@@ -2,7 +2,7 @@ import type { ParentComponent } from 'solid-js';
 import type { Organization } from '../organizations.types';
 import { makePersisted } from '@solid-primitives/storage';
 import { createQuery } from '@tanstack/solid-query';
-import { createContext, createEffect, createSignal, onCleanup, onMount, Show, useContext } from 'solid-js';
+import { createContext, createSignal, Show, useContext } from 'solid-js';
 import { fetchOrganizations } from '../organizations.services';
 
 const currentOrganizationContext = createContext<{

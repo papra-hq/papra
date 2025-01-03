@@ -11,7 +11,7 @@ import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createEffect, onMount, type ParentComponent, Show, Suspense } from 'solid-js';
+import { type Component, createEffect, type ParentComponent, Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import {
   Select,
@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/select';
-import { Separator } from '../components/separator';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 
 type MenuItem = {

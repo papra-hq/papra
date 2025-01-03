@@ -49,6 +49,7 @@ export function registerGithubProviderOauthRoute({ app }: { app: ServerInstance 
           email: githubUser.email,
           fullName: githubUser.name,
         },
+        config,
       });
 
       const userId = user.id;
@@ -104,6 +105,7 @@ export function registerGoogleProviderOauthRoute({ app }: { app: ServerInstance 
           email: googleUser.email,
           fullName: googleUser.name,
         },
+        config,
       });
 
       const userId = user.id;

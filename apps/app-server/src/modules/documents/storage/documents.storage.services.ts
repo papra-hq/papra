@@ -8,7 +8,7 @@ const storageDriverFactories = {
   [FS_STORAGE_DRIVER_NAME]: fsStorageDriverFactory,
 };
 
-export type DocumentStorageService = Awaited<ReturnType<typeof createDocumentStorageService>>
+export type DocumentStorageService = Awaited<ReturnType<typeof createDocumentStorageService>>;
 
 export async function createDocumentStorageService({ config }: { config: Config }) {
   const storageDriverName = config.documentsStorage.driver;

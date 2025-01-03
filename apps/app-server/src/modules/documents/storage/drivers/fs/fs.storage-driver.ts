@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import path, { dirname } from 'node:path';
+import { dirname } from 'node:path';
 import stream from 'node:stream';
 import { defineStorageDriver } from '../drivers.models';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';

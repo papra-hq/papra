@@ -1,4 +1,3 @@
-import type { Readable } from 'node:stream';
 import type { Config } from '../../../config/config.types';
 
 export type StorageDriver = {

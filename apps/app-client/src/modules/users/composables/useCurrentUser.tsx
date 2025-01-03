@@ -1,9 +1,7 @@
-import type { Organization } from '@/modules/organizations/organizations.types';
 import type { ParentComponent } from 'solid-js';
 import type { UserMe } from '../users.types';
-import { fetchOrganizations } from '@/modules/organizations/organizations.services';
 import { makePersisted } from '@solid-primitives/storage';
-import { createQueries, createQuery } from '@tanstack/solid-query';
+import { createQueries } from '@tanstack/solid-query';
 import { createContext, createSignal, Show, useContext } from 'solid-js';
 import { fetchCurrentUser } from '../users.services';
 

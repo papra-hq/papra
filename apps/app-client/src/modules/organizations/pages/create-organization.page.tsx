@@ -1,7 +1,6 @@
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useNavigate } from '@solidjs/router';
 import { type Component, Show } from 'solid-js';
 import { z } from 'zod';

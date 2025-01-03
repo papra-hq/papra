@@ -1,6 +1,5 @@
 import type { ServerInstance } from '../app/server.types';
 import { bodyLimit } from 'hono/body-limit';
-import { validator } from 'hono/validator';
 import { z } from 'zod';
 import { getAuthUserId } from '../app/auth/auth.models';
 import { getDb } from '../app/database/database.models';

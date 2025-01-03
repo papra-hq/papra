@@ -11,10 +11,7 @@ import { CheckoutCancelPage } from './modules/payments/pages/checkout-cancel.pag
 import { CheckoutSuccessPage } from './modules/payments/pages/checkout-success.page';
 import { Button } from './modules/ui/components/button';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
-import { SettingsLayout } from './modules/ui/layouts/settings.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
-import { SettingsAccountPage } from './modules/users/pages/settings.account.page';
-import { SettingsBillingPage } from './modules/users/pages/settings.billing';
 
 export const routes: RouteDefinition[] = [
   {

@@ -13,9 +13,11 @@ import { REFRESH_TOKEN_DURATION_IN_DAYS } from './refresh-tokens/refresh-token.c
 export async function getOrCreateUserFromProvider({
   usersRepository,
   providerUser,
+  config,
 }: {
   usersRepository: UsersRepository;
   providerUser: DbInsertableUser;
+  config: Config;
 }) {
   const { email } = providerUser;
 
@@ -30,6 +32,7 @@ export async function getOrCreateUserFromProvider({
   const { user: newUser } = await createUser({
     user: providerUser,
     usersRepository,
+    config,
   });
 
   return {

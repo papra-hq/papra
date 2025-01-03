@@ -1,6 +1,6 @@
 import type { Config } from '../../../../config/config.types';
 import fs from 'node:fs';
-import os, { tmpdir } from 'node:os';
+import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import stream from 'node:stream';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';

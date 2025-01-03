@@ -1,11 +1,9 @@
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
 import { Badge } from '@/modules/ui/components/badge';
-import { Card } from '@/modules/ui/components/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useParams } from '@solidjs/router';
-import { createQueries, createQuery, keepPreviousData } from '@tanstack/solid-query';
+import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { type Component, createSignal } from 'solid-js';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { getDocumentIcon } from '../document.models';
