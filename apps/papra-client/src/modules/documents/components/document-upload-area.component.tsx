@@ -1,4 +1,5 @@
 import type { Component } from 'solid-js';
+import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
@@ -23,18 +24,9 @@ export const DocumentUploadArea: Component<{ organizationId?: string }> = (props
     });
   };
 
-  const promptImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.pdf';
-    input.multiple = true;
-    input.onchange = async () => {
-      if (!input.files) {
-        return;
-      }
-      await uploadFiles({ files: [...input.files] });
-    };
-    input.click();
+  const promptImport = async () => {
+    const { files } = await promptUploadFiles();
+    await uploadFiles({ files });
   };
 
   const handleDragOver = (event: DragEvent) => {

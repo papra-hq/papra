@@ -13,6 +13,7 @@ async function apiClient<T>({
   formData,
   queryParams,
   impersonatedUserId,
+  responseType = 'json',
 }: {
   path: string;
   method: string;
@@ -20,6 +21,7 @@ async function apiClient<T>({
   formData?: Record<string, unknown>;
   queryParams?: Record<string, string | number>;
   impersonatedUserId?: string;
+  responseType?: 'json' | 'blob';
 }): Promise<T> {
   const url = buildUrl({
     path,
@@ -57,6 +59,10 @@ async function apiClient<T>({
 
   if (response.status === 204) {
     return {} as T;
+  }
+
+  if (responseType === 'blob') {
+    return response.blob() as unknown as T;
   }
 
   return response.json();

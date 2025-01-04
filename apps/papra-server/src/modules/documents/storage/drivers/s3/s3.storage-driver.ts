@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
 import { defineStorageDriver } from '../drivers.models';
@@ -35,6 +35,18 @@ export const s3StorageDriverFactory = defineStorageDriver(async ({ config }) => 
       await upload.done();
 
       return { storageKey };
+    },
+    getFileStream: async ({ storageKey }) => {
+      const { Body } = await s3Client.send(new GetObjectCommand({
+        Bucket: bucketName,
+        Key: storageKey,
+      }));
+
+      if (!Body) {
+        throw new Error('File not found or has no content');
+      }
+
+      return { fileStream: Body.transformToWebStream() };
     },
   };
 });

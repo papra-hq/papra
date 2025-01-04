@@ -17,6 +17,7 @@ export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance })
   setupGetDocumentsRoute({ app });
   setupGetDocumentRoute({ app });
   setupDeleteDocumentRoute({ app });
+  setupGetDocumentFileRoute({ app });
 }
 
 function setupCreateDocumentRoute({ app }: { app: ServerInstance }) {
@@ -202,6 +203,59 @@ function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
       return context.json({
         success: true,
       });
+    },
+  );
+}
+
+function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId/documents/:documentId/file',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+      const { config } = getConfig({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+
+      if (!isInOrganization) {
+        throw createError({
+          message: 'You are not part of this organization.',
+          code: 'user.not_in_organization',
+          statusCode: 403,
+        });
+      }
+
+      const { document } = await documentsRepository.getDocumentById({ documentId });
+
+      if (!document) {
+        throw createError({
+          message: 'Document not found.',
+          code: 'document.not_found',
+          statusCode: 404,
+        });
+      }
+
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.storageKey });
+
+      return context.body(
+        fileStream,
+        200,
+        {
+          'Content-Type': document.mimeType,
+          'Content-Disposition': `inline; filename="${document.name}"`,
+        },
+      );
     },
   );
 }

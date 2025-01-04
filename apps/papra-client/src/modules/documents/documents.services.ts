@@ -70,7 +70,7 @@ export async function deleteDocument({
   });
 }
 
-export async function getDocument({
+export async function fetchDocument({
   documentId,
   organizationId,
 }: {
@@ -89,4 +89,20 @@ export async function getDocument({
       updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
     },
   };
+}
+
+export async function fetchDocumentFile({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
+  const blob = await apiClient<Blob>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/file`,
+    responseType: 'blob',
+  });
+
+  return blob;
 }

@@ -49,5 +49,20 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
         });
       });
     },
+    getFileStream: async ({ storageKey }) => {
+      const storagePath = `${root}/${storageKey}`;
+
+      const fileExists = await checkFileExists({ path: storagePath });
+
+      if (!fileExists) {
+        throw new Error('File not found');
+      }
+
+      const readStream = fs.createReadStream(storagePath);
+
+      return {
+        fileStream: stream.Readable.toWeb(readStream),
+      };
+    },
   };
 });

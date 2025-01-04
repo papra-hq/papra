@@ -1,3 +1,4 @@
+import type { ReadableStream } from 'node:stream/web';
 import type { Config } from '../../../config/config.types';
 
 export type StorageDriver = {
@@ -6,6 +7,10 @@ export type StorageDriver = {
     file: File;
     organizationId: string;
   }) => Promise<{ storageKey: string }>;
+
+  getFileStream: (args: { storageKey: string }) => Promise<{
+    fileStream: ReadableStream;
+  }>;
 };
 
 export type StorageDriverFactory = (args: { config: Config }) => Promise<StorageDriver>;

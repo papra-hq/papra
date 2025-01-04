@@ -33,7 +33,10 @@ async function getOrganizationDocumentsCount({ organizationId, db }: { organizat
     })
     .from(documentsTable)
     .where(
-      eq(documentsTable.organizationId, organizationId),
+      and(
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, false),
+      ),
     );
 
   return { documentsCount };

@@ -3,12 +3,13 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 import { authStore } from '@/modules/auth/auth.store';
 import { uploadDocument } from '@/modules/documents/documents.services';
 import { fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 
+import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { type Component, createEffect, type ParentComponent, Show, Suspense } from 'solid-js';
@@ -42,7 +43,7 @@ const MenuItemButton: Component<MenuItem> = (props) => {
       </Show>
 
       <Show when={!props.onClick}>
-        <Button class="block dark:text-muted-foreground" as={A} href={props.href!} variant="ghost" activeClass="bg-accent/50! text-accent-foreground! ">
+        <Button class="block dark:text-muted-foreground" as={A} href={props.href!} variant="ghost" activeClass="bg-accent/50! text-accent-foreground!">
           <div class="flex items-center gap-2">
             <div class={cn(props.icon, 'size-5')}></div>
             <div>{props.label}</div>
@@ -202,26 +203,17 @@ export const OrganizationLayout: ParentComponent = (props) => {
     }
   });
 
-  const promptImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.pdf';
-    input.multiple = true;
-    input.onchange = async () => {
-      if (!input.files) {
-        return;
-      }
+  const promptImport = async () => {
+    const { files } = await promptUploadFiles();
 
-      for (const file of Array.from(input.files)) {
-        await uploadDocument({ file, organizationId: params.organizationId });
-      }
+    for (const file of files) {
+      await uploadDocument({ file, organizationId: params.organizationId });
+    }
 
-      queryClient.invalidateQueries({
-        queryKey: ['organizations', params.organizationId, 'documents'],
-        refetchType: 'all',
-      });
-    };
-    input.click();
+    queryClient.invalidateQueries({
+      queryKey: ['organizations', params.organizationId, 'documents'],
+      refetchType: 'all',
+    });
   };
 
   return (

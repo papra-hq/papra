@@ -30,6 +30,7 @@ export async function createDocumentStorageService({ config }: { config: Config 
 
   return injectArguments({
     saveFile,
+    getFileStream,
   }, {
     storageDriver,
   });
@@ -45,4 +46,14 @@ async function saveFile({
   storageDriver: StorageDriver;
 }) {
   return storageDriver.saveFile({ file, organizationId });
+}
+
+async function getFileStream({
+  storageKey,
+  storageDriver,
+}: {
+  storageKey: string;
+  storageDriver: StorageDriver;
+}) {
+  return storageDriver.getFileStream({ storageKey });
 }

@@ -4,6 +4,7 @@ import { ConfirmPage } from './modules/auth/pages/confirm.page';
 import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
 import { MagicLinkSentPage } from './modules/auth/pages/magic-link-sent.page';
 import { PendingMagicLinkPage } from './modules/auth/pages/verify-magic-link.page';
+import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
@@ -27,7 +28,7 @@ export const routes: RouteDefinition[] = [
             <>
               {getLatestOrganizationId()
                 ? <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
-                : <Navigate href="/organizations/create" />}
+                : <Navigate href="/organizations" />}
             </>
 
           );
@@ -58,6 +59,19 @@ export const routes: RouteDefinition[] = [
                 path: '/',
                 component: DocumentsPage,
               },
+
+              {
+                path: '/documents/:documentId',
+                component: DocumentPage,
+              },
+              // {
+              //   path: '/documents',
+              //   component: () => {
+              //     const params = useParams();
+
+              //     return <Navigate href={`/organizations/${params.organizationId}`} />;
+              //   },
+              // },
             ],
           },
           {

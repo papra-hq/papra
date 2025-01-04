@@ -30,6 +30,7 @@
   "dependencies": {
     "@corentinth/chisels": "^1.0.2",
     "@kobalte/core": "^0.13.4",
+    "@pdfslick/solid": "^2.0.0",
     "@solid-primitives/i18n": "^2.1.1",
     "@solid-primitives/storage": "^4.2.1",
     "@solidjs/router": "^0.14.3",

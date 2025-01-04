@@ -19,6 +19,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['@pdfslick/solid'],
+  },
   // test: {
   //   exclude: [...configDefaults.exclude, '**/*.e2e.test.ts'],
   // },
