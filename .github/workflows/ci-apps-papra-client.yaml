@@ -7,12 +7,12 @@ on:
       - main
 
 jobs:
-  ci-app-client:
-    name: CI - App Client
+  ci-apps-papra-client:
+    name: CI - Papra Client
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/app-client
+        working-directory: apps/papra-client
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4

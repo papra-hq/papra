@@ -7,12 +7,12 @@ on:
       - main
 
 jobs:
-  ci-app-server:
-    name: CI - App Server
+  ci-apps-papra-server:
+    name: CI - Papra Server
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/app-server
+        working-directory: apps/papra-server
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4

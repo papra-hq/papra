@@ -1,5 +1,5 @@
 {
-  "name": "@papra/app-client",
+  "name": "@papra/papra-client",
   "type": "module",
   "version": "1.11.0",
   "packageManager": "pnpm@9.12.3",
