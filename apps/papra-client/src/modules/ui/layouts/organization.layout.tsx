@@ -122,11 +122,16 @@ const SideNav: Component = () => {
             optionValue="id"
             optionTextValue="name"
             value={query.data?.organizations.find(organization => organization.id === params.organizationId)}
-            onChange={value => value && (
-              value.id === 'create'
-                ? navigate('/organizations/create')
-                : navigate(`/organizations/${value.id}`)
-            )}
+            onChange={(value) => {
+              if (!value || value.id === params.organizationId) {
+                return;
+              }
+
+              return value && (
+                value.id === 'create'
+                  ? navigate('/organizations/create')
+                  : navigate(`/organizations/${value.id}`));
+            }}
 
             itemComponent={props => props.item.rawValue.id === 'create'
               ? (
