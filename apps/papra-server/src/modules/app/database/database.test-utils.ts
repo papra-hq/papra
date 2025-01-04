@@ -1,5 +1,6 @@
 import type { Database } from './database.types';
 import { migrate } from 'drizzle-orm/libsql/migrator';
+import { organizationsTable, organizationUsersTable } from '../../organizations/organizations.table';
 import { usersTable } from '../../users/users.table';
 import { setupDatabase } from './database';
 
@@ -20,11 +21,17 @@ async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDa
 async function seedDatabase({
   db,
   users,
+  organizations,
+  organizationUsers,
 }: {
   db: Database;
   users?: typeof usersTable.$inferInsert[];
+  organizations?: typeof organizationsTable.$inferInsert[];
+  organizationUsers?: typeof organizationUsersTable.$inferInsert[];
 }) {
   await Promise.all([
     users && db.insert(usersTable).values(users).execute(),
+    organizations && db.insert(organizationsTable).values(organizations).execute(),
+    organizationUsers && db.insert(organizationUsersTable).values(organizationUsers).execute(),
   ]);
 }

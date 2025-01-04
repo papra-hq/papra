@@ -15,6 +15,8 @@ import { createDocumentStorageService } from './storage/documents.storage.servic
 export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance }) {
   setupCreateDocumentRoute({ app });
   setupGetDocumentsRoute({ app });
+  setupGetDocumentRoute({ app });
+  setupDeleteDocumentRoute({ app });
 }
 
 function setupCreateDocumentRoute({ app }: { app: ServerInstance }) {
@@ -118,10 +120,87 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
         });
       }
 
-      const { documents } = await documentsRepository.getOrganizationDocuments({ organizationId, pageIndex, pageSize });
+      const [
+        { documents },
+        { documentsCount },
+      ] = await Promise.all([
+        documentsRepository.getOrganizationDocuments({ organizationId, pageIndex, pageSize }),
+        documentsRepository.getOrganizationDocumentsCount({ organizationId }),
+      ]);
 
       return context.json({
         documents,
+        documentsCount,
+      });
+    },
+  );
+}
+
+function setupGetDocumentRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId/documents/:documentId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+
+      if (!isInOrganization) {
+        throw createError({
+          message: 'You are not part of this organization.',
+          code: 'user.not_in_organization',
+          statusCode: 403,
+        });
+      }
+
+      const { document } = await documentsRepository.getDocumentById({ documentId });
+
+      return context.json({
+        document,
+      });
+    },
+  );
+}
+
+function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
+  app.delete(
+    '/api/organizations/:organizationId/documents/:documentId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+
+      if (!isInOrganization) {
+        throw createError({
+          message: 'You are not part of this organization.',
+          code: 'user.not_in_organization',
+          statusCode: 403,
+        });
+      }
+
+      await documentsRepository.softDeleteDocument({ documentId, userId });
+
+      return context.json({
+        success: true,
       });
     },
   );
