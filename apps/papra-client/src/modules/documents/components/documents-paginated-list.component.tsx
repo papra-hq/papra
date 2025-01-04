@@ -36,7 +36,7 @@ export const DocumentsPaginatedList: Component<{ organizationId: string }> = (pr
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
-              <div class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-muted-foreground')}></div>
+              <div class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}></div>
             </div>
 
             <div class="flex-1 flex flex-col gap-1 truncate">

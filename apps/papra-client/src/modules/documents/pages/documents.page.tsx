@@ -21,7 +21,7 @@ const DocumentCard: Component<{ document: Document; organizationId?: string }> =
   return (
     <div class="border rounded-lg overflow-hidden flex gap-4 p-3 pr-2 items-center">
       <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
-        <div class={cn(getDocumentIcon({ document: props.document }), 'size-6 text-muted-foreground')}></div>
+        <div class={cn(getDocumentIcon({ document: props.document }), 'size-6 text-primary')}></div>
       </div>
 
       <div class="flex-1 flex flex-col gap-1 truncate">

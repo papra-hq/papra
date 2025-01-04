@@ -101,8 +101,8 @@ const SideNav: Component = () => {
   return (
     <div class="flex h-full">
       <div class="w-65px border-r bg-card pt-4">
-        <Button variant="link" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-foreground mb-4">
-          <div class="i-tabler-file-text size-8"></div>
+        <Button variant="link" size="icon" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-primary mb-4 mx-auto">
+          <div class="i-tabler-file-text size-10"></div>
         </Button>
 
         <Button variant="link" as={A} href="/organizations" class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground">
