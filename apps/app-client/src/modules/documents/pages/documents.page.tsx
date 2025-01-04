@@ -1,7 +1,8 @@
+import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
-import { Badge } from '@/modules/ui/components/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
+import { formatBytes } from '@corentinth/chisels';
 import { A, useParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { type Component, createSignal } from 'solid-js';
@@ -15,6 +16,13 @@ export const DocumentsPage: Component = () => {
 
   const query = createQueries(() => ({
     queries: [
+      {
+        queryKey: ['organizations', params.organizationId, 'documents', { pageIndex: 0, pageSize: 100 }],
+        queryFn: () => fetchOrganizationDocuments({
+          organizationId: params.organizationId,
+          ...getPagination(),
+        }),
+      },
       {
         queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
         queryFn: () => fetchOrganizationDocuments({
@@ -46,43 +54,40 @@ export const DocumentsPage: Component = () => {
           )
         : (
             <>
-              <h2 class="text-xl font-bold mb-6">
-                Latest imports
+              <h2 class="text-lg font-semibold mb-4">
+                Latest imported documents
               </h2>
-              <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6">
+              <div class="grid gap-4 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4">
                 {query[0].data?.documents.map(document => (
-                  <div class="border rounded-lg overflow-hidden">
-                    <div class="bg-card border-b flex items-center justify-center p-6">
-                      <div class={cn(getDocumentIcon({ document }), 'size-16 text-muted-foreground')}></div>
+                  <div class="border rounded-lg overflow-hidden flex gap-4 p-3 items-center">
+                    <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
+                      <div class={cn(getDocumentIcon({ document }), 'size-6 text-muted-foreground')}></div>
                     </div>
 
-                    <div class="p-4">
+                    <div class="flex-1 flex flex-col gap-1 truncate">
+                      <A
+                        href={`/organizations/${params.organizationId}/documents/${document.id}`}
+                        class="text-xs font-bold truncate block hover:underline"
+                      >
+                        {document.name.split('.').shift()}
+                      </A>
 
-                      <Tooltip>
-                        <TooltipTrigger class="w-full text-left">
-                          <A
-                            href={`/organizations/${params.organizationId}/documents/${document.id}`}
-                            class="text-xs font-bold truncate block"
-                          >
-                            {document.name.split('.').shift()}
-                          </A>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {document.name}
-                        </TooltipContent>
-                      </Tooltip>
-
-                      <div class="text-xs text-muted-foreground mt-1">
-                        <Badge variant="secondary" class="px-2">
-                          {document.name.split('.').pop()?.toUpperCase()}
-                        </Badge>
+                      <div class="text-xs text-muted-foreground lh-none">
+                        {formatBytes({ bytes: document.size, base: 1000 })}
+                        {' '}
+                        -
+                        {' '}
+                        {document.name.split('.').pop()?.toUpperCase()}
                         {' '}
                         -
                         {' '}
                         <Tooltip>
-                          <TooltipTrigger>
-                            {timeAgo({ date: document.createdAt })}
-                          </TooltipTrigger>
+                          <TooltipTrigger as={(props: TooltipTriggerProps) => (
+                            <span {...props}>
+                              {timeAgo({ date: document.createdAt })}
+                            </span>
+                          )}
+                          />
                           <TooltipContent>
                             {document.createdAt.toLocaleString()}
                           </TooltipContent>

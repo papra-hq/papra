@@ -244,7 +244,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
               </SheetContent>
             </Sheet>
 
-            <Button variant="outline" class="sm:min-w-64 justify-start">
+            <Button variant="outline" class="lg:min-w-64  justify-start">
               <div class="i-tabler-search size-4 mr-2"></div>
               Search...
             </Button>
@@ -252,8 +252,10 @@ export const OrganizationLayout: ParentComponent = (props) => {
 
           <div class="flex items-center gap-2">
             <Button onClick={promptImport}>
-              <div class="i-tabler-upload size-4 mr-2"></div>
-              Import a document
+              <div class="i-tabler-upload size-4"></div>
+              <span class="hidden sm:inline ml-2">
+                Import a document
+              </span>
             </Button>
 
             <DropdownMenu>
