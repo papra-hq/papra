@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.11.0",
   "description": "",
   "author": "",
+  "license": "AGPL-3.0-or-later",
   "keywords": [],
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts",
