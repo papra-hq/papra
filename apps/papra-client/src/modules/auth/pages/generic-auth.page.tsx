@@ -1,19 +1,11 @@
 import type { Component, ParentComponent } from 'solid-js';
 import { config } from '@/modules/config/config';
-import { createForm } from '@/modules/shared/form/form-legacy';
-import { isHttpErrorWithStatusCode } from '@/modules/shared/http/http-errors';
-import { useAsyncState } from '@/modules/shared/signals/async-state';
 import { cn } from '@/modules/shared/style/cn';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
-import { createToast } from '@/modules/ui/components/sonner';
-import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A, useNavigate } from '@solidjs/router';
-import { createSignal, For, Show } from 'solid-js';
-import { z } from 'zod';
-import { requestMagicLink } from '../auth.services';
-import { authStore } from '../auth.store';
+import { A } from '@solidjs/router';
+import { createSignal, For } from 'solid-js';
 
 const InlineLink: ParentComponent<{ href: string }> = props => (
   <Button variant="link" as={A} href={props.href} class="inline px-0">
@@ -34,54 +26,6 @@ const SsoProviderButton: Component<{ name: string; icon: string; url: string; la
       <span class={cn(`mr-2 text-lg inline-block`, getIsLoading() ? 'i-tabler-loader-2 animate-spin' : props.icon)} />
       {props.label}
     </Button>
-  );
-};
-
-export const MagicLinkLinkForm: Component = () => {
-  const navigate = useNavigate();
-
-  const { getInputBindings, submit, onSubmit, getFieldError, getForm } = createForm({
-    fields: {
-      email: {
-        schema: z.string().trim().email('Please enter a valid email address'),
-      },
-    },
-  });
-
-  const { execute: requestLink, getIsLoading, onSuccess, onError } = useAsyncState(requestMagicLink);
-
-  onSubmit(async ({ email }) => {
-    await requestLink({ email });
-  });
-
-  onSuccess(() => {
-    authStore.setMagicLinkRequestEmail(getForm().email);
-    navigate('/magic-link');
-  });
-
-  onError(({ error }) => {
-    if (isHttpErrorWithStatusCode({ error, statusCode: 429 })) {
-      createToast({ type: 'error', message: 'Too many magic link requests. Please try again later.' });
-      return;
-    }
-
-    createToast({ type: 'error', message: 'An error occurred while requesting the magic link. Please try again later.' });
-  });
-
-  return (
-    <div class="flex flex-col gap-3 w-full">
-      <TextFieldRoot class="flex flex-col gap-2">
-        <TextFieldLabel for="email">Email address</TextFieldLabel>
-        <TextField type="email" id="email" placeholder="Eg. jane.doe@example.com" {...getInputBindings('email')} />
-        <Show when={getFieldError('email')}>{getErrorMessage => <div class="text-red-500 text-sm">{getErrorMessage()}</div>}</Show>
-      </TextFieldRoot>
-
-      <Button onClick={submit} isLoading={getIsLoading()}>
-        Continue with email
-
-        <span class="i-tabler-arrow-right ml-2" />
-      </Button>
-    </div>
   );
 };
 
@@ -156,10 +100,6 @@ export const GenericAuthPage: Component<{ type: 'login' | 'register' }> = (props
         </div>
 
         <Separator class="my-6" />
-
-        {/* <MagicLinkLinkForm /> */}
-
-        {/* <Separator class="my-6" /> */}
 
         <p class="text-muted-foreground">
           {byType({

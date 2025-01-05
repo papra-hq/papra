@@ -44,15 +44,13 @@
     "date-fns": "^4.1.0",
     "jszip": "^3.10.1",
     "lodash-es": "^4.17.21",
-    "shiki": "^1.24.0",
     "solid-js": "^1.8.11",
     "solid-sonner": "^0.2.8",
     "tailwind-merge": "^2.6.0",
     "ts-pattern": "^5.5.0",
     "unocss-preset-animations": "^1.1.0",
     "uqr": "^0.1.2",
-    "valibot": "1.0.0-beta.10",
-    "zod": "^3.23.8"
+    "valibot": "1.0.0-beta.10"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",

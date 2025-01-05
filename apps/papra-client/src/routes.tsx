@@ -12,8 +12,6 @@ import { fetchOrganizations } from './modules/organizations/organizations.servic
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
-import { CheckoutCancelPage } from './modules/payments/pages/checkout-cancel.page';
-import { CheckoutSuccessPage } from './modules/payments/pages/checkout-success.page';
 import { Button } from './modules/ui/components/button';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
@@ -95,34 +93,7 @@ export const routes: RouteDefinition[] = [
             path: '/first',
             component: CreateFirstOrganizationPage,
           },
-          // {
-          //   path: '/settings',
-          //   component: SettingsLayout,
-          //   children: [
-          //     {
-          //       path: '/',
-          //       component: () => <Navigate href="/settings/account" />,
-          //     },
-          //     {
-          //       path: '/account',
-          //       component: createProtectedPage({ authType: 'private', component: SettingsAccountPage }),
-          //     },
-          //     {
-          //       path: '/billing',
-          //       component: createProtectedPage({ authType: 'private', component: SettingsBillingPage }),
-          //     },
-          //   ],
-          // },
         ],
-      },
-
-      {
-        path: '/checkout-success',
-        component: createProtectedPage({ authType: 'private', component: CheckoutSuccessPage }),
-      },
-      {
-        path: '/checkout-cancel',
-        component: createProtectedPage({ authType: 'private', component: CheckoutCancelPage }),
       },
     ],
   },
