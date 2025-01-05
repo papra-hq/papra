@@ -1,4 +1,6 @@
 import { A, Navigate, type RouteDefinition, useParams } from '@solidjs/router';
+import { createQuery } from '@tanstack/solid-query';
+import { Match, Suspense, Switch } from 'solid-js';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
 import { ConfirmPage } from './modules/auth/pages/confirm.page';
 import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
@@ -6,6 +8,8 @@ import { MagicLinkSentPage } from './modules/auth/pages/magic-link-sent.page';
 import { PendingMagicLinkPage } from './modules/auth/pages/verify-magic-link.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
+import { fetchOrganizations } from './modules/organizations/organizations.services';
+import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { CheckoutCancelPage } from './modules/payments/pages/checkout-cancel.page';
@@ -24,11 +28,28 @@ export const routes: RouteDefinition[] = [
         component: () => {
           const { getLatestOrganizationId } = useCurrentUser();
 
+          const query = createQuery(() => ({
+            queryKey: ['organizations'],
+            queryFn: fetchOrganizations,
+          }));
+
           return (
             <>
-              {getLatestOrganizationId()
-                ? <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
-                : <Navigate href="/organizations" />}
+              <Suspense>
+                <Switch>
+                  <Match when={getLatestOrganizationId() && query.data && query.data.organizations.some(org => org.id === getLatestOrganizationId())}>
+                    <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
+                  </Match>
+
+                  <Match when={query.data && query.data.organizations.length > 0}>
+                    <Navigate href="/organizations" />
+                  </Match>
+
+                  <Match when={query.data && query.data.organizations.length === 0}>
+                    <Navigate href="/organizations/first" />
+                  </Match>
+                </Switch>
+              </Suspense>
             </>
 
           );
@@ -64,19 +85,15 @@ export const routes: RouteDefinition[] = [
                 path: '/documents/:documentId',
                 component: DocumentPage,
               },
-              // {
-              //   path: '/documents',
-              //   component: () => {
-              //     const params = useParams();
-
-              //     return <Navigate href={`/organizations/${params.organizationId}`} />;
-              //   },
-              // },
             ],
           },
           {
             path: '/create',
             component: CreateOrganizationPage,
+          },
+          {
+            path: '/first',
+            component: CreateFirstOrganizationPage,
           },
           // {
           //   path: '/settings',

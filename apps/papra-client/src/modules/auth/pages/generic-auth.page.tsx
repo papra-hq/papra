@@ -1,13 +1,13 @@
 import type { Component, ParentComponent } from 'solid-js';
 import { config } from '@/modules/config/config';
-import { createForm } from '@/modules/shared/form/form';
+import { createForm } from '@/modules/shared/form/form-legacy';
 import { isHttpErrorWithStatusCode } from '@/modules/shared/http/http-errors';
 import { useAsyncState } from '@/modules/shared/signals/async-state';
 import { cn } from '@/modules/shared/style/cn';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
-import { toast } from '@/modules/ui/components/sonner';
+import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { A, useNavigate } from '@solidjs/router';
 import { createSignal, For, Show } from 'solid-js';
@@ -61,11 +61,11 @@ export const MagicLinkLinkForm: Component = () => {
 
   onError(({ error }) => {
     if (isHttpErrorWithStatusCode({ error, statusCode: 429 })) {
-      toast.error('Too many magic link requests. Please try again later.');
+      createToast({ type: 'error', message: 'Too many magic link requests. Please try again later.' });
       return;
     }
 
-    toast.error('An error occurred while requesting the magic link. Please try again later.');
+    createToast({ type: 'error', message: 'An error occurred while requesting the magic link. Please try again later.' });
   });
 
   return (

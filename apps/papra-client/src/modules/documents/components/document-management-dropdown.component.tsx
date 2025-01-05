@@ -3,7 +3,7 @@ import type { Component } from 'solid-js';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
-import { toast } from '@/modules/ui/components/sonner';
+import { createToast } from '@/modules/ui/components/sonner';
 import { A } from '@solidjs/router';
 import { deleteDocument } from '../documents.services';
 
@@ -15,7 +15,7 @@ export const DocumentManagementDropdown: Component<{ documentId: string; organiz
     });
 
     await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'documents'] });
-    toast.success('Document deleted');
+    createToast({ type: 'success', message: 'Document deleted' });
   };
 
   return (

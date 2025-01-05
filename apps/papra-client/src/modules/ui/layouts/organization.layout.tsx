@@ -13,7 +13,7 @@ import { Button } from '@/modules/ui/components/button';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createEffect, type ParentComponent, Show, Suspense } from 'solid-js';
+import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import {
   Select,
@@ -196,19 +196,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
   const { user } = useCurrentUser();
   const themeStore = useThemeStore();
   const params = useParams();
-  const navigate = useNavigate();
   const { openCommandPalette } = useCommandPalette();
-
-  const query = createQuery(() => ({
-    queryKey: ['organizations'],
-    queryFn: fetchOrganizations,
-  }));
-
-  createEffect(() => {
-    if (query.data?.organizations && query.data.organizations.length === 0) {
-      navigate('/organizations/create');
-    }
-  });
 
   const promptImport = async () => {
     const { files } = await promptUploadFiles();

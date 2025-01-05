@@ -1,11 +1,11 @@
 import type { Component } from 'solid-js';
 import { Navigate } from '@solidjs/router';
 import { onMount } from 'solid-js';
-import { toast } from '../../ui/components/sonner';
+import { createToast } from '../../ui/components/sonner';
 
 export const CheckoutCancelPage: Component = () => {
   onMount(() => {
-    toast.error('Payment canceled');
+    createToast({ type: 'error', message: 'Payment canceled' });
   });
 
   return (

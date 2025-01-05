@@ -3,7 +3,7 @@ import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
 import { Card } from '@/modules/ui/components/card';
-import { toast } from '@/modules/ui/components/sonner';
+import { createToast } from '@/modules/ui/components/sonner';
 import { Tabs, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { createSignal, splitProps } from 'solid-js';
@@ -90,11 +90,11 @@ export const UpgradePlanPage: Component = () => {
       window.location.href = checkoutUrl;
     } catch (error) {
       if (isHttpErrorWithCode({ error, code: 'payment.customer_already_has_subscription' })) {
-        toast.error('You already have an active subscription');
+        createToast({ type: 'error', message: 'You already have an active subscription' });
         return;
       }
 
-      toast.error('An error occurred while processing your request');
+      createToast({ type: 'error', message: 'An error occurred while processing your request' });
     }
   };
 
