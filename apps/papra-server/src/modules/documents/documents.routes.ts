@@ -15,6 +15,7 @@ import { createDocumentStorageService } from './storage/documents.storage.servic
 export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance }) {
   setupCreateDocumentRoute({ app });
   setupGetDocumentsRoute({ app });
+  setupSearchDocumentsRoute({ app });
   setupGetDocumentRoute({ app });
   setupDeleteDocumentRoute({ app });
   setupGetDocumentFileRoute({ app });
@@ -256,6 +257,48 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
           'Content-Disposition': `inline; filename="${document.name}"`,
         },
       );
+    },
+  );
+}
+
+function setupSearchDocumentsRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId/documents/search',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    validateQuery(
+      z.object({
+        searchQuery: z.string(),
+        pageIndex: z.coerce.number().min(0).int().optional().default(0),
+        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+      }),
+    ),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+
+      const { organizationId } = context.req.valid('param');
+      const { searchQuery, pageIndex, pageSize } = context.req.valid('query');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+
+      if (!isInOrganization) {
+        throw createError({
+          message: 'You are not part of this organization.',
+          code: 'user.not_in_organization',
+          statusCode: 403,
+        });
+      }
+
+      const { documents } = await documentsRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
+
+      return context.json({
+        documents,
+      });
     },
   );
 }

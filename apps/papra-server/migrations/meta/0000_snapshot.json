@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "daf25e46-2a4b-462a-8488-04778b929104",
+  "id": "74d7233a-2257-411c-b8cd-b5df0523bbff",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auth_tokens": {
@@ -154,20 +154,20 @@
           "notNull": true,
           "autoincrement": false
         },
-        "original_checksum": {
-          "name": "original_checksum",
+        "original_size": {
+          "name": "original_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "storage_key": {
+          "name": "storage_key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "original_size": {
-          "name": "original_size",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'0'"
         },
         "name": {
           "name": "name",
@@ -176,20 +176,13 @@
           "notNull": true,
           "autoincrement": false
         },
-        "mime_type": {
-          "name": "mime_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "size": {
           "name": "size",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'0'"
+          "default": 0
         },
         "status": {
           "name": "status",
@@ -198,6 +191,21 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'pending'"
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
         }
       },
       "indexes": {},

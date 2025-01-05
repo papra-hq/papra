@@ -1,14 +1,15 @@
 import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { authStore } from '@/modules/auth/auth.store';
+import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 import { uploadDocument } from '@/modules/documents/documents.services';
 import { fetchOrganizations } from '@/modules/organizations/organizations.services';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
-import { Button } from '@/modules/ui/components/button';
 
+import { Button } from '@/modules/ui/components/button';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
@@ -196,6 +197,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
   const themeStore = useThemeStore();
   const params = useParams();
   const navigate = useNavigate();
+  const { openCommandPalette } = useCommandPalette();
 
   const query = createQuery(() => ({
     queryKey: ['organizations'],
@@ -210,7 +212,6 @@ export const OrganizationLayout: ParentComponent = (props) => {
 
   const promptImport = async () => {
     const { files } = await promptUploadFiles();
-
     for (const file of files) {
       await uploadDocument({ file, organizationId: params.organizationId });
     }
@@ -241,7 +242,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
               </SheetContent>
             </Sheet>
 
-            <Button variant="outline" class="lg:min-w-64  justify-start">
+            <Button variant="outline" class="lg:min-w-64  justify-start" onClick={openCommandPalette}>
               <div class="i-tabler-search size-4 mr-2"></div>
               Search...
             </Button>

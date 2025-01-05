@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, count, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, sql } from 'drizzle-orm';
 import { withPagination } from '../shared/db/pagination';
 import { documentsTable } from './documents.table';
 
@@ -15,6 +15,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getDocumentById,
       softDeleteDocument,
       getOrganizationDocumentsCount,
+      searchOrganizationDocuments,
     },
     { db },
   );
@@ -87,4 +88,26 @@ async function softDeleteDocument({ documentId, userId, db, now = new Date() }: 
       deletedAt: now,
     })
     .where(eq(documentsTable.id, documentId));
+}
+
+async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {
+  // const doubleQuotedSearchQuery = `"${searchQuery.replace(/"/g, '')}"`;
+  // when searchquery is a single word, we append a wildcard to it to make it a prefix search
+  const cleanedSearchQuery = searchQuery.replace(/"/g, '').replace(/\*/g, '').trim();
+  const formatedSearchQuery = cleanedSearchQuery.includes(' ') ? cleanedSearchQuery : `${cleanedSearchQuery}*`;
+
+  const result = await db.run(sql`
+    SELECT * FROM ${documentsTable}
+    JOIN documents_fts ON documents_fts.id = ${documentsTable.id}
+    WHERE ${documentsTable.organizationId} = ${organizationId}
+          AND ${documentsTable.isDeleted} = 0
+          AND documents_fts MATCH ${formatedSearchQuery}
+    ORDER BY rank
+    LIMIT ${pageSize}
+    OFFSET ${pageIndex * pageSize}
+  `);
+
+  return {
+    documents: result.rows as unknown as (typeof documentsTable.$inferSelect)[],
+  };
 }

@@ -22,4 +22,5 @@ export const documentsTable = sqliteTable('documents', {
   size: integer('size').notNull().default(0),
   status: text('status').notNull().default('pending'),
   mimeType: text('mime_type').notNull(),
+  content: text('content').notNull().default(''),
 });

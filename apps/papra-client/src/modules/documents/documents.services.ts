@@ -106,3 +106,35 @@ export async function fetchDocumentFile({
 
   return blob;
 }
+
+export async function searchDocuments({
+  organizationId,
+  searchQuery,
+  pageIndex,
+  pageSize,
+}: {
+  organizationId: string;
+  searchQuery: string;
+  pageIndex: number;
+  pageSize: number;
+}) {
+  const {
+    documents,
+  } = await apiClient<{ documents: Document[] }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/search`,
+    queryParams: {
+      searchQuery,
+      pageIndex,
+      pageSize,
+    },
+  });
+
+  return {
+    documents: documents.map(document => ({
+      ...document,
+      createdAt: new Date(document.createdAt),
+      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
+    })),
+  };
+}

@@ -1,8 +1,8 @@
 {
+  "id": "b40309ae-eb2f-4eb4-9cce-a6ccb6ddc820",
+  "prevId": "74d7233a-2257-411c-b8cd-b5df0523bbff",
   "version": "6",
   "dialect": "sqlite",
-  "id": "1c84dab4-216c-4dfb-bcc9-a73b6be8290d",
-  "prevId": "daf25e46-2a4b-462a-8488-04778b929104",
   "tables": {
     "auth_tokens": {
       "name": "auth_tokens",
@@ -72,15 +72,15 @@
         "auth_tokens_user_id_users_id_fk": {
           "name": "auth_tokens_user_id_users_id_fk",
           "tableFrom": "auth_tokens",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -198,6 +198,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
         }
       },
       "indexes": {},
@@ -205,41 +213,41 @@
         "documents_organization_id_organizations_id_fk": {
           "name": "documents_organization_id_organizations_id_fk",
           "tableFrom": "documents",
-          "tableTo": "organizations",
           "columnsFrom": [
             "organization_id"
           ],
+          "tableTo": "organizations",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         },
         "documents_created_by_users_id_fk": {
           "name": "documents_created_by_users_id_fk",
           "tableFrom": "documents",
-          "tableTo": "users",
           "columnsFrom": [
             "created_by"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "set null"
         },
         "documents_deleted_by_users_id_fk": {
           "name": "documents_deleted_by_users_id_fk",
           "tableFrom": "documents",
-          "tableTo": "users",
           "columnsFrom": [
             "deleted_by"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
@@ -298,28 +306,28 @@
         "organization_users_user_id_users_id_fk": {
           "name": "organization_users_user_id_users_id_fk",
           "tableFrom": "organization_users",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         },
         "organization_users_organization_id_organizations_id_fk": {
           "name": "organization_users_organization_id_organizations_id_fk",
           "tableFrom": "organization_users",
-          "tableTo": "organizations",
           "columnsFrom": [
             "organization_id"
           ],
+          "tableTo": "organizations",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -424,15 +432,15 @@
         "user_roles_user_id_users_id_fk": {
           "name": "user_roles_user_id_users_id_fk",
           "tableFrom": "user_roles",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "cascade"
+          "onUpdate": "cascade",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -503,9 +511,9 @@
   "views": {},
   "enums": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   },
   "internal": {
     "indexes": {}

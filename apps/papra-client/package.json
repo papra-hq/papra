@@ -39,6 +39,7 @@
     "@unocss/reset": "^0.64.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk-solid": "^1.1.0",
     "date-fns": "^4.1.0",
     "jszip": "^3.10.1",
     "lodash-es": "^4.17.21",
