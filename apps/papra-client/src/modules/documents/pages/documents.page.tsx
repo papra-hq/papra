@@ -33,7 +33,7 @@ const DocumentCard: Component<{ document: Document; organizationId?: string }> =
         </A>
 
         <div class="text-xs text-muted-foreground lh-tight">
-          {formatBytes({ bytes: props.document.size, base: 1000 })}
+          {formatBytes({ bytes: props.document.originalSize, base: 1000 })}
           {' '}
           -
           {' '}

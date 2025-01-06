@@ -3,7 +3,7 @@ export type Document = {
   organizationId: string;
   name: string;
   mimeType: string;
-  size: number;
+  originalSize: number;
   createdAt: Date;
   updatedAt?: Date;
 };

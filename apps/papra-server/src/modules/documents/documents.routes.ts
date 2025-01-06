@@ -81,7 +81,7 @@ function setupCreateDocumentRoute({ app }: { app: ServerInstance }) {
         organizationId,
         documentsRepository,
         documentsStorageService,
-        
+
       });
 
       return context.json({
@@ -248,7 +248,7 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
 
       const documentsStorageService = await createDocumentStorageService({ config });
 
-      const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.storageKey });
+      const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.originalStorageKey });
 
       return context.body(
         fileStream,

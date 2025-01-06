@@ -42,9 +42,8 @@ export async function createDocument({
     organizationId,
     originalName: fileName,
     createdBy: userId,
-    size,
     originalSize: size,
-    storageKey,
+    originalStorageKey: storageKey,
     mimeType,
   });
 

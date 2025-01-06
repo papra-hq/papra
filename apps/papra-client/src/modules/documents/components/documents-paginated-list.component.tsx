@@ -48,7 +48,7 @@ export const DocumentsPaginatedList: Component<{ organizationId: string }> = (pr
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
-                {formatBytes({ bytes: data.row.original.size, base: 1000 })}
+                {formatBytes({ bytes: data.row.original.originalSize, base: 1000 })}
                 {' '}
                 -
                 {' '}

@@ -20,7 +20,7 @@ describe('documents repository', () => {
         mimeType: 'application/pdf',
         name: 'Document 1',
         originalName: 'document-1.pdf',
-        storageKey: 'document-1.pdf',
+        originalStorageKey: 'document-1.pdf',
       });
 
       expect(document).to.include({
@@ -29,7 +29,7 @@ describe('documents repository', () => {
         mimeType: 'application/pdf',
         name: 'Document 1',
         originalName: 'document-1.pdf',
-        storageKey: 'document-1.pdf',
+        originalStorageKey: 'document-1.pdf',
         isDeleted: false,
       });
 
@@ -46,7 +46,7 @@ describe('documents repository', () => {
         mimeType: 'application/pdf',
         name: 'Document 1',
         originalName: 'document-1.pdf',
-        storageKey: 'document-1.pdf',
+        originalStorageKey: 'document-1.pdf',
         isDeleted: false,
       });
 
@@ -72,9 +72,9 @@ describe('documents repository', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
         documents: [
-          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', storageKey: '', mimeType: 'application/pdf' },
-          { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', storageKey: '', mimeType: 'application/pdf' },
-          { id: 'doc-3', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', storageKey: '', mimeType: 'application/pdf' },
+          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf' },
+          { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf' },
+          { id: 'doc-3', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf' },
         ],
       });
 

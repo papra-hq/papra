@@ -1,6 +1,6 @@
 {
-  "id": "b40309ae-eb2f-4eb4-9cce-a6ccb6ddc820",
-  "prevId": "74d7233a-2257-411c-b8cd-b5df0523bbff",
+  "id": "f209c9bf-ecfe-4240-a1c7-4731fed516b4",
+  "prevId": "3be32f9a-68f4-4aee-9fed-e3d89ba031c0",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -162,8 +162,8 @@
           "autoincrement": false,
           "default": 0
         },
-        "storage_key": {
-          "name": "storage_key",
+        "original_storage_key": {
+          "name": "original_storage_key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -175,22 +175,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "size": {
-          "name": "size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'pending'"
         },
         "mime_type": {
           "name": "mime_type",

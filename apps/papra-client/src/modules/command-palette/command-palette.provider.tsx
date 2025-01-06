@@ -67,13 +67,28 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     },
   ));
 
-  const getCommandData = () => [
+  createEffect(on(
+    getIsCommandPaletteOpen,
+    (isCommandPaletteOpen) => {
+      if (isCommandPaletteOpen) {
+        setMatchingDocuments([]);
+      }
+    },
+  ));
+
+  const getCommandData = (): {
+    label: string;
+    forceMatch?: boolean;
+    options: { label: string; icon: string; action: () => void; forceMatch?: boolean }[];
+  }[] => [
     {
       label: 'Documents',
+      forceMatch: true,
       options: getMatchingDocuments().map(document => ({
         label: document.name,
         icon: getDocumentIcon({ document }),
         action: () => navigate(`/organizations/${params.organizationId}/documents/${document.id}`),
+        forceMatch: true,
       })),
     },
     {
@@ -110,11 +125,13 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
       closeCommandPalette: () => setIsCommandPaletteOpen(false),
     }}
     >
+
       <CommandDialog
         class="rounded-lg border shadow-md"
         open={getIsCommandPaletteOpen()}
         onOpenChange={setIsCommandPaletteOpen}
       >
+
         <CommandInput placeholder="Search commands" onValueChange={setSearchQuery} />
         <CommandList>
           <Show when={getIsLoading()}>
@@ -123,16 +140,18 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
             </CommandLoading>
           </Show>
           <Show when={!getIsLoading()}>
-            <CommandEmpty>
-              No results found.
-            </CommandEmpty>
+            <Show when={getMatchingDocuments().length === 0}>
+              <CommandEmpty>
+                No results found.
+              </CommandEmpty>
+            </Show>
 
             <For each={getCommandData().filter(section => section.options.length > 0)}>
               {section => (
-                <CommandGroup heading={section.label}>
+                <CommandGroup heading={section.label} forceMount={section.forceMatch ?? false}>
                   <For each={section.options}>
                     {item => (
-                      <CommandItem onSelect={() => onCommandSelect(item)}>
+                      <CommandItem onSelect={() => onCommandSelect(item)} forceMount={item.forceMatch ?? false}>
                         <span class={cn('mr-2 ml-2 size-4 text-primary', item.icon)} />
                         <span>{item.label}</span>
                       </CommandItem>
