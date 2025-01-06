@@ -6,10 +6,11 @@ import { getDb } from '../app/database/database.models';
 import { getConfig } from '../config/config.models';
 import { organizationIdRegex } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
+import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
 import { createDocumentsRepository } from './documents.repository';
-import { createDocument } from './documents.usecases';
+import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
 export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance }) {
@@ -113,15 +114,7 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
-
-      if (!isInOrganization) {
-        throw createError({
-          message: 'You are not part of this organization.',
-          code: 'user.not_in_organization',
-          statusCode: 403,
-        });
-      }
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const [
         { documents },
@@ -155,17 +148,9 @@ function setupGetDocumentRoute({ app }: { app: ServerInstance }) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      if (!isInOrganization) {
-        throw createError({
-          message: 'You are not part of this organization.',
-          code: 'user.not_in_organization',
-          statusCode: 403,
-        });
-      }
-
-      const { document } = await documentsRepository.getDocumentById({ documentId });
+      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
 
       return context.json({
         document,
@@ -190,15 +175,8 @@ function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
-
-      if (!isInOrganization) {
-        throw createError({
-          message: 'You are not part of this organization.',
-          code: 'user.not_in_organization',
-          statusCode: 403,
-        });
-      }
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await ensureDocumentExists({ documentId, documentsRepository });
 
       await documentsRepository.softDeleteDocument({ documentId, userId });
 
@@ -226,25 +204,9 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      if (!isInOrganization) {
-        throw createError({
-          message: 'You are not part of this organization.',
-          code: 'user.not_in_organization',
-          statusCode: 403,
-        });
-      }
-
-      const { document } = await documentsRepository.getDocumentById({ documentId });
-
-      if (!document) {
-        throw createError({
-          message: 'Document not found.',
-          code: 'document.not_found',
-          statusCode: 404,
-        });
-      }
+      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
 
       const documentsStorageService = await createDocumentStorageService({ config });
 
@@ -285,15 +247,7 @@ function setupSearchDocumentsRoute({ app }: { app: ServerInstance }) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
-
-      if (!isInOrganization) {
-        throw createError({
-          message: 'You are not part of this organization.',
-          code: 'user.not_in_organization',
-          statusCode: 403,
-        });
-      }
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { documents } = await documentsRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
 

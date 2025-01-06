@@ -1,5 +1,6 @@
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
+import { createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 
 export async function createDocument({
@@ -48,4 +49,30 @@ export async function createDocument({
   });
 
   return { document };
+}
+
+export async function getDocumentOrThrow({
+  documentId,
+  documentsRepository,
+}: {
+  documentId: string;
+  documentsRepository: DocumentsRepository;
+}) {
+  const { document } = await documentsRepository.getDocumentById({ documentId });
+
+  if (!document) {
+    throw createDocumentNotFoundError();
+  }
+
+  return { document };
+}
+
+export async function ensureDocumentExists({
+  documentId,
+  documentsRepository,
+}: {
+  documentId: string;
+  documentsRepository: DocumentsRepository;
+}) {
+  await getDocumentOrThrow({ documentId, documentsRepository });
 }
