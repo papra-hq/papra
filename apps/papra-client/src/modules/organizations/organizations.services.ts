@@ -1,5 +1,5 @@
 import type { Organization } from './organizations.types';
-import { apiClient } from '../shared/http/http-client';
+import { apiClient } from '../shared/http/api-client';
 
 export async function fetchOrganizations() {
   const { organizations } = await apiClient<{ organizations: Organization[] }>({

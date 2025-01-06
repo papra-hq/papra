@@ -44,6 +44,7 @@
     "date-fns": "^4.1.0",
     "jszip": "^3.10.1",
     "lodash-es": "^4.17.21",
+    "ofetch": "^1.4.1",
     "solid-js": "^1.8.11",
     "solid-sonner": "^0.2.8",
     "tailwind-merge": "^2.6.0",

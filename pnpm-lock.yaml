@@ -76,6 +76,9 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      ofetch:
+        specifier: ^1.4.1
+        version: 1.4.1
       solid-js:
         specifier: ^1.8.11
         version: 1.9.3

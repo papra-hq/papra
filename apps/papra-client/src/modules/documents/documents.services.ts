@@ -1,10 +1,10 @@
 import type { Document } from './documents.types';
-import { apiClient } from '../shared/http/http-client';
+import { apiClient } from '../shared/http/api-client';
+import { getFormData } from '../shared/http/http-client.models';
 
 export async function uploadDocument({
   file,
   organizationId,
-
 }: {
   file: File;
   organizationId: string;
@@ -12,9 +12,7 @@ export async function uploadDocument({
   const { document } = await apiClient<{ document: Document }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
-    formData: {
-      file,
-    },
+    body: getFormData({ file }),
   });
 
   return {
@@ -41,7 +39,7 @@ export async function fetchOrganizationDocuments({
   } = await apiClient<{ documents: Document[]; documentsCount: number }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents`,
-    queryParams: {
+    query: {
       pageIndex,
       pageSize,
     },
@@ -98,7 +96,7 @@ export async function fetchDocumentFile({
   documentId: string;
   organizationId: string;
 }) {
-  const blob = await apiClient<Blob>({
+  const blob = await apiClient({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}/file`,
     responseType: 'blob',
@@ -123,7 +121,7 @@ export async function searchDocuments({
   } = await apiClient<{ documents: Document[] }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/search`,
-    queryParams: {
+    query: {
       searchQuery,
       pageIndex,
       pageSize,

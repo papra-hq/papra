@@ -1,6 +1,6 @@
-import { buildUrl } from '@corentinth/chisels';
 import { config } from '../config/config';
-import { apiClient } from '../shared/http/http-client';
+import { apiClient } from '../shared/http/api-client';
+import { httpClient } from '../shared/http/http-client';
 
 export { login };
 
@@ -18,27 +18,15 @@ async function login({ email, password }: { email: string; password: string }) {
 }
 
 export async function requestAuthTokensRefresh() {
-  // Do not use apiClient here top prevent infinite loop
-
-  const url = buildUrl({
+  // Do not use apiClient here top prevent loops since requestAuthTokensRefresh might be called from apiClient
+  const { accessToken } = await httpClient<{ accessToken: string }>({
     baseUrl: config.baseApiUrl,
-    path: '/api/auth/refresh',
-  });
-
-  const response = await fetch(url, {
+    url: '/api/auth/refresh',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    // set http only cookie
+
+    // Required to send the refresh token
     credentials: 'include',
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to refresh tokens');
-  }
-
-  const { accessToken } = await response.json();
 
   return { accessToken };
 }
@@ -47,6 +35,7 @@ export async function logout() {
   await apiClient({
     path: '/api/auth/logout',
     method: 'POST',
+    credentials: 'include',
   });
 }
 
