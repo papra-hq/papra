@@ -20,7 +20,9 @@
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://docs.papra.app/self-hosting/docker">Self-hosting</a> -->
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://dashboard.papra.app">Prod app</a>
+  <a href="https://github.com/orgs/papra-hq/projects/2">Roadmap</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://dashboard.papra.app">Managed instance</a>
 </p>
 
 ## Introduction
