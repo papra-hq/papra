@@ -1,20 +1,12 @@
 import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { authStore } from '@/modules/auth/auth.store';
-import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
-import { uploadDocument } from '@/modules/documents/documents.services';
-import { fetchOrganizations } from '@/modules/organizations/organizations.services';
-import { promptUploadFiles } from '@/modules/shared/files/upload';
-import { queryClient } from '@/modules/shared/query/query-client';
-import { cn } from '@/modules/shared/style/cn';
-import { useThemeStore } from '@/modules/theme/theme.store';
+import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 
-import { Button } from '@/modules/ui/components/button';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
-import { A, useNavigate, useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
-import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
+import { useNavigate, useParams } from '@solidjs/router';
+import { createQueries, createQuery } from '@tanstack/solid-query';
+import { get } from 'lodash-es';
+import { type Component, createEffect, on, type ParentComponent } from 'solid-js';
 import {
   Select,
   SelectContent,
@@ -22,40 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/select';
-import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
+import { SideNav, SidenavLayout } from './sidenav.layout';
 
-type MenuItem = {
-  label: string;
-  icon: string;
-  href?: string;
-  onClick?: () => void;
-};
-
-const MenuItemButton: Component<MenuItem> = (props) => {
-  return (
-    <>
-      <Show when={props.onClick}>
-        <Button class="block" onClick={props.onClick} variant="ghost">
-          <div class="flex items-center gap-2 dark:text-muted-foreground">
-            <div class={cn(props.icon, 'size-5')}></div>
-            <div>{props.label}</div>
-          </div>
-        </Button>
-      </Show>
-
-      <Show when={!props.onClick}>
-        <Button class="block dark:text-muted-foreground" as={A} href={props.href!} variant="ghost" activeClass="bg-accent/50! text-accent-foreground!">
-          <div class="flex items-center gap-2">
-            <div class={cn(props.icon, 'size-5')}></div>
-            <div>{props.label}</div>
-          </div>
-        </Button>
-      </Show>
-    </>
-  );
-};
-
-const SideNav: Component = () => {
+const OrganizationLayoutSideNav: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
 
@@ -71,7 +32,7 @@ const SideNav: Component = () => {
       href: `/organizations/${params.organizationId}/deleted`,
     },
     {
-      label: 'Settings',
+      label: 'Organization settings',
       icon: 'i-tabler-settings',
       href: `/organizations/${params.organizationId}/settings`,
     },
@@ -79,11 +40,6 @@ const SideNav: Component = () => {
   ];
 
   const getFooterMenuItems = () => [
-    {
-      label: 'Settings',
-      icon: 'i-tabler-settings',
-      href: '/settings',
-    },
     {
       label: 'Logout',
       icon: 'i-tabler-logout',
@@ -94,181 +50,111 @@ const SideNav: Component = () => {
     },
   ];
 
-  const query = createQuery(() => ({
-    queryKey: ['organizations'],
-    queryFn: fetchOrganizations,
+  const queries = createQueries(() => ({
+    queries: [
+      {
+        queryKey: ['organizations'],
+        queryFn: fetchOrganizations,
+      },
+      {
+        queryKey: ['organizations', params.organizationId],
+        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+      },
+    ],
   }));
 
-  return (
-    <div class="flex h-full">
-      <div class="w-65px border-r bg-card pt-4">
-        <Button variant="link" size="icon" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-primary mb-4 mx-auto">
-          <div class="i-tabler-file-text size-10"></div>
-        </Button>
+  createEffect(on(
+    () => queries[1].error,
+    (error) => {
+      if (error) {
+        const status = get(error, 'status');
 
-        <Button variant="link" as={A} href="/organizations" class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground">
-          <div class="i-tabler-building-community size-5"></div>
-        </Button>
-
-        <Button variant="link" as={A} href="/docs" class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground mt-1">
-          <div class="i-tabler-book-2 size-5"></div>
-        </Button>
-
-      </div>
-      <div class="h-full flex flex-col pb-6 flex-1">
-
-        <div class="px-6 pt-4">
-          <Select
-            options={[...query.data?.organizations ?? [], { id: 'create' }]}
-            optionValue="id"
-            optionTextValue="name"
-            value={query.data?.organizations.find(organization => organization.id === params.organizationId)}
-            onChange={(value) => {
-              if (!value || value.id === params.organizationId) {
-                return;
-              }
-
-              return value && (
-                value.id === 'create'
-                  ? navigate('/organizations/create')
-                  : navigate(`/organizations/${value.id}`));
-            }}
-
-            itemComponent={props => props.item.rawValue.id === 'create'
-              ? (
-                  <SelectItem class="cursor-pointer" item={props.item}>
-                    <div class="flex items-center gap-2 text-muted-foreground">
-                      <div class="i-tabler-plus size-4"></div>
-                      <div>Create new organization</div>
-                    </div>
-                  </SelectItem>
-                )
-              : (
-                  <SelectItem class="cursor-pointer" item={props.item}>{props.item.rawValue.name}</SelectItem>
-                )}
-          >
-            <SelectTrigger>
-              <SelectValue<Organization>>
-                {state => state.selectedOption().name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
-
-        </div>
-
-        <nav class="flex flex-col gap-0.5 mt-4 px-4">
-          {getMainMenuItems().map(menuItem => <MenuItemButton {...menuItem} />)}
-        </nav>
-
-        <div class="flex-1"></div>
-
-        <nav class="flex flex-col gap-0.5 px-4">
-          {getFooterMenuItems().map(menuItem => <MenuItemButton {...menuItem} />)}
-        </nav>
-      </div>
-    </div>
-  );
-};
-
-const ThemeSwitcher: Component = () => {
-  const themeStore = useThemeStore();
+        if (status && [
+          400, // when the id of the organization is not valid
+          403, // when the user does not have access to the organization or the organization does not exist
+        ].includes(status)) {
+          navigate('/');
+        }
+      }
+    },
+  ));
 
   return (
-    <>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'light' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-sun text-lg"></div>
-        Light Mode
-      </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'dark' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-moon text-lg"></div>
-        Dark Mode
-      </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'system' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-device-laptop text-lg"></div>
-        System Mode
-      </DropdownMenuItem>
-    </>
+    <SideNav
+      mainMenu={getMainMenuItems()}
+      footerMenu={getFooterMenuItems()}
+      header={() =>
+        (
+          <div class="px-6 pt-4 max-w-285px min-w-0">
+            <Select
+              options={[...queries[0].data?.organizations ?? [], { id: 'create' }]}
+              optionValue="id"
+              optionTextValue="name"
+              value={queries[0].data?.organizations.find(organization => organization.id === params.organizationId)}
+              onChange={(value) => {
+                if (!value || value.id === params.organizationId) {
+                  return;
+                }
+
+                return value && (
+                  value.id === 'create'
+                    ? navigate('/organizations/create')
+                    : navigate(`/organizations/${value.id}`));
+              }}
+              itemComponent={props => props.item.rawValue.id === 'create'
+                ? (
+                    <SelectItem class="cursor-pointer" item={props.item}>
+                      <div class="flex items-center gap-2 text-muted-foreground">
+                        <div class="i-tabler-plus size-4"></div>
+                        <div>Create new organization</div>
+                      </div>
+                    </SelectItem>
+                  )
+                : (
+                    <SelectItem class="cursor-pointer" item={props.item}>{props.item.rawValue.name}</SelectItem>
+                  )}
+            >
+              <SelectTrigger>
+                <SelectValue<Organization> class="truncate">
+                  {state => state.selectedOption().name}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent />
+            </Select>
+
+          </div>
+        )}
+    />
+
   );
 };
 
 export const OrganizationLayout: ParentComponent = (props) => {
-  const { user } = useCurrentUser();
-  const themeStore = useThemeStore();
   const params = useParams();
-  const { openCommandPalette } = useCommandPalette();
+  const navigate = useNavigate();
 
-  const promptImport = async () => {
-    const { files } = await promptUploadFiles();
-    for (const file of files) {
-      await uploadDocument({ file, organizationId: params.organizationId });
-    }
+  const query = createQuery(() => ({
+    queryKey: ['organizations', params.organizationId],
+    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+  }));
 
-    queryClient.invalidateQueries({
-      queryKey: ['organizations', params.organizationId, 'documents'],
-      refetchType: 'all',
-    });
-  };
+  createEffect(on(
+    () => query.error,
+    (error) => {
+      if (error) {
+        const status = get(error, 'status');
+
+        if (status && [401, 403].includes(status)) {
+          navigate('/');
+        }
+      }
+    },
+  ));
 
   return (
-    <div class="flex flex-row h-screen min-h-0">
-      <div class="w-320px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
-        <SideNav />
-      </div>
-      <div class="flex-1 min-h-0 flex flex-col">
-        <div class="flex justify-between px-6 pt-4">
-
-          <div class="flex items-center">
-            <Sheet>
-              <SheetTrigger>
-                <Button variant="ghost" size="icon" class="md:hidden mr-2">
-                  <div class="i-tabler-menu-2 size-6"></div>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" class="bg-card p-0!">
-                <SideNav />
-              </SheetContent>
-            </Sheet>
-
-            <Button variant="outline" class="lg:min-w-64  justify-start" onClick={openCommandPalette}>
-              <div class="i-tabler-search size-4 mr-2"></div>
-              Search...
-            </Button>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <Button onClick={promptImport}>
-              <div class="i-tabler-upload size-4"></div>
-              <span class="hidden sm:inline ml-2">
-                Import a document
-              </span>
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger as={Button} class="text-base hidden sm:flex" variant="outline" aria-label="Theme switcher">
-                <div classList={{ 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' }}></div>
-                <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm"></div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent class="w-42">
-                <ThemeSwitcher />
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {user.roles.includes('admin') && (
-              <Button as={A} href="/admin">
-                <div class="i-tabler-settings size-4 mr-2"></div>
-                Admin
-              </Button>
-            )}
-
-          </div>
-        </div>
-        <div class="flex-1 overflow-auto max-w-screen">
-          <Suspense>
-            {props.children}
-          </Suspense>
-        </div>
-      </div>
-    </div>
+    <SidenavLayout
+      children={props.children}
+      sideNav={OrganizationLayoutSideNav}
+    />
   );
 };

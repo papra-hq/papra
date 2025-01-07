@@ -1,6 +1,6 @@
 import { A, Navigate, type RouteDefinition, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { Match, Suspense, Switch } from 'solid-js';
+import { Match, Show, Suspense, Switch } from 'solid-js';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
 import { ConfirmPage } from './modules/auth/pages/confirm.page';
 import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
@@ -11,6 +11,7 @@ import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
+import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { Button } from './modules/ui/components/button';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
@@ -34,19 +35,23 @@ export const routes: RouteDefinition[] = [
           return (
             <>
               <Suspense>
-                <Switch>
-                  <Match when={getLatestOrganizationId() && query.data && query.data.organizations.some(org => org.id === getLatestOrganizationId())}>
-                    <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
-                  </Match>
+                <Show when={query.data?.organizations}>
+                  {getOrgs => (
+                    <Switch>
+                      <Match when={getLatestOrganizationId() && getOrgs().some(org => org.id === getLatestOrganizationId())}>
+                        <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
+                      </Match>
 
-                  <Match when={query.data && query.data.organizations.length > 0}>
-                    <Navigate href="/organizations" />
-                  </Match>
+                      <Match when={query.data && query.data.organizations.length > 0}>
+                        <Navigate href="/organizations" />
+                      </Match>
 
-                  <Match when={query.data && query.data.organizations.length === 0}>
-                    <Navigate href="/organizations/first" />
-                  </Match>
-                </Switch>
+                      <Match when={query.data && query.data.organizations.length === 0}>
+                        <Navigate href="/organizations/first" />
+                      </Match>
+                    </Switch>
+                  )}
+                </Show>
               </Suspense>
             </>
 
@@ -78,10 +83,13 @@ export const routes: RouteDefinition[] = [
                 path: '/',
                 component: DocumentsPage,
               },
-
               {
                 path: '/documents/:documentId',
                 component: DocumentPage,
+              },
+              {
+                path: '/settings',
+                component: OrganizationsSettingsPage,
               },
             ],
           },

@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 import { Button } from '@/modules/ui/components/button';
 import { A } from '@solidjs/router';
 import { CreateOrganizationForm } from '../components/create-organization-form.component';
-import { useCreateOrganization } from '../composables/useCreateOrganization';
+import { useCreateOrganization } from '../organizations.composables';
 
 export const CreateOrganizationPage: Component = () => {
   const { createOrganization } = useCreateOrganization();

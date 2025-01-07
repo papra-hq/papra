@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { CreateOrganizationForm } from '../components/create-organization-form.component';
-import { useCreateOrganization } from '../composables/useCreateOrganization';
+import { useCreateOrganization } from '../organizations.composables';
 
 export const CreateFirstOrganizationPage: Component = () => {
   const { createOrganization } = useCreateOrganization();

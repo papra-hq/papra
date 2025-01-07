@@ -3,6 +3,7 @@ import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import * as v from 'valibot';
+import { organizationNameSchema } from '../organizations.schemas';
 
 export const CreateOrganizationForm: Component<{
   onSubmit: (args: { organizationName: string }) => Promise<void>;
@@ -11,11 +12,7 @@ export const CreateOrganizationForm: Component<{
   const { form, Form, Field } = createForm({
     onSubmit: ({ organizationName }) => props.onSubmit({ organizationName }),
     schema: v.object({
-      organizationName: v.pipe(
-        v.string('Organization name must be a string'),
-        v.minLength(3, 'Organization name must be at least 3 characters'),
-        v.maxLength(50, 'Organization name must be at most 50 characters'),
-      ),
+      organizationName: organizationNameSchema,
     }),
     initialValues: {
       organizationName: props.initialOrganizationName,

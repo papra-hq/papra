@@ -13,6 +13,9 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getUserOrganizations,
       addUserToOrganization,
       isUserInOrganization,
+      updateOrganization,
+      deleteOrganization,
+      getOrganizationById,
     },
     { db },
   );
@@ -53,5 +56,32 @@ async function isUserInOrganization({ userId, organizationId, db }: { userId: st
 
   return {
     isInOrganization: organizationUser.length > 0,
+  };
+}
+
+async function updateOrganization({ organizationId, organization: organizationToUpdate, db }: { organizationId: string; organization: { name: string }; db: Database }) {
+  const [organization] = await db
+    .update(organizationsTable)
+    .set({
+      name: organizationToUpdate.name,
+    })
+    .where(eq(organizationsTable.id, organizationId))
+    .returning();
+
+  return { organization };
+}
+
+async function deleteOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+  await db.delete(organizationsTable).where(eq(organizationsTable.id, organizationId));
+}
+
+async function getOrganizationById({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [organization] = await db
+    .select()
+    .from(organizationsTable)
+    .where(eq(organizationsTable.id, organizationId));
+
+  return {
+    organization,
   };
 }

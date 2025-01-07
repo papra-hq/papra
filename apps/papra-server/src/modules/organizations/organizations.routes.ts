@@ -2,13 +2,18 @@ import type { ServerInstance } from '../app/server.types';
 import { z } from 'zod';
 import { getAuthUserId } from '../app/auth/auth.models';
 import { getDb } from '../app/database/database.models';
-import { validateJsonBody } from '../shared/validation/validation';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { organizationIdRegex } from './organizations.constants';
+import { createOrganizationNotFoundError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
-import { createOrganization } from './organizations.usecases';
+import { createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
 export async function registerOrganizationsPrivateRoutes({ app }: { app: ServerInstance }) {
   setupGetOrganizationsRoute({ app });
   setupCreateOrganizationRoute({ app });
+  setupGetOrganizationRoute({ app });
+  setupUpdateOrganizationRoute({ app });
+  setupDeleteOrganizationRoute({ app });
 }
 
 function setupGetOrganizationsRoute({ app }: { app: ServerInstance }) {
@@ -44,6 +49,84 @@ function setupCreateOrganizationRoute({ app }: { app: ServerInstance }) {
       return context.json({
         organization,
       });
+    },
+  );
+}
+
+function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+      if (!organization) {
+        throw createOrganizationNotFoundError();
+      }
+
+      return context.json({
+        organization,
+      });
+    },
+  );
+}
+
+function setupUpdateOrganizationRoute({ app }: { app: ServerInstance }) {
+  app.put(
+    '/api/organizations/:organizationId',
+    validateJsonBody(z.object({
+      name: z.string().min(3).max(50),
+    })),
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+      const { name } = context.req.valid('json');
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { organization } = await organizationsRepository.updateOrganization({ organizationId, organization: { name } });
+
+      return context.json({
+        organization,
+      });
+    },
+  );
+}
+
+function setupDeleteOrganizationRoute({ app }: { app: ServerInstance }) {
+  app.delete(
+    '/api/organizations/:organizationId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await organizationsRepository.deleteOrganization({ organizationId });
+
+      return context.body(null, 204);
     },
   );
 }

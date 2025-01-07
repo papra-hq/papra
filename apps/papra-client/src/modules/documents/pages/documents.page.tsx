@@ -79,7 +79,7 @@ export const DocumentsPage: Component = () => {
   }));
 
   return (
-    <div class="p-6  mt-4 pb-32">
+    <div class="p-6 mt-4 pb-32">
 
       {query[0].data?.documents.length === 0
         ? (

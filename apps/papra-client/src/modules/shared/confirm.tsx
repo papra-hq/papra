@@ -76,12 +76,15 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
           </DialogHeader>
 
           <DialogFooter>
-            <Button onClick={() => handleConfirm({ isConfirmed: false })} variant={getConfig()?.cancelButton?.variant ?? 'secondary'}>
-              {getConfig()?.cancelButton?.text ?? 'Cancel'}
-            </Button>
-            <Button onClick={() => handleConfirm({ isConfirmed: true })} variant={getConfig()?.confirmButton?.variant ?? 'default'}>
-              {getConfig()?.confirmButton?.text ?? 'Confirm'}
-            </Button>
+            <div class="flex gap-2 justify-end flex-col-reverse sm:flex-row">
+
+              <Button onClick={() => handleConfirm({ isConfirmed: false })} variant={getConfig()?.cancelButton?.variant ?? 'secondary'}>
+                {getConfig()?.cancelButton?.text ?? 'Cancel'}
+              </Button>
+              <Button onClick={() => handleConfirm({ isConfirmed: true })} variant={getConfig()?.confirmButton?.variant ?? 'default'}>
+                {getConfig()?.confirmButton?.text ?? 'Confirm'}
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
