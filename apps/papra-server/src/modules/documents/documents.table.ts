@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createSoftDeleteColumns, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
@@ -20,5 +20,7 @@ export const documentsTable = sqliteTable('documents', {
   name: text('name').notNull(),
   mimeType: text('mime_type').notNull(),
   content: text('content').notNull().default(''),
-
-});
+}, table => [
+  // To select paginated documents by organization
+  index('documents_organization_id_is_deleted_created_at_index').on(table.organizationId, table.isDeleted, table.createdAt),
+]);

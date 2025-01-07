@@ -5,15 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1736198123938,
-      "tag": "0000_busy_iron_fist",
+      "when": 1736211100443,
+      "tag": "0000_initial_schema_setup",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1736198126637,
-      "tag": "0001_unknown_umar",
+      "when": 1736211135498,
+      "tag": "0001_documents_fts",
       "breakpoints": true
     }
   ]

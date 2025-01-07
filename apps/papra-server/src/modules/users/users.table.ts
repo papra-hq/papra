@@ -11,6 +11,6 @@ export const usersTable = sqliteTable(
     fullName: text('full_name'),
   },
   table => [
-    index('email_index').on(table.email),
+    index('users_email_index').on(table.email),
   ],
 );

@@ -17,10 +17,10 @@ export const authTokensTable = sqliteTable(
   },
   table => [
     // To get a token record by its value
-    index('token_index').on(table.token),
+    index('auth_tokens_token_index').on(table.token),
     // To easily remove expired tokens
-    index('expires_at_index').on(table.expiresAt),
+    index('auth_tokens_expires_at_index').on(table.expiresAt),
     // To rotate tokens
-    index('token_user_id_expires_at_index').on(table.token, table.userId, table.expiresAt),
+    index('auth_tokens_token_user_id_expires_at_index').on(table.token, table.userId, table.expiresAt),
   ],
 );

@@ -1,6 +1,6 @@
 {
-  "id": "f209c9bf-ecfe-4240-a1c7-4731fed516b4",
-  "prevId": "3be32f9a-68f4-4aee-9fed-e3d89ba031c0",
+  "id": "a09c4d4c-5d2c-4b04-acbe-9e9b468ba135",
+  "prevId": "371b2e20-533e-4329-abf4-300ceb7c7010",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -44,22 +44,22 @@
         }
       },
       "indexes": {
-        "token_index": {
-          "name": "token_index",
+        "auth_tokens_token_index": {
+          "name": "auth_tokens_token_index",
           "columns": [
             "token"
           ],
           "isUnique": false
         },
-        "expires_at_index": {
-          "name": "expires_at_index",
+        "auth_tokens_expires_at_index": {
+          "name": "auth_tokens_expires_at_index",
           "columns": [
             "expires_at"
           ],
           "isUnique": false
         },
-        "token_user_id_expires_at_index": {
-          "name": "token_user_id_expires_at_index",
+        "auth_tokens_token_user_id_expires_at_index": {
+          "name": "auth_tokens_token_user_id_expires_at_index",
           "columns": [
             "token",
             "user_id",
@@ -192,7 +192,17 @@
           "default": "''"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "documents_organization_id_is_deleted_created_at_index": {
+          "name": "documents_organization_id_is_deleted_created_at_index",
+          "columns": [
+            "organization_id",
+            "is_deleted",
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "documents_organization_id_organizations_id_fk": {
           "name": "documents_organization_id_organizations_id_fk",
@@ -396,15 +406,15 @@
         }
       },
       "indexes": {
-        "role_index": {
-          "name": "role_index",
+        "user_roles_role_index": {
+          "name": "user_roles_role_index",
           "columns": [
             "role"
           ],
           "isUnique": false
         },
-        "user_roles_user_id_role_key": {
-          "name": "user_roles_user_id_role_key",
+        "user_roles_user_id_role_unique_index": {
+          "name": "user_roles_user_id_role_unique_index",
           "columns": [
             "user_id",
             "role"
@@ -478,8 +488,8 @@
           ],
           "isUnique": true
         },
-        "email_index": {
-          "name": "email_index",
+        "users_email_index": {
+          "name": "users_email_index",
           "columns": [
             "email"
           ],

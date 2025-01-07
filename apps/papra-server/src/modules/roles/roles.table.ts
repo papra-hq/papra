@@ -20,9 +20,9 @@ export const userRolesTable = sqliteTable(
   },
   table => [
     // To enforce unique roles per user
-    unique('user_roles_user_id_role_key').on(table.userId, table.role),
+    unique('user_roles_user_id_role_unique_index').on(table.userId, table.role),
 
     // To get all user for a role
-    index('role_index').on(table.role),
+    index('user_roles_role_index').on(table.role),
   ],
 );

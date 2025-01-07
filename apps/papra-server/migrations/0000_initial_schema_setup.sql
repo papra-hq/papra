@@ -7,9 +7,9 @@ CREATE TABLE `auth_tokens` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `token_index` ON `auth_tokens` (`token`);--> statement-breakpoint
-CREATE INDEX `expires_at_index` ON `auth_tokens` (`expires_at`);--> statement-breakpoint
-CREATE INDEX `token_user_id_expires_at_index` ON `auth_tokens` (`token`,`user_id`,`expires_at`);--> statement-breakpoint
+CREATE INDEX `auth_tokens_token_index` ON `auth_tokens` (`token`);--> statement-breakpoint
+CREATE INDEX `auth_tokens_expires_at_index` ON `auth_tokens` (`expires_at`);--> statement-breakpoint
+CREATE INDEX `auth_tokens_token_user_id_expires_at_index` ON `auth_tokens` (`token`,`user_id`,`expires_at`);--> statement-breakpoint
 CREATE TABLE `documents` (
 	`id` text PRIMARY KEY NOT NULL,
 	`created_at` integer NOT NULL,
@@ -30,6 +30,7 @@ CREATE TABLE `documents` (
 	FOREIGN KEY (`deleted_by`) REFERENCES `users`(`id`) ON UPDATE cascade ON DELETE set null
 );
 --> statement-breakpoint
+CREATE INDEX `documents_organization_id_is_deleted_created_at_index` ON `documents` (`organization_id`,`is_deleted`,`created_at`);--> statement-breakpoint
 CREATE TABLE `organization_users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`created_at` integer NOT NULL,
@@ -57,8 +58,8 @@ CREATE TABLE `user_roles` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `role_index` ON `user_roles` (`role`);--> statement-breakpoint
-CREATE UNIQUE INDEX `user_roles_user_id_role_key` ON `user_roles` (`user_id`,`role`);--> statement-breakpoint
+CREATE INDEX `user_roles_role_index` ON `user_roles` (`role`);--> statement-breakpoint
+CREATE UNIQUE INDEX `user_roles_user_id_role_unique_index` ON `user_roles` (`user_id`,`role`);--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`created_at` integer NOT NULL,
@@ -68,4 +69,4 @@ CREATE TABLE `users` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
-CREATE INDEX `email_index` ON `users` (`email`);
+CREATE INDEX `users_email_index` ON `users` (`email`);
