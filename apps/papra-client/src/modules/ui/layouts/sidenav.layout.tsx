@@ -1,17 +1,19 @@
+import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 import { uploadDocument } from '@/modules/documents/documents.services';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
-import { useThemeStore } from '@/modules/theme/theme.store';
 
+import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { A, useParams } from '@solidjs/router';
 import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
 
 type MenuItem = {
   label: string;
@@ -50,6 +52,24 @@ export const SideNav: Component<{
   header?: Component;
   footer?: Component;
 }> = (props) => {
+  const getShortSideNavItems = () => [
+    {
+      to: '/organizations',
+      label: 'All organizations',
+      icon: 'i-tabler-building-community',
+    },
+    {
+      label: 'GitHub repository',
+      href: 'https://github.com/papra-hq/papra',
+      icon: 'i-tabler-brand-github',
+    },
+    {
+      label: 'Bluesky',
+      href: 'https://bsky.app/profile/papra.app',
+      icon: 'i-tabler-brand-bluesky',
+    },
+  ];
+
   return (
     <div class="flex h-full">
       <div class="w-65px border-r bg-card pt-4">
@@ -57,13 +77,29 @@ export const SideNav: Component<{
           <div class="i-tabler-file-text size-10"></div>
         </Button>
 
-        <Button variant="link" as={A} href="/organizations" class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground">
-          <div class="i-tabler-building-community size-5"></div>
-        </Button>
+        <div class="flex flex-col gap-0.5">
+          {getShortSideNavItems().map(menuItem => (
+            <Tooltip>
+              <TooltipTrigger
+                as={(tooltipProps: TooltipTriggerProps) => (
+                  <Button
+                    variant="link"
+                    class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground hover:text-primary"
+                    {...tooltipProps}
+                    aria-label={menuItem.label}
+                    {...(menuItem.href
+                      ? { as: 'a', href: menuItem.href, target: '_blank', rel: 'noopener noreferrer' }
+                      : { as: A, href: menuItem.to })}
+                  >
+                    <div class={cn(menuItem.icon, 'size-5')} />
+                  </Button>
+                )}
+              />
 
-        <Button variant="link" as={A} href="/docs" class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground mt-1">
-          <div class="i-tabler-book-2 size-5"></div>
-        </Button>
+              <TooltipContent>{menuItem.label}</TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
 
       </div>
       {(props.header || props.mainMenu || props.footerMenu || props.footer) && (
