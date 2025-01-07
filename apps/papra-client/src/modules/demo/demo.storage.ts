@@ -10,3 +10,7 @@ const storage = createStorage<any>({
 export const organizationStorage = prefixStorage<Organization>(storage, 'organizations');
 export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage(storage, 'documentFiles');
+
+export async function clearDemoStorage() {
+  await storage.clear();
+}

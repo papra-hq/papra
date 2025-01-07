@@ -7,6 +7,7 @@ import { QueryClientProvider } from '@tanstack/solid-query';
 
 import { render, Suspense } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
+import { DemoIndicator } from './modules/demo/demo.provider';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
 import { Toaster } from './modules/ui/components/sonner';
@@ -37,6 +38,7 @@ render(
                     <div class="min-h-screen font-sans text-sm font-400">{props.children}</div>
 
                     <Toaster />
+                    <DemoIndicator />
                   </CommandPaletteProvider>
                 </ColorModeProvider>
 

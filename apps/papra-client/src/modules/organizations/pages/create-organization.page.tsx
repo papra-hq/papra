@@ -9,7 +9,7 @@ export const CreateOrganizationPage: Component = () => {
 
   return (
     <div>
-      <div class="max-w-md mx-auto sm:mt-16 p-6">
+      <div class="max-w-md mx-auto pt-12 sm:pt-24 px-6">
 
         <Button as={A} href="/" class="mb-4" variant="outline">
           <div class="i-tabler-arrow-left mr-2"></div>
@@ -21,7 +21,7 @@ export const CreateOrganizationPage: Component = () => {
         </h1>
 
         <p class="text-muted-foreground mb-6">
-          Your documents will be grouped by organization. You can create multiple organizations to separate your documents.
+          Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.
         </p>
 
         <CreateOrganizationForm onSubmit={createOrganization} />

@@ -13,15 +13,15 @@
   Minimalistic document management and archiving platform.
 </p>
 
-<!-- <p align="center">
+<p align="center">
   <a href="https://demo.papra.app">Demo</a>
+  <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://docs.papra.app">Docs</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://demo.papra.app">Docs</a>
+  <a href="https://docs.papra.app/self-hosting/docker">Self-hosting</a> -->
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://docs.papra.app/self-hosting/docker">Self-hosting</a>
-  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://dashboard.papra.app">Production app</a>
-</p> -->
+  <a href="https://dashboard.papra.app">Prod app</a>
+</p>
 
 ## Introduction
 
@@ -32,7 +32,7 @@
 
 Forget about that receipt of that gift you bought for your friend last year, or that warranty for your new phone. With Papra, you can easily store, forget, and retrieve your documents whenever you need them.
 
-A live demo of the platform is available at [demo.papra.cc](https://demo.papra.cc) (*coming soon*).
+A live demo of the platform is available at [demo.papra.cc](https://demo.papra.cc) (no backend, client-side local storage only).
 
 ## Features
 
