@@ -147,6 +147,32 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/search',
+    method: 'GET',
+    handler: async ({ params: { organizationId }, query }) => {
+      const {
+        pageIndex = 0,
+        pageSize = 5,
+        searchQuery = '',
+      } = query ?? {};
+
+      const organization = organizationStorage.getItem(organizationId);
+      assert(organization, { status: 403 });
+
+      const allKeys = await documentStorage.getKeys();
+      const keys = allKeys.filter(key => key.startsWith(organizationId));
+
+      const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
+
+      const filteredDocuments = documents.filter(document => document?.name.includes(searchQuery));
+
+      return {
+        documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+      };
+    },
+  }),
+
+  ...defineHandler({
     path: '/api/organizations/:organizationId/documents/:documentId',
     method: 'DELETE',
     handler: async ({ params: { organizationId, documentId } }) => {

@@ -132,7 +132,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
         onOpenChange={setIsCommandPaletteOpen}
       >
 
-        <CommandInput placeholder="Search commands" onValueChange={setSearchQuery} />
+        <CommandInput onValueChange={setSearchQuery} placeholder="Search commands or documents" />
         <CommandList>
           <Show when={getIsLoading()}>
             <CommandLoading>
