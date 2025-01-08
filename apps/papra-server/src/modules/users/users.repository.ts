@@ -17,6 +17,7 @@ function createUsersRepository({ db }: { db: Database }) {
       getUserByEmail,
       getUserById,
       getUserByIdOrThrow,
+      updateUser,
     },
     { db },
   );
@@ -62,6 +63,12 @@ async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFou
   if (!user) {
     throw errorFactory();
   }
+
+  return { user };
+}
+
+async function updateUser({ userId, fullName, db }: { userId: string; fullName: string; db: Database }) {
+  const [user] = await db.update(usersTable).set({ fullName }).where(eq(usersTable.id, userId)).returning();
 
   return { user };
 }

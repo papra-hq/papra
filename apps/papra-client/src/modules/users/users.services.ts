@@ -9,3 +9,13 @@ export async function fetchCurrentUser() {
 
   return { user };
 }
+
+export async function updateUser({ fullName }: { fullName: string }) {
+  const { user } = await apiClient<{ user: UserMe }>({
+    path: '/api/users/me',
+    method: 'PUT',
+    body: { fullName },
+  });
+
+  return { user };
+}

@@ -37,3 +37,4 @@ cache
 *.sqlite
 
 local-documents
+.cursorrules

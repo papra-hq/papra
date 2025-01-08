@@ -1,16 +1,17 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
+import { authStore } from '@/modules/auth/auth.store';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
+import { config } from '@/modules/config/config';
 import { uploadDocument } from '@/modules/documents/documents.services';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
+
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
-
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
+
 import { A, useParams } from '@solidjs/router';
 import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
-
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
@@ -72,12 +73,12 @@ export const SideNav: Component<{
 
   return (
     <div class="flex h-full">
-      <div class="w-65px border-r bg-card pt-4">
+      <div class="w-65px border-r bg-card pt-4 pb-6 flex flex-col">
         <Button variant="link" size="icon" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-primary mb-4 mx-auto">
           <div class="i-tabler-file-text size-10"></div>
         </Button>
 
-        <div class="flex flex-col gap-0.5">
+        <div class="flex flex-col gap-0.5 flex-1">
           {getShortSideNavItems().map(menuItem => (
             <Tooltip>
               <TooltipTrigger
@@ -99,6 +100,10 @@ export const SideNav: Component<{
               <TooltipContent>{menuItem.label}</TooltipContent>
             </Tooltip>
           ))}
+        </div>
+
+        <div class="text-xs text-muted-foreground text-center mt-auto">
+          {`v${config.papraVersion}`}
         </div>
 
       </div>
@@ -152,7 +157,6 @@ export const SidenavLayout: ParentComponent<{
   sideNav: Component;
   showSearch?: boolean;
 }> = (props) => {
-  const { user } = useCurrentUser();
   const themeStore = useThemeStore();
   const params = useParams();
   const { openCommandPalette } = useCommandPalette();
@@ -216,12 +220,22 @@ export const SidenavLayout: ParentComponent<{
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {user.roles.includes('admin') && (
-              <Button as={A} href="/admin">
-                <div class="i-tabler-settings size-4 mr-2"></div>
-                Admin
-              </Button>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger as={Button} class="text-base hidden sm:flex" variant="outline" aria-label="User menu" size="icon">
+                <div class="i-tabler-user size-4"></div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-42">
+                <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/settings">
+                  <div class="i-tabler-settings size-4 text-muted-foreground"></div>
+                  Account settings
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => authStore.logout()} class="flex items-center gap-2 cursor-pointer">
+                  <div class="i-tabler-logout size-4 text-muted-foreground"></div>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
           </div>
         </div>

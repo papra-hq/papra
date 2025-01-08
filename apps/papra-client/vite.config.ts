@@ -2,12 +2,16 @@ import path from 'node:path';
 import unoCssPlugin from 'unocss/vite';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import { version } from './package.json';
 
 export default defineConfig({
   plugins: [
     unoCssPlugin(),
     solidPlugin(),
   ],
+  define: {
+    'import.meta.env.VITE_PAPRA_VERSION': JSON.stringify(version),
+  },
   server: {
     port: 3000,
   },

@@ -1,6 +1,5 @@
 import type { Organization } from '@/modules/organizations/organizations.types';
 
-import { authStore } from '@/modules/auth/auth.store';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 
 import { useNavigate, useParams } from '@solidjs/router';
@@ -31,22 +30,14 @@ const OrganizationLayoutSideNav: Component = () => {
       icon: 'i-tabler-trash',
       href: `/organizations/${params.organizationId}/deleted`,
     },
-    {
-      label: 'Organization settings',
-      icon: 'i-tabler-settings',
-      href: `/organizations/${params.organizationId}/settings`,
-    },
 
   ];
 
   const getFooterMenuItems = () => [
     {
-      label: 'Logout',
-      icon: 'i-tabler-logout',
-      onClick: () => {
-        authStore.logout();
-        navigate('/login');
-      },
+      label: 'Organization settings',
+      icon: 'i-tabler-settings',
+      href: `/organizations/${params.organizationId}/settings`,
     },
   ];
 

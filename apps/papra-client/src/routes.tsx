@@ -16,6 +16,7 @@ import { OrganizationsPage } from './modules/organizations/pages/organizations.p
 import { Button } from './modules/ui/components/button';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
+import { UserSettingsPage } from './modules/users/pages/user-settings.page';
 
 export const routes: RouteDefinition[] = [
   {
@@ -104,6 +105,10 @@ export const routes: RouteDefinition[] = [
         ],
       },
     ],
+  },
+  {
+    path: '/settings',
+    component: UserSettingsPage,
   },
   {
     path: '/login',
