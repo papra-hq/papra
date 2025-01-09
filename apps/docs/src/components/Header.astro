@@ -1,0 +1,49 @@
+---
+import Button from './Button.astro';
+import GitHubStarsButton from './GitHubStarsButton.astro';
+import ToggleThemeButton from './ToggleThemeButton.astro';
+---
+
+<nav class="flex justify-between items-center py-4">
+    <div class="flex items-center gap-2">
+        <Button variant="ghost" aria-label="Toggle menu" size="icon" class="sm:hidden" data-open-sidebar>
+            <div class="i-tabler-menu-2 size-4"></div>
+        </Button>
+        <Button variant="outline" class="justify-start items-center gap-2 sm:min-w-48 md:min-w-60 bg-card" data-open-search-modal>
+            <div class="i-tabler-search size-4"></div>
+            <span class="flex-1 text-left">Search...</span>
+
+            <!-- <span class="text-xs text-muted-foreground px-1.5 py-0.5 bg-muted rounded-sm">
+                Ctrl + K
+            </span> -->
+        </Button>
+    </div>
+
+    <div class="hidden sm:flex items-center gap-2">
+        <Button as="a" href="https://demo.papra.app" target="_blank" rel="noreferrer" variant="ghost" class="text-foreground flex items-center gap-2">
+            Demo app
+            <div class="i-tabler-external-link size-4"></div>
+        </Button>
+        <GitHubStarsButton />
+        <ToggleThemeButton />
+    </div>
+
+    <div class="flex sm:hidden items-center gap-2">
+        <Button as="a" href="https://github.com/papra-hq/papra" target="_blank" rel="noreferrer" variant="ghost" size="icon">
+            <div class="i-tabler-brand-github size-4.5"></div>
+        </Button>
+    </div>
+</nav>
+
+<script>
+    const searchButton = document.querySelector('[data-open-search-modal]')!;
+
+    // @ts-expect-error navigator.userAgentData is not supported in all browsers
+    const isMac = navigator.userAgentData?.platform?.toLowerCase().includes('mac') ?? navigator.userAgent.toLowerCase().includes('mac');
+
+    const shortcut = document.createElement('span');
+    shortcut.textContent = isMac ? '⌘ + K' : 'Ctrl + K';
+    shortcut.classList.add('text-xs', 'text-muted-foreground', 'px-1.5', 'py-0.5', 'bg-muted', 'rounded-sm');
+
+    searchButton.appendChild(shortcut);
+</script>

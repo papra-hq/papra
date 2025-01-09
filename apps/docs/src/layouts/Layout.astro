@@ -1,0 +1,78 @@
+---
+import type { MarkdownHeading } from 'astro';
+import Header from '@/components/Header.astro';
+import SearchModal from '@/components/SearchModal.astro';
+import Sidenav from '@/components/Sidenav.astro';
+import ToC from '@/components/ToC.astro';
+import '../styles/app.css';
+
+type Props = {
+  title?: string;
+  description?: string;
+  headings?: MarkdownHeading[];
+};
+
+const defaultTitle = 'Papra Docs';
+const defaultDescription = 'Documentation for Papra, the open-source document management platform.';
+
+const { title, description, headings } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title ?? defaultTitle}</title>
+    <meta name="description" content={description ?? defaultDescription} />
+    <meta name="author" content="Corentin Thomasset" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Papra docs" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:title" content={title ?? defaultTitle} />
+    <meta property="og:description" content={description ?? defaultDescription} />
+    <meta property="og:image" content={new URL('/og-image.png', Astro.url).toString()} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Papra Docs" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Papra Docs" />
+    <meta property="og:image:type" content="image/png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@cthmsst" />
+    <meta name="twitter:title" content={title ?? defaultTitle} />
+    <meta name="twitter:description" content={description ?? defaultDescription} />
+    <meta name="twitter:image" content={new URL('/og-image.png', Astro.url).toString()} />
+
+    <link rel="canonical" href="https://docs.papra.app" />
+  </head>
+  <body class="min-h-screen font-sans text-sm bg-background">
+    <SearchModal />
+
+    <main class="flex min-h-screen items-start">
+      <Sidenav />
+
+      <article class="max-w-860px w-full px-4 sm:px-6 z-10 pb-42">
+        <Header />
+
+        <slot />
+      </article>
+
+      <aside class="sticky top-0 flex-1 hidden lg:block">
+        <div class="min-w-260px p-4 mt-16">
+          <ToC headings={headings} />
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+name: CI - Docs
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci-apps-docs:
+    name: CI - Docs
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/docs
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          corepack: true
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm i
+        working-directory: ./
+
+      - name: Run linters
+        run: pnpm lint
+
+      # - name: Type check
+      #   run: pnpm typecheck
+
+      # - name: Run unit test
+      #   run: pnpm test
+
+      - name: Build the app
+        run: pnpm build

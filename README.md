@@ -15,9 +15,9 @@
 
 <p align="center">
   <a href="https://demo.papra.app">Demo</a>
-  <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://docs.papra.app">Docs</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://docs.papra.app">Docs</a>
+  <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://docs.papra.app/self-hosting/docker">Self-hosting</a> -->
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://github.com/orgs/papra-hq/projects/2">Roadmap</a>

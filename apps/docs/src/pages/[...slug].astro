@@ -1,0 +1,41 @@
+---
+import PrevNextDocCard from '@/components/PrevNextDocCard.astro';
+import Layout from '@/layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+const docs = await getCollection('docs');
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+
+  return docs.map(doc => ({
+    params: { slug: doc.data.slug === 'index' ? undefined : doc.data.slug },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+
+const currentDocIndex = docs.findIndex(d => d.data.slug === doc.data.slug);
+const nextDoc = docs[currentDocIndex + 1];
+const prevDoc = docs[currentDocIndex - 1];
+---
+
+<Layout title={doc.data.title} description={doc.data.description} headings={headings}>
+  <div class="prose max-w-none text-base prose-coolgray dark:prose-invert mb-12">
+    <Content />
+  </div>
+
+    <a class="text-sm flex gap-2 items-center" href={`https://github.com/papra-hq/papra/blob/main/apps/docs/${doc.filePath}`} target="_blank" rel="noopener noreferrer">
+      <div class="i-tabler-edit size-4.5"></div>
+      Edit this page on GitHub
+    </a>
+
+    <hr class="my-4" />
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      { prevDoc && (<PrevNextDocCard direction="prev" {...prevDoc.data} />)}
+      { nextDoc && (<PrevNextDocCard direction="next" {...nextDoc.data} class={!prevDoc ? 'grid-col-start-2' : ''} />) }
+    </div>
+</Layout>

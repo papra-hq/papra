@@ -1,0 +1,188 @@
+---
+import Button from './Button.astro';
+---
+
+<div class="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-60 hidden!" role="dialog" aria-labelledby="search-title" aria-hidden="true" id="search-modal">
+  <div class="absolute inset-0" role="button" tabindex="0" aria-label="Close Search" data-close-search-modal></div>
+
+  <div class="bg-card border rounded-lg max-w-lg w-full z-10">
+    <header class="flex items-center border-b py-1.5 pl-4 pr-1.5 gap-3">
+      <div class="i-tabler-search size-4"></div>
+
+      <div class="flex-1">
+        <label for="search-input" class="sr-only">Search Query</label>
+        <input
+          type="text"
+          id="search-input"
+          class="bg-transparent border-none focus:ring-none outline-none w-full text-base"
+          placeholder="Type to search..."
+          aria-describedby="search-results"
+          autofocus
+        />
+      </div>
+
+      <Button variant="ghost" aria-label="Close" data-close-search-modal size="icon">
+        <div class="i-tabler-x size-4"></div>
+      </Button>
+    </header>
+
+    <div class="text-muted-foreground text-center pt-8 pb-4" id="no-results">No results found</div>
+
+    <ul id="search-results" class="flex flex-col gap-2 p-2" role="list" />
+  </div>
+</div>
+
+<script>
+import MiniSearch, { type SearchResult } from 'minisearch';
+
+// eslint-disable-next-line antfu/no-top-level-await
+const docsIndex = await fetch('/search.json').then(res => res.json());
+
+type Doc = {
+  title: string;
+  description: string;
+  slug: string;
+};
+
+const miniSearch = MiniSearch.loadJS<Doc>(docsIndex, {
+  idField: 'slug',
+  fields: ['title', 'description', 'content'],
+  storeFields: ['title', 'description', 'slug'],
+  searchOptions: {
+    fuzzy: 0.2,
+  },
+});
+
+const modalContainer = document.getElementById('search-modal')!;
+const resultsList = document.getElementById('search-results')!;
+const noResults = document.getElementById('no-results')!;
+const searchInput = document.getElementById('search-input')!;
+const closeSearch = document.querySelectorAll('[data-close-search-modal]');
+const openSearch = document.querySelectorAll('[data-open-search-modal]');
+
+let currentIndex = -1;
+let filteredResults: SearchResult[] = [];
+
+function openModal() {
+  modalContainer.setAttribute('aria-hidden', 'false');
+  modalContainer.classList.remove('hidden!');
+  searchInput.focus();
+}
+
+function closeModal() {
+  modalContainer.setAttribute('aria-hidden', 'true');
+  modalContainer.classList.add('hidden!');
+}
+
+function filterResults(event: Event) {
+  const query = (event.target as HTMLInputElement).value.toLowerCase();
+  resultsList.innerHTML = '';
+  currentIndex = -1;
+
+  filteredResults = miniSearch
+    .search(query, {
+      boost: { title: 2 },
+      prefix: true,
+    })
+    .slice(0, 10);
+
+  if (filteredResults.length === 0) {
+    noResults.style.display = 'block';
+    currentIndex = -1;
+  } else {
+    currentIndex = 0;
+    noResults.style.display = 'none';
+
+    const resultItems = filteredResults.map((item, index) => {
+      const li = document.createElement('li');
+      li.className = 'py-1.5 px-3 rounded cursor-pointer hover:bg-accent';
+      li.dataset.index = String(index);
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'text-base font-semibold';
+      titleDiv.textContent = item.title;
+      li.appendChild(titleDiv);
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'text-muted-foreground';
+      contentDiv.textContent = item.description;
+      li.appendChild(contentDiv);
+
+      li.onclick = () => navigateTo(item.slug);
+      resultsList.appendChild(li);
+
+      return li;
+    });
+
+    highlightResult(resultItems);
+  }
+}
+
+function handleKeyDown(event: KeyboardEvent) {
+  const resultItems = Array.from(resultsList.querySelectorAll('li'));
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      if (currentIndex < filteredResults.length - 1) {
+        currentIndex++;
+        highlightResult(resultItems);
+      }
+      break;
+    case 'ArrowUp':
+      event.preventDefault();
+      if (currentIndex > 0) {
+        currentIndex--;
+        highlightResult(resultItems);
+      }
+      break;
+    case 'Enter':
+      if (currentIndex >= 0 && filteredResults.length > 0) {
+        event.preventDefault();
+        selectResult(currentIndex);
+      }
+      break;
+    case 'Escape':
+      closeModal();
+      break;
+  }
+}
+
+function highlightResult(resultItems: Element[]) {
+  resultItems.forEach((item, index) => {
+    if (index === currentIndex) {
+      item.classList.add('bg-accent');
+      item.scrollIntoView({ block: 'nearest' });
+    } else {
+      item.classList.remove('bg-accent');
+    }
+  });
+}
+
+function selectResult(index: number) {
+  const selectedResult = filteredResults[index];
+
+  navigateTo(selectedResult.slug);
+
+  closeModal();
+}
+
+function navigateTo(slug: string) {
+  const url = slug === 'index' ? '/' : `/${slug}`;
+
+  window.location.href = url;
+}
+
+// open modal on Ctrl/Cmd + K
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+    event.preventDefault();
+    openModal();
+  }
+});
+
+searchInput.addEventListener('input', event => filterResults(event));
+searchInput.addEventListener('keydown', event => handleKeyDown(event));
+openSearch.forEach(button => button.addEventListener('click', openModal));
+closeSearch.forEach(button => button.addEventListener('click', closeModal));
+</script>
