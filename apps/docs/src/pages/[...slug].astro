@@ -34,7 +34,7 @@ const prevDoc = docs[currentDocIndex - 1];
 
     <hr class="my-4" />
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       { prevDoc && (<PrevNextDocCard direction="prev" {...prevDoc.data} />)}
       { nextDoc && (<PrevNextDocCard direction="next" {...nextDoc.data} class={!prevDoc ? 'grid-col-start-2' : ''} />) }
     </div>

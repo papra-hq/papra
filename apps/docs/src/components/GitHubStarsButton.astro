@@ -34,7 +34,7 @@ async function getStars() {
 const { stars, formattedStars } = await getStars();
 ---
 
-<Button as="a" variant="outline" href={repoUrl} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2" size={stars ? undefined : 'icon'}>
+<Button as="a" variant="outline" href={repoUrl} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2" size={stars ? undefined : 'icon'} aria-label="GitHub repository">
     <div class="i-tabler-brand-github size-4.5"></div>
     {stars && <span>{formattedStars}</span>}
 </Button>
