@@ -27,12 +27,12 @@ docker pull corentinth/papra:latest-root
 docker pull corentinth/papra:latest-rootless
 
 # Using GitHub Container Registry
-docker pull ghcr.io/corentinth/papra:latest-root
-docker pull ghcr.io/corentinth/papra:latest-rootless
+docker pull ghcr.io/papra-hq/papra:latest-root
+docker pull ghcr.io/papra-hq/papra:latest-rootless
 ```
 
 ## Basic Usage
 
 ```bash frame="none"
-docker run -d --name papra --restart unless-stopped -p 1221:1221 corentinth/papra:latest-root
+docker run -d --name papra --restart unless-stopped -p 1221:1221 ghcr.io/papra-hq/papra:latest-root
 ```

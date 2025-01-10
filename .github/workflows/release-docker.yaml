@@ -54,8 +54,8 @@ jobs:
           tags: |
             corentinth/papra:latest-root
             corentinth/papra:${{ env.RELEASE_VERSION }}-root
-            ghcr.io/corentinth/papra:latest-root
-            ghcr.io/corentinth/papra:${{ env.RELEASE_VERSION }}-root
+            ghcr.io/papra-hq/papra:latest-root
+            ghcr.io/papra-hq/papra:${{ env.RELEASE_VERSION }}-root
 
       - name: Build and push rootless Docker image
         uses: docker/build-push-action@v6
@@ -67,5 +67,5 @@ jobs:
           tags: |
             corentinth/papra:latest-rootless
             corentinth/papra:${{ env.RELEASE_VERSION }}-rootless
-            ghcr.io/corentinth/papra:latest-rootless
-            ghcr.io/corentinth/papra:${{ env.RELEASE_VERSION }}-rootless
+            ghcr.io/papra-hq/papra:latest-rootless
+            ghcr.io/papra-hq/papra:${{ env.RELEASE_VERSION }}-rootless
