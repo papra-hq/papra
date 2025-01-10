@@ -3,8 +3,8 @@
   "type": "module",
   "version": "1.0.0",
   "packageManager": "pnpm@9.11.0",
-  "description": "",
-  "author": "",
+  "description": "Papra app server",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",
   "keywords": [],
   "scripts": {

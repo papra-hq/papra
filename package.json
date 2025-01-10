@@ -1,13 +1,17 @@
 {
-    "name": "@papra/root",
-    "version": "1.0.0",
-    "license": "AGPL-3.0-or-later",
-    "description": "",
-    "keywords": [],
-    "author": "",
-    "packageManager": "pnpm@9.11.0",
-    "scripts": {
-      "app:docker:build": "docker build -t papra -f docker/Dockerfile .",
-      "app:docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless ."
-    }
+  "name": "@papra/root",
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.11.0",
+  "description": "Papra document management monorepo root",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "license": "AGPL-3.0-or-later",
+  "keywords": [],
+  "scripts": {
+    "app:docker:build": "docker build -t papra -f docker/Dockerfile .",
+    "app:docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless .",
+    "release": "bumpp --commit --tag --push --recursive"
+  },
+  "dependencies": {
+    "bumpp": "^9.10.0"
   }
+}
