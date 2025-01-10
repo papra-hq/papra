@@ -1,0 +1,8 @@
+.site-title {
+    color:inherit !important;
+    gap: 0.5rem !important;
+}
+
+.site-title img {
+    width: 1.8rem !important;
+}

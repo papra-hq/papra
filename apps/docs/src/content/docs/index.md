@@ -1,10 +1,7 @@
 ---
-title: Introduction
+title: Papra docs
 description: Papra documentation.
-slug: index
 ---
-
-# Papra docs
 
 **WIP**: This is still a work in progress. The documentation is not yet complete.
 
