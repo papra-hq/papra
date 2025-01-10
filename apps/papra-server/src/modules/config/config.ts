@@ -35,6 +35,17 @@ export const configDefinition = {
       default: ['http://localhost:3000'],
       env: 'SERVER_CORS_ORIGINS',
     },
+    servePublicDir: {
+      doc: 'Whether to serve the public directory',
+      schema: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .transform(x => x === 'true')
+        .pipe(z.boolean()),
+      default: 'false',
+      env: 'SERVER_SERVE_PUBLIC_DIR',
+    },
   },
   stripe: {
     apiSecretKey: {
@@ -172,7 +183,9 @@ const logger = createLogger({ namespace: 'config' });
 export function parseConfig({ env }: { env?: Record<string, string | undefined> } = {}) {
   const [configResult, configError] = safelySync(() => defineConfig(
     configDefinition,
-    { envSource: env },
+    {
+      envSource: env,
+    },
   ));
 
   if (configError) {

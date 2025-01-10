@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { parseConfig } from '../config/config';
 import { createDatabaseMiddleware } from './database/database.middleware';
+import { registerAssetsMiddleware } from './middlewares/assets.middleware';
 import { createConfigMiddleware } from './middlewares/config.middleware';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { registerErrorMiddleware } from './middlewares/errors.middleware';
@@ -22,6 +23,7 @@ export function createServer({ config = parseConfig().config, db }: { config?: C
   app.use(createDatabaseMiddleware({ db }));
   app.use(secureHeaders());
 
+  registerAssetsMiddleware({ app });
   registerErrorMiddleware({ app });
 
   registerRoutes({ app });

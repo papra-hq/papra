@@ -5,5 +5,9 @@
     "description": "",
     "keywords": [],
     "author": "",
-    "packageManager": "pnpm@9.11.0"
+    "packageManager": "pnpm@9.11.0",
+    "scripts": {
+      "app:docker:build": "docker build -t papra -f docker/Dockerfile .",
+      "app:docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless ."
+    }
   }

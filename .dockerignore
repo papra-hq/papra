@@ -1,0 +1,10 @@
+node_modules
+.pnp
+.pnp.*
+*.log
+dist
+*.local
+.env
+.git
+db.sqlite
+local-documents
