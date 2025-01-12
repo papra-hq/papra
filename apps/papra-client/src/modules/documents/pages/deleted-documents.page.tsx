@@ -10,6 +10,37 @@ import { type Component, createSignal, Show, Suspense } from 'solid-js';
 import { DocumentsPaginatedList } from '../components/documents-list.component';
 import { fetchOrganizationDeletedDocuments, restoreDocument } from '../documents.services';
 
+const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
+  const [getIsLoading, setIsLoading] = createSignal(false);
+
+  const restore = async ({ document }: { document: Document }) => {
+    setIsLoading(true);
+
+    await restoreDocument({
+      documentId: document.id,
+      organizationId: document.organizationId,
+    });
+
+    await queryClient.invalidateQueries({ queryKey: ['organizations', document.organizationId, 'documents'] });
+
+    createToast({ type: 'success', message: 'Document restored' });
+    setIsLoading(false);
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={() => restore({ document: props.document })} isLoading={getIsLoading()}>
+      { getIsLoading()
+        ? (<>Restoring...</>)
+        : (
+            <>
+              <div class="i-tabler-refresh size-4 mr-2" />
+              Restore
+            </>
+          )}
+    </Button>
+  );
+};
+
 export const DeletedDocumentsPage: Component = () => {
   const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
   const params = useParams();
@@ -22,17 +53,6 @@ export const DeletedDocumentsPage: Component = () => {
     }),
     placeholderData: keepPreviousData,
   }));
-
-  const restore = async ({ document }: { document: Document }) => {
-    await restoreDocument({
-      documentId: document.id,
-      organizationId: document.organizationId,
-    });
-
-    await queryClient.invalidateQueries({ queryKey: ['organizations', document.organizationId, 'documents'] });
-
-    createToast({ type: 'success', message: 'Document restored' });
-  };
 
   return (
     <div class="p-6 mt-4 pb-32">
@@ -77,10 +97,7 @@ export const DeletedDocumentsPage: Component = () => {
                 id: 'actions',
                 cell: data => (
                   <div class="flex items-center justify-end">
-                    <Button variant="outline" size="sm" class="gap-2" onClick={() => restore({ document: data.row.original })}>
-                      <div class="i-tabler-refresh size-4" />
-                      Restore
-                    </Button>
+                    <RestoreDocumentButton document={data.row.original} />
                   </div>
                 ),
               },
