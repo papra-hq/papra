@@ -1,4 +1,4 @@
-import { A, Navigate, type RouteDefinition, useParams } from '@solidjs/router';
+import { Navigate, type RouteDefinition, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
@@ -6,6 +6,7 @@ import { ConfirmPage } from './modules/auth/pages/confirm.page';
 import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
 import { MagicLinkSentPage } from './modules/auth/pages/magic-link-sent.page';
 import { PendingMagicLinkPage } from './modules/auth/pages/verify-magic-link.page';
+import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
@@ -13,7 +14,8 @@ import { CreateFirstOrganizationPage } from './modules/organizations/pages/creat
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
-import { Button } from './modules/ui/components/button';
+import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
+import { NotFoundPage } from './modules/shared/pages/not-found.page';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
@@ -85,12 +87,28 @@ export const routes: RouteDefinition[] = [
                 component: DocumentsPage,
               },
               {
+                path: '/documents',
+                component: DocumentsPage,
+              },
+              {
                 path: '/documents/:documentId',
                 component: DocumentPage,
               },
               {
                 path: '/settings',
                 component: OrganizationsSettingsPage,
+              },
+              {
+                path: '/deleted',
+                component: DeletedDocumentsPage,
+              },
+              {
+                path: '/tags',
+                component: ComingSoonPage,
+              },
+              {
+                path: '/integrations',
+                component: ComingSoonPage,
               },
             ],
           },
@@ -132,26 +150,6 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '*404',
-    component: () => (
-      <div class="h-screen flex flex-col items-center justify-center p-6">
-
-        <div class="flex items-center flex-row sm:gap-24">
-          <div class="max-w-350px">
-            <h1 class="text-xl mr-4 py-2">404 - Not Found</h1>
-            <p class="text-muted-foreground">
-              Sorry, the page you are looking for does seem to exist. Please check the URL and try again.
-            </p>
-            <Button as={A} href="/" class="mt-4" variant="default">
-              <div class="i-tabler-arrow-left mr-2"></div>
-              Go back to home
-            </Button>
-          </div>
-
-          <div class="hidden sm:block light:text-muted-foreground">
-            <div class="i-tabler-file-shredder text-200px"></div>
-          </div>
-        </div>
-      </div>
-    ),
+    component: NotFoundPage,
   },
 ];

@@ -5,3 +5,9 @@ export const createDocumentNotFoundError = createErrorFactory({
   code: 'document.not_found',
   statusCode: 404,
 });
+
+export const createDocumentIsNotDeletedError = createErrorFactory({
+  message: 'Document is not deleted, cannot restore.',
+  code: 'document.not_deleted',
+  statusCode: 400,
+});

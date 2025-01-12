@@ -55,6 +55,37 @@ export async function fetchOrganizationDocuments({
   };
 }
 
+export async function fetchOrganizationDeletedDocuments({
+  organizationId,
+  pageIndex,
+  pageSize,
+}: {
+  organizationId: string;
+  pageIndex: number;
+  pageSize: number;
+}) {
+  const {
+    documents,
+    documentsCount,
+  } = await apiClient<{ documents: Document[]; documentsCount: number }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/deleted`,
+    query: {
+      pageIndex,
+      pageSize,
+    },
+  });
+
+  return {
+    documentsCount,
+    documents: documents.map(document => ({
+      ...document,
+      createdAt: new Date(document.createdAt),
+      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
+    })),
+  };
+}
+
 export async function deleteDocument({
   documentId,
   organizationId,
@@ -65,6 +96,19 @@ export async function deleteDocument({
   await apiClient({
     method: 'DELETE',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
+  });
+}
+
+export async function restoreDocument({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
+  await apiClient({
+    method: 'POST',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/restore`,
   });
 }
 

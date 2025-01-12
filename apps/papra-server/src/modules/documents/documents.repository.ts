@@ -12,10 +12,13 @@ export function createDocumentsRepository({ db }: { db: Database }) {
     {
       saveOrganizationDocument,
       getOrganizationDocuments,
+      getOrganizationDeletedDocuments,
       getDocumentById,
       softDeleteDocument,
       getOrganizationDocumentsCount,
+      getOrganizationDeletedDocumentsCount,
       searchOrganizationDocuments,
+      restoreDocument,
     },
     { db },
   );
@@ -30,13 +33,29 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
 async function getOrganizationDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
   const [{ documentsCount }] = await db
     .select({
-      documentsCount: count(),
+      documentsCount: count(documentsTable.id),
     })
     .from(documentsTable)
     .where(
       and(
         eq(documentsTable.organizationId, organizationId),
         eq(documentsTable.isDeleted, false),
+      ),
+    );
+
+  return { documentsCount };
+}
+
+async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [{ documentsCount }] = await db
+    .select({
+      documentsCount: count(documentsTable.id),
+    })
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, true),
       ),
     );
 
@@ -68,6 +87,31 @@ async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, d
   };
 }
 
+async function getOrganizationDeletedDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {
+  const query = db
+    .select()
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, true),
+      ),
+    );
+
+  const documents = await withPagination(
+    query.$dynamic(),
+    {
+      orderByColumn: desc(documentsTable.deletedAt),
+      pageIndex,
+      pageSize,
+    },
+  );
+
+  return {
+    documents,
+  };
+}
+
 async function getDocumentById({ documentId, db }: { documentId: string; db: Database }) {
   const [document] = await db
     .select()
@@ -86,6 +130,17 @@ async function softDeleteDocument({ documentId, userId, db, now = new Date() }: 
       isDeleted: true,
       deletedBy: userId,
       deletedAt: now,
+    })
+    .where(eq(documentsTable.id, documentId));
+}
+
+async function restoreDocument({ documentId, db }: { documentId: string; db: Database }) {
+  await db
+    .update(documentsTable)
+    .set({
+      isDeleted: false,
+      deletedBy: null,
+      deletedAt: null,
     })
     .where(eq(documentsTable.id, documentId));
 }

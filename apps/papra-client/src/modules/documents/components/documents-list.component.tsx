@@ -1,4 +1,6 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
+import type { ColumnDef } from '@tanstack/solid-table';
+import type { Document } from '../documents.types';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
@@ -7,28 +9,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
 import { formatBytes } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
-import { createQuery, keepPreviousData } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
-import { type Component, createSignal, For, Match, Show, Switch } from 'solid-js';
+import { type Accessor, type Component, For, Match, type Setter, Show, Switch } from 'solid-js';
 import { getDocumentIcon } from '../document.models';
-import { fetchOrganizationDocuments } from '../documents.services';
-import { DocumentManagementDropdown } from './document-management-dropdown.component';
 
-export const DocumentsPaginatedList: Component<{ organizationId: string }> = (props) => {
-  const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
+type Pagination = {
+  pageIndex: number;
+  pageSize: number;
+};
 
-  const query = createQuery(() => ({
-    queryKey: ['organizations', props.organizationId, 'documents', getPagination()],
-    queryFn: () => fetchOrganizationDocuments({
-      organizationId: props.organizationId,
-      ...getPagination(),
-    }),
-    placeholderData: keepPreviousData,
-  }));
+export const createdAtColumn: ColumnDef<Document> = {
+  header: () => (<span class="hidden sm:block">Created at</span>),
+  accessorKey: 'createdAt',
+  cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
+};
 
+export const deletedAtColumn: ColumnDef<Document> = {
+  header: () => (<span class="hidden sm:block">Deleted at</span>),
+  accessorKey: 'deletedAt',
+  cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
+};
+
+export const DocumentsPaginatedList: Component<{
+  documents: Document[];
+  documentsCount: number;
+  getPagination: Accessor<Pagination>;
+  setPagination: Setter<Pagination>;
+  extraColumns?: ColumnDef<Document>[];
+}> = (props) => {
   const table = createSolidTable({
     get data() {
-      return query.data?.documents ?? [];
+      return props.documents ?? [];
     },
     columns: [
       {
@@ -41,7 +52,7 @@ export const DocumentsPaginatedList: Component<{ organizationId: string }> = (pr
 
             <div class="flex-1 flex flex-col gap-1 truncate">
               <A
-                href={`/organizations/${props.organizationId}/documents/${data.row.original.id}`}
+                href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
                 class="font-bold truncate block hover:underline"
               >
                 {data.row.original.name.split('.').shift()}
@@ -73,29 +84,32 @@ export const DocumentsPaginatedList: Component<{ organizationId: string }> = (pr
 
         ),
       },
-      {
-        header: 'Created at',
-        accessorKey: 'createdAt',
-        cell: data => <div class="text-muted-foreground" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
-      },
-      {
-        header: 'Actions',
-        cell: data => (
-          <div class="flex items-center justify-end">
-            <DocumentManagementDropdown documentId={data.row.original.id} organizationId={props.organizationId} />
-          </div>
-        ),
-      },
+      // {
+      //   header: () => (<span class="hidden sm:block">Created at</span>),
+      //   accessorKey: 'createdAt',
+      //   cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
+      // },
+      // {
+      //   header: () => (<span class="block text-right">Actions</span>),
+      //   id: 'actions',
+      //   cell: data => (
+      //     <div class="flex items-center justify-end">
+      //       <DocumentManagementDropdown documentId={data.row.original.id} organizationId={data.row.original.organizationId} />
+      //     </div>
+      //   ),
+      // },
+
+      ...(props.extraColumns ?? []),
     ],
     get rowCount() {
-      return query.data?.documentsCount;
+      return props.documentsCount;
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    onPaginationChange: props.setPagination,
     state: {
       get pagination() {
-        return getPagination();
+        return props.getPagination();
       },
     },
     manualPagination: true,
@@ -105,16 +119,10 @@ export const DocumentsPaginatedList: Component<{ organizationId: string }> = (pr
   return (
     <div>
       <Switch>
-        <Match when={query.data?.documentsCount === 0}>
+        <Match when={props.documentsCount === 0}>
           <p>No documents found</p>
         </Match>
-        <Match when={query.isError}>
-          <p>
-            Error:
-            {query.error?.message}
-          </p>
-        </Match>
-        <Match when={query.isSuccess}>
+        <Match when={props.documentsCount > 0}>
           <Table>
 
             <TableHeader>

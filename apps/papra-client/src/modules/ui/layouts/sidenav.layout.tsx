@@ -11,7 +11,7 @@ import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 
 import { A, useParams } from '@solidjs/router';
-import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
+import { type Component, type ComponentProps, type JSX, type ParentComponent, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
@@ -21,29 +21,18 @@ type MenuItem = {
   icon: string;
   href?: string;
   onClick?: () => void;
+  badge?: JSX.Element;
 };
 
 const MenuItemButton: Component<MenuItem> = (props) => {
   return (
-    <>
-      <Show when={props.onClick}>
-        <Button class="block" onClick={props.onClick} variant="ghost">
-          <div class="flex items-center gap-2 dark:text-muted-foreground truncate">
-            <div class={cn(props.icon, 'size-5')}></div>
-            <div>{props.label}</div>
-          </div>
-        </Button>
-      </Show>
-
-      <Show when={!props.onClick}>
-        <Button class="block dark:text-muted-foreground" as={A} href={props.href!} variant="ghost" activeClass="bg-accent/50! text-accent-foreground! truncate" end>
-          <div class="flex items-center gap-2">
-            <div class={cn(props.icon, 'size-5')}></div>
-            <div class="truncate">{props.label}</div>
-          </div>
-        </Button>
-      </Show>
-    </>
+    <Button class="block" variant="ghost" {...(props.onClick ? { onClick: props.onClick } : { as: A, href: props.href, activeClass: 'bg-accent/50! text-accent-foreground! truncate', end: true } as ComponentProps<typeof Button>)}>
+      <div class="flex items-center gap-2 dark:text-muted-foreground truncate">
+        <div class={cn(props.icon, 'size-5')}></div>
+        <div>{props.label}</div>
+        {props.badge && <div class="ml-auto">{props.badge}</div>}
+      </div>
+    </Button>
   );
 };
 

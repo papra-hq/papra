@@ -1,15 +1,15 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
-import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useParams } from '@solidjs/router';
-import { createQueries } from '@tanstack/solid-query';
+import { createQueries, keepPreviousData } from '@tanstack/solid-query';
+import { type Component, createSignal, Suspense } from 'solid-js';
 import { DocumentManagementDropdown } from '../components/document-management-dropdown.component';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
-import { DocumentsPaginatedList } from '../components/documents-paginated-list.component';
+import { DocumentsPaginatedList } from '../components/documents-list.component';
 import { getDocumentIcon } from '../document.models';
 import { fetchOrganizationDocuments } from '../documents.services';
 
@@ -64,57 +64,64 @@ const DocumentCard: Component<{ document: Document; organizationId?: string }> =
 
 export const DocumentsPage: Component = () => {
   const params = useParams();
+  const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
 
   const query = createQueries(() => ({
     queries: [
       {
-        queryKey: ['organizations', params.organizationId, 'documents', { pageIndex: 0, pageSize: 100 }],
+        queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
         queryFn: () => fetchOrganizationDocuments({
           organizationId: params.organizationId,
-          pageIndex: 0,
-          pageSize: 5,
+          ...getPagination(),
         }),
+        placeholderData: keepPreviousData,
       },
     ],
   }));
 
   return (
     <div class="p-6 mt-4 pb-32">
+      <Suspense>
+        {query[0].data?.documents?.length === 0
+          ? (
+              <>
+                <h2 class="text-xl font-bold ">
+                  No documents
+                </h2>
 
-      {query[0].data?.documents.length === 0
-        ? (
-            <>
-              <h2 class="text-xl font-bold ">
-                No documents
-              </h2>
+                <p class="text-muted-foreground mt-1 mb-6">
+                  There are no documents in this organization yet. Start by uploading some documents.
+                </p>
 
-              <p class="text-muted-foreground mt-1 mb-6">
-                There are no documents in this organization yet. Start by uploading some documents.
-              </p>
+                <DocumentUploadArea />
 
-              <DocumentUploadArea />
+              </>
+            )
+          : (
+              <>
+                <h2 class="text-lg font-semibold mb-4">
+                  Latest imported documents
+                </h2>
+                <div class="grid gap-4 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4">
+                  {query[0].data?.documents.slice(0, 5).map(document => (
+                    <DocumentCard document={document} />
+                  ))}
+                </div>
 
-            </>
-          )
-        : (
-            <>
-              <h2 class="text-lg font-semibold mb-4">
-                Latest imported documents
-              </h2>
-              <div class="grid gap-4 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4">
-                {query[0].data?.documents.map(document => (
-                  <DocumentCard document={document} />
-                ))}
-              </div>
+                <h2 class="text-lg font-semibold mt-8 mb-2">
+                  All documents
+                </h2>
 
-              <h2 class="text-lg font-semibold mt-8 mb-2">
-                All documents
-              </h2>
+                <DocumentsPaginatedList
+                  documents={query[0].data?.documents ?? []}
+                  documentsCount={query[0].data?.documentsCount ?? 0}
+                  getPagination={getPagination}
+                  setPagination={setPagination}
+                />
+              </>
 
-              <DocumentsPaginatedList organizationId={params.organizationId} />
-            </>
-
-          )}
+            )}
+      </Suspense>
     </div>
   );
 };

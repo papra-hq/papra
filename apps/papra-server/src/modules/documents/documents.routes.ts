@@ -9,6 +9,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
+import { createDocumentIsNotDeletedError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
@@ -17,6 +18,8 @@ export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance })
   setupCreateDocumentRoute({ app });
   setupGetDocumentsRoute({ app });
   setupSearchDocumentsRoute({ app });
+  setupRestoreDocumentRoute({ app });
+  setupGetDeletedDocumentsRoute({ app });
   setupGetDocumentRoute({ app });
   setupDeleteDocumentRoute({ app });
   setupGetDocumentFileRoute({ app });
@@ -132,6 +135,46 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
   );
 }
 
+function setupGetDeletedDocumentsRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId/documents/deleted',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    validateQuery(
+      z.object({
+        pageIndex: z.coerce.number().min(0).int().optional().default(0),
+        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+      }),
+    ),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+
+      const { organizationId } = context.req.valid('param');
+      const { pageIndex, pageSize } = context.req.valid('query');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const [
+        { documents },
+        { documentsCount },
+      ] = await Promise.all([
+        documentsRepository.getOrganizationDeletedDocuments({ organizationId, pageIndex, pageSize }),
+        documentsRepository.getOrganizationDeletedDocumentsCount({ organizationId }),
+      ]);
+
+      return context.json({
+        documents,
+        documentsCount,
+      });
+    },
+  );
+}
+
 function setupGetDocumentRoute({ app }: { app: ServerInstance }) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
@@ -183,6 +226,37 @@ function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
       return context.json({
         success: true,
       });
+    },
+  );
+}
+
+function setupRestoreDocumentRoute({ app }: { app: ServerInstance }) {
+  app.post(
+    '/api/organizations/:organizationId/documents/:documentId/restore',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getAuthUserId({ context });
+      const { db } = getDb({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
+
+      if (!document.isDeleted) {
+        throw createDocumentIsNotDeletedError();
+      }
+
+      await documentsRepository.restoreDocument({ documentId });
+
+      return context.body(null, 204);
     },
   );
 }

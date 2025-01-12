@@ -21,19 +21,35 @@ const OrganizationLayoutSideNav: Component = () => {
 
   const getMainMenuItems = () => [
     {
-      label: 'Documents',
-      icon: 'i-tabler-file-text',
+      label: 'Home',
+      icon: 'i-tabler-home',
       href: `/organizations/${params.organizationId}`,
     },
     {
-      label: 'Deleted documents',
-      icon: 'i-tabler-trash',
-      href: `/organizations/${params.organizationId}/deleted`,
+      label: 'Documents',
+      icon: 'i-tabler-file-text',
+      href: `/organizations/${params.organizationId}/documents`,
+    },
+
+    {
+      label: 'Tags',
+      icon: 'i-tabler-tag',
+      href: `/organizations/${params.organizationId}/tags`,
+    },
+    {
+      label: 'Integrations',
+      icon: 'i-tabler-link',
+      href: `/organizations/${params.organizationId}/integrations`,
     },
 
   ];
 
   const getFooterMenuItems = () => [
+    {
+      label: 'Deleted documents',
+      icon: 'i-tabler-trash',
+      href: `/organizations/${params.organizationId}/deleted`,
+    },
     {
       label: 'Organization settings',
       icon: 'i-tabler-settings',
