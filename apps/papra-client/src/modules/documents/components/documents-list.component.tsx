@@ -36,7 +36,7 @@ export const standardActionsColumn: ColumnDef<Document> = {
   id: 'actions',
   cell: data => (
     <div class="flex items-center justify-end">
-      <DocumentManagementDropdown documentId={data.row.original.id} organizationId={data.row.original.organizationId} />
+      <DocumentManagementDropdown document={data.row.original} />
     </div>
   ),
 };

@@ -1,5 +1,7 @@
 import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
+import type { Document } from '../documents.types';
+import { useConfirmModal } from '@/modules/shared/confirm';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
@@ -7,14 +9,39 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { A } from '@solidjs/router';
 import { deleteDocument } from '../documents.services';
 
-export const DocumentManagementDropdown: Component<{ documentId: string; organizationId: string }> = (props) => {
+export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
+  const { confirm } = useConfirmModal();
+
   const deleteDoc = async () => {
-    await deleteDocument({
-      documentId: props.documentId,
-      organizationId: props.organizationId,
+    const isConfirmed = await confirm({
+      title: 'Delete document',
+      message: (
+        <>
+          Are you sure you want to delete
+          {' '}
+          <span class="font-bold">{props.document.name}</span>
+          ?
+        </>
+      ),
+      confirmButton: {
+        text: 'Delete document',
+        variant: 'destructive',
+      },
+      cancelButton: {
+        text: 'Cancel',
+      },
     });
 
-    await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'documents'] });
+    if (!isConfirmed) {
+      return;
+    }
+
+    await deleteDocument({
+      documentId: props.document.id,
+      organizationId: props.document.organizationId,
+    });
+
+    await queryClient.invalidateQueries({ queryKey: ['organizations', props.document.organizationId, 'documents'] });
     createToast({ type: 'success', message: 'Document deleted' });
   };
 
@@ -31,7 +58,7 @@ export const DocumentManagementDropdown: Component<{ documentId: string; organiz
         <DropdownMenuItem
           class="cursor-pointer "
           as={A}
-          href={`/organizations/${props.organizationId}/documents/${props.documentId}`}
+          href={`/organizations/${props.document.organizationId}/documents/${props.document.id}`}
         >
           <div class="i-tabler-info-circle size-4 mr-2"></div>
           <span>Document details</span>

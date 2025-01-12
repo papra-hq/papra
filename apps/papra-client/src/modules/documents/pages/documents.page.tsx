@@ -56,7 +56,7 @@ const DocumentCard: Component<{ document: Document; organizationId?: string }> =
       </div>
 
       <div>
-        <DocumentManagementDropdown documentId={props.document.id} organizationId={getOrganizationId()} />
+        <DocumentManagementDropdown document={props.document} />
       </div>
     </div>
   );
