@@ -36,6 +36,8 @@ Forget about that receipt of that gift you bought for your friend last year, or 
 
 A live demo of the platform is available at [demo.papra.cc](https://demo.papra.cc) (no backend, client-side local storage only).
 
+[![Papra](./.github/papra-screenshot.png)](https://demo.papra.app)
+
 ## Features
 
 - **Document management**: Upload, store, and manage your documents in one place.

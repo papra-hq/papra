@@ -2,14 +2,15 @@ import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import { authStore } from '@/modules/auth/auth.store';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 import { config } from '@/modules/config/config';
+import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { uploadDocument } from '@/modules/documents/documents.services';
-import { promptUploadFiles } from '@/modules/shared/files/upload';
 
+import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
-import { Button } from '@/modules/ui/components/button';
 
+import { Button } from '@/modules/ui/components/button';
 import { A, useParams } from '@solidjs/router';
 import { type Component, type ComponentProps, type JSX, type ParentComponent, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
@@ -150,8 +151,7 @@ export const SidenavLayout: ParentComponent<{
   const params = useParams();
   const { openCommandPalette } = useCommandPalette();
 
-  const promptImport = async () => {
-    const { files } = await promptUploadFiles();
+  const uploadDocuments = async (files: File[]) => {
     for (const file of files) {
       await uploadDocument({ file, organizationId: params.organizationId });
     }
@@ -160,6 +160,16 @@ export const SidenavLayout: ParentComponent<{
       queryKey: ['organizations', params.organizationId, 'documents'],
       refetchType: 'all',
     });
+  };
+
+  const promptImport = async () => {
+    const { files } = await promptUploadFiles();
+
+    await uploadDocuments(files);
+  };
+
+  const handleDrop = async (args: { files: File[] }) => {
+    await uploadDocuments(args.files);
   };
 
   return (
@@ -192,6 +202,7 @@ export const SidenavLayout: ParentComponent<{
           </div>
 
           <div class="flex items-center gap-2">
+            <GlobalDropArea onFilesDrop={handleDrop} />
             <Button onClick={promptImport}>
               <div class="i-tabler-upload size-4"></div>
               <span class="hidden sm:inline ml-2">

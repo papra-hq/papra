@@ -3,19 +3,28 @@ import { downloadFile } from '@/modules/shared/files/download';
 import { Button } from '@/modules/ui/components/button';
 import { useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
-import { type Component, Show, Suspense } from 'solid-js';
+import { type Component, type JSX, Show, Suspense } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { fetchDocument, fetchDocumentFile } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
-const KeyValues: Component<{ data: Record<string, any> }> = (props) => {
+type KeyValueItem = {
+  label: string | JSX.Element;
+  value: string | JSX.Element;
+  icon?: string;
+};
+
+const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
   return (
     <div class="flex flex-col gap-2">
       <table>
-        {Object.entries(props.data).map(([key, value]) => (
+        {props.data?.map(item => (
           <tr>
-            <td class="py-1 pr-2 text-sm text-muted-foreground">{key}</td>
-            <td class="py-1 pl-2 text-sm">{value}</td>
+            <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2">
+              {item.icon && <div class={item.icon}></div>}
+              {item.label}
+            </td>
+            <td class="py-1 pl-2 text-sm">{item.value}</td>
           </tr>
         ))}
       </table>
@@ -42,7 +51,7 @@ export const DocumentPage: Component = () => {
   const getDataUrl = () => queries[1].data ? URL.createObjectURL(queries[1].data) : undefined;
 
   return (
-    <div class="p-6 flex gap-6 h-full flex-col md:flex-row">
+    <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
         <div class="md:flex-1">
           <Show when={queries[0].data?.document}>
@@ -63,12 +72,28 @@ export const DocumentPage: Component = () => {
                     Download
                   </Button>
 
-                  <KeyValues data={{
-                    'ID': getDocument().id,
-                    'Name': getDocument().name,
-                    'Created At': timeAgo({ date: getDocument().createdAt }),
-                    'Updated At': getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
-                  }}
+                  <KeyValues data={[
+                    {
+                      label: 'ID',
+                      value: getDocument().id,
+                      icon: 'i-tabler-id',
+                    },
+                    {
+                      label: 'Name',
+                      value: getDocument().name,
+                      icon: 'i-tabler-file',
+                    },
+                    {
+                      label: 'Created At',
+                      value: timeAgo({ date: getDocument().createdAt }),
+                      icon: 'i-tabler-calendar',
+                    },
+                    {
+                      label: 'Updated At',
+                      value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
+                      icon: 'i-tabler-calendar',
+                    },
+                  ]}
                   />
                 </div>
               </div>

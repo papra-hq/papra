@@ -102,7 +102,7 @@ export const DocumentsPage: Component = () => {
                 <h2 class="text-lg font-semibold mb-4">
                   Latest imported documents
                 </h2>
-                <div class="grid gap-4 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                   {query[0].data?.documents.slice(0, 5).map(document => (
                     <DocumentCard document={document} />
                   ))}
