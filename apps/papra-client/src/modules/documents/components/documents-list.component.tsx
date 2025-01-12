@@ -12,6 +12,7 @@ import { A } from '@solidjs/router';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { type Accessor, type Component, For, Match, type Setter, Show, Switch } from 'solid-js';
 import { getDocumentIcon } from '../document.models';
+import { DocumentManagementDropdown } from './document-management-dropdown.component';
 
 type Pagination = {
   pageIndex: number;
@@ -28,6 +29,16 @@ export const deletedAtColumn: ColumnDef<Document> = {
   header: () => (<span class="hidden sm:block">Deleted at</span>),
   accessorKey: 'deletedAt',
   cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
+};
+
+export const standardActionsColumn: ColumnDef<Document> = {
+  header: () => (<span class="block text-right">Actions</span>),
+  id: 'actions',
+  cell: data => (
+    <div class="flex items-center justify-end">
+      <DocumentManagementDropdown documentId={data.row.original.id} organizationId={data.row.original.organizationId} />
+    </div>
+  ),
 };
 
 export const DocumentsPaginatedList: Component<{

@@ -7,4 +7,5 @@ export type Document = {
   createdAt: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+  deletedBy?: string;
 };

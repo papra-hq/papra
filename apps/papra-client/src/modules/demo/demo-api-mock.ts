@@ -91,14 +91,16 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
 
+      const filteredDocuments = documents.filter(document => !document?.deletedAt);
+
       const {
         pageIndex = 0,
         pageSize = 10,
       } = query ?? {};
 
       return {
-        documents: documents.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-        documentsCount: documents.length,
+        documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+        documentsCount: filteredDocuments.length,
       };
     },
   }),
@@ -134,19 +136,6 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
-    path: '/api/organizations/:organizationId/documents/:documentId',
-    method: 'GET',
-    handler: async ({ params: { organizationId, documentId } }) => {
-      const key = `${organizationId}:${documentId}`;
-      const document = await documentStorage.getItem(key);
-
-      assert(document, { status: 404 });
-
-      return { document };
-    },
-  }),
-
-  ...defineHandler({
     path: '/api/organizations/:organizationId/documents/search',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {
@@ -164,11 +153,63 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
 
-      const filteredDocuments = documents.filter(document => document?.name.includes(searchQuery));
+      const filteredDocuments = documents.filter(document => document?.name.includes(searchQuery) && !document?.deletedAt);
 
       return {
         documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+        documentsCount: filteredDocuments.length,
       };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/deleted',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = organizationStorage.getItem(organizationId);
+      assert(organization, { status: 403 });
+
+      const allKeys = await documentStorage.getKeys();
+      const keys = allKeys.filter(key => key.startsWith(organizationId));
+
+      const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
+
+      const deletedDocuments = documents.filter(document => document?.deletedAt);
+
+      return {
+        documents: deletedDocuments,
+        documentsCount: deletedDocuments.length,
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId',
+    method: 'GET',
+    handler: async ({ params: { organizationId, documentId } }) => {
+      const key = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(key);
+
+      assert(document, { status: 404 });
+
+      return { document };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/restore',
+    method: 'POST',
+    handler: async ({ params: { organizationId, documentId } }) => {
+      const key = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(key);
+
+      assert(document, { status: 404 });
+
+      document.deletedAt = undefined;
+      document.deletedBy = undefined;
+      document.updatedAt = new Date();
+
+      await documentStorage.setItem(key, document);
     },
   }),
 
@@ -178,8 +219,16 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     handler: async ({ params: { organizationId, documentId } }) => {
       const key = `${organizationId}:${documentId}`;
 
-      await documentStorage.removeItem(key);
-      await documentFileStorage.removeItem(key);
+      const document = await documentStorage.getItem(key);
+      assert(document, { status: 404 });
+
+      const now = new Date();
+
+      document.deletedAt = now;
+      document.updatedAt = now;
+      document.deletedBy = 'usr_1';
+
+      await documentStorage.setItem(key, document);
     },
   }),
 
