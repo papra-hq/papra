@@ -5,6 +5,7 @@ import { registerUsersPrivateRoutes } from '../users/users.routes';
 import { registerAuthPrivateRoutes, registerAuthPublicRoutes } from './auth/auth.routes';
 import { jwtValidationMiddleware } from './auth/middlewares/auth.middleware';
 import { impersonationMiddleware } from './auth/middlewares/impersonation.middleware';
+import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
 export function registerRoutes({ app }: { app: ServerInstance }) {
   registerPublicRoutes({ app });
@@ -12,8 +13,7 @@ export function registerRoutes({ app }: { app: ServerInstance }) {
 }
 
 function registerPublicRoutes({ app }: { app: ServerInstance }) {
-  app.get('/api/ping', context => context.json({ status: 'ok' }));
-
+  registerHealthCheckRoutes({ app });
   registerAuthPublicRoutes({ app });
 }
 
