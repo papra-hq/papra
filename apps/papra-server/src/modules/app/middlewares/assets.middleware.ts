@@ -23,7 +23,7 @@ export function registerAssetsMiddleware({ app }: { app: ServerInstance }) {
 
         return serveStatic({
           root: './public',
-          index: 'unexisting-file', // Disable index.html fallback to let the next middleware handle it
+          index: `unexisting-file-${Math.random().toString(36).substring(2, 15)}`, // Disable index.html fallback to let the next middleware handle it
         })(context, next);
       },
     )
