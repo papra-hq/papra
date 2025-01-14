@@ -8,8 +8,6 @@ export function createProtectedPage({ authType, component }: { authType: 'public
   return () => {
     const session = useSession();
 
-    // const { user } = ['public', 'public-only'].includes(authType) ? {} : useCurrentUser();
-
     const getIsAuthenticated = () => Boolean(session()?.data?.user);
 
     return (
@@ -18,11 +16,9 @@ export function createProtectedPage({ authType, component }: { authType: 'public
           match({
             authType,
             isAuthenticated: getIsAuthenticated(),
-            isPending: session().isPending,
             // isAdmin: user?.roles.includes('admin'),
           })
 
-            .with({ isPending: true }, () => <div>Authenticating...</div>)
             .with({ authType: 'private', isAuthenticated: false }, () => <Navigate href="/login" />)
             .with({ authType: 'public-only', isAuthenticated: true }, () => <Navigate href="/" />)
             // .with({ authType: 'admin', isAuthenticated: false }, () => <Navigate href="/login" />)
