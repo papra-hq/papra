@@ -1,7 +1,7 @@
 import type { ServerInstance } from '../app/server.types';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
-import { getAuthUserId } from '../app/auth/auth.models';
+import { getUser } from '../app/auth/auth.models';
 import { getDb } from '../app/database/database.models';
 import { getConfig } from '../config/config.models';
 import { organizationIdRegex } from '../organizations/organizations.constants';
@@ -53,7 +53,7 @@ function setupCreateDocumentRoute({ app }: { app: ServerInstance }) {
       organizationId: z.string().regex(organizationIdRegex),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { config } = getConfig({ context });
 
@@ -108,7 +108,7 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
       }),
     ),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId } = context.req.valid('param');
@@ -148,7 +148,7 @@ function setupGetDeletedDocumentsRoute({ app }: { app: ServerInstance }) {
       }),
     ),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId } = context.req.valid('param');
@@ -183,7 +183,7 @@ function setupGetDocumentRoute({ app }: { app: ServerInstance }) {
       documentId: z.string(),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId, documentId } = context.req.valid('param');
@@ -210,7 +210,7 @@ function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
       documentId: z.string(),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId, documentId } = context.req.valid('param');
@@ -238,7 +238,7 @@ function setupRestoreDocumentRoute({ app }: { app: ServerInstance }) {
       documentId: z.string(),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId, documentId } = context.req.valid('param');
@@ -269,7 +269,7 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
       documentId: z.string(),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { config } = getConfig({ context });
 
@@ -312,7 +312,7 @@ function setupSearchDocumentsRoute({ app }: { app: ServerInstance }) {
       }),
     ),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
 
       const { organizationId } = context.req.valid('param');

@@ -1,79 +1,93 @@
-import { addDays } from 'date-fns';
-import { sign, verify } from 'hono/jwt';
-import { isString } from 'lodash-es';
-import { createUnauthorizedError } from './auth.errors';
+import type { Config } from '../../config/config.types';
+import type { Database } from '../database/database.types';
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { APIError } from 'better-auth/api';
+import { createLogger } from '../../shared/logger/logger';
+import { usersTable } from '../../users/users.table';
+import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
 
-export async function generateUserJwt({
-  userId,
-  jwtSecret,
-  roles = [],
-  now = new Date(),
-}: {
-  userId: string;
-  jwtSecret: string;
-  roles?: string[];
-  now?: Date;
-}) {
-  const token = await sign({
-    sub: userId,
-    // TODO: extract token expiration delay to config
-    exp: Math.floor(now.getTime() / 1000) + 60 * 10,
-    roles,
-  }, jwtSecret);
+export type Auth = ReturnType<typeof getAuth>['auth'];
 
-  return { token };
-}
+const logger = createLogger({ namespace: 'auth' });
 
-export async function verifyJwt({ token, jwtSecret }: { token: string; jwtSecret: string }) {
-  const jwtPayload = await verify(token, jwtSecret);
+export function getAuth({ db, config }: { db: Database; config: Config }) {
+  const { secret } = config.auth;
 
-  if (!jwtPayload) {
-    throw createUnauthorizedError();
-  }
+  const auth = betterAuth({
+    secret,
 
-  return jwtPayload;
-}
+    baseURL: config.server.baseUrl,
+    trustedOrigins: [config.client.baseUrl],
+    logger: {
+      disabled: false,
+      log: (baseLevel, message) => {
+        const level = (baseLevel in logger ? baseLevel : 'info') as keyof typeof logger;
 
-export async function verifyUserJwt({ token, jwtSecret }: { token: string; jwtSecret: string }) {
-  const jwtPayload = await verify(token, jwtSecret);
-
-  if (!jwtPayload) {
-    throw createUnauthorizedError();
-  }
-
-  const userId = jwtPayload.sub;
-
-  if (!userId || !isString(userId)) {
-    throw createUnauthorizedError();
-  }
-
-  return { userId };
-}
-
-export async function verifyUserRefreshToken({ refreshToken, jwtRefreshSecret }: { refreshToken: string; jwtRefreshSecret: string }) {
-  const jwtPayload = await verify(refreshToken, jwtRefreshSecret);
-
-  if (!jwtPayload) {
-    throw createUnauthorizedError();
-  }
-
-  const userId = jwtPayload.sub;
-
-  if (!userId || !isString(userId)) {
-    throw createUnauthorizedError();
-  }
-
-  return { userId };
-}
-
-export async function generateUserRefreshToken({ userId, jwtSecret, now = new Date(), expiresAt = addDays(now, 14) }: { userId: string; jwtSecret: string; now?: Date; expiresAt?: Date }) {
-  const refreshToken = await sign(
-    {
-      sub: userId,
-      exp: Math.floor(expiresAt.getTime() / 1000),
+        logger[level](message);
+      },
     },
-    jwtSecret,
-  );
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: true,
+    },
+    appName: 'Papra',
+    account: {
+      accountLinking: {
+        enabled: true,
+      },
+    },
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url, token }) => {
+        // eslint-disable-next-line no-console
+        console.log('sendVerificationEmail', { user, url, token });
+      },
+    },
 
-  return { refreshToken };
+    database: drizzleAdapter(
+      db,
+      {
+        provider: 'sqlite',
+        schema: {
+          user: usersTable,
+          account: accountsTable,
+          session: sessionsTable,
+          verification: verificationsTable,
+        },
+      },
+    ),
+
+    databaseHooks: {
+      user: {
+        create: {
+          before: async (data) => {
+            if (!config.auth.isRegistrationEnabled) {
+              throw new APIError('FORBIDDEN', { message: 'Registration is disabled' });
+            }
+
+            return { data };
+          },
+        },
+      },
+    },
+
+    advanced: {
+      // Drizzle tables handle the id generation
+      generateId: false,
+    },
+    socialProviders: {
+      github: {
+        clientId: config.auth.providers.github.clientId,
+        clientSecret: config.auth.providers.github.clientSecret,
+      },
+    },
+    user: {
+      changeEmail: { enabled: false },
+      deleteUser: { enabled: false },
+    },
+  });
+
+  return {
+    auth,
+  };
 }

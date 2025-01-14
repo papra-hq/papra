@@ -3,8 +3,8 @@ import { updateUser } from './users.services';
 
 export function useUpdateCurrentUser() {
   return {
-    updateCurrentUser: async ({ fullName }: { fullName: string }) => {
-      await updateUser({ fullName });
+    updateCurrentUser: async ({ name }: { name: string }) => {
+      await updateUser({ name });
 
       await queryClient.invalidateQueries({
         queryKey: ['users'],

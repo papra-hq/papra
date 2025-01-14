@@ -1,17 +1,17 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
-import { authStore } from '@/modules/auth/auth.store';
+import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 import { config } from '@/modules/config/config';
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
-import { uploadDocument } from '@/modules/documents/documents.services';
 
+import { uploadDocument } from '@/modules/documents/documents.services';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
-import { useThemeStore } from '@/modules/theme/theme.store';
 
+import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { A, useParams } from '@solidjs/router';
+import { A, useNavigate, useParams } from '@solidjs/router';
 import { type Component, type ComponentProps, type JSX, type ParentComponent, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
@@ -150,6 +150,7 @@ export const SidenavLayout: ParentComponent<{
   const themeStore = useThemeStore();
   const params = useParams();
   const { openCommandPalette } = useCommandPalette();
+  const navigate = useNavigate();
 
   const uploadDocuments = async (files: File[]) => {
     for (const file of files) {
@@ -230,7 +231,13 @@ export const SidenavLayout: ParentComponent<{
                   Account settings
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => authStore.logout()} class="flex items-center gap-2 cursor-pointer">
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await signOut();
+                    navigate('/login');
+                  }}
+                  class="flex items-center gap-2 cursor-pointer"
+                >
                   <div class="i-tabler-logout size-4 text-muted-foreground"></div>
                   Logout
                 </DropdownMenuItem>

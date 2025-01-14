@@ -6,6 +6,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { A } from '@solidjs/router';
 import { createSignal, For } from 'solid-js';
+import { signIn } from '../auth.services';
 
 const InlineLink: ParentComponent<{ href: string }> = props => (
   <Button variant="link" as={A} href={props.href} class="inline px-0">
@@ -13,12 +14,12 @@ const InlineLink: ParentComponent<{ href: string }> = props => (
   </Button>
 );
 
-const SsoProviderButton: Component<{ name: string; icon: string; url: string; label: string }> = (props) => {
+const SsoProviderButton: Component<{ name: string; icon: string; onClick: () => Promise<void>; label: string }> = (props) => {
   const [getIsLoading, setIsLoading] = createSignal(false);
 
-  const navigateToProvider = () => {
+  const navigateToProvider = async () => {
     setIsLoading(true);
-    window.location.href = props.url;
+    await props.onClick();
   };
 
   return (
@@ -30,8 +31,6 @@ const SsoProviderButton: Component<{ name: string; icon: string; url: string; la
 };
 
 export const GenericAuthPage: Component<{ type: 'login' | 'register' }> = (props) => {
-  const { baseApiUrl } = config;
-
   const ssoProviders = [
     // {
     //   name: 'Google',
@@ -45,7 +44,9 @@ export const GenericAuthPage: Component<{ type: 'login' | 'register' }> = (props
     {
       name: 'GitHub',
       icon: 'i-tabler-brand-github',
-      url: new URL('/api/auth/github', baseApiUrl).toString(),
+      onClick: async () => {
+        await signIn.social({ provider: 'github' });
+      },
       labels: {
         login: 'Login with GitHub',
         register: 'Register with GitHub',

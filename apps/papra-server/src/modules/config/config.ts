@@ -3,6 +3,7 @@ import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
 import { defineConfig } from 'figue';
 import { z } from 'zod';
+import { authConfig } from '../app/auth/auth.config';
 import { createLogger } from '../shared/logger/logger';
 import { documentStorageConfig } from './fragments/document-storage.config';
 
@@ -14,6 +15,12 @@ export const configDefinition = {
     env: 'NODE_ENV',
   },
   server: {
+    baseUrl: {
+      doc: 'The base URL of the server',
+      schema: z.string().url(),
+      default: 'http://localhost:1221',
+      env: 'SERVER_BASE_URL',
+    },
     port: {
       doc: 'The port to listen on when using node server',
       schema: z.coerce.number().min(1024).max(65535),
@@ -109,7 +116,8 @@ export const configDefinition = {
     },
   },
   documentsStorage: documentStorageConfig,
-  auth: {
+  auth: authConfig,
+  authLegacy: {
     isRegistrationEnabled: {
       doc: 'Whether registration is enabled',
       schema: z

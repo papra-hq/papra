@@ -2,10 +2,8 @@ import { Navigate, type RouteDefinition, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
-import { ConfirmPage } from './modules/auth/pages/confirm.page';
 import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
-import { MagicLinkSentPage } from './modules/auth/pages/magic-link-sent.page';
-import { PendingMagicLinkPage } from './modules/auth/pages/verify-magic-link.page';
+import { LoginPage } from './modules/auth/pages/login.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
@@ -130,23 +128,11 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/login',
-    component: createProtectedPage({ authType: 'public-only', component: () => <GenericAuthPage type="login" /> }),
+    component: createProtectedPage({ authType: 'public-only', component: LoginPage }),
   },
   {
     path: '/register',
     component: createProtectedPage({ authType: 'public-only', component: () => <GenericAuthPage type="register" /> }),
-  },
-  {
-    path: '/magic-link',
-    component: createProtectedPage({ authType: 'public-only', component: MagicLinkSentPage }),
-  },
-  {
-    path: '/magic-link/:token',
-    component: createProtectedPage({ authType: 'public-only', component: PendingMagicLinkPage }),
-  },
-  {
-    path: '/confirm',
-    component: createProtectedPage({ authType: 'public-only', component: ConfirmPage }),
   },
   {
     path: '*404',

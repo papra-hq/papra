@@ -1,6 +1,6 @@
 import type { ServerInstance } from '../app/server.types';
 import { z } from 'zod';
-import { getAuthUserId } from '../app/auth/auth.models';
+import { getUser } from '../app/auth/auth.models';
 import { getDb } from '../app/database/database.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { organizationIdRegex } from './organizations.constants';
@@ -18,7 +18,7 @@ export async function registerOrganizationsPrivateRoutes({ app }: { app: ServerI
 
 function setupGetOrganizationsRoute({ app }: { app: ServerInstance }) {
   app.get('/api/organizations', async (context) => {
-    const { userId } = getAuthUserId({ context });
+    const { userId } = getUser({ context });
     const { db } = getDb({ context });
 
     const organizationsRepository = createOrganizationsRepository({ db });
@@ -38,7 +38,7 @@ function setupCreateOrganizationRoute({ app }: { app: ServerInstance }) {
       name: z.string().min(3).max(50),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { name } = context.req.valid('json');
 
@@ -60,7 +60,7 @@ function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
       organizationId: z.string().regex(organizationIdRegex),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { organizationId } = context.req.valid('param');
 
@@ -91,7 +91,7 @@ function setupUpdateOrganizationRoute({ app }: { app: ServerInstance }) {
       organizationId: z.string().regex(organizationIdRegex),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { name } = context.req.valid('json');
       const { organizationId } = context.req.valid('param');
@@ -116,7 +116,7 @@ function setupDeleteOrganizationRoute({ app }: { app: ServerInstance }) {
       organizationId: z.string().regex(organizationIdRegex),
     })),
     async (context) => {
-      const { userId } = getAuthUserId({ context });
+      const { userId } = getUser({ context });
       const { db } = getDb({ context });
       const { organizationId } = context.req.valid('param');
 

@@ -12,10 +12,10 @@ export const CreateFirstOrganizationPage: Component = () => {
   const navigate = useNavigate();
 
   const getOrganizationName = () => {
-    const fullName = user.fullName;
+    const { name } = user;
 
-    if (fullName && fullName.length > 0) {
-      return `${fullName}'s organization`;
+    if (name && name.length > 0) {
+      return `${name}'s organization`;
     }
 
     return `My organization`;

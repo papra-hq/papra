@@ -1,8 +1,8 @@
-import { authStore } from '@/modules/auth/auth.store';
+import { signOut } from '@/modules/auth/auth.services';
 
 import { cn } from '@/modules/shared/style/cn';
-import { useThemeStore } from '@/modules/theme/theme.store';
 
+import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { A, useNavigate } from '@solidjs/router';
 import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
@@ -60,8 +60,8 @@ const SideNav: Component = () => {
     {
       label: 'Logout',
       icon: 'i-tabler-logout',
-      onClick: () => {
-        authStore.logout();
+      onClick: async () => {
+        await signOut();
         navigate('/login');
       },
     },

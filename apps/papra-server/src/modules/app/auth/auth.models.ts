@@ -1,31 +1,26 @@
 import type { Context } from '../server.types';
-import { buildUrl } from '@corentinth/chisels';
 import { createError } from '../../shared/errors/errors';
 
-export { createAccessTokenRedirectionUrl, getAuthUserId };
+export function getUser({ context }: { context: Context }) {
+  const user = context.get('user');
 
-function getAuthUserId({ context }: { context: Context }) {
-  const userId = context.get('userId');
-  const authUserId = context.get('authUserId');
-
-  if (!userId || !authUserId) {
+  if (!user) {
     throw createError({
-      message: 'User ID or Auth User ID not found in context',
-      code: 'users.id_not_found',
-      statusCode: 500,
+      message: 'User not found in context',
+      code: 'users.not_found',
+      statusCode: 403,
       isInternal: true,
     });
   }
 
   return {
-    userId,
-    authUserId,
+    user,
+    userId: user.id,
   };
 }
 
-function createAccessTokenRedirectionUrl({ redirectionBaseUrl, accessToken }: { redirectionBaseUrl: string; accessToken: string }) {
-  return buildUrl({
-    baseUrl: redirectionBaseUrl,
-    hash: `accessToken=${accessToken}`,
-  });
+export function getSession({ context }: { context: Context }) {
+  const session = context.get('session');
+
+  return { session };
 }

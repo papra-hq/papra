@@ -67,8 +67,8 @@ async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFou
   return { user };
 }
 
-async function updateUser({ userId, fullName, db }: { userId: string; fullName: string; db: Database }) {
-  const [user] = await db.update(usersTable).set({ fullName }).where(eq(usersTable.id, userId)).returning();
+async function updateUser({ userId, name, db }: { userId: string; name: string; db: Database }) {
+  const [user] = await db.update(usersTable).set({ name }).where(eq(usersTable.id, userId)).returning();
 
   return { user };
 }

@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-export const fullNameSchema = v.pipe(
+export const nameSchema = v.pipe(
   v.string(),
   v.trim(),
   v.minLength(1, 'Full name must be at least 2 characters'),

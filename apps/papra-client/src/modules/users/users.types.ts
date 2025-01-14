@@ -2,7 +2,7 @@ export type UserMe = {
   id: string;
   email: string;
   planId: string;
-  fullName: string;
+  name: string;
   roles: string[];
 };
 

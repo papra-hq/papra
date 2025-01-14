@@ -1,23 +1,25 @@
-import { authStore } from '@/modules/auth/auth.store';
+import { signOut } from '@/modules/auth/auth.services';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A } from '@solidjs/router';
+import { A, useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { type Component, createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useUpdateCurrentUser } from '../users.composables';
-import { fullNameSchema } from '../users.schemas';
+import { nameSchema } from '../users.schemas';
 import { fetchCurrentUser } from '../users.services';
 
 const LogoutCard: Component = () => {
   const [getIsLoading, setIsLoading] = createSignal(false);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     setIsLoading(true);
-    await authStore.logout();
+    await signOut();
+    navigate('/login');
   };
 
   return (
@@ -54,19 +56,19 @@ const UserEmailCard: Component<{ email: string }> = (props) => {
   );
 };
 
-const UpdateFullNameCard: Component<{ fullName: string }> = (props) => {
+const UpdateFullNameCard: Component<{ name: string }> = (props) => {
   const { updateCurrentUser } = useUpdateCurrentUser();
 
   const { form, Form, Field } = createForm({
     schema: v.object({
-      fullName: fullNameSchema,
+      name: nameSchema,
     }),
     initialValues: {
-      fullName: props.fullName,
+      name: props.name,
     },
-    onSubmit: async ({ fullName }) => {
+    onSubmit: async ({ name }) => {
       await updateCurrentUser({
-        fullName: fullName.trim(),
+        name: name.trim(),
       });
 
       createToast({ type: 'success', message: 'Your full name has been updated' });
@@ -82,16 +84,16 @@ const UpdateFullNameCard: Component<{ fullName: string }> = (props) => {
 
       <Form>
         <CardContent class="pt-6">
-          <Field name="fullName">
+          <Field name="name">
             {(field, inputProps) => (
               <TextFieldRoot class="flex flex-col gap-1">
-                <TextFieldLabel for="fullName" class="sr-only">
+                <TextFieldLabel for="name" class="sr-only">
                   Full name
                 </TextFieldLabel>
                 <div class="flex gap-2 flex-col sm:flex-row">
                   <TextField
                     type="text"
-                    id="fullName"
+                    id="name"
                     placeholder="Eg. John Doe"
                     {...inputProps}
                     value={field.value}
@@ -101,7 +103,7 @@ const UpdateFullNameCard: Component<{ fullName: string }> = (props) => {
                     type="submit"
                     isLoading={form.submitting}
                     class="flex-shrink-0"
-                    disabled={field.value?.trim() === props.fullName}
+                    disabled={field.value?.trim() === props.name}
                   >
                     Update name
                   </Button>
@@ -140,7 +142,7 @@ export const UserSettingsPage: Component = () => {
 
               <div class="mt-6 flex flex-col gap-6">
                 <UserEmailCard email={getUser().email} />
-                <UpdateFullNameCard fullName={getUser().fullName} />
+                <UpdateFullNameCard name={getUser().name} />
                 <LogoutCard />
               </div>
             </>
