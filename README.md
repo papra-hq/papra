@@ -17,12 +17,12 @@
   <a href="https://demo.papra.app">Demo</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://docs.papra.app">Docs</a>
-  <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://docs.papra.app/self-hosting/docker">Self-hosting</a> -->
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://docs.papra.app/self-hosting/using-docker">Self-hosting</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://github.com/orgs/papra-hq/projects/2">Roadmap</a>
-  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://dashboard.papra.app">Managed instance</a>
+  <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://dashboard.papra.app">Managed instance</a> -->
 </p>
 
 ## Introduction
@@ -47,10 +47,10 @@ A live demo of the platform is available at [demo.papra.cc](https://demo.papra.c
 - **Dark Mode**: A dark theme for those late-night document management sessions.
 - **Responsive Design**: Works on all devices, from desktops to mobile phones.
 - **Open Source**: The project is open-source and free to use.
-- *Coming soon:* **Self-hosting**: Host your own instance of Papra using Docker or other methods.
+- **Self-hosting**: Host your own instance of Papra using Docker or other methods.
 - *Coming soon:* **Tags**: Organize your documents with tags.
 - *Coming soon:* **Tagging Rules**: Automatically tag documents based on custom rules.
-- *Coming soon:* **OCR**: Automatically extract text from images or scanned documents for search.
+- *Coming soon:* **Content extraction**: Automatically extract text from images or scanned documents for search.
 - *Coming soon:* **i18n**: Support for multiple languages.
 - *Coming soon:* **Email ingestion**: Forward emails to automatically import documents.
 - *Coming soon:* **SDK and API**: Build your own applications on top of Papra.
@@ -89,6 +89,7 @@ Enclosed would not have been possible without the following open-source projects
 - **Backend**
   - **[HonoJS](https://hono.dev/)**: A small, fast, and lightweight web framework for building APIs.
   - **[Drizzle](https://orm.drizzle.team/)**: A simple and lightweight ORM for Node.js.
+  - **[Better Auth](https://better-auth.com/)**: A simple and lightweight authentication library for Node.js.
   - And other dependencies listed in the **[server package.json](./apps/papra-server/package.json)**
 
 ### Inspiration
