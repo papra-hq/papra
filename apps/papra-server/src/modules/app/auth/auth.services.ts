@@ -5,6 +5,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
+import { sendPasswordResetEmail, sendVerificationEmail } from './auth.emails.services';
 import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
 
 export type Auth = ReturnType<typeof getAuth>['auth'];
@@ -29,7 +30,10 @@ export function getAuth({ db, config }: { db: Database; config: Config }) {
     },
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: true,
+      requireEmailVerification: config.auth.isEmailVerificationRequired,
+      sendResetPassword: config.auth.isPasswordResetEnabled
+        ? sendPasswordResetEmail
+        : undefined,
     },
     appName: 'Papra',
     account: {
@@ -38,10 +42,7 @@ export function getAuth({ db, config }: { db: Database; config: Config }) {
       },
     },
     emailVerification: {
-      sendVerificationEmail: async ({ user, url, token }) => {
-        // eslint-disable-next-line no-console
-        console.log('sendVerificationEmail', { user, url, token });
-      },
+      sendVerificationEmail,
     },
 
     database: drizzleAdapter(

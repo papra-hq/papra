@@ -5,7 +5,11 @@ import { createDemoAuthClient } from './auth.demo.services';
 export const {
   useSession,
   signIn,
+  signUp,
   signOut,
+  forgetPassword,
+  resetPassword,
+  sendVerificationEmail,
 } = config.isDemoMode
   ? createDemoAuthClient()
   : createAuthClient({

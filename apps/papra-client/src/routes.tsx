@@ -2,8 +2,11 @@ import { Navigate, type RouteDefinition, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
-import { GenericAuthPage } from './modules/auth/pages/generic-auth.page';
+import { EmailValidationRequiredPage } from './modules/auth/pages/email-validation-required.page';
 import { LoginPage } from './modules/auth/pages/login.page';
+import { RegisterPage } from './modules/auth/pages/register.page';
+import { RequestPasswordResetPage } from './modules/auth/pages/request-password-reset.page';
+import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
@@ -132,7 +135,19 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/register',
-    component: createProtectedPage({ authType: 'public-only', component: () => <GenericAuthPage type="register" /> }),
+    component: createProtectedPage({ authType: 'public-only', component: RegisterPage }),
+  },
+  {
+    path: '/reset-password',
+    component: createProtectedPage({ authType: 'public-only', component: ResetPasswordPage }),
+  },
+  {
+    path: '/request-password-reset',
+    component: createProtectedPage({ authType: 'public-only', component: RequestPasswordResetPage }),
+  },
+  {
+    path: '/email-validation-required',
+    component: createProtectedPage({ authType: 'public-only', component: EmailValidationRequiredPage }),
   },
   {
     path: '*404',

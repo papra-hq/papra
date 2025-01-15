@@ -5,8 +5,6 @@ import { registerUsersPrivateRoutes } from '../users/users.routes';
 import { createUnauthorizedError } from './auth/auth.errors';
 import { getSession } from './auth/auth.models';
 import { registerAuthRoutes } from './auth/auth.routes';
-// import { jwtValidationMiddleware } from './auth/middlewares/auth.middleware';
-// import { impersonationMiddleware } from './auth/middlewares/impersonation.middleware';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
 export function registerRoutes({ app }: { app: ServerInstance }) {
@@ -21,9 +19,6 @@ function registerPublicRoutes({ app }: { app: ServerInstance }) {
 }
 
 function registerPrivateRoutes({ app }: { app: ServerInstance }) {
-  // app.use(jwtValidationMiddleware);
-  // app.use(impersonationMiddleware);
-
   app.use(async (context, next) => {
     const { session } = getSession({ context });
 

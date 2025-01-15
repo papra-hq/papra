@@ -19,6 +19,28 @@ export const authConfig = {
     default: 'true',
     env: 'AUTH_IS_REGISTRATION_ENABLED',
   },
+  isPasswordResetEnabled: {
+    doc: 'Whether password reset is enabled',
+    schema: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .transform(x => x === 'true')
+      .pipe(z.boolean()),
+    default: 'true',
+    env: 'AUTH_IS_PASSWORD_RESET_ENABLED',
+  },
+  isEmailVerificationRequired: {
+    doc: 'Whether email verification is required',
+    schema: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .transform(x => x === 'true')
+      .pipe(z.boolean()),
+    default: 'true',
+    env: 'AUTH_IS_EMAIL_VERIFICATION_REQUIRED',
+  },
   providers: {
     github: {
       clientId: {
