@@ -1,24 +1,14 @@
 import type { ServerInstance } from '../server.types';
 
-import { getConfig } from '../../config/config.models';
-import { getDb } from '../database/database.models';
-import { getAuth } from './auth.services';
-
 export function registerAuthRoutes({ app }: { app: ServerInstance }) {
   app.on(['POST', 'GET'], '/api/auth/*', (context) => {
-    const { db } = getDb({ context });
-    const { config } = getConfig({ context });
-
-    const { auth } = getAuth({ db, config });
+    const auth = context.get('auth');
 
     return auth.handler(context.req.raw);
   });
 
   app.use('*', async (context, next) => {
-    const { db } = getDb({ context });
-    const { config } = getConfig({ context });
-
-    const { auth } = getAuth({ db, config });
+    const auth = context.get('auth');
 
     const session = await auth.api.getSession({ headers: context.req.raw.headers });
 
