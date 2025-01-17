@@ -1,6 +1,7 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightThemeRapide from 'starlight-theme-rapide';
+import { sidebar } from './src/content/navigation';
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,27 +22,7 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/papra-hq/papra/edit/main/apps/docs/',
       },
-      sidebar: [
-        {
-          label: 'Getting Started',
-          items: [
-            { label: 'Introduction', slug: '' },
-          ],
-        },
-        {
-          label: 'Self Hosting',
-          items: [
-            { label: 'Using Docker', slug: 'self-hosting/using-docker' },
-            { label: 'Using Docker Compose', slug: 'self-hosting/using-docker-compose' },
-          ],
-        },
-        {
-          label: 'Configuration',
-          items: [
-            { label: 'Environment variables', slug: 'configuration/environment-variables' },
-          ],
-        },
-      ],
+      sidebar,
       favicon: '/favicon.svg',
       head: [
         // Add ICO favicon fallback for Safari.
