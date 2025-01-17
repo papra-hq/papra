@@ -9,6 +9,7 @@ describe('config models', () => {
         - auth.isPasswordResetEnabled Whether password reset is enabled
         - auth.isRegistrationEnabled Whether registration is enabled
         - auth.providers.*.isEnabled Wether a oauth provider is enabled
+        - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
         
         Any other config should not be exposed.`, () => {
       const config = {
@@ -24,6 +25,9 @@ describe('config models', () => {
             },
           },
         },
+        documents: {
+          deletedDocumentsRetentionDays: 30,
+        },
       } as unknown as Config;
 
       expect(getPublicConfig({ config })).to.eql({
@@ -37,6 +41,9 @@ describe('config models', () => {
                 isEnabled: true,
               },
             },
+          },
+          documents: {
+            deletedDocumentsRetentionDays: 30,
           },
         },
       });

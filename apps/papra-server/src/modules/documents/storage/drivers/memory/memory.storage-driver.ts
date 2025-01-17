@@ -25,5 +25,9 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
         fileStream: fileEntry.stream(),
       };
     },
+
+    deleteFile: async ({ storageKey }) => {
+      storage.delete(storageKey);
+    },
   };
 });

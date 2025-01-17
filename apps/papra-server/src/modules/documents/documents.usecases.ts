@@ -1,5 +1,9 @@
+import type { Config } from '../config/config.types';
+import type { Logger } from '../shared/logger/logger.types';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
+import { safely } from '@corentinth/chisels';
+import { createLogger } from '../shared/logger/logger';
 import { createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 
@@ -75,4 +79,52 @@ export async function ensureDocumentExists({
   documentsRepository: DocumentsRepository;
 }) {
   await getDocumentOrThrow({ documentId, documentsRepository });
+}
+
+export async function hardDeleteDocument({
+  documentId,
+  documentsRepository,
+  documentsStorageService,
+}: {
+  documentId: string;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+}) {
+  await Promise.all([
+    documentsRepository.hardDeleteDocument({ documentId }),
+    documentsStorageService.deleteFile({ storageKey: documentId }),
+  ]);
+}
+
+export async function deleteExpiredDocuments({
+  documentsRepository,
+  documentsStorageService,
+  config,
+  now = new Date(),
+  logger = createLogger({ namespace: 'documents:deleteExpiredDocuments' }),
+}: {
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+  config: Config;
+  now?: Date;
+  logger?: Logger;
+}) {
+  const { documentIds } = await documentsRepository.getExpiredDeletedDocuments({
+    expirationDelayInDays: config.documents.deletedDocumentsRetentionDays,
+    now,
+  });
+
+  await Promise.all(
+    documentIds.map(async (documentId) => {
+      const [, error] = await safely(hardDeleteDocument({ documentId, documentsRepository, documentsStorageService }));
+
+      if (error) {
+        logger.error({ documentId, error }, 'Error while deleting expired document');
+      }
+    }),
+  );
+
+  return {
+    deletedDocumentsCount: documentIds.length,
+  };
 }

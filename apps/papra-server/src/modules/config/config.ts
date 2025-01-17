@@ -4,7 +4,9 @@ import { safelySync } from '@corentinth/chisels';
 import { defineConfig } from 'figue';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
+import { documentsConfig } from '../documents/documents.config';
 import { createLogger } from '../shared/logger/logger';
+import { tasksConfig } from '../tasks/tasks.config';
 import { documentStorageConfig } from './fragments/document-storage.config';
 
 export const configDefinition = {
@@ -115,8 +117,10 @@ export const configDefinition = {
       env: 'CLIENT_OAUTH_REDIRECT_URL',
     },
   },
+  documents: documentsConfig,
   documentsStorage: documentStorageConfig,
   auth: authConfig,
+  tasks: tasksConfig,
   authLegacy: {
     isRegistrationEnabled: {
       doc: 'Whether registration is enabled',

@@ -1,4 +1,4 @@
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
 import { defineStorageDriver } from '../drivers.models';
@@ -45,6 +45,12 @@ export const s3StorageDriverFactory = defineStorageDriver(async ({ config }) => 
       }
 
       return { fileStream: Body.transformToWebStream() };
+    },
+    deleteFile: async ({ storageKey }) => {
+      await s3Client.send(new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: storageKey,
+      }));
     },
   };
 });

@@ -11,6 +11,8 @@ export type StorageDriver = {
   getFileStream: (args: { storageKey: string }) => Promise<{
     fileStream: ReadableStream;
   }>;
+
+  deleteFile: (args: { storageKey: string }) => Promise<void>;
 };
 
 export type StorageDriverFactory = (args: { config: Config }) => Promise<StorageDriver>;

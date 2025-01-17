@@ -5,14 +5,17 @@ import { setupDatabase } from './modules/app/database/database';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
 import { createLogger } from './modules/shared/logger/logger';
+import { createTaskScheduler } from './modules/tasks/task-scheduler';
+import { taskDefinitions } from './modules/tasks/tasks.defiitions';
 
 const logger = createLogger({ namespace: 'app-server' });
 
 const { config } = parseConfig({ env });
-const { db } = setupDatabase(config.database);
+const { db, client } = setupDatabase(config.database);
 const { auth } = getAuth({ db, config });
 
 const { app } = createServer({ config, db, auth });
+const { taskScheduler } = createTaskScheduler({ config, taskDefinitions, tasksArgs: { db } });
 
 const server = serve(
   {
@@ -22,8 +25,12 @@ const server = serve(
   ({ port }) => logger.info({ port }, 'Server started'),
 );
 
+taskScheduler.start();
+
 process.on('SIGINT', async () => {
   server.close();
+  taskScheduler.stop();
+  client.close();
 
   process.exit(0);
 });

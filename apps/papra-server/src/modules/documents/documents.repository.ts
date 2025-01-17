@@ -1,7 +1,8 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, count, desc, eq, sql } from 'drizzle-orm';
+import { subDays } from 'date-fns';
+import { and, count, desc, eq, lt, sql } from 'drizzle-orm';
 import { withPagination } from '../shared/db/pagination';
 import { documentsTable } from './documents.table';
 
@@ -19,6 +20,8 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationDeletedDocumentsCount,
       searchOrganizationDocuments,
       restoreDocument,
+      hardDeleteDocument,
+      getExpiredDeletedDocuments,
     },
     { db },
   );
@@ -143,6 +146,27 @@ async function restoreDocument({ documentId, db }: { documentId: string; db: Dat
       deletedAt: null,
     })
     .where(eq(documentsTable.id, documentId));
+}
+
+async function hardDeleteDocument({ documentId, db }: { documentId: string; db: Database }) {
+  await db.delete(documentsTable).where(eq(documentsTable.id, documentId));
+}
+
+async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new Date() }: { db: Database; expirationDelayInDays: number; now?: Date }) {
+  const expirationDate = subDays(now, expirationDelayInDays);
+
+  const documents = await db.select({
+    id: documentsTable.id,
+  }).from(documentsTable).where(
+    and(
+      eq(documentsTable.isDeleted, true),
+      lt(documentsTable.deletedAt, expirationDate),
+    ),
+  );
+
+  return {
+    documentIds: documents.map(document => document.id),
+  };
 }
 
 async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {

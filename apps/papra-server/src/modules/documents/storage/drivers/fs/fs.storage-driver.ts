@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import { dirname, join } from 'node:path';
 import stream from 'node:stream';
+import { get } from 'lodash-es';
 import { defineStorageDriver } from '../drivers.models';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
@@ -22,10 +23,12 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
 
   await ensureDirectoryExists({ path: root });
 
+  const getStoragePath = ({ storageKey }: { storageKey: string }) => ({ storagePath: join(root, storageKey) });
+
   return {
     name: FS_STORAGE_DRIVER_NAME,
     saveFile: async ({ file, storageKey }) => {
-      const storagePath = join(root, storageKey);
+      const { storagePath } = getStoragePath({ storageKey });
 
       const fileExists = await checkFileExists({ path: storagePath });
 
@@ -49,7 +52,7 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
       });
     },
     getFileStream: async ({ storageKey }) => {
-      const storagePath = join(root, storageKey);
+      const { storagePath } = getStoragePath({ storageKey });
 
       const fileExists = await checkFileExists({ path: storagePath });
 
@@ -61,6 +64,19 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
       const fileStream = stream.Readable.toWeb(readStream);
 
       return { fileStream };
+    },
+    deleteFile: async ({ storageKey }) => {
+      const { storagePath } = getStoragePath({ storageKey });
+
+      try {
+        await fs.promises.unlink(storagePath);
+      } catch (error) {
+        if (get(error, 'code') === 'ENOENT') {
+          throw new Error('File not found');
+        }
+
+        throw error;
+      }
     },
   };
 });

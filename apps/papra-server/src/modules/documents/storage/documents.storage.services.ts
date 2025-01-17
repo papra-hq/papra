@@ -1,6 +1,4 @@
 import type { Config } from '../../config/config.types';
-import type { StorageDriver } from './drivers/drivers.models';
-import { injectArguments } from '@corentinth/chisels';
 import { createError } from '../../shared/errors/errors';
 import { FS_STORAGE_DRIVER_NAME, fsStorageDriverFactory } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME, inMemoryStorageDriverFactory } from './drivers/memory/memory.storage-driver';
@@ -30,32 +28,5 @@ export async function createDocumentStorageService({ config }: { config: Config 
 
   const storageDriver = await storageDriverFactory({ config });
 
-  return injectArguments({
-    saveFile,
-    getFileStream,
-  }, {
-    storageDriver,
-  });
-}
-
-async function saveFile({
-  file,
-  storageKey,
-  storageDriver,
-}: {
-  file: File;
-  storageKey: string;
-  storageDriver: StorageDriver;
-}) {
-  return storageDriver.saveFile({ file, storageKey });
-}
-
-async function getFileStream({
-  storageKey,
-  storageDriver,
-}: {
-  storageKey: string;
-  storageDriver: StorageDriver;
-}) {
-  return storageDriver.getFileStream({ storageKey });
+  return storageDriver;
 }

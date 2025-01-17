@@ -14,6 +14,9 @@ export const buildTimeConfig = {
       },
     },
   },
+  documents: {
+    deletedDocumentsRetentionDays: Number(import.meta.env.VITE_DOCUMENTS_DELETED_DOCUMENTS_RETENTION_DAYS ?? 30),
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;

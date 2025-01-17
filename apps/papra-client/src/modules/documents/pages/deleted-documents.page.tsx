@@ -1,4 +1,5 @@
 import type { Document } from '../documents.types';
+import { useConfig } from '@/modules/config/config.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
@@ -44,6 +45,7 @@ const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
 export const DeletedDocumentsPage: Component = () => {
   const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
   const params = useParams();
+  const { config } = useConfig();
 
   const query = createQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'deleted', getPagination()],
@@ -61,7 +63,11 @@ export const DeletedDocumentsPage: Component = () => {
       <Alert variant="muted" class="my-4 flex items-center gap-6 xl:gap-4">
         <div class="i-tabler-info-circle size-10 xl:size-8 text-primary flex-shrink-0 hidden sm:block" />
         <AlertDescription>
-          All deleted documents are stored in the trash bin for 30 days. Passing this delay, the documents will be permanently deleted, and you will not be able to restore them.
+          All deleted documents are stored in the trash bin for
+          {' '}
+          {config.documents.deletedDocumentsRetentionDays}
+          {' '}
+          days. Passing this delay, the documents will be permanently deleted, and you will not be able to restore them.
         </AlertDescription>
       </Alert>
 
@@ -71,7 +77,11 @@ export const DeletedDocumentsPage: Component = () => {
             <div class="i-tabler-trash text-primary size-12" aria-hidden="true" />
             <div class="text-xl font-medium">No deleted documents</div>
             <div class="text-sm  text-muted-foreground">
-              You have no deleted documents. Documents that are deleted will be moved to the trash bin for 30 days.
+              You have no deleted documents. Documents that are deleted will be moved to the trash bin for
+              {' '}
+              {config.documents.deletedDocumentsRetentionDays}
+              {' '}
+              days.
             </div>
           </div>
         </Show>

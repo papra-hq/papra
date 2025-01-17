@@ -4,7 +4,7 @@ import { inMemoryStorageDriverFactory } from './memory.storage-driver';
 
 describe('memory storage-driver', () => {
   describe('inMemoryStorageDriver', () => {
-    test('saves and retrieves a file', async () => {
+    test('saves, retrieves and delete a file', async () => {
       const inMemoryStorageDriver = await inMemoryStorageDriverFactory({ config: {} as Config });
 
       const file = new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' });
@@ -23,6 +23,10 @@ describe('memory storage-driver', () => {
       const fileContent = await new Response(fileStream).text();
 
       expect(fileContent).to.eql('lorem ipsum');
+
+      await inMemoryStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' });
+
+      await expect(inMemoryStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow('File not found');
     });
   });
 });
