@@ -1,3 +1,4 @@
+import { ssoProviders } from '@/modules/auth/auth.constants';
 import { iconByFileType } from '@/modules/documents/document.models';
 import { uniq, values } from 'lodash-es';
 import {
@@ -113,5 +114,6 @@ export default defineConfig({
   },
   safelist: [
     ...uniq(values(iconByFileType)),
+    ...(ssoProviders.map(p => p.icon)),
   ],
 });

@@ -127,11 +127,13 @@ export const RegisterPage: Component = () => {
 
           <Separator class="my-4" />
 
-          <For each={ssoProviders}>
-            {provider => (
-              <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Register with ${provider.name}`} />
-            )}
-          </For>
+          <div class="flex flex-col gap-2">
+            <For each={ssoProviders}>
+              {provider => (
+                <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Register with ${provider.name}`} />
+              )}
+            </For>
+          </div>
 
           <p class="text-muted-foreground mt-4">
             Already have an account?

@@ -10,7 +10,10 @@ export const buildTimeConfig = {
     isEmailVerificationRequired: import.meta.env.VITE_AUTH_IS_EMAIL_VERIFICATION_REQUIRED !== 'false',
     providers: {
       github: {
-        isEnabled: import.meta.env.VITE_AUTH_PROVIDERS_GITHUB_IS_ENABLED !== 'false',
+        isEnabled: import.meta.env.VITE_AUTH_PROVIDERS_GITHUB_IS_ENABLED === 'true',
+      },
+      google: {
+        isEnabled: import.meta.env.VITE_AUTH_PROVIDERS_GOOGLE_IS_ENABLED === 'true',
       },
     },
   },

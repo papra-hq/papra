@@ -127,11 +127,13 @@ export const LoginPage: Component = () => {
 
           <Separator class="my-4" />
 
-          <For each={getEnabledSsoProviderConfigs({ config })}>
-            {provider => (
-              <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Login with ${provider.name}`} />
-            )}
-          </For>
+          <div class="flex flex-col gap-2">
+            <For each={getEnabledSsoProviderConfigs({ config })}>
+              {provider => (
+                <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Login with ${provider.name}`} />
+              )}
+            </For>
+          </div>
 
           <p class="text-muted-foreground mt-4">
             Don't have an account?

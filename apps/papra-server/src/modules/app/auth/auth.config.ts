@@ -51,7 +51,7 @@ export const authConfig = {
           .toLowerCase()
           .transform(x => x === 'true')
           .pipe(z.boolean()),
-        default: 'true',
+        default: 'false',
         env: 'AUTH_PROVIDERS_GITHUB_IS_ENABLED',
       },
       clientId: {
@@ -67,5 +67,31 @@ export const authConfig = {
         env: 'AUTH_PROVIDERS_GITHUB_CLIENT_SECRET',
       },
     },
+    google: {
+      isEnabled: {
+        doc: 'Whether Google OAuth is enabled',
+        schema: z
+          .string()
+          .trim()
+          .toLowerCase()
+          .transform(x => x === 'true')
+          .pipe(z.boolean()),
+        default: 'false',
+        env: 'AUTH_PROVIDERS_GOOGLE_IS_ENABLED',
+      },
+      clientId: {
+        doc: 'The client id for Google OAuth',
+        schema: z.string(),
+        default: 'set-me',
+        env: 'AUTH_PROVIDERS_GOOGLE_CLIENT_ID',
+      },
+      clientSecret: {
+        doc: 'The client secret for Google OAuth',
+        schema: z.string(),
+        default: 'set-me',
+        env: 'AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET',
+      },
+    },
+
   },
 } as const satisfies ConfigDefinition;

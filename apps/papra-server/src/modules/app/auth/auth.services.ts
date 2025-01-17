@@ -82,6 +82,11 @@ export function getAuth({ db, config }: { db: Database; config: Config }) {
         clientId: config.auth.providers.github.clientId,
         clientSecret: config.auth.providers.github.clientSecret,
       },
+      google: {
+        enabled: config.auth.providers.google.isEnabled,
+        clientId: config.auth.providers.google.clientId,
+        clientSecret: config.auth.providers.google.clientSecret,
+      },
     },
     user: {
       changeEmail: { enabled: false },
