@@ -99,6 +99,34 @@ export const EmailRegisterForm: Component = () => {
 };
 
 export const RegisterPage: Component = () => {
+  const { config } = useConfig();
+
+  if (!config.auth.isRegistrationEnabled) {
+    return (
+      <AuthLayout>
+        <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+          <div class="max-w-sm w-full">
+            <h1 class="text-xl font-bold">
+              Registration is disabled
+            </h1>
+            <p class="text-muted-foreground mt-1 mb-4">
+              The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.
+            </p>
+
+            <p class="text-muted-foreground mt-4">
+              Already have an account?
+              {' '}
+              <Button variant="link" as={A} class="inline px-0" href="/login">
+                Login
+              </Button>
+            </p>
+
+          </div>
+        </div>
+      </AuthLayout>
+    );
+  }
+
   const [getShowEmailRegister, setShowEmailRegister] = createSignal(false);
 
   const loginWithProvider = async (provider: typeof ssoProviders[number]) => {
