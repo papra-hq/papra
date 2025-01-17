@@ -1,4 +1,4 @@
-import { config } from '@/modules/config/config';
+import { buildTimeConfig } from '@/modules/config/config';
 import { safely } from '@corentinth/chisels';
 import { httpClient, type HttpClientOptions, type ResponseType } from './http-client';
 import { isHttpErrorWithStatusCode } from './http-errors';
@@ -10,7 +10,7 @@ export async function apiClient<T, R extends ResponseType = 'json'>({
   path: string;
 } & Omit<HttpClientOptions<R>, 'url'>) {
   const requestConfig: HttpClientOptions<R> = {
-    baseUrl: config.baseApiUrl,
+    baseUrl: buildTimeConfig.baseApiUrl,
     url: path,
     credentials: 'include',
     ...rest,

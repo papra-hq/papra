@@ -1,5 +1,5 @@
 import type { FetchOptions, ResponseType } from 'ofetch';
-import { config } from '@/modules/config/config';
+import { buildTimeConfig } from '@/modules/config/config';
 import { demoHttpClient } from '@/modules/demo/demo-http-client';
 import { ofetch } from 'ofetch';
 
@@ -13,4 +13,4 @@ function baseHttpClient<A, R extends ResponseType = 'json'>({ url, baseUrl, ...r
   });
 }
 
-export const httpClient = config.isDemoMode ? demoHttpClient : baseHttpClient;
+export const httpClient = buildTimeConfig.isDemoMode ? demoHttpClient : baseHttpClient;

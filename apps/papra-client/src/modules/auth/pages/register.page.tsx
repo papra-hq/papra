@@ -1,10 +1,10 @@
-import { config } from '@/modules/config/config';
+import { useConfig } from '@/modules/config/config.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A } from '@solidjs/router';
+import { A, useNavigate } from '@solidjs/router';
 import { type Component, createSignal, For } from 'solid-js';
 import * as v from 'valibot';
 import { ssoProviders } from '../auth.constants';
@@ -13,13 +13,28 @@ import { AuthLayout } from '../components/auth-layout.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
 export const EmailRegisterForm: Component = () => {
+  const { config } = useConfig();
+  const navigate = useNavigate();
+
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, name }) => {
-      const { error } = await signUp.email({ email, password, name, callbackURL: config.baseUrl });
+      const { error } = await signUp.email({
+        email,
+        password,
+        name,
+        callbackURL: config.baseUrl,
+      });
 
       if (error) {
         throw error;
       }
+
+      if (config.auth.isEmailVerificationRequired) {
+        navigate('/email-validation-required');
+        return;
+      }
+
+      navigate('/');
     },
     schema: v.object({
       email: v.pipe(

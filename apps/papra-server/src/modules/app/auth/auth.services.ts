@@ -78,6 +78,7 @@ export function getAuth({ db, config }: { db: Database; config: Config }) {
     },
     socialProviders: {
       github: {
+        enabled: config.auth.providers.github.isEnabled,
         clientId: config.auth.providers.github.clientId,
         clientSecret: config.auth.providers.github.clientSecret,
       },

@@ -1,8 +1,10 @@
+import { useConfig } from '@/modules/config/config.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A, Navigate, useSearchParams } from '@solidjs/router';
+import { A, Navigate, useNavigate, useSearchParams } from '@solidjs/router';
 import { type Component, createSignal } from 'solid-js';
+import { onMount } from 'solid-js';
 import * as v from 'valibot';
 import { resetPassword } from '../auth.services';
 import { AuthLayout } from '../components/auth-layout.component';
@@ -50,6 +52,15 @@ export const ResetPasswordPage: Component = () => {
   if (!token || typeof token !== 'string') {
     return <Navigate href="/login" />;
   }
+
+  const { config } = useConfig();
+  const navigate = useNavigate();
+
+  onMount(() => {
+    if (config.auth.isPasswordResetEnabled) {
+      navigate('/login');
+    }
+  });
 
   const onPasswordResetRequested = async ({ newPassword }: { newPassword: string }) => {
     const { error } = await resetPassword({

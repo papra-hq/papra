@@ -1,14 +1,14 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
-import { config } from '@/modules/config/config';
-import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
+import { useConfig } from '@/modules/config/config.provider';
 
+import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { uploadDocument } from '@/modules/documents/documents.services';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
-import { cn } from '@/modules/shared/style/cn';
 
+import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { A, useNavigate, useParams } from '@solidjs/router';
@@ -43,6 +43,8 @@ export const SideNav: Component<{
   header?: Component;
   footer?: Component;
 }> = (props) => {
+  const { config } = useConfig();
+
   const getShortSideNavItems = () => [
     {
       to: '/organizations',

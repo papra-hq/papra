@@ -43,6 +43,17 @@ export const authConfig = {
   },
   providers: {
     github: {
+      isEnabled: {
+        doc: 'Whether Github OAuth is enabled',
+        schema: z
+          .string()
+          .trim()
+          .toLowerCase()
+          .transform(x => x === 'true')
+          .pipe(z.boolean()),
+        default: 'true',
+        env: 'AUTH_PROVIDERS_GITHUB_IS_ENABLED',
+      },
       clientId: {
         doc: 'The client id for Github OAuth',
         schema: z.string(),

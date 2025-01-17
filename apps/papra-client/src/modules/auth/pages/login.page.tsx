@@ -1,4 +1,5 @@
-import { config } from '@/modules/config/config';
+import type { SsoProviderKey } from '../auth.types';
+import { useConfig } from '@/modules/config/config.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
@@ -8,14 +9,14 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { A, useNavigate } from '@solidjs/router';
 import { type Component, createSignal, For } from 'solid-js';
 import * as v from 'valibot';
-import { ssoProviders } from '../auth.constants';
-import { isEmailVerificationRequiredError } from '../auth.models';
+import { getEnabledSsoProviderConfigs, isEmailVerificationRequiredError } from '../auth.models';
 import { signIn } from '../auth.services';
 import { AuthLayout } from '../components/auth-layout.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
 export const EmailLoginForm: Component = () => {
   const navigate = useNavigate();
+  const { config } = useConfig();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -96,9 +97,11 @@ export const EmailLoginForm: Component = () => {
 };
 
 export const LoginPage: Component = () => {
+  const { config } = useConfig();
+
   const [getShowEmailLogin, setShowEmailLogin] = createSignal(false);
 
-  const loginWithProvider = async (provider: typeof ssoProviders[number]) => {
+  const loginWithProvider = async (provider: { key: SsoProviderKey }) => {
     await signIn.social({ provider: provider.key });
   };
 
@@ -124,7 +127,7 @@ export const LoginPage: Component = () => {
 
           <Separator class="my-4" />
 
-          <For each={ssoProviders}>
+          <For each={getEnabledSsoProviderConfigs({ config })}>
             {provider => (
               <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Login with ${provider.name}`} />
             )}

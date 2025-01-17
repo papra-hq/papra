@@ -1,4 +1,5 @@
 import type { ServerInstance } from './server.types';
+import { registerConfigPublicRoutes } from '../config/config.routes';
 import { registerDocumentsPrivateRoutes } from '../documents/documents.routes';
 import { registerOrganizationsPrivateRoutes } from '../organizations/organizations.routes';
 import { registerUsersPrivateRoutes } from '../users/users.routes';
@@ -15,6 +16,7 @@ export function registerRoutes({ app }: { app: ServerInstance }) {
 }
 
 function registerPublicRoutes({ app }: { app: ServerInstance }) {
+  registerConfigPublicRoutes({ app });
   registerHealthCheckRoutes({ app });
 }
 

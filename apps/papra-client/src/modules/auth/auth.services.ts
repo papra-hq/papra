@@ -1,5 +1,5 @@
 import { createAuthClient } from 'better-auth/solid';
-import { config } from '../config/config';
+import { buildTimeConfig } from '../config/config';
 import { createDemoAuthClient } from './auth.demo.services';
 
 export const {
@@ -10,8 +10,8 @@ export const {
   forgetPassword,
   resetPassword,
   sendVerificationEmail,
-} = config.isDemoMode
+} = buildTimeConfig.isDemoMode
   ? createDemoAuthClient()
   : createAuthClient({
-      baseURL: config.baseApiUrl,
+      baseURL: buildTimeConfig.baseApiUrl,
     });

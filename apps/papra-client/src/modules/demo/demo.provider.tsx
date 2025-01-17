@@ -1,7 +1,7 @@
 import { useNavigate } from '@solidjs/router';
 import { type Component, createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import { config } from '../config/config';
+import { buildTimeConfig } from '../config/config';
 import { Button } from '../ui/components/button';
 import { clearDemoStorage } from './demo.storage';
 
@@ -16,7 +16,7 @@ export const DemoIndicator: Component = () => {
 
   return (
     <>
-      {config.isDemoMode && (
+      {buildTimeConfig.isDemoMode && (
         <Portal>
           {getIsMinified()
             ? (
