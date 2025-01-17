@@ -67,7 +67,7 @@ export const SideNav: Component<{
     <div class="flex h-full">
       <div class="w-65px border-r bg-card pt-4 pb-6 flex flex-col">
         <Button variant="link" size="icon" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-primary mb-4 mx-auto">
-          <div class="i-tabler-file-text size-10"></div>
+          <div class="i-tabler-file-text size-10 transform rotate-12deg hover:rotate-25deg transition"></div>
         </Button>
 
         <div class="flex flex-col gap-0.5 flex-1">
