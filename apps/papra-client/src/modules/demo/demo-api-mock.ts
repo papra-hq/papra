@@ -39,6 +39,22 @@ async function deserializeFile({ name, type, content }: Awaited<ReturnType<typeo
 
 const inMemoryApiMock: Record<string, { handler: any }> = {
   ...defineHandler({
+    path: '/api/config',
+    method: 'GET',
+    handler: () => ({
+      config: {
+        auth: {
+          isEmailVerificationRequired: false,
+          isPasswordResetEnabled: false,
+          providers: {
+            github: { isEnabled: false },
+          },
+        },
+      },
+    }),
+  }),
+
+  ...defineHandler({
     path: '/api/users/me',
     method: 'GET',
     handler: () => ({
