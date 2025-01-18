@@ -20,6 +20,11 @@ export const buildTimeConfig = {
   documents: {
     deletedDocumentsRetentionDays: Number(import.meta.env.VITE_DOCUMENTS_DELETED_DOCUMENTS_RETENTION_DAYS ?? 30),
   },
+  plausible: {
+    isEnabled: import.meta.env.VITE_PLAUSIBLE_IS_ENABLED === 'true',
+    domain: import.meta.env.VITE_PLAUSIBLE_DOMAIN,
+    apiHost: import.meta.env.VITE_PLAUSIBLE_API_HOST,
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;

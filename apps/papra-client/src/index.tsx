@@ -9,6 +9,7 @@ import { render, Suspense } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';
+import { PlausibleTracker } from './modules/plausible/components/plausible-tracker.component';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
 import { Toaster } from './modules/ui/components/sonner';
@@ -28,6 +29,7 @@ render(
         children={routes}
         root={props => (
           <QueryClientProvider client={queryClient}>
+            <PlausibleTracker />
             <Suspense>
               <ConfirmModalProvider>
                 <ColorModeScript storageType={localStorageManager.type} storageKey={colorModeStorageKey} initialColorMode={initialColorMode} />
