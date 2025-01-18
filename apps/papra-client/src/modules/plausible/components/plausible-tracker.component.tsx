@@ -20,7 +20,9 @@ export const PlausibleTracker: Component = () => {
   const matches = useCurrentMatches();
 
   createEffect(() => {
-    const pattern = matches().at(-1)?.route.pattern ?? '/';
+    const basePattern = matches().at(-1)?.route.pattern ?? '/';
+    const pattern = basePattern === '*404' ? window.location.pathname : basePattern;
+
     const url = buildUrl({
       path: pattern,
       baseUrl: window.location.origin,
