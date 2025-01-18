@@ -1,7 +1,7 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
 import { values } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
-import { getDocumentIcon, iconByFileType } from './document.models';
+import { getDaysBeforePermanentDeletion, getDocumentIcon, iconByFileType } from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
@@ -77,6 +77,28 @@ describe('files models', () => {
       const icon = getDocumentIcon({ document, iconsMap });
 
       expect(icon).to.eql('i-tabler-file-type-html');
+    });
+  });
+
+  describe('getDaysBeforePermanentDeletion', () => {
+    test('get the amount of days before a document is permanently deleted, basically the difference between the deletion date and now', () => {
+      const document = { deletedAt: new Date('2021-01-01') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-10');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(21);
+    });
+
+    test('if the document has not been deleted, the days before permanent deletion is undefined', () => {
+      const document = { deletedAt: undefined };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-10');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(undefined);
     });
   });
 });

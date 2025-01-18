@@ -1,49 +1,19 @@
 import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
-import { useConfirmModal } from '@/modules/shared/confirm';
-import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
-import { createToast } from '@/modules/ui/components/sonner';
 import { A } from '@solidjs/router';
-import { deleteDocument } from '../documents.services';
+import { useDeleteDocument } from '../documents.composables';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
-  const { confirm } = useConfirmModal();
+  const { deleteDocument } = useDeleteDocument();
 
-  const deleteDoc = async () => {
-    const isConfirmed = await confirm({
-      title: 'Delete document',
-      message: (
-        <>
-          Are you sure you want to delete
-          {' '}
-          <span class="font-bold">{props.document.name}</span>
-          ?
-        </>
-      ),
-      confirmButton: {
-        text: 'Delete document',
-        variant: 'destructive',
-      },
-      cancelButton: {
-        text: 'Cancel',
-      },
-    });
-
-    if (!isConfirmed) {
-      return;
-    }
-
-    await deleteDocument({
-      documentId: props.document.id,
-      organizationId: props.document.organizationId,
-    });
-
-    await queryClient.invalidateQueries({ queryKey: ['organizations', props.document.organizationId, 'documents'] });
-    createToast({ type: 'success', message: 'Document deleted' });
-  };
+  const deleteDoc = () => deleteDocument({
+    documentId: props.document.id,
+    organizationId: props.document.organizationId,
+    documentName: props.document.name,
+  });
 
   return (
     <DropdownMenu>

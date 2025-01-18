@@ -1,36 +1,26 @@
 import type { Document } from '../documents.types';
 import { useConfig } from '@/modules/config/config.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
-import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
-import { createToast } from '@/modules/ui/components/sonner';
 import { useParams } from '@solidjs/router';
 import { createQuery, keepPreviousData } from '@tanstack/solid-query';
 import { type Component, createSignal, Show, Suspense } from 'solid-js';
 import { DocumentsPaginatedList } from '../components/documents-list.component';
-import { fetchOrganizationDeletedDocuments, restoreDocument } from '../documents.services';
+import { useRestoreDocument } from '../documents.composables';
+import { fetchOrganizationDeletedDocuments } from '../documents.services';
 
 const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
-  const [getIsLoading, setIsLoading] = createSignal(false);
-
-  const restore = async ({ document }: { document: Document }) => {
-    setIsLoading(true);
-
-    await restoreDocument({
-      documentId: document.id,
-      organizationId: document.organizationId,
-    });
-
-    await queryClient.invalidateQueries({ queryKey: ['organizations', document.organizationId, 'documents'] });
-
-    createToast({ type: 'success', message: 'Document restored' });
-    setIsLoading(false);
-  };
+  const { getIsRestoring, restore } = useRestoreDocument();
 
   return (
-    <Button variant="outline" size="sm" onClick={() => restore({ document: props.document })} isLoading={getIsLoading()}>
-      { getIsLoading()
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => restore({ document: props.document })}
+      isLoading={getIsRestoring()}
+    >
+      { getIsRestoring()
         ? (<>Restoring...</>)
         : (
             <>

@@ -1,3 +1,5 @@
+import { addDays, differenceInDays } from 'date-fns';
+
 export const iconByFileType = {
   '*': 'i-tabler-file',
   'image': 'i-tabler-photo',
@@ -34,4 +36,16 @@ export function getDocumentIcon({ document, iconsMap = iconByFileType }: { docum
   const icon = iconsMap[mimeType as FileTypes] ?? iconsMap[fileTypeGroup as FileTypes] ?? iconsMap['*'];
 
   return icon;
+}
+
+export function getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now = new Date() }: { document: { deletedAt?: Date }; deletedDocumentsRetentionDays: number; now?: Date }) {
+  if (!document.deletedAt) {
+    return undefined;
+  }
+
+  const deletionDate = addDays(document.deletedAt, deletedDocumentsRetentionDays);
+
+  const daysBeforeDeletion = differenceInDays(deletionDate, now);
+
+  return daysBeforeDeletion;
 }

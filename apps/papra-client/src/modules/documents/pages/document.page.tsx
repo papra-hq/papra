@@ -1,10 +1,16 @@
+import { useConfig } from '@/modules/config/config.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
+import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
-import { useParams } from '@solidjs/router';
+import { Separator } from '@/modules/ui/components/separator';
+import { formatBytes } from '@corentinth/chisels';
+import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
 import { type Component, type JSX, Show, Suspense } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
+import { getDaysBeforePermanentDeletion } from '../document.models';
+import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
 import { fetchDocument, fetchDocumentFile } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
@@ -34,6 +40,10 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
 
 export const DocumentPage: Component = () => {
   const params = useParams();
+  const { deleteDocument } = useDeleteDocument();
+  const { restore, getIsRestoring } = useRestoreDocument();
+  const navigate = useNavigate();
+  const { config } = useConfig();
 
   const queries = createQueries(() => ({
     queries: [
@@ -48,29 +58,94 @@ export const DocumentPage: Component = () => {
     ],
   }));
 
+  const deleteDoc = async () => {
+    if (!queries[0].data) {
+      return;
+    }
+
+    const { hasDeleted } = await deleteDocument({
+      documentId: params.documentId,
+      organizationId: params.organizationId,
+      documentName: queries[0].data.document.name,
+    });
+
+    if (!hasDeleted) {
+      return;
+    }
+
+    navigate(`/organizations/${params.organizationId}/documents`);
+  };
+
   const getDataUrl = () => queries[1].data ? URL.createObjectURL(queries[1].data) : undefined;
 
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
-        <div class="md:flex-1">
+        <div class="md:flex-1 md:border-r">
           <Show when={queries[0].data?.document}>
             {getDocument => (
-              <div class="flex gap-4">
+              <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
                   <h1 class="text-xl font-semibold">{getDocument().name}</h1>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
-                  <Button
-                    onClick={() => downloadFile({
-                      fileName: getDocument().name,
-                      url: getDataUrl()!,
-                    })}
-                    variant="default"
-                    class="mb-4"
-                  >
-                    <div class="i-tabler-download mr-2"></div>
-                    Download
-                  </Button>
+
+                  <div class="flex gap-2">
+                    <Button
+                      onClick={() => downloadFile({ fileName: getDocument().name, url: getDataUrl()! })}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <div class="i-tabler-download size-4 mr-2"></div>
+                      Download
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open(getDataUrl()!, '_blank')}
+                      size="sm"
+                    >
+                      <div class="i-tabler-eye size-4 mr-2"></div>
+                      Open in new tab
+                    </Button>
+
+                    {getDocument().isDeleted
+                      ? (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => restore({ document: getDocument() })}
+                            isLoading={getIsRestoring()}
+                          >
+                            <div class="i-tabler-refresh size-4 mr-2"></div>
+                            Restore
+                          </Button>
+                        )
+                      : (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={deleteDoc}
+                          >
+                            <div class="i-tabler-trash size-4 mr-2"></div>
+                            Delete
+                          </Button>
+                        )}
+                  </div>
+
+                  {getDocument().isDeleted && (
+                    <Alert variant="destructive" class="mt-6">
+                      This document has been deleted and will be permanently removed in
+                      {' '}
+                      {getDaysBeforePermanentDeletion({
+                        document: getDocument(),
+                        deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays,
+                      })}
+                      {' '}
+                      days.
+                    </Alert>
+                  )}
+
+                  <Separator class="my-6" />
 
                   <KeyValues data={[
                     {
@@ -81,7 +156,17 @@ export const DocumentPage: Component = () => {
                     {
                       label: 'Name',
                       value: getDocument().name,
-                      icon: 'i-tabler-file',
+                      icon: 'i-tabler-file-text',
+                    },
+                    {
+                      label: 'Type',
+                      value: getDocument().mimeType,
+                      icon: 'i-tabler-file-unknown',
+                    },
+                    {
+                      label: 'Size',
+                      value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
+                      icon: 'i-tabler-weight',
                     },
                     {
                       label: 'Created At',
