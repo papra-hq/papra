@@ -3,6 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlightThemeRapide from 'starlight-theme-rapide';
 import { sidebar } from './src/content/navigation';
 
+const plausibleDomain = import.meta.env.PLAUSIBLE_DOMAIN;
+const plausibleScriptSrc = import.meta.env.PLAUSIBLE_SCRIPT_SRC;
+const isPlausibleEnabled = plausibleDomain && plausibleScriptSrc;
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://docs.papra.app',
@@ -34,6 +38,18 @@ export default defineConfig({
             sizes: '32x32',
           },
         },
+        ...(isPlausibleEnabled
+          ? [
+              {
+                tag: 'script',
+                attrs: {
+                  'defer': true,
+                  'data-domain': plausibleDomain,
+                  'src': plausibleScriptSrc,
+                },
+              } as const,
+            ]
+          : []),
       ],
       customCss: ['./src/assets/app.css'],
     }),
