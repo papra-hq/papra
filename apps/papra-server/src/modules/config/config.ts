@@ -56,20 +56,6 @@ export const configDefinition = {
       env: 'SERVER_SERVE_PUBLIC_DIR',
     },
   },
-  stripe: {
-    apiSecretKey: {
-      doc: 'The Stripe API key',
-      schema: z.string(),
-      default: '',
-      env: 'STRIPE_API_SECRET_KEY',
-    },
-    webhookSecret: {
-      doc: 'The Stripe webhook secret',
-      schema: z.string(),
-      default: '',
-      env: 'STRIPE_WEBHOOK_SECRET',
-    },
-  },
   database: {
     url: {
       doc: 'The URL of the database',
@@ -82,25 +68,6 @@ export const configDefinition = {
       schema: z.string(),
       default: '',
       env: 'DATABASE_AUTH_TOKEN',
-    },
-  },
-  email: {
-    resendApiToken: {
-      doc: 'The API token for Resend',
-      schema: z.string(),
-      default: '',
-      env: 'RESEND_API_TOKEN',
-    },
-    dryRun: {
-      doc: 'Whether to run in dry run mode',
-      schema: z
-        .string()
-        .trim()
-        .toLowerCase()
-        .transform(x => x === 'true')
-        .pipe(z.boolean()),
-      default: 'false',
-      env: 'EMAIL_DRY_RUN',
     },
   },
   client: {
