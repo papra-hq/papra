@@ -1,10 +1,11 @@
+import { env } from 'node:process';
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightThemeRapide from 'starlight-theme-rapide';
 import { sidebar } from './src/content/navigation';
 
-const plausibleDomain = import.meta.env.PLAUSIBLE_DOMAIN;
-const plausibleScriptSrc = import.meta.env.PLAUSIBLE_SCRIPT_SRC;
+const plausibleDomain = env.PLAUSIBLE_DOMAIN;
+const plausibleScriptSrc = env.PLAUSIBLE_SCRIPT_SRC;
 const isPlausibleEnabled = plausibleDomain && plausibleScriptSrc;
 
 // https://astro.build/config
