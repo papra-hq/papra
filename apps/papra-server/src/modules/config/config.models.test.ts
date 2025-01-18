@@ -23,6 +23,9 @@ describe('config models', () => {
             github: {
               isEnabled: true,
             },
+            google: {
+              isEnabled: false,
+            },
           },
         },
         documents: {
@@ -39,6 +42,9 @@ describe('config models', () => {
             providers: {
               github: {
                 isEnabled: true,
+              },
+              google: {
+                isEnabled: false,
               },
             },
           },

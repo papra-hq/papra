@@ -19,6 +19,7 @@ export function getPublicConfig({ config }: { config: Config }) {
     'auth.isPasswordResetEnabled',
     'auth.isRegistrationEnabled',
     'auth.providers.github.isEnabled',
+    'auth.providers.google.isEnabled',
     'documents.deletedDocumentsRetentionDays',
   ]);
 
