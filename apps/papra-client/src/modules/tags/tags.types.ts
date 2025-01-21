@@ -4,6 +4,7 @@ export type Tag = {
   color: string;
   description: string | null;
   documentsCount: number;
+  organizationId: string;
   createdAt: Date;
   updatedAt: Date;
 };

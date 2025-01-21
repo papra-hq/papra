@@ -3,6 +3,7 @@ import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { defineHandler } from './demo-api-mock.models';
 import { documentFileStorage, documentStorage, organizationStorage, tagDocumentStorage, tagStorage } from './demo.storage';
+import { findMany, getValues } from './demo.storage.models';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
   if (!condition) {
@@ -71,8 +72,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations',
     method: 'GET',
     handler: async () => {
-      const keys = await organizationStorage.getKeys();
-      const organizations = await Promise.all(keys.map(key => organizationStorage.getItem(key)));
+      const organizations = await getValues(organizationStorage);
 
       return { organizations };
     },
@@ -102,33 +102,20 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const organization = organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
-      const allKeys = await documentStorage.getKeys();
-      const keys = allKeys.filter(key => key.startsWith(organizationId));
-
-      const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
 
       const filteredDocuments = await Promise.all(
-        documents
-          .filter(document => !document?.deletedAt)
-          .map(async (document) => {
-            const tagDocumentsIds = await tagDocumentStorage.getKeys();
-            const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
+        documents.map(async (document) => {
+          const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument?.documentId === document?.id);
+          const allTags = await getValues(tagStorage);
 
-            const tags = await Promise.all(
-              tagDocuments
-                .filter(tagDocument => tagDocument?.documentId === document?.id)
-                .map(async (tagDocument) => {
-                  const tag = await tagStorage.getItem(tagDocument?.tagId);
+          const tags = allTags.filter(tag => tagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
 
-                  return tag;
-                }),
-            );
-
-            return {
-              ...document,
-              tags,
-            };
-          }),
+          return {
+            ...document,
+            tags,
+          };
+        }),
       );
 
       const {
@@ -187,10 +174,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const organization = organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
-      const allKeys = await documentStorage.getKeys();
-      const keys = allKeys.filter(key => key.startsWith(organizationId));
-
-      const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
+      const documents = await findMany(documentStorage, document => document?.organizationId === organizationId);
 
       const filteredDocuments = documents.filter(document => document?.name.includes(searchQuery) && !document?.deletedAt);
 
@@ -208,12 +192,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const organization = organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
-      const allKeys = await documentStorage.getKeys();
-      const keys = allKeys.filter(key => key.startsWith(organizationId));
-
-      const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
-
-      const deletedDocuments = documents.filter(document => document?.deletedAt);
+      const deletedDocuments = await findMany(
+        documentStorage,
+        document => document.organizationId === organizationId && document.deletedAt !== undefined,
+      );
 
       return {
         documents: deletedDocuments,
@@ -229,13 +211,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const key = `${organizationId}:${documentId}`;
       const document = await documentStorage.getItem(key);
 
-      const tagsIds = await tagDocumentStorage.getKeys();
-      const documentTags = await Promise.all(tagsIds.map(tagId => tagDocumentStorage.getItem(tagId)));
-      const filteredDocumentTags = documentTags.filter(documentTag => documentTag?.documentId === documentId);
-
-      const tags = await Promise.all(filteredDocumentTags.map(tag => tagStorage.getItem(tag?.tagId)));
-
       assert(document, { status: 404 });
+
+      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.documentId === documentId);
+      const tags = await findMany(tagStorage, tag => tagDocuments.some(tagDocument => tagDocument.tagId === tag.id));
 
       return {
         document: {
@@ -344,27 +323,16 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const tagsItemsIds = await tagStorage.getKeys();
-      const allTags = await Promise.all(tagsItemsIds.map(tagId => tagStorage.getItem(tagId)));
+      const tags = await findMany(tagStorage, tag => tag.organizationId === organizationId);
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
 
-      const filteredTags = await Promise.all(
-        allTags
-          .filter(tag => tag?.organizationId === organizationId)
-          .map(async (tag) => {
-            const tagDocumentsIds = await tagDocumentStorage.getKeys();
-            const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
-
-            const tagDocumentsFiltered = tagDocuments.filter(tagDocument => tagDocument?.tagId === tag?.id);
-
-            return {
-              ...tag,
-              documentsCount: tagDocumentsFiltered.length,
-            };
-          }),
-      );
+      const tagsWithDocumentsCount = tags.map(tag => ({
+        ...tag,
+        documentsCount: documents.filter(document => document.tags.some(t => t.id === tag.id)).length,
+      }));
 
       return {
-        tags: filteredTags,
+        tags: tagsWithDocumentsCount,
       };
     },
   }),
@@ -421,9 +389,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       await tagStorage.removeItem(tagId);
 
-      const tagDocumentsIds = await tagDocumentStorage.getKeys();
-      const allTagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
-      const tagDocuments = allTagDocuments.filter(tagDocument => tagDocument?.tagId === tagId);
+      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.tagId === tagId);
 
       await Promise.all(tagDocuments.map(tagDocument => tagDocumentStorage.removeItem(tagDocument.id)));
     },
@@ -460,13 +426,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const tagDocumentsIds = await tagDocumentStorage.getKeys();
-      const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
-      const tagDocument = tagDocuments.find(tagDocument => tagDocument?.tagId === tagId && tagDocument?.documentId === documentId);
+      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.tagId === tagId && tagDocument.documentId === documentId);
 
-      assert(tagDocument, { status: 404 });
-
-      await tagDocumentStorage.removeItem(tagDocument.id);
+      await Promise.all(tagDocuments.map(tagDocument => tagDocumentStorage.removeItem(tagDocument.id)));
     },
   }),
 
