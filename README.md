@@ -48,7 +48,7 @@ A live demo of the platform is available at [demo.papra.cc](https://demo.papra.c
 - **Responsive Design**: Works on all devices, from desktops to mobile phones.
 - **Open Source**: The project is open-source and free to use.
 - **Self-hosting**: Host your own instance of Papra using Docker or other methods.
-- *Coming soon:* **Tags**: Organize your documents with tags.
+- **Tags**: Organize your documents with tags.
 - *Coming soon:* **Tagging Rules**: Automatically tag documents based on custom rules.
 - *Coming soon:* **Content extraction**: Automatically extract text from images or scanned documents for search.
 - *Coming soon:* **i18n**: Support for multiple languages.
