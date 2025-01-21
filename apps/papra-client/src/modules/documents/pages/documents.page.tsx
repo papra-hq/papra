@@ -9,7 +9,7 @@ import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { type Component, createSignal, Suspense } from 'solid-js';
 import { DocumentManagementDropdown } from '../components/document-management-dropdown.component';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
-import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn } from '../components/documents-list.component';
+import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
 import { getDocumentIcon } from '../document.models';
 import { fetchOrganizationDocuments } from '../documents.services';
 
@@ -118,6 +118,7 @@ export const DocumentsPage: Component = () => {
                   getPagination={getPagination}
                   setPagination={setPagination}
                   extraColumns={[
+                    tagsColumn,
                     createdAtColumn,
                     standardActionsColumn,
                   ]}

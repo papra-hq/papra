@@ -17,6 +17,7 @@ import { OrganizationsSettingsPage } from './modules/organizations/pages/organiz
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
+import { TagsPage } from './modules/tags/pages/tags.page';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
@@ -105,7 +106,7 @@ export const routes: RouteDefinition[] = [
               },
               {
                 path: '/tags',
-                component: ComingSoonPage,
+                component: TagsPage,
               },
               {
                 path: '/integrations',

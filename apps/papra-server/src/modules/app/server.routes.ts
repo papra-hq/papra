@@ -2,6 +2,7 @@ import type { ServerInstance } from './server.types';
 import { registerConfigPublicRoutes } from '../config/config.routes';
 import { registerDocumentsPrivateRoutes } from '../documents/documents.routes';
 import { registerOrganizationsPrivateRoutes } from '../organizations/organizations.routes';
+import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerUsersPrivateRoutes } from '../users/users.routes';
 import { createUnauthorizedError } from './auth/auth.errors';
 import { getSession } from './auth/auth.models';
@@ -34,4 +35,5 @@ function registerPrivateRoutes({ app }: { app: ServerInstance }) {
   registerUsersPrivateRoutes({ app });
   registerOrganizationsPrivateRoutes({ app });
   registerDocumentsPrivateRoutes({ app });
+  registerTagsRoutes({ app });
 }

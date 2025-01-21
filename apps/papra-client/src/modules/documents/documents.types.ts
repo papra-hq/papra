@@ -1,3 +1,5 @@
+import type { Tag } from '../tags/tags.types';
+
 export type Document = {
   id: string;
   organizationId: string;
@@ -9,4 +11,5 @@ export type Document = {
   isDeleted?: boolean;
   deletedAt?: Date;
   deletedBy?: string;
+  tags: Tag[];
 };

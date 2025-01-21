@@ -2,7 +2,7 @@ import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { defineHandler } from './demo-api-mock.models';
-import { documentFileStorage, documentStorage, organizationStorage } from './demo.storage';
+import { documentFileStorage, documentStorage, organizationStorage, tagDocumentStorage, tagStorage } from './demo.storage';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
   if (!condition) {
@@ -107,7 +107,29 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const documents = await Promise.all(keys.map(key => documentStorage.getItem(key)));
 
-      const filteredDocuments = documents.filter(document => !document?.deletedAt);
+      const filteredDocuments = await Promise.all(
+        documents
+          .filter(document => !document?.deletedAt)
+          .map(async (document) => {
+            const tagDocumentsIds = await tagDocumentStorage.getKeys();
+            const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
+
+            const tags = await Promise.all(
+              tagDocuments
+                .filter(tagDocument => tagDocument?.documentId === document?.id)
+                .map(async (tagDocument) => {
+                  const tag = await tagStorage.getItem(tagDocument?.tagId);
+
+                  return tag;
+                }),
+            );
+
+            return {
+              ...document,
+              tags,
+            };
+          }),
+      );
 
       const {
         pageIndex = 0,
@@ -140,6 +162,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         mimeType: file.type,
         createdAt: new Date(),
         updatedAt: new Date(),
+        tags: [],
       };
 
       const key = `${organizationId}:${document.id}`;
@@ -206,9 +229,20 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const key = `${organizationId}:${documentId}`;
       const document = await documentStorage.getItem(key);
 
+      const tagsIds = await tagDocumentStorage.getKeys();
+      const documentTags = await Promise.all(tagsIds.map(tagId => tagDocumentStorage.getItem(tagId)));
+      const filteredDocumentTags = documentTags.filter(documentTag => documentTag?.documentId === documentId);
+
+      const tags = await Promise.all(filteredDocumentTags.map(tag => tagStorage.getItem(tag?.tagId)));
+
       assert(document, { status: 404 });
 
-      return { document };
+      return {
+        document: {
+          ...document,
+          tags,
+        },
+      };
     },
   }),
 
@@ -301,6 +335,141 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       return { organization };
     },
   }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tags',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const tagsItemsIds = await tagStorage.getKeys();
+      const allTags = await Promise.all(tagsItemsIds.map(tagId => tagStorage.getItem(tagId)));
+
+      const filteredTags = await Promise.all(
+        allTags
+          .filter(tag => tag?.organizationId === organizationId)
+          .map(async (tag) => {
+            const tagDocumentsIds = await tagDocumentStorage.getKeys();
+            const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
+
+            const tagDocumentsFiltered = tagDocuments.filter(tagDocument => tagDocument?.tagId === tag?.id);
+
+            return {
+              ...tag,
+              documentsCount: tagDocumentsFiltered.length,
+            };
+          }),
+      );
+
+      return {
+        tags: filteredTags,
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tags',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const tag = {
+        id: `tag_${Math.random().toString(36).slice(2)}`,
+        organizationId,
+        name: get(body, 'name'),
+        color: get(body, 'color'),
+        description: get(body, 'description'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await tagStorage.setItem(tag.id, tag);
+
+      return { tag };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tags/:tagId',
+    method: 'PUT',
+    handler: async ({ params: { organizationId, tagId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const tag = await tagStorage.getItem(tagId);
+
+      assert(tag, { status: 404 });
+
+      await tagStorage.setItem(tagId, Object.assign(tag, body, { updatedAt: new Date() }));
+
+      return { tag };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tags/:tagId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, tagId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      await tagStorage.removeItem(tagId);
+
+      const tagDocumentsIds = await tagDocumentStorage.getKeys();
+      const allTagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
+      const tagDocuments = allTagDocuments.filter(tagDocument => tagDocument?.tagId === tagId);
+
+      await Promise.all(tagDocuments.map(tagDocument => tagDocumentStorage.removeItem(tagDocument.id)));
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/tags',
+    method: 'POST',
+    handler: async ({ params: { organizationId, documentId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const tagId = get(body, 'tagId');
+
+      assert(tagId, { status: 400 });
+
+      const tagDocument = {
+        id: `tagDoc_${Math.random().toString(36).slice(2)}`,
+        tagId,
+        documentId,
+        createdAt: new Date(),
+      };
+
+      await tagDocumentStorage.setItem(tagDocument.id, tagDocument);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, documentId, tagId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const tagDocumentsIds = await tagDocumentStorage.getKeys();
+      const tagDocuments = await Promise.all(tagDocumentsIds.map(tagDocumentId => tagDocumentStorage.getItem(tagDocumentId)));
+      const tagDocument = tagDocuments.find(tagDocument => tagDocument?.tagId === tagId && tagDocument?.documentId === documentId);
+
+      assert(tagDocument, { status: 404 });
+
+      await tagDocumentStorage.removeItem(tagDocument.id);
+    },
+  }),
+
 };
 
 export const router = createRouter({ routes: inMemoryApiMock, strictTrailingSlash: false });

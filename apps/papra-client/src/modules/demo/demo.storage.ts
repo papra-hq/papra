@@ -10,6 +10,8 @@ const storage = createStorage<any>({
 export const organizationStorage = prefixStorage<Organization>(storage, 'organizations');
 export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage(storage, 'documentFiles');
+export const tagStorage = prefixStorage(storage, 'tags');
+export const tagDocumentStorage = prefixStorage(storage, 'tagDocuments');
 
 export async function clearDemoStorage() {
   await storage.clear();

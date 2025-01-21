@@ -3,6 +3,7 @@ import type { ColumnDef } from '@tanstack/solid-table';
 import type { Document } from '../documents.types';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
+import { Tag } from '@/modules/tags/components/tag.component';
 import { Button } from '@/modules/ui/components/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
@@ -41,6 +42,20 @@ export const standardActionsColumn: ColumnDef<Document> = {
   ),
 };
 
+export const tagsColumn: ColumnDef<Document> = {
+  header: () => (<span class="hidden sm:block">Tags</span>),
+  accessorKey: 'tags',
+  cell: data => (
+    <div class="text-muted-foreground hidden sm:flex flex-wrap gap-1">
+      <For each={data.getValue<any[]>()}>
+        {tag => (
+          <Tag {...tag} class="text-xs" />
+        )}
+      </For>
+    </div>
+  ),
+};
+
 export const DocumentsPaginatedList: Component<{
   documents: Document[];
   documentsCount: number;
@@ -54,7 +69,7 @@ export const DocumentsPaginatedList: Component<{
     },
     columns: [
       {
-        header: 'File name',
+        header: 'File',
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">

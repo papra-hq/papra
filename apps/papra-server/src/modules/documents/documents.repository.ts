@@ -2,8 +2,9 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
-import { and, count, desc, eq, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
 import { withPagination } from '../shared/db/pagination';
+import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { documentsTable } from './documents.table';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
@@ -67,8 +68,13 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
 
 async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {
   const query = db
-    .select()
+    .select({
+      document: getTableColumns(documentsTable),
+      tag: getTableColumns(tagsTable),
+    })
     .from(documentsTable)
+    .leftJoin(documentsTagsTable, eq(documentsTable.id, documentsTagsTable.documentId))
+    .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
     .where(
       and(
         eq(documentsTable.organizationId, organizationId),
@@ -76,7 +82,7 @@ async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, d
       ),
     );
 
-  const documents = await withPagination(
+  const documentsTagsQuery = withPagination(
     query.$dynamic(),
     {
       orderByColumn: desc(documentsTable.createdAt),
@@ -85,8 +91,25 @@ async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, d
     },
   );
 
+  const documentsTags = await documentsTagsQuery;
+
+  const groupedDocuments = documentsTags.reduce((acc, { document, tag }) => {
+    if (!acc[document.id]) {
+      acc[document.id] = {
+        ...document,
+        tags: [],
+      };
+    }
+
+    if (tag) {
+      acc[document.id].tags.push(tag);
+    }
+
+    return acc;
+  }, {} as Record<string, typeof documentsTable.$inferSelect & { tags: typeof tagsTable.$inferSelect[] }>);
+
   return {
-    documents,
+    documents: Object.values(groupedDocuments),
   };
 }
 
@@ -116,13 +139,25 @@ async function getOrganizationDeletedDocuments({ organizationId, pageIndex, page
 }
 
 async function getDocumentById({ documentId, db }: { documentId: string; db: Database }) {
-  const [document] = await db
-    .select()
-    .from(documentsTable)
-    .where(eq(documentsTable.id, documentId));
+  const [[document], tags] = await Promise.all([
+    db
+      .select()
+      .from(documentsTable)
+      .where(eq(documentsTable.id, documentId)),
+    db
+      .select({
+        ...getTableColumns(tagsTable),
+      })
+      .from(documentsTagsTable)
+      .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
+      .where(eq(documentsTagsTable.documentId, documentId)),
+  ]);
 
   return {
-    document,
+    document: {
+      ...document,
+      tags,
+    },
   };
 }
 

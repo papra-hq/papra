@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { getFormData } from './http-client.models';
+import { coerceDates, getFormData } from './http-client.models';
 
 describe('http-client models', () => {
   describe('getFormData', () => {
@@ -15,6 +15,64 @@ describe('http-client models', () => {
       expect(formData.get('baz')).to.eql('qux');
       expect(formData.get('file1')).to.be.instanceOf(Blob);
       expect(formData.get('file2')).to.be.instanceOf(File);
+    });
+  });
+
+  describe('coerceDates', () => {
+    test('transforms common date strings (createdAt, updatedAt, deletedAt) into Date objects, keeping the rest of the object intact', () => {
+      const obj = {
+        createdAt: '2021-01-01T00:00:00.000Z',
+        updatedAt: '2021-01-02T00:00:00.000Z',
+        deletedAt: '2021-01-03T00:00:00.000Z',
+        foo: 'bar',
+        baz: 'qux',
+      };
+
+      const coercedObj = coerceDates(obj);
+
+      expect(coercedObj).to.eql({
+        createdAt: new Date('2021-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2021-01-02T00:00:00.000Z'),
+        deletedAt: new Date('2021-01-03T00:00:00.000Z'),
+        foo: 'bar',
+        baz: 'qux',
+      });
+    });
+
+    test('nullish values are transformed into undefined', () => {
+      const obj = {
+        createdAt: null,
+        updatedAt: undefined,
+        deletedAt: '2021-01-03T00:00:00.000Z',
+        foo: 'bar',
+        baz: 'qux',
+      };
+
+      const coercedObj = coerceDates(obj);
+
+      expect(coercedObj).to.eql({
+        createdAt: undefined,
+        updatedAt: undefined,
+        deletedAt: new Date('2021-01-03T00:00:00.000Z'),
+        foo: 'bar',
+        baz: 'qux',
+      });
+    });
+
+    test('non present date keys are not transformed', () => {
+      const obj = {
+        createdAt: '2021-01-03T00:00:00.000Z',
+        foo: 'bar',
+        baz: 'qux',
+      };
+
+      const coercedObj = coerceDates(obj);
+
+      expect(coercedObj).to.eql({
+        createdAt: new Date('2021-01-03T00:00:00.000Z'),
+        foo: 'bar',
+        baz: 'qux',
+      });
     });
   });
 });

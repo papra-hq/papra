@@ -1,6 +1,8 @@
 import { useConfig } from '@/modules/config/config.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
+import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
+import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
@@ -89,7 +91,7 @@ export const DocumentPage: Component = () => {
                   <h1 class="text-xl font-semibold">{getDocument().name}</h1>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 mb-2">
                     <Button
                       onClick={() => downloadFile({ fileName: getDocument().name, url: getDataUrl()! })}
                       variant="outline"
@@ -131,6 +133,27 @@ export const DocumentPage: Component = () => {
                           </Button>
                         )}
                   </div>
+
+                  <DocumentTagPicker
+                    organizationId={params.organizationId}
+                    documentId={params.documentId}
+                    tags={getDocument().tags}
+                    onTagAdded={async ({ tag }) => {
+                      await addTagToDocument({
+                        documentId: params.documentId,
+                        organizationId: params.organizationId,
+                        tagId: tag.id,
+                      });
+                    }}
+
+                    onTagRemoved={async ({ tag }) => {
+                      await removeTagFromDocument({
+                        documentId: params.documentId,
+                        organizationId: params.organizationId,
+                        tagId: tag.id,
+                      });
+                    }}
+                  />
 
                   {getDocument().isDeleted && (
                     <Alert variant="destructive" class="mt-6">
