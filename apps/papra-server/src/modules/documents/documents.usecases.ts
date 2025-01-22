@@ -3,7 +3,7 @@ import type { Logger } from '../shared/logger/logger.types';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
-import { extractText } from 'unpdf';
+import { extractTextFromFile } from '@papra/lecture';
 import { createLogger } from '../shared/logger/logger';
 import { createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
@@ -11,20 +11,14 @@ import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl 
 const logger = createLogger({ namespace: 'documents:usecases' });
 
 export async function extractDocumentText({ file }: { file: File }) {
-  if (file.type === 'application/pdf') {
-    const [data, error] = await safely(extractText(await file.arrayBuffer(), { mergePages: true }));
+  const { textContent, error, extractorName } = await extractTextFromFile({ file });
 
-    if (error) {
-      logger.error({ error }, 'Error while attempting to extract text from PDF');
-    }
-
-    return {
-      text: data?.text ?? '',
-    };
+  if (error) {
+    logger.error({ error, extractorName }, 'Error while attempting to extract text from PDF');
   }
 
   return {
-    text: '',
+    text: textContent ?? '',
   };
 }
 

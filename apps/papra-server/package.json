@@ -33,6 +33,7 @@
     "@hono/node-server": "^1.13.7",
     "@hono/oauth-providers": "^0.6.2",
     "@libsql/client": "^0.14.0",
+    "@papra/lecture": "^0.0.4",
     "@paralleldrive/cuid2": "^2.2.2",
     "better-auth": "^1.1.11",
     "date-fns": "^4.1.0",
