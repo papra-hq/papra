@@ -3,6 +3,7 @@ import type { DbInsertableDocument } from './documents.types';
 import { injectArguments } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
 import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
+import { omit } from 'lodash-es';
 import { withPagination } from '../shared/db/pagination';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { documentsTable } from './documents.table';
@@ -69,7 +70,7 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
 async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {
   const query = db
     .select({
-      document: getTableColumns(documentsTable),
+      document: omit(getTableColumns(documentsTable), ['content']),
       tag: getTableColumns(tagsTable),
     })
     .from(documentsTable)
@@ -106,7 +107,7 @@ async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, d
     }
 
     return acc;
-  }, {} as Record<string, typeof documentsTable.$inferSelect & { tags: typeof tagsTable.$inferSelect[] }>);
+  }, {} as Record<string, Omit<typeof documentsTable.$inferSelect, 'content'> & { tags: typeof tagsTable.$inferSelect[] }>);
 
   return {
     documents: Object.values(groupedDocuments),

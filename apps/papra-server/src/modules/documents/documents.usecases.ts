@@ -3,9 +3,30 @@ import type { Logger } from '../shared/logger/logger.types';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
+import { extractText } from 'unpdf';
 import { createLogger } from '../shared/logger/logger';
 import { createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
+
+const logger = createLogger({ namespace: 'documents:usecases' });
+
+export async function extractDocumentText({ file }: { file: File }) {
+  if (file.type === 'application/pdf') {
+    const [data, error] = await safely(extractText(await file.arrayBuffer(), { mergePages: true }));
+
+    if (error) {
+      logger.error({ error }, 'Error while attempting to extract text from PDF');
+    }
+
+    return {
+      text: data?.text ?? '',
+    };
+  }
+
+  return {
+    text: '',
+  };
+}
 
 export async function createDocument({
   file,
@@ -41,6 +62,8 @@ export async function createDocument({
     storageKey: originalDocumentStorageKey,
   });
 
+  const { text } = await extractDocumentText({ file });
+
   const { document } = await documentsRepository.saveOrganizationDocument({
     id: documentId,
     name: fileName,
@@ -50,6 +73,7 @@ export async function createDocument({
     originalSize: size,
     originalStorageKey: storageKey,
     mimeType,
+    content: text,
   });
 
   return { document };
