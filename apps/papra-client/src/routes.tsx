@@ -10,6 +10,7 @@ import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
+import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
@@ -18,6 +19,7 @@ import { OrganizationsPage } from './modules/organizations/pages/organizations.p
 import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
 import { TagsPage } from './modules/tags/pages/tags.page';
+import { IntegrationsLayout } from './modules/ui/layouts/integrations.layout';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
@@ -109,8 +111,18 @@ export const routes: RouteDefinition[] = [
                 component: TagsPage,
               },
               {
-                path: '/integrations',
-                component: ComingSoonPage,
+                path: '/',
+                component: IntegrationsLayout,
+                children: [
+                  {
+                    path: '/intake-emails',
+                    component: IntakeEmailsPage,
+                  },
+                  {
+                    path: '/api-keys',
+                    component: ComingSoonPage,
+                  },
+                ],
               },
             ],
           },

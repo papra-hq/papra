@@ -25,6 +25,10 @@ export const buildTimeConfig = {
     domain: import.meta.env.VITE_PLAUSIBLE_DOMAIN,
     apiHost: import.meta.env.VITE_PLAUSIBLE_API_HOST,
   },
+  intakeEmails: {
+    isEnabled: import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED === 'true',
+    emailGenerationDomain: import.meta.env.VITE_INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN,
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;

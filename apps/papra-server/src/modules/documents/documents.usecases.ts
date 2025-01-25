@@ -31,7 +31,7 @@ export async function createDocument({
   generateDocumentId = generateDocumentIdImpl,
 }: {
   file: File;
-  userId: string;
+  userId?: string;
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;

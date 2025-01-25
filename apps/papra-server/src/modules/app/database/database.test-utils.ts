@@ -1,6 +1,7 @@
 import type { Database } from './database.types';
 import { migrate } from 'drizzle-orm/libsql/migrator';
 import { documentsTable } from '../../documents/documents.table';
+import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationsTable, organizationUsersTable } from '../../organizations/organizations.table';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
@@ -28,6 +29,7 @@ async function seedDatabase({
   documents,
   tags,
   documentsTags,
+  intakeEmails,
 }: {
   db: Database;
   users?: typeof usersTable.$inferInsert[];
@@ -36,6 +38,7 @@ async function seedDatabase({
   documents?: typeof documentsTable.$inferInsert[];
   tags?: typeof tagsTable.$inferInsert[];
   documentsTags?: typeof documentsTagsTable.$inferInsert[];
+  intakeEmails?: typeof intakeEmailsTable.$inferInsert[];
 }) {
   await Promise.all([
     users && db.insert(usersTable).values(users).execute(),
@@ -44,5 +47,6 @@ async function seedDatabase({
     documents && db.insert(documentsTable).values(documents).execute(),
     tags && db.insert(tagsTable).values(tags).execute(),
     documentsTags && db.insert(documentsTagsTable).values(documentsTags).execute(),
+    intakeEmails && db.insert(intakeEmailsTable).values(intakeEmails).execute(),
   ]);
 }

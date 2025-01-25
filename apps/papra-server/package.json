@@ -30,6 +30,7 @@
     "@aws-sdk/client-s3": "^3.722.0",
     "@aws-sdk/lib-storage": "^3.722.0",
     "@corentinth/chisels": "^1.1.0",
+    "@corentinth/friendly-ids": "^0.0.1",
     "@hono/node-server": "^1.13.7",
     "@hono/oauth-providers": "^0.6.2",
     "@libsql/client": "^0.14.0",

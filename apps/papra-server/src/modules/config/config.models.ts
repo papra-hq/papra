@@ -21,6 +21,8 @@ export function getPublicConfig({ config }: { config: Config }) {
     'auth.providers.github.isEnabled',
     'auth.providers.google.isEnabled',
     'documents.deletedDocumentsRetentionDays',
+    'intakeEmails.isEnabled',
+    'intakeEmails.emailGenerationDomain',
   ]);
 
   return {

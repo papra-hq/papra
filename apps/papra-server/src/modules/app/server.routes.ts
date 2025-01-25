@@ -1,6 +1,7 @@
 import type { ServerInstance } from './server.types';
 import { registerConfigPublicRoutes } from '../config/config.routes';
 import { registerDocumentsPrivateRoutes } from '../documents/documents.routes';
+import { registerIntakeEmailsPrivateRoutes, registerIntakeEmailsPublicRoutes } from '../intake-emails/intake-emails.routes';
 import { registerOrganizationsPrivateRoutes } from '../organizations/organizations.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerUsersPrivateRoutes } from '../users/users.routes';
@@ -19,6 +20,7 @@ export function registerRoutes({ app }: { app: ServerInstance }) {
 function registerPublicRoutes({ app }: { app: ServerInstance }) {
   registerConfigPublicRoutes({ app });
   registerHealthCheckRoutes({ app });
+  registerIntakeEmailsPublicRoutes({ app });
 }
 
 function registerPrivateRoutes({ app }: { app: ServerInstance }) {
@@ -36,4 +38,5 @@ function registerPrivateRoutes({ app }: { app: ServerInstance }) {
   registerOrganizationsPrivateRoutes({ app });
   registerDocumentsPrivateRoutes({ app });
   registerTagsRoutes({ app });
+  registerIntakeEmailsPrivateRoutes({ app });
 }

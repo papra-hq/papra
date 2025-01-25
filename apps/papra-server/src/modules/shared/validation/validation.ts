@@ -14,10 +14,10 @@ function formatValidationError({ error }: { error: z.ZodError }) {
 }
 
 function buildValidator<Target extends keyof ValidationTargets>({ target, error }: { target: Target; error: { message: string; code: string } }) {
-  return <Schema extends z.ZodTypeAny>(schema: Schema) => {
+  return <Schema extends z.ZodTypeAny>(schema: Schema, { allowAdditionalFields = false }: { allowAdditionalFields?: boolean } = {}) => {
     return validator(target, (value, context) => {
       // @ts-expect-error try to enforce strict mode
-      const refinedSchema = schema.strict?.() ?? schema;
+      const refinedSchema = allowAdditionalFields ? schema : (schema.strict?.() ?? schema);
 
       const result = refinedSchema.safeParse(value);
 

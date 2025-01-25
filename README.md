@@ -49,10 +49,10 @@ A live demo of the platform is available at [demo.papra.cc](https://demo.papra.c
 - **Open Source**: The project is open-source and free to use.
 - **Self-hosting**: Host your own instance of Papra using Docker or other methods.
 - **Tags**: Organize your documents with tags.
+- **Email ingestion**: Send/forward emails to a generated address to automatically import documents.
 - *Coming soon:* **Tagging Rules**: Automatically tag documents based on custom rules.
 - *Coming soon:* **Content extraction**: Automatically extract text from images or scanned documents for search.
 - *Coming soon:* **i18n**: Support for multiple languages.
-- *Coming soon:* **Email ingestion**: Forward emails to automatically import documents.
 - *Coming soon:* **SDK and API**: Build your own applications on top of Papra.
 - *Coming soon:* **CLI**: Manage your documents from the command line.
 - *Coming soon:* **Document sharing**: Share documents with others.

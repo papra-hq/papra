@@ -5,6 +5,7 @@ import { defineConfig } from 'figue';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
 import { documentsConfig } from '../documents/documents.config';
+import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { createLogger } from '../shared/logger/logger';
 import { tasksConfig } from '../tasks/tasks.config';
 import { documentStorageConfig } from './fragments/document-storage.config';
@@ -88,6 +89,7 @@ export const configDefinition = {
   documentsStorage: documentStorageConfig,
   auth: authConfig,
   tasks: tasksConfig,
+  intakeEmails: intakeEmailsConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

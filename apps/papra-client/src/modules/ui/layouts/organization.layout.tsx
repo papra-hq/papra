@@ -39,7 +39,7 @@ const OrganizationLayoutSideNav: Component = () => {
     {
       label: 'Integrations',
       icon: 'i-tabler-link',
-      href: `/organizations/${params.organizationId}/integrations`,
+      href: `/organizations/${params.organizationId}/intake-emails`,
     },
 
   ];

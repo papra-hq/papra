@@ -10,6 +10,8 @@ describe('config models', () => {
         - auth.isRegistrationEnabled Whether registration is enabled
         - auth.providers.*.isEnabled Wether a oauth provider is enabled
         - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
+        - intakeEmails.isEnabled Whether intake emails are enabled
+        - intakeEmails.emailGenerationDomain The domain to use when generating email addresses for intake emails
         
         Any other config should not be exposed.`, () => {
       const config = {
@@ -31,6 +33,10 @@ describe('config models', () => {
         documents: {
           deletedDocumentsRetentionDays: 30,
         },
+        intakeEmails: {
+          isEnabled: true,
+          emailGenerationDomain: 'papra.email',
+        },
       } as unknown as Config;
 
       expect(getPublicConfig({ config })).to.eql({
@@ -50,6 +56,10 @@ describe('config models', () => {
           },
           documents: {
             deletedDocumentsRetentionDays: 30,
+          },
+          intakeEmails: {
+            isEnabled: true,
+            emailGenerationDomain: 'papra.email',
           },
         },
       });
