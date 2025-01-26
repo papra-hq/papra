@@ -292,6 +292,7 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
         {
           'Content-Type': document.mimeType,
           'Content-Disposition': `inline; filename="${document.name}"`,
+          'Content-Length': String(document.originalSize),
         },
       );
     },
