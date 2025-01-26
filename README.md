@@ -50,8 +50,8 @@ A live demo of the platform is available at [demo.papra.cc](https://demo.papra.c
 - **Self-hosting**: Host your own instance of Papra using Docker or other methods.
 - **Tags**: Organize your documents with tags.
 - **Email ingestion**: Send/forward emails to a generated address to automatically import documents.
+- **Content extraction**: Automatically extract text from images or scanned documents for search.
 - *Coming soon:* **Tagging Rules**: Automatically tag documents based on custom rules.
-- *Coming soon:* **Content extraction**: Automatically extract text from images or scanned documents for search.
 - *Coming soon:* **i18n**: Support for multiple languages.
 - *Coming soon:* **SDK and API**: Build your own applications on top of Papra.
 - *Coming soon:* **CLI**: Manage your documents from the command line.
