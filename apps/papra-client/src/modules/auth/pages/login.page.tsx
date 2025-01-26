@@ -1,5 +1,6 @@
 import type { SsoProviderKey } from '../auth.types';
 import { useConfig } from '@/modules/config/config.provider';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
@@ -98,30 +99,27 @@ export const EmailLoginForm: Component = () => {
 
 export const LoginPage: Component = () => {
   const { config } = useConfig();
+  const { t } = useI18n();
 
   const [getShowEmailLogin, setShowEmailLogin] = createSignal(false);
 
   const loginWithProvider = async (provider: { key: SsoProviderKey }) => {
-    await signIn.social({ provider: provider.key });
+    await signIn.social({ provider: provider.key, callbackURL: config.baseUrl });
   };
 
   return (
     <AuthLayout>
       <div class="flex items-center justify-center min-h-screen p-6 pb-18">
         <div class="max-w-sm w-full">
-          <h1 class="text-xl font-bold">
-            Login to Papra
-          </h1>
-          <p class="text-muted-foreground mt-1 mb-4">
-            Enter your email or use social login to access your Papra account.
-          </p>
+          <h1 class="text-xl font-bold">{t('auth.login.title')}</h1>
+          <p class="text-muted-foreground mt-1 mb-4">{t('auth.login.description')}</p>
 
           {getShowEmailLogin()
             ? <EmailLoginForm />
             : (
                 <Button onClick={() => setShowEmailLogin(true)} class="w-full">
                   <div class="i-tabler-mail mr-2 size-4.5" />
-                  Login with email
+                  {t('auth.login.login-with-provider', { provider: 'Email' })}
                 </Button>
               )}
 
@@ -130,16 +128,21 @@ export const LoginPage: Component = () => {
           <div class="flex flex-col gap-2">
             <For each={getEnabledSsoProviderConfigs({ config })}>
               {provider => (
-                <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => loginWithProvider(provider)} label={`Login with ${provider.name}`} />
+                <SsoProviderButton
+                  name={provider.name}
+                  icon={provider.icon}
+                  onClick={() => loginWithProvider(provider)}
+                  label={t('auth.login.login-with-provider', { provider: provider.name })}
+                />
               )}
             </For>
           </div>
 
           <p class="text-muted-foreground mt-4">
-            Don't have an account?
+            {t('auth.login.no-account')}
             {' '}
             <Button variant="link" as={A} class="inline px-0" href="/register">
-              Register
+              {t('auth.login.register')}
             </Button>
           </p>
 

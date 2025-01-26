@@ -1,5 +1,6 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Tag as TagType } from '../tags.types';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { createForm } from '@/modules/shared/form/form';
@@ -190,6 +191,7 @@ const UpdateTagModal: Component<{
 export const TagsPage: Component = () => {
   const params = useParams();
   const { confirm } = useConfirmModal();
+  const { t } = useI18n();
 
   const query = createQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
@@ -239,15 +241,15 @@ export const TagsPage: Component = () => {
               when={getTags().length > 0}
               fallback={(
                 <EmptyState
-                  title="No tags yet"
+                  title={t('tags.no-tags.title')}
                   icon="i-tabler-tag"
-                  description="This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize."
+                  description={t('tags.no-tags.description')}
                   cta={(
                     <CreateTagModal organizationId={params.organizationId}>
                       {props => (
                         <Button {...props}>
                           <div class="i-tabler-plus size-4 mr-2" />
-                          Create tag
+                          {t('tags.no-tags.create-tag')}
                         </Button>
                       )}
                     </CreateTagModal>

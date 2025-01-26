@@ -1,0 +1,28 @@
+auth:
+  login:
+    title: Login to Papra
+    description: Enter your email or use social login to access your Papra account.
+    login-with-provider: Login with {{ provider }}
+    no-account: Don't have an account?
+    register: Register
+
+tags:
+  no-tags:
+    title: No tags yet
+    description: This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
+    create-tag: Create tag
+
+layout:
+  menu:
+    home: Home
+    documents: Documents
+    tags: Tags
+    integrations: Integrations
+    deleted-documents: Deleted documents
+    organization-settings: Organization settings
+
+demo:
+  popup:
+    description: This is a demo environment, all data is save to your browser local storage.
+    reset: Reset demo data
+    hide: Hide

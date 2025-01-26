@@ -12,9 +12,6 @@ catalogs:
     '@types/node':
       specifier: ^22.5.4
       version: 22.10.7
-    '@vitest/coverage-v8':
-      specifier: ^3.0.2
-      version: 3.0.2
     eslint:
       specifier: ^9.10.0
       version: 9.18.0
@@ -96,9 +93,6 @@ importers:
       '@pdfslick/solid':
         specifier: ^2.0.0
         version: 2.0.0(@types/node@22.10.7)(react@18.3.1)(solid-js@1.9.4)
-      '@solid-primitives/i18n':
-        specifier: ^2.1.1
-        version: 2.1.1(solid-js@1.9.4)
       '@solid-primitives/storage':
         specifier: ^4.2.1
         version: 4.2.1(solid-js@1.9.4)
@@ -202,6 +196,9 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.0.2(@types/node@22.10.7)(jsdom@25.0.1(canvas@2.11.2))
+      yaml:
+        specifier: ^2.7.0
+        version: 2.7.0
 
   apps/papra-server:
     dependencies:
@@ -2290,11 +2287,6 @@ packages:
 
   '@solid-primitives/event-listener@2.3.3':
     resolution: {integrity: sha512-DAJbl+F0wrFW2xmcV8dKMBhk9QLVLuBSW+TR4JmIfTaObxd13PuL7nqaXnaYKDWOYa6otB00qcCUIGbuIhSUgQ==}
-    peerDependencies:
-      solid-js: ^1.6.12
-
-  '@solid-primitives/i18n@2.1.1':
-    resolution: {integrity: sha512-1p9B8hveu+gzFRWfXcRtdzzEdr7gw3c8uLXm+2bU33JHgiI8kYJsWvG128sE6vU1ZtYGPrGq980Jd6hxYupyZQ==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -8389,10 +8381,6 @@ snapshots:
       '@solid-primitives/utils': 6.2.3(solid-js@1.9.4)
       solid-js: 1.9.4
 
-  '@solid-primitives/i18n@2.1.1(solid-js@1.9.4)':
-    dependencies:
-      solid-js: 1.9.4
-
   '@solid-primitives/keyed@1.2.3(solid-js@1.9.4)':
     dependencies:
       solid-js: 1.9.4
@@ -9920,7 +9908,7 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.18.0(jiti@2.4.2))
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@typescript-eslint/types': 8.19.1
+      '@typescript-eslint/types': 8.21.0
       astro-eslint-parser: 1.1.0(typescript@5.7.3)
       eslint: 9.18.0(jiti@2.4.2)
       eslint-compat-utils: 0.6.4(eslint@9.18.0(jiti@2.4.2))

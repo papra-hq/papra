@@ -5,15 +5,16 @@ import { useConfig } from '@/modules/config/config.provider';
 
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { uploadDocument } from '@/modules/documents/documents.services';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
-import { queryClient } from '@/modules/shared/query/query-client';
 
+import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { A, useNavigate, useParams } from '@solidjs/router';
-import { type Component, type ComponentProps, type JSX, type ParentComponent, Suspense } from 'solid-js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
+import { type Component, type ComponentProps, type JSX, type ParentComponent, Show, Suspense } from 'solid-js';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
 
@@ -47,8 +48,8 @@ export const SideNav: Component<{
 
   const getShortSideNavItems = () => [
     {
-      to: '/organizations',
       label: 'All organizations',
+      to: '/organizations',
       icon: 'i-tabler-building-community',
     },
     {
@@ -145,6 +146,33 @@ const ThemeSwitcher: Component = () => {
   );
 };
 
+const LanguageSwitcher: Component = () => {
+  const { getLocale, setLocale, locales } = useI18n();
+  const languageName = new Intl.DisplayNames(getLocale(), {
+    type: 'language',
+    languageDisplay: 'standard',
+  });
+
+  return (
+    <>
+      {locales.map(locale => (
+        <DropdownMenuItem onClick={() => setLocale(locale.key)} class={cn('cursor-pointer', { 'font-bold': getLocale() === locale.key })}>
+          <span translate="no" lang={getLocale() === locale.key ? undefined : locale.key}>
+            {locale.name}
+          </span>
+          <Show when={getLocale() !== locale.key}>
+            <span class="text-muted-foreground pl-1">
+              (
+              {languageName.of(locale.key)}
+              )
+            </span>
+          </Show>
+        </DropdownMenuItem>
+      ))}
+    </>
+  );
+};
+
 export const SidenavLayout: ParentComponent<{
   sideNav: Component;
   showSearch?: boolean;
@@ -232,6 +260,17 @@ export const SidenavLayout: ParentComponent<{
                   <div class="i-tabler-settings size-4 text-muted-foreground"></div>
                   Account settings
                 </DropdownMenuItem>
+
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
+                    <div class="i-tabler-language size-4 text-muted-foreground"></div>
+                    Language
+                  </DropdownMenuSubTrigger>
+
+                  <DropdownMenuSubContent>
+                    <LanguageSwitcher />
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
 
                 <DropdownMenuItem
                   onClick={async () => {

@@ -9,6 +9,7 @@ import { render, Suspense } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';
+import { I18nProvider } from './modules/i18n/i18n.provider';
 import { PlausibleTracker } from './modules/plausible/components/plausible-tracker.component';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
@@ -31,25 +32,27 @@ render(
           <QueryClientProvider client={queryClient}>
             <PlausibleTracker />
             <Suspense>
-              <ConfirmModalProvider>
-                <ColorModeScript storageType={localStorageManager.type} storageKey={colorModeStorageKey} initialColorMode={initialColorMode} />
-                <ColorModeProvider
-                  initialColorMode={initialColorMode}
-                  storageManager={localStorageManager}
-                >
-                  <CommandPaletteProvider>
-                    <ConfigProvider>
-                      <div class="min-h-screen font-sans text-sm font-400">
-                        {props.children}
-                      </div>
-                      <DemoIndicator />
-                    </ConfigProvider>
+              <I18nProvider>
+                <ConfirmModalProvider>
+                  <ColorModeScript storageType={localStorageManager.type} storageKey={colorModeStorageKey} initialColorMode={initialColorMode} />
+                  <ColorModeProvider
+                    initialColorMode={initialColorMode}
+                    storageManager={localStorageManager}
+                  >
+                    <CommandPaletteProvider>
+                      <ConfigProvider>
+                        <div class="min-h-screen font-sans text-sm font-400">
+                          {props.children}
+                        </div>
+                        <DemoIndicator />
+                      </ConfigProvider>
 
-                    <Toaster />
-                  </CommandPaletteProvider>
-                </ColorModeProvider>
+                      <Toaster />
+                    </CommandPaletteProvider>
+                  </ColorModeProvider>
 
-              </ConfirmModalProvider>
+                </ConfirmModalProvider>
+              </I18nProvider>
             </Suspense>
           </QueryClientProvider>
         )}

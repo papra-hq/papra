@@ -20,12 +20,13 @@
     "serve": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "pnpm run test:unit",
-    "test:unit": "vitest run",
-    "test:unit:watch": "vitest watch",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "script:get-missing-i18n-keys": "tsx src/scripts/get-missing-i18n-keys.script.ts"
+    "script:get-missing-i18n-keys": "tsx src/scripts/get-missing-i18n-keys.script.ts",
+    "script:generate-i18n-types": "tsx src/scripts/generate-i18n-types.script.ts",
+    "script:generate-i18n-types:watch": "tsx watch --include src/locales/en.yml src/scripts/generate-i18n-types.script.ts"
   },
   "dependencies": {
     "@corentinth/chisels": "^1.0.2",
@@ -33,7 +34,6 @@
     "@kobalte/utils": "^0.9.1",
     "@modular-forms/solid": "^0.25.0",
     "@pdfslick/solid": "^2.0.0",
-    "@solid-primitives/i18n": "^2.1.1",
     "@solid-primitives/storage": "^4.2.1",
     "@solidjs/router": "^0.14.3",
     "@tanstack/solid-query": "^5.61.5",
@@ -69,6 +69,7 @@
     "unocss": "0.65.0-beta.2",
     "vite": "^5.0.11",
     "vite-plugin-solid": "^2.8.2",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "yaml": "^2.7.0"
   }
 }

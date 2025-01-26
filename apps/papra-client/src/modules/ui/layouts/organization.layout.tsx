@@ -1,7 +1,8 @@
 import type { Organization } from '@/modules/organizations/organizations.types';
 
-import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 
+import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries, createQuery } from '@tanstack/solid-query';
 import { get } from 'lodash-es';
@@ -18,26 +19,27 @@ import { SideNav, SidenavLayout } from './sidenav.layout';
 const OrganizationLayoutSideNav: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const { t } = useI18n();
 
   const getMainMenuItems = () => [
     {
-      label: 'Home',
+      label: t('layout.menu.home'),
       icon: 'i-tabler-home',
       href: `/organizations/${params.organizationId}`,
     },
     {
-      label: 'Documents',
+      label: t('layout.menu.documents'),
       icon: 'i-tabler-file-text',
       href: `/organizations/${params.organizationId}/documents`,
     },
 
     {
-      label: 'Tags',
+      label: t('layout.menu.tags'),
       icon: 'i-tabler-tag',
       href: `/organizations/${params.organizationId}/tags`,
     },
     {
-      label: 'Integrations',
+      label: t('layout.menu.integrations'),
       icon: 'i-tabler-link',
       href: `/organizations/${params.organizationId}/intake-emails`,
     },
@@ -46,12 +48,12 @@ const OrganizationLayoutSideNav: Component = () => {
 
   const getFooterMenuItems = () => [
     {
-      label: 'Deleted documents',
+      label: t('layout.menu.deleted-documents'),
       icon: 'i-tabler-trash',
       href: `/organizations/${params.organizationId}/deleted`,
     },
     {
-      label: 'Organization settings',
+      label: t('layout.menu.organization-settings'),
       icon: 'i-tabler-settings',
       href: `/organizations/${params.organizationId}/settings`,
     },
