@@ -62,8 +62,8 @@ A live demo of the platform is available at [demo.papra.cc](https://demo.papra.c
 
 ## Contributing
 
-*Coming soon*
-Currently, the project is in heavy development and is not yet ready for contributions as changes are frequent and the architecture is not yet finalized. However, you can star the project to follow its progress.
+Contributions are welcome! Please refer to the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file for guidelines on how to get started, report issues, and submit pull requests.
+You can find easy-to-pick-up tasks with the [`good first issue`](https://github.com/papra-hq/papra/issues?q=sort%3Aupdated-desc%20is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22) or [`PR welcome`](https://github.com/papra-hq/papra/issues?q=sort%3Aupdated-desc%20is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22) labels.
 
 ## License
 
