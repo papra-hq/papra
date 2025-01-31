@@ -8,7 +8,7 @@
   "license": "AGPL-3.0-or-later",
   "keywords": [],
   "scripts": {
-    "dev": "tsx watch --env-file=.env src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "pnpm esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=dist/index.js --minify",
     "start": "node dist/index.js",
     "start:with-migrations": "pnpm migrate:up && pnpm start",
@@ -17,7 +17,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "migrate:up": "tsx --env-file=.env src/scripts/migrate-up.script.ts",
+    "migrate:up": "tsx --env-file-if-exists=.env src/scripts/migrate-up.script.ts",
     "migrate:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "clean:dist": "rm -rf dist",
