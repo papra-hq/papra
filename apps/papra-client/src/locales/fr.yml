@@ -5,6 +5,13 @@ auth:
     login-with-provider: Connexion via {{ provider }}
     no-account: Vous n'avez pas de compte ?
     register: S'inscrire
+  email-validation-required:
+    title: Vérifiez votre adresse e-mail
+    description: Un e-mail de vérification a été envoyé à votre adresse. Veuillez vérifier votre adresse en cliquant sur le lien dans l'e-mail.
+  legal-links:
+    description: En continuant, vous reconnaissez que vous comprenez et acceptez les {{ terms }} et la {{ privacy }}.
+    terms: Conditions d'utilisation
+    privacy: Politique de confidentialité
 
 tags:
   no-tags:

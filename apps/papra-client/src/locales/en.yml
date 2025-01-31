@@ -5,6 +5,13 @@ auth:
     login-with-provider: Login with {{ provider }}
     no-account: Don't have an account?
     register: Register
+  email-validation-required:
+    title: Verify your email
+    description: A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.
+  legal-links:
+    description: By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.
+    terms: Terms of Service
+    privacy: Privacy Policy
 
 tags:
   no-tags:

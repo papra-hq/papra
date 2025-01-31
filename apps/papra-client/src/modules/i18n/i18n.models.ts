@@ -1,3 +1,4 @@
+import type { JSX } from 'solid-js';
 import type { Locale } from './i18n.provider';
 
 // This tries to get the most preferred language compatible with the supported languages
@@ -35,6 +36,31 @@ export function createTranslator<Dict extends Record<string, string>>({ getDicti
       for (const [key, value] of Object.entries(args)) {
         translation = translation.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), String(value));
       }
+    }
+
+    return translation;
+  };
+}
+
+export function createFragmentTranslator<Dict extends Record<string, string>>({ getDictionary }: { getDictionary: () => Dict }) {
+  return (key: keyof Dict, args?: Record<string, JSX.Element>) => {
+    const translation: string = getDictionary()[key] ?? key;
+
+    if (args) {
+      const fragments: JSX.Element[] = [];
+
+      const parts = translation.split(/(\{\{[^}]+\}\})/g);
+
+      for (const part of parts) {
+        if (part.startsWith('{{') && part.endsWith('}}')) {
+          const key = part.slice(2, -2).trim();
+          fragments.push(args[key]);
+        } else {
+          fragments.push(part);
+        }
+      }
+
+      return fragments;
     }
 
     return translation;

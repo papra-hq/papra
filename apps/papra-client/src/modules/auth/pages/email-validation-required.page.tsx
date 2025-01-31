@@ -1,18 +1,21 @@
 import type { Component } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 
 export const EmailValidationRequiredPage: Component = () => {
+  const { t } = useI18n();
+
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center p-6 sm:pb-32">
+      <div class="flex items-center justify-center h-full p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <div class="i-tabler-mail size-12 text-primary mb-2" />
 
           <h1 class="text-xl font-bold">
-            Verify your email
+            {t('auth.email-validation-required.title')}
           </h1>
           <p class="text-muted-foreground mt-1 mb-4">
-            A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.
+            {t('auth.email-validation-required.description')}
           </p>
         </div>
       </div>
