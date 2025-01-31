@@ -6,8 +6,8 @@ import { buildUrl } from '@corentinth/chisels';
 import { A, useNavigate } from '@solidjs/router';
 import { type Component, createSignal, onMount } from 'solid-js';
 import * as v from 'valibot';
+import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { forgetPassword } from '../auth.services';
-import { AuthLayout } from '../components/auth-layout.component';
 import { OpenEmailProvider } from '../components/open-email-provider.component';
 
 export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) => Promise<void> }> = (props) => {
@@ -77,7 +77,7 @@ export const RequestPasswordResetPage: Component = () => {
 
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+      <div class="flex items-center justify-center p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <h1 class="text-xl font-bold">
             Reset your password

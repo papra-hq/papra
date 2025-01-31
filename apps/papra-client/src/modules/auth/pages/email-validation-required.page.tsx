@@ -1,10 +1,10 @@
 import type { Component } from 'solid-js';
-import { AuthLayout } from '../components/auth-layout.component';
+import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 
 export const EmailValidationRequiredPage: Component = () => {
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+      <div class="flex items-center justify-center p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <div class="i-tabler-mail size-12 text-primary mb-2" />
 

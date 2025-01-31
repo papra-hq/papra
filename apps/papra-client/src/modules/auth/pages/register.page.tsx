@@ -7,9 +7,9 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { A, useNavigate } from '@solidjs/router';
 import { type Component, createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
+import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
 import { signIn, signUp } from '../auth.services';
-import { AuthLayout } from '../components/auth-layout.component';
 import { AuthLegalLinks } from '../components/legal-links.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
@@ -105,7 +105,7 @@ export const RegisterPage: Component = () => {
   if (!config.auth.isRegistrationEnabled) {
     return (
       <AuthLayout>
-        <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+        <div class="flex items-center justify-center h-full p-6 sm:pb-32">
           <div class="max-w-sm w-full">
             <h1 class="text-xl font-bold">
               Registration is disabled
@@ -138,7 +138,7 @@ export const RegisterPage: Component = () => {
 
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+      <div class="flex items-center justify-center h-full p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <h1 class="text-xl font-bold">
             Register to Papra

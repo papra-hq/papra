@@ -125,7 +125,7 @@ export const SideNav: Component<{
   );
 };
 
-const ThemeSwitcher: Component = () => {
+export const ThemeSwitcher: Component = () => {
   const themeStore = useThemeStore();
 
   return (
@@ -146,7 +146,7 @@ const ThemeSwitcher: Component = () => {
   );
 };
 
-const LanguageSwitcher: Component = () => {
+export const LanguageSwitcher: Component = () => {
   const { getLocale, setLocale, locales } = useI18n();
   const languageName = new Intl.DisplayNames(getLocale(), {
     type: 'language',

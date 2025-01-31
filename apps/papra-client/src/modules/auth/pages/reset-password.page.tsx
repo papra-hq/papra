@@ -6,8 +6,8 @@ import { A, Navigate, useNavigate, useSearchParams } from '@solidjs/router';
 import { type Component, createSignal } from 'solid-js';
 import { onMount } from 'solid-js';
 import * as v from 'valibot';
+import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { resetPassword } from '../auth.services';
-import { AuthLayout } from '../components/auth-layout.component';
 
 export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: string }) => Promise<void> }> = (props) => {
   const { form, Form, Field } = createForm({
@@ -77,7 +77,7 @@ export const ResetPasswordPage: Component = () => {
 
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center min-h-screen p-6 pb-18">
+      <div class="flex items-center justify-center p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <h1 class="text-xl font-bold">
             Reset your password
