@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components
 import { formatBytes } from '@corentinth/chisels';
 import { A, useParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
-import { type Component, createSignal, Suspense } from 'solid-js';
+import { type Component, createSignal, For, Suspense } from 'solid-js';
 import { DocumentManagementDropdown } from '../components/document-management-dropdown.component';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
@@ -103,9 +103,11 @@ export const DocumentsPage: Component = () => {
                   Latest imported documents
                 </h2>
                 <div class="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                  {query[0].data?.documents.slice(0, 5).map(document => (
-                    <DocumentCard document={document} />
-                  ))}
+                  <For each={query[0].data?.documents.slice(0, 5)}>
+                    {document => (
+                      <DocumentCard document={document} />
+                    )}
+                  </For>
                 </div>
 
                 <h2 class="text-lg font-semibold mt-8 mb-2">

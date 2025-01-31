@@ -9,7 +9,7 @@ import { Separator } from '@/modules/ui/components/separator';
 import { formatBytes } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
-import { type Component, type JSX, Show, Suspense } from 'solid-js';
+import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
@@ -26,15 +26,17 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
   return (
     <div class="flex flex-col gap-2">
       <table>
-        {props.data?.map(item => (
-          <tr>
-            <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2">
-              {item.icon && <div class={item.icon}></div>}
-              {item.label}
-            </td>
-            <td class="py-1 pl-2 text-sm">{item.value}</td>
-          </tr>
-        ))}
+        <For each={props.data}>
+          {item => (
+            <tr>
+              <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2">
+                {item.icon && <div class={item.icon}></div>}
+                {item.label}
+              </td>
+              <td class="py-1 pl-2 text-sm">{item.value}</td>
+            </tr>
+          )}
+        </For>
       </table>
     </div>
   );

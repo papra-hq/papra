@@ -253,79 +253,81 @@ export const IntakeEmailsPage: Component = () => {
               </div>
 
               <div class="flex flex-col gap-2">
-                {intakeEmails().map(intakeEmail => (
-                  <div class="flex items-center justify-between border rounded-lg p-4">
-                    <div class="flex items-center gap-4">
-                      <div class="bg-muted size-9 rounded-lg flex items-center justify-center">
-                        <div class={cn('i-tabler-mail size-5', intakeEmail.isEnabled ? 'text-primary' : 'text-muted-foreground')} />
-                      </div>
-
-                      <div>
-                        <div class="font-medium">
-                          {formatIntakeEmail({
-                            domain: config.intakeEmails.emailGenerationDomain,
-                            username: intakeEmail.id,
-                          })}
-
-                          <Show when={!intakeEmail.isEnabled}>
-                            <span class="text-muted-foreground text-xs ml-2">(Disabled)</span>
-                          </Show>
-
+                <For each={intakeEmails()}>
+                  {intakeEmail => (
+                    <div class="flex items-center justify-between border rounded-lg p-4">
+                      <div class="flex items-center gap-4">
+                        <div class="bg-muted size-9 rounded-lg flex items-center justify-center">
+                          <div class={cn('i-tabler-mail size-5', intakeEmail.isEnabled ? 'text-primary' : 'text-muted-foreground')} />
                         </div>
 
-                        <Show
-                          when={intakeEmail.allowedOrigins.length > 0}
-                          fallback={(
-                            <div class="text-xs text-warning flex items-center gap-1.5">
-                              <div class="i-tabler-alert-triangle size-3.75" />
-                              No allowed email origins
-                            </div>
-                          )}
-                        >
-                          <div class="text-xs text-muted-foreground flex items-center gap-2">
-                            {`Allowed from ${intakeEmail.allowedOrigins.length} address${intakeEmail.allowedOrigins.length > 1 ? 'es' : ''}`}
+                        <div>
+                          <div class="font-medium">
+                            {formatIntakeEmail({
+                              domain: config.intakeEmails.emailGenerationDomain,
+                              username: intakeEmail.id,
+                            })}
+
+                            <Show when={!intakeEmail.isEnabled}>
+                              <span class="text-muted-foreground text-xs ml-2">(Disabled)</span>
+                            </Show>
+
                           </div>
 
-                        </Show>
+                          <Show
+                            when={intakeEmail.allowedOrigins.length > 0}
+                            fallback={(
+                              <div class="text-xs text-warning flex items-center gap-1.5">
+                                <div class="i-tabler-alert-triangle size-3.75" />
+                                No allowed email origins
+                              </div>
+                            )}
+                          >
+                            <div class="text-xs text-muted-foreground flex items-center gap-2">
+                              {`Allowed from ${intakeEmail.allowedOrigins.length} address${intakeEmail.allowedOrigins.length > 1 ? 'es' : ''}`}
+                            </div>
+
+                          </Show>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled })}
+                        >
+                          <div class="i-tabler-power size-4 mr-2" />
+                          {intakeEmail.isEnabled ? 'Disable' : 'Enable'}
+                        </Button>
+
+                        <AllowedOriginsDialog intakeEmails={intakeEmail}>
+                          {(props: DialogTriggerProps) => (
+                            <Button
+                              variant="outline"
+                              aria-label="Edit intake email"
+                              {...props}
+                              class="flex items-center gap-2 leading-none"
+                            >
+                              <div class="i-tabler-edit size-4" />
+                              Manage origins addresses
+                            </Button>
+                          )}
+                        </AllowedOriginsDialog>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => deleteEmail({ intakeEmailId: intakeEmail.id })}
+                          aria-label="Delete intake email"
+                          class="text-red"
+                        >
+                          <div class="i-tabler-trash size-4 mr-2" />
+
+                          Delete
+                        </Button>
                       </div>
                     </div>
-
-                    <div class="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled })}
-                      >
-                        <div class="i-tabler-power size-4 mr-2" />
-                        {intakeEmail.isEnabled ? 'Disable' : 'Enable'}
-                      </Button>
-
-                      <AllowedOriginsDialog intakeEmails={intakeEmail}>
-                        {(props: DialogTriggerProps) => (
-                          <Button
-                            variant="outline"
-                            aria-label="Edit intake email"
-                            {...props}
-                            class="flex items-center gap-2 leading-none"
-                          >
-                            <div class="i-tabler-edit size-4" />
-                            Manage origins addresses
-                          </Button>
-                        )}
-                      </AllowedOriginsDialog>
-
-                      <Button
-                        variant="outline"
-                        onClick={() => deleteEmail({ intakeEmailId: intakeEmail.id })}
-                        aria-label="Delete intake email"
-                        class="text-red"
-                      >
-                        <div class="i-tabler-trash size-4 mr-2" />
-
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  )}
+                </For>
 
               </div>
 

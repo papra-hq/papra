@@ -1,7 +1,7 @@
 import type { Tag } from '../tags.types';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxTrigger } from '@/modules/ui/components/combobox';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createSignal } from 'solid-js';
+import { type Component, createSignal, For } from 'solid-js';
 import { fetchTags } from '../tags.services';
 import { Tag as TagComponent } from './tag.component';
 
@@ -48,9 +48,11 @@ export const DocumentTagPicker: Component<{
       <ComboboxTrigger displayMultipleState={state => (
 
         <span class="flex flex-wrap items-center gap-1">
-          {state.selectedOptions().map((tag: Tag) => (
-            <TagComponent name={tag.name} color={tag.color} class="text-xs my-1" closable onClose={() => state.remove(tag)} />
-          ))}
+          <For each={state.selectedOptions() as Tag[]}>
+            {tag => (
+              <TagComponent name={tag.name} color={tag.color} class="text-xs my-1" closable onClose={() => state.remove(tag)} />
+            )}
+          </For>
           <ComboboxInput />
 
         </span>

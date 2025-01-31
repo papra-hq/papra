@@ -5,7 +5,7 @@ import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { A, useNavigate } from '@solidjs/router';
-import { type Component, type ParentComponent, Show, Suspense } from 'solid-js';
+import { type Component, For, type ParentComponent, Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 
@@ -79,13 +79,17 @@ const SideNav: Component = () => {
       </div>
 
       <nav class="flex flex-col gap-0.5 mt-4 text-muted-foreground">
-        {getMainMenuItems().map(menuItem => <MenuItemButton {...menuItem} />)}
+        <For each={getMainMenuItems()}>
+          {menuItem => <MenuItemButton {...menuItem} />}
+        </For>
       </nav>
 
       <div class="flex-1"></div>
 
       <nav class="flex flex-col gap-0.5 text-muted-foreground">
-        {getFooterMenuItems().map(menuItem => <MenuItemButton {...menuItem} />)}
+        <For each={getFooterMenuItems()}>
+          {menuItem => <MenuItemButton {...menuItem} />}
+        </For>
       </nav>
     </div>
   );
