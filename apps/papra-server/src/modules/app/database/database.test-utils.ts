@@ -1,18 +1,18 @@
 import type { Database } from './database.types';
-import { migrate } from 'drizzle-orm/libsql/migrator';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationsTable, organizationUsersTable } from '../../organizations/organizations.table';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
 import { setupDatabase } from './database';
+import { runMigrations } from './database.services';
 
 export { createInMemoryDatabase, seedDatabase };
 
 async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDatabase>[0], 'db'> | undefined = {}) {
   const { db } = setupDatabase({ url: ':memory:' });
 
-  await migrate(db, { migrationsFolder: './migrations' });
+  await runMigrations({ db });
 
   await seedDatabase({ db, ...seedOptions });
 

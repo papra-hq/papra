@@ -4,11 +4,12 @@ import { safelySync } from '@corentinth/chisels';
 import { defineConfig } from 'figue';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
+import { databaseConfig } from '../app/database/database.config';
 import { documentsConfig } from '../documents/documents.config';
+import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { createLogger } from '../shared/logger/logger';
 import { tasksConfig } from '../tasks/tasks.config';
-import { documentStorageConfig } from './fragments/document-storage.config';
 
 export const configDefinition = {
   env: {
@@ -57,20 +58,6 @@ export const configDefinition = {
       env: 'SERVER_SERVE_PUBLIC_DIR',
     },
   },
-  database: {
-    url: {
-      doc: 'The URL of the database',
-      schema: z.string().url(),
-      default: 'file:./db.sqlite',
-      env: 'DATABASE_URL',
-    },
-    authToken: {
-      doc: 'The auth token for the database',
-      schema: z.string(),
-      default: '',
-      env: 'DATABASE_AUTH_TOKEN',
-    },
-  },
   client: {
     baseUrl: {
       doc: 'The URL of the client',
@@ -85,6 +72,7 @@ export const configDefinition = {
       env: 'CLIENT_OAUTH_REDIRECT_URL',
     },
   },
+  database: databaseConfig,
   documents: documentsConfig,
   documentsStorage: documentStorageConfig,
   auth: authConfig,
@@ -94,7 +82,7 @@ export const configDefinition = {
 
 const logger = createLogger({ namespace: 'config' });
 
-export function parseConfig({ env }: { env?: Record<string, string | undefined> } = {}) {
+export function parseConfig({ env = process.env }: { env?: Record<string, string | undefined> } = {}) {
   const [configResult, configError] = safelySync(() => defineConfig(
     configDefinition,
     {
