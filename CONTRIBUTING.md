@@ -14,7 +14,7 @@ If you find a bug, have a feature request, or need help, feel free to open an is
 
 ### Submitting Pull Requests
 
-Please refrain from submitting pull requests that implement new features or fix bugs without first opening an issue. This will help us avoid duplicate work and ensure that your contribution is in line with the project's goals.
+Please refrain from submitting pull requests that implement new features or fix bugs without first opening an issue. This will help us avoid duplicate work and ensure that your contribution is in line with the project's goals and prevents wasted effort on your part.
 
 We follow a **GitHub Flow** model where all PRs should target the `main` branch, which is continuously deployed to production.
 
