@@ -13,4 +13,14 @@ export const sidebar = [
       { label: 'Configuration', slug: 'self-hosting/configuration' },
     ],
   },
+  {
+    label: 'Guides',
+    items: [
+      {
+        label: 'Setup intake emails',
+        slug: 'guides/intake-emails-with-cloudflare-email-workers',
+      },
+
+    ],
+  },
 ];

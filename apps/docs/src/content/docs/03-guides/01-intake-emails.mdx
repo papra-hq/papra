@@ -1,0 +1,110 @@
+---
+title: Setup Papra to receive emails
+description: Step-by-step guide to setup a Cloudflare Email worker to receive emails in your Papra instance.
+slug: guides/intake-emails-with-cloudflare-email-workers
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+This guide will show you how to setup a Cloudflare Email worker to receive emails in your Papra instance.
+
+<Aside type="note">
+  Currently, only [Cloudflare Email Workers](https://developers.cloudflare.com/email-routing/email-workers/) are officially supported to handle email-to-http. More solutions may be added in the future.
+</Aside>
+
+## Prerequisites
+
+In order to follow this guide, you need to have a Cloudflare account with a domain and a publicly accessible Papra instance.
+
+## How it works
+
+In order to receive emails in your Papra instance, we need to convert the email to an HTTP request. This is currently done by setting up a Cloudflare Email Worker that will forward the email to your Papra instance, basically acting as a bridge between the email and your Papra instance.
+
+The code for the Email Worker proxy is available in the [papra-hq/email-proxy](https://github.com/papra-hq/email-proxy) repository.
+
+![diagram](../../../assets/cf-intake-email.light.png)
+
+## Setup
+
+<Steps>
+
+1. **Create the Email Worker**
+
+   There are two ways to create an Email Worker, either from the Cloudflare dashboard or by cloning and deploying the code from the [papra-hq/email-proxy](https://github.com/papra-hq/email-proxy) repository.
+
+    - **Option 1**: From the Cloudflare dashboard (easier).
+
+      - Go to the [Cloudflare dashboard](https://dash.cloudflare.com/).
+      - Select your domain.
+      - Go to the `Compute (Workers)` tab.
+      - Click on the `Create Worker` button.
+      - Name your worker (e.g. `email-proxy`).
+      - Copy the code from the [index.js](https://github.com/papra-hq/email-proxy/releases/latest/download/index.js) file (from the [papra-hq/email-proxy](https://github.com/papra-hq/email-proxy) repository) and paste it in the editor.
+
+    - **Option 2**: Build and deploy the Email Worker
+
+      Clone the [papra-hq/email-proxy](https://github.com/papra-hq/email-proxy) repository and deploy the worker using Wrangler cli. You will need to have Node.js v22 and pnpm installed.
+
+        ```bash
+        # Clone the repository
+        git clone https://github.com/papra-hq/email-proxy.git
+
+        # Change directory
+        cd email-proxy
+
+        # Install dependencies
+        pnpm install
+
+        # Build the worker
+        pnpm build
+
+        # Deploy the worker (you will be prompted to login to Cloudflare through wrangler)
+        pnpm deploy
+        ```
+
+2. **Configure the Email Worker**
+
+   Add the following environment variables to the worker:
+    - `WEBHOOK_URL`: The email intake endpoint in your Papra instance (basically. `https://<your-papra-instance.com>/api/intake-emails/ingest`).
+    - `WEBHOOK_SECRET`: The secret key to authenticate the webhook requests, set the same as the `INTAKE_EMAILS_WEBHOOK_SECRET` environment variable in your Papra instance.
+
+3. **Configure your Papra instance**
+
+   In your Papra instance, add the following environment variables:
+    - `INTAKE_EMAILS_IS_ENABLED`: Set to `true` to enable the email intake feature.
+    - `INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN`: The domain from which the intake email will be generated (eg. `domain.com`).
+    - `INTAKE_EMAILS_WEBHOOK_SECRET`: The secret key to authenticate the webhook requests, set the same as the `WEBHOOK_SECRET` environment variable in the Email Worker.
+
+4. **Configure the Email Routing**
+
+   - Go to the `Email Routing` tab in the Cloudflare dashboard.
+   - Follow the email onboarding process.
+   - Add a catch-all rule to forward all emails to the Email Worker you created.
+
+   ![email-routing](../../../assets/cf-catchall-config.png)
+
+5. **Test the setup**
+
+   In your Papra instance, go to the `Integrations` page in your organization and generates an intake email URL, setup an allowed sender (basically your email address), and copy the generated email address. Send an email to the generated address with a file attached, and check if the file is uploaded to your Papra instance.
+</Steps>
+
+## Troubleshooting
+
+### Email Worker not receiving emails
+
+If the Email Worker is not receiving emails, make sure that the email routing is correctly configured in the Cloudflare dashboard.
+Also, check the [logs in the Email Worker dashboard](https://developers.cloudflare.com/workers/observability/logs/real-time-logs/) for any errors.
+
+### Papra instance returning 403 Forbidden
+
+If your Papra instance is returning a `403 Forbidden` error, make sure that the `INTAKE_EMAILS_IS_ENABLED` environment variable is set to `true` in your Papra instance.
+
+### Papra instance is returning 401 Unauthorized
+
+If your Papra instance is returning a `401 Unauthorized` error, make sure that the `INTAKE_EMAILS_WEBHOOK_SECRET` environment variable is correctly set in your Papra instance.
+
+### The worker is not forwarding the email to the Papra instance
+
+Make sure that the `WEBHOOK_URL` and `WEBHOOK_SECRET` environment variables are correctly set in the Email Worker, and the `INTAKE_EMAILS_WEBHOOK_SECRET` environment variable is correctly set in your Papra instance.
+Also, check the [logs in the Email Worker dashboard](https://developers.cloudflare.com/workers/observability/logs/real-time-logs/) or the logs in your Papra instance for any errors.
