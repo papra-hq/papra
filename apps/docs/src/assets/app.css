@@ -1,3 +1,12 @@
+:root[data-theme='dark'] {
+    --sl-color-text-accent: #d9fe7a;
+    --sl-color-accent-high: #d9fe7a!important;
+
+    --sl-color-bg: #141414!important;
+    --sl-rapide-ui-header-bg-color: #141414!important;
+    --sl-color-bg-sidebar: #141414!important;
+}
+
 .site-title {
     color:inherit !important;
     gap: 0.5rem !important;
@@ -5,4 +14,4 @@
 
 .site-title img {
     width: 1.8rem !important;
-}
+} 
