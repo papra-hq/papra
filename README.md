@@ -97,6 +97,17 @@ Papra would not have been possible without the following open-source projects:
   - **[Drizzle](https://orm.drizzle.team/)**: A simple and lightweight ORM for Node.js.
   - **[Better Auth](https://better-auth.com/)**: A simple and lightweight authentication library for Node.js.
   - And other dependencies listed in the **[server package.json](./apps/papra-server/package.json)**
+- **Documentation**
+  - **[Astro](https://astro.build)**: A great static site generator.
+  - **[Starlight](https://starlight.astro.build)**: A module for Astro that provides a starting point for building documentation websites.
+  - **[HiDeoo/starlight-theme-rapide](https://github.com/HiDeoo/starlight-theme-rapide)**: A theme for Starlight.
+- **Project**
+  - **[PNPM Workspaces](https://pnpm.io/workspaces)**: A monorepo management tool.
+  - **[Github Actions](https://github.com/features/actions)**: For CI/CD.
+- **Infrastructure**
+  - **[Cloudflare Pages](https://pages.cloudflare.com/)**: For static site hosting.
+  - **[Render](https://render.com/)**: For backend hosting.
+  - **[Turso](https://turso.tech/)**: For production database.
 
 ### Inspiration
 

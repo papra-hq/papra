@@ -1,7 +1,11 @@
 {
-  "name": "docs",
+  "name": "@papra/docs",
   "type": "module",
   "version": "0.1.0",
+  "packageManager": "pnpm@9.15.4",
+  "description": "Papra documentation website",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
