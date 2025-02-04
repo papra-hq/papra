@@ -29,6 +29,13 @@
       "when": 1737665080672,
       "tag": "0003_intake-emails",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1738706983829,
+      "tag": "0004_auth-indexs",
+      "breakpoints": true
     }
   ]
 }
