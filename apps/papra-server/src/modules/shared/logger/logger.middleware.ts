@@ -1,7 +1,7 @@
 import { createMiddleware } from 'hono/factory';
-import { getHeader } from '../../shared/headers/headers.models';
-import { createLogger, wrapWithLoggerContext } from '../../shared/logger/logger';
-import { generateId } from '../../shared/random';
+import { getHeader } from '../headers/headers.models';
+import { generateId } from '../random';
+import { createLogger, wrapWithLoggerContext } from './logger';
 
 const logger = createLogger({ namespace: 'app' });
 

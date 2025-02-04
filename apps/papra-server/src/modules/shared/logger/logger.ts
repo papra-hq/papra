@@ -1,4 +1,7 @@
+import type { LoggerTransport, LogLevel, LogMethodArguments } from './logger.types';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { logLevels } from './logger.constants';
+import { createConsoleLoggerTransport } from './transports/console.logger-transport';
 
 const asyncLocalStorage = new AsyncLocalStorage<Record<string, unknown>>();
 
@@ -17,28 +20,37 @@ export function wrapWithLoggerContext<T>(data: Record<string, unknown>, cb: () =
   return asyncLocalStorage.run({ ...data }, cb);
 }
 
-function createScopedLogger({ level, consoleMethod, extra = {} }: { level: string; consoleMethod: 'log' | 'warn' | 'error'; extra?: Record<string, unknown> }) {
-  return (...args: [data: Record<string, unknown>, message: string] | [message: string]) => {
-    const [data, message] = args.length === 1 ? [{}, args[0]] : args;
+export function createLogger({
+  namespace,
+  transports = [createConsoleLoggerTransport()],
+}: {
+  namespace: string;
+  transports?: LoggerTransport[];
+}) {
+  const buildLogger = ({ level }: { level: LogLevel }) => {
+    return (...args: [data: Record<string, unknown>, message: string] | [message: string]) => {
+      const [data, message] = args.length === 1 ? [{}, args[0]] : args;
 
-    const loggerContext = asyncLocalStorage.getStore();
+      const loggerContext = asyncLocalStorage.getStore();
+      const timestampMs = Date.now();
 
-    // eslint-disable-next-line no-console
-    console[consoleMethod]({
-      ...loggerContext,
-      ...data,
-      ...extra,
-      level,
-      message,
-      timestampMs: Date.now(),
-    });
+      transports.forEach((transport) => {
+        transport.log({
+          level,
+          message,
+          timestampMs,
+          namespace,
+          data: {
+            ...loggerContext,
+            ...data,
+          },
+        });
+      });
+    };
   };
-}
 
-export function createLogger(extra: { namespace: string } & Record<string, unknown>) {
-  return {
-    info: createScopedLogger({ level: 'info', consoleMethod: 'log', extra }),
-    warn: createScopedLogger({ level: 'warn', consoleMethod: 'warn', extra }),
-    error: createScopedLogger({ level: 'error', consoleMethod: 'error', extra }),
-  };
+  return logLevels.reduce((acc, level) => ({
+    ...acc,
+    [level]: buildLogger({ level }),
+  }), {} as Record<LogLevel, (...args: LogMethodArguments) => void>);
 }

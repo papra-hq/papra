@@ -5,7 +5,8 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
-import { createTestLogger } from '../shared/logger/logger.test-utils';
+import { createLogger } from '../shared/logger/logger';
+import { createInMemoryLoggerTransport } from '../shared/logger/transports/in-memory.logger-transport';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
 
@@ -45,7 +46,9 @@ describe('intake-emails usecases', () => {
       });
 
       test(`when the intake email is disabled, nothing happens, only a log is emitted`, async () => {
-        const { getLoggerArgs, logger } = createTestLogger();
+        const loggerTransport = createInMemoryLoggerTransport();
+        const logger = createLogger({ transports: [loggerTransport], namespace: 'test' });
+
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
           intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', isEnabled: false }],
@@ -65,12 +68,16 @@ describe('intake-emails usecases', () => {
           logger,
         });
 
-        expect(getLoggerArgs()).to.eql({ info: [['Intake email is disabled']] });
+        expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
+          { level: 'info', message: 'Intake email is disabled', namespace: 'test', data: {} },
+        ]);
         expect(await db.select().from(documentsTable)).to.eql([]);
       });
 
       test('when no intake email is found for the recipient, nothing happens, only a log is emitted', async () => {
-        const { getLoggerArgs, logger } = createTestLogger();
+        const loggerTransport = createInMemoryLoggerTransport();
+        const logger = createLogger({ transports: [loggerTransport], namespace: 'test' });
+
         const { db } = await createInMemoryDatabase();
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -87,14 +94,18 @@ describe('intake-emails usecases', () => {
           logger,
         });
 
-        expect(getLoggerArgs()).to.eql({ info: [['Intake email not found']] });
+        expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
+          { level: 'info', message: 'Intake email not found', namespace: 'test', data: { } },
+        ]);
         expect(await db.select().from(documentsTable)).to.eql([]);
       });
 
       test(`in order to be processed, the emitter of the email must be allowed for the intake email
             it should be registered in the intake email allowed origins
             if not, an error is logged and no document is created`, async () => {
-        const { getLoggerArgs, logger } = createTestLogger();
+        const loggerTransport = createInMemoryLoggerTransport();
+        const logger = createLogger({ transports: [loggerTransport], namespace: 'test' });
+
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
           intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'] }],
@@ -114,7 +125,16 @@ describe('intake-emails usecases', () => {
           logger,
         });
 
-        expect(getLoggerArgs()).to.eql({ warn: [[{ fromAddress: 'a-non-allowed-adress@example.fr' }, 'Origin not allowed']] });
+        expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            level: 'warn',
+            message: 'Origin not allowed',
+            namespace: 'test',
+            data: {
+              fromAddress: 'a-non-allowed-adress@example.fr',
+            },
+          },
+        ]);
         expect(await db.select().from(documentsTable)).to.eql([]);
       });
     });
