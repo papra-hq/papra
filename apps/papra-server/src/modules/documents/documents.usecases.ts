@@ -75,12 +75,14 @@ export async function createDocument({
 
 export async function getDocumentOrThrow({
   documentId,
+  organizationId,
   documentsRepository,
 }: {
   documentId: string;
+  organizationId: string;
   documentsRepository: DocumentsRepository;
 }) {
-  const { document } = await documentsRepository.getDocumentById({ documentId });
+  const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
   if (!document) {
     throw createDocumentNotFoundError();
@@ -91,12 +93,14 @@ export async function getDocumentOrThrow({
 
 export async function ensureDocumentExists({
   documentId,
+  organizationId,
   documentsRepository,
 }: {
   documentId: string;
+  organizationId: string;
   documentsRepository: DocumentsRepository;
 }) {
-  await getDocumentOrThrow({ documentId, documentsRepository });
+  await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 }
 
 export async function hardDeleteDocument({

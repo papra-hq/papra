@@ -193,7 +193,7 @@ function setupGetDocumentRoute({ app }: { app: ServerInstance }) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
+      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       return context.json({
         document,
@@ -219,9 +219,9 @@ function setupDeleteDocumentRoute({ app }: { app: ServerInstance }) {
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-      await ensureDocumentExists({ documentId, documentsRepository });
+      await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
-      await documentsRepository.softDeleteDocument({ documentId, userId });
+      await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
 
       return context.json({
         success: true,
@@ -248,13 +248,13 @@ function setupRestoreDocumentRoute({ app }: { app: ServerInstance }) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
+      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       if (!document.isDeleted) {
         throw createDocumentIsNotDeletedError();
       }
 
-      await documentsRepository.restoreDocument({ documentId });
+      await documentsRepository.restoreDocument({ documentId, organizationId });
 
       return context.body(null, 204);
     },
@@ -280,7 +280,7 @@ function setupGetDocumentFileRoute({ app }: { app: ServerInstance }) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, documentsRepository });
+      const { document } = await getDocumentOrThrow({ documentId, documentsRepository, organizationId });
 
       const documentsStorageService = await createDocumentStorageService({ config });
 

@@ -139,20 +139,28 @@ async function getOrganizationDeletedDocuments({ organizationId, pageIndex, page
   };
 }
 
-async function getDocumentById({ documentId, db }: { documentId: string; db: Database }) {
-  const [[document], tags] = await Promise.all([
-    db
-      .select()
-      .from(documentsTable)
-      .where(eq(documentsTable.id, documentId)),
-    db
-      .select({
-        ...getTableColumns(tagsTable),
-      })
-      .from(documentsTagsTable)
-      .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
-      .where(eq(documentsTagsTable.documentId, documentId)),
-  ]);
+async function getDocumentById({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
+  const [document] = await db
+    .select()
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
+
+  if (!document) {
+    return { document: undefined };
+  }
+
+  const tags = await db
+    .select({
+      ...getTableColumns(tagsTable),
+    })
+    .from(documentsTagsTable)
+    .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
+    .where(eq(documentsTagsTable.documentId, documentId));
 
   return {
     document: {
@@ -162,7 +170,7 @@ async function getDocumentById({ documentId, db }: { documentId: string; db: Dat
   };
 }
 
-async function softDeleteDocument({ documentId, userId, db, now = new Date() }: { documentId: string; userId: string; db: Database; now?: Date }) {
+async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string;userId: string; db: Database; now?: Date }) {
   await db
     .update(documentsTable)
     .set({
@@ -170,10 +178,15 @@ async function softDeleteDocument({ documentId, userId, db, now = new Date() }: 
       deletedBy: userId,
       deletedAt: now,
     })
-    .where(eq(documentsTable.id, documentId));
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
 }
 
-async function restoreDocument({ documentId, db }: { documentId: string; db: Database }) {
+async function restoreDocument({ documentId, organizationId, db }: { documentId: string;organizationId: string; db: Database }) {
   await db
     .update(documentsTable)
     .set({
@@ -181,7 +194,12 @@ async function restoreDocument({ documentId, db }: { documentId: string; db: Dat
       deletedBy: null,
       deletedAt: null,
     })
-    .where(eq(documentsTable.id, documentId));
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
 }
 
 async function hardDeleteDocument({ documentId, db }: { documentId: string; db: Database }) {

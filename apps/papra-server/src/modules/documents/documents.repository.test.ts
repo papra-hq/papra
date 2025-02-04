@@ -53,6 +53,7 @@ describe('documents repository', () => {
       await documentsRepository.softDeleteDocument({
         documentId: document.id,
         userId: 'user-1',
+        organizationId: 'organization-1',
       });
 
       const { documents: documentsAfterDelete } = await documentsRepository.getOrganizationDocuments({
