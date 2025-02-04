@@ -6,12 +6,12 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { parseConfig } from '../config/config';
 import { getAuth } from './auth/auth.services';
-import { registerAssetsMiddleware } from './middlewares/assets.middleware';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { registerErrorMiddleware } from './middlewares/errors.middleware';
 import { loggerMiddleware } from './middlewares/logger.middleware';
 import { timeoutMiddleware } from './middlewares/timeout.middleware';
 import { registerRoutes } from './server.routes';
+import { registerStaticAssetsRoutes } from './static-assets/static-assets.routes';
 
 export function createServer({
   db,
@@ -38,8 +38,8 @@ export function createServer({
   app.use(timeoutMiddleware);
   app.use(secureHeaders());
 
-  registerAssetsMiddleware({ app });
   registerErrorMiddleware({ app });
+  registerStaticAssetsRoutes({ app });
 
   registerRoutes({ app });
 

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { memoize } from 'lodash-es';
 import { getConfig } from '../../config/config.models';
+import { isApiRoute } from './static-assets.models';
 
 const getIndexContent = memoize(async () => {
   const index = await readFile('public/index.html', 'utf-8');
@@ -10,7 +11,7 @@ const getIndexContent = memoize(async () => {
   return index;
 });
 
-export function registerAssetsMiddleware({ app }: { app: ServerInstance }) {
+export function registerStaticAssetsRoutes({ app }: { app: ServerInstance }) {
   app
     .use(
       '*',
@@ -21,10 +22,13 @@ export function registerAssetsMiddleware({ app }: { app: ServerInstance }) {
           return next();
         }
 
-        return serveStatic({
+        const staticMiddleware = serveStatic({
           root: './public',
-          index: `unexisting-file-${Math.random().toString(36).substring(2, 15)}`, // Disable index.html fallback to let the next middleware handle it
-        })(context, next);
+          // Disable index.html fallback to let the next middleware handle it
+          index: `unexisting-file-${Math.random().toString(36).substring(2)}`,
+        });
+
+        return staticMiddleware(context, next);
       },
     )
     .use(
@@ -36,7 +40,7 @@ export function registerAssetsMiddleware({ app }: { app: ServerInstance }) {
           return next();
         }
 
-        if (context.req.path.startsWith('/api/')) {
+        if (isApiRoute({ path: context.req.path })) {
           return next();
         }
 
