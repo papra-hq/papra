@@ -284,8 +284,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
+
       return {
-        organization,
+        organization: {
+          ...organization,
+          documentsCount: documents.length,
+          documentsSize: documents.reduce((acc, document) => acc + document.originalSize, 0),
+        },
       };
     },
   }),

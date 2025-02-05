@@ -1,4 +1,4 @@
-import type { Organization } from './organizations.types';
+import type { Organization, OrganizationWithStats } from './organizations.types';
 import { apiClient } from '../shared/http/api-client';
 
 export async function fetchOrganizations() {
@@ -49,7 +49,7 @@ export async function updateOrganization({ organizationId, name }: { organizatio
 }
 
 export async function fetchOrganization({ organizationId }: { organizationId: string }) {
-  const { organization } = await apiClient<{ organization: Organization }>({
+  const { organization } = await apiClient<{ organization: OrganizationWithStats }>({
     path: `/api/organizations/${organizationId}`,
     method: 'GET',
   });

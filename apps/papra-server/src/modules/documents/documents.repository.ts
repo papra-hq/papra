@@ -2,7 +2,7 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
-import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm';
 import { omit } from 'lodash-es';
 import { withPagination } from '../shared/db/pagination';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
@@ -24,6 +24,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       restoreDocument,
       hardDeleteDocument,
       getExpiredDeletedDocuments,
+      getOrganizationStats,
     },
     { db },
   );
@@ -242,5 +243,25 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
 
   return {
     documents: result.rows as unknown as (typeof documentsTable.$inferSelect)[],
+  };
+}
+
+async function getOrganizationStats({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [{ documentsCount, documentsSize }] = await db
+    .select({
+      documentsCount: count(documentsTable.id),
+      documentsSize: sum(documentsTable.originalSize),
+    })
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, false),
+      ),
+    );
+
+  return {
+    documentsCount,
+    documentsSize: Number(documentsSize ?? 0),
   };
 }

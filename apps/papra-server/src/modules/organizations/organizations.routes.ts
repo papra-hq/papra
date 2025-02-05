@@ -2,9 +2,9 @@ import type { ServerInstance } from '../app/server.types';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
 import { getDb } from '../app/database/database.models';
+import { createDocumentsRepository } from '../documents/documents.repository';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { organizationIdRegex } from './organizations.constants';
-import { createOrganizationNotFoundError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
@@ -65,17 +65,19 @@ function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
       const { organizationId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
-
-      if (!organization) {
-        throw createOrganizationNotFoundError();
-      }
+      const { documentsCount, documentsSize } = await documentsRepository.getOrganizationStats({ organizationId });
 
       return context.json({
-        organization,
+        organization: {
+          ...organization,
+          documentsCount,
+          documentsSize,
+        },
       });
     },
   );

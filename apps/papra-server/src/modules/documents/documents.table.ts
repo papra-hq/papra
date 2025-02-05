@@ -23,4 +23,6 @@ export const documentsTable = sqliteTable('documents', {
 }, table => [
   // To select paginated documents by organization
   index('documents_organization_id_is_deleted_created_at_index').on(table.organizationId, table.isDeleted, table.createdAt),
+  // To count/stats documents by organization
+  index('documents_organization_id_is_deleted_index').on(table.organizationId, table.isDeleted),
 ]);

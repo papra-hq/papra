@@ -1,16 +1,19 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import type { Document } from '../documents.types';
+import { fetchOrganization } from '@/modules/organizations/organizations.services';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
+import { Button } from '@/modules/ui/components/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
-import { type Component, createSignal, For, Suspense } from 'solid-js';
+import { type Component, createSignal, For, Show, Suspense } from 'solid-js';
 import { DocumentManagementDropdown } from '../components/document-management-dropdown.component';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
 import { getDocumentIcon } from '../document.models';
+import { useUploadDocuments } from '../documents.composables';
 import { fetchOrganizationDocuments } from '../documents.services';
 
 const DocumentCard: Component<{ document: Document; organizationId?: string }> = (props) => {
@@ -76,11 +79,17 @@ export const DocumentsPage: Component = () => {
         }),
         placeholderData: keepPreviousData,
       },
+      {
+        queryKey: ['organizations', params.organizationId],
+        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+      },
     ],
   }));
 
+  const { promptImport } = useUploadDocuments({ organizationId: params.organizationId });
+
   return (
-    <div class="p-6 mt-4 pb-32">
+    <div class="p-6 mt-4 pb-32 max-w-7xl mx-auto">
       <Suspense>
         {query[0].data?.documents?.length === 0
           ? (
@@ -99,6 +108,43 @@ export const DocumentsPage: Component = () => {
             )
           : (
               <>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-12">
+
+                  <Button onClick={promptImport} class="h-auto items-start flex-col gap-4 py-4 px-6">
+                    <div class="i-tabler-upload size-6"></div>
+
+                    Upload documents
+                  </Button>
+
+                  <Show when={query[1].data?.organization}>
+                    {organization => (
+                      <>
+                        <div class="border rounded-lg p-2 flex items-center gap-4 py-4 px-6">
+                          <div class="flex gap-2 items-baseline">
+                            <span class="font-light text-2xl">
+                              {organization().documentsCount}
+                            </span>
+                            <span class="text-muted-foreground">
+                              documents in total
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="border rounded-lg p-2 flex items-center gap-4 py-4 px-6">
+                          <div class="flex gap-2 items-baseline">
+                            <span class="font-light text-2xl">
+                              {formatBytes({ bytes: organization().documentsSize, base: 1000 })}
+                            </span>
+                            <span class="text-muted-foreground">
+                              total size
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </Show>
+                </div>
+
                 <h2 class="text-lg font-semibold mb-4">
                   Latest imported documents
                 </h2>
@@ -110,7 +156,7 @@ export const DocumentsPage: Component = () => {
                   </For>
                 </div>
 
-                <h2 class="text-lg font-semibold mt-8 mb-2">
+                <h2 class="text-lg font-semibold mt-12 mb-2">
                   All documents
                 </h2>
 

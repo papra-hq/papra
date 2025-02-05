@@ -4,11 +4,9 @@ import { useCommandPalette } from '@/modules/command-palette/command-palette.pro
 import { useConfig } from '@/modules/config/config.provider';
 
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
-import { uploadDocument } from '@/modules/documents/documents.services';
+import { useUploadDocuments } from '@/modules/documents/documents.composables';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { promptUploadFiles } from '@/modules/shared/files/upload';
 
-import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
@@ -182,26 +180,7 @@ export const SidenavLayout: ParentComponent<{
   const { openCommandPalette } = useCommandPalette();
   const navigate = useNavigate();
 
-  const uploadDocuments = async (files: File[]) => {
-    for (const file of files) {
-      await uploadDocument({ file, organizationId: params.organizationId });
-    }
-
-    queryClient.invalidateQueries({
-      queryKey: ['organizations', params.organizationId, 'documents'],
-      refetchType: 'all',
-    });
-  };
-
-  const promptImport = async () => {
-    const { files } = await promptUploadFiles();
-
-    await uploadDocuments(files);
-  };
-
-  const handleDrop = async (args: { files: File[] }) => {
-    await uploadDocuments(args.files);
-  };
+  const { promptImport, uploadDocuments } = useUploadDocuments({ organizationId: params.organizationId });
 
   return (
     <div class="flex flex-row h-screen min-h-0">
@@ -233,7 +212,7 @@ export const SidenavLayout: ParentComponent<{
           </div>
 
           <div class="flex items-center gap-2">
-            <GlobalDropArea onFilesDrop={handleDrop} />
+            <GlobalDropArea onFilesDrop={uploadDocuments} />
             <Button onClick={promptImport}>
               <div class="i-tabler-upload size-4"></div>
               <span class="hidden sm:inline ml-2">
