@@ -1,6 +1,6 @@
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
-import type { Logger } from '../shared/logger/logger.types';
+import type { Logger } from '../shared/logger/logger';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
 import { safely } from '@corentinth/chisels';
 import { createDocument } from '../documents/documents.usecases';

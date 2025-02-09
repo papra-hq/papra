@@ -1,4 +1,5 @@
 import type { Config } from '../config/config.types';
+import { createInMemoryLoggerTransport } from '@crowlog/logger';
 import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
@@ -6,7 +7,6 @@ import { createDocumentsRepository } from '../documents/documents.repository';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
 import { createLogger } from '../shared/logger/logger';
-import { createInMemoryLoggerTransport } from '../shared/logger/transports/in-memory.logger-transport';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
 

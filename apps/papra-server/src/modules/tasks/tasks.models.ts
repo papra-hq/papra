@@ -1,6 +1,6 @@
 import type { Database } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
-import type { Logger } from '../shared/logger/logger.types';
+import type { Logger } from '../shared/logger/logger';
 import { isFunction } from 'lodash-es';
 import { createLogger } from '../shared/logger/logger';
 

@@ -1,6 +1,6 @@
 import type { Database } from '../../modules/app/database/database.types';
 import type { Config } from '../../modules/config/config.types';
-import type { Logger } from '../../modules/shared/logger/logger.types';
+import type { Logger } from '../../modules/shared/logger/logger';
 import process from 'node:process';
 import { setupDatabase } from '../../modules/app/database/database';
 import { parseConfig } from '../../modules/config/config';

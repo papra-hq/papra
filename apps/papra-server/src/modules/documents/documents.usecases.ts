@@ -1,5 +1,5 @@
 import type { Config } from '../config/config.types';
-import type { Logger } from '../shared/logger/logger.types';
+import type { Logger } from '../shared/logger/logger';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
