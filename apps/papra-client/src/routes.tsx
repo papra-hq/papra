@@ -14,6 +14,7 @@ import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.pa
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
+import { OrganizationPage } from './modules/organizations/pages/organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
@@ -88,7 +89,7 @@ export const routes: RouteDefinition[] = [
             children: [
               {
                 path: '/',
-                component: DocumentsPage,
+                component: OrganizationPage,
               },
               {
                 path: '/documents',

@@ -59,9 +59,10 @@ export const tagsColumn: ColumnDef<Document> = {
 export const DocumentsPaginatedList: Component<{
   documents: Document[];
   documentsCount: number;
-  getPagination: Accessor<Pagination>;
-  setPagination: Setter<Pagination>;
+  getPagination?: Accessor<Pagination>;
+  setPagination?: Setter<Pagination>;
   extraColumns?: ColumnDef<Document>[];
+  showPagination?: boolean;
 }> = (props) => {
   const table = createSolidTable({
     get data() {
@@ -69,7 +70,7 @@ export const DocumentsPaginatedList: Component<{
     },
     columns: [
       {
-        header: 'File',
+        header: 'File name',
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
@@ -81,7 +82,7 @@ export const DocumentsPaginatedList: Component<{
                 href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
                 class="font-bold truncate block hover:underline"
               >
-                {data.row.original.name.split('.').shift()}
+                {data.row.original.name.split('.').slice(0, -1).join('.')}
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
@@ -135,7 +136,7 @@ export const DocumentsPaginatedList: Component<{
     onPaginationChange: props.setPagination,
     state: {
       get pagination() {
-        return props.getPagination();
+        return props.getPagination?.();
       },
     },
     manualPagination: true,
@@ -191,76 +192,78 @@ export const DocumentsPaginatedList: Component<{
 
           </Table>
 
-          <div class="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-end mt-4">
-            <div class="flex items-center space-x-2">
-              <p class="whitespace-nowrap text-sm font-medium">Rows per page</p>
-              <Select
-                value={table.getState().pagination.pageSize}
-                onChange={value => value && table.setPageSize(value)}
-                options={[15, 50, 100]}
-                itemComponent={props => (
-                  <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
-                )}
-              >
-                <SelectTrigger class="h-8 w-[4.5rem]">
-                  <SelectValue<string>>
-                    {state => state.selectedOption()}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent />
-              </Select>
+          <Show when={props.showPagination ?? true}>
+            <div class="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-end mt-4">
+              <div class="flex items-center space-x-2">
+                <p class="whitespace-nowrap text-sm font-medium">Rows per page</p>
+                <Select
+                  value={table.getState().pagination.pageSize}
+                  onChange={value => value && table.setPageSize(value)}
+                  options={[15, 50, 100]}
+                  itemComponent={props => (
+                    <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
+                  )}
+                >
+                  <SelectTrigger class="h-8 w-[4.5rem]">
+                    <SelectValue<string>>
+                      {state => state.selectedOption()}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent />
+                </Select>
+              </div>
+              <div class="flex items-center justify-center whitespace-nowrap text-sm font-medium">
+                Page
+                {' '}
+                {table.getState().pagination.pageIndex + 1}
+                {' '}
+                of
+                {' '}
+                {table.getPageCount()}
+              </div>
+              <div class="flex items-center space-x-2">
+                <Button
+                  aria-label="Go to first page"
+                  variant="outline"
+                  class="flex size-8 p-0"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <div class="size-4 i-tabler-chevrons-left" />
+                </Button>
+                <Button
+                  aria-label="Go to previous page"
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <div class="size-4 i-tabler-chevron-left" />
+                </Button>
+                <Button
+                  aria-label="Go to next page"
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <div class="size-4 i-tabler-chevron-right" />
+                </Button>
+                <Button
+                  aria-label="Go to last page"
+                  variant="outline"
+                  size="icon"
+                  class="flex size-8"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <div class="size-4 i-tabler-chevrons-right" />
+                </Button>
+              </div>
             </div>
-            <div class="flex items-center justify-center whitespace-nowrap text-sm font-medium">
-              Page
-              {' '}
-              {table.getState().pagination.pageIndex + 1}
-              {' '}
-              of
-              {' '}
-              {table.getPageCount()}
-            </div>
-            <div class="flex items-center space-x-2">
-              <Button
-                aria-label="Go to first page"
-                variant="outline"
-                class="flex size-8 p-0"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <div class="size-4 i-tabler-chevrons-left" />
-              </Button>
-              <Button
-                aria-label="Go to previous page"
-                variant="outline"
-                size="icon"
-                class="size-8"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <div class="size-4 i-tabler-chevron-left" />
-              </Button>
-              <Button
-                aria-label="Go to next page"
-                variant="outline"
-                size="icon"
-                class="size-8"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                <div class="size-4 i-tabler-chevron-right" />
-              </Button>
-              <Button
-                aria-label="Go to last page"
-                variant="outline"
-                size="icon"
-                class="flex size-8"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <div class="size-4 i-tabler-chevrons-right" />
-              </Button>
-            </div>
-          </div>
+          </Show>
         </Match>
       </Switch>
     </div>

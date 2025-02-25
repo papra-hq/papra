@@ -62,6 +62,8 @@ export const SideNav: Component<{
     },
   ];
 
+  const version = `v${config.papraVersion}`;
+
   return (
     <div class="flex h-full">
       <div class="w-65px border-r bg-card pt-4 pb-6 flex flex-col">
@@ -93,9 +95,9 @@ export const SideNav: Component<{
           ))}
         </div>
 
-        <div class="text-xs text-muted-foreground text-center mt-auto">
-          {`v${config.papraVersion}`}
-        </div>
+        <a class="text-xs text-muted-foreground text-center mt-auto transition-colors hover:(text-primary underline)" href={`https://github.com/papra-hq/papra/releases/tag/${version}`} target="_blank" rel="noopener noreferrer">
+          {version}
+        </a>
 
       </div>
       {(props.header || props.mainMenu || props.footerMenu || props.footer) && (

@@ -26,7 +26,7 @@ layout:
     tags: Tags
     integrations: Intégrations
     deleted-documents: Documents supprimés
-    organization-settings: Paramètres de l'orga.
+    organization-settings: Paramètres de l'organisation
 
 demo:
   popup:
