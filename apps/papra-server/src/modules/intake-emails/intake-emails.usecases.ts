@@ -1,11 +1,28 @@
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { Logger } from '../shared/logger/logger';
+import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
 import { safely } from '@corentinth/chisels';
 import { createDocument } from '../documents/documents.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
-import { getEmailUsername, getIsFromAllowedOrigin } from './intake-emails.models';
+import { getIsFromAllowedOrigin } from './intake-emails.models';
+
+export async function createIntakeEmail({
+  organizationId,
+  intakeEmailsRepository,
+  intakeEmailsServices,
+}: {
+  organizationId: string;
+  intakeEmailsRepository: IntakeEmailsRepository;
+  intakeEmailsServices: IntakeEmailsServices;
+}) {
+  const { emailAddress } = await intakeEmailsServices.generateEmailAddress();
+
+  const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({ organizationId, emailAddress });
+
+  return { intakeEmail };
+}
 
 export function processIntakeEmailIngestion({
   fromAddress,
@@ -53,15 +70,7 @@ export async function ingestEmailForRecipient({
   documentsStorageService: DocumentStorageService;
   logger?: Logger;
 }) {
-  const { username } = getEmailUsername({ email: recipientAddress });
-
-  if (!username) {
-    logger.warn('Invalid recipient address, no username found');
-
-    return;
-  }
-
-  const { intakeEmail } = await intakeEmailsRepository.getIntakeEmail({ intakeEmailId: username });
+  const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
 
   if (!intakeEmail) {
     logger.info('Intake email not found');

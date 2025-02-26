@@ -16,7 +16,7 @@ describe('intake-emails usecases', () => {
       test(`when an intake email is is configured, enabled and match the recipient, and the sender is allowed, a document is created for each attachment`, async () => {
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'] }],
+          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -25,7 +25,7 @@ describe('intake-emails usecases', () => {
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
-          recipientAddress: 'ie-1@example.fr',
+          recipientAddress: 'email-1@papra.email',
           attachments: [
             new File(['content1'], 'file1.txt', { type: 'text/plain' }),
             new File(['content2'], 'file2.txt', { type: 'text/plain' }),
@@ -51,7 +51,7 @@ describe('intake-emails usecases', () => {
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', isEnabled: false }],
+          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', isEnabled: false, emailAddress: 'email-1@papra.email' }],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -60,7 +60,7 @@ describe('intake-emails usecases', () => {
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
-          recipientAddress: 'ie-1@example.fr',
+          recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
           documentsRepository,
@@ -108,7 +108,7 @@ describe('intake-emails usecases', () => {
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'] }],
+          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -117,7 +117,7 @@ describe('intake-emails usecases', () => {
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
-          recipientAddress: 'ie-1@papra.app',
+          recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
           documentsRepository,
@@ -148,8 +148,8 @@ describe('intake-emails usecases', () => {
           { id: 'org-2', name: 'Organization 2' },
         ],
         intakeEmails: [
-          { id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'] },
-          { id: 'ie-2', organizationId: 'org-2', allowedOrigins: ['foo@example.fr'] },
+          { id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' },
+          { id: 'ie-2', organizationId: 'org-2', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-2@papra.email' },
         ],
       });
 
@@ -159,7 +159,7 @@ describe('intake-emails usecases', () => {
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
-        recipientsAddresses: ['ie-1@papra.email', 'ie-2@papra.email'],
+        recipientsAddresses: ['email-1@papra.email', 'email-2@papra.email'],
         attachments: [
           new File(['content1'], 'file1.txt', { type: 'text/plain' }),
         ],

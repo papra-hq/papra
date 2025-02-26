@@ -1,3 +1,23 @@
+export function buildEmailAddress({
+  username,
+  domain,
+  plusPart,
+}: {
+  username: string;
+  domain: string;
+  plusPart?: string;
+}) {
+  return `${username}${plusPart ? `+${plusPart}` : ''}@${domain}`;
+}
+
+export function parseEmailAddress({ email }: { email: string }) {
+  const [fullUsername, domain] = email.split('@');
+  const [username, ...plusParts] = fullUsername.split('+');
+  const plusPart = plusParts.length > 0 ? plusParts.join('+') : undefined;
+
+  return { username, domain, plusPart };
+}
+
 export function getIsIntakeEmailWebhookSecretValid({
   secret,
   authorizationHeader,

@@ -14,6 +14,7 @@ describe('intake-emails repository', () => {
 
       const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({
         organizationId: 'organization-1',
+        emailAddress: 'foo@example.fr',
       });
 
       expect(
@@ -22,6 +23,7 @@ describe('intake-emails repository', () => {
         organizationId: 'organization-1',
         isEnabled: true,
         allowedOrigins: [],
+        emailAddress: 'foo@example.fr',
       });
 
       const { intakeEmail: updatedIntakeEmail } = await intakeEmailsRepository.updateIntakeEmail({
@@ -37,6 +39,7 @@ describe('intake-emails repository', () => {
         organizationId: 'organization-1',
         isEnabled: false,
         allowedOrigins: ['foo@example.fr'],
+        emailAddress: 'foo@example.fr',
       });
 
       const { intakeEmail: retrievedIntakeEmail } = await intakeEmailsRepository.getIntakeEmail({
@@ -49,6 +52,7 @@ describe('intake-emails repository', () => {
         organizationId: 'organization-1',
         isEnabled: false,
         allowedOrigins: ['foo@example.fr'],
+        emailAddress: 'foo@example.fr',
       });
 
       const { intakeEmails: orgIntakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({

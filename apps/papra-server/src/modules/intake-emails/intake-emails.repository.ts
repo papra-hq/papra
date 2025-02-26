@@ -13,14 +13,15 @@ export function createIntakeEmailsRepository({ db }: { db: Database }) {
       updateIntakeEmail,
       getIntakeEmail,
       getOrganizationIntakeEmails,
+      getIntakeEmailByEmailAddress,
       deleteIntakeEmail,
     },
     { db },
   );
 }
 
-async function createIntakeEmail({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [intakeEmail] = await db.insert(intakeEmailsTable).values({ organizationId }).returning();
+async function createIntakeEmail({ organizationId, emailAddress, db }: { organizationId: string; emailAddress: string; db: Database }) {
+  const [intakeEmail] = await db.insert(intakeEmailsTable).values({ organizationId, emailAddress }).returning();
 
   return { intakeEmail };
 }
@@ -52,6 +53,15 @@ async function getIntakeEmail({ intakeEmailId, db }: { intakeEmailId: string; db
     .where(
       eq(intakeEmailsTable.id, intakeEmailId),
     );
+
+  return { intakeEmail };
+}
+
+async function getIntakeEmailByEmailAddress({ emailAddress, db }: { emailAddress: string; db: Database }) {
+  const [intakeEmail] = await db
+    .select()
+    .from(intakeEmailsTable)
+    .where(eq(intakeEmailsTable.emailAddress, emailAddress));
 
   return { intakeEmail };
 }

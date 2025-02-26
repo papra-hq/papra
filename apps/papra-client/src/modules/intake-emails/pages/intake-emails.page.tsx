@@ -17,11 +17,9 @@ import { createQuery } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
 import { createSignal } from 'solid-js';
 import * as v from 'valibot';
-import { formatIntakeEmail } from '../intake-emails.models';
 import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEmail } from '../intake-emails.services';
 
 const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) => JSX.Element; intakeEmails: IntakeEmail }> = (props) => {
-  const { config } = useConfig();
   const [getAllowedOrigins, setAllowedOrigins] = createSignal([...props.intakeEmails.allowedOrigins]);
 
   const update = async () => {
@@ -31,11 +29,6 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
       allowedOrigins: getAllowedOrigins(),
     });
   };
-
-  const getIntakeAddress = () => formatIntakeEmail({
-    domain: config.intakeEmails.emailGenerationDomain,
-    username: props.intakeEmails.id,
-  });
 
   const deleteAllowedOrigin = async ({ origin }: { origin: string }) => {
     setAllowedOrigins(origins => origins.filter(o => o !== origin));
@@ -76,7 +69,7 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
           <DialogDescription>
             Only emails sent to
             {' '}
-            <span class="font-medium text-primary">{getIntakeAddress()}</span>
+            <span class="font-medium text-primary">{props.intakeEmails.emailAddress}</span>
             {' '}
             from these origins will be processed. If no origins are specified, all emails will be discarded.
           </DialogDescription>
@@ -263,10 +256,7 @@ export const IntakeEmailsPage: Component = () => {
 
                         <div>
                           <div class="font-medium">
-                            {formatIntakeEmail({
-                              domain: config.intakeEmails.emailGenerationDomain,
-                              username: intakeEmail.id,
-                            })}
+                            {intakeEmail.emailAddress}
 
                             <Show when={!intakeEmail.isEnabled}>
                               <span class="text-muted-foreground text-xs ml-2">(Disabled)</span>

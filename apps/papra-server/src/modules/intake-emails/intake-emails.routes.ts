@@ -16,7 +16,8 @@ import { validateFormData, validateJsonBody, validateParams } from '../shared/va
 import { getIsIntakeEmailWebhookSecretValid } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
-import { processIntakeEmailIngestion } from './intake-emails.usecases';
+import { createIntakeEmailsServices } from './intake-emails.services';
+import { createIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
@@ -64,13 +65,15 @@ export function setupCreateIntakeEmailRoute({ app }: { app: ServerInstance }) {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
       const { db } = getDb({ context });
+      const { config } = getConfig({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = createIntakeEmailsServices({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({ organizationId });
+      const { intakeEmail } = await createIntakeEmail({ organizationId, intakeEmailsRepository, intakeEmailsServices });
 
       return context.json({ intakeEmail });
     },

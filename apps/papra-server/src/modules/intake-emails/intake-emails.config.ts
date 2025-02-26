@@ -1,5 +1,8 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { intakeEmailDrivers } from './drivers/intake-emails.drivers';
+import { RANDOM_USERNAME_INTAKE_EMAIL_DRIVER_NAME } from './drivers/random-username/random-username.intake-email-driver';
+import { randomUsernameIntakeEmailDriverConfig } from './drivers/random-username/random-username.intake-email-driver.config';
 
 export const intakeEmailsConfig = {
   isEnabled: {
@@ -19,10 +22,19 @@ export const intakeEmailsConfig = {
     default: 'papra.email',
     env: 'INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN',
   },
+  driver: {
+    doc: 'The driver to use when generating email addresses for intake emails',
+    schema: z.enum(Object.keys(intakeEmailDrivers) as [string, ...string[]]),
+    default: RANDOM_USERNAME_INTAKE_EMAIL_DRIVER_NAME,
+    env: 'INTAKE_EMAILS_DRIVER',
+  },
   webhookSecret: {
     doc: 'The secret to use when verifying webhooks',
     schema: z.string(),
     default: 'change-me',
     env: 'INTAKE_EMAILS_WEBHOOK_SECRET',
+  },
+  drivers: {
+    randomUsername: randomUsernameIntakeEmailDriverConfig,
   },
 } as const satisfies ConfigDefinition;

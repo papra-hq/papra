@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { getEmailUsername, getIsFromAllowedOrigin, getIsIntakeEmailWebhookSecretValid } from './intake-emails.models';
+import { buildEmailAddress, getEmailUsername, getIsFromAllowedOrigin, getIsIntakeEmailWebhookSecretValid, parseEmailAddress } from './intake-emails.models';
 
 describe('intake-emails models', () => {
   describe('getIsIntakeEmailWebhookSecretValid', () => {
@@ -75,6 +75,21 @@ describe('intake-emails models', () => {
           allowedOrigins: [],
         }),
       ).to.eql(false);
+    });
+  });
+
+  describe('buildEmailAddress', () => {
+    test('it builds an email address from a username, a domain and an optional plus part', () => {
+      expect(buildEmailAddress({ username: 'foo', domain: 'example.fr' })).to.eql('foo@example.fr');
+      expect(buildEmailAddress({ username: 'foo', domain: 'example.fr', plusPart: 'bar' })).to.eql('foo+bar@example.fr');
+    });
+  });
+
+  describe('parseEmailAddress', () => {
+    test('it parses an email address into a username, a domain and an optional plus part', () => {
+      expect(parseEmailAddress({ email: 'foo@example.fr' })).to.eql({ username: 'foo', domain: 'example.fr', plusPart: undefined });
+      expect(parseEmailAddress({ email: 'foo+bar@example.fr' })).to.eql({ username: 'foo', domain: 'example.fr', plusPart: 'bar' });
+      expect(parseEmailAddress({ email: 'foo+bar+baz@example.fr' })).to.eql({ username: 'foo', domain: 'example.fr', plusPart: 'bar+baz' });
     });
   });
 });
