@@ -5,7 +5,7 @@ import { overrideConfig } from '../../config/config.test-utils';
 
 function buildBody({ attachments = [], from, to }: { attachments?: File[]; from: { address: string; name: string }; to: { address: string; name: string }[] }) {
   const formData = new FormData();
-  formData.append('meta', JSON.stringify({ from, to }));
+  formData.append('email', JSON.stringify({ from, to }));
   attachments.forEach((attachment) => {
     formData.append('attachments[]', attachment);
   });
@@ -28,9 +28,6 @@ describe('intake-emails e2e', () => {
 
       const response = await app.request('/api/intake-emails/ingest', {
         method: 'POST',
-        headers: {
-          Authorization: 'Bearer invalid-token',
-        },
         body: buildBody({
           from: { address: 'foo@example.fr', name: 'Foo' },
           to: [{ address: 'bar@example.fr', name: 'Bar' }],
@@ -46,8 +43,37 @@ describe('intake-emails e2e', () => {
       });
     });
 
-    describe('when ingesting an email, the request must have an bearer authorization header with the token specified in the config', async () => {
-      test('when the header is missing or invalid, a 401 is returned', async () => {
+    describe('when ingesting an email, the request must have an X-Signature header with the hmac signature of the body', async () => {
+      test('when the header is missing, a 400 is returned', async () => {
+        const { db } = await createInMemoryDatabase();
+        const { app } = createServer({
+          db,
+          config: overrideConfig({
+            intakeEmails: {
+              isEnabled: true,
+              webhookSecret: 'super-secret',
+            },
+          }),
+        });
+
+        const response = await app.request('/api/intake-emails/ingest', {
+          method: 'POST',
+          body: buildBody({
+            from: { address: 'foo@example.fr', name: 'Foo' },
+            to: [{ address: 'bar@example.fr', name: 'Bar' }],
+          }),
+        });
+
+        expect(response.status).to.eql(400);
+        expect(await response.json()).to.eql({
+          error: {
+            code: 'intake_emails.signature_header_required',
+            message: 'Signature header is required',
+          },
+        });
+      });
+
+      test('when the header is invalid, a 401 is returned', async () => {
         const { db } = await createInMemoryDatabase();
         const { app } = createServer({
           db,
@@ -62,7 +88,7 @@ describe('intake-emails e2e', () => {
         const response = await app.request('/api/intake-emails/ingest', {
           method: 'POST',
           headers: {
-            Authorization: 'Bearer invalid-token',
+            'X-Signature': 'invalid',
           },
           body: buildBody({
             from: { address: 'foo@example.fr', name: 'Foo' },

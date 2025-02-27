@@ -1,6 +1,7 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
 import { intakeEmailDrivers } from './drivers/intake-emails.drivers';
+import { owlrelayIntakeEmailDriverConfig } from './drivers/owlrelay/owlrelay.intake-email-driver.config';
 import { RANDOM_USERNAME_INTAKE_EMAIL_DRIVER_NAME } from './drivers/random-username/random-username.intake-email-driver';
 import { randomUsernameIntakeEmailDriverConfig } from './drivers/random-username/random-username.intake-email-driver.config';
 
@@ -36,5 +37,6 @@ export const intakeEmailsConfig = {
   },
   drivers: {
     randomUsername: randomUsernameIntakeEmailDriverConfig,
+    owlrelay: owlrelayIntakeEmailDriverConfig,
   },
 } as const satisfies ConfigDefinition;

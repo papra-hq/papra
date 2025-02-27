@@ -1,4 +1,5 @@
 import type { ServerInstance } from '../app/server.types';
+import { verifySignature } from '@owlrelay/webhook';
 import { z } from 'zod';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getUser } from '../app/auth/auth.models';
@@ -10,10 +11,9 @@ import { organizationIdRegex } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
-import { getAuthorizationHeader } from '../shared/headers/headers.models';
+import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
-import { getIsIntakeEmailWebhookSecretValid } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
@@ -143,14 +143,13 @@ export function setupIngestIntakeEmailRoute({ app }: { app: ServerInstance }) {
     '/api/intake-emails/ingest',
     validateFormData(z.object({
       // meta is a JSON string, but it can also be parsed as an object in case of multipart/form-data json section
-      'meta': z.string().transform(parseJson).pipe(intakeEmailsIngestionMetaSchema),
+      'email': z.string().transform(parseJson).pipe(intakeEmailsIngestionMetaSchema),
       'attachments[]': z.array(z.instanceof(File)).min(1, 'At least one attachment is required').optional(),
     }), { allowAdditionalFields: true }),
     async (context) => {
       const { db } = getDb({ context });
       const { config } = getConfig({ context });
-      const { meta, 'attachments[]': attachments = [] } = context.req.valid('form');
-      const { authorizationHeader } = getAuthorizationHeader({ context });
+      const { email, 'attachments[]': attachments = [] } = context.req.valid('form');
 
       if (!config.intakeEmails.isEnabled) {
         throw createError({
@@ -160,13 +159,25 @@ export function setupIngestIntakeEmailRoute({ app }: { app: ServerInstance }) {
         });
       }
 
-      const isIntakeEmailWebhookSecretValid = getIsIntakeEmailWebhookSecretValid({
-        authorizationHeader,
+      const bodyBuffer = await context.req.arrayBuffer();
+      const signature = getHeader({ context, name: 'X-Signature' });
+
+      if (!signature) {
+        throw createError({
+          message: 'Signature header is required',
+          code: 'intake_emails.signature_header_required',
+          statusCode: 400,
+        });
+      }
+
+      const isSignatureValid = await verifySignature({
+        signature,
+        bodyBuffer,
         secret: config.intakeEmails.webhookSecret,
       });
 
-      if (!isIntakeEmailWebhookSecretValid) {
-        logger.error('Invalid webhook secret');
+      if (!isSignatureValid) {
+        logger.error({ signature }, 'Invalid webhook signature');
 
         throw createUnauthorizedError();
       }
@@ -176,8 +187,8 @@ export function setupIngestIntakeEmailRoute({ app }: { app: ServerInstance }) {
       const documentsStorageService = await createDocumentStorageService({ config });
 
       await processIntakeEmailIngestion({
-        fromAddress: meta.from.address,
-        recipientsAddresses: meta.to.map(({ address }) => address),
+        fromAddress: email.from.address,
+        recipientsAddresses: email.to.map(({ address }) => address),
         attachments,
         intakeEmailsRepository,
         documentsRepository,

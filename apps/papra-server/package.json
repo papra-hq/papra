@@ -24,7 +24,8 @@
     "clean:db": "rm db.sqlite",
     "clean:storage": "rm -rf local-documents",
     "clean:all": "pnpm clean:db && pnpm clean:storage",
-    "dev:reset": "pnpm clean:all && pnpm migrate:push"
+    "dev:reset": "pnpm clean:all && pnpm migrate:push",
+    "script:send-intake-email": "tsx --env-file-if-exists=.env src/scripts/send-intake-email.script.ts | crowlog-pretty"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.722.0",
@@ -36,6 +37,8 @@
     "@hono/node-server": "^1.13.7",
     "@hono/oauth-providers": "^0.6.2",
     "@libsql/client": "^0.14.0",
+    "@owlrelay/api-sdk": "^0.0.1",
+    "@owlrelay/webhook": "^0.0.2",
     "@papra/lecture": "^0.0.4",
     "@paralleldrive/cuid2": "^2.2.2",
     "better-auth": "^1.1.11",
