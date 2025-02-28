@@ -1,7 +1,9 @@
 import type { Document } from './documents.types';
+import { safely } from '@corentinth/chisels';
 import { createSignal } from 'solid-js';
 import { useConfirmModal } from '../shared/confirm';
 import { promptUploadFiles } from '../shared/files/upload';
+import { isHttpErrorWithCode } from '../shared/http/http-errors';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
 import { deleteDocument, restoreDocument, uploadDocument } from './documents.services';
@@ -75,7 +77,15 @@ export function useRestoreDocument() {
 export function useUploadDocuments({ organizationId }: { organizationId: string }) {
   const uploadDocuments = async ({ files }: { files: File[] }) => {
     for (const file of files) {
-      await uploadDocument({ file, organizationId });
+      const [, error] = await safely(uploadDocument({ file, organizationId }));
+
+      if (isHttpErrorWithCode({ error, code: 'document.already_exists' })) {
+        createToast({
+          type: 'error',
+          message: 'Document already exists',
+          description: `The document ${file.name} already exists, it has not been uploaded.`,
+        });
+      }
     }
 
     queryClient.invalidateQueries({

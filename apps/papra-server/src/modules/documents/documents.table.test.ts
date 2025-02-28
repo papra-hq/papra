@@ -23,6 +23,7 @@ describe('documents table', () => {
             originalName: 'document-1.pdf',
             originalStorageKey: 'document-1.pdf',
             content: 'lorem ipsum',
+            originalSha256Hash: 'hash1',
           },
           {
             id: 'document-2',
@@ -33,6 +34,7 @@ describe('documents table', () => {
             originalName: 'photo-1.jpg',
             originalStorageKey: 'photo-1.jpg',
             content: 'dolor sit amet',
+            originalSha256Hash: 'hash2',
           },
         ]);
 
@@ -82,6 +84,7 @@ describe('documents table', () => {
             originalName: 'document-1.pdf',
             originalStorageKey: 'document-1.pdf',
             content: 'lorem ipsum',
+            originalSha256Hash: 'hash1',
           },
           {
             id: 'document-2',
@@ -92,6 +95,7 @@ describe('documents table', () => {
             originalName: 'photo-1.jpg',
             originalStorageKey: 'photo-1.jpg',
             content: 'dolor sit amet',
+            originalSha256Hash: 'hash2',
           },
         ]);
 
@@ -143,6 +147,7 @@ describe('documents table', () => {
             originalName: 'document-1.pdf',
             originalStorageKey: 'document-1.pdf',
             content: 'lorem ipsum',
+            originalSha256Hash: 'hash1',
           },
           {
             id: 'document-2',
@@ -153,6 +158,7 @@ describe('documents table', () => {
             originalName: 'photo-1.jpg',
             originalStorageKey: 'photo-1.jpg',
             content: 'dolor sit amet',
+            originalSha256Hash: 'hash2',
           },
         ]);
 

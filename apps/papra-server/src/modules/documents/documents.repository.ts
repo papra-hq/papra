@@ -1,11 +1,13 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
-import { injectArguments } from '@corentinth/chisels';
+import { injectArguments, safely } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
 import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
+import { createDocumentAlreadyExistsError } from './documents.errors';
 import { documentsTable } from './documents.table';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
@@ -25,13 +27,34 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       hardDeleteDocument,
       getExpiredDeletedDocuments,
       getOrganizationStats,
+      getOrganizationDocumentBySha256Hash,
     },
     { db },
   );
 }
 
+async function getOrganizationDocumentBySha256Hash({ sha256Hash, organizationId, db }: { sha256Hash: string; organizationId: string; db: Database }) {
+  const [document] = await db
+    .select()
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.originalSha256Hash, sha256Hash),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
+
+  return { document };
+}
+
 async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Database } & DbInsertableDocument) {
-  const [document] = await db.insert(documentsTable).values(documentToInsert).returning();
+  const [documents, error] = await safely(db.insert(documentsTable).values(documentToInsert).returning());
+
+  if (isUniqueConstraintError({ error })) {
+    throw createDocumentAlreadyExistsError();
+  }
+
+  const [document] = documents ?? [];
 
   return { document };
 }

@@ -5,8 +5,9 @@ import type { DocumentStorageService } from './storage/documents.storage.service
 import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
 import { createLogger } from '../shared/logger/logger';
-import { createDocumentNotFoundError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
+import { getFileSha256Hash } from './documents.services';
 
 const logger = createLogger({ namespace: 'documents:usecases' });
 
@@ -43,6 +44,15 @@ export async function createDocument({
     type: mimeType,
   } = file;
 
+  const { hash } = await getFileSha256Hash({ file });
+
+  // Early check to avoid saving the file and then realizing it already exists with the db constraint
+  const { document: existingDocument } = await documentsRepository.getOrganizationDocumentBySha256Hash({ sha256Hash: hash, organizationId });
+
+  if (existingDocument) {
+    throw createDocumentAlreadyExistsError();
+  }
+
   const documentId = generateDocumentId();
 
   const { originalDocumentStorageKey } = buildOriginalDocumentKey({
@@ -58,7 +68,7 @@ export async function createDocument({
 
   const { text } = await extractDocumentText({ file });
 
-  const { document } = await documentsRepository.saveOrganizationDocument({
+  const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
     id: documentId,
     name: fileName,
     organizationId,
@@ -68,7 +78,18 @@ export async function createDocument({
     originalStorageKey: storageKey,
     mimeType,
     content: text,
-  });
+    originalSha256Hash: hash,
+  }),
+  );
+
+  if (error) {
+    // If the document is not saved, delete the file from the storage
+    await documentsStorageService.deleteFile({ storageKey: originalDocumentStorageKey });
+
+    throw error;
+  }
+
+  const { document } = result;
 
   return { document };
 }

@@ -1,0 +1,2 @@
+ALTER TABLE `documents` ADD `original_sha256_hash` text NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX `documents_organization_id_original_sha256_hash_unique` ON `documents` (`organization_id`,`original_sha256_hash`);

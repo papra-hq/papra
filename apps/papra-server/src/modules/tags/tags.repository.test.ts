@@ -72,7 +72,7 @@ describe('tags repository', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
         documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf' },
+          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash' },
         ],
         tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' }],
       });
