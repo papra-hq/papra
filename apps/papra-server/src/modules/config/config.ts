@@ -7,6 +7,7 @@ import { authConfig } from '../app/auth/auth.config';
 import { databaseConfig } from '../app/database/database.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
+import { emailsConfig } from '../emails/emails.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { createLogger } from '../shared/logger/logger';
 import { tasksConfig } from '../tasks/tasks.config';
@@ -78,6 +79,7 @@ export const configDefinition = {
   auth: authConfig,
   tasks: tasksConfig,
   intakeEmails: intakeEmailsConfig,
+  emails: emailsConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

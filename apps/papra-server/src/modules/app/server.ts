@@ -1,11 +1,12 @@
 import type { Config } from '../config/config.types';
-import type { Auth } from './auth/auth.services';
 import type { Database } from './database/database.types';
 import type { ServerInstanceGenerics } from './server.types';
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { parseConfig } from '../config/config';
+import { createEmailsServices } from '../emails/emails.services';
 import { loggerMiddleware } from '../shared/logger/logger.middleware';
+import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { registerErrorMiddleware } from './middlewares/errors.middleware';
@@ -16,11 +17,9 @@ import { registerStaticAssetsRoutes } from './static-assets/static-assets.routes
 export function createServer({
   db,
   config = parseConfig().config,
-  auth = getAuth({ config, db }).auth,
 }: {
   db: Database;
   config?: Config;
-  auth?: Auth;
 }) {
   const app = new Hono<ServerInstanceGenerics>({ strict: true });
 
@@ -29,6 +28,11 @@ export function createServer({
   app.use((context, next) => {
     context.set('config', config);
     context.set('db', db);
+
+    const emailsServices = createEmailsServices({ config });
+    const authEmailsServices = createAuthEmailsServices({ emailsServices });
+    const { auth } = getAuth({ db, config, authEmailsServices });
+
     context.set('auth', auth);
 
     return next();

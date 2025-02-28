@@ -1,6 +1,5 @@
 import process, { env } from 'node:process';
 import { serve } from '@hono/node-server';
-import { getAuth } from './modules/app/auth/auth.services';
 import { setupDatabase } from './modules/app/database/database';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
@@ -12,9 +11,8 @@ const logger = createLogger({ namespace: 'app-server' });
 
 const { config } = parseConfig({ env });
 const { db, client } = setupDatabase(config.database);
-const { auth } = getAuth({ db, config });
 
-const { app } = createServer({ config, db, auth });
+const { app } = createServer({ config, db });
 const { taskScheduler } = createTaskScheduler({ config, taskDefinitions, tasksArgs: { db } });
 
 const server = serve(
