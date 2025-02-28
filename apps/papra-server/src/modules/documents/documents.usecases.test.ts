@@ -119,7 +119,7 @@ describe('documents usecases', () => {
       ).rejects.toThrow('File not found');
     });
 
-    test('when their is an issue when inserting the document in the db, the file should not be saved in the  storage', async () => {
+    test('when there is an issue when inserting the document in the db, the file should not be saved in the storage', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
