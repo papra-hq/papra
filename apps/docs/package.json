@@ -14,7 +14,9 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "pnpm server:build-types && tsc --noEmit && pnpm server:clean-tsbuild",
+    "server:build-types": "tsc -b ../papra-server --emitDeclarationOnly",
+    "server:clean-tsbuild": "pnpm --filter @papra/papra-app-server run clean:tsbuild"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.31.0",
