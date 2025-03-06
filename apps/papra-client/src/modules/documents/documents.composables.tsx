@@ -1,5 +1,6 @@
 import type { Document } from './documents.types';
 import { safely } from '@corentinth/chisels';
+import { throttle } from 'lodash-es';
 import { createSignal } from 'solid-js';
 import { useConfirmModal } from '../shared/confirm';
 import { promptUploadFiles } from '../shared/files/upload';
@@ -7,6 +8,12 @@ import { isHttpErrorWithCode } from '../shared/http/http-errors';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
 import { deleteDocument, restoreDocument, uploadDocument } from './documents.services';
+
+function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
+  return queryClient.invalidateQueries({
+    queryKey: ['organizations', organizationId],
+  });
+}
 
 export function useDeleteDocument() {
   const { confirm } = useConfirmModal();
@@ -41,9 +48,7 @@ export function useDeleteDocument() {
         organizationId,
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: ['organizations', organizationId],
-      });
+      await invalidateOrganizationDocumentsQuery({ organizationId });
       createToast({ type: 'success', message: 'Document deleted' });
 
       return { hasDeleted: true };
@@ -64,9 +69,7 @@ export function useRestoreDocument() {
         organizationId: document.organizationId,
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: ['organizations', document.organizationId],
-      });
+      await invalidateOrganizationDocumentsQuery({ organizationId: document.organizationId });
 
       createToast({ type: 'success', message: 'Document restored' });
       setIsRestoring(false);
@@ -76,7 +79,9 @@ export function useRestoreDocument() {
 
 export function useUploadDocuments({ organizationId }: { organizationId: string }) {
   const uploadDocuments = async ({ files }: { files: File[] }) => {
-    for (const file of files) {
+    const throttledInvalidateOrganizationDocumentsQuery = throttle(invalidateOrganizationDocumentsQuery, 500);
+
+    await Promise.all(files.map(async (file) => {
       const [, error] = await safely(uploadDocument({ file, organizationId }));
 
       if (isHttpErrorWithCode({ error, code: 'document.already_exists' })) {
@@ -86,13 +91,10 @@ export function useUploadDocuments({ organizationId }: { organizationId: string 
           description: `The document ${file.name} already exists, it has not been uploaded.`,
         });
       }
-    }
 
-    queryClient.invalidateQueries({
-      // Invalidate the whole organization as the documents count and stats might have changed
-      queryKey: ['organizations', organizationId],
-      refetchType: 'all',
-    });
+      await throttledInvalidateOrganizationDocumentsQuery({ organizationId });
+    }),
+    );
   };
 
   return {

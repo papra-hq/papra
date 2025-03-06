@@ -59,16 +59,18 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
   return { document };
 }
 
-async function getOrganizationDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationDocumentsCount({ organizationId, filters, db }: { organizationId: string; filters?: { tags?: string[] }; db: Database }) {
   const [{ documentsCount }] = await db
     .select({
       documentsCount: count(documentsTable.id),
     })
     .from(documentsTable)
+    .leftJoin(documentsTagsTable, eq(documentsTable.id, documentsTagsTable.documentId))
     .where(
       and(
         eq(documentsTable.organizationId, organizationId),
         eq(documentsTable.isDeleted, false),
+        ...(filters?.tags ? filters.tags.map(tag => eq(documentsTagsTable.tagId, tag)) : []),
       ),
     );
 
@@ -91,7 +93,19 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
   return { documentsCount };
 }
 
-async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {
+async function getOrganizationDocuments({
+  organizationId,
+  pageIndex,
+  pageSize,
+  filters,
+  db,
+}: {
+  organizationId: string;
+  pageIndex: number;
+  pageSize: number;
+  filters?: { tags?: string[] };
+  db: Database;
+}) {
   const query = db
     .select({
       document: omit(getTableColumns(documentsTable), ['content']),
@@ -104,6 +118,7 @@ async function getOrganizationDocuments({ organizationId, pageIndex, pageSize, d
       and(
         eq(documentsTable.organizationId, organizationId),
         eq(documentsTable.isDeleted, false),
+        ...(filters?.tags ? filters.tags.map(tag => eq(documentsTagsTable.tagId, tag)) : []),
       ),
     );
 

@@ -1,9 +1,10 @@
+import type { Tag } from '@/modules/tags/tags.types';
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import type { ColumnDef } from '@tanstack/solid-table';
 import type { Document } from '../documents.types';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
-import { Tag } from '@/modules/tags/components/tag.component';
+import { TagLink } from '@/modules/tags/components/tag.component';
 import { Button } from '@/modules/ui/components/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
@@ -47,9 +48,9 @@ export const tagsColumn: ColumnDef<Document> = {
   accessorKey: 'tags',
   cell: data => (
     <div class="text-muted-foreground hidden sm:flex flex-wrap gap-1">
-      <For each={data.getValue<any[]>()}>
+      <For each={data.getValue<Tag[]>()}>
         {tag => (
-          <Tag {...tag} class="text-xs" />
+          <TagLink {...tag} class="text-xs" />
         )}
       </For>
     </div>
@@ -146,9 +147,6 @@ export const DocumentsPaginatedList: Component<{
   return (
     <div>
       <Switch>
-        <Match when={props.documentsCount === 0}>
-          <p>No documents found</p>
-        </Match>
         <Match when={props.documentsCount > 0}>
           <Table>
 

@@ -28,10 +28,14 @@ export async function fetchOrganizationDocuments({
   organizationId,
   pageIndex,
   pageSize,
+  filters,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
+  filters?: {
+    tags?: string[];
+  };
 }) {
   const {
     documents,
@@ -42,6 +46,7 @@ export async function fetchOrganizationDocuments({
     query: {
       pageIndex,
       pageSize,
+      ...filters,
     },
   });
 

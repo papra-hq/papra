@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { getValues } from '@modular-forms/solid';
-import { useParams } from '@solidjs/router';
+import { A, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { type Component, createSignal, For, type JSX, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
@@ -302,9 +302,11 @@ export const TagsPage: Component = () => {
                           </div>
                         </TableCell>
                         <TableCell>{tag.description || <span class="text-muted-foreground">No description</span>}</TableCell>
-                        <TableCell class="flex items-center gap-1">
-                          <div class="i-tabler-file-text size-5 text-muted-foreground" />
-                          {tag.documentsCount}
+                        <TableCell>
+                          <A href={`/organizations/${params.organizationId}/documents?tags=${tag.id}`} class="inline-flex items-center gap-1 hover:underline">
+                            <div class="i-tabler-file-text size-5 text-muted-foreground" />
+                            {tag.documentsCount}
+                          </A>
                         </TableCell>
                         <TableCell class="text-muted-foreground" title={tag.createdAt.toLocaleString()}>
                           {timeAgo({ date: tag.createdAt })}

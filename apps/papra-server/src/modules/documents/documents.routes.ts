@@ -105,6 +105,10 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
       z.object({
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
         pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+        tags: z.union([
+          z.array(z.string()),
+          z.string().transform(value => [value]),
+        ]).optional(),
       }),
     ),
     async (context) => {
@@ -112,7 +116,7 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
       const { db } = getDb({ context });
 
       const { organizationId } = context.req.valid('param');
-      const { pageIndex, pageSize } = context.req.valid('query');
+      const { pageIndex, pageSize, tags } = context.req.valid('query');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -123,8 +127,8 @@ function setupGetDocumentsRoute({ app }: { app: ServerInstance }) {
         { documents },
         { documentsCount },
       ] = await Promise.all([
-        documentsRepository.getOrganizationDocuments({ organizationId, pageIndex, pageSize }),
-        documentsRepository.getOrganizationDocumentsCount({ organizationId }),
+        documentsRepository.getOrganizationDocuments({ organizationId, pageIndex, pageSize, filters: { tags } }),
+        documentsRepository.getOrganizationDocumentsCount({ organizationId, filters: { tags } }),
       ]);
 
       return context.json({
