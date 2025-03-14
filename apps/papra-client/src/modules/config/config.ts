@@ -26,7 +26,7 @@ export const buildTimeConfig = {
   posthog: {
     apiKey: asString(import.meta.env.VITE_POSTHOG_API_KEY),
     host: asString(import.meta.env.VITE_POSTHOG_HOST),
-    isEnabled: asBoolean(import.meta.env.VITE_POSTHOG_API_KEY, false),
+    isEnabled: asBoolean(import.meta.env.VITE_POSTHOG_ENABLED, false),
   },
   intakeEmails: {
     isEnabled: asBoolean(import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED, false),
