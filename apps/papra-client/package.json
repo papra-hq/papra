@@ -48,6 +48,7 @@
     "lodash-es": "^4.17.21",
     "ofetch": "^1.4.1",
     "plausible-tracker": "^0.3.9",
+    "posthog-js": "^1.231.0",
     "radix3": "^1.1.2",
     "solid-js": "^1.8.11",
     "solid-sonner": "^0.2.8",

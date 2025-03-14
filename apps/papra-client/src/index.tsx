@@ -10,9 +10,10 @@ import { CommandPaletteProvider } from './modules/command-palette/command-palett
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';
 import { I18nProvider } from './modules/i18n/i18n.provider';
-import { PlausibleTracker } from './modules/plausible/components/plausible-tracker.component';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
+import { IdentifyUser } from './modules/tracking/components/identify-user.component';
+import { PageViewTracker } from './modules/tracking/components/pageview-tracker.component';
 import { Toaster } from './modules/ui/components/sonner';
 import { routes } from './routes';
 import '@unocss/reset/tailwind.css';
@@ -30,7 +31,9 @@ render(
         children={routes}
         root={props => (
           <QueryClientProvider client={queryClient}>
-            <PlausibleTracker />
+            <PageViewTracker />
+            <IdentifyUser />
+
             <Suspense>
               <I18nProvider>
                 <ConfirmModalProvider>
