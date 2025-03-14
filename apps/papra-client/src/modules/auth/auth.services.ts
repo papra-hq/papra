@@ -12,7 +12,7 @@ export function createAuthClient() {
   });
 
   return {
-    // we can't spread the client because it a proxy object
+    // we can't spread the client because it is a proxy object
     signIn: client.signIn,
     signUp: client.signUp,
     forgetPassword: client.forgetPassword,
