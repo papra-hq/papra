@@ -1,6 +1,7 @@
 import type { Config } from '../config/config.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
@@ -13,8 +14,8 @@ describe('documents usecases', () => {
     test('creating a document save the file to the storage and registers a record in the db', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -62,8 +63,8 @@ describe('documents usecases', () => {
     test('in the same organization, we should be able to have two documents with the same content, an error is raised if the document already exists', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -122,8 +123,8 @@ describe('documents usecases', () => {
     test('when there is an issue when inserting the document in the db, the file should not be saved in the storage', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });

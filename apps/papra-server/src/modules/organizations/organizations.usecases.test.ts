@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { ORGANIZATION_ROLE_MEMBER } from './organizations.constants';
 import { createUserNotInOrganizationError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { ensureUserIsInOrganization } from './organizations.usecases';
@@ -10,8 +11,8 @@ describe('organizations usecases', () => {
       test('the user is in the organization and the organization exists', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
@@ -28,7 +29,7 @@ describe('organizations usecases', () => {
       test('the user is not in the organization', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });

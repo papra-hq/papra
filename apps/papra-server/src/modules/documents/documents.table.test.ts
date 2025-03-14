@@ -1,6 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
 import { documentsTable } from './documents.table';
 
 describe('documents table', () => {
@@ -9,8 +10,8 @@ describe('documents table', () => {
       test('when inserting a document, a corresponding row is inserted in the documents_fts table', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
         await db.insert(documentsTable).values([
@@ -70,8 +71,8 @@ describe('documents table', () => {
       test('when updating a document, the corresponding row in the documents_fts table is updated', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
         await db.insert(documentsTable).values([
@@ -133,8 +134,8 @@ describe('documents table', () => {
       test('when deleting a document, the corresponding row in the documents_fts table is deleted', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
         await db.insert(documentsTable).values([

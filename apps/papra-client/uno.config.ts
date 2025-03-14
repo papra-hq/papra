@@ -1,5 +1,3 @@
-import { ssoProviders } from '@/modules/auth/auth.constants';
-import { iconByFileType } from '@/modules/documents/document.models';
 import { uniq, values } from 'lodash-es';
 import {
   defineConfig,
@@ -10,6 +8,8 @@ import {
   transformerVariantGroup,
 } from 'unocss';
 import presetAnimations from 'unocss-preset-animations';
+import { ssoProviders } from './src/modules/auth/auth.constants';
+import { iconByFileType } from './src/modules/documents/document.models';
 
 export default defineConfig({
   presets: [

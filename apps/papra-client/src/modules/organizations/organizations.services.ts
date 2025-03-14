@@ -1,71 +1,51 @@
-import type { Organization, OrganizationWithStats } from './organizations.types';
-import { apiClient } from '../shared/http/api-client';
+import slugify from '@sindresorhus/slugify';
+import { organizationClient } from '../auth/auth.services';
 
 export async function fetchOrganizations() {
-  const { organizations } = await apiClient<{ organizations: Organization[] }>({
-    path: '/api/organizations',
-    method: 'GET',
-  });
+  const { data: organizations } = await organizationClient.list();
 
   return {
-    organizations: organizations.map(organization => ({
-      ...organization,
-      createdAt: new Date(organization.createdAt),
-      updatedAt: organization.updatedAt ? new Date(organization.updatedAt) : undefined,
-    })),
+    organizations: organizations ?? [],
   };
 }
 
 export async function createOrganization({ name }: { name: string }) {
-  const { organization } = await apiClient<{ organization: Organization }>({
-    path: '/api/organizations',
-    method: 'POST',
-    body: { name },
+  const { data: organization, error } = await organizationClient.create({
+    name,
+    // Currently, we do not need/use the slug, so we generate a random one, as it is required by BetterAuth
+    slug: `${slugify(name)}-${Math.random().toString(36).substring(2)}`,
   });
 
+  if (error) {
+    throw Object.assign(new Error(error.message), error);
+  }
+
   return {
-    organization: {
-      ...organization,
-      createdAt: new Date(organization.createdAt),
-      updatedAt: organization.updatedAt ? new Date(organization.updatedAt) : undefined,
-    },
+    organization,
   };
 }
 
 export async function updateOrganization({ organizationId, name }: { organizationId: string; name: string }) {
-  const { organization } = await apiClient<{ organization: Organization }>({
-    path: `/api/organizations/${organizationId}`,
-    method: 'PUT',
-    body: { name },
+  const { data: organization } = await organizationClient.update({
+    organizationId,
+    data: {
+      name,
+    },
   });
 
   return {
-    organization: {
-      ...organization,
-      createdAt: new Date(organization.createdAt),
-      updatedAt: organization.updatedAt ? new Date(organization.updatedAt) : undefined,
-    },
+    organization,
   };
 }
 
 export async function fetchOrganization({ organizationId }: { organizationId: string }) {
-  const { organization } = await apiClient<{ organization: OrganizationWithStats }>({
-    path: `/api/organizations/${organizationId}`,
-    method: 'GET',
-  });
+  const { data: organization } = await organizationClient.getFullOrganization({ query: { organizationId } });
 
   return {
-    organization: {
-      ...organization,
-      createdAt: new Date(organization.createdAt),
-      updatedAt: organization.updatedAt ? new Date(organization.updatedAt) : undefined,
-    },
+    organization,
   };
 }
 
 export async function deleteOrganization({ organizationId }: { organizationId: string }) {
-  await apiClient({
-    path: `/api/organizations/${organizationId}`,
-    method: 'DELETE',
-  });
+  await organizationClient.delete({ organizationId });
 }

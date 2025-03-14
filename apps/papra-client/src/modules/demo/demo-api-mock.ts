@@ -69,33 +69,6 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
-    path: '/api/organizations',
-    method: 'GET',
-    handler: async () => {
-      const organizations = await getValues(organizationStorage);
-
-      return { organizations };
-    },
-  }),
-
-  ...defineHandler({
-    path: '/api/organizations',
-    method: 'POST',
-    handler: async ({ body }) => {
-      const organization = {
-        id: `org_${Math.random().toString(36).slice(2)}`,
-        name: get(body, 'name'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      await organizationStorage.setItem(organization.id, organization);
-
-      return { organization };
-    },
-  }),
-
-  ...defineHandler({
     path: '/api/organizations/:organizationId/documents',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {
@@ -273,51 +246,6 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(file, { status: 404 });
 
       return deserializeFile(file);
-    },
-  }),
-
-  ...defineHandler({
-    path: '/api/organizations/:organizationId',
-    method: 'GET',
-    handler: async ({ params: { organizationId } }) => {
-      const organization = await organizationStorage.getItem(organizationId);
-
-      assert(organization, { status: 403 });
-
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
-
-      return {
-        organization: {
-          ...organization,
-          documentsCount: documents.length,
-          documentsSize: documents.reduce((acc, document) => acc + document.originalSize, 0),
-        },
-      };
-    },
-  }),
-
-  ...defineHandler({
-    path: '/api/organizations/:organizationId',
-    method: 'DELETE',
-    handler: async ({ params: { organizationId } }) => {
-      await organizationStorage.removeItem(organizationId);
-    },
-  }),
-
-  ...defineHandler({
-    path: '/api/organizations/:organizationId',
-    method: 'PUT',
-    handler: async ({ params: { organizationId }, body }) => {
-      const organization = await organizationStorage.getItem(organizationId);
-
-      assert(organization, { status: 403 });
-
-      organization.name = get(body, 'name');
-      organization.updatedAt = new Date();
-
-      await organizationStorage.setItem(organizationId, organization);
-
-      return { organization };
     },
   }),
 

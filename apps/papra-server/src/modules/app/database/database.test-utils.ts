@@ -1,7 +1,7 @@
 import type { Database } from './database.types';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
-import { organizationsTable, organizationUsersTable } from '../../organizations/organizations.table';
+import { organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
 import { setupDatabase } from './database';
@@ -21,32 +21,28 @@ async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDa
   };
 }
 
-async function seedDatabase({
-  db,
-  users,
-  organizations,
-  organizationUsers,
-  documents,
-  tags,
-  documentsTags,
-  intakeEmails,
-}: {
-  db: Database;
-  users?: typeof usersTable.$inferInsert[];
-  organizations?: typeof organizationsTable.$inferInsert[];
-  organizationUsers?: typeof organizationUsersTable.$inferInsert[];
-  documents?: typeof documentsTable.$inferInsert[];
-  tags?: typeof tagsTable.$inferInsert[];
-  documentsTags?: typeof documentsTagsTable.$inferInsert[];
-  intakeEmails?: typeof intakeEmailsTable.$inferInsert[];
-}) {
-  await Promise.all([
-    users && db.insert(usersTable).values(users).execute(),
-    organizations && db.insert(organizationsTable).values(organizations).execute(),
-    organizationUsers && db.insert(organizationUsersTable).values(organizationUsers).execute(),
-    documents && db.insert(documentsTable).values(documents).execute(),
-    tags && db.insert(tagsTable).values(tags).execute(),
-    documentsTags && db.insert(documentsTagsTable).values(documentsTags).execute(),
-    intakeEmails && db.insert(intakeEmailsTable).values(intakeEmails).execute(),
-  ]);
+const seedTables = {
+  users: usersTable,
+  organizations: organizationsTable,
+  organizationMembers: organizationMembersTable,
+  documents: documentsTable,
+  tags: tagsTable,
+  documentsTags: documentsTagsTable,
+  intakeEmails: intakeEmailsTable,
+} as const;
+
+type SeedTablesRows = {
+  [K in keyof typeof seedTables]?: typeof seedTables[K] extends { $inferInsert: infer T } ? T[] : never;
+};
+
+async function seedDatabase({ db, ...seedRows }: { db: Database } & SeedTablesRows) {
+  await Promise.all(
+    Object
+      .entries(seedRows)
+      .map(([table, rows]) => db
+        .insert(seedTables[table as keyof typeof seedTables])
+        .values(rows)
+        .execute(),
+      ),
+  );
 }

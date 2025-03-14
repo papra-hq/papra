@@ -1,4 +1,5 @@
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { organizationsTable } from '../../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../../shared/db/columns.helpers';
 import { usersTable } from '../../users/users.table';
 
@@ -13,6 +14,7 @@ export const sessionsTable = sqliteTable(
     expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
+    activeOrganizationId: text('active_organization_id').references(() => organizationsTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
   },
   table => [
     // To select sessions by token

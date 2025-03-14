@@ -50,6 +50,13 @@
       "when": 1740775396113,
       "tag": "0006_documents-hash",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1741343969980,
+      "tag": "0007_better-auth-orgs",
+      "breakpoints": true
     }
   ]
 }

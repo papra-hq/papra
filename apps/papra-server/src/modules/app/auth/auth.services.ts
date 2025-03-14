@@ -4,6 +4,8 @@ import type { AuthEmailsServices } from './auth.emails.services';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
+import { organization } from 'better-auth/plugins';
+import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
 import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
@@ -17,7 +19,9 @@ export function getAuth({ db, config, authEmailsServices }: { db: Database; conf
 
   const auth = betterAuth({
     secret,
-
+    plugins: [
+      organization(),
+    ],
     baseURL: config.server.baseUrl,
     trustedOrigins: [config.client.baseUrl],
     logger: {
@@ -54,6 +58,9 @@ export function getAuth({ db, config, authEmailsServices }: { db: Database; conf
           account: accountsTable,
           session: sessionsTable,
           verification: verificationsTable,
+          organization: organizationsTable,
+          member: organizationMembersTable,
+          invitation: organizationInvitationsTable,
         },
       },
     ),

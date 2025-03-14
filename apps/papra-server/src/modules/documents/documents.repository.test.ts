@@ -1,6 +1,7 @@
 import { map } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 
@@ -9,8 +10,8 @@ describe('documents repository', () => {
     test('a document can be created, retrieved, and soft deleted', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -73,7 +74,7 @@ describe('documents repository', () => {
     test('a document is unique by organization, an error is raised if a document with the same hash already exists', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -108,8 +109,8 @@ describe('documents repository', () => {
     test('provides full text search on document name, original name, and content', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationUsers: [{ organizationId: 'organization-1', userId: 'user-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         documents: [
           { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
           { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2' },
@@ -142,12 +143,12 @@ describe('documents repository', () => {
           { id: 'user-2', email: 'user-2@example.com' },
         ],
         organizations: [
-          { id: 'organization-1', name: 'Organization 1' },
-          { id: 'organization-2', name: 'Organization 2' },
+          { id: 'organization-1', name: 'Organization 1', slug: 'organization-1' },
+          { id: 'organization-2', name: 'Organization 2', slug: 'organization-2' },
         ],
-        organizationUsers: [
-          { organizationId: 'organization-1', userId: 'user-1' },
-          { organizationId: 'organization-2', userId: 'user-2' },
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },
+          { organizationId: 'organization-2', userId: 'user-2', role: ORGANIZATION_ROLE_MEMBER },
         ],
         documents: [
           { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 200, originalSha256Hash: 'hash1' },
@@ -175,10 +176,10 @@ describe('documents repository', () => {
           { id: 'user-1', email: 'user-1@example.com' },
         ],
         organizations: [
-          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-1', name: 'Organization 1', slug: 'organization-1' },
         ],
-        organizationUsers: [
-          { organizationId: 'organization-1', userId: 'user-1' },
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },
         ],
       });
 
