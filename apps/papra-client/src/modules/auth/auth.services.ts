@@ -12,7 +12,14 @@ export function createAuthClient() {
   });
 
   return {
-    ...client,
+    // we can't spread the client because it a proxy object
+    signIn: client.signIn,
+    signUp: client.signUp,
+    forgetPassword: client.forgetPassword,
+    resetPassword: client.resetPassword,
+    sendVerificationEmail: client.sendVerificationEmail,
+    useSession: client.useSession,
+    organization: client.organization,
     signOut: async () => {
       trackingServices.capture({ event: 'User logged out' });
       const result = await client.signOut();
