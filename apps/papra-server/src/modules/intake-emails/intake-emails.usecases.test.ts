@@ -36,7 +36,7 @@ describe('intake-emails usecases', () => {
           documentsStorageService,
         });
 
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
 
         expect(
           documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName', 'content'])),

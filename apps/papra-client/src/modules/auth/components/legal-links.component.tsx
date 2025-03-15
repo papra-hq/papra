@@ -22,7 +22,7 @@ export const AuthLegalLinks: Component = () => {
           </Button>
         ),
         privacy: (
-          <Button variant="link" as={A} class="inline px-0" href={createVitrineUrl({ path: 'privacy-policy' })}>
+          <Button variant="link" as={A} class="inline px-0" href={createVitrineUrl({ path: 'privacy' })}>
             {t('auth.legal-links.privacy')}
           </Button>
         ),
