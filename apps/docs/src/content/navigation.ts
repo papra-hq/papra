@@ -24,4 +24,16 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
       },
     ],
   },
+  {
+    label: 'Resources',
+    items: [
+      {
+        label: 'Security Policy',
+        link: 'https://github.com/papra-hq/papra/blob/main/SECURITY.md',
+        attrs: {
+          target: '_blank',
+        },
+      },
+    ],
+  },
 ];
