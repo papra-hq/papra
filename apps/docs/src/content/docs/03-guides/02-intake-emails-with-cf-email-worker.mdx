@@ -1,5 +1,5 @@
 ---
-title: Setup Papra to receive emails
+title: Setup Intake Emails with CF Email Workers
 description: Step-by-step guide to setup a Cloudflare Email worker to receive emails in your Papra instance.
 slug: guides/intake-emails-with-cloudflare-email-workers
 ---
@@ -10,12 +10,20 @@ import { Steps } from '@astrojs/starlight/components';
 This guide will show you how to setup a Cloudflare Email worker to receive emails in your Papra instance.
 
 <Aside type="note">
-  Currently, only [Cloudflare Email Workers](https://developers.cloudflare.com/email-routing/email-workers/) are officially supported to handle email-to-http. More solutions may be added in the future.
+  Setting up a Papra Intake Emails with a Cloudflare Email worker requires bit of knowledge about how to setup a CF Email worker and how to configure your Papra instance to receive emails.
+
+  For a simpler solution, you can use the official [OwlRelay integration](/docs/guides/intake-emails-with-papra-email-intake) guide.
 </Aside>
 
 ## Prerequisites
 
-In order to follow this guide, you need to have a Cloudflare account with a domain and a publicly accessible Papra instance.
+In order to follow this guide, you need:
+- a [Cloudflare](https://www.cloudflare.com/) account
+- a custom domain name available on Cloudflare
+- a publicly accessible Papra instance
+- basic development skills (git and node.js to setup the Email Worker)
+
+If you prefer a simpler solution, you can use the official [OwlRelay integration](/docs/guides/intake-emails-with-papra-email-intake) guide.
 
 ## How it works
 
@@ -72,9 +80,23 @@ The code for the Email Worker proxy is available in the [papra-hq/email-proxy](h
 3. **Configure your Papra instance**
 
    In your Papra instance, add the following environment variables:
-    - `INTAKE_EMAILS_IS_ENABLED`: Set to `true` to enable the email intake feature.
-    - `INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN`: The domain from which the intake email will be generated (eg. `domain.com`).
-    - `INTAKE_EMAILS_WEBHOOK_SECRET`: The secret key to authenticate the webhook requests, set the same as the `WEBHOOK_SECRET` environment variable in the Email Worker.
+
+   ```bash
+   # Enable intake emails
+   INTAKE_EMAILS_IS_ENABLED=true
+
+   # Tell your Papra instance that it can generate any email address from the
+   # domain you setup in the Email Worker as it's a wildcard redirection
+   INTAKE_EMAILS_DRIVER=random-username
+
+   # This is the domain from which the intake email will be generated 
+   # eg. `domain.com`
+   INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=papra.email
+
+   # This is the secret key to authenticate the webhook requests
+   # set the same as the `WEBHOOK_SECRET` variable in the Email Worker
+   INTAKE_EMAILS_WEBHOOK_SECRET=a-random-key
+   ```
 
 4. **Configure the Email Routing**
 

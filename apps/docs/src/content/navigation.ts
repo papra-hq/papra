@@ -19,7 +19,11 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
     label: 'Guides',
     items: [
       {
-        label: 'Setup intake emails',
+        label: 'Setup intake emails with OwlRelay',
+        slug: 'guides/intake-emails-with-owlrelay',
+      },
+      {
+        label: 'Setup intake emails with CF Email Workers',
         slug: 'guides/intake-emails-with-cloudflare-email-workers',
       },
     ],

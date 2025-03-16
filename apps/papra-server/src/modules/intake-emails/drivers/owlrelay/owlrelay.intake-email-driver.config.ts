@@ -15,10 +15,4 @@ export const owlrelayIntakeEmailDriverConfig = {
     default: undefined,
     env: 'OWLRELAY_WEBHOOK_URL',
   },
-  webhookSecret: {
-    doc: 'The secret used to verify the webhook from OwlRelay',
-    schema: z.string(),
-    default: 'change-me',
-    env: 'OWLRELAY_WEBHOOK_SECRET',
-  },
 } as const satisfies ConfigDefinition;

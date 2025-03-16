@@ -1,0 +1,88 @@
+---
+title: Using Docker Compose
+slug: self-hosting/using-docker-compose
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Docker Compose makes it easy to deploy Papra on your server or local machine. Follow these simple steps to get your instance up and running quickly.
+
+<Steps>
+
+1. Prepare your environment
+
+    Make sure you have [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your system.
+
+    Verify your installation:
+
+    ```bash frame="none"
+    docker --version
+    ```
+
+2. Create Docker Compose file
+
+    Create a file named `docker-compose.yml` with the following content:
+
+    ```yaml
+    services:
+      papra:
+        image: corentinth/papra:latest-rootless
+        ports:
+          - '1221:1221'
+        volumes:
+          - papra-data:/app/app-data
+        restart: unless-stopped
+
+    volumes:
+      papra-data:
+        driver: local
+    ```
+
+3. Start Papra
+
+    From the directory containing your `docker-compose.yml` file, run:
+
+    ```bash
+    docker compose up -d
+    ```
+
+    This command downloads the latest Papra image, sets up the container, and starts the Papra service.
+
+4. Access Papra
+
+    Once your container is running, access Papra via your browser at:
+
+    ```
+    http://localhost:1221
+    ```
+
+    Your Papra instance is now ready for use!
+
+5. To go further
+
+    Check the [configuration](/self-hosting/configuration) page for more information on how to configure your Papra instance.
+
+</Steps>
+
+## Maintenance
+
+Check logs
+
+```bash
+docker compose logs -f
+```
+
+Stop the service
+
+```bash
+docker compose down
+```
+
+Update Papra
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+You're all set! Enjoy managing your documents with Papra.

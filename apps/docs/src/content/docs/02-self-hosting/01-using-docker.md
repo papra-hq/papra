@@ -6,9 +6,20 @@ slug: self-hosting/using-docker
 
 Papra can be easily installed and run using Docker. This method is recommended for users who want a quick and straightforward way to deploy their own instance of Papra with minimal setup.
 
+- Single lightweight image
+- Only one container to manage
+- Available for all platforms (arm64, arm/v7, x86_64)
+- Root and Rootless image variants
+
 ## Prerequisites
 
-Before you begin, ensure that you have Docker installed on your system. You can download and install Docker from the official Docker website.
+Before you begin, ensure that you have Docker installed on your system. You can download and install Docker from the official [Docker website](https://www.docker.com/get-started).
+
+Verify your installation:
+
+```bash frame="none"
+docker --version
+```
 
 ## Root and Rootless installation
 

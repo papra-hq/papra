@@ -1,16 +1,27 @@
 :root[data-theme='dark'] {
-    --sl-color-text-accent: #d9fe7a;
-    --sl-color-accent-high: #d9fe7a!important;
+    --background-color: #050505!important;
+    --accent-color: #fff!important;
+    --foreground-color: #f6f6f6!important;
 
-    --sl-color-bg: #141414!important;
-    --sl-rapide-ui-header-bg-color: #141414!important;
-    --sl-color-bg-sidebar: #141414!important;
+    --sl-color-text: var(--foreground-color)!important;
+
+    --sl-color-text-accent: var(--accent-color)!important;
+    --sl-color-accent-high: var(--accent-color)!important;
+
+    --sl-color-bg: var(--background-color)!important;
+    --sl-rapide-ui-header-bg-color: var(--background-color)!important;
+    --sl-color-bg-sidebar: var(--background-color)!important;
 }
 
 .site-title {
     color:inherit !important;
     gap: 0.5rem !important;
 }
+
+:root[data-theme='dark'] .site-title {
+    color:#fff !important;
+}
+
 
 .site-title img {
     width: 1.8rem !important;

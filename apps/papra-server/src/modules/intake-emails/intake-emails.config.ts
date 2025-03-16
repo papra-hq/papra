@@ -17,14 +17,8 @@ export const intakeEmailsConfig = {
     default: 'false',
     env: 'INTAKE_EMAILS_IS_ENABLED',
   },
-  emailGenerationDomain: {
-    doc: 'The domain to use when generating email addresses for intake emails',
-    schema: z.string(),
-    default: 'papra.email',
-    env: 'INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN',
-  },
   driver: {
-    doc: 'The driver to use when generating email addresses for intake emails',
+    doc: `The driver to use when generating email addresses for intake emails, value can be one of: ${Object.keys(intakeEmailDrivers).map(x => `\`${x}\``).join(', ')}`,
     schema: z.enum(Object.keys(intakeEmailDrivers) as [string, ...string[]]),
     default: RANDOM_USERNAME_INTAKE_EMAIL_DRIVER_NAME,
     env: 'INTAKE_EMAILS_DRIVER',

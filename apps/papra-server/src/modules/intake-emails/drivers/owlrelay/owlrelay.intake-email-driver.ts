@@ -8,6 +8,7 @@ export const OWLRELAY_INTAKE_EMAIL_DRIVER_NAME = 'owlrelay';
 
 export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ config }) => {
   const { baseUrl } = config.server;
+  const { webhookSecret } = config.intakeEmails;
   const { owlrelayApiKey, webhookUrl: configuredWebhookUrl } = config.intakeEmails.drivers.owlrelay;
 
   const client = createClient({
@@ -22,6 +23,7 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
       const { domain, username } = await client.createEmail({
         username: generateHumanReadableId(),
         webhookUrl,
+        webhookSecret,
       });
 
       const emailAddress = buildEmailAddress({ username, domain });
