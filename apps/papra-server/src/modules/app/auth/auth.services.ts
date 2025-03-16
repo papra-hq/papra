@@ -3,8 +3,6 @@ import type { Database } from '../database/database.types';
 import type { AuthEmailsServices } from './auth.emails.services';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { APIError } from 'better-auth/api';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
 import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
@@ -54,26 +52,9 @@ export function getAuth({ db, config, authEmailsServices }: { db: Database; conf
           account: accountsTable,
           session: sessionsTable,
           verification: verificationsTable,
-          organization: organizationsTable,
-          member: organizationMembersTable,
-          invitation: organizationInvitationsTable,
         },
       },
     ),
-
-    databaseHooks: {
-      user: {
-        create: {
-          before: async (data) => {
-            if (!config.auth.isRegistrationEnabled) {
-              throw new APIError('FORBIDDEN', { message: 'Registration is disabled' });
-            }
-
-            return { data };
-          },
-        },
-      },
-    },
 
     advanced: {
       // Drizzle tables handle the id generation
@@ -84,11 +65,15 @@ export function getAuth({ db, config, authEmailsServices }: { db: Database; conf
         enabled: config.auth.providers.github.isEnabled,
         clientId: config.auth.providers.github.clientId,
         clientSecret: config.auth.providers.github.clientSecret,
+        disableSignUp: !config.auth.isRegistrationEnabled,
+        disableImplicitSignUp: !config.auth.isRegistrationEnabled,
       },
       google: {
         enabled: config.auth.providers.google.isEnabled,
         clientId: config.auth.providers.google.clientId,
         clientSecret: config.auth.providers.google.clientSecret,
+        disableSignUp: !config.auth.isRegistrationEnabled,
+        disableImplicitSignUp: !config.auth.isRegistrationEnabled,
       },
     },
     user: {
