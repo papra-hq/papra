@@ -135,6 +135,25 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/statistics',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+
+      return {
+        organizationStats: {
+          documentsCount: documents.length,
+          documentsSize: documents.reduce((acc, document) => acc + document.originalSize, 0),
+        },
+      };
+    },
+  }),
+
+  ...defineHandler({
     path: '/api/organizations/:organizationId/documents/search',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {

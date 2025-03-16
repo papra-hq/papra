@@ -20,6 +20,7 @@ export function registerDocumentsPrivateRoutes({ app }: { app: ServerInstance })
   setupSearchDocumentsRoute({ app });
   setupRestoreDocumentRoute({ app });
   setupGetDeletedDocumentsRoute({ app });
+  setupGetOrganizationDocumentsStatsRoute({ app });
   setupGetDocumentRoute({ app });
   setupDeleteDocumentRoute({ app });
   setupGetDocumentFileRoute({ app });
@@ -332,6 +333,34 @@ function setupSearchDocumentsRoute({ app }: { app: ServerInstance }) {
 
       return context.json({
         documents,
+      });
+    },
+  );
+}
+
+function setupGetOrganizationDocumentsStatsRoute({ app }: { app: ServerInstance }) {
+  app.get(
+    '/api/organizations/:organizationId/documents/statistics',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { db } = getDb({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { documentsCount, documentsSize } = await documentsRepository.getOrganizationStats({ organizationId });
+
+      return context.json({
+        organizationStats: {
+          documentsCount,
+          documentsSize,
+        },
       });
     },
   );

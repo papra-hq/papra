@@ -185,3 +185,12 @@ export async function searchDocuments({
     })),
   };
 }
+
+export async function getOrganizationDocumentsStats({ organizationId }: { organizationId: string }) {
+  const { organizationStats } = await apiClient<{ organizationStats: { documentsCount: number; documentsSize: number } }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/statistics`,
+  });
+
+  return { organizationStats };
+}

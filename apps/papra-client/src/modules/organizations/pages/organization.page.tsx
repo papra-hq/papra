@@ -1,13 +1,12 @@
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
 import { useUploadDocuments } from '@/modules/documents/documents.composables';
-import { fetchOrganizationDocuments } from '@/modules/documents/documents.services';
+import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
 import { Button } from '@/modules/ui/components/button';
 import { formatBytes } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { type Component, createSignal, Show, Suspense } from 'solid-js';
-import { fetchOrganization } from '../organizations.services';
 
 export const OrganizationPage: Component = () => {
   const params = useParams();
@@ -24,8 +23,8 @@ export const OrganizationPage: Component = () => {
         placeholderData: keepPreviousData,
       },
       {
-        queryKey: ['organizations', params.organizationId],
-        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+        queryKey: ['organizations', params.organizationId, 'documents', 'stats'],
+        queryFn: () => getOrganizationDocumentsStats({ organizationId: params.organizationId }),
       },
     ],
   }));
@@ -60,13 +59,13 @@ export const OrganizationPage: Component = () => {
                     Upload documents
                   </Button>
 
-                  <Show when={query[1].data?.organization}>
-                    {organization => (
+                  <Show when={query[1].data?.organizationStats}>
+                    {organizationStats => (
                       <>
                         <div class="border rounded-lg p-2 flex items-center gap-4 py-4 px-6">
                           <div class="flex gap-2 items-baseline">
                             <span class="font-light text-2xl">
-                              {organization().documentsCount}
+                              {organizationStats().documentsCount}
                             </span>
                             <span class="text-muted-foreground">
                               documents in total
@@ -77,7 +76,7 @@ export const OrganizationPage: Component = () => {
                         <div class="border rounded-lg p-2 flex items-center gap-4 py-4 px-6">
                           <div class="flex gap-2 items-baseline">
                             <span class="font-light text-2xl">
-                              {formatBytes({ bytes: organization().documentsSize, base: 1000 })}
+                              {formatBytes({ bytes: organizationStats().documentsSize, base: 1000 })}
                             </span>
                             <span class="text-muted-foreground">
                               total size
