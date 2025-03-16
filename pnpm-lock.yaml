@@ -12,9 +12,6 @@ catalogs:
     '@types/node':
       specifier: ^22.5.4
       version: 22.10.7
-    '@vitest/coverage-v8':
-      specifier: ^3.0.2
-      version: 3.0.2
     eslint:
       specifier: ^9.10.0
       version: 9.18.0
@@ -96,9 +93,6 @@ importers:
       '@pdfslick/solid':
         specifier: ^2.0.0
         version: 2.2.0(react@18.3.1)(solid-js@1.9.5)(use-sync-external-store@1.2.2(react@18.3.1))
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
       '@solid-primitives/storage':
         specifier: ^4.2.1
         version: 4.3.1(solid-js@1.9.5)
@@ -135,9 +129,6 @@ importers:
       ofetch:
         specifier: ^1.4.1
         version: 1.4.1
-      plausible-tracker:
-        specifier: ^0.3.9
-        version: 0.3.9
       posthog-js:
         specifier: ^1.231.0
         version: 1.231.0
@@ -232,9 +223,6 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.7
         version: 1.13.8(hono@4.7.4)
-      '@hono/oauth-providers':
-        specifier: ^0.6.2
-        version: 0.6.2(hono@4.7.4)
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -280,9 +268,6 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.19.3
-      unpdf:
-        specifier: ^0.12.1
-        version: 0.12.1
       zod:
         specifier: ^3.24.1
         version: 3.24.2
@@ -1732,12 +1717,6 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/oauth-providers@0.6.2':
-    resolution: {integrity: sha512-Uo2Lf+GnaPGebkC4GUQMRD9spIKonav/gWwSapEJhCKQjq1WVxTLIlCykNRhJtcizPCPc6OAV3A9RAYk0kX9XQ==}
-    engines: {node: '>=18.4.0'}
-    peerDependencies:
-      hono: '>=3.*'
-
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -2313,14 +2292,6 @@ packages:
   '@simplewebauthn/server@13.1.1':
     resolution: {integrity: sha512-1hsLpRHfSuMB9ee2aAdh0Htza/X3f4djhYISrggqGe3xopNjOcePiSDkDDoPzDYaaMCrbqGP1H2TYU7bgL9PmA==}
     engines: {node: '>=20.0.0'}
-
-  '@sindresorhus/slugify@2.2.1':
-    resolution: {integrity: sha512-MkngSCRZ8JdSOCHRaYd+D01XhvU3Hjy6MGl06zhOk614hp9EOAp5gIkBeQg7wtmxpitU6eAL4kdiRMcJa2dlrw==}
-    engines: {node: '>=12'}
-
-  '@sindresorhus/transliterate@1.6.0':
-    resolution: {integrity: sha512-doH1gimEu3A46VX6aVxpHTeHrytJAG6HgdxntYnCFiIFHEM/ZGpG8KiZGBChchjQmG0XFIBL552kBTjVcMZXwQ==}
-    engines: {node: '>=12'}
 
   '@smithy/abort-controller@4.0.1':
     resolution: {integrity: sha512-fiUIYgIgRjMWznk6iLJz35K2YxSLHzLBA/RC6lBrKfQ8fHbPfvk7Pk9UvpKoHgJjI18MnbPuEju53zcVy6KF1g==}
@@ -4737,7 +4708,6 @@ packages:
 
   libsql@0.4.7:
     resolution: {integrity: sha512-T9eIRCs6b0J1SHKYIvD8+KCJMcWZ900iZyxdnSCdqxN12Z1ijzT+jY5nrk72Jw4B0HGzms2NgpryArlJqvc3Lw==}
-    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   lines-and-columns@1.2.4:
@@ -5359,10 +5329,6 @@ packages:
 
   pkg-types@2.1.0:
     resolution: {integrity: sha512-wmJwA+8ihJixSoHKxZJRBQG1oY8Yr9pGLzRmSsNms0iNWyHHAlZCa7mmKiFR10YPZuz/2k169JiS/inOjBCZ2A==}
-
-  plausible-tracker@0.3.9:
-    resolution: {integrity: sha512-hMhneYm3GCPyQon88SZrVJx+LlqhM1kZFQbuAgXPoh/Az2YvO1B6bitT9qlhpiTdJlsT5lsr3gPmzoVjb5CDXA==}
-    engines: {node: '>=10'}
 
   playwright-core@1.51.0:
     resolution: {integrity: sha512-x47yPE3Zwhlil7wlNU/iktF7t2r/URR3VLbH6EknJd/04Qc/PSJ0EY3CMXipmglLG+zyRxW6HNo2EGbKLHPWMg==}
@@ -8174,10 +8140,6 @@ snapshots:
     dependencies:
       hono: 4.7.4
 
-  '@hono/oauth-providers@0.6.2(hono@4.7.4)':
-    dependencies:
-      hono: 4.7.4
-
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -8766,15 +8728,6 @@ snapshots:
       '@peculiar/asn1-rsa': 2.3.15
       '@peculiar/asn1-schema': 2.3.15
       '@peculiar/asn1-x509': 2.3.15
-
-  '@sindresorhus/slugify@2.2.1':
-    dependencies:
-      '@sindresorhus/transliterate': 1.6.0
-      escape-string-regexp: 5.0.0
-
-  '@sindresorhus/transliterate@1.6.0':
-    dependencies:
-      escape-string-regexp: 5.0.0
 
   '@smithy/abort-controller@4.0.1':
     dependencies:
@@ -10049,11 +10002,11 @@ snapshots:
 
   astro-eslint-parser@1.1.0(typescript@5.7.3):
     dependencies:
-      '@astrojs/compiler': 2.10.3
-      '@typescript-eslint/scope-manager': 8.21.0
-      '@typescript-eslint/types': 8.21.0
-      '@typescript-eslint/typescript-estree': 8.21.0(typescript@5.7.3)
-      astrojs-compiler-sync: 1.0.1(@astrojs/compiler@2.10.3)
+      '@astrojs/compiler': 2.10.4
+      '@typescript-eslint/scope-manager': 8.26.0
+      '@typescript-eslint/types': 8.26.0
+      '@typescript-eslint/typescript-estree': 8.26.0(typescript@5.7.3)
+      astrojs-compiler-sync: 1.0.1(@astrojs/compiler@2.10.4)
       debug: 4.4.0
       entities: 4.5.0
       eslint-scope: 8.2.0
@@ -10192,6 +10145,12 @@ snapshots:
     dependencies:
       '@astrojs/compiler': 2.10.3
       synckit: 0.9.2
+
+  astrojs-compiler-sync@1.0.1(@astrojs/compiler@2.10.4):
+    dependencies:
+      '@astrojs/compiler': 2.10.4
+      synckit: 0.9.2
+    optional: true
 
   asynckit@0.4.0: {}
 
@@ -11010,12 +10969,12 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.18.0(jiti@2.4.2))
       '@jridgewell/sourcemap-codec': 1.5.0
-      '@typescript-eslint/types': 8.21.0
+      '@typescript-eslint/types': 8.26.0
       astro-eslint-parser: 1.1.0(typescript@5.7.3)
       eslint: 9.18.0(jiti@2.4.2)
       eslint-compat-utils: 0.6.4(eslint@9.18.0(jiti@2.4.2))
-      globals: 15.14.0
-      postcss: 8.4.49
+      globals: 15.15.0
+      postcss: 8.5.3
       postcss-selector-parser: 7.0.0
     transitivePeerDependencies:
       - supports-color
@@ -13272,8 +13231,6 @@ snapshots:
       confbox: 0.2.1
       exsolve: 1.0.2
       pathe: 2.0.3
-
-  plausible-tracker@0.3.9: {}
 
   playwright-core@1.51.0: {}
 

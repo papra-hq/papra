@@ -35,7 +35,6 @@
     "@crowlog/async-context-plugin": "^1.0.0",
     "@crowlog/logger": "^1.1.0",
     "@hono/node-server": "^1.13.7",
-    "@hono/oauth-providers": "^0.6.2",
     "@libsql/client": "^0.14.0",
     "@owlrelay/api-sdk": "^0.0.1",
     "@owlrelay/webhook": "^0.0.2",
@@ -51,7 +50,6 @@
     "node-cron": "^3.0.3",
     "resend": "^4.1.2",
     "tsx": "^4.19.2",
-    "unpdf": "^0.12.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
