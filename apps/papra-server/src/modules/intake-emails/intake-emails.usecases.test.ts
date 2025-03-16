@@ -16,7 +16,7 @@ describe('intake-emails usecases', () => {
     describe('when a email is forwarded to papra api, we look for the recipient in the intake emails repository and create a papra document for each attachment', () => {
       test(`when an intake email is is configured, enabled and match the recipient, and the sender is allowed, a document is created for each attachment`, async () => {
         const { db } = await createInMemoryDatabase({
-          organizations: [{ id: 'org-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'org-1', name: 'Organization 1' }],
           intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
         });
 
@@ -108,7 +108,7 @@ describe('intake-emails usecases', () => {
         const logger = createLogger({ transports: [loggerTransport], namespace: 'test' });
 
         const { db } = await createInMemoryDatabase({
-          organizations: [{ id: 'org-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'org-1', name: 'Organization 1' }],
           intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
         });
 
@@ -145,8 +145,8 @@ describe('intake-emails usecases', () => {
     test(`when an email is send to multiple intake emails from different organization, the attachments are processed for each of them`, async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
-          { id: 'org-1', name: 'Organization 1', slug: 'organization-1' },
-          { id: 'org-2', name: 'Organization 2', slug: 'organization-2' },
+          { id: 'org-1', name: 'Organization 1' },
+          { id: 'org-2', name: 'Organization 2' },
         ],
         intakeEmails: [
           { id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' },

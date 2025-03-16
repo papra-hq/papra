@@ -10,7 +10,7 @@ describe('documents table', () => {
       test('when inserting a document, a corresponding row is inserted in the documents_fts table', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
@@ -71,7 +71,7 @@ describe('documents table', () => {
       test('when updating a document, the corresponding row in the documents_fts table is updated', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
@@ -134,7 +134,7 @@ describe('documents table', () => {
       test('when deleting a document, the corresponding row in the documents_fts table is deleted', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 

@@ -10,7 +10,7 @@ describe('documents repository', () => {
     test('a document can be created, retrieved, and soft deleted', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
       });
 
@@ -74,7 +74,7 @@ describe('documents repository', () => {
     test('a document is unique by organization, an error is raised if a document with the same hash already exists', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -109,7 +109,7 @@ describe('documents repository', () => {
     test('provides full text search on document name, original name, and content', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         documents: [
           { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
@@ -143,8 +143,8 @@ describe('documents repository', () => {
           { id: 'user-2', email: 'user-2@example.com' },
         ],
         organizations: [
-          { id: 'organization-1', name: 'Organization 1', slug: 'organization-1' },
-          { id: 'organization-2', name: 'Organization 2', slug: 'organization-2' },
+          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-2', name: 'Organization 2' },
         ],
         organizationMembers: [
           { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },
@@ -176,7 +176,7 @@ describe('documents repository', () => {
           { id: 'user-1', email: 'user-1@example.com' },
         ],
         organizations: [
-          { id: 'organization-1', name: 'Organization 1', slug: 'organization-1' },
+          { id: 'organization-1', name: 'Organization 1' },
         ],
         organizationMembers: [
           { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },

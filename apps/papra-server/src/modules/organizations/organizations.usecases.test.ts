@@ -11,7 +11,7 @@ describe('organizations usecases', () => {
       test('the user is in the organization and the organization exists', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
         });
 
@@ -29,7 +29,7 @@ describe('organizations usecases', () => {
       test('the user is not in the organization', async () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
-          organizations: [{ id: 'organization-1', name: 'Organization 1', slug: 'organization-1' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });

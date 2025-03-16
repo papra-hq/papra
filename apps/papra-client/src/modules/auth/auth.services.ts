@@ -1,4 +1,3 @@
-import { organizationClient as organizationClientPlugin } from 'better-auth/client/plugins';
 import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
 
 import { buildTimeConfig } from '../config/config';
@@ -8,7 +7,6 @@ import { createDemoAuthClient } from './auth.demo.services';
 export function createAuthClient() {
   const client = createBetterAuthClient({
     baseURL: buildTimeConfig.baseApiUrl,
-    plugins: [organizationClientPlugin()],
   });
 
   return {
@@ -19,7 +17,6 @@ export function createAuthClient() {
     resetPassword: client.resetPassword,
     sendVerificationEmail: client.sendVerificationEmail,
     useSession: client.useSession,
-    organization: client.organization,
     signOut: async () => {
       trackingServices.capture({ event: 'User logged out' });
       const result = await client.signOut();
@@ -38,7 +35,6 @@ export const {
   forgetPassword,
   resetPassword,
   sendVerificationEmail,
-  organization: organizationClient,
 } = buildTimeConfig.isDemoMode
   ? createDemoAuthClient()
   : createAuthClient();
