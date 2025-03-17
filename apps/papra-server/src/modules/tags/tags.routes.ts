@@ -1,7 +1,6 @@
-import type { ServerInstance } from '../app/server.types';
+import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
-import { getDb } from '../app/database/database.models';
 import { organizationIdRegex } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
@@ -9,17 +8,16 @@ import { validateJsonBody, validateParams } from '../shared/validation/validatio
 import { TagColorRegex } from './tags.constants';
 import { createTagsRepository } from './tags.repository';
 
-export function registerTagsRoutes({ app }: { app: ServerInstance }) {
-  setupCreateNewTagRoute({ app });
-  setupGetOrganizationTagsRoute({ app });
-  setupUpdateTagRoute({ app });
-  setupDeleteTagRoute({ app });
-
-  setupAddTagToDocumentRoute({ app });
-  setupRemoveTagFromDocumentRoute({ app });
+export function registerTagsRoutes(context: RouteDefinitionContext) {
+  setupCreateNewTagRoute(context);
+  setupGetOrganizationTagsRoute(context);
+  setupUpdateTagRoute(context);
+  setupDeleteTagRoute(context);
+  setupAddTagToDocumentRoute(context);
+  setupRemoveTagFromDocumentRoute(context);
 }
 
-function setupCreateNewTagRoute({ app }: { app: ServerInstance }) {
+function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
 
@@ -39,7 +37,6 @@ function setupCreateNewTagRoute({ app }: { app: ServerInstance }) {
       const { organizationId } = context.req.valid('param');
       const { name, color, description } = context.req.valid('json');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -54,7 +51,7 @@ function setupCreateNewTagRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupGetOrganizationTagsRoute({ app }: { app: ServerInstance }) {
+function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
 
@@ -65,7 +62,6 @@ function setupGetOrganizationTagsRoute({ app }: { app: ServerInstance }) {
     async (context) => {
       const { organizationId } = context.req.valid('param');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
 
       const { tags } = await tagsRepository.getOrganizationTags({ organizationId });
@@ -77,7 +73,7 @@ function setupGetOrganizationTagsRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupUpdateTagRoute({ app }: { app: ServerInstance }) {
+function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
 
@@ -98,7 +94,6 @@ function setupUpdateTagRoute({ app }: { app: ServerInstance }) {
       const { organizationId, tagId } = context.req.valid('param');
       const { name, color, description } = context.req.valid('json');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -113,7 +108,7 @@ function setupUpdateTagRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupDeleteTagRoute({ app }: { app: ServerInstance }) {
+function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
 
@@ -127,7 +122,6 @@ function setupDeleteTagRoute({ app }: { app: ServerInstance }) {
 
       const { organizationId, tagId } = context.req.valid('param');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -140,7 +134,7 @@ function setupDeleteTagRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupAddTagToDocumentRoute({ app }: { app: ServerInstance }) {
+function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
 
@@ -159,7 +153,6 @@ function setupAddTagToDocumentRoute({ app }: { app: ServerInstance }) {
       const { organizationId, documentId } = context.req.valid('param');
       const { tagId } = context.req.valid('json');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -172,7 +165,7 @@ function setupAddTagToDocumentRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupRemoveTagFromDocumentRoute({ app }: { app: ServerInstance }) {
+function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
 
@@ -187,7 +180,6 @@ function setupRemoveTagFromDocumentRoute({ app }: { app: ServerInstance }) {
 
       const { organizationId, documentId, tagId } = context.req.valid('param');
 
-      const { db } = getDb({ context });
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 

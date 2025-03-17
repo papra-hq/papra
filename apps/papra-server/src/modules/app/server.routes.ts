@@ -1,4 +1,4 @@
-import type { ServerInstance } from './server.types';
+import type { RouteDefinitionContext } from './server.types';
 import { registerConfigPublicRoutes } from '../config/config.routes';
 import { registerDocumentsPrivateRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsPrivateRoutes, registerIntakeEmailsPublicRoutes } from '../intake-emails/intake-emails.routes';
@@ -10,22 +10,22 @@ import { getSession } from './auth/auth.models';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
-export function registerRoutes({ app }: { app: ServerInstance }) {
-  registerAuthRoutes({ app });
+export function registerRoutes(context: RouteDefinitionContext) {
+  registerAuthRoutes(context);
 
-  registerPublicRoutes({ app });
-  registerPrivateRoutes({ app });
+  registerPublicRoutes(context);
+  registerPrivateRoutes(context);
 }
 
-function registerPublicRoutes({ app }: { app: ServerInstance }) {
-  registerConfigPublicRoutes({ app });
-  registerHealthCheckRoutes({ app });
-  registerIntakeEmailsPublicRoutes({ app });
+function registerPublicRoutes(context: RouteDefinitionContext) {
+  registerConfigPublicRoutes(context);
+  registerHealthCheckRoutes(context);
+  registerIntakeEmailsPublicRoutes(context);
 }
 
-function registerPrivateRoutes({ app }: { app: ServerInstance }) {
-  app.use(async (context, next) => {
-    const { session } = getSession({ context });
+function registerPrivateRoutes(context: RouteDefinitionContext) {
+  context.app.use(async (handlerContext, next) => {
+    const { session } = getSession({ context: handlerContext });
 
     if (!session) {
       throw createUnauthorizedError();
@@ -34,9 +34,9 @@ function registerPrivateRoutes({ app }: { app: ServerInstance }) {
     await next();
   });
 
-  registerUsersPrivateRoutes({ app });
-  registerOrganizationsPrivateRoutes({ app });
-  registerDocumentsPrivateRoutes({ app });
-  registerTagsRoutes({ app });
-  registerIntakeEmailsPrivateRoutes({ app });
+  registerUsersPrivateRoutes(context);
+  registerOrganizationsPrivateRoutes(context);
+  registerDocumentsPrivateRoutes(context);
+  registerTagsRoutes(context);
+  registerIntakeEmailsPrivateRoutes(context);
 }

@@ -1,8 +1,8 @@
+import type { Config } from '../../config/config.types';
 import type { ServerInstance } from '../server.types';
 import { readFile } from 'node:fs/promises';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { memoize } from 'lodash-es';
-import { getConfig } from '../../config/config.models';
 import { isApiRoute } from './static-assets.models';
 
 const getIndexContent = memoize(async () => {
@@ -11,17 +11,15 @@ const getIndexContent = memoize(async () => {
   return index;
 });
 
-export function registerStaticAssetsRoutes({ app }: { app: ServerInstance }) {
+export function registerStaticAssetsRoutes({ app, config }: { app: ServerInstance; config: Config }) {
+  if (!config.server.servePublicDir) {
+    return;
+  }
+
   app
     .use(
       '*',
       async (context, next) => {
-        const { config } = getConfig({ context });
-
-        if (!config.server.servePublicDir) {
-          return next();
-        }
-
         const staticMiddleware = serveStatic({
           root: './public',
           // Disable index.html fallback to let the next middleware handle it
@@ -34,12 +32,6 @@ export function registerStaticAssetsRoutes({ app }: { app: ServerInstance }) {
     .use(
       '*',
       async (context, next) => {
-        const { config } = getConfig({ context });
-
-        if (!config.server.servePublicDir) {
-          return next();
-        }
-
         if (isApiRoute({ path: context.req.path })) {
           return next();
         }

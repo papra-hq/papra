@@ -1,20 +1,17 @@
-import type { ServerInstance } from '../server.types';
-import { getDb } from '../database/database.models';
+import type { RouteDefinitionContext } from '../server.types';
 import { isDatabaseHealthy } from './health-check.repository';
 
-export function registerHealthCheckRoutes({ app }: { app: ServerInstance }) {
-  setupPingRoute({ app });
-  setupHealthCheckRoute({ app });
+export function registerHealthCheckRoutes(context: RouteDefinitionContext) {
+  setupPingRoute(context);
+  setupHealthCheckRoute(context);
 }
 
-function setupPingRoute({ app }: { app: ServerInstance }) {
+function setupPingRoute({ app }: RouteDefinitionContext) {
   app.get('/api/ping', context => context.json({ status: 'ok' }));
 }
 
-function setupHealthCheckRoute({ app }: { app: ServerInstance }) {
+function setupHealthCheckRoute({ app, db }: RouteDefinitionContext) {
   app.get('/api/health', async (context) => {
-    const { db } = getDb({ context });
-
     const isHealthy = await isDatabaseHealthy({ db });
 
     const isEverythingOk = isHealthy;

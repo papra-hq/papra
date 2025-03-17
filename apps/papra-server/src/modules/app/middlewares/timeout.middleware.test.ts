@@ -1,23 +1,20 @@
 import { Hono } from 'hono';
 import { describe, expect, test } from 'vitest';
+import { overrideConfig } from '../../config/config.test-utils';
 import { registerErrorMiddleware } from './errors.middleware';
-import { timeoutMiddleware } from './timeout.middleware';
+import { createTimeoutMiddleware } from './timeout.middleware';
 
 describe('middlewares', () => {
   describe('timeoutMiddleware', () => {
     test('when a request last longer than the config timeout, a 504 error is raised', async () => {
+      const config = overrideConfig({ server: { routeTimeoutMs: 50 } });
+
       const app = new Hono<{ Variables: { config: any } }>();
       registerErrorMiddleware({ app: app as any });
 
-      app.use(async (context, next) => {
-        context.set('config', { server: { routeTimeoutMs: 50 } });
-
-        await next();
-      });
-
       app.get(
         '/should-timeout',
-        timeoutMiddleware,
+        createTimeoutMiddleware({ config }),
         async (context) => {
           await new Promise(resolve => setTimeout(resolve, 100));
           return context.json({ status: 'ok' });
@@ -26,7 +23,7 @@ describe('middlewares', () => {
 
       app.get(
         '/should-not-timeout',
-        timeoutMiddleware,
+        createTimeoutMiddleware({ config }),
         async (context) => {
           return context.json({ status: 'ok' });
         },

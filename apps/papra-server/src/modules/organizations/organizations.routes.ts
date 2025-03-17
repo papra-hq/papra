@@ -1,24 +1,22 @@
-import type { ServerInstance } from '../app/server.types';
+import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
-import { getDb } from '../app/database/database.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { organizationIdRegex } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
 import { createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
-export async function registerOrganizationsPrivateRoutes({ app }: { app: ServerInstance }) {
-  setupGetOrganizationsRoute({ app });
-  setupCreateOrganizationRoute({ app });
-  setupGetOrganizationRoute({ app });
-  setupUpdateOrganizationRoute({ app });
-  setupDeleteOrganizationRoute({ app });
+export async function registerOrganizationsPrivateRoutes(context: RouteDefinitionContext) {
+  setupGetOrganizationsRoute(context);
+  setupCreateOrganizationRoute(context);
+  setupGetOrganizationRoute(context);
+  setupUpdateOrganizationRoute(context);
+  setupDeleteOrganizationRoute(context);
 }
 
-function setupGetOrganizationsRoute({ app }: { app: ServerInstance }) {
+function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
   app.get('/api/organizations', async (context) => {
     const { userId } = getUser({ context });
-    const { db } = getDb({ context });
 
     const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -30,7 +28,7 @@ function setupGetOrganizationsRoute({ app }: { app: ServerInstance }) {
   });
 }
 
-function setupCreateOrganizationRoute({ app }: { app: ServerInstance }) {
+function setupCreateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations',
     validateJsonBody(z.object({
@@ -38,7 +36,6 @@ function setupCreateOrganizationRoute({ app }: { app: ServerInstance }) {
     })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { db } = getDb({ context });
       const { name } = context.req.valid('json');
 
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -52,7 +49,7 @@ function setupCreateOrganizationRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
+function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId',
     validateParams(z.object({
@@ -60,7 +57,6 @@ function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
     })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { db } = getDb({ context });
       const { organizationId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -74,7 +70,7 @@ function setupGetOrganizationRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupUpdateOrganizationRoute({ app }: { app: ServerInstance }) {
+function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId',
     validateJsonBody(z.object({
@@ -85,7 +81,6 @@ function setupUpdateOrganizationRoute({ app }: { app: ServerInstance }) {
     })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { db } = getDb({ context });
       const { name } = context.req.valid('json');
       const { organizationId } = context.req.valid('param');
 
@@ -102,7 +97,7 @@ function setupUpdateOrganizationRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-function setupDeleteOrganizationRoute({ app }: { app: ServerInstance }) {
+function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId',
     validateParams(z.object({
@@ -110,7 +105,6 @@ function setupDeleteOrganizationRoute({ app }: { app: ServerInstance }) {
     })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { db } = getDb({ context });
       const { organizationId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });

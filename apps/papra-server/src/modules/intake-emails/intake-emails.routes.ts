@@ -1,10 +1,8 @@
-import type { ServerInstance } from '../app/server.types';
+import type { RouteDefinitionContext } from '../app/server.types';
 import { verifySignature } from '@owlrelay/webhook';
 import { z } from 'zod';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getUser } from '../app/auth/auth.models';
-import { getDb } from '../app/database/database.models';
-import { getConfig } from '../config/config.models';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
 import { organizationIdRegex } from '../organizations/organizations.constants';
@@ -21,18 +19,18 @@ import { createIntakeEmail, processIntakeEmailIngestion } from './intake-emails.
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
-export function registerIntakeEmailsPrivateRoutes({ app }: { app: ServerInstance }) {
-  setupGetOrganizationIntakeEmailsRoute({ app });
-  setupCreateIntakeEmailRoute({ app });
-  setupDeleteIntakeEmailRoute({ app });
-  setupUpdateIntakeEmailRoute({ app });
+export function registerIntakeEmailsPrivateRoutes(context: RouteDefinitionContext) {
+  setupGetOrganizationIntakeEmailsRoute(context);
+  setupCreateIntakeEmailRoute(context);
+  setupDeleteIntakeEmailRoute(context);
+  setupUpdateIntakeEmailRoute(context);
 }
 
-export function registerIntakeEmailsPublicRoutes({ app }: { app: ServerInstance }) {
-  setupIngestIntakeEmailRoute({ app });
+export function registerIntakeEmailsPublicRoutes(context: RouteDefinitionContext) {
+  setupIngestIntakeEmailRoute(context);
 }
 
-export function setupGetOrganizationIntakeEmailsRoute({ app }: { app: ServerInstance }) {
+function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/intake-emails',
     validateParams(z.object({
@@ -41,7 +39,6 @@ export function setupGetOrganizationIntakeEmailsRoute({ app }: { app: ServerInst
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
-      const { db } = getDb({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -55,7 +52,7 @@ export function setupGetOrganizationIntakeEmailsRoute({ app }: { app: ServerInst
   );
 }
 
-export function setupCreateIntakeEmailRoute({ app }: { app: ServerInstance }) {
+function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/intake-emails',
     validateParams(z.object({
@@ -64,8 +61,6 @@ export function setupCreateIntakeEmailRoute({ app }: { app: ServerInstance }) {
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
-      const { db } = getDb({ context });
-      const { config } = getConfig({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -80,7 +75,7 @@ export function setupCreateIntakeEmailRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-export function setupDeleteIntakeEmailRoute({ app }: { app: ServerInstance }) {
+function setupDeleteIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     validateParams(z.object({
@@ -90,7 +85,6 @@ export function setupDeleteIntakeEmailRoute({ app }: { app: ServerInstance }) {
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, intakeEmailId } = context.req.valid('param');
-      const { db } = getDb({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -104,7 +98,7 @@ export function setupDeleteIntakeEmailRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-export function setupUpdateIntakeEmailRoute({ app }: { app: ServerInstance }) {
+function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     validateParams(z.object({
@@ -117,7 +111,6 @@ export function setupUpdateIntakeEmailRoute({ app }: { app: ServerInstance }) {
     })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { db } = getDb({ context });
       const { organizationId, intakeEmailId } = context.req.valid('param');
       const { isEnabled, allowedOrigins } = context.req.valid('json');
 
@@ -138,7 +131,7 @@ export function setupUpdateIntakeEmailRoute({ app }: { app: ServerInstance }) {
   );
 }
 
-export function setupIngestIntakeEmailRoute({ app }: { app: ServerInstance }) {
+function setupIngestIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/intake-emails/ingest',
     validateFormData(z.object({
@@ -147,8 +140,6 @@ export function setupIngestIntakeEmailRoute({ app }: { app: ServerInstance }) {
       'attachments[]': z.array(z.instanceof(File)).min(1, 'At least one attachment is required').optional(),
     }), { allowAdditionalFields: true }),
     async (context) => {
-      const { db } = getDb({ context });
-      const { config } = getConfig({ context });
       const { email, 'attachments[]': attachments = [] } = context.req.valid('form');
 
       if (!config.intakeEmails.isEnabled) {
