@@ -2,6 +2,7 @@ import type { Database } from './database.types';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
+import { organizationSubscriptionsTable } from '../../subscriptions/subscriptions.tables';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
 import { setupDatabase } from './database';
@@ -29,6 +30,7 @@ const seedTables = {
   tags: tagsTable,
   documentsTags: documentsTagsTable,
   intakeEmails: intakeEmailsTable,
+  organizationSubscriptions: organizationSubscriptionsTable,
 } as const;
 
 type SeedTablesRows = {

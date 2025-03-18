@@ -2,9 +2,10 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { createUsersRepository } from '../users/users.repository';
 import { organizationIdRegex } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
-import { createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
 export async function registerOrganizationsPrivateRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
@@ -28,7 +29,7 @@ function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
   });
 }
 
-function setupCreateOrganizationRoute({ app, db }: RouteDefinitionContext) {
+function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations',
     validateJsonBody(z.object({
@@ -39,6 +40,9 @@ function setupCreateOrganizationRoute({ app, db }: RouteDefinitionContext) {
       const { name } = context.req.valid('json');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const usersRepository = createUsersRepository({ db });
+
+      await checkIfUserCanCreateNewOrganization({ userId, config, organizationsRepository, usersRepository });
 
       const { organization } = await createOrganization({ userId, name, organizationsRepository });
 

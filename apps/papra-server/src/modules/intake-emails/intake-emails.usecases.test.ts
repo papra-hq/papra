@@ -1,4 +1,5 @@
 import type { Config } from '../config/config.types';
+import type { PlansRepository } from '../plans/plans.repository';
 import { createInMemoryLoggerTransport } from '@crowlog/logger';
 import { asc } from 'drizzle-orm';
 import { pick } from 'lodash-es';
@@ -7,9 +8,14 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
+import { PLUS_PLAN_ID } from '../plans/plans.constants';
+import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
-import { ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
+import { intakeEmailsTable } from './intake-emails.tables';
+import { checkIfOrganizationCanCreateNewIntakeEmail, ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
 
 describe('intake-emails usecases', () => {
   describe('ingestEmailForRecipient', () => {
@@ -23,6 +29,8 @@ describe('intake-emails usecases', () => {
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
         const documentsRepository = createDocumentsRepository({ db });
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -34,9 +42,11 @@ describe('intake-emails usecases', () => {
           intakeEmailsRepository,
           documentsRepository,
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
         });
 
-        const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
+        const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
 
         expect(
           documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName', 'content'])),
@@ -58,6 +68,8 @@ describe('intake-emails usecases', () => {
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
         const documentsRepository = createDocumentsRepository({ db });
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -66,6 +78,8 @@ describe('intake-emails usecases', () => {
           intakeEmailsRepository,
           documentsRepository,
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
           logger,
         });
 
@@ -84,6 +98,8 @@ describe('intake-emails usecases', () => {
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
         const documentsRepository = createDocumentsRepository({ db });
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -92,6 +108,8 @@ describe('intake-emails usecases', () => {
           intakeEmailsRepository,
           documentsRepository,
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
           logger,
         });
 
@@ -115,6 +133,8 @@ describe('intake-emails usecases', () => {
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
         const documentsRepository = createDocumentsRepository({ db });
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
@@ -123,6 +143,8 @@ describe('intake-emails usecases', () => {
           intakeEmailsRepository,
           documentsRepository,
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
           logger,
         });
 
@@ -157,6 +179,8 @@ describe('intake-emails usecases', () => {
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
@@ -167,6 +191,8 @@ describe('intake-emails usecases', () => {
         intakeEmailsRepository,
         documentsRepository,
         documentsStorageService,
+        plansRepository,
+        subscriptionsRepository,
       });
 
       const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
@@ -177,6 +203,63 @@ describe('intake-emails usecases', () => {
         { organizationId: 'org-1', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt', content: 'content1' },
         { organizationId: 'org-2', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt', content: 'content1' },
       ]);
+    });
+  });
+
+  describe('checkIfOrganizationCanCreateNewIntakeEmail', () => {
+    test('the maximum amount of intake emails for an organization is defined by the organization plan, when the limit is reached, an error is thrown', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        intakeEmails: [{ organizationId: 'org-1', emailAddress: 'email-1@papra.email' }],
+        organizationSubscriptions: [{
+          id: 'os-1',
+          organizationId: 'org-1',
+          status: 'active',
+          currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
+          currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
+          stripeCustomerId: 'sc_123',
+          planId: PLUS_PLAN_ID,
+          stripeSubscriptionId: 'sub_123',
+        }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            id: PLUS_PLAN_ID,
+            name: 'Plus',
+            limits: {
+              maxIntakeEmailsCount: 2,
+              maxDocumentStorageBytes: 512,
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as PlansRepository;
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+
+      // no throw as the intake email count is less than the allowed limit
+      await checkIfOrganizationCanCreateNewIntakeEmail({
+        organizationId: 'org-1',
+        plansRepository,
+        subscriptionsRepository,
+        intakeEmailsRepository,
+      });
+
+      await db.insert(intakeEmailsTable).values({
+        organizationId: 'org-1',
+        emailAddress: 'email-2@papra.email',
+      });
+
+      await expect(
+        checkIfOrganizationCanCreateNewIntakeEmail({
+          organizationId: 'org-1',
+          plansRepository,
+          subscriptionsRepository,
+          intakeEmailsRepository,
+        }),
+      ).rejects.toThrow(createIntakeEmailLimitReachedError());
     });
   });
 });

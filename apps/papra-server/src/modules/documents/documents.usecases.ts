@@ -1,9 +1,12 @@
 import type { Config } from '../config/config.types';
+import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
+import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
+import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createLogger } from '../shared/logger/logger';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
@@ -30,6 +33,8 @@ export async function createDocument({
   documentsRepository,
   documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
+  plansRepository,
+  subscriptionsRepository,
 }: {
   file: File;
   userId?: string;
@@ -37,12 +42,22 @@ export async function createDocument({
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
   generateDocumentId?: () => string;
+  plansRepository: PlansRepository;
+  subscriptionsRepository: SubscriptionsRepository;
 }) {
   const {
     name: fileName,
     size,
     type: mimeType,
   } = file;
+
+  await checkIfOrganizationCanCreateNewDocument({
+    organizationId,
+    newDocumentSize: size,
+    documentsRepository,
+    plansRepository,
+    subscriptionsRepository,
+  });
 
   const { hash } = await getFileSha256Hash({ file });
 

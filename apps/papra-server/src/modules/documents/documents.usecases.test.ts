@@ -1,8 +1,10 @@
 import type { Config } from '../config/config.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
+import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
+import { createPlansRepository } from '../plans/plans.repository';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -15,11 +17,13 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -33,6 +37,8 @@ describe('documents usecases', () => {
         documentsRepository,
         documentsStorageService,
         generateDocumentId,
+        plansRepository,
+        subscriptionsRepository,
       });
 
       expect(document).to.include({
@@ -64,11 +70,13 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
       let documentIdIndex = 1;
       const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -82,6 +90,8 @@ describe('documents usecases', () => {
         organizationId,
         documentsRepository,
         documentsStorageService,
+        plansRepository,
+        subscriptionsRepository,
         generateDocumentId,
       });
 
@@ -105,6 +115,8 @@ describe('documents usecases', () => {
           organizationId,
           documentsRepository,
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
           generateDocumentId,
         }),
       ).rejects.toThrow(
@@ -124,11 +136,13 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
+      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -147,6 +161,8 @@ describe('documents usecases', () => {
             },
           },
           documentsStorageService,
+          plansRepository,
+          subscriptionsRepository,
           generateDocumentId,
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));

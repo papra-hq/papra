@@ -1,7 +1,8 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, eq, getTableColumns } from 'drizzle-orm';
+import { and, count, eq, getTableColumns } from 'drizzle-orm';
+import { ORGANIZATION_ROLES } from './organizations.constants';
 import { organizationMembersTable, organizationsTable } from './organizations.table';
 
 export type OrganizationsRepository = ReturnType<typeof createOrganizationsRepository>;
@@ -16,6 +17,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       updateOrganization,
       deleteOrganization,
       getOrganizationById,
+      getUserOwnedOrganizationCount,
     },
     { db },
   );
@@ -83,5 +85,23 @@ async function getOrganizationById({ organizationId, db }: { organizationId: str
 
   return {
     organization,
+  };
+}
+
+async function getUserOwnedOrganizationCount({ userId, db }: { userId: string; db: Database }) {
+  const [{ organizationCount }] = await db
+    .select({
+      organizationCount: count(organizationMembersTable.id),
+    })
+    .from(organizationMembersTable)
+    .where(
+      and(
+        eq(organizationMembersTable.userId, userId),
+        eq(organizationMembersTable.role, ORGANIZATION_ROLES.OWNER),
+      ),
+    );
+
+  return {
+    organizationCount,
   };
 }

@@ -11,3 +11,15 @@ export const createOrganizationNotFoundError = createErrorFactory({
   code: 'organization.not_found',
   statusCode: 404,
 });
+
+export const createUserMaxOrganizationCountReachedError = createErrorFactory({
+  message: 'You have reached the maximum number of organizations.',
+  code: 'user.max_organization_count_reached',
+  statusCode: 403,
+});
+
+export const createOrganizationDocumentStorageLimitReachedError = createErrorFactory({
+  message: 'You have reached the maximum number of documents.',
+  code: 'organization.document_storage_limit_reached',
+  statusCode: 403,
+});

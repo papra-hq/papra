@@ -28,6 +28,8 @@ export const documentsTable = sqliteTable('documents', {
   index('documents_organization_id_is_deleted_index').on(table.organizationId, table.isDeleted),
   // Unique document by organization and hash
   uniqueIndex('documents_organization_id_original_sha256_hash_unique').on(table.organizationId, table.originalSha256Hash),
-  // To select document by hash
+  // To verify if a document exists by hash
   index('documents_original_sha256_hash_index').on(table.originalSha256Hash),
+  // To sum the size of documents by organization
+  index('documents_organization_id_size_index').on(table.organizationId, table.originalSize),
 ]);

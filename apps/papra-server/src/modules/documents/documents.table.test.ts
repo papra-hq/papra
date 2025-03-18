@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
+import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { documentsTable } from './documents.table';
 
 describe('documents table', () => {
@@ -11,7 +11,7 @@ describe('documents table', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
         await db.insert(documentsTable).values([
@@ -72,7 +72,7 @@ describe('documents table', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
         await db.insert(documentsTable).values([
@@ -135,7 +135,7 @@ describe('documents table', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
         await db.insert(documentsTable).values([

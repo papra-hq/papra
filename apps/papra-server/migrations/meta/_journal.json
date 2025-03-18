@@ -57,6 +57,13 @@
       "when": 1741343969980,
       "tag": "0007_better-auth-orgs",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1742246019130,
+      "tag": "0008_max-user-organization-count",
+      "breakpoints": true
     }
   ]
 }

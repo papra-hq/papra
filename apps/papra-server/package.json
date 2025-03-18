@@ -8,7 +8,7 @@
   "license": "AGPL-3.0-or-later",
   "keywords": [],
   "scripts": {
-    "dev": "tsx watch --env-file=.env src/index.ts | crowlog-pretty",
+    "dev": "tsx watch --env-file-if-exists=.env  src/index.ts | crowlog-pretty",
     "build": "pnpm esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=dist/index.js --minify",
     "start": "node dist/index.js",
     "start:with-migrations": "pnpm migrate:up && pnpm start",
@@ -49,6 +49,7 @@
     "lodash-es": "^4.17.21",
     "node-cron": "^3.0.3",
     "resend": "^4.1.2",
+    "stripe": "^17.7.0",
     "tsx": "^4.19.2",
     "zod": "^3.24.1"
   },

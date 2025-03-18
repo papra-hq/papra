@@ -9,6 +9,8 @@ import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { emailsConfig } from '../emails/emails.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
+import { organizationsConfig } from '../organizations/organizations.config';
+import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
 import { tasksConfig } from '../tasks/tasks.config';
 
@@ -80,6 +82,8 @@ export const configDefinition = {
   tasks: tasksConfig,
   intakeEmails: intakeEmailsConfig,
   emails: emailsConfig,
+  organizations: organizationsConfig,
+  organizationPlans: organizationPlansConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

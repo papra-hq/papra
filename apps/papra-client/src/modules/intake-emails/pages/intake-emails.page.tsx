@@ -3,6 +3,7 @@ import type { IntakeEmail } from '../intake-emails.types';
 import { useConfig } from '@/modules/config/config.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
+import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
@@ -12,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
@@ -149,7 +151,21 @@ export const IntakeEmailsPage: Component = () => {
   }));
 
   const createEmail = async () => {
-    await createIntakeEmail({ organizationId: params.organizationId });
+    const [,error] = await safely(createIntakeEmail({ organizationId: params.organizationId }));
+
+    if (isHttpErrorWithCode({ error, code: 'intake_email.limit_reached' })) {
+      createToast({
+        message: 'The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.',
+        type: 'error',
+      });
+
+      return;
+    }
+
+    if (error) {
+      throw error;
+    }
+
     await query.refetch();
 
     createToast({

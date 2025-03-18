@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
+import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createDocumentAlreadyHasTagError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 
@@ -71,7 +71,7 @@ describe('tags repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         documents: [
           { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash' },
         ],

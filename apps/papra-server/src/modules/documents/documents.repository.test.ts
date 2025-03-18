@@ -1,7 +1,7 @@
 import { map } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { ORGANIZATION_ROLE_MEMBER } from '../organizations/organizations.constants';
+import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 
@@ -11,7 +11,7 @@ describe('documents repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -110,7 +110,7 @@ describe('documents repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         documents: [
           { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
           { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2' },
@@ -147,8 +147,8 @@ describe('documents repository', () => {
           { id: 'organization-2', name: 'Organization 2' },
         ],
         organizationMembers: [
-          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },
-          { organizationId: 'organization-2', userId: 'user-2', role: ORGANIZATION_ROLE_MEMBER },
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          { organizationId: 'organization-2', userId: 'user-2', role: ORGANIZATION_ROLES.OWNER },
         ],
         documents: [
           { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 200, originalSha256Hash: 'hash1' },
@@ -179,7 +179,7 @@ describe('documents repository', () => {
           { id: 'organization-1', name: 'Organization 1' },
         ],
         organizationMembers: [
-          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLE_MEMBER },
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
         ],
       });
 

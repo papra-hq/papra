@@ -5,8 +5,10 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdRegex } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
@@ -74,6 +76,8 @@ function setupCreateDocumentRoute({ app, config, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config });
+      const plansRepository = createPlansRepository({ config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       const { document } = await createDocument({
         file,
@@ -81,7 +85,8 @@ function setupCreateDocumentRoute({ app, config, db }: RouteDefinitionContext) {
         organizationId,
         documentsRepository,
         documentsStorageService,
-
+        plansRepository,
+        subscriptionsRepository,
       });
 
       return context.json({

@@ -1,6 +1,6 @@
 import type { Database } from '../app/database/database.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { omitUndefined } from '../shared/utils';
 import { intakeEmailsTable } from './intake-emails.tables';
 
@@ -15,6 +15,7 @@ export function createIntakeEmailsRepository({ db }: { db: Database }) {
       getOrganizationIntakeEmails,
       getIntakeEmailByEmailAddress,
       deleteIntakeEmail,
+      getOrganizationIntakeEmailsCount,
     },
     { db },
   );
@@ -86,4 +87,15 @@ async function deleteIntakeEmail({ intakeEmailId, organizationId, db }: { intake
         eq(intakeEmailsTable.organizationId, organizationId),
       ),
     );
+}
+
+async function getOrganizationIntakeEmailsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [{ intakeEmailCount }] = await db
+    .select({ intakeEmailCount: count() })
+    .from(intakeEmailsTable)
+    .where(
+      eq(intakeEmailsTable.organizationId, organizationId),
+    );
+
+  return { intakeEmailCount };
 }

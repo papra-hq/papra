@@ -1,7 +1,9 @@
 import type { Component } from 'solid-js';
 import { createForm } from '@/modules/shared/form/form';
+import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { safely } from '@corentinth/chisels';
 import * as v from 'valibot';
 import { organizationNameSchema } from '../organizations.schemas';
 
@@ -10,7 +12,15 @@ export const CreateOrganizationForm: Component<{
   initialOrganizationName?: string;
 }> = (props) => {
   const { form, Form, Field } = createForm({
-    onSubmit: ({ organizationName }) => props.onSubmit({ organizationName }),
+    onSubmit: async ({ organizationName }) => {
+      const [, error] = await safely(props.onSubmit({ organizationName }));
+
+      if (isHttpErrorWithCode({ error, code: 'user.max_organization_count_reached' })) {
+        throw new Error('You have reached the maximum number of organizations you can create, if you need to create more, please contact support.');
+      }
+
+      throw error;
+    },
     schema: v.object({
       organizationName: organizationNameSchema,
     }),

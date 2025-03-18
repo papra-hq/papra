@@ -8,10 +8,12 @@ import { createDocumentStorageService } from '../documents/storage/documents.sto
 import { organizationIdRegex } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
@@ -65,10 +67,18 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
       const intakeEmailsServices = createIntakeEmailsServices({ config });
+      const plansRepository = createPlansRepository({ config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { intakeEmail } = await createIntakeEmail({ organizationId, intakeEmailsRepository, intakeEmailsServices });
+      const { intakeEmail } = await createIntakeEmail({
+        organizationId,
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        plansRepository,
+        subscriptionsRepository,
+      });
 
       return context.json({ intakeEmail });
     },
@@ -176,6 +186,8 @@ function setupIngestIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config });
+      const plansRepository = createPlansRepository({ config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: email.from.address,
@@ -184,6 +196,8 @@ function setupIngestIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
         intakeEmailsRepository,
         documentsRepository,
         documentsStorageService,
+        plansRepository,
+        subscriptionsRepository,
       });
 
       return context.body(null, 202);
