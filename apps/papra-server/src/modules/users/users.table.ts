@@ -9,7 +9,6 @@ export const usersTable = sqliteTable(
 
     email: text('email').notNull().unique(),
     emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
-    stripeCustomerId: text('customer_id').unique(),
     name: text('name'),
     image: text('image'),
     maxOrganizationCount: integer('max_organization_count', { mode: 'number' }),

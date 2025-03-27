@@ -2,11 +2,12 @@ import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import type { UsersRepository } from '../users/users.repository';
 import type { OrganizationsRepository } from './organizations.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationDocumentStorageLimitReachedError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError } from './organizations.errors';
+import { createOrganizationDocumentStorageLimitReachedError, createOrganizationNotFoundError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError } from './organizations.errors';
 
 export async function createOrganization({ name, userId, organizationsRepository }: { name: string; userId: string; organizationsRepository: OrganizationsRepository }) {
   const { organization } = await organizationsRepository.saveOrganization({ organization: { name } });
@@ -76,5 +77,56 @@ export async function checkIfOrganizationCanCreateNewDocument({
 
   if (documentsSize + newDocumentSize > organizationPlan.limits.maxDocumentStorageBytes) {
     throw createOrganizationDocumentStorageLimitReachedError();
+  }
+}
+
+export async function getOrCreateOrganizationCustomerId({
+  organizationId,
+  subscriptionsServices,
+  organizationsRepository,
+}: {
+  organizationId: string;
+  subscriptionsServices: SubscriptionsServices;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+  if (!organization) {
+    throw createOrganizationNotFoundError();
+  }
+
+  if (organization.customerId) {
+    return { customerId: organization.customerId };
+  }
+
+  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({ organizationId });
+
+  const { customerId } = await subscriptionsServices.createCustomer({
+    ownerId: organizationOwner.id,
+    email: organizationOwner.email,
+    organizationId,
+  });
+
+  await organizationsRepository.updateOrganization({
+    organizationId,
+    organization: { customerId },
+  });
+
+  return { customerId };
+}
+
+export async function ensureUserIsOwnerOfOrganization({
+  userId,
+  organizationId,
+  organizationsRepository,
+}: {
+  userId: string;
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({ organizationId });
+
+  if (organizationOwner.id !== userId) {
+    throw createUserNotOrganizationOwnerError();
   }
 }

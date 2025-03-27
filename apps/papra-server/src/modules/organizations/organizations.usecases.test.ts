@@ -1,4 +1,5 @@
 import type { PlansRepository } from '../plans/plans.repository';
+import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
@@ -7,10 +8,10 @@ import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationDocumentStorageLimitReachedError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError } from './organizations.errors';
+import { createOrganizationDocumentStorageLimitReachedError, createOrganizationNotFoundError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization } from './organizations.usecases';
+import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -163,8 +164,8 @@ describe('organizations usecases', () => {
           id: 'org_sub_1',
           organizationId: 'organization-1',
           planId: PLUS_PLAN_ID,
-          stripeSubscriptionId: 'sub_123',
-          stripeCustomerId: 'cus_123',
+          seatsCount: 1,
+          customerId: 'cus_123',
           status: 'active',
           currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
           currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
@@ -194,7 +195,7 @@ describe('organizations usecases', () => {
             },
           },
         }),
-      } as PlansRepository;
+      } as unknown as PlansRepository;
 
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
@@ -219,6 +220,134 @@ describe('organizations usecases', () => {
         }),
       ).rejects.toThrow(
         createOrganizationDocumentStorageLimitReachedError(),
+      );
+    });
+  });
+
+  describe('getOrCreateOrganizationCustomerId', () => {
+    describe(`in order to handle organization subscriptions, we need a stripe customer id per organization
+              as stripe require an email per customer, we use the organization owner's email`, () => {
+      test('an organization that does not have a customer id, will have one created and saved', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'user-1', email: 'user-1@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const createCustomerArgs: unknown[] = [];
+
+        const subscriptionsServices = {
+          createCustomer: async (args: unknown) => {
+            createCustomerArgs.push(args);
+            return { customerId: 'cus_123' };
+          },
+        } as unknown as SubscriptionsServices;
+
+        const { customerId } = await getOrCreateOrganizationCustomerId({
+          organizationId: 'organization-1',
+          subscriptionsServices,
+          organizationsRepository,
+        });
+
+        expect(createCustomerArgs).toEqual([{ email: 'user-1@example.com', ownerId: 'user-1', organizationId: 'organization-1' }]);
+        expect(customerId).toEqual('cus_123');
+
+        const { organization } = await organizationsRepository.getOrganizationById({ organizationId: 'organization-1' });
+
+        expect(organization?.customerId).toEqual('cus_123');
+      });
+
+      test('an organization that already has a customer id, will not have a new customer created', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'user-1', email: 'user-1@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Organization 1', customerId: 'cus_123' }],
+          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsServices = {
+          createCustomer: async () => expect.fail('createCustomer should not be called'),
+        } as unknown as SubscriptionsServices;
+
+        const { customerId } = await getOrCreateOrganizationCustomerId({
+          organizationId: 'organization-1',
+          subscriptionsServices,
+          organizationsRepository,
+        });
+
+        expect(customerId).toEqual('cus_123');
+
+        // ensure the customer id is still the same in the database
+        const { organization } = await organizationsRepository.getOrganizationById({ organizationId: 'organization-1' });
+
+        expect(organization?.customerId).toEqual('cus_123');
+      });
+
+      test('if the organization does not exist, an error is thrown', async () => {
+        const { db } = await createInMemoryDatabase();
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsServices = {
+          createCustomer: async () => expect.fail('createCustomer should not be called'),
+        } as unknown as SubscriptionsServices;
+
+        await expect(
+          getOrCreateOrganizationCustomerId({
+            organizationId: 'organization-1',
+            subscriptionsServices,
+            organizationsRepository,
+          }),
+        ).rejects.toThrow(
+          createOrganizationNotFoundError(),
+        );
+      });
+    });
+  });
+
+  describe('ensureUserIsOwnerOfOrganization', () => {
+    test('throws an error if the user is not the owner of the organization', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+          { id: 'user-2', email: 'user-2@example.com' },
+          { id: 'user-3', email: 'user-3@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          { organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.MEMBER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      // no throw as user-1 is the owner of the organization
+      await ensureUserIsOwnerOfOrganization({
+        userId: 'user-1',
+        organizationId: 'organization-1',
+        organizationsRepository,
+      });
+
+      // throw as user-2 is not the owner of the organization
+      await expect(
+        ensureUserIsOwnerOfOrganization({
+          userId: 'user-2',
+          organizationId: 'organization-1',
+          organizationsRepository,
+        }),
+      ).rejects.toThrow(
+        createUserNotOrganizationOwnerError(),
+      );
+
+      // throw as user-3 is not in the organization
+      await expect(
+        ensureUserIsOwnerOfOrganization({
+          userId: 'user-3',
+          organizationId: 'organization-1',
+          organizationsRepository,
+        }),
+      ).rejects.toThrow(
+        createUserNotOrganizationOwnerError(),
       );
     });
   });

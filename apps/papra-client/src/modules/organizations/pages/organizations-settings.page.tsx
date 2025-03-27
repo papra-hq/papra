@@ -1,13 +1,15 @@
 import type { Organization } from '../organizations.types';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
+import { getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, Show, Suspense } from 'solid-js';
+import { type Component, createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useDeleteOrganization, useUpdateOrganization } from '../organizations.composables';
 import { organizationNameSchema } from '../organizations.schemas';
@@ -54,6 +56,43 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
         </CardFooter>
       </Card>
     </div>
+  );
+};
+
+export const SubscriptionCard: Component<{ organization: Organization }> = (props) => {
+  const [getIsLoading, setIsLoading] = createSignal(false);
+
+  const goToCustomerPortal = async () => {
+    setIsLoading(true);
+
+    const [result, error] = await safely(getCustomerPortalUrl({ organizationId: props.organization.id }));
+
+    if (error) {
+      createToast({ type: 'error', message: 'Failed to get customer portal URL' });
+      setIsLoading(false);
+
+      return;
+    }
+
+    window.open(result.customerPortalUrl, '_blank');
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <Card class="flex flex-col sm:flex-row justify-between gap-4 sm:items-center p-6 ">
+      <div>
+        <div class="font-semibold">Subscription</div>
+        <div class="text-sm text-muted-foreground">
+          Manage your billing, invoices and payment methods.
+        </div>
+      </div>
+      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0">
+        Manage subscription
+      </Button>
+    </Card>
   );
 };
 
@@ -139,6 +178,7 @@ export const OrganizationsSettingsPage: Component = () => {
 
               <div class="mt-6 flex flex-col gap-6">
                 <UpdateOrganizationNameCard organization={getOrganization()} />
+                <SubscriptionCard organization={getOrganization()} />
                 <DeleteOrganizationCard organization={getOrganization()} />
               </div>
             </>

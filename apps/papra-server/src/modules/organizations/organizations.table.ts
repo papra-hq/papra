@@ -7,6 +7,7 @@ export const organizationsTable = sqliteTable('organizations', {
   ...createTimestampColumns(),
 
   name: text('name').notNull(),
+  customerId: text('customer_id'),
 });
 
 export const organizationMembersTable = sqliteTable('organization_members', {

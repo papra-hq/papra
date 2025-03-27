@@ -4,6 +4,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { parseConfig } from '../config/config';
 import { createEmailsServices } from '../emails/emails.services';
 import { createLoggerMiddleware } from '../shared/logger/logger.middleware';
+import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { setupDatabase } from './database/database';
@@ -18,12 +19,14 @@ function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>): Glo
   const db = partialDeps.db ?? setupDatabase(config.database).db;
   const emailsServices = createEmailsServices({ config });
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }) }).auth;
+  const subscriptionsServices = createSubscriptionsServices({ config });
 
   return {
     config,
     db,
     auth,
     emailsServices,
+    subscriptionsServices,
   };
 }
 

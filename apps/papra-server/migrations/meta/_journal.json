@@ -64,6 +64,27 @@
       "when": 1742246019130,
       "tag": "0008_max-user-organization-count",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1742335878357,
+      "tag": "0009_subscriptions",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1742336671903,
+      "tag": "0010_subscriptions-2",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1742339890093,
+      "tag": "0011_orgs-customer-id",
+      "breakpoints": true
     }
   ]
 }

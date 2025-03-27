@@ -3,6 +3,7 @@ import { registerConfigPublicRoutes } from '../config/config.routes';
 import { registerDocumentsPrivateRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsPrivateRoutes, registerIntakeEmailsPublicRoutes } from '../intake-emails/intake-emails.routes';
 import { registerOrganizationsPrivateRoutes } from '../organizations/organizations.routes';
+import { registerSubscriptionsPrivateRoutes, registerSubscriptionsPublicRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerUsersPrivateRoutes } from '../users/users.routes';
 import { createUnauthorizedError } from './auth/auth.errors';
@@ -21,6 +22,7 @@ function registerPublicRoutes(context: RouteDefinitionContext) {
   registerConfigPublicRoutes(context);
   registerHealthCheckRoutes(context);
   registerIntakeEmailsPublicRoutes(context);
+  registerSubscriptionsPublicRoutes(context);
 }
 
 function registerPrivateRoutes(context: RouteDefinitionContext) {
@@ -39,4 +41,5 @@ function registerPrivateRoutes(context: RouteDefinitionContext) {
   registerDocumentsPrivateRoutes(context);
   registerTagsRoutes(context);
   registerIntakeEmailsPrivateRoutes(context);
+  registerSubscriptionsPrivateRoutes(context);
 }

@@ -16,7 +16,13 @@ export const organizationPlansConfig = {
   plusPlanPriceId: {
     doc: 'The price id of the plus plan',
     schema: z.string(),
-    default: 'price_123456',
+    default: 'change-me',
     env: 'PLANS_PLUS_PLAN_PRICE_ID',
+  },
+  familyPlanPriceId: {
+    doc: 'The price id of the family plan',
+    schema: z.string(),
+    default: 'change-me',
+    env: 'PLANS_FAMILY_PLAN_PRICE_ID',
   },
 } as const satisfies ConfigDefinition;

@@ -12,6 +12,7 @@ import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
+import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
 
 export const configDefinition = {
@@ -84,6 +85,7 @@ export const configDefinition = {
   emails: emailsConfig,
   organizations: organizationsConfig,
   organizationPlans: organizationPlansConfig,
+  subscriptions: subscriptionsConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

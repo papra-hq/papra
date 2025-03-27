@@ -215,11 +215,11 @@ describe('intake-emails usecases', () => {
           id: 'os-1',
           organizationId: 'org-1',
           status: 'active',
+          seatsCount: 1,
           currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
           currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
-          stripeCustomerId: 'sc_123',
+          customerId: 'sc_123',
           planId: PLUS_PLAN_ID,
-          stripeSubscriptionId: 'sub_123',
         }],
       });
 
@@ -236,7 +236,8 @@ describe('intake-emails usecases', () => {
             },
           },
         }),
-      } as PlansRepository;
+      } as unknown as PlansRepository;
+
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       // no throw as the intake email count is less than the allowed limit

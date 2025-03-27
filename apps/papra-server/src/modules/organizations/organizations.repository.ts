@@ -2,6 +2,8 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, count, eq, getTableColumns } from 'drizzle-orm';
+import { omitUndefined } from '../shared/utils';
+import { usersTable } from '../users/users.table';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { organizationMembersTable, organizationsTable } from './organizations.table';
 
@@ -18,6 +20,8 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       deleteOrganization,
       getOrganizationById,
       getUserOwnedOrganizationCount,
+      getOrganizationOwner,
+      getOrganizationMembersCount,
     },
     { db },
   );
@@ -61,12 +65,10 @@ async function isUserInOrganization({ userId, organizationId, db }: { userId: st
   };
 }
 
-async function updateOrganization({ organizationId, organization: organizationToUpdate, db }: { organizationId: string; organization: { name: string }; db: Database }) {
+async function updateOrganization({ organizationId, organization: organizationToUpdate, db }: { organizationId: string; organization: { name?: string; customerId?: string }; db: Database }) {
   const [organization] = await db
     .update(organizationsTable)
-    .set({
-      name: organizationToUpdate.name,
-    })
+    .set(omitUndefined(organizationToUpdate))
     .where(eq(organizationsTable.id, organizationId))
     .returning();
 
@@ -103,5 +105,37 @@ async function getUserOwnedOrganizationCount({ userId, db }: { userId: string; d
 
   return {
     organizationCount,
+  };
+}
+
+async function getOrganizationOwner({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [{ organizationOwner }] = await db
+    .select({
+      organizationOwner: getTableColumns(usersTable),
+    })
+    .from(usersTable)
+    .leftJoin(organizationMembersTable, eq(usersTable.id, organizationMembersTable.userId))
+    .where(
+      and(
+        eq(organizationMembersTable.organizationId, organizationId),
+        eq(organizationMembersTable.role, ORGANIZATION_ROLES.OWNER),
+      ),
+    );
+
+  return { organizationOwner };
+}
+
+async function getOrganizationMembersCount({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [{ membersCount }] = await db
+    .select({
+      membersCount: count(organizationMembersTable.id),
+    })
+    .from(organizationMembersTable)
+    .where(
+      eq(organizationMembersTable.organizationId, organizationId),
+    );
+
+  return {
+    membersCount,
   };
 }

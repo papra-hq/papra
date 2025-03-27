@@ -1,0 +1,2 @@
+ALTER TABLE `organization_subscriptions` ADD `seats_count` integer NOT NULL;--> statement-breakpoint
+CREATE INDEX `documents_organization_id_size_index` ON `documents` (`organization_id`,`original_size`);

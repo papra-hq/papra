@@ -23,3 +23,9 @@ export const createOrganizationDocumentStorageLimitReachedError = createErrorFac
   code: 'organization.document_storage_limit_reached',
   statusCode: 403,
 });
+
+export const createUserNotOrganizationOwnerError = createErrorFactory({
+  message: 'You are not the owner of this organization.',
+  code: 'user.not_organization_owner',
+  statusCode: 403,
+});
