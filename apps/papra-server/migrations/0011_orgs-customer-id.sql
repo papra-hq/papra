@@ -1,1 +1,0 @@
-ALTER TABLE `organizations` ADD `customer_id` text;
