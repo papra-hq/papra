@@ -1,39 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { buildEmailAddress, getEmailUsername, getIsFromAllowedOrigin, getIsIntakeEmailWebhookSecretValid, parseEmailAddress } from './intake-emails.models';
+import { buildEmailAddress, getEmailUsername, getIsFromAllowedOrigin, parseEmailAddress } from './intake-emails.models';
 
 describe('intake-emails models', () => {
-  describe('getIsIntakeEmailWebhookSecretValid', () => {
-    test('the authorization header from the email intake webhook should be a bearer token with the api secret', () => {
-      expect(
-        getIsIntakeEmailWebhookSecretValid({
-          secret: 'foo',
-          authorizationHeader: 'Bearer foo',
-        }),
-      ).to.eql(true);
-
-      expect(
-        getIsIntakeEmailWebhookSecretValid({
-          secret: 'foo',
-          authorizationHeader: 'Bearer bar',
-        }),
-      ).to.eql(false);
-
-      expect(
-        getIsIntakeEmailWebhookSecretValid({
-          secret: 'foo',
-          authorizationHeader: 'Bearer ',
-        }),
-      ).to.eql(false);
-
-      expect(
-        getIsIntakeEmailWebhookSecretValid({
-          secret: 'foo',
-          authorizationHeader: undefined,
-        }),
-      ).to.eql(false);
-    });
-  });
-
   describe('getEmailUsername', () => {
     test('the username is the whole part of the email address before the @', () => {
       expect(getEmailUsername({ email: 'foo@example.fr' })).to.eql({ username: 'foo' });

@@ -18,16 +18,6 @@ export function parseEmailAddress({ email }: { email: string }) {
   return { username, domain, plusPart };
 }
 
-export function getIsIntakeEmailWebhookSecretValid({
-  secret,
-  authorizationHeader,
-}: {
-  secret: string;
-  authorizationHeader: string | undefined;
-}) {
-  return authorizationHeader === `Bearer ${secret}`;
-}
-
 export function getEmailUsername({ email }: { email: string | undefined }) {
   if (!email) {
     return { username: undefined };
