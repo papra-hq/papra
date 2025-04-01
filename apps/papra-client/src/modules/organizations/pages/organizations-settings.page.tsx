@@ -1,4 +1,5 @@
 import type { Organization } from '../organizations.types';
+import { buildTimeConfig } from '@/modules/config/config';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
 import { getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
@@ -89,7 +90,7 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
           Manage your billing, invoices and payment methods.
         </div>
       </div>
-      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0">
+      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0" disabled={buildTimeConfig.isDemoMode}>
         Manage subscription
       </Button>
     </Card>

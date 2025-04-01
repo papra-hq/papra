@@ -135,6 +135,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
+    path: '/api/organizations/:organizationId/customer-portal',
+    method: 'GET',
+    handler: async () => {
+      throw Object.assign(new FetchError('Not available in demo'), { status: 501 });
+    },
+  }),
+
+  ...defineHandler({
     path: '/api/organizations/:organizationId/documents/statistics',
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
