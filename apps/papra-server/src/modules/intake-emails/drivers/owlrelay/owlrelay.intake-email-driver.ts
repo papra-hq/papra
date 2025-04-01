@@ -1,6 +1,7 @@
 import { buildUrl } from '@corentinth/chisels';
 import { generateId as generateHumanReadableId } from '@corentinth/friendly-ids';
 import { createClient } from '@owlrelay/api-sdk';
+import { INTAKE_EMAILS_INGEST_ROUTE } from '../../intake-emails.constants';
 import { buildEmailAddress } from '../../intake-emails.models';
 import { defineIntakeEmailDriver } from '../intake-emails.drivers.models';
 
@@ -15,7 +16,7 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
     apiKey: owlrelayApiKey,
   });
 
-  const webhookUrl = configuredWebhookUrl ?? buildUrl({ baseUrl, path: '/api/intake-emails/owlrelay' });
+  const webhookUrl = configuredWebhookUrl ?? buildUrl({ baseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
 
   return {
     name: OWLRELAY_INTAKE_EMAIL_DRIVER_NAME,

@@ -55,11 +55,12 @@ By integrating Papra with OwlRelay, your instance will generate email addresses 
    # this is to authenticate that the emails are coming from OwlRelay
    INTAKE_EMAILS_WEBHOOK_SECRET=a-random-key
 
-   # Optional: This is the URL that OwlRelay will send the emails to,
+   # [Optional]
+   # This is the URL that OwlRelay will send the emails to,
    # if not provided, the webhook will be inferred from the server URL.
    # Can be relevant if you have multiple urls pointing to your Papra instance
    # or when using tunnel services
-   OWLRELAY_WEBHOOK_URL=https://your-instance.com/api/intake-emails/owlrelay
+   OWLRELAY_WEBHOOK_URL=https://your-instance.com/api/intake-emails/ingest
    ```
 
 4. **That's it!**

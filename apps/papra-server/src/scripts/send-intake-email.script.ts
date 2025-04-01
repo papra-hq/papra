@@ -1,5 +1,6 @@
 import { buildUrl } from '@corentinth/chisels';
 import { triggerWebhook } from '@owlrelay/webhook';
+import { INTAKE_EMAILS_INGEST_ROUTE } from '../modules/intake-emails/intake-emails.constants';
 import { runScript } from './commons/run-script';
 
 runScript(
@@ -8,7 +9,7 @@ runScript(
     const { baseUrl } = config.server;
     const { webhookSecret } = config.intakeEmails;
 
-    const webhookUrl = buildUrl({ baseUrl, path: '/api/intake-emails/ingest' });
+    const webhookUrl = buildUrl({ baseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
 
     await triggerWebhook({
       webhookUrl,

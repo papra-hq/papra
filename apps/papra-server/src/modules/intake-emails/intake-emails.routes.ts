@@ -14,6 +14,7 @@ import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
@@ -143,7 +144,7 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
 
 function setupIngestIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
-    '/api/intake-emails/ingest',
+    INTAKE_EMAILS_INGEST_ROUTE,
     validateFormData(z.object({
       // meta is a JSON string, but it can also be parsed as an object in case of multipart/form-data json section
       'email': z.string().transform(parseJson).pipe(intakeEmailsIngestionMetaSchema),
