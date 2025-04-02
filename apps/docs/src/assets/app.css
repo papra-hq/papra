@@ -16,9 +16,26 @@
     --sl-color-bg-sidebar: var(--background-color)!important;
 }
 
-
 .sl-link-card {
     background-color: var(--surface)!important;
+}
+
+.hero .sl-link-button {
+    background-color: var(--sl-color-text)!important;
+    border-color: transparent!important;
+    color: var(--sl-color-bg)!important;
+    border-radius: 0.8rem!important;
+    transition: opacity 0.2s ease-in-out!important;
+    font-weight: 500!important;
+}
+
+:root[data-theme='dark'] .hero .sl-link-button {
+    background-color: var(--accent-color)!important;
+    color: var(--background-color)!important;
+}
+
+.hero .sl-link-button:hover {
+    opacity: 0.8!important;
 }
 
 #_top {
