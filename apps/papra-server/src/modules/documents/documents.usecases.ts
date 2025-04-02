@@ -2,6 +2,7 @@ import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { TrackingServices } from '../tracking/tracking.services';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
@@ -35,6 +36,8 @@ export async function createDocument({
   generateDocumentId = generateDocumentIdImpl,
   plansRepository,
   subscriptionsRepository,
+  trackingServices,
+  logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
   file: File;
   userId?: string;
@@ -44,6 +47,8 @@ export async function createDocument({
   generateDocumentId?: () => string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  trackingServices: TrackingServices;
+  logger?: Logger;
 }) {
   const {
     name: fileName,
@@ -98,11 +103,21 @@ export async function createDocument({
   );
 
   if (error) {
+    logger.error({ error }, 'Error while creating document');
+
     // If the document is not saved, delete the file from the storage
     await documentsStorageService.deleteFile({ storageKey: originalDocumentStorageKey });
 
+    logger.error({ error }, 'Stored document file deleted because of error');
+
     throw error;
   }
+
+  if (userId) {
+    trackingServices.captureUserEvent({ userId, event: 'Document created' });
+  }
+
+  logger.info({ documentId, userId, organizationId }, 'Document created');
 
   const { document } = result;
 

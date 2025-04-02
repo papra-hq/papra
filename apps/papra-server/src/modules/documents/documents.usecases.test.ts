@@ -5,6 +5,7 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createPlansRepository } from '../plans/plans.repository';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createDummyTrackingServices } from '../tracking/tracking.services';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -24,6 +25,7 @@ describe('documents usecases', () => {
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const trackingServices = createDummyTrackingServices();
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -39,6 +41,7 @@ describe('documents usecases', () => {
         generateDocumentId,
         plansRepository,
         subscriptionsRepository,
+        trackingServices,
       });
 
       expect(document).to.include({
@@ -77,6 +80,7 @@ describe('documents usecases', () => {
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const trackingServices = createDummyTrackingServices();
       let documentIdIndex = 1;
       const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -93,6 +97,7 @@ describe('documents usecases', () => {
         plansRepository,
         subscriptionsRepository,
         generateDocumentId,
+        trackingServices,
       });
 
       expect(document1).to.include({
@@ -118,6 +123,7 @@ describe('documents usecases', () => {
           plansRepository,
           subscriptionsRepository,
           generateDocumentId,
+          trackingServices,
         }),
       ).rejects.toThrow(
         createDocumentAlreadyExistsError(),
@@ -143,6 +149,7 @@ describe('documents usecases', () => {
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const trackingServices = createDummyTrackingServices();
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -164,6 +171,7 @@ describe('documents usecases', () => {
           plansRepository,
           subscriptionsRepository,
           generateDocumentId,
+          trackingServices,
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 

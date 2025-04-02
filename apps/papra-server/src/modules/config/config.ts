@@ -16,6 +16,7 @@ import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
+import { trackingConfig } from '../tracking/tracking.config';
 import { booleanishSchema } from './config.schemas';
 
 export const configDefinition = {
@@ -84,6 +85,7 @@ export const configDefinition = {
   organizations: organizationsConfig,
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
+  tracking: trackingConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

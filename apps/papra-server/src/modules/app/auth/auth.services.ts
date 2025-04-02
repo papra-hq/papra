@@ -1,4 +1,5 @@
 import type { Config } from '../../config/config.types';
+import type { TrackingServices } from '../../tracking/tracking.services';
 import type { Database } from '../database/database.types';
 import type { AuthEmailsServices } from './auth.emails.services';
 import { betterAuth } from 'better-auth';
@@ -11,7 +12,17 @@ export type Auth = ReturnType<typeof getAuth>['auth'];
 
 const logger = createLogger({ namespace: 'auth' });
 
-export function getAuth({ db, config, authEmailsServices }: { db: Database; config: Config; authEmailsServices: AuthEmailsServices }) {
+export function getAuth({
+  db,
+  config,
+  authEmailsServices,
+  trackingServices,
+}: {
+  db: Database;
+  config: Config;
+  authEmailsServices: AuthEmailsServices;
+  trackingServices: TrackingServices;
+}) {
   const { secret } = config.auth;
 
   const auth = betterAuth({
@@ -55,6 +66,17 @@ export function getAuth({ db, config, authEmailsServices }: { db: Database; conf
         },
       },
     ),
+
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            logger.info({ userId: user.id }, 'User signed up');
+            trackingServices.captureUserEvent({ userId: user.id, event: 'User signed up' });
+          },
+        },
+      },
+    },
 
     advanced: {
       // Drizzle tables handle the id generation

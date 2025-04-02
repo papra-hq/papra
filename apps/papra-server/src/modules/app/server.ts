@@ -5,6 +5,7 @@ import { parseConfig } from '../config/config';
 import { createEmailsServices } from '../emails/emails.services';
 import { createLoggerMiddleware } from '../shared/logger/logger.middleware';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
+import { createTrackingServices } from '../tracking/tracking.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { setupDatabase } from './database/database';
@@ -18,7 +19,8 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   const config = partialDeps.config ?? (await parseConfig()).config;
   const db = partialDeps.db ?? setupDatabase(config.database).db;
   const emailsServices = createEmailsServices({ config });
-  const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }) }).auth;
+  const trackingServices = createTrackingServices({ config });
+  const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
   const subscriptionsServices = createSubscriptionsServices({ config });
 
   return {
@@ -27,12 +29,13 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
     auth,
     emailsServices,
     subscriptionsServices,
+    trackingServices,
   };
 }
 
 export async function createServer(initialDeps: Partial<GlobalDependencies>) {
   const dependencies = await createGlobalDependencies(initialDeps);
-  const { config } = dependencies;
+  const { config, trackingServices } = dependencies;
 
   const app = new Hono<ServerInstanceGenerics>({ strict: true });
 
@@ -48,5 +51,8 @@ export async function createServer(initialDeps: Partial<GlobalDependencies>) {
 
   return {
     app,
+    shutdown: async () => {
+      await trackingServices.shutdown();
+    },
   };
 }

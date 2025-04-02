@@ -3,6 +3,7 @@ import type { DocumentStorageService } from '../documents/storage/documents.stor
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { TrackingServices } from '../tracking/tracking.services';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
 import { safely } from '@corentinth/chisels';
@@ -48,6 +49,7 @@ export function processIntakeEmailIngestion({
   documentsStorageService,
   plansRepository,
   subscriptionsRepository,
+  trackingServices,
 }: {
   fromAddress: string;
   recipientsAddresses: string[];
@@ -57,6 +59,7 @@ export function processIntakeEmailIngestion({
   documentsStorageService: DocumentStorageService;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  trackingServices: TrackingServices;
 }) {
   return Promise.all(
     recipientsAddresses.map(recipientAddress => safely(
@@ -69,6 +72,7 @@ export function processIntakeEmailIngestion({
         documentsStorageService,
         plansRepository,
         subscriptionsRepository,
+        trackingServices,
       }),
     )),
   );
@@ -83,6 +87,7 @@ export async function ingestEmailForRecipient({
   documentsStorageService,
   logger = createLogger({ namespace: 'intake-emails.ingest' }),
   plansRepository,
+  trackingServices,
   subscriptionsRepository,
 }: {
   fromAddress: string;
@@ -93,6 +98,7 @@ export async function ingestEmailForRecipient({
   documentsStorageService: DocumentStorageService;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  trackingServices: TrackingServices;
   logger?: Logger;
 }) {
   const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
@@ -130,6 +136,7 @@ export async function ingestEmailForRecipient({
       documentsRepository,
       plansRepository,
       subscriptionsRepository,
+      trackingServices,
     }));
 
     if (error) {

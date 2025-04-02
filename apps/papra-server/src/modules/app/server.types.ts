@@ -2,6 +2,7 @@ import type { Context as BaseContext, Hono } from 'hono';
 import type { Config } from '../config/config.types';
 import type { EmailsServices } from '../emails/emails.services';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
+import type { TrackingServices } from '../tracking/tracking.services';
 import type { Auth } from './auth/auth.services';
 import type { Database } from './database/database.types';
 
@@ -22,6 +23,7 @@ export type GlobalDependencies = {
   auth: Auth;
   emailsServices: EmailsServices;
   subscriptionsServices: SubscriptionsServices;
+  trackingServices: TrackingServices;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

@@ -26,7 +26,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupGetDocumentFileRoute(context);
 }
 
-function setupCreateDocumentRoute({ app, config, db }: RouteDefinitionContext) {
+function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     (context, next) => {
@@ -87,6 +87,7 @@ function setupCreateDocumentRoute({ app, config, db }: RouteDefinitionContext) {
         documentsStorageService,
         plansRepository,
         subscriptionsRepository,
+        trackingServices,
       });
 
       return context.json({

@@ -12,6 +12,7 @@ import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createDummyTrackingServices } from '../tracking/tracking.services';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsTable } from './intake-emails.tables';
@@ -31,6 +32,7 @@ describe('intake-emails usecases', () => {
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const trackingServices = createDummyTrackingServices();
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -44,6 +46,7 @@ describe('intake-emails usecases', () => {
           documentsStorageService,
           plansRepository,
           subscriptionsRepository,
+          trackingServices,
         });
 
         const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
@@ -70,6 +73,7 @@ describe('intake-emails usecases', () => {
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const trackingServices = createDummyTrackingServices();
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -80,6 +84,7 @@ describe('intake-emails usecases', () => {
           documentsStorageService,
           plansRepository,
           subscriptionsRepository,
+          trackingServices,
           logger,
         });
 
@@ -100,6 +105,7 @@ describe('intake-emails usecases', () => {
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const trackingServices = createDummyTrackingServices();
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -110,6 +116,7 @@ describe('intake-emails usecases', () => {
           documentsStorageService,
           plansRepository,
           subscriptionsRepository,
+          trackingServices,
           logger,
         });
 
@@ -135,6 +142,7 @@ describe('intake-emails usecases', () => {
         const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const trackingServices = createDummyTrackingServices();
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
@@ -145,6 +153,7 @@ describe('intake-emails usecases', () => {
           documentsStorageService,
           plansRepository,
           subscriptionsRepository,
+          trackingServices,
           logger,
         });
 
@@ -181,6 +190,7 @@ describe('intake-emails usecases', () => {
       const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const trackingServices = createDummyTrackingServices();
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
@@ -193,6 +203,7 @@ describe('intake-emails usecases', () => {
         documentsStorageService,
         plansRepository,
         subscriptionsRepository,
+        trackingServices,
       });
 
       const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
