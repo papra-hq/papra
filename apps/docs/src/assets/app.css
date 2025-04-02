@@ -1,7 +1,10 @@
 :root[data-theme='dark'] {
-    --background-color: #050505!important;
+    --background-color: #0c0d0f!important;
     --accent-color: #fff!important;
-    --foreground-color: #f6f6f6!important;
+    --foreground-color: #9ea3a2!important;
+    --sl-color-white: #f3f7f6!important;
+
+    --surface: #0a0b0d!important;
 
     --sl-color-text: var(--foreground-color)!important;
 
@@ -11,6 +14,16 @@
     --sl-color-bg: var(--background-color)!important;
     --sl-rapide-ui-header-bg-color: var(--background-color)!important;
     --sl-color-bg-sidebar: var(--background-color)!important;
+}
+
+
+.sl-link-card {
+    background-color: var(--surface)!important;
+}
+
+#_top {
+    padding-top: 10px!important;
+    padding-bottom: 30px!important;
 }
 
 .site-title {

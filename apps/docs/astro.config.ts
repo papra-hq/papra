@@ -28,6 +28,9 @@ export default defineConfig({
         blueSky: 'https://bsky.app/profile/papra.app',
         discord: 'https://discord.gg/8UPjzsrBNF',
       },
+      expressiveCode: {
+        themes: ['vitesse-black', 'vitesse-light'],
+      },
       editLink: {
         baseUrl: 'https://github.com/papra-hq/papra/edit/main/apps/docs/',
       },
