@@ -37,6 +37,6 @@ export function createTrackingServices({ config }: { config: Config }): Tracking
     captureUserEvent: ({ userId, event, properties }) => {
       trackingClient.capture({ distinctId: userId, event, properties });
     },
-    shutdown: trackingClient.shutdown,
+    shutdown: () => trackingClient.shutdown(),
   };
 }

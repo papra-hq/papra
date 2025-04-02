@@ -108,6 +108,8 @@ export async function createDocument({
     // If the document is not saved, delete the file from the storage
     await documentsStorageService.deleteFile({ storageKey: originalDocumentStorageKey });
 
+    logger.error({ error }, 'Stored document file deleted because of error');
+
     throw error;
   }
 
