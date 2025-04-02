@@ -146,7 +146,7 @@ function setupIngestIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.post(
     INTAKE_EMAILS_INGEST_ROUTE,
     validateFormData(z.object({
-      // meta is a JSON string, but it can also be parsed as an object in case of multipart/form-data json section
+      // email field is a JSON string
       'email': z.string().transform(parseJson).pipe(intakeEmailsIngestionMetaSchema),
       'attachments[]': z.array(z.instanceof(File)).min(1, 'At least one attachment is required').optional(),
     }), { allowAdditionalFields: true }),

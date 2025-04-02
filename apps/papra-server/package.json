@@ -38,7 +38,7 @@
     "@hono/node-server": "^1.13.7",
     "@libsql/client": "^0.14.0",
     "@owlrelay/api-sdk": "^0.0.1",
-    "@owlrelay/webhook": "^0.0.2",
+    "@owlrelay/webhook": "^0.0.3",
     "@papra/lecture": "^0.0.4",
     "@paralleldrive/cuid2": "^2.2.2",
     "better-auth": "catalog:",
