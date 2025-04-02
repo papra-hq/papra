@@ -57,5 +57,5 @@ docker pull ghcr.io/papra-hq/papra:latest-root
 ## Basic Usage
 
 ```bash frame="none"
-docker run -d --name papra --restart unless-stopped -p 1221:1221 ghcr.io/papra-hq/papra:latest-root
+docker run -d --name papra --restart unless-stopped -p 1221:1221 ghcr.io/papra-hq/papra:latest
 ```

@@ -62,6 +62,17 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 - *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
 - *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
 
+## Self-hosting
+
+Papra can easily be self-hosted using Docker
+For a quick start, simply run the following command:
+
+```bash
+docker run -d --name papra -p 1221:1221 ghcr.io/papra-hq/papra:latest
+```
+
+Please refer to the [self-hosting documentation](https://docs.papra.app/self-hosting/using-docker) for more information and configuration options.
+
 ## Contributing
 
 Contributions are welcome! Please refer to the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file for guidelines on how to get started, report issues, and submit pull requests.
