@@ -8,7 +8,7 @@ describe('health check routes e2e', () => {
     describe('the /api/health is a publicly accessible route that provides health information about the server', () => {
       test('when the database is healthy, the /api/health returns 200', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = createServer({ db });
+        const { app } = await createServer({ db });
 
         const response = await app.request('/api/health');
 
@@ -27,7 +27,7 @@ describe('health check routes e2e', () => {
           },
         } as unknown as Database;
 
-        const { app } = createServer({ db });
+        const { app } = await createServer({ db });
 
         const response = await app.request('/api/health');
 

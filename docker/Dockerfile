@@ -2,7 +2,9 @@
 FROM node:22-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN npm install -g corepack@latest
 RUN corepack enable
+RUN corepack prepare pnpm@9.15.4 --activate
 
 # Build stage
 FROM base AS build
@@ -35,6 +37,7 @@ EXPOSE 1221
 ENV SERVER_SERVE_PUBLIC_DIR=true
 ENV DATABASE_URL=file:./app-data/db/db.sqlite
 ENV DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents
+ENV PAPRA_CONFIG_DIR=./app-data
 
 RUN mkdir -p ./app-data/db ./app-data/documents
 

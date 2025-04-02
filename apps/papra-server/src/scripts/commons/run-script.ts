@@ -22,7 +22,7 @@ async function runScript(
     async () => {
       const logger = createLogger({ namespace: 'scripts' });
 
-      const { config } = parseConfig({ env: process.env });
+      const { config } = await parseConfig({ env: process.env });
       const { db, client } = setupDatabase({ ...config.database });
 
       try {

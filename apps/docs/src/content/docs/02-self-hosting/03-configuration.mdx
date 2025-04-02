@@ -6,8 +6,72 @@ slug: self-hosting/configuration
 
 import { mdSections } from '../../../config.data.ts';
 import { marked } from 'marked';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 Configuring your self hosted Papra allows you to customize the application to better suit your environment and requirements. This guide covers the key environment variables you can set to control various aspects of the application, including port settings, security options, and storage configurations.
+
+## Configuration files
+
+You can configure Papra using standard environment variables or use some configuration files.
+Papra uses [c12](https://github.com/unjs/c12) to load configuration files and [figue](https://github.com/CorentinTh/figue) to validate and merge environment variables and configuration files.
+
+The [c12](https://github.com/unjs/c12) allows you to use the file format you want. The configuration file should be named `papra.config.[ext]` and should be located in the root of the project or in `/app/app-data/` directory in docker container (it can be changed using `PAPRA_CONFIG_DIR` environment variable).
+
+The supported formats are: `json`, `jsonc`, `json5`, `yaml`, `yml`, `toml`, `js`, `ts`, `cjs`, `mjs`.
+
+Example of configuration files:
+<Tabs>
+  <TabItem label="papra.config.yaml">
+    ```yaml
+    server:
+      baseUrl: https://papra.example.com
+      corsOrigins: *
+
+    client:
+      baseUrl: https://papra.example.com
+
+    auth:
+      secret: your-secret-key
+      isRegistrationEnabled: true
+    # ...
+    ```
+  </TabItem>
+
+  <TabItem label="papra.config.json">
+    ```json
+    {
+      "$schema": "https://docs.papra.com/papra-config-schema.json",
+      "server": {
+        "baseUrl": "https://papra.example.com"
+      },
+      "client": {
+        "baseUrl": "https://papra.example.com"
+      },
+      "auth": {
+        "secret": "your-secret-key",
+        "isRegistrationEnabled": true
+      }
+    }
+    ```
+
+    <Aside type="tip">
+      When using an IDE, you can use the [papra-config-schema.json](/papra-config-schema.json) file to get autocompletion for the configuration file. Just add a `$schema` property to your configuration file and point it to the schema file.
+
+      ```json
+      {
+        "$schema": "https://docs.papra.com/papra-config-schema.json",
+        // ...
+      }
+      ```
+      
+    </Aside>
+
+  </TabItem>
+</Tabs>
+
+
+You'll find the complete list of configuration variables with their environment variables equivalents and path for files in the next section.
 
 ## Configuration variables
 

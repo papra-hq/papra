@@ -86,7 +86,7 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const usersRepository = createUsersRepository({ db });
-      const config = overrideConfig({ organizations: { maxOrganizationCount: 2 } });
+      const config = await overrideConfig({ organizations: { maxOrganizationCount: 2 } });
 
       // no throw
       await checkIfUserCanCreateNewOrganization({
@@ -128,7 +128,7 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const usersRepository = createUsersRepository({ db });
-      const config = overrideConfig({ organizations: { maxOrganizationCount: 2 } });
+      const config = await overrideConfig({ organizations: { maxOrganizationCount: 2 } });
 
       // no throw
       await checkIfUserCanCreateNewOrganization({

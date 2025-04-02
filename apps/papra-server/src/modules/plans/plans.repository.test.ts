@@ -6,8 +6,8 @@ import { getOrganizationPlansRecords } from './plans.repository';
 describe('plans repository', () => {
   describe('getOrganizationPlansRecords', () => {
     describe('generates a map of organization plans, used in the organization plan repository', () => {
-      test('the key indexing the plans is the plan id', () => {
-        const config = overrideConfig({});
+      test('the key indexing the plans is the plan id', async () => {
+        const config = await overrideConfig({});
 
         const { organizationPlans } = getOrganizationPlansRecords({ config });
         const organizationPlanEntries = Object.entries(organizationPlans);
@@ -20,8 +20,8 @@ describe('plans repository', () => {
       });
     });
 
-    test('for self-hosted instances, it make no sense to have a limited free plan, so admin can set the free plan to unlimited using the isFreePlanUnlimited config', () => {
-      const config = overrideConfig({
+    test('for self-hosted instances, it make no sense to have a limited free plan, so admin can set the free plan to unlimited using the isFreePlanUnlimited config', async () => {
+      const config = await overrideConfig({
         organizationPlans: {
           isFreePlanUnlimited: true,
         },

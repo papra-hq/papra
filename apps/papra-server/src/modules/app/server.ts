@@ -14,8 +14,8 @@ import { createTimeoutMiddleware } from './middlewares/timeout.middleware';
 import { registerRoutes } from './server.routes';
 import { registerStaticAssetsRoutes } from './static-assets/static-assets.routes';
 
-function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>): GlobalDependencies {
-  const config = partialDeps.config ?? parseConfig().config;
+async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>): Promise<GlobalDependencies> {
+  const config = partialDeps.config ?? (await parseConfig()).config;
   const db = partialDeps.db ?? setupDatabase(config.database).db;
   const emailsServices = createEmailsServices({ config });
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }) }).auth;
@@ -30,8 +30,8 @@ function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>): Glo
   };
 }
 
-export function createServer(initialDeps: Partial<GlobalDependencies>) {
-  const dependencies = createGlobalDependencies(initialDeps);
+export async function createServer(initialDeps: Partial<GlobalDependencies>) {
+  const dependencies = await createGlobalDependencies(initialDeps);
   const { config } = dependencies;
 
   const app = new Hono<ServerInstanceGenerics>({ strict: true });

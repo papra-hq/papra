@@ -7,7 +7,7 @@ import { createTimeoutMiddleware } from './timeout.middleware';
 describe('middlewares', () => {
   describe('timeoutMiddleware', () => {
     test('when a request last longer than the config timeout, a 504 error is raised', async () => {
-      const config = overrideConfig({ server: { routeTimeoutMs: 50 } });
+      const config = await overrideConfig({ server: { routeTimeoutMs: 50 } });
 
       const app = new Hono<{ Variables: { config: any } }>();
       registerErrorMiddleware({ app: app as any });

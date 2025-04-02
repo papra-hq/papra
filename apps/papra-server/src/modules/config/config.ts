@@ -1,6 +1,7 @@
 import type { ConfigDefinition } from 'figue';
 import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
+import { loadConfig } from 'c12';
 import { defineConfig } from 'figue';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
@@ -90,13 +91,18 @@ export const configDefinition = {
 
 const logger = createLogger({ namespace: 'config' });
 
-export function parseConfig({ env = process.env }: { env?: Record<string, string | undefined> } = {}) {
-  const [configResult, configError] = safelySync(() => defineConfig(
-    configDefinition,
-    {
-      envSource: env,
-    },
-  ));
+export async function parseConfig({ env = process.env }: { env?: Record<string, string | undefined> } = {}) {
+  const { config: configFromFile } = await loadConfig({
+    name: 'papra',
+    rcFile: false,
+    globalRc: false,
+    dotenv: false,
+    packageJson: false,
+    envName: false,
+    cwd: env.PAPRA_CONFIG_DIR ?? process.cwd(),
+  });
+
+  const [configResult, configError] = safelySync(() => defineConfig(configDefinition, { envSource: env, defaults: configFromFile }));
 
   if (configError) {
     logger.error({ error: configError }, `Invalid config: ${configError.message}`);

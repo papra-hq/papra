@@ -11,9 +11,9 @@ describe('intake-emails e2e', () => {
   describe('ingest an intake email', () => {
     test('when intake email ingestion is disabled, a 403 is returned', async () => {
       const { db } = await createInMemoryDatabase();
-      const { app } = createServer({
+      const { app } = await createServer({
         db,
-        config: overrideConfig({
+        config: await overrideConfig({
           intakeEmails: {
             isEnabled: false,
           },
@@ -42,9 +42,9 @@ describe('intake-emails e2e', () => {
     describe('when ingesting an email, the request must have an X-Signature header with the hmac signature of the body', async () => {
       test('when the header is missing, a 400 is returned', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = createServer({
+        const { app } = await createServer({
           db,
-          config: overrideConfig({
+          config: await overrideConfig({
             intakeEmails: {
               isEnabled: true,
               webhookSecret: 'super-secret',
@@ -73,9 +73,9 @@ describe('intake-emails e2e', () => {
 
       test('when the header is invalid, a 401 is returned', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = createServer({
+        const { app } = await createServer({
           db,
-          config: overrideConfig({
+          config: await overrideConfig({
             intakeEmails: {
               isEnabled: true,
               webhookSecret: 'super-secret',
@@ -114,9 +114,9 @@ describe('intake-emails e2e', () => {
         intakeEmails: [{ id: 'ie_1', organizationId: 'org_1', emailAddress: 'email-1@papra.email', allowedOrigins: ['foo@example.fr'] }],
       });
 
-      const { app } = createServer({
+      const { app } = await createServer({
         db,
-        config: overrideConfig({
+        config: await overrideConfig({
           intakeEmails: { isEnabled: true, webhookSecret: 'super-secret' },
         }),
       });

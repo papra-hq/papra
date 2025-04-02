@@ -5,8 +5,8 @@ import { parseConfig } from './config';
 
 export { overrideConfig };
 
-function overrideConfig(config: DeepPartial<Config>) {
-  const { config: defaultConfig } = parseConfig();
+async function overrideConfig(config: DeepPartial<Config>) {
+  const { config: defaultConfig } = await parseConfig();
 
   return merge({}, defaultConfig, config);
 }
