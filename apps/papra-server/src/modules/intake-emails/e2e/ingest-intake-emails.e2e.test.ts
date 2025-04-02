@@ -13,7 +13,7 @@ describe('intake-emails e2e', () => {
       const { db } = await createInMemoryDatabase();
       const { app } = await createServer({
         db,
-        config: await overrideConfig({
+        config: overrideConfig({
           intakeEmails: {
             isEnabled: false,
           },
@@ -44,7 +44,7 @@ describe('intake-emails e2e', () => {
         const { db } = await createInMemoryDatabase();
         const { app } = await createServer({
           db,
-          config: await overrideConfig({
+          config: overrideConfig({
             intakeEmails: {
               isEnabled: true,
               webhookSecret: 'super-secret',
@@ -75,7 +75,7 @@ describe('intake-emails e2e', () => {
         const { db } = await createInMemoryDatabase();
         const { app } = await createServer({
           db,
-          config: await overrideConfig({
+          config: overrideConfig({
             intakeEmails: {
               isEnabled: true,
               webhookSecret: 'super-secret',
@@ -116,7 +116,7 @@ describe('intake-emails e2e', () => {
 
       const { app } = await createServer({
         db,
-        config: await overrideConfig({
+        config: overrideConfig({
           intakeEmails: { isEnabled: true, webhookSecret: 'super-secret' },
         }),
       });

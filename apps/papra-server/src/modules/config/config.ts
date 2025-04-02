@@ -3,6 +3,7 @@ import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
 import { loadConfig } from 'c12';
 import { defineConfig } from 'figue';
+import { memoize } from 'lodash-es';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
 import { databaseConfig } from '../app/database/database.config';
@@ -113,3 +114,11 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
 
   return { config };
 }
+
+// Permit to load the default config, regardless of environnement variables, and config files
+// memoized to avoid re-parsing the config definition
+export const loadDryConfig = memoize(() => {
+  const { config } = defineConfig(configDefinition);
+
+  return { config };
+});

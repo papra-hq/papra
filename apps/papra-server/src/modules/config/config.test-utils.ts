@@ -1,12 +1,12 @@
 import type { DeepPartial } from '@corentinth/chisels';
 import type { Config } from './config.types';
 import { merge } from 'lodash-es';
-import { parseConfig } from './config';
+import { loadDryConfig } from './config';
 
 export { overrideConfig };
 
-async function overrideConfig(config: DeepPartial<Config>) {
-  const { config: defaultConfig } = await parseConfig();
+function overrideConfig(config: DeepPartial<Config>) {
+  const { config: defaultConfig } = loadDryConfig();
 
   return merge({}, defaultConfig, config);
 }

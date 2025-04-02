@@ -27,7 +27,7 @@ describe('plans usecases', () => {
         }],
       });
 
-      const config = await overrideConfig({
+      const config = overrideConfig({
         organizationPlans: {
           plusPlanPriceId: 'price_123',
         },
@@ -48,7 +48,7 @@ describe('plans usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const config = await overrideConfig({
+      const config = overrideConfig({
         organizationPlans: {
           plusPlanPriceId: 'price_123',
         },
