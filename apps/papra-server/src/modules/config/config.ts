@@ -115,7 +115,7 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
   return { config };
 }
 
-// Permit to load the default config, regardless of environnement variables, and config files
+// Permit to load the default config, regardless of environment variables, and config files
 // memoized to avoid re-parsing the config definition
 export const loadDryConfig = memoize(() => {
   const { config } = defineConfig(configDefinition);
