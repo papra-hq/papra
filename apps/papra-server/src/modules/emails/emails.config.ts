@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../config/config.schemas';
 
 export const emailsConfig = {
   resendApiKey: {
@@ -16,13 +17,8 @@ export const emailsConfig = {
   },
   dryRun: {
     doc: 'Whether to run the email service in dry run mode',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'false',
+    schema: booleanishSchema,
+    default: false,
     env: 'EMAILS_DRY_RUN',
   },
 } as const satisfies ConfigDefinition;

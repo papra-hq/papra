@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../config/config.schemas';
 import { intakeEmailDrivers } from './drivers/intake-emails.drivers';
 import { owlrelayIntakeEmailDriverConfig } from './drivers/owlrelay/owlrelay.intake-email-driver.config';
 import { RANDOM_USERNAME_INTAKE_EMAIL_DRIVER_NAME } from './drivers/random-username/random-username.intake-email-driver';
@@ -8,13 +9,8 @@ import { randomUsernameIntakeEmailDriverConfig } from './drivers/random-username
 export const intakeEmailsConfig = {
   isEnabled: {
     doc: 'Whether intake emails are enabled',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'false',
+    schema: booleanishSchema,
+    default: false,
     env: 'INTAKE_EMAILS_IS_ENABLED',
   },
   driver: {

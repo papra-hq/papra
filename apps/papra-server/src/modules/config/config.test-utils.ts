@@ -5,7 +5,7 @@ import { loadDryConfig } from './config';
 
 export { overrideConfig };
 
-function overrideConfig(config: DeepPartial<Config>) {
+function overrideConfig(config: DeepPartial<Config> | undefined = {}) {
   const { config: defaultConfig } = loadDryConfig();
 
   return merge({}, defaultConfig, config);

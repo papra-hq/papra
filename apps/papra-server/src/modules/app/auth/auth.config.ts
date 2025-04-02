@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../../config/config.schemas';
 
 export const authConfig = {
   secret: {
@@ -10,59 +11,33 @@ export const authConfig = {
   },
   isRegistrationEnabled: {
     doc: 'Whether registration is enabled',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'true',
+    schema: booleanishSchema,
+    default: true,
     env: 'AUTH_IS_REGISTRATION_ENABLED',
   },
   isPasswordResetEnabled: {
     doc: 'Whether password reset is enabled',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'true',
+    schema: booleanishSchema,
+    default: true,
     env: 'AUTH_IS_PASSWORD_RESET_ENABLED',
   },
   isEmailVerificationRequired: {
     doc: 'Whether email verification is required',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'false',
+    schema: booleanishSchema,
+    default: false,
     env: 'AUTH_IS_EMAIL_VERIFICATION_REQUIRED',
   },
   showLegalLinksOnAuthPage: {
     doc: 'Whether to show Papra legal links on the auth pages (terms of service, privacy policy), useless for self-hosted instances',
-    schema: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .transform(x => x === 'true')
-      .pipe(z.boolean()),
-    default: 'false',
+    schema: booleanishSchema,
+    default: false,
     env: 'AUTH_SHOW_LEGAL_LINKS',
   },
   providers: {
     github: {
       isEnabled: {
         doc: 'Whether Github OAuth is enabled',
-        schema: z
-          .string()
-          .trim()
-          .toLowerCase()
-          .transform(x => x === 'true')
-          .pipe(z.boolean()),
-        default: 'false',
+        schema: booleanishSchema,
         env: 'AUTH_PROVIDERS_GITHUB_IS_ENABLED',
       },
       clientId: {
@@ -81,13 +56,8 @@ export const authConfig = {
     google: {
       isEnabled: {
         doc: 'Whether Google OAuth is enabled',
-        schema: z
-          .string()
-          .trim()
-          .toLowerCase()
-          .transform(x => x === 'true')
-          .pipe(z.boolean()),
-        default: 'false',
+        schema: booleanishSchema,
+        default: false,
         env: 'AUTH_PROVIDERS_GOOGLE_IS_ENABLED',
       },
       clientId: {

@@ -16,6 +16,7 @@ import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
+import { booleanishSchema } from './config.schemas';
 
 export const configDefinition = {
   env: {
@@ -54,13 +55,8 @@ export const configDefinition = {
     },
     servePublicDir: {
       doc: 'Whether to serve the public directory',
-      schema: z
-        .string()
-        .trim()
-        .toLowerCase()
-        .transform(x => x === 'true')
-        .pipe(z.boolean()),
-      default: 'false',
+      schema: booleanishSchema,
+      default: false,
       env: 'SERVER_SERVE_PUBLIC_DIR',
     },
   },

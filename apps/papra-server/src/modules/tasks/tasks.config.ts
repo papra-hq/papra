@@ -1,17 +1,13 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../config/config.schemas';
 
 export const tasksConfig = {
   hardDeleteExpiredDocuments: {
     enabled: {
       doc: 'Whether the task to hard delete expired "soft deleted" documents is enabled',
-      schema: z
-        .string()
-        .trim()
-        .toLowerCase()
-        .transform(x => x === 'true')
-        .pipe(z.boolean()),
-      default: 'true',
+      schema: booleanishSchema,
+      default: true,
       env: 'DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_ENABLED',
     },
     cron: {
@@ -22,13 +18,8 @@ export const tasksConfig = {
     },
     runOnStartup: {
       doc: 'Whether the task to hard delete expired "soft deleted" documents should run on startup',
-      schema: z
-        .string()
-        .trim()
-        .toLowerCase()
-        .transform(x => x === 'true')
-        .pipe(z.boolean()),
-      default: 'true',
+      schema: booleanishSchema,
+      default: true,
       env: 'DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_RUN_ON_STARTUP',
     },
   },

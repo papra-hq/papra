@@ -1,5 +1,6 @@
 import type { Database } from '../../database/database.types';
 import { describe, expect, test } from 'vitest';
+import { overrideConfig } from '../../../config/config.test-utils';
 import { createInMemoryDatabase } from '../../database/database.test-utils';
 import { createServer } from '../../server';
 
@@ -8,7 +9,7 @@ describe('health check routes e2e', () => {
     describe('the /api/health is a publicly accessible route that provides health information about the server', () => {
       test('when the database is healthy, the /api/health returns 200', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = await createServer({ db });
+        const { app } = await createServer({ db, config: overrideConfig() });
 
         const response = await app.request('/api/health');
 
@@ -27,7 +28,7 @@ describe('health check routes e2e', () => {
           },
         } as unknown as Database;
 
-        const { app } = await createServer({ db });
+        const { app } = await createServer({ db, config: overrideConfig() });
 
         const response = await app.request('/api/health');
 
