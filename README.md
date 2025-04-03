@@ -50,12 +50,13 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 - **Tags**: Organize your documents with tags.
 - **Email ingestion**: Send/forward emails to a generated address to automatically import documents.
 - **Content extraction**: Automatically extract text from images or scanned documents for search.
-- **i18n**: Support for multiple languages.
+- *In progress:* **i18n**: Support for multiple languages.
 - *Coming soon:* **Tagging Rules**: Automatically tag documents based on custom rules.
 - *Coming soon:* **Folder ingestion**: Automatically import documents from a folder.
 - *Coming soon:* **SDK and API**: Build your own applications on top of Papra.
 - *Coming soon:* **CLI**: Manage your documents from the command line.
 - *Coming soon:* **Document sharing**: Share documents with others.
+- *Coming soon:* **Document requests**: Generate upload links for people to add documents.
 - *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
 - *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
 
