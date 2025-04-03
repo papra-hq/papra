@@ -71,7 +71,8 @@ Papra is currently in **beta**. The core functionality is stable and usable, but
 
 ## Self-hosting
 
-Papra can easily be self-hosted using Docker.
+Papra is dedicated to providing a simple yet highly configurable self-hosting experience. Our lightweight Docker image (<200MB) is compatible with multiple architectures including x86, ARM64, and ARMv7.
+
 For a quick start, simply run the following command:
 
 ```bash
