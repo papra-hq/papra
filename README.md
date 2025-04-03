@@ -29,13 +29,22 @@
 
 ## Introduction
 
-**Papra** is a minimalistic document management and archiving platform. It is designed to be simple to use and accessible to everyone. Papra is a plateform for long-term document storage and management, like a digital archive for your documents.
+**Papra** is a minimalistic document management and archiving platform. It is designed to be simple to use and accessible to everyone. Papra is a platform for long-term document storage and management, like a digital archive for your documents.
 
 Forget about that receipt of that gift you bought for your friend last year, or that warranty for your new phone. With Papra, you can easily store, forget, and retrieve your documents whenever you need them.
 
 A live demo of the platform is available at [demo.papra.app](https://demo.papra.app) (no backend, client-side local storage only).
 
 [![Papra](./.github/papra-screenshot.png)](https://demo.papra.app)
+
+## Project Status
+
+Papra is currently in **beta**. The core functionality is stable and usable, but you may encounter occasional bugs or limitations. The project is actively developed, with new features being added regularly.
+
+- ✅ Core document management features are stable
+- ✅ Self-hosting is fully supported
+- 🚧 Some advanced features are still in development
+- 📝 Feedback and bug reports are highly appreciated
 
 ## Features
 
@@ -62,7 +71,7 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 
 ## Self-hosting
 
-Papra can easily be self-hosted using Docker
+Papra can easily be self-hosted using Docker.
 For a quick start, simply run the following command:
 
 ```bash
