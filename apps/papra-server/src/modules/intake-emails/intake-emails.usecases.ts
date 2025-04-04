@@ -10,7 +10,7 @@ import { safely } from '@corentinth/chisels';
 import { createDocument } from '../documents/documents.usecases';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
-import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
+import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } from './intake-emails.errors';
 import { getIsFromAllowedOrigin } from './intake-emails.models';
 
 export async function createIntakeEmail({
@@ -164,4 +164,25 @@ export async function checkIfOrganizationCanCreateNewIntakeEmail({
   if (intakeEmailCount >= organizationPlan.limits.maxIntakeEmailsCount) {
     throw createIntakeEmailLimitReachedError();
   }
+}
+
+export async function deleteIntakeEmail({
+  intakeEmailId,
+  organizationId,
+  intakeEmailsRepository,
+  intakeEmailsServices,
+}: {
+  intakeEmailId: string;
+  organizationId: string;
+  intakeEmailsRepository: IntakeEmailsRepository;
+  intakeEmailsServices: IntakeEmailsServices;
+}) {
+  const { intakeEmail } = await intakeEmailsRepository.getIntakeEmail({ intakeEmailId, organizationId });
+
+  if (!intakeEmail) {
+    throw createIntakeEmailNotFoundError();
+  }
+
+  await intakeEmailsRepository.deleteIntakeEmail({ organizationId: intakeEmail.organizationId, intakeEmailId });
+  await intakeEmailsServices.deleteEmailAddress({ emailAddress: intakeEmail.emailAddress });
 }

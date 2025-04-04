@@ -1,11 +1,14 @@
-import { buildUrl } from '@corentinth/chisels';
+import { buildUrl, safely } from '@corentinth/chisels';
 import { generateId as generateHumanReadableId } from '@corentinth/friendly-ids';
 import { createClient } from '@owlrelay/api-sdk';
+import { createLogger } from '../../../shared/logger/logger';
 import { INTAKE_EMAILS_INGEST_ROUTE } from '../../intake-emails.constants';
 import { buildEmailAddress } from '../../intake-emails.models';
 import { defineIntakeEmailDriver } from '../intake-emails.drivers.models';
 
 export const OWLRELAY_INTAKE_EMAIL_DRIVER_NAME = 'owlrelay';
+
+const logger = createLogger({ namespace: 'intake-emails.drivers.owlrelay' });
 
 export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ config }) => {
   const { baseUrl } = config.server;
@@ -21,7 +24,7 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
   return {
     name: OWLRELAY_INTAKE_EMAIL_DRIVER_NAME,
     generateEmailAddress: async () => {
-      const { domain, username } = await client.createEmail({
+      const { domain, username, id: owlrelayEmailId } = await client.createEmail({
         username: generateHumanReadableId(),
         webhookUrl,
         webhookSecret,
@@ -29,9 +32,21 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
 
       const emailAddress = buildEmailAddress({ username, domain });
 
+      logger.info({ emailAddress, owlrelayEmailId }, 'Created email address in OwlRelay');
+
       return {
         emailAddress,
       };
+    },
+    deleteEmailAddress: async ({ emailAddress }) => {
+      const [, error] = await safely(client.deleteEmail({ emailAddress }));
+
+      if (error) {
+        logger.error({ error }, 'Failed to delete email address in OwlRelay');
+        return;
+      }
+
+      logger.info({ emailAddress }, 'Deleted email address in OwlRelay');
     },
   };
 });

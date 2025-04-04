@@ -44,6 +44,7 @@ describe('intake-emails repository', () => {
 
       const { intakeEmail: retrievedIntakeEmail } = await intakeEmailsRepository.getIntakeEmail({
         intakeEmailId: intakeEmail.id,
+        organizationId: 'organization-1',
       });
 
       expect(

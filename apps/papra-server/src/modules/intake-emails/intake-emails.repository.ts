@@ -47,12 +47,15 @@ async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, all
   return { intakeEmail };
 }
 
-async function getIntakeEmail({ intakeEmailId, db }: { intakeEmailId: string; db: Database }) {
+async function getIntakeEmail({ intakeEmailId, organizationId, db }: { intakeEmailId: string; organizationId: string; db: Database }) {
   const [intakeEmail] = await db
     .select()
     .from(intakeEmailsTable)
     .where(
-      eq(intakeEmailsTable.id, intakeEmailId),
+      and(
+        eq(intakeEmailsTable.id, intakeEmailId),
+        eq(intakeEmailsTable.organizationId, organizationId),
+      ),
     );
 
   return { intakeEmail };

@@ -15,5 +15,6 @@ export const randomUsernameIntakeEmailDriverFactory = defineIntakeEmailDriver(({
         emailAddress: `${randomUsername}@${domain}`,
       };
     },
+    deleteEmailAddress: async () => {},
   };
 });

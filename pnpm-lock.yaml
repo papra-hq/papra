@@ -236,8 +236,8 @@ importers:
         specifier: ^0.14.0
         version: 0.14.0
       '@owlrelay/api-sdk':
-        specifier: ^0.0.1
-        version: 0.0.1
+        specifier: ^0.0.2
+        version: 0.0.2
       '@owlrelay/webhook':
         specifier: ^0.0.3
         version: 0.0.3
@@ -2064,8 +2064,8 @@ packages:
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
 
-  '@owlrelay/api-sdk@0.0.1':
-    resolution: {integrity: sha512-/4x/J4ktb9z3Zf3VfX7tjQYYqgn8bMXk7hbYePoGknijk90QRjsfsVjpPjl2fgUs+ZGFeOQqdsgLmpxq2d1NGA==}
+  '@owlrelay/api-sdk@0.0.2':
+    resolution: {integrity: sha512-7WzTd/IKiT/h9Y90O7aCdrdZVk26Tb4f4EkIGRzzF0hvujmrp98R3TNji/ZD9As0v6OOilMlMYm4xlZGQzu+bQ==}
     engines: {node: '>=20.0.0'}
 
   '@owlrelay/webhook@0.0.3':
@@ -8551,7 +8551,7 @@ snapshots:
 
   '@oslojs/encoding@1.1.0': {}
 
-  '@owlrelay/api-sdk@0.0.1':
+  '@owlrelay/api-sdk@0.0.2':
     dependencies:
       ofetch: 1.4.1
 

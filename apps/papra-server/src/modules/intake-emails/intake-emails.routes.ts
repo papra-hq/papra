@@ -18,7 +18,7 @@ import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
-import { createIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
+import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
@@ -86,7 +86,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   );
 }
 
-function setupDeleteIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
+function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     validateParams(z.object({
@@ -99,10 +99,11 @@ function setupDeleteIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = createIntakeEmailsServices({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await intakeEmailsRepository.deleteIntakeEmail({ intakeEmailId, organizationId });
+      await deleteIntakeEmail({ intakeEmailId, organizationId, intakeEmailsRepository, intakeEmailsServices });
 
       return context.body(null, 204);
     },
