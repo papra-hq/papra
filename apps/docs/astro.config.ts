@@ -26,7 +26,7 @@ export default defineConfig({
       social: {
         github: 'https://github.com/papra-hq/papra',
         blueSky: 'https://bsky.app/profile/papra.app',
-        discord: 'https://discord.gg/8UPjzsrBNF',
+        discord: 'https://papra.app/discord',
       },
       expressiveCode: {
         themes: ['vitesse-black', 'vitesse-light'],

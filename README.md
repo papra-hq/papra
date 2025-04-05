@@ -22,7 +22,7 @@
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://github.com/orgs/papra-hq/projects/2">Roadmap</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://discord.gg/8UPjzsrBNF">Discord</a>
+  <a href="https://papra.app/discord">Discord</a>
   <!-- <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://dashboard.papra.app">Managed instance</a> -->
 </p>
@@ -92,7 +92,7 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](./LICENS
 
 ## Community
 
-Join the community on [Papra's Discord server](https://discord.gg/8UPjzsrBNF) to discuss the project, ask questions, or get help.
+Join the community on [Papra's Discord server](https://papra.app/discord) to discuss the project, ask questions, or get help.
 
 ## Credits
 
