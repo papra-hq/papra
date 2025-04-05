@@ -7,3 +7,9 @@ export const booleanishSchema = z
   .toLowerCase()
   .transform(x => ['true', '1'].includes(x))
   .pipe(z.boolean());
+
+export const trustedOriginsSchema = z.union([
+  z.literal('*'),
+  z.array(z.string().url()),
+  z.string().transform(value => value.split(',')).pipe(z.array(z.string().url())),
+]);

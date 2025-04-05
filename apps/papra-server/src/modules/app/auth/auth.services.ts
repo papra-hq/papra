@@ -6,6 +6,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
+import { getTrustedOrigins } from './auth.models';
 import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
 
 export type Auth = ReturnType<typeof getAuth>['auth'];
@@ -25,10 +26,12 @@ export function getAuth({
 }) {
   const { secret } = config.auth;
 
+  const { trustedOrigins } = getTrustedOrigins({ config });
+
   const auth = betterAuth({
     secret,
     baseURL: config.server.baseUrl,
-    trustedOrigins: [config.client.baseUrl],
+    trustedOrigins,
     logger: {
       disabled: false,
       log: (baseLevel, message) => {

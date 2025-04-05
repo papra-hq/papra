@@ -17,7 +17,7 @@ import { createLogger } from '../shared/logger/logger';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
-import { booleanishSchema } from './config.schemas';
+import { booleanishSchema, trustedOriginsSchema } from './config.schemas';
 
 export const configDefinition = {
   env: {
@@ -32,6 +32,12 @@ export const configDefinition = {
       schema: z.string().url(),
       default: 'http://localhost:1221',
       env: 'SERVER_BASE_URL',
+    },
+    trustedOrigins: {
+      doc: 'A comma separated list of origins that are trusted to make requests to the server, it\'ll include the baseUrl by default. You can set it to "*" to allow all origins (not recommended).',
+      schema: trustedOriginsSchema,
+      default: [],
+      env: 'TRUSTED_ORIGINS',
     },
     port: {
       doc: 'The port to listen on when using node server',
