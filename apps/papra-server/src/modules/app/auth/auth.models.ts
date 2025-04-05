@@ -1,4 +1,6 @@
+import type { Config } from '../../config/config.types';
 import type { Context } from '../server.types';
+import { uniq } from 'lodash-es';
 import { createError } from '../../shared/errors/errors';
 
 export function getUser({ context }: { context: Context }) {
@@ -23,4 +25,13 @@ export function getSession({ context }: { context: Context }) {
   const session = context.get('session');
 
   return { session };
+}
+
+export function getTrustedOrigins({ config }: { config: Config }) {
+  const { baseUrl } = config.client;
+  const { trustedOrigins } = config.server;
+
+  return {
+    trustedOrigins: trustedOrigins === '*' ? undefined : uniq([baseUrl, ...trustedOrigins]),
+  };
 }
