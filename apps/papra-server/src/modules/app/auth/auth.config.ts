@@ -38,6 +38,7 @@ export const authConfig = {
       isEnabled: {
         doc: 'Whether Github OAuth is enabled',
         schema: booleanishSchema,
+        default: false,
         env: 'AUTH_PROVIDERS_GITHUB_IS_ENABLED',
       },
       clientId: {

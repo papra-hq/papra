@@ -52,11 +52,32 @@ ${documentation}
 
 `.trim()).join('\n\n---\n\n');
 
+function wrapText(text: string, maxLength = 75) {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+
+  words.forEach((word) => {
+    if ((currentLine + word).length + 1 <= maxLength) {
+      currentLine += (currentLine ? ' ' : '') + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  });
+
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+
+  return lines.map(line => `# ${line}`);
+}
+
 const fullDotEnv = rows.map(({ env, defaultValue, documentation }) => {
   const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
 
   return [
-    `# ${documentation}`,
+    ...wrapText(documentation),
     `# ${env}=${isEmptyDefaultValue ? '' : defaultValue}`,
   ].join('\n');
 }).join('\n\n');
