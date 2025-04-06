@@ -52,4 +52,13 @@ ${documentation}
 
 `.trim()).join('\n\n---\n\n');
 
-export { mdSections };
+const fullDotEnv = rows.map(({ env, defaultValue, documentation }) => {
+  const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
+
+  return [
+    `# ${documentation}`,
+    `# ${env}=${isEmptyDefaultValue ? '' : defaultValue}`,
+  ].join('\n');
+}).join('\n\n');
+
+export { fullDotEnv, mdSections };

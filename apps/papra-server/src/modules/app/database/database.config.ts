@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const databaseConfig = {
   url: {
-    doc: 'The URL of the database',
+    doc: 'The URL of the database (default as "file:./app-data/db/db.sqlite" when using docker)',
     schema: z.string().url(),
     default: 'file:./db.sqlite',
     env: 'DATABASE_URL',

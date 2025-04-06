@@ -26,6 +26,20 @@ export const configDefinition = {
     default: 'development',
     env: 'NODE_ENV',
   },
+  client: {
+    baseUrl: {
+      doc: 'The URL of the client',
+      schema: z.string().url(),
+      default: 'http://localhost:3000',
+      env: 'CLIENT_BASE_URL',
+    },
+    oauthRedirectUrl: {
+      doc: 'The URL to redirect to after OAuth',
+      schema: z.string().url(),
+      default: 'http://localhost:3000/confirm',
+      env: 'CLIENT_OAUTH_REDIRECT_URL',
+    },
+  },
   server: {
     baseUrl: {
       doc: 'The base URL of the server',
@@ -61,26 +75,13 @@ export const configDefinition = {
       env: 'SERVER_CORS_ORIGINS',
     },
     servePublicDir: {
-      doc: 'Whether to serve the public directory',
+      doc: 'Whether to serve the public directory (default as true when using docker)',
       schema: booleanishSchema,
       default: false,
       env: 'SERVER_SERVE_PUBLIC_DIR',
     },
   },
-  client: {
-    baseUrl: {
-      doc: 'The URL of the client',
-      schema: z.string().url(),
-      default: 'http://localhost:3000',
-      env: 'CLIENT_BASE_URL',
-    },
-    oauthRedirectUrl: {
-      doc: 'The URL to redirect to after OAuth',
-      schema: z.string().url(),
-      default: 'http://localhost:3000/confirm',
-      env: 'CLIENT_OAUTH_REDIRECT_URL',
-    },
-  },
+
   database: databaseConfig,
   documents: documentsConfig,
   documentsStorage: documentStorageConfig,

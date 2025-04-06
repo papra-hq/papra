@@ -4,10 +4,11 @@ slug: self-hosting/configuration
 
 ---
 
-import { mdSections } from '../../../config.data.ts';
+import { mdSections, fullDotEnv } from '../../../config.data.ts';
 import { marked } from 'marked';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
 
 Configuring your self hosted Papra allows you to customize the application to better suit your environment and requirements. This guide covers the key environment variables you can set to control various aspects of the application, including port settings, security options, and storage configurations.
 
@@ -73,10 +74,15 @@ Example of configuration files:
 
 You'll find the complete list of configuration variables with their environment variables equivalents and path for files in the next section.
 
+## Complete .env
+
+Here is the full configuration file that you can use to configure Papra. The variables values are the default values.
+
+<Code code={fullDotEnv} language="env" title=".env" />
+
 ## Configuration variables
 
 Here is the complete list of configuration variables that you can use to configure Papra. You can set these variables in the `.env` file or pass them as environment variables when running the Docker container.
 
 <Fragment set:html={marked.parse(mdSections)} />
 
-Coming soon.

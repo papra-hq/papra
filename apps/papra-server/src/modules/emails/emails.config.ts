@@ -4,7 +4,7 @@ import { booleanishSchema } from '../config/config.schemas';
 
 export const emailsConfig = {
   resendApiKey: {
-    doc: 'The API key for Resend',
+    doc: 'The API key for Resend (use to send emails)',
     schema: z.string(),
     default: 'set-me',
     env: 'RESEND_API_KEY',

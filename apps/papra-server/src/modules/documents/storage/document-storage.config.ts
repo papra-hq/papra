@@ -12,7 +12,7 @@ export const documentStorageConfig = {
     env: 'DOCUMENT_STORAGE_MAX_UPLOAD_SIZE',
   },
   driver: {
-    doc: 'The driver to use for document storage',
+    doc: `The driver to use for document storage, values can be one of: ${[FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME].map(x => `\`${x}\``).join(', ')}`,
     schema: z.enum([FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME]),
     default: FS_STORAGE_DRIVER_NAME,
     env: 'DOCUMENT_STORAGE_DRIVER',
@@ -20,7 +20,7 @@ export const documentStorageConfig = {
   drivers: {
     filesystem: {
       root: {
-        doc: 'The root directory to store documents in',
+        doc: 'The root directory to store documents in (default as "./app-data/documents" when using docker)',
         schema: z.string(),
         default: './local-documents',
         env: 'DOCUMENT_STORAGE_FILESYSTEM_ROOT',
