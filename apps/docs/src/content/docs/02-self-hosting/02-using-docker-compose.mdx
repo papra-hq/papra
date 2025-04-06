@@ -5,18 +5,35 @@ slug: self-hosting/using-docker-compose
 
 import { Steps } from '@astrojs/starlight/components';
 
-Docker Compose makes it easy to deploy Papra on your server or local machine. Follow these simple steps to get your instance up and running quickly.
+This guide covers how to deploy Papra using Docker Compose, ideal for users who prefer declarative configurations or plan to integrate Papra into a broader service stack.
+
+Using Docker Compose provides:
+- A single, versioned configuration file
+- Easy integration with volumes, networks, and service dependencies
+- Simplified updates and re-deployments
+
+This method supports both `rootless` and `rootful` Papra images, please refer to the [Docker](/self-hosting/using-docker) guide for more information about the difference between the two. The following example uses the recommended `rootless` setup.
+
+## Prerequisites
+
+Ensure Docker and Docker Compose are installed on your host system. Official installation guides are available at: [docker.com/get-started](https://www.docker.com/get-started)
+
+Verify Docker installation with:
+
+```bash
+docker --version
+docker compose version
+```
+
 
 <Steps>
 
-1. Prepare your environment
+1. Initialize Project Structure
 
-    Make sure you have [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your system.
+    Create working directory and persistent storage subdirectories:
 
-    Verify your installation:
-
-    ```bash frame="none"
-    docker --version
+    ```bash
+    mkdir -p papra/app-data/{db,documents} && cd papra
     ```
 
 2. Create Docker Compose file
@@ -26,16 +43,14 @@ Docker Compose makes it easy to deploy Papra on your server or local machine. Fo
     ```yaml
     services:
       papra:
-        image: corentinth/papra:latest-rootless
-        ports:
-          - '1221:1221'
-        volumes:
-          - papra-data:/app/app-data
+        container_name: papra
+        image: ghcr.io/papra-hq/papra:latest
         restart: unless-stopped
-
-    volumes:
-      papra-data:
-        driver: local
+        ports:
+          - "1221:1221"
+        volumes:
+          - ./app-data:/app/app-data
+        user: "${UID}:${GID}"
     ```
 
 3. Start Papra
@@ -43,10 +58,10 @@ Docker Compose makes it easy to deploy Papra on your server or local machine. Fo
     From the directory containing your `docker-compose.yml` file, run:
 
     ```bash
-    docker compose up -d
+    UID=$(id -u) GID=$(id -g) docker compose up -d
     ```
 
-    This command downloads the latest Papra image, sets up the container, and starts the Papra service.
+    This command downloads the latest Papra image, sets up the container, and starts the Papra service. The `UID` and `GID` variables are used to set the user and group for the container, ensuring proper file ownership. If you don't want to use the `UID` and `GID` variables, you can replace the image with the rootful variant.
 
 4. Access Papra
 

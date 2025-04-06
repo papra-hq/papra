@@ -1,0 +1,111 @@
+---
+title: Installing Papra using Docker
+description: Self-host Papra using Docker.
+slug: self-hosting/using-docker
+---
+import { Steps } from '@astrojs/starlight/components';
+
+Papra provides optimized Docker images for streamlined deployment. This method is recommended for users seeking a production-ready setup with minimal maintenance overhead.
+
+- **Simplified management**: Single container handles all components
+- **Lightweight**: Optimized image sizes across architectures
+- **Cross-platform support**: Compatible with `arm64`, `arm/v7`, and `x86_64` systems
+- **Security options**: Supports both rootless (recommended) and rootful configurations
+
+## Prerequisites
+
+Ensure Docker is installed on your host system. Official installation guides are available at:
+[docker.com/get-started](https://www.docker.com/get-started)
+
+Verify Docker installation with:
+
+```bash
+docker --version
+```
+
+## Quick Deployment
+
+Launch Papra with default configuration using:
+
+```bash
+docker run -d \
+  --name papra \
+  --restart unless-stopped \
+  -p 1221:1221 \
+  ghcr.io/papra-hq/papra:latest
+```
+
+This command will:
+1. Pull the latest rootless image from GitHub Container Registry
+2. Expose the web interface on [http://localhost:1221](http://localhost:1221)
+3. Configure automatic restarts for service continuity
+
+## Image Variants
+
+Choose between two security models based on your requirements:
+
+- **Rootless**: Tagged as `latest`, `latest-rootless` or `<version>-rootless` (like `0.2.1-rootless`). Recommended for most users.
+- **Root**: Tagged as `latest-root` or `<version>-root` (like `0.2.1-root`). Only use if you need to run Papra as the root user.
+
+The `:latest` tag always references the latest rootless build.
+
+## Persistent Data Configuration
+
+For production deployments, mount host directories to preserve application data between container updates.
+
+<Steps>
+
+1. Create Storage Directories
+
+    Create a directory for Papra data `./papra-data`, with `./papra-data/db` and `./papra-data/documents` subdirectories:
+
+    ```bash
+    mkdir -p ./papra-data/{db,documents}
+    ```
+
+2. Launch Container with Volume Binding
+
+    ```bash
+    docker run -d \
+      --name papra \
+      --restart unless-stopped \
+      -p 1221:1221 \
+      -v $(pwd)/papra-data:/app/app-data \
+      --user $(id -u):$(id -g) \
+      ghcr.io/papra-hq/papra:latest
+    ```
+
+    This configuration:
+    - Maintains data integrity across container lifecycle events
+    - Enforces proper file ownership without manual permission adjustments
+    - Stores both database files and document assets persistently
+
+</Steps>
+
+## Image Registries
+
+Papra images are distributed through multiple channels:
+
+**Primary Source (GHCR):**
+```bash
+docker pull ghcr.io/papra-hq/papra:latest
+docker pull ghcr.io/papra-hq/papra:latest-rootless
+docker pull ghcr.io/papra-hq/papra:latest-root
+```
+
+**Community Mirror (Docker Hub):**
+```bash
+docker pull corentinth/papra:latest
+docker pull corentinth/papra:latest-rootless
+docker pull corentinth/papra:latest-root
+```
+
+## Updating Papra
+
+Regularly pull updated images and recreate containers to receive security patches and feature updates.
+
+```bash
+docker pull ghcr.io/papra-hq/papra:latest
+# Or
+docker pull corentinth/papra:latest
+```
