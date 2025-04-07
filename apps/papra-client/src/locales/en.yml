@@ -31,5 +31,7 @@ layout:
 demo:
   popup:
     description: This is a demo environment, all data is save to your browser local storage.
+    discord: Join the {{ discordLink }} to get support, propose features or just chat.
+    discord-link-label: Discord server
     reset: Reset demo data
     hide: Hide

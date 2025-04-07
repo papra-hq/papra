@@ -31,5 +31,7 @@ layout:
 demo:
   popup:
     description: Ceci est un environnement de démo, toutes les données sont enregistrées dans le local storage de votre navigateur.
+    discord: Rejoignez le {{ discordLink }} pour obtenir de l'aide, proposer des fonctionnalités ou discuter avec l'équipe.
+    discord-link-label: Serveur Discord
     reset: Réinitialiser la démo
     hide: Masquer
