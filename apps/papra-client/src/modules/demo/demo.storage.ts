@@ -1,5 +1,6 @@
 import type { Document } from '../documents/documents.types';
 import type { Organization } from '../organizations/organizations.types';
+import type { TaggingRule } from '../tagging-rules/tagging-rules.types';
 import type { Tag } from '../tags/tags.types';
 import { createStorage, prefixStorage } from 'unstorage';
 import localStorageDriver from 'unstorage/drivers/localstorage';
@@ -14,6 +15,7 @@ export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage(storage, 'documentFiles');
 export const tagStorage = prefixStorage<Omit<Tag, 'documentsCount'>>(storage, 'tags');
 export const tagDocumentStorage = prefixStorage<{ documentId: string; tagId: string; id: string }>(storage, 'tagDocuments');
+export const taggingRuleStorage = prefixStorage<TaggingRule>(storage, 'taggingRules');
 
 export async function clearDemoStorage() {
   await storage.clear();

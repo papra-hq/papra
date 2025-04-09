@@ -12,6 +12,8 @@ import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
@@ -33,6 +35,8 @@ describe('intake-emails usecases', () => {
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
         const trackingServices = createDummyTrackingServices();
+        const taggingRulesRepository = createTaggingRulesRepository({ db });
+        const tagsRepository = createTagsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -47,6 +51,8 @@ describe('intake-emails usecases', () => {
           plansRepository,
           subscriptionsRepository,
           trackingServices,
+          taggingRulesRepository,
+          tagsRepository,
         });
 
         const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
@@ -74,6 +80,8 @@ describe('intake-emails usecases', () => {
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
         const trackingServices = createDummyTrackingServices();
+        const taggingRulesRepository = createTaggingRulesRepository({ db });
+        const tagsRepository = createTagsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -86,6 +94,8 @@ describe('intake-emails usecases', () => {
           subscriptionsRepository,
           trackingServices,
           logger,
+          taggingRulesRepository,
+          tagsRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -106,6 +116,8 @@ describe('intake-emails usecases', () => {
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
         const trackingServices = createDummyTrackingServices();
+        const taggingRulesRepository = createTaggingRulesRepository({ db });
+        const tagsRepository = createTagsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -117,6 +129,8 @@ describe('intake-emails usecases', () => {
           plansRepository,
           subscriptionsRepository,
           trackingServices,
+          taggingRulesRepository,
+          tagsRepository,
           logger,
         });
 
@@ -143,6 +157,8 @@ describe('intake-emails usecases', () => {
         const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
         const subscriptionsRepository = createSubscriptionsRepository({ db });
         const trackingServices = createDummyTrackingServices();
+        const taggingRulesRepository = createTaggingRulesRepository({ db });
+        const tagsRepository = createTagsRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
@@ -154,6 +170,8 @@ describe('intake-emails usecases', () => {
           plansRepository,
           subscriptionsRepository,
           trackingServices,
+          taggingRulesRepository,
+          tagsRepository,
           logger,
         });
 
@@ -191,6 +209,8 @@ describe('intake-emails usecases', () => {
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const trackingServices = createDummyTrackingServices();
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
@@ -204,6 +224,8 @@ describe('intake-emails usecases', () => {
         plansRepository,
         subscriptionsRepository,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));

@@ -3,6 +3,8 @@ import type { DocumentStorageService } from '../documents/storage/documents.stor
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
@@ -50,6 +52,8 @@ export function processIntakeEmailIngestion({
   plansRepository,
   subscriptionsRepository,
   trackingServices,
+  taggingRulesRepository,
+  tagsRepository,
 }: {
   fromAddress: string;
   recipientsAddresses: string[];
@@ -60,6 +64,8 @@ export function processIntakeEmailIngestion({
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
+  taggingRulesRepository: TaggingRulesRepository;
+  tagsRepository: TagsRepository;
 }) {
   return Promise.all(
     recipientsAddresses.map(recipientAddress => safely(
@@ -73,6 +79,8 @@ export function processIntakeEmailIngestion({
         plansRepository,
         subscriptionsRepository,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       }),
     )),
   );
@@ -89,6 +97,8 @@ export async function ingestEmailForRecipient({
   plansRepository,
   trackingServices,
   subscriptionsRepository,
+  taggingRulesRepository,
+  tagsRepository,
 }: {
   fromAddress: string;
   recipientAddress: string;
@@ -99,6 +109,8 @@ export async function ingestEmailForRecipient({
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
+  taggingRulesRepository: TaggingRulesRepository;
+  tagsRepository: TagsRepository;
   logger?: Logger;
 }) {
   const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
@@ -137,6 +149,8 @@ export async function ingestEmailForRecipient({
       plansRepository,
       subscriptionsRepository,
       trackingServices,
+      taggingRulesRepository,
+      tagsRepository,
     }));
 
     if (error) {

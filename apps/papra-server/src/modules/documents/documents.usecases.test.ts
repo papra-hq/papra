@@ -5,6 +5,8 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createPlansRepository } from '../plans/plans.repository';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
@@ -26,6 +28,8 @@ describe('documents usecases', () => {
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const trackingServices = createDummyTrackingServices();
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -42,6 +46,8 @@ describe('documents usecases', () => {
         plansRepository,
         subscriptionsRepository,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       expect(document).to.include({
@@ -81,6 +87,9 @@ describe('documents usecases', () => {
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const trackingServices = createDummyTrackingServices();
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+
       let documentIdIndex = 1;
       const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -98,6 +107,8 @@ describe('documents usecases', () => {
         subscriptionsRepository,
         generateDocumentId,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       expect(document1).to.include({
@@ -124,6 +135,8 @@ describe('documents usecases', () => {
           subscriptionsRepository,
           generateDocumentId,
           trackingServices,
+          taggingRulesRepository,
+          tagsRepository,
         }),
       ).rejects.toThrow(
         createDocumentAlreadyExistsError(),
@@ -150,6 +163,8 @@ describe('documents usecases', () => {
       const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const trackingServices = createDummyTrackingServices();
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -172,6 +187,8 @@ describe('documents usecases', () => {
           subscriptionsRepository,
           generateDocumentId,
           trackingServices,
+          taggingRulesRepository,
+          tagsRepository,
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 

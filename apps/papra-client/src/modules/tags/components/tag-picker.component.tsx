@@ -7,13 +7,12 @@ import { Tag as TagComponent } from './tag.component';
 
 export const DocumentTagPicker: Component<{
   organizationId: string;
-  tags: Tag[];
-  documentId: string;
+  tagIds: string[];
   onTagsChange?: (args: { tags: Tag[] }) => void;
   onTagAdded?: (args: { tag: Tag }) => void;
   onTagRemoved?: (args: { tag: Tag }) => void;
 }> = (props) => {
-  const [getSelectedTags, setSelectedTags] = createSignal<Tag[]>(props.tags);
+  const [getSelectedTagIds, setSelectedTagIds] = createSignal<string[]>(props.tagIds);
 
   const query = createQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'tags'],
@@ -21,6 +20,9 @@ export const DocumentTagPicker: Component<{
   }));
 
   const options = () => query.data?.tags || [];
+
+  const getSelectedTags = () => query.data?.tags.filter(tag => getSelectedTagIds().includes(tag.id)) ?? [];
+  const setSelectedTags = (tags: Tag[]) => setSelectedTagIds(tags.map(tag => tag.id));
 
   return (
     <Combobox<Tag>

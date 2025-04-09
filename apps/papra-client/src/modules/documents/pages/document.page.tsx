@@ -138,8 +138,7 @@ export const DocumentPage: Component = () => {
 
                   <DocumentTagPicker
                     organizationId={params.organizationId}
-                    documentId={params.documentId}
-                    tags={getDocument().tags}
+                    tagIds={getDocument().tags.map(tag => tag.id)}
                     onTagAdded={async ({ tag }) => {
                       await addTagToDocument({
                         documentId: params.documentId,

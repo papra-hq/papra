@@ -2,6 +2,8 @@ import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
@@ -9,6 +11,7 @@ import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createLogger } from '../shared/logger/logger';
+import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { getFileSha256Hash } from './documents.services';
@@ -37,6 +40,8 @@ export async function createDocument({
   plansRepository,
   subscriptionsRepository,
   trackingServices,
+  taggingRulesRepository,
+  tagsRepository,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
   file: File;
@@ -48,6 +53,8 @@ export async function createDocument({
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
+  taggingRulesRepository: TaggingRulesRepository;
+  tagsRepository: TagsRepository;
   logger?: Logger;
 }) {
   const {
@@ -118,6 +125,8 @@ export async function createDocument({
   }
 
   logger.info({ documentId, userId, organizationId }, 'Document created');
+
+  await applyTaggingRules({ document: result.document, taggingRulesRepository, tagsRepository });
 
   const { document } = result;
 

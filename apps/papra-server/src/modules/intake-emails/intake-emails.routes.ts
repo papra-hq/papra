@@ -14,6 +14,8 @@ import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
@@ -190,6 +192,8 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
       const documentsStorageService = await createDocumentStorageService({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: email.from.address,
@@ -201,6 +205,8 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
         plansRepository,
         subscriptionsRepository,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       return context.body(null, 202);

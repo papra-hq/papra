@@ -24,10 +24,80 @@ layout:
     home: Home
     documents: Documents
     tags: Tags
+    tagging-rules: Tagging rules
     integrations: Integrations
     deleted-documents: Deleted documents
     organization-settings: Organization settings
 
+tagging-rules:
+  field:
+    name: document name
+    content: document content
+  operator:
+    equals: equals
+    not-equals: not equals
+    contains: contains
+    not-contains: not contains
+    starts-with: starts with
+    ends-with: ends with
+  list:
+    title: Tagging rules
+    description: Manage your organization's tagging rules, to automatically tag documents based on conditions you define.
+    demo-warning: 'Note: As this is a demo environment (with no server), tagging rules will not be applied to newly added documents.'
+    no-tagging-rules:
+      title: No tagging rules
+      description: Create a tagging rule to automatically tag your added documents based on conditions you define.
+      create-tagging-rule: Create tagging rule
+    card:
+      no-conditions: No conditions
+      one-condition: 1 condition
+      conditions: '{{ count }} conditions'
+      delete: Delete rule
+      edit: Edit rule
+  create:
+    title: Create tagging rule
+    success: Tagging rule created successfully
+    error: Failed to create tagging rule
+    submit: Create rule
+  form:
+    name:
+      label: Name
+      placeholder: 'Example: Tag invoices'
+      min-length: Please enter a name for the rule
+      max-length: The name must be less than 64 characters
+    description:
+      label: Description
+      placeholder: 'Example: Tag documents with "invoice" in the name'
+      max-length: The description must be less than 256 characters
+    conditions:
+      label: Conditions
+      description: Define the conditions that must be met for the rule to apply. All conditions must be met for the rule to apply.
+      add-condition: Add condition
+      no-conditions:
+        title: No conditions
+        description: You didn't add any conditions to this rule. This rule will apply its tags to all documents.
+        confirm: Apply rule without conditions
+        cancel: Cancel
+      field:
+        label: Field
+      operator:
+        label: Operator
+      value:
+        label: Value
+        placeholder: 'Example: invoice'
+        min-length: Please enter a value for the condition
+    tags:
+      label: Tags
+      description: Select the tags to apply to the added documents that match the conditions
+      min-length: At least one tag to apply is required
+      add-tag: Create tag
+    submit: Create rule
+  update:
+    title: Update tagging rule
+    success: Tagging rule updated successfully
+    error: Failed to update tagging rule
+    submit: Update rule
+    cancel: Cancel
 demo:
   popup:
     description: This is a demo environment, all data is save to your browser local storage.

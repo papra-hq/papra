@@ -39,6 +39,11 @@ const OrganizationLayoutSideNav: Component = () => {
       href: `/organizations/${params.organizationId}/tags`,
     },
     {
+      label: t('layout.menu.tagging-rules'),
+      icon: 'i-tabler-list-check',
+      href: `/organizations/${params.organizationId}/tagging-rules`,
+    },
+    {
       label: t('layout.menu.integrations'),
       icon: 'i-tabler-link',
       href: `/organizations/${params.organizationId}/intake-emails`,

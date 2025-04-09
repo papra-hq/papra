@@ -9,6 +9,8 @@ import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
@@ -78,6 +80,8 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
       const documentsStorageService = await createDocumentStorageService({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       const { document } = await createDocument({
         file,
@@ -88,6 +92,8 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
         plansRepository,
         subscriptionsRepository,
         trackingServices,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       return context.json({

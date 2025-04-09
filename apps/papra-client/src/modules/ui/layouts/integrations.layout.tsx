@@ -8,7 +8,7 @@ export const IntegrationsLayout: ParentComponent = (props) => {
   return (
     <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
       <div class="border-b mb-6">
-        <h1 class="text-xl font-bold ">
+        <h1 class="text-xl font-bold">
           Integrations
         </h1>
 

@@ -3,6 +3,7 @@ import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
 import { organizationSubscriptionsTable } from '../../subscriptions/subscriptions.tables';
+import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from '../../tagging-rules/tagging-rules.tables';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
 import { setupDatabase } from './database';
@@ -31,6 +32,9 @@ const seedTables = {
   documentsTags: documentsTagsTable,
   intakeEmails: intakeEmailsTable,
   organizationSubscriptions: organizationSubscriptionsTable,
+  taggingRules: taggingRulesTable,
+  taggingRuleConditions: taggingRuleConditionsTable,
+  taggingRuleActions: taggingRuleActionsTable,
 } as const;
 
 type SeedTablesRows = {

@@ -17,6 +17,7 @@ export function createTagsRepository({ db }: { db: Database }) {
       deleteTag,
       updateTag,
       addTagToDocument,
+      addTagsToDocument,
       removeTagFromDocument,
     },
     { db },
@@ -77,6 +78,10 @@ async function addTagToDocument({ tagId, documentId, db }: { tagId: string; docu
   if (error) {
     throw error;
   }
+}
+
+async function addTagsToDocument({ tagIds, documentId, db }: { tagIds: string[]; documentId: string; db: Database }) {
+  await db.insert(documentsTagsTable).values(tagIds.map(tagId => ({ tagId, documentId })));
 }
 
 async function removeTagFromDocument({ tagId, documentId, db }: { tagId: string; documentId: string; db: Database }) {

@@ -19,6 +19,9 @@ import { OrganizationsSettingsPage } from './modules/organizations/pages/organiz
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
+import { CreateTaggingRulePage } from './modules/tagging-rules/pages/create-tagging-rule.page';
+import { TaggingRulesPage } from './modules/tagging-rules/pages/tagging-rules.page';
+import { UpdateTaggingRulePage } from './modules/tagging-rules/pages/update-tagging-rule.page';
 import { TagsPage } from './modules/tags/pages/tags.page';
 import { IntegrationsLayout } from './modules/ui/layouts/integrations.layout';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
@@ -110,6 +113,18 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/tags',
                 component: TagsPage,
+              },
+              {
+                path: '/tagging-rules',
+                component: TaggingRulesPage,
+              },
+              {
+                path: '/tagging-rules/create',
+                component: CreateTaggingRulePage,
+              },
+              {
+                path: '/tagging-rules/:taggingRuleId',
+                component: UpdateTaggingRulePage,
               },
               {
                 path: '/',

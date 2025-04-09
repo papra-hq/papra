@@ -2,7 +2,7 @@ import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { defineHandler } from './demo-api-mock.models';
-import { documentFileStorage, documentStorage, organizationStorage, tagDocumentStorage, tagStorage } from './demo.storage';
+import { documentFileStorage, documentStorage, organizationStorage, tagDocumentStorage, taggingRuleStorage, tagStorage } from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
@@ -457,6 +457,70 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     },
   }),
 
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tagging-rules',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const taggingRules = await findMany(taggingRuleStorage, taggingRule => taggingRule.organizationId === organizationId);
+
+      return { taggingRules };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tagging-rules',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const taggingRule = {
+        id: `tr_${Math.random().toString(36).slice(2)}`,
+        organizationId,
+        name: get(body, 'name'),
+        description: get(body, 'description'),
+        conditions: get(body, 'conditions'),
+        actions: get(body, 'tagIds').map((tagId: string) => ({ tagId })),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await taggingRuleStorage.setItem(taggingRule.id, taggingRule);
+
+      return { taggingRule };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    method: 'GET',
+    handler: async ({ params: { taggingRuleId } }) => {
+      const taggingRule = await taggingRuleStorage.getItem(taggingRuleId);
+
+      assert(taggingRule, { status: 404 });
+
+      return { taggingRule };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    method: 'DELETE',
+    handler: async ({ params: { taggingRuleId } }) => {
+      await taggingRuleStorage.removeItem(taggingRuleId);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    method: 'PUT',
+    handler: async ({ params: { taggingRuleId }, body }) => {
+      const taggingRule = await taggingRuleStorage.getItem(taggingRuleId);
+
+      assert(taggingRule, { status: 404 });
+
+      await taggingRuleStorage.setItem(taggingRuleId, Object.assign(taggingRule, body, { updatedAt: new Date() }));
+
+      return { taggingRule };
+    },
+  }),
 };
 
 export const router = createRouter({ routes: inMemoryApiMock, strictTrailingSlash: false });

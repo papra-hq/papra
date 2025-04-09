@@ -104,7 +104,7 @@ const TagForm: Component<{
   );
 };
 
-const CreateTagModal: Component<{
+export const CreateTagModal: Component<{
   children: (props: DialogTriggerProps) => JSX.Element;
   organizationId: string;
 }> = (props) => {

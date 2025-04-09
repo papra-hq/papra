@@ -2,11 +2,12 @@ import { primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { documentsTable } from '../documents/documents.table';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
+import { tagIdPrefix } from './tags.constants';
 
 export const tagsTable = sqliteTable(
   'tags',
   {
-    ...createPrimaryKeyField({ prefix: 'tag' }),
+    ...createPrimaryKeyField({ prefix: tagIdPrefix }),
     ...createTimestampColumns(),
 
     organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),

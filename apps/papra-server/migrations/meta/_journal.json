@@ -15,6 +15,13 @@
       "when": 1743508401881,
       "tag": "0001_documents_fts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1743938048080,
+      "tag": "0002_tagging_rules",
+      "breakpoints": true
     }
   ]
 }
