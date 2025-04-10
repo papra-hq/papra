@@ -30,7 +30,13 @@ export function findMatchingLocale({
 
 export function createTranslator<Dict extends Record<string, string>>({ getDictionary }: { getDictionary: () => Dict }) {
   return (key: keyof Dict, args?: Record<string, string | number>) => {
-    let translation: string = getDictionary()[key] ?? key;
+    const translationFromDictionary = getDictionary()[key];
+
+    if (!translationFromDictionary && import.meta.env.DEV) {
+      console.warn(`Translation not found for key: ${String(key)}`);
+    }
+
+    let translation: string = translationFromDictionary ?? key;
 
     if (args) {
       for (const [key, value] of Object.entries(args)) {

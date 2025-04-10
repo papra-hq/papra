@@ -18,6 +18,7 @@ import { SsoProviderButton } from '../components/sso-provider-button.component';
 export const EmailLoginForm: Component = () => {
   const navigate = useNavigate();
   const { config } = useConfig();
+  const { t } = useI18n();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -35,12 +36,12 @@ export const EmailLoginForm: Component = () => {
       email: v.pipe(
         v.string(),
         v.trim(),
-        v.nonEmpty('Please enter your email address'),
-        v.email('This is not a valid email address'),
+        v.nonEmpty(t('auth.login.form.email.required')),
+        v.email(t('auth.login.form.email.invalid')),
       ),
       password: v.pipe(
-        v.string('Password is required'),
-        v.nonEmpty('Please enter your password'),
+        v.string(t('auth.login.form.password.required')),
+        v.nonEmpty(t('auth.login.form.password.required')),
       ),
       rememberMe: v.boolean(),
     }),
@@ -54,8 +55,8 @@ export const EmailLoginForm: Component = () => {
       <Field name="email">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="email">Email</TextFieldLabel>
-            <TextField type="email" id="email" placeholder="Eg. ada@papra.app" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextFieldLabel for="email">{t('auth.login.form.email.label')}</TextFieldLabel>
+            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -64,9 +65,9 @@ export const EmailLoginForm: Component = () => {
       <Field name="password">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="password">Password</TextFieldLabel>
+            <TextFieldLabel for="password">{t('auth.login.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder="Your password" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -78,18 +79,18 @@ export const EmailLoginForm: Component = () => {
             <Checkbox class="flex items-center gap-2" defaultChecked={field.value}>
               <CheckboxControl inputProps={inputProps} />
               <CheckboxLabel class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Remember me
+                {t('auth.login.form.remember-me.label')}
               </CheckboxLabel>
             </Checkbox>
           )}
         </Field>
 
         <Button variant="link" as={A} class="inline p-0! h-auto" href="/request-password-reset">
-          Forgot password?
+          {t('auth.login.form.forgot-password.label')}
         </Button>
       </div>
 
-      <Button type="submit" class="w-full">Login</Button>
+      <Button type="submit" class="w-full">{t('auth.login.form.submit')}</Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
 

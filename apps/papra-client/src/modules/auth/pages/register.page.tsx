@@ -1,5 +1,6 @@
 import type { ssoProviders } from '../auth.constants';
 import { useConfig } from '@/modules/config/config.provider';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
@@ -16,7 +17,7 @@ import { SsoProviderButton } from '../components/sso-provider-button.component';
 export const EmailRegisterForm: Component = () => {
   const { config } = useConfig();
   const navigate = useNavigate();
-
+  const { t } = useI18n();
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, name }) => {
       const { error } = await signUp.email({
@@ -41,19 +42,19 @@ export const EmailRegisterForm: Component = () => {
       email: v.pipe(
         v.string(),
         v.trim(),
-        v.nonEmpty('Please enter an email address'),
-        v.email('This is not a valid email address'),
+        v.nonEmpty(t('auth.register.form.email.required')),
+        v.email(t('auth.register.form.email.invalid')),
       ),
       password: v.pipe(
-        v.string('Password is required'),
-        v.nonEmpty('Please enter a password'),
-        v.minLength(8, 'Password must be at least 8 characters'),
-        v.maxLength(128, 'Password must be at most 128 characters'),
+        v.string(t('auth.register.form.password.label')),
+        v.nonEmpty(t('auth.register.form.password.required')),
+        v.minLength(8, t('auth.register.form.password.min-length', { minLength: 8 })),
+        v.maxLength(128, t('auth.register.form.password.max-length', { maxLength: 128 })),
       ),
       name: v.pipe(
-        v.string('Name is required'),
-        v.nonEmpty('Please enter a name'),
-        v.maxLength(64, 'Name must be at most 64 characters'),
+        v.string(t('auth.register.form.name.label')),
+        v.nonEmpty(t('auth.register.form.name.required')),
+        v.maxLength(64, t('auth.register.form.name.max-length', { maxLength: 64 })),
       ),
     }),
   });
@@ -63,8 +64,8 @@ export const EmailRegisterForm: Component = () => {
       <Field name="email">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="email">Email</TextFieldLabel>
-            <TextField type="email" id="email" placeholder="Eg. ada@papra.app" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextFieldLabel for="email">{t('auth.register.form.email.label')}</TextFieldLabel>
+            <TextField type="email" id="email" placeholder={t('auth.register.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -73,8 +74,8 @@ export const EmailRegisterForm: Component = () => {
       <Field name="name">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="name">Your full name</TextFieldLabel>
-            <TextField type="text" id="name" placeholder="Eg. Ada Lovelace" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextFieldLabel for="name">{t('auth.register.form.name.label')}</TextFieldLabel>
+            <TextField type="text" id="name" placeholder={t('auth.register.form.name.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -83,15 +84,15 @@ export const EmailRegisterForm: Component = () => {
       <Field name="password">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="password">Password</TextFieldLabel>
+            <TextFieldLabel for="password">{t('auth.register.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder="Your password" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField type="password" id="password" placeholder={t('auth.register.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Button type="submit" class="w-full">Register</Button>
+      <Button type="submit" class="w-full">{t('auth.register.form.submit')}</Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
 
@@ -101,6 +102,7 @@ export const EmailRegisterForm: Component = () => {
 
 export const RegisterPage: Component = () => {
   const { config } = useConfig();
+  const { t } = useI18n();
 
   if (!config.auth.isRegistrationEnabled) {
     return (
@@ -108,17 +110,17 @@ export const RegisterPage: Component = () => {
         <div class="flex items-center justify-center h-full p-6 sm:pb-32">
           <div class="max-w-sm w-full">
             <h1 class="text-xl font-bold">
-              Registration is disabled
+              {t('auth.register.registration-disabled.title')}
             </h1>
             <p class="text-muted-foreground mt-1 mb-4">
-              The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.
+              {t('auth.register.registration-disabled.description')}
             </p>
 
             <p class="text-muted-foreground mt-4">
-              Already have an account?
+              {t('auth.register.have-account')}
               {' '}
               <Button variant="link" as={A} class="inline px-0" href="/login">
-                Login
+                {t('auth.register.login')}
               </Button>
             </p>
 
@@ -141,10 +143,10 @@ export const RegisterPage: Component = () => {
       <div class="flex items-center justify-center h-full p-6 sm:pb-32">
         <div class="max-w-sm w-full">
           <h1 class="text-xl font-bold">
-            Register to Papra
+            {t('auth.register.title')}
           </h1>
           <p class="text-muted-foreground mt-1 mb-4">
-            Enter your email or use social login to create your Papra account.
+            {t('auth.register.description')}
           </p>
 
           {getShowEmailRegister() || !getHasSsoProviders()
@@ -152,7 +154,7 @@ export const RegisterPage: Component = () => {
             : (
                 <Button onClick={() => setShowEmailRegister(true)} class="w-full">
                   <div class="i-tabler-mail mr-2 size-4.5" />
-                  Register with email
+                  {t('auth.register.register-with-email')}
                 </Button>
               )}
 
@@ -162,17 +164,22 @@ export const RegisterPage: Component = () => {
             <div class="flex flex-col gap-2">
               <For each={getEnabledSsoProviderConfigs({ config })}>
                 {provider => (
-                  <SsoProviderButton name={provider.name} icon={provider.icon} onClick={() => registerWithProvider(provider)} label={`Register with ${provider.name}`} />
+                  <SsoProviderButton
+                    name={provider.name}
+                    icon={provider.icon}
+                    onClick={() => registerWithProvider(provider)}
+                    label={t('auth.register.register-with-provider', { provider: t(`auth.register.providers.${provider.key}`) })}
+                  />
                 )}
               </For>
             </div>
           </Show>
 
           <p class="text-muted-foreground mt-4">
-            Already have an account?
+            {t('auth.register.have-account')}
             {' '}
             <Button variant="link" as={A} class="inline px-0" href="/login">
-              Login
+              {t('auth.register.login')}
             </Button>
           </p>
 

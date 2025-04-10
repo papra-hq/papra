@@ -1,3 +1,4 @@
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 import { type Component, type ComponentProps, splitProps } from 'solid-js';
@@ -246,6 +247,7 @@ export function getEmailProvider({ email }: { email?: string }) {
 
 export const OpenEmailProvider: Component<{ email?: string } & ComponentProps<typeof Button>> = (props) => {
   const [local, rest] = splitProps(props, ['email', 'class']);
+  const { t } = useI18n();
 
   const { provider } = getEmailProvider({ email: local.email });
 
@@ -256,9 +258,7 @@ export const OpenEmailProvider: Component<{ email?: string } & ComponentProps<ty
   return (
     <Button as="a" href={provider.url} target="_blank" rel="noopener noreferrer" class={cn('w-full', local.class)} {...rest}>
       <div class="i-tabler-external-link mr-2 size-4" />
-      Open
-      {' '}
-      {provider.name}
+      {t('auth.email-provider.open', { provider: provider.name })}
     </Button>
   );
 };

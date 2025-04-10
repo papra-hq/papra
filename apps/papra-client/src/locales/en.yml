@@ -1,10 +1,87 @@
 auth:
+  request-password-reset:
+    title: Reset your password
+    description: Enter your email to reset your password.
+    requested: If an account exists for this email, we've sent you an email to reset your password.
+    back-to-login: Back to login
+    form:
+      email:
+        label: Email
+        placeholder: 'Example: ada@papra.app'
+        required: Please enter your email address
+        invalid: This email address is invalid
+      submit: Request password reset
+
+  reset-password:
+    title: Reset your password
+    description: Enter your new password to reset your password.
+    reset: Your password has been reset.
+    back-to-login: Back to login
+    form:
+      new-password:
+        label: New password
+        placeholder: 'Example: **********'
+        required: Please enter your new password
+        min-length: Password must be at least {{ minLength }} characters
+        max-length: Password must be less than {{ maxLength }} characters
+      submit: Reset password
+
+  email-provider:
+    open: Open {{ provider }}
+
   login:
     title: Login to Papra
     description: Enter your email or use social login to access your Papra account.
     login-with-provider: Login with {{ provider }}
     no-account: Don't have an account?
     register: Register
+    form:
+      email:
+        label: Email
+        placeholder: 'Example: ada@papra.app'
+        required: Please enter your email address
+        invalid: This email address is invalid
+      password:
+        label: Password
+        placeholder: Set a password
+        required: Please enter your password
+      remember-me:
+        label: Remember me
+      forgot-password:
+        label: Forgot password?
+      submit: Login
+
+  register:
+    title: Register to Papra
+    description: Enter your email or use social login to access your Papra account.
+    register-with-email: Register with email
+    register-with-provider: Register with {{ provider }}
+    providers:
+      google: Google
+      github: GitHub
+    have-account: Already have an account?
+    login: Login
+    registration-disabled:
+      title: Registration is disabled
+      description: The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.
+    form:
+      email:
+        label: Email
+        placeholder: 'Example: ada@papra.app'
+        required: Please enter your email address
+        invalid: This email address is invalid
+      password:
+        label: Password
+        placeholder: Set a password
+        required: Please enter your password
+        min-length: Password must be at least {{ minLength }} characters
+        max-length: Password must be less than {{ maxLength }} characters
+      name:
+        label: Name
+        placeholder: 'Example: Ada Lovelace'
+        required: Please enter your name
+        max-length: Name must be less than {{ maxLength }} characters
+      submit: Register
   email-validation-required:
     title: Verify your email
     description: A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.
