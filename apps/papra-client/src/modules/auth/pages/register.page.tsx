@@ -46,7 +46,7 @@ export const EmailRegisterForm: Component = () => {
         v.email(t('auth.register.form.email.invalid')),
       ),
       password: v.pipe(
-        v.string(t('auth.register.form.password.label')),
+        v.string(),
         v.nonEmpty(t('auth.register.form.password.required')),
         v.minLength(8, t('auth.register.form.password.min-length', { minLength: 8 })),
         v.maxLength(128, t('auth.register.form.password.max-length', { maxLength: 128 })),
