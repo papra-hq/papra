@@ -48,7 +48,7 @@ export const configDefinition = {
       env: 'SERVER_BASE_URL',
     },
     trustedOrigins: {
-      doc: 'A comma separated list of origins that are trusted to make requests to the server, it\'ll include the baseUrl by default. You can set it to "*" to allow all origins (not recommended).',
+      doc: 'A comma separated list of origins that are trusted to make requests to the server. The client baseUrl (CLIENT_BASE_URL) is automatically added by default, no need to add it to the list.',
       schema: trustedOriginsSchema,
       default: [],
       env: 'TRUSTED_ORIGINS',

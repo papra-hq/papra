@@ -44,20 +44,5 @@ describe('auth models', () => {
         'http://localhost:3002',
       ]);
     });
-
-    test('if the user disables the trusted origins, by setting the trustedOrigins to *, the trustedOrigins are not enabled', () => {
-      const config = {
-        client: {
-          baseUrl: 'http://localhost:3000',
-        },
-        server: {
-          trustedOrigins: '*',
-        },
-      } as Config;
-
-      const { trustedOrigins } = getTrustedOrigins({ config });
-
-      expect(trustedOrigins).to.equal(undefined);
-    });
   });
 });

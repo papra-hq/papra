@@ -32,6 +32,6 @@ export function getTrustedOrigins({ config }: { config: Config }) {
   const { trustedOrigins } = config.server;
 
   return {
-    trustedOrigins: trustedOrigins === '*' ? undefined : uniq([baseUrl, ...trustedOrigins]),
+    trustedOrigins: uniq([baseUrl, ...trustedOrigins]),
   };
 }

@@ -26,8 +26,7 @@ describe('config schemas', () => {
   });
 
   describe('trustedOriginsSchema', () => {
-    test('this schema validates and coerces a comma separated string to an array of urls or a literal *', () => {
-      expect(trustedOriginsSchema.parse('*')).toEqual('*');
+    test('this schema validates and coerces a comma separated string to an array of urls', () => {
       expect(trustedOriginsSchema.parse('http://localhost:3000')).toEqual(['http://localhost:3000']);
       expect(trustedOriginsSchema.parse('http://localhost:3000,http://localhost:3001')).toEqual([
         'http://localhost:3000',
