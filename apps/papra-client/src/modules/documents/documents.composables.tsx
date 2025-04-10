@@ -77,6 +77,34 @@ export function useRestoreDocument() {
   };
 }
 
+function toastUploadError({ error, file }: { error: Error; file: File }) {
+  if (isHttpErrorWithCode({ error, code: 'document.already_exists' })) {
+    createToast({
+      type: 'error',
+      message: 'Document already exists',
+      description: `The document ${file.name} already exists, it has not been uploaded.`,
+    });
+
+    return;
+  }
+
+  if (isHttpErrorWithCode({ error, code: 'document.file_too_big' })) {
+    createToast({
+      type: 'error',
+      message: 'Document too big',
+      description: `The document ${file.name} is too big, it has not been uploaded.`,
+    });
+
+    return;
+  }
+
+  createToast({
+    type: 'error',
+    message: 'Failed to upload document',
+    description: error.message,
+  });
+}
+
 export function useUploadDocuments({ organizationId }: { organizationId: string }) {
   const uploadDocuments = async ({ files }: { files: File[] }) => {
     const throttledInvalidateOrganizationDocumentsQuery = throttle(invalidateOrganizationDocumentsQuery, 500);
@@ -84,12 +112,8 @@ export function useUploadDocuments({ organizationId }: { organizationId: string 
     await Promise.all(files.map(async (file) => {
       const [, error] = await safely(uploadDocument({ file, organizationId }));
 
-      if (isHttpErrorWithCode({ error, code: 'document.already_exists' })) {
-        createToast({
-          type: 'error',
-          message: 'Document already exists',
-          description: `The document ${file.name} already exists, it has not been uploaded.`,
-        });
+      if (error) {
+        toastUploadError({ error, file });
       }
 
       await throttledInvalidateOrganizationDocumentsQuery({ organizationId });

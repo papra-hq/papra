@@ -19,3 +19,7 @@ export function buildOriginalDocumentKey({ documentId, organizationId, fileName 
 export function generateDocumentId() {
   return generateId({ prefix: 'doc' });
 }
+
+export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: number }) {
+  return maxUploadSize !== 0;
+}

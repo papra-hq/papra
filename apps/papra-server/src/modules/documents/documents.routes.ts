@@ -12,6 +12,7 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
+import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
@@ -33,6 +34,10 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
     '/api/organizations/:organizationId/documents',
     (context, next) => {
       const { maxUploadSize } = config.documentsStorage;
+
+      if (!isDocumentSizeLimitEnabled({ maxUploadSize })) {
+        return next();
+      }
 
       const middleware = bodyLimit({
         maxSize: maxUploadSize,

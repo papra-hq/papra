@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildOriginalDocumentKey, joinStorageKeyParts } from './documents.models';
+import { buildOriginalDocumentKey, isDocumentSizeLimitEnabled, joinStorageKeyParts } from './documents.models';
 
 describe('documents models', () => {
   describe('joinStorageKeyParts', () => {
@@ -44,6 +44,15 @@ describe('documents models', () => {
       })).to.eql({
         originalDocumentStorageKey: 'org_1/originals/doc_1',
       });
+    });
+  });
+
+  describe('isDocumentSizeLimitEnabled', () => {
+    test('the user can disable the document size limit by setting the maxUploadSize to 0', () => {
+      expect(isDocumentSizeLimitEnabled({ maxUploadSize: 0 })).to.eql(false);
+
+      expect(isDocumentSizeLimitEnabled({ maxUploadSize: 100 })).to.eql(true);
+      expect(isDocumentSizeLimitEnabled({ maxUploadSize: 42 })).to.eql(true);
     });
   });
 });
