@@ -521,6 +521,26 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       return { taggingRule };
     },
   }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/trash',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId } }) => {
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && Boolean(document.deletedAt));
+
+      await Promise.all(documents.map(document => documentStorage.removeItem(`${organizationId}:${document.id}`)));
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/trash/:documentId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, documentId } }) => {
+      const key = `${organizationId}:${documentId}`;
+
+      await documentStorage.removeItem(key);
+    },
+  }),
 };
 
 export const router = createRouter({ routes: inMemoryApiMock, strictTrailingSlash: false });

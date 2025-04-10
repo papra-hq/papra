@@ -274,6 +274,9 @@ importers:
       node-cron:
         specifier: ^3.0.3
         version: 3.0.3
+      p-limit:
+        specifier: ^6.2.0
+        version: 6.2.0
       posthog-node:
         specifier: ^4.11.1
         version: 4.11.1

@@ -9,10 +9,11 @@ import type { DocumentsRepository } from './documents.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
+import pLimit from 'p-limit';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createLogger } from '../shared/logger/logger';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
-import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { getFileSha256Hash } from './documents.services';
 
@@ -172,7 +173,7 @@ export async function hardDeleteDocument({
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
 }) {
-  await Promise.all([
+  await Promise.allSettled([
     documentsRepository.hardDeleteDocument({ documentId }),
     documentsStorageService.deleteFile({ storageKey: documentId }),
   ]);
@@ -209,4 +210,48 @@ export async function deleteExpiredDocuments({
   return {
     deletedDocumentsCount: documentIds.length,
   };
+}
+
+export async function deleteTrashDocument({
+  documentId,
+  organizationId,
+  documentsRepository,
+  documentsStorageService,
+}: {
+  documentId: string;
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+}) {
+  const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
+
+  if (!document) {
+    throw createDocumentNotFoundError();
+  }
+
+  if (!document.isDeleted) {
+    throw createDocumentNotDeletedError();
+  }
+
+  await hardDeleteDocument({ documentId, documentsRepository, documentsStorageService });
+}
+
+export async function deleteAllTrashDocuments({
+  organizationId,
+  documentsRepository,
+  documentsStorageService,
+}: {
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+}) {
+  const { documentIds } = await documentsRepository.getAllOrganizationTrashDocumentIds({ organizationId });
+
+  // TODO: refactor to use batching and transaction
+
+  const limit = pLimit(10);
+
+  await Promise.all(
+    documentIds.map(documentId => limit(() => hardDeleteDocument({ documentId, documentsRepository, documentsStorageService }))),
+  );
 }

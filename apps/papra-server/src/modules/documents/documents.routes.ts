@@ -14,7 +14,7 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { createDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
+import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
 export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) {
@@ -25,6 +25,8 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupGetDeletedDocumentsRoute(context);
   setupGetOrganizationDocumentsStatsRoute(context);
   setupGetDocumentRoute(context);
+  setupDeleteTrashDocumentRoute(context);
+  setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
 }
@@ -366,6 +368,57 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
           documentsSize,
         },
       });
+    },
+  );
+}
+
+function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionContext) {
+  app.delete(
+    '/api/organizations/:organizationId/documents/trash/:documentId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await deleteTrashDocument({ documentId, organizationId, documentsRepository, documentsStorageService });
+
+      return context.json({
+        success: true,
+      });
+    },
+  );
+}
+
+function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionContext) {
+  app.delete(
+    '/api/organizations/:organizationId/documents/trash',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const { organizationId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService });
+
+      return context.body(null, 204);
     },
   );
 }

@@ -194,3 +194,17 @@ export async function getOrganizationDocumentsStats({ organizationId }: { organi
 
   return { organizationStats };
 }
+
+export async function deleteAllTrashDocuments({ organizationId }: { organizationId: string }) {
+  await apiClient({
+    method: 'DELETE',
+    path: `/api/organizations/${organizationId}/documents/trash`,
+  });
+}
+
+export async function deleteTrashDocument({ documentId, organizationId }: { documentId: string; organizationId: string }) {
+  await apiClient({
+    method: 'DELETE',
+    path: `/api/organizations/${organizationId}/documents/trash/${documentId}`,
+  });
+}

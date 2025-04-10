@@ -28,6 +28,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getExpiredDeletedDocuments,
       getOrganizationStats,
       getOrganizationDocumentBySha256Hash,
+      getAllOrganizationTrashDocumentIds,
     },
     { db },
   );
@@ -301,5 +302,20 @@ async function getOrganizationStats({ organizationId, db }: { organizationId: st
   return {
     documentsCount,
     documentsSize: Number(documentsSize ?? 0),
+  };
+}
+
+async function getAllOrganizationTrashDocumentIds({ organizationId, db }: { organizationId: string; db: Database }) {
+  const documents = await db.select({
+    id: documentsTable.id,
+  }).from(documentsTable).where(
+    and(
+      eq(documentsTable.organizationId, organizationId),
+      eq(documentsTable.isDeleted, true),
+    ),
+  );
+
+  return {
+    documentIds: documents.map(document => document.id),
   };
 }

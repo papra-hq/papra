@@ -182,3 +182,23 @@ demo:
     discord-link-label: Discord server
     reset: Reset demo data
     hide: Hide
+
+trash:
+  delete-all:
+    button: Delete all
+    confirm:
+      title: Permanently delete all documents?
+      description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.
+      label: Delete
+      cancel: Cancel
+  delete:
+    button: Delete
+    confirm:
+      title: Permanently delete document?
+      description: Are you sure you want to permanently delete this document from the trash? This action cannot be undone.
+      label: Delete
+      cancel: Cancel
+  deleted:
+    success:
+      title: Document deleted
+      description: The document has been permanently deleted.
