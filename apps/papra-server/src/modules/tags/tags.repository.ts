@@ -19,6 +19,7 @@ export function createTagsRepository({ db }: { db: Database }) {
       addTagToDocument,
       addTagsToDocument,
       removeTagFromDocument,
+      removeAllTagsFromDocument,
     },
     { db },
   );
@@ -91,4 +92,8 @@ async function removeTagFromDocument({ tagId, documentId, db }: { tagId: string;
       eq(documentsTagsTable.documentId, documentId),
     ),
   );
+}
+
+async function removeAllTagsFromDocument({ documentId, db }: { documentId: string; db: Database }) {
+  await db.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
 }

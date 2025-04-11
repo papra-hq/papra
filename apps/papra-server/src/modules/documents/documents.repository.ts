@@ -226,20 +226,25 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
     );
 }
 
-async function restoreDocument({ documentId, organizationId, db }: { documentId: string;organizationId: string; db: Database }) {
-  await db
+async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string;organizationId: string; name?: string; userId?: string; db: Database }) {
+  const [document] = await db
     .update(documentsTable)
     .set({
       isDeleted: false,
       deletedBy: null,
       deletedAt: null,
+      ...(name ? { name, originalName: name } : {}),
+      ...(userId ? { createdBy: userId } : {}),
     })
     .where(
       and(
         eq(documentsTable.id, documentId),
         eq(documentsTable.organizationId, organizationId),
       ),
-    );
+    )
+    .returning();
+
+  return { document };
 }
 
 async function hardDeleteDocument({ documentId, db }: { documentId: string; db: Database }) {

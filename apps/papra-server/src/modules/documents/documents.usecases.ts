@@ -6,6 +6,7 @@ import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repo
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { DocumentsRepository } from './documents.repository';
+import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
@@ -77,10 +78,93 @@ export async function createDocument({
   // Early check to avoid saving the file and then realizing it already exists with the db constraint
   const { document: existingDocument } = await documentsRepository.getOrganizationDocumentBySha256Hash({ sha256Hash: hash, organizationId });
 
-  if (existingDocument) {
+  const { document } = existingDocument
+    ? await handleExistingDocument({
+      existingDocument,
+      fileName,
+      organizationId,
+      documentsRepository,
+      tagsRepository,
+      logger,
+    })
+    : await createNewDocument({
+      file,
+      fileName,
+      size,
+      mimeType,
+      hash,
+      userId,
+      organizationId,
+      documentsRepository,
+      documentsStorageService,
+      generateDocumentId,
+      trackingServices,
+      logger,
+    });
+
+  await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
+
+  return { document };
+}
+
+async function handleExistingDocument({
+  existingDocument,
+  fileName,
+  userId,
+  organizationId,
+  documentsRepository,
+  tagsRepository,
+  logger,
+}: {
+  existingDocument: Document;
+  fileName: string;
+  userId?: string;
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  tagsRepository: TagsRepository;
+  logger: Logger;
+}) {
+  if (existingDocument && !existingDocument.isDeleted) {
     throw createDocumentAlreadyExistsError();
   }
 
+  logger.info({ documentId: existingDocument.id }, 'Document already exists, restoring for deduplication');
+
+  const [, { document: restoredDocument }] = await Promise.all([
+    tagsRepository.removeAllTagsFromDocument({ documentId: existingDocument.id }),
+    documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
+  ]);
+
+  return { document: restoredDocument };
+}
+
+async function createNewDocument({
+  file,
+  fileName,
+  size,
+  mimeType,
+  hash,
+  userId,
+  organizationId,
+  documentsRepository,
+  documentsStorageService,
+  generateDocumentId,
+  trackingServices,
+  logger,
+}: {
+  file: File;
+  fileName: string;
+  size: number;
+  mimeType: string;
+  hash: string;
+  userId?: string;
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+  generateDocumentId: () => string;
+  trackingServices: TrackingServices;
+  logger: Logger;
+}) {
   const documentId = generateDocumentId();
 
   const { originalDocumentStorageKey } = buildOriginalDocumentKey({
@@ -107,8 +191,7 @@ export async function createDocument({
     mimeType,
     content: text,
     originalSha256Hash: hash,
-  }),
-  );
+  }));
 
   if (error) {
     logger.error({ error }, 'Error while creating document');
@@ -127,11 +210,7 @@ export async function createDocument({
 
   logger.info({ documentId, userId, organizationId }, 'Document created');
 
-  await applyTaggingRules({ document: result.document, taggingRulesRepository, tagsRepository });
-
-  const { document } = result;
-
-  return { document };
+  return { document: result.document };
 }
 
 export async function getDocumentOrThrow({
