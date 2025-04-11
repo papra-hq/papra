@@ -9,7 +9,7 @@ import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
 import { deleteDocument, restoreDocument, uploadDocument } from './documents.services';
 
-function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
+export function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
   return queryClient.invalidateQueries({
     queryKey: ['organizations', organizationId],
   });

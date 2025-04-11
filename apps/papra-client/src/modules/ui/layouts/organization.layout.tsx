@@ -1,7 +1,8 @@
 import type { Organization } from '@/modules/organizations/organizations.types';
 
-import { useI18n } from '@/modules/i18n/i18n.provider';
+import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries, createQuery } from '@tanstack/solid-query';
@@ -166,9 +167,11 @@ export const OrganizationLayout: ParentComponent = (props) => {
   ));
 
   return (
-    <SidenavLayout
-      children={props.children}
-      sideNav={OrganizationLayoutSideNav}
-    />
+    <DocumentUploadProvider>
+      <SidenavLayout
+        children={props.children}
+        sideNav={OrganizationLayoutSideNav}
+      />
+    </DocumentUploadProvider>
   );
 };

@@ -3,10 +3,10 @@ import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 import { useConfig } from '@/modules/config/config.provider';
 
+import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
-import { useUploadDocuments } from '@/modules/documents/documents.composables';
-import { useI18n } from '@/modules/i18n/i18n.provider';
 
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
@@ -182,7 +182,7 @@ export const SidenavLayout: ParentComponent<{
   const { openCommandPalette } = useCommandPalette();
   const navigate = useNavigate();
 
-  const { promptImport, uploadDocuments } = useUploadDocuments({ organizationId: params.organizationId });
+  const { promptImport, uploadDocuments } = useDocumentUpload({ organizationId: params.organizationId });
 
   return (
     <div class="flex flex-row h-screen min-h-0">

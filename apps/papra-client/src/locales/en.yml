@@ -202,3 +202,18 @@ trash:
     success:
       title: Document deleted
       description: The document has been permanently deleted.
+
+import-documents:
+  title:
+    error: '{{ count }} documents failed'
+    success: '{{ count }} documents imported'
+    pending: '{{ count }} / {{ total }} documents imported'
+    none: Import documents
+  no-import-in-progress: No document import in progress
+
+api-errors:
+  document.already_exists: The document already exists
+  document.file_too_big: The document file is too big
+  intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
+  user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
+  default: An error occurred while processing your request.

@@ -130,6 +130,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await documentFileStorage.setItem(key, await serializeFile(file));
       await documentStorage.setItem(key, document);
 
+      // Simulate a slow response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       return { document };
     },
   }),
