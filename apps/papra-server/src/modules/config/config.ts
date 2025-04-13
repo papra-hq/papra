@@ -10,6 +10,7 @@ import { databaseConfig } from '../app/database/database.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { emailsConfig } from '../emails/emails.config';
+import { ingestionFolderConfig } from '../ingestion-folders/ingestion-folders.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
@@ -86,6 +87,7 @@ export const configDefinition = {
   documents: documentsConfig,
   documentsStorage: documentStorageConfig,
   auth: authConfig,
+  ingestionFolder: ingestionFolderConfig,
   tasks: tasksConfig,
   intakeEmails: intakeEmailsConfig,
   emails: emailsConfig,

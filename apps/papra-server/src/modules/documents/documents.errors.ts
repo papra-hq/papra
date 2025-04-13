@@ -12,9 +12,10 @@ export const createDocumentIsNotDeletedError = createErrorFactory({
   statusCode: 400,
 });
 
+export const DOCUMENT_ALREADY_EXISTS_ERROR_CODE = 'document.already_exists' as const;
 export const createDocumentAlreadyExistsError = createErrorFactory({
   message: 'Document already exists.',
-  code: 'document.already_exists',
+  code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE,
   statusCode: 409,
 });
 

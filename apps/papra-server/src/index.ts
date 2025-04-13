@@ -4,6 +4,7 @@ import { serve } from '@hono/node-server';
 import { setupDatabase } from './modules/app/database/database';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
+import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
 import { createLogger } from './modules/shared/logger/logger';
 import { createTaskScheduler } from './modules/tasks/task-scheduler';
 import { taskDefinitions } from './modules/tasks/tasks.defiitions';
@@ -23,6 +24,15 @@ const server = serve(
   },
   ({ port }) => logger.info({ port }, 'Server started'),
 );
+
+if (config.ingestionFolder.isEnabled) {
+  const { startWatchingIngestionFolders } = createIngestionFolderWatcher({
+    config,
+    db,
+  });
+
+  await startWatchingIngestionFolders();
+}
 
 taskScheduler.start();
 

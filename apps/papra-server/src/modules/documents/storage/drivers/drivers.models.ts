@@ -17,6 +17,6 @@ export type StorageDriver = {
 
 export type StorageDriverFactory = (args: { config: Config }) => Promise<StorageDriver>;
 
-export function defineStorageDriver(factory: StorageDriverFactory) {
+export function defineStorageDriver<T extends StorageDriverFactory>(factory: T) {
   return factory;
 }

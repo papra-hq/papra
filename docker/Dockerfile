@@ -39,6 +39,6 @@ ENV DATABASE_URL=file:./app-data/db/db.sqlite
 ENV DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents
 ENV PAPRA_CONFIG_DIR=./app-data
 
-RUN mkdir -p ./app-data/db ./app-data/documents
+RUN mkdir -p ./app-data/db ./app-data/documents ./ingestion
 
 CMD ["pnpm", "start:with-migrations"]

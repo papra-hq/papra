@@ -2,19 +2,9 @@ import fs from 'node:fs';
 import { dirname, join } from 'node:path';
 import stream from 'node:stream';
 import { get } from 'lodash-es';
+import { checkFileExists, deleteFile, ensureDirectoryExists } from '../../../../shared/fs/fs.services';
 import { defineStorageDriver } from '../drivers.models';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
-
-function ensureDirectoryExists({ path }: { path: string }) {
-  return fs.promises.mkdir(
-    dirname(path),
-    { recursive: true },
-  );
-}
-
-function checkFileExists({ path }: { path: string }) {
-  return fs.promises.access(path, fs.constants.F_OK).then(() => true).catch(() => false);
-}
 
 export const FS_STORAGE_DRIVER_NAME = 'filesystem' as const;
 
@@ -36,7 +26,7 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
         throw createFileAlreadyExistsError();
       }
 
-      await ensureDirectoryExists({ path: storagePath });
+      await ensureDirectoryExists({ path: dirname(storagePath) });
 
       const writeStream = fs.createWriteStream(storagePath);
       stream.Readable.fromWeb(file.stream()).pipe(writeStream);
@@ -69,7 +59,7 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
       const { storagePath } = getStoragePath({ storageKey });
 
       try {
-        await fs.promises.unlink(storagePath);
+        await deleteFile({ filePath: storagePath });
       } catch (error) {
         if (get(error, 'code') === 'ENOENT') {
           throw new Error('File not found');

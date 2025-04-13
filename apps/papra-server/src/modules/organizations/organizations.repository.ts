@@ -22,6 +22,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getUserOwnedOrganizationCount,
       getOrganizationOwner,
       getOrganizationMembersCount,
+      getAllOrganizationIds,
     },
     { db },
   );
@@ -137,5 +138,13 @@ async function getOrganizationMembersCount({ organizationId, db }: { organizatio
 
   return {
     membersCount,
+  };
+}
+
+async function getAllOrganizationIds({ db }: { db: Database }) {
+  const organizationIds = await db.select({ id: organizationsTable.id }).from(organizationsTable);
+
+  return {
+    organizationIds: organizationIds.map(({ id }) => id),
   };
 }

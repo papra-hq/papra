@@ -1,0 +1,105 @@
+---
+title: Setup Ingestion Folder
+description: Step-by-step guide to setup an ingestion folder to automatically ingest documents into your Papra instance.
+slug: guides/setup-ingestion-folder
+---
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { FileTree } from '@astrojs/starlight/components';
+
+The ingestion folder is a special folder that is watched by Papra for new files. When a new file is added to the ingestion folder, Papra will automatically import it.
+
+## Multi-Organization Structure
+
+Papra supports multiple organizations within a single instance, each requiring a dedicated ingestion folder. The ingestion system uses a hierarchical structure where:
+
+<FileTree>
+- ingestion-folder
+  - org_abc123
+    - document.pdf
+    - report.docx
+  - org_def456
+    - file.txt
+  - foo.txt # Ignored as it's not in an organization 
+</FileTree>
+
+
+This allows you to have a single instance of Papra watching multiple organizations' ingestion folders.
+
+<Aside>
+Files and folders that are within the `ingestion-root-folder` but not within an organization folder are ignored.
+</Aside>
+
+## Setup
+
+Add the following to your `docker-compose.yml` file:
+
+```yaml title="docker-compose.yml" ins={9,12}
+services:
+papra:
+   container_name: papra
+   image: ghcr.io/papra-hq/papra:latest
+   restart: unless-stopped
+   ports:
+      - "1221:1221"
+   environment:
+      - INGESTION_FOLDER_IS_ENABLED=true
+   volumes:
+      - ./app-data:/app/app-data
+      - <your-ingestion-folder>:/app/ingestion
+   user: "${UID}:${GID}"
+```
+
+Then add files to a folder named with the organization id (available in Papra URL, e.g. `https://papra.example.com/organizations/<organization-id>`, the format is `org_<random>`).
+
+```bash
+mkdir -p <your-ingestion-folder>/<org_id>
+touch <your-ingestion-folder>/<org_id>/hello.txt
+```
+
+## Post-processing
+
+Once a file has been ingested in your Papra organization, you can configure what happens to it by setting the `INGESTION_FOLDER_POST_PROCESSING_STRATEGY` environment variable. There are two strategies:
+
+- `delete`: The file is deleted from the ingestion folder (default strategy)
+- `move`: The file is moved to the `INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH` folder (default: `./ingestion-done`)
+
+Note that the `INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH` path is relative to the organization ingestion folder.
+
+So with `INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH=ingestion-done`, the file `<ingestion-folder>/<org_id>/file.pdf` will be moved to `<ingestion-folder>/<org_id>/ingestion-done/file.pdf` once ingested.
+
+## Safeguards
+
+To avoid accidental data loss, if for some reason the ingestion fails, the file is moved to the `INGESTION_FOLDER_ERROR_FOLDER_PATH` folder (default: `./ingestion-error`).
+
+<Aside>
+As for the `INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH`, the `INGESTION_FOLDER_ERROR_FOLDER_PATH` path is relative to the organization ingestion folder.
+</Aside>
+
+## Polling
+
+By default, Papra uses native file watchers to detect changes in the ingestion folder. On some OS (like Windows), this can be flaky with Docker. To avoid this issue, you can enable polling by setting the `INGESTION_FOLDER_WATCHER_USE_POLLING` environment variable to `true`.
+
+The default polling interval is 2 seconds, you can change it by setting the `INGESTION_FOLDER_WATCHER_POLLING_INTERVAL_MS` environment variable.
+
+
+```yaml title="docker-compose.yml" ins={2-3}
+environment:
+   - INGESTION_FOLDER_WATCHER_USE_POLLING=true
+   - INGESTION_FOLDER_WATCHER_POLLING_INTERVAL_MS=2000
+```
+
+## Configuration
+
+You can find the list of all configuration options in the [configuration reference](/docs/configuration-reference), the related variables are prefixed with `INGESTION_FOLDER_`.
+
+
+## Edge cases and behaviors
+
+- The ingestion folder is watched recursively.
+- Files in the ingestion folder `done` and `error` folders are ignored.
+- When a file from the ingestion folder is already present (and not in the trash) in the organization, no ingestion is done, but the file is post-processed (deleted or moved) as successfully ingested.
+- When a file is moved to "done" or "error" folder
+   - If a file with the same name and same content is present in the destination folder, the original file is deleted
+   - If a file with the same name but different content is present in the destination folder, the original file is moved and a timestamp is added to the filename
+- Some files are ignored by default (`.DS_Store`, `Thumbs.db`, `desktop.ini`, etc.) see [ingestion-folders.constants.ts](https://github.com/papra-hq/papra/blob/main/apps/papra-server/src/modules/ingestion-folders/ingestion-folders.constants.ts) for the list of ignored files and patterns. You can change this by setting the `INGESTION_FOLDER_IGNORED_PATTERNS` environment variable.

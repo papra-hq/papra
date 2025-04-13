@@ -29,5 +29,7 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
     deleteFile: async ({ storageKey }) => {
       storage.delete(storageKey);
     },
+
+    _getStorage: () => storage,
   };
 });

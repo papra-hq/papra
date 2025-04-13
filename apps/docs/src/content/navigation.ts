@@ -26,6 +26,10 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
         label: 'Setup intake emails with CF Email Workers',
         slug: 'guides/intake-emails-with-cloudflare-email-workers',
       },
+      {
+        label: 'Setup Ingestion Folder',
+        slug: 'guides/setup-ingestion-folder',
+      },
     ],
   },
   {

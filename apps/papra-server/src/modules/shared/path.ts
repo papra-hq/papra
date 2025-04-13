@@ -1,5 +1,4 @@
 import process from 'node:process';
+import { memoize } from 'lodash-es';
 
-export function getRootDirPath() {
-  return process.cwd();
-}
+export const getRootDirPath = memoize(() => process.cwd());
