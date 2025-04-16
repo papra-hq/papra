@@ -49,3 +49,33 @@ export function getDaysBeforePermanentDeletion({ document, deletedDocumentsReten
 
   return daysBeforeDeletion;
 }
+
+export function getDocumentNameWithoutExtension({ name }: { name: string }) {
+  const dotSplittedName = name.split('.');
+  const dotCount = dotSplittedName.length - 1;
+
+  if (dotCount === 0) {
+    return name;
+  }
+
+  if (dotCount === 1 && name.startsWith('.')) {
+    return name;
+  }
+
+  return dotSplittedName.slice(0, -1).join('.');
+}
+
+export function getDocumentNameExtension({ name }: { name: string }) {
+  const dotSplittedName = name.split('.');
+  const dotCount = dotSplittedName.length - 1;
+
+  if (dotCount === 0) {
+    return undefined;
+  }
+
+  if (dotCount === 1 && name.startsWith('.')) {
+    return undefined;
+  }
+
+  return dotSplittedName[dotCount];
+}

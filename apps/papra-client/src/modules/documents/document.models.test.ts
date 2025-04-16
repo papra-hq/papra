@@ -1,7 +1,7 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
 import { values } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
-import { getDaysBeforePermanentDeletion, getDocumentIcon, iconByFileType } from './document.models';
+import { getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension, iconByFileType } from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
@@ -99,6 +99,26 @@ describe('files models', () => {
       const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
 
       expect(daysBeforeDeletion).to.eql(undefined);
+    });
+  });
+
+  describe('getDocumentNameWithoutExtension', () => {
+    test('get the document name without the extension', () => {
+      expect(getDocumentNameWithoutExtension({ name: 'document.txt' })).to.eql('document');
+      expect(getDocumentNameWithoutExtension({ name: 'document' })).to.eql('document');
+      expect(getDocumentNameWithoutExtension({ name: '.document' })).to.eql('.document');
+      expect(getDocumentNameWithoutExtension({ name: '.document.txt' })).to.eql('.document');
+      expect(getDocumentNameWithoutExtension({ name: 'document.test.txt' })).to.eql('document.test');
+    });
+  });
+
+  describe('getDocumentNameExtension', () => {
+    test('get the document name extension', () => {
+      expect(getDocumentNameExtension({ name: 'document.txt' })).to.eql('txt');
+      expect(getDocumentNameExtension({ name: 'document' })).to.eql(undefined);
+      expect(getDocumentNameExtension({ name: '.document' })).to.eql(undefined);
+      expect(getDocumentNameExtension({ name: '.document.txt' })).to.eql('txt');
+      expect(getDocumentNameExtension({ name: 'document.test.txt' })).to.eql('txt');
     });
   });
 });

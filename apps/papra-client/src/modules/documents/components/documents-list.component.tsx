@@ -13,7 +13,7 @@ import { formatBytes } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { type Accessor, type Component, For, Match, type Setter, Show, Switch } from 'solid-js';
-import { getDocumentIcon } from '../document.models';
+import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
 
 type Pagination = {
@@ -83,15 +83,11 @@ export const DocumentsPaginatedList: Component<{
                 href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
                 class="font-bold truncate block hover:underline"
               >
-                {data.row.original.name.split('.').slice(0, -1).join('.')}
+                {getDocumentNameWithoutExtension({ name: data.row.original.name })}
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
-                {formatBytes({ bytes: data.row.original.originalSize, base: 1000 })}
-                {' '}
-                -
-                {' '}
-                {data.row.original.name.split('.').pop()?.toUpperCase()}
+                {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name })].filter(Boolean).join(' - ')}
                 {' '}
                 -
                 {' '}
