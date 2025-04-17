@@ -1,7 +1,9 @@
 import { useConfig } from '@/modules/config/config.provider';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
+import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
@@ -43,6 +45,7 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
 };
 
 export const DocumentPage: Component = () => {
+  const { t } = useI18n();
   const params = useParams();
   const { deleteDocument } = useDeleteDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
@@ -136,25 +139,38 @@ export const DocumentPage: Component = () => {
                         )}
                   </div>
 
-                  <DocumentTagPicker
-                    organizationId={params.organizationId}
-                    tagIds={getDocument().tags.map(tag => tag.id)}
-                    onTagAdded={async ({ tag }) => {
-                      await addTagToDocument({
-                        documentId: params.documentId,
-                        organizationId: params.organizationId,
-                        tagId: tag.id,
-                      });
-                    }}
+                  <div class="flex gap-2 sm:items-center sm:flex-row flex-col">
+                    <div class="flex-1">
+                      <DocumentTagPicker
+                        organizationId={params.organizationId}
+                        tagIds={getDocument().tags.map(tag => tag.id)}
+                        onTagAdded={async ({ tag }) => {
+                          await addTagToDocument({
+                            documentId: params.documentId,
+                            organizationId: params.organizationId,
+                            tagId: tag.id,
+                          });
+                        }}
 
-                    onTagRemoved={async ({ tag }) => {
-                      await removeTagFromDocument({
-                        documentId: params.documentId,
-                        organizationId: params.organizationId,
-                        tagId: tag.id,
-                      });
-                    }}
-                  />
+                        onTagRemoved={async ({ tag }) => {
+                          await removeTagFromDocument({
+                            documentId: params.documentId,
+                            organizationId: params.organizationId,
+                            tagId: tag.id,
+                          });
+                        }}
+                      />
+                    </div>
+
+                    <CreateTagModal organizationId={params.organizationId}>
+                      {params => (
+                        <Button variant="outline" {...params}>
+                          <div class="i-tabler-plus size-4 mr-2"></div>
+                          {t('tagging-rules.form.tags.add-tag')}
+                        </Button>
+                      )}
+                    </CreateTagModal>
+                  </div>
 
                   {getDocument().isDeleted && (
                     <Alert variant="destructive" class="mt-6">
