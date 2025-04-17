@@ -49,7 +49,7 @@ export const DocumentTagPicker: Component<{
     >
       <ComboboxTrigger displayMultipleState={state => (
 
-        <span class="flex flex-wrap items-center gap-1">
+        <span class="flex flex-wrap items-center gap-1 flex-1">
           <For each={state.selectedOptions() as Tag[]}>
             {tag => (
               <TagComponent name={tag.name} color={tag.color} class="text-xs my-1" closable onClose={() => state.remove(tag)} />
