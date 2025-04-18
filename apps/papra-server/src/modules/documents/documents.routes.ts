@@ -433,14 +433,13 @@ function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
       organizationId: z.string().regex(organizationIdRegex),
       documentId: z.string(),
     })),
+    validateJsonBody(z.object({
+      content: z.string(),
+    })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
-      const { content } = await context.req.json<{ content: string }>();
-
-      validateJsonBody(z.object({
-        content: z.string(),
-      }));
+      const { content } = context.req.valid('json');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
