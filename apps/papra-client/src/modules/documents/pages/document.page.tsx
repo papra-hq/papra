@@ -2,20 +2,26 @@ import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
+import { queryClient } from '@/modules/shared/query/query-client';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
-import { formatBytes } from '@corentinth/chisels';
+import { createToast } from '@/modules/ui/components/sonner';
+import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
+import { TextArea } from '@/modules/ui/components/textarea';
+import { TextFieldRoot } from '@/modules/ui/components/textfield';
+import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentFile } from '../documents.services';
+import { fetchDocument, fetchDocumentFile, updateDocument } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
@@ -84,6 +90,45 @@ export const DocumentPage: Component = () => {
   };
 
   const getDataUrl = () => queries[1].data ? URL.createObjectURL(queries[1].data) : undefined;
+
+  const [isEditing, setIsEditing] = createSignal(false);
+  const [editedContent, setEditedContent] = createSignal('');
+  const [isSaving, setIsSaving] = createSignal(false);
+
+  const handleEdit = () => {
+    setEditedContent(queries[0].data?.document.content ?? '');
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedContent('');
+  };
+
+  const handleSave = async () => {
+    if (!queries[0].data?.document) {
+      return;
+    }
+
+    setIsSaving(true);
+    const [, error] = await safely(updateDocument({
+      documentId: queries[0].data.document.id,
+      organizationId: params.organizationId,
+      content: editedContent(),
+    }));
+    setIsSaving(false);
+    setIsEditing(false);
+
+    if (error) {
+      createToast({ type: 'error', message: 'Failed to update document content' });
+    } else {
+      createToast({ type: 'success', message: 'Document content updated' });
+
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+      });
+    }
+  };
 
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
@@ -185,41 +230,88 @@ export const DocumentPage: Component = () => {
                     </Alert>
                   )}
 
-                  <Separator class="my-6" />
+                  <Separator class="my-3" />
 
-                  <KeyValues data={[
-                    {
-                      label: 'ID',
-                      value: getDocument().id,
-                      icon: 'i-tabler-id',
-                    },
-                    {
-                      label: 'Name',
-                      value: getDocument().name,
-                      icon: 'i-tabler-file-text',
-                    },
-                    {
-                      label: 'Type',
-                      value: getDocument().mimeType,
-                      icon: 'i-tabler-file-unknown',
-                    },
-                    {
-                      label: 'Size',
-                      value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
-                      icon: 'i-tabler-weight',
-                    },
-                    {
-                      label: 'Created At',
-                      value: timeAgo({ date: getDocument().createdAt }),
-                      icon: 'i-tabler-calendar',
-                    },
-                    {
-                      label: 'Updated At',
-                      value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
-                      icon: 'i-tabler-calendar',
-                    },
-                  ]}
-                  />
+                  <Tabs defaultValue="info" class="w-full">
+                    <TabsList class="w-full h-8">
+                      <TabsTrigger value="info">Info</TabsTrigger>
+                      <TabsTrigger value="content">Content</TabsTrigger>
+                      <TabsIndicator />
+                    </TabsList>
+
+                    <TabsContent value="info">
+                      <KeyValues data={[
+                        {
+                          label: 'ID',
+                          value: getDocument().id,
+                          icon: 'i-tabler-id',
+                        },
+                        {
+                          label: 'Name',
+                          value: getDocument().name,
+                          icon: 'i-tabler-file-text',
+                        },
+                        {
+                          label: 'Type',
+                          value: getDocument().mimeType,
+                          icon: 'i-tabler-file-unknown',
+                        },
+                        {
+                          label: 'Size',
+                          value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
+                          icon: 'i-tabler-weight',
+                        },
+                        {
+                          label: 'Created At',
+                          value: timeAgo({ date: getDocument().createdAt }),
+                          icon: 'i-tabler-calendar',
+                        },
+                        {
+                          label: 'Updated At',
+                          value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
+                          icon: 'i-tabler-calendar',
+                        },
+                      ]}
+                      />
+                    </TabsContent>
+                    <TabsContent value="content">
+                      <Show
+                        when={isEditing()}
+                        fallback={(
+                          <div class="flex flex-col gap-2">
+                            <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md">
+                              {queries[0].data?.document.content}
+                            </div>
+                            <div class="flex justify-end">
+                              <Button variant="outline" onClick={handleEdit}>
+                                <div class="i-tabler-edit size-4 mr-2" />
+                                Edit
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      >
+                        <div class="flex flex-col gap-2">
+                          <TextFieldRoot>
+                            <TextArea
+                              value={editedContent()}
+                              onInput={e => setEditedContent(e.currentTarget.value)}
+                              class="font-mono min-h-[200px]"
+                            />
+                          </TextFieldRoot>
+                          <div class="flex justify-end gap-2">
+                            <Button variant="outline" onClick={handleCancel} disabled={isSaving()}>
+                              Cancel
+                            </Button>
+                            <Button onClick={handleSave} disabled={isSaving()}>
+                              {isSaving() ? 'Saving...' : 'Save'}
+                            </Button>
+                          </div>
+                        </div>
+                      </Show>
+                    </TabsContent>
+                  </Tabs>
+
                 </div>
               </div>
             )}

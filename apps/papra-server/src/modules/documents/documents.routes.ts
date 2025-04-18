@@ -1,4 +1,5 @@
 import type { RouteDefinitionContext } from '../app/server.types';
+import { and, eq } from 'drizzle-orm';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
@@ -7,13 +8,14 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
-import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
+import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
+import { documentsTable } from './documents.table';
 import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -29,6 +31,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
+  setupUpdateDocumentContentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
@@ -419,6 +422,48 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
       await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
+  app.patch(
+    '/api/organizations/:organizationId/documents/:documentId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    validateJsonBody(z.object({
+      content: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+      const { content } = context.req.valid('json');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await db
+        .update(documentsTable)
+        .set({
+          content,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(documentsTable.id, documentId),
+            eq(documentsTable.organizationId, organizationId),
+          ),
+        );
+
+      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+
+      return context.json({
+        document,
+      });
     },
   );
 }
