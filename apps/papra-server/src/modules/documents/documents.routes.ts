@@ -446,7 +446,6 @@ function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       await db
         .update(documentsTable)
@@ -461,12 +460,10 @@ function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
           ),
         );
 
+      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+
       return context.json({
-        document: {
-          ...document,
-          content,
-          updatedAt: new Date(),
-        },
+        document,
       });
     },
   );
