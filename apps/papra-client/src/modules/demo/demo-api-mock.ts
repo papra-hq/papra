@@ -120,6 +120,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         originalName: file.name,
         originalSize: file.size,
         mimeType: file.type,
+        content: '',
         createdAt: new Date(),
         updatedAt: new Date(),
         tags: [],
