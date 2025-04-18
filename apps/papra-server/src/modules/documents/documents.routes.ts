@@ -1,4 +1,5 @@
 import type { RouteDefinitionContext } from '../app/server.types';
+import { and, eq } from 'drizzle-orm';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
@@ -14,6 +15,7 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
+import { documentsTable } from './documents.table';
 import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -29,6 +31,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
+  setupUpdateDocumentContentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
@@ -419,6 +422,56 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
       await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
+  app.put(
+    '/api/organizations/:organizationId/documents/:documentId/content',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+      const { content } = await context.req.json<{ content: string }>();
+
+      if (typeof content !== 'string') {
+        throw createError({
+          message: 'Content must be a string',
+          code: 'document.invalid_content',
+          statusCode: 400,
+        });
+      }
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+
+      await db
+        .update(documentsTable)
+        .set({
+          content,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(documentsTable.id, documentId),
+            eq(documentsTable.organizationId, organizationId),
+          ),
+        );
+
+      return context.json({
+        document: {
+          ...document,
+          content,
+          updatedAt: new Date(),
+        },
+      });
     },
   );
 }

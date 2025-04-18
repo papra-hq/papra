@@ -8,15 +8,19 @@ import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.ser
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
+import { createToast } from '@/modules/ui/components/sonner';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
+import { TextArea } from '@/modules/ui/components/textarea';
+import { TextFieldRoot } from '@/modules/ui/components/textfield';
 import { formatBytes } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentFile } from '../documents.services';
+import { fetchDocument, fetchDocumentFile, updateDocumentContent } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
@@ -85,6 +89,43 @@ export const DocumentPage: Component = () => {
   };
 
   const getDataUrl = () => queries[1].data ? URL.createObjectURL(queries[1].data) : undefined;
+
+  const [isEditing, setIsEditing] = createSignal(false);
+  const [editedContent, setEditedContent] = createSignal('');
+  const [isSaving, setIsSaving] = createSignal(false);
+
+  const handleEdit = () => {
+    setEditedContent(queries[0].data?.document.content ?? '');
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedContent('');
+  };
+
+  const handleSave = async () => {
+    if (!queries[0].data?.document) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await updateDocumentContent({
+        documentId: queries[0].data.document.id,
+        organizationId: params.organizationId,
+        content: editedContent(),
+      });
+
+      await queries[0].refetch();
+      setIsEditing(false);
+      createToast({ type: 'success', message: 'Document content updated' });
+    } catch (_) {
+      createToast({ type: 'error', message: 'Failed to update document content' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
@@ -231,9 +272,40 @@ export const DocumentPage: Component = () => {
                       />
                     </TabsContent>
                     <TabsContent value="content">
-                      <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md">
-                        {getDocument().content}
-                      </div>
+                      <Show
+                        when={isEditing()}
+                        fallback={(
+                          <div class="flex flex-col gap-2">
+                            <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md">
+                              {queries[0].data?.document.content}
+                            </div>
+                            <div class="flex justify-end">
+                              <Button variant="outline" onClick={handleEdit}>
+                                <div class="i-tabler-edit size-4 mr-2" />
+                                Edit
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      >
+                        <div class="flex flex-col gap-2">
+                          <TextFieldRoot>
+                            <TextArea
+                              value={editedContent()}
+                              onInput={e => setEditedContent(e.currentTarget.value)}
+                              class="font-mono min-h-[200px]"
+                            />
+                          </TextFieldRoot>
+                          <div class="flex justify-end gap-2">
+                            <Button variant="outline" onClick={handleCancel} disabled={isSaving()}>
+                              Cancel
+                            </Button>
+                            <Button onClick={handleSave} disabled={isSaving()}>
+                              {isSaving() ? 'Saving...' : 'Save'}
+                            </Button>
+                          </div>
+                        </div>
+                      </Show>
                     </TabsContent>
                   </Tabs>
 
