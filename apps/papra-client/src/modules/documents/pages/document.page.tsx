@@ -2,20 +2,24 @@ import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
+import { queryClient } from '@/modules/shared/query/query-client';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
+import { createToast } from '@/modules/ui/components/sonner';
+import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { formatBytes } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries } from '@tanstack/solid-query';
-import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
+import { createMutation, createQueries } from '@tanstack/solid-query';
+import { type Component, createEffect, For, type JSX, Show, Suspense } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentFile } from '../documents.services';
+import { fetchDocument, fetchDocumentFile, updateDocument } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
@@ -51,6 +55,28 @@ export const DocumentPage: Component = () => {
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
+  const [isEditing, setIsEditing] = createSignal(false);
+  const [editName, setEditName] = createSignal('');
+
+  const updateMutation = createMutation(() => ({
+    mutationFn: async ({ name }: { name: string }) => {
+      await updateDocument({
+        documentId: params.documentId,
+        organizationId: params.organizationId,
+        name,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+      });
+      setIsEditing(false);
+      createToast({
+        type: 'success',
+        message: 'Document name updated successfully',
+      });
+    },
+  }));
 
   const queries = createQueries(() => ({
     queries: [
@@ -93,7 +119,55 @@ export const DocumentPage: Component = () => {
             {getDocument => (
               <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
-                  <h1 class="text-xl font-semibold">{getDocument().name}</h1>
+                  <div class="flex items-center gap-2">
+                    <Show
+                      when={isEditing()}
+                      fallback={(
+                        <div class="flex items-center gap-2">
+                          <h1 class="text-xl font-semibold">{getDocument().name}</h1>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditName(getDocument().name);
+                              setIsEditing(true);
+                            }}
+                          >
+                            <div class="i-tabler-edit size-4" />
+                          </Button>
+                        </div>
+                      )}
+                    >
+                      <div class="flex items-center gap-2">
+                        <TextFieldRoot>
+                          <TextField
+                            value={editName()}
+                            onInput={e => setEditName(e.currentTarget.value)}
+                            class="text-xl font-semibold h-8"
+                          />
+                        </TextFieldRoot>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          class="text-green-500"
+                          onClick={() => {
+                            updateMutation.mutate({ name: editName() });
+                          }}
+                          isLoading={updateMutation.isPending}
+                        >
+                          <div class="i-tabler-check size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          class="text-red-500"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          <div class="i-tabler-x size-4" />
+                        </Button>
+                      </div>
+                    </Show>
+                  </div>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
                   <div class="flex gap-2 mb-2">

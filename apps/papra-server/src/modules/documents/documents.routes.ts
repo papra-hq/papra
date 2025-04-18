@@ -7,7 +7,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
-import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
+import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -29,6 +29,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
+  setupUpdateDocumentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
@@ -419,6 +420,38 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
       await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
+  app.patch(
+    '/api/organizations/:organizationId/documents/:documentId',
+    validateParams(z.object({
+      organizationId: z.string().regex(organizationIdRegex),
+      documentId: z.string(),
+    })),
+    validateJsonBody(z.object({
+      name: z.string().min(1),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+      const { name } = context.req.valid('json');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await ensureDocumentExists({ documentId, organizationId, documentsRepository });
+
+      const { document } = await documentsRepository.updateDocument({
+        documentId,
+        organizationId,
+        name,
+      });
+
+      return context.json({ document });
     },
   );
 }

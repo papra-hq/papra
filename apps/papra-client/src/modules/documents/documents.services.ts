@@ -208,3 +208,27 @@ export async function deleteTrashDocument({ documentId, organizationId }: { docu
     path: `/api/organizations/${organizationId}/documents/trash/${documentId}`,
   });
 }
+
+export async function updateDocument({
+  documentId,
+  organizationId,
+  name,
+}: {
+  documentId: string;
+  organizationId: string;
+  name: string;
+}) {
+  const { document } = await apiClient<{ document: Document }>({
+    method: 'PATCH',
+    path: `/api/organizations/${organizationId}/documents/${documentId}`,
+    body: { name },
+  });
+
+  return {
+    document: {
+      ...document,
+      createdAt: new Date(document.createdAt),
+      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
+    },
+  };
+}
