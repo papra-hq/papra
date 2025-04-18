@@ -8,6 +8,7 @@ import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.ser
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
+import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { formatBytes } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
@@ -185,41 +186,57 @@ export const DocumentPage: Component = () => {
                     </Alert>
                   )}
 
-                  <Separator class="my-6" />
+                  <Separator class="my-3" />
 
-                  <KeyValues data={[
-                    {
-                      label: 'ID',
-                      value: getDocument().id,
-                      icon: 'i-tabler-id',
-                    },
-                    {
-                      label: 'Name',
-                      value: getDocument().name,
-                      icon: 'i-tabler-file-text',
-                    },
-                    {
-                      label: 'Type',
-                      value: getDocument().mimeType,
-                      icon: 'i-tabler-file-unknown',
-                    },
-                    {
-                      label: 'Size',
-                      value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
-                      icon: 'i-tabler-weight',
-                    },
-                    {
-                      label: 'Created At',
-                      value: timeAgo({ date: getDocument().createdAt }),
-                      icon: 'i-tabler-calendar',
-                    },
-                    {
-                      label: 'Updated At',
-                      value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
-                      icon: 'i-tabler-calendar',
-                    },
-                  ]}
-                  />
+                  <Tabs defaultValue="info" class="w-full">
+                    <TabsList class="w-full h-8">
+                      <TabsTrigger value="info">Info</TabsTrigger>
+                      <TabsTrigger value="content">Content</TabsTrigger>
+                      <TabsIndicator />
+                    </TabsList>
+
+                    <TabsContent value="info">
+                      <KeyValues data={[
+                        {
+                          label: 'ID',
+                          value: getDocument().id,
+                          icon: 'i-tabler-id',
+                        },
+                        {
+                          label: 'Name',
+                          value: getDocument().name,
+                          icon: 'i-tabler-file-text',
+                        },
+                        {
+                          label: 'Type',
+                          value: getDocument().mimeType,
+                          icon: 'i-tabler-file-unknown',
+                        },
+                        {
+                          label: 'Size',
+                          value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
+                          icon: 'i-tabler-weight',
+                        },
+                        {
+                          label: 'Created At',
+                          value: timeAgo({ date: getDocument().createdAt }),
+                          icon: 'i-tabler-calendar',
+                        },
+                        {
+                          label: 'Updated At',
+                          value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
+                          icon: 'i-tabler-calendar',
+                        },
+                      ]}
+                      />
+                    </TabsContent>
+                    <TabsContent value="content">
+                      <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md">
+                        {getDocument().content}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
                 </div>
               </div>
             )}
