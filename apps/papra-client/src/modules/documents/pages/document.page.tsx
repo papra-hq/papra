@@ -14,7 +14,7 @@ import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { formatBytes } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createMutation, createQueries } from '@tanstack/solid-query';
-import { type Component, createEffect, For, type JSX, Show, Suspense } from 'solid-js';
+import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
 import { createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
