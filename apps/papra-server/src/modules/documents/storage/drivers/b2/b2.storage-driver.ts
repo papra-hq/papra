@@ -42,7 +42,7 @@ export const b2StorageDriverFactory = defineStorageDriver(async ({ config }) => 
         const response = await b2Client.downloadFileByName({
           bucketName,
           fileName: storageKey,
-          responseType: 'blob',
+          responseType: 'stream',
         });
         if (!response.data) {
           throw new Error('File not found or has no content');
