@@ -8,7 +8,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
-import { validateFormData, validateParams, validateQuery } from '../shared/validation/validation';
+import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -427,8 +427,8 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
 }
 
 function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
-  app.put(
-    '/api/organizations/:organizationId/documents/:documentId/content',
+  app.patch(
+    '/api/organizations/:organizationId/documents/:documentId',
     validateParams(z.object({
       organizationId: z.string().regex(organizationIdRegex),
       documentId: z.string(),
@@ -438,13 +438,9 @@ function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
       const { organizationId, documentId } = context.req.valid('param');
       const { content } = await context.req.json<{ content: string }>();
 
-      if (typeof content !== 'string') {
-        throw createError({
-          message: 'Content must be a string',
-          code: 'document.invalid_content',
-          statusCode: 400,
-        });
-      }
+      validateJsonBody(z.object({
+        content: z.string(),
+      }));
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });

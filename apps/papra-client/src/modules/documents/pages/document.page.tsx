@@ -2,6 +2,7 @@ import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
+import { queryClient } from '@/modules/shared/query/query-client';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
@@ -12,7 +13,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextFieldRoot } from '@/modules/ui/components/textfield';
-import { formatBytes } from '@corentinth/chisels';
+import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
@@ -20,7 +21,7 @@ import { createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentFile, updateDocumentContent } from '../documents.services';
+import { fetchDocument, fetchDocumentFile, updateDocument } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
@@ -110,20 +111,22 @@ export const DocumentPage: Component = () => {
     }
 
     setIsSaving(true);
-    try {
-      await updateDocumentContent({
-        documentId: queries[0].data.document.id,
-        organizationId: params.organizationId,
-        content: editedContent(),
-      });
+    const [, error] = await safely(updateDocument({
+      documentId: queries[0].data.document.id,
+      organizationId: params.organizationId,
+      content: editedContent(),
+    }));
+    setIsSaving(false);
+    setIsEditing(false);
 
-      await queries[0].refetch();
-      setIsEditing(false);
-      createToast({ type: 'success', message: 'Document content updated' });
-    } catch (_) {
+    if (error) {
       createToast({ type: 'error', message: 'Failed to update document content' });
-    } finally {
-      setIsSaving(false);
+    } else {
+      createToast({ type: 'success', message: 'Document content updated' });
+
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+      });
     }
   };
 

@@ -209,7 +209,7 @@ export async function deleteTrashDocument({ documentId, organizationId }: { docu
   });
 }
 
-export async function updateDocumentContent({
+export async function updateDocument({
   documentId,
   organizationId,
   content,
@@ -219,8 +219,8 @@ export async function updateDocumentContent({
   content: string;
 }) {
   const { document } = await apiClient<{ document: Document }>({
-    method: 'PUT',
-    path: `/api/organizations/${organizationId}/documents/${documentId}/content`,
+    method: 'PATCH',
+    path: `/api/organizations/${organizationId}/documents/${documentId}`,
     body: { content },
   });
 
