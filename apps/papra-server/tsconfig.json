@@ -9,7 +9,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   }
 }
