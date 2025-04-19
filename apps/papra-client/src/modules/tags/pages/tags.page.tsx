@@ -6,6 +6,7 @@ import { timeAgo } from '@/modules/shared/date/time-ago';
 import { createForm } from '@/modules/shared/form/form';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
+import { ColorPicker } from '@/modules/ui/components/color-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
@@ -70,7 +71,14 @@ const TagForm: Component<{
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="color">Color</TextFieldLabel>
-            <TextField id="color" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. #FF0000" />
+            <ColorPicker
+              id="color"
+              value={field.value}
+              onChange={inputProps.onChange}
+              onInput={inputProps.onInput}
+              aria-invalid={Boolean(field.error)}
+              placeholder="Eg. #FF0000"
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -83,7 +91,7 @@ const TagForm: Component<{
               Description
               <span class="font-normal ml-1 text-muted-foreground">(optional)</span>
             </TextFieldLabel>
-            <TextArea id="description" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. All the contracts signed by the company" />
+            <TextArea id="description" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. All the contracts signed by the company" />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
