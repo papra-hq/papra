@@ -2,7 +2,7 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { get, pick } from 'lodash-es';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';
@@ -68,7 +68,7 @@ async function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsS
       planId: z.enum([PLUS_PLAN_ID]),
     })),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -129,7 +129,7 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
   app.get(
     '/api/organizations/:organizationId/customer-portal',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -156,7 +156,7 @@ function getOrganizationSubscriptionRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/subscription',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });

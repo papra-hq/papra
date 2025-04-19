@@ -1,9 +1,10 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
+import { INTAKE_EMAIL_ID_PREFIX } from './intake-emails.constants';
 
 export const intakeEmailsTable = sqliteTable('intake_emails', {
-  ...createPrimaryKeyField({ prefix: 'ie' }),
+  ...createPrimaryKeyField({ prefix: INTAKE_EMAIL_ID_PREFIX }),
   ...createTimestampColumns(),
 
   emailAddress: text('email_address').notNull().unique(),

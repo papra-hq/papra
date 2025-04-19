@@ -1,12 +1,14 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { documentIdSchema } from '../documents/documents.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { TagColorRegex } from './tags.constants';
 import { createTagsRepository } from './tags.repository';
+import { tagIdSchema } from './tags.schemas';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
@@ -22,7 +24,7 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/tags',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
 
     validateJsonBody(z.object({
@@ -56,7 +58,7 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/tags',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
 
     async (context) => {
@@ -78,8 +80,8 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/tags/:tagId',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      tagId: tagIdSchema,
     })),
 
     validateJsonBody(z.object({
@@ -113,8 +115,8 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/tags/:tagId',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      tagId: tagIdSchema,
     })),
 
     async (context) => {
@@ -139,12 +141,12 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/documents/:documentId/tags',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
 
     validateJsonBody(z.object({
-      tagId: z.string(),
+      tagId: tagIdSchema,
     })),
 
     async (context) => {
@@ -170,9 +172,9 @@ function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
 
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
+      tagId: tagIdSchema,
     })),
 
     async (context) => {
