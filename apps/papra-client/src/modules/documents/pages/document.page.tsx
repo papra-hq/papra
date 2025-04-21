@@ -121,13 +121,12 @@ export const DocumentPage: Component = () => {
 
     if (error) {
       createToast({ type: 'error', message: 'Failed to update document content' });
-    } else {
-      createToast({ type: 'success', message: 'Document content updated' });
-
-      await queryClient.invalidateQueries({
-        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
-      });
+      return;
     }
+    createToast({ type: 'success', message: 'Document content updated' });
+    await queryClient.invalidateQueries({
+      queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+    });
   };
 
   return (

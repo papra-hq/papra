@@ -1,5 +1,4 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { and, eq } from 'drizzle-orm';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
@@ -15,7 +14,6 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentsTable } from './documents.table';
 import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -31,7 +29,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
-  setupUpdateDocumentContentRoute(context);
+  setupUpdateDocumentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
@@ -426,7 +424,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
   );
 }
 
-function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
+function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     validateParams(z.object({
@@ -434,36 +432,29 @@ function setupUpdateDocumentContentRoute({ app, db }: RouteDefinitionContext) {
       documentId: z.string(),
     })),
     validateJsonBody(z.object({
-      content: z.string(),
+      name: z.string().min(1).optional(),
+      content: z.string().min(1).optional(),
+    }).refine(data => data.name !== undefined || data.content !== undefined, {
+      message: 'At least one of \'name\' or \'content\' must be provided',
     })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
-      const { content } = context.req.valid('json');
+      const updateData = context.req.valid('json');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
-      await db
-        .update(documentsTable)
-        .set({
-          content,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(documentsTable.id, documentId),
-            eq(documentsTable.organizationId, organizationId),
-          ),
-        );
-
-      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
-
-      return context.json({
-        document,
+      const { document } = await documentsRepository.updateDocument({
+        documentId,
+        organizationId,
+        ...updateData,
       });
+
+      return context.json({ document });
     },
   );
 }
