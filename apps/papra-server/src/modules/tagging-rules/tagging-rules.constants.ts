@@ -1,7 +1,8 @@
 import type { DbSelectableDocument } from '../documents/documents.types';
+import { createPrefixedIdRegex } from '../shared/random/ids';
 
-export const taggingRuleIdPrefix = 'tr';
-export const taggingRuleIdRegex = new RegExp(`^${taggingRuleIdPrefix}_[a-z0-9]{24}$`);
+export const TAGGING_RULE_ID_PREFIX = 'tr';
+export const TAGGING_RULE_ID_REGEX = createPrefixedIdRegex({ prefix: TAGGING_RULE_ID_PREFIX });
 
 export const TAGGING_RULE_OPERATORS = {
   EQUAL: 'equal',

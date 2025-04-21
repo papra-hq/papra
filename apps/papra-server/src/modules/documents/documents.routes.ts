@@ -2,7 +2,7 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
@@ -14,6 +14,7 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
+import { documentIdSchema } from './documents.schemas';
 import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -60,7 +61,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
       file: z.instanceof(File),
     })),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -115,7 +116,7 @@ function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     validateQuery(
       z.object({
@@ -158,7 +159,7 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/deleted',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     validateQuery(
       z.object({
@@ -197,8 +198,8 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -223,8 +224,8 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -250,8 +251,8 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -280,8 +281,8 @@ function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) 
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -316,7 +317,7 @@ function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/search',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     validateQuery(
       z.object({
@@ -349,7 +350,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   app.get(
     '/api/organizations/:organizationId/documents/statistics',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -377,8 +378,8 @@ function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionConte
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -404,7 +405,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });

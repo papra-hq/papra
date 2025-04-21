@@ -1,5 +1,5 @@
 import { integer, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from '../random';
+import { generateId } from '../random/ids';
 
 export { createCreatedAtField, createPrimaryKeyField, createSoftDeleteColumns, createTimestampColumns, createUpdatedAtField };
 

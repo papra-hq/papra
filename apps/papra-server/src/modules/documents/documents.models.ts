@@ -1,5 +1,5 @@
 import { getExtension } from '../shared/files/file-names';
-import { generateId } from '../shared/random';
+import { generateId } from '../shared/random/ids';
 import { ORIGINAL_DOCUMENTS_STORAGE_KEY } from './documents.constants';
 
 export function joinStorageKeyParts(...parts: string[]) {
