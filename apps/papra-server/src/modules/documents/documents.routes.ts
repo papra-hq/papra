@@ -429,8 +429,8 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
     validateJsonBody(z.object({
       name: z.string().min(1).optional(),
