@@ -1,8 +1,9 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableTag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, eq, getTableColumns } from 'drizzle-orm';
+import { and, count, eq, getTableColumns, isNull, or } from 'drizzle-orm';
 import { get } from 'lodash-es';
+import { documentsTable } from '../documents/documents.table';
 import { omitUndefined } from '../shared/utils';
 import { createDocumentAlreadyHasTagError } from './tags.errors';
 import { documentsTagsTable, tagsTable } from './tags.table';
@@ -33,8 +34,15 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
     })
     .from(tagsTable)
     .leftJoin(documentsTagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
+    .leftJoin(documentsTable, eq(documentsTagsTable.documentId, documentsTable.id))
     .where(
-      eq(tagsTable.organizationId, organizationId),
+      and(
+        eq(tagsTable.organizationId, organizationId),
+        or(
+          isNull(documentsTable.id),
+          eq(documentsTable.isDeleted, false),
+        ),
+      ),
     )
     .groupBy(tagsTable.id);
 

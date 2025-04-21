@@ -1,9 +1,10 @@
 import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
+import { ORGANIZATION_ID_PREFIX } from './organizations.constants';
 
 export const organizationsTable = sqliteTable('organizations', {
-  ...createPrimaryKeyField({ prefix: 'org' }),
+  ...createPrimaryKeyField({ prefix: ORGANIZATION_ID_PREFIX }),
   ...createTimestampColumns(),
 
   name: text('name').notNull(),

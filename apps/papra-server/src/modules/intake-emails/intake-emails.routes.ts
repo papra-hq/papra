@@ -5,7 +5,7 @@ import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
@@ -18,7 +18,7 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { createTagsRepository } from '../tags/tags.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
-import { intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
+import { intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
 import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
 
@@ -39,7 +39,7 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/intake-emails',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -61,7 +61,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.post(
     '/api/organizations/:organizationId/intake-emails',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -92,8 +92,8 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      intakeEmailId: z.string(),
+      organizationId: organizationIdSchema,
+      intakeEmailId: intakeEmailIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -116,8 +116,8 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      intakeEmailId: z.string(),
+      organizationId: organizationIdSchema,
+      intakeEmailId: intakeEmailIdSchema,
     })),
     validateJsonBody(z.object({
       isEnabled: z.boolean().optional(),

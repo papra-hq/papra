@@ -3,12 +3,12 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { tagsTable } from '../tags/tags.table';
-import { taggingRuleIdPrefix } from './tagging-rules.constants';
+import { TAGGING_RULE_ID_PREFIX } from './tagging-rules.constants';
 
 export const taggingRulesTable = sqliteTable(
   'tagging_rules',
   {
-    ...createPrimaryKeyField({ prefix: taggingRuleIdPrefix }),
+    ...createPrimaryKeyField({ prefix: TAGGING_RULE_ID_PREFIX }),
     ...createTimestampColumns(),
 
     organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),

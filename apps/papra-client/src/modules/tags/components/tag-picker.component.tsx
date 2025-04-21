@@ -55,7 +55,7 @@ export const DocumentTagPicker: Component<{
               <TagComponent name={tag.name} color={tag.color} class="text-xs my-1" closable onClose={() => state.remove(tag)} />
             )}
           </For>
-          <ComboboxInput />
+          <ComboboxInput class="py-2" />
 
         </span>
 

@@ -24,7 +24,7 @@ const TextFromBlob: Component<{ blob: Blob }> = (props) => {
   return (
     <Card class="p-6 overflow-auto max-h-800px max-w-full text-xs">
       <Suspense>
-        <pre>{txt()}</pre>
+        <pre class="break-words whitespace-pre-wrap">{txt()}</pre>
       </Suspense>
     </Card>
   );

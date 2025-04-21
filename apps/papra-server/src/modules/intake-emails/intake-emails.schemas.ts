@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { INTAKE_EMAIL_ID_REGEX } from './intake-emails.constants';
 
 export const emailInfoSchema = z.object({
   address: z.string().email(),
@@ -22,3 +23,5 @@ export function parseJson(content: string, ctx: z.RefinementCtx) {
     return z.never;
   }
 }
+
+export const intakeEmailIdSchema = z.string().regex(INTAKE_EMAIL_ID_REGEX);

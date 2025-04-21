@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getUser } from '../app/auth/auth.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createUsersRepository } from '../users/users.repository';
-import { organizationIdRegex } from './organizations.constants';
+import { organizationIdSchema } from './organization.schemas';
 import { createOrganizationsRepository } from './organizations.repository';
 import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
@@ -57,7 +57,7 @@ function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -81,7 +81,7 @@ function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
       name: z.string().min(3).max(50),
     })),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -105,7 +105,7 @@ function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId',
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
