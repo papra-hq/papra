@@ -278,7 +278,7 @@ export const DocumentPage: Component = () => {
                         when={isEditing()}
                         fallback={(
                           <div class="flex flex-col gap-2">
-                            <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md">
+                            <div class="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-md max-h-[400px] overflow-auto">
                               {queries[0].data?.document.content}
                             </div>
                             <div class="flex justify-end">
