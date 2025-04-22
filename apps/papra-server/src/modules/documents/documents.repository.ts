@@ -6,6 +6,7 @@ import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm
 import { omit } from 'lodash-es';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
+import { omitUndefined } from '../shared/utils';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { documentsTable } from './documents.table';
@@ -327,19 +328,9 @@ async function getAllOrganizationTrashDocumentIds({ organizationId, db }: { orga
 }
 
 async function updateDocument({ documentId, organizationId, name, content, db }: { documentId: string; organizationId: string; name?: string; content?: string; db: Database }) {
-  const updateData: Partial<{ name: string; content: string }> = {};
-
-  if (name !== undefined) {
-    updateData.name = name;
-  }
-
-  if (content !== undefined) {
-    updateData.content = content;
-  }
-
   const [document] = await db
     .update(documentsTable)
-    .set(updateData)
+    .set(omitUndefined({ name, content }))
     .where(
       and(
         eq(documentsTable.id, documentId),

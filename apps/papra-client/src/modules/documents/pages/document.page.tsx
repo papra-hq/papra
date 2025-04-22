@@ -6,7 +6,7 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
-import { Alert } from '@/modules/ui/components/alert';
+import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { createToast } from '@/modules/ui/components/sonner';
@@ -231,7 +231,7 @@ export const DocumentPage: Component = () => {
 
                   <Separator class="my-3" />
 
-                  <Tabs defaultValue="info" class="w-full">
+                  <Tabs defaultValue="info" class="w-full" value="content">
                     <TabsList class="w-full h-8">
                       <TabsTrigger value="info">Info</TabsTrigger>
                       <TabsTrigger value="content">Content</TabsTrigger>
@@ -287,6 +287,13 @@ export const DocumentPage: Component = () => {
                                 Edit
                               </Button>
                             </div>
+
+                            <Alert variant="muted" class="my-4 flex items-center gap-2">
+                              <div class="i-tabler-info-circle size-8 flex-shrink-0" />
+                              <AlertDescription>
+                                The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.
+                              </AlertDescription>
+                            </Alert>
                           </div>
                         )}
                       >
