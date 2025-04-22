@@ -6,5 +6,5 @@ export type IntakeEmail = {
   allowedOrigins: string[];
 
   createdAt: Date;
-  updatedAt: Date | undefined;
+  updatedAt: Date;
 };

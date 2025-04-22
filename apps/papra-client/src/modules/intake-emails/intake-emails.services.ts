@@ -1,9 +1,10 @@
+import type { AsDto } from '../shared/http/http-client.types';
 import type { IntakeEmail } from './intake-emails.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
 
 export async function fetchIntakeEmails({ organizationId }: { organizationId: string }) {
-  const { intakeEmails } = await apiClient<{ intakeEmails: IntakeEmail[] }>({
+  const { intakeEmails } = await apiClient<{ intakeEmails: AsDto<IntakeEmail>[] }>({
     path: `/api/organizations/${organizationId}/intake-emails`,
     method: 'GET',
   });
@@ -14,7 +15,7 @@ export async function fetchIntakeEmails({ organizationId }: { organizationId: st
 }
 
 export async function createIntakeEmail({ organizationId }: { organizationId: string }) {
-  const { intakeEmail } = await apiClient<{ intakeEmail: IntakeEmail }>({
+  const { intakeEmail } = await apiClient<{ intakeEmail: AsDto<IntakeEmail> }>({
     path: `/api/organizations/${organizationId}/intake-emails`,
     method: 'POST',
   });
@@ -42,7 +43,7 @@ export async function updateIntakeEmail({
   isEnabled?: boolean;
   allowedOrigins?: string[];
 }) {
-  const { intakeEmail } = await apiClient<{ intakeEmail: IntakeEmail }>({
+  const { intakeEmail } = await apiClient<{ intakeEmail: AsDto<IntakeEmail> }>({
     path: `/api/organizations/${organizationId}/intake-emails/${intakeEmailId}`,
     method: 'PUT',
     body: {

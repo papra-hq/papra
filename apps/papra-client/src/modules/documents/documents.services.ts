@@ -1,6 +1,7 @@
+import type { AsDto } from '../shared/http/http-client.types';
 import type { Document } from './documents.types';
 import { apiClient } from '../shared/http/api-client';
-import { getFormData } from '../shared/http/http-client.models';
+import { coerceDates, getFormData } from '../shared/http/http-client.models';
 
 export async function uploadDocument({
   file,
@@ -9,18 +10,14 @@ export async function uploadDocument({
   file: File;
   organizationId: string;
 }) {
-  const { document } = await apiClient<{ document: Document }>({
+  const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
     body: getFormData({ file }),
   });
 
   return {
-    document: {
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    },
+    document: coerceDates(document),
   };
 }
 
@@ -40,7 +37,7 @@ export async function fetchOrganizationDocuments({
   const {
     documents,
     documentsCount,
-  } = await apiClient<{ documents: Document[]; documentsCount: number }>({
+  } = await apiClient<{ documents: AsDto<Document>[]; documentsCount: number }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents`,
     query: {
@@ -52,11 +49,7 @@ export async function fetchOrganizationDocuments({
 
   return {
     documentsCount,
-    documents: documents.map(document => ({
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    })),
+    documents: documents.map(coerceDates),
   };
 }
 
@@ -72,7 +65,7 @@ export async function fetchOrganizationDeletedDocuments({
   const {
     documents,
     documentsCount,
-  } = await apiClient<{ documents: Document[]; documentsCount: number }>({
+  } = await apiClient<{ documents: AsDto<Document>[]; documentsCount: number }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/deleted`,
     query: {
@@ -83,11 +76,7 @@ export async function fetchOrganizationDeletedDocuments({
 
   return {
     documentsCount,
-    documents: documents.map(document => ({
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    })),
+    documents: documents.map(coerceDates),
   };
 }
 
@@ -124,17 +113,13 @@ export async function fetchDocument({
   documentId: string;
   organizationId: string;
 }) {
-  const { document } = await apiClient<{ document: Document }>({
+  const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
   });
 
   return {
-    document: {
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    },
+    document: coerceDates(document),
   };
 }
 
@@ -167,7 +152,7 @@ export async function searchDocuments({
 }) {
   const {
     documents,
-  } = await apiClient<{ documents: Document[] }>({
+  } = await apiClient<{ documents: AsDto<Document>[] }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/search`,
     query: {
@@ -178,11 +163,7 @@ export async function searchDocuments({
   });
 
   return {
-    documents: documents.map(document => ({
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    })),
+    documents: documents.map(coerceDates),
   };
 }
 
@@ -218,17 +199,13 @@ export async function updateDocument({
   organizationId: string;
   content: string;
 }) {
-  const { document } = await apiClient<{ document: Document }>({
+  const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'PATCH',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
     body: { content },
   });
 
   return {
-    document: {
-      ...document,
-      createdAt: new Date(document.createdAt),
-      updatedAt: document.updatedAt ? new Date(document.updatedAt) : undefined,
-    },
+    document: coerceDates(document),
   };
 }
