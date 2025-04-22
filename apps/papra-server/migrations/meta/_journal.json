@@ -22,6 +22,13 @@
       "when": 1743938048080,
       "tag": "0002_tagging_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1745131802627,
+      "tag": "0003_api-keys",
+      "breakpoints": true
     }
   ]
 }

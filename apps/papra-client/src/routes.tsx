@@ -1,6 +1,8 @@
 import { Navigate, type RouteDefinition, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
+import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
+import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
 import { EmailValidationRequiredPage } from './modules/auth/pages/email-validation-required.page';
 import { LoginPage } from './modules/auth/pages/login.page';
@@ -25,6 +27,7 @@ import { UpdateTaggingRulePage } from './modules/tagging-rules/pages/update-tagg
 import { TagsPage } from './modules/tags/pages/tags.page';
 import { IntegrationsLayout } from './modules/ui/layouts/integrations.layout';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
+import { SettingsLayout } from './modules/ui/layouts/settings.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
 
@@ -155,8 +158,22 @@ export const routes: RouteDefinition[] = [
     ],
   },
   {
-    path: '/settings',
-    component: UserSettingsPage,
+    path: '/',
+    component: SettingsLayout,
+    children: [
+      {
+        path: '/settings',
+        component: UserSettingsPage,
+      },
+      {
+        path: '/api-keys',
+        component: ApiKeysPage,
+      },
+      {
+        path: '/api-keys/create',
+        component: CreateApiKeyPage,
+      },
+    ],
   },
   {
     path: '/login',

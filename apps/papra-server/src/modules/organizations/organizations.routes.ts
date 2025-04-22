@@ -1,5 +1,6 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createUsersRepository } from '../users/users.repository';
@@ -7,7 +8,7 @@ import { organizationIdSchema } from './organization.schemas';
 import { createOrganizationsRepository } from './organizations.repository';
 import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
 
-export async function registerOrganizationsPrivateRoutes(context: RouteDefinitionContext) {
+export async function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
   setupCreateOrganizationRoute(context);
   setupGetOrganizationRoute(context);
@@ -16,22 +17,27 @@ export async function registerOrganizationsPrivateRoutes(context: RouteDefinitio
 }
 
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
-  app.get('/api/organizations', async (context) => {
-    const { userId } = getUser({ context });
+  app.get(
+    '/api/organizations',
+    requireAuthentication(),
+    async (context) => {
+      const { userId } = getUser({ context });
 
-    const organizationsRepository = createOrganizationsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
 
-    const { organizations } = await organizationsRepository.getUserOrganizations({ userId });
+      const { organizations } = await organizationsRepository.getUserOrganizations({ userId });
 
-    return context.json({
-      organizations,
-    });
-  });
+      return context.json({
+        organizations,
+      });
+    },
+  );
 }
 
 function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations',
+    requireAuthentication(),
     validateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
@@ -56,6 +62,7 @@ function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContex
 function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -77,6 +84,7 @@ function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId',
+    requireAuthentication(),
     validateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
@@ -104,6 +112,7 @@ function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),

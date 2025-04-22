@@ -1,6 +1,7 @@
 import type { GlobalDependencies, ServerInstanceGenerics } from './server.types';
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
+import { createApiKeyMiddleware } from '../api-keys/api-keys.middlewares';
 import { parseConfig } from '../config/config';
 import { createEmailsServices } from '../emails/emails.services';
 import { createLoggerMiddleware } from '../shared/logger/logger.middleware';
@@ -33,9 +34,9 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   };
 }
 
-export async function createServer(initialDeps: Partial<GlobalDependencies>) {
+export async function createServer(initialDeps: Partial<GlobalDependencies> = {}) {
   const dependencies = await createGlobalDependencies(initialDeps);
-  const { config, trackingServices } = dependencies;
+  const { config, trackingServices, db } = dependencies;
 
   const app = new Hono<ServerInstanceGenerics>({ strict: true });
 
@@ -46,6 +47,8 @@ export async function createServer(initialDeps: Partial<GlobalDependencies>) {
 
   registerErrorMiddleware({ app });
   registerStaticAssetsRoutes({ app, config });
+
+  app.use(createApiKeyMiddleware({ db }));
 
   registerRoutes({ app, ...dependencies });
 

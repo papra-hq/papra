@@ -51,6 +51,7 @@
     "hono": "^4.6.15",
     "lodash-es": "^4.17.21",
     "mime-types": "^3.0.1",
+    "nanoid": "^5.1.5",
     "node-cron": "^3.0.3",
     "p-limit": "^6.2.0",
     "p-queue": "^8.1.0",

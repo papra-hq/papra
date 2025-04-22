@@ -4,7 +4,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A, useNavigate } from '@solidjs/router';
+import { useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { type Component, createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
@@ -127,18 +127,15 @@ export const UserSettingsPage: Component = () => {
   }));
 
   return (
-    <div class="p-6 mt-4 pb-32 mx-auto max-w-xl">
+    <div class="p-6 mt-12 pb-32 mx-auto max-w-xl">
       <Suspense>
         <Show when={query.data?.user}>
           {getUser => (
             <>
-              <Button as={A} href="/" variant="outline" class="mb-4">
-                <div class="i-tabler-arrow-left size-4 mr-2"></div>
-                Back
-              </Button>
-
-              <h1 class="text-xl font-semibold mb-2">User settings</h1>
-              <p class="text-muted-foreground">Manage your account settings here.</p>
+              <div class="border-b pb-4">
+                <h1 class="text-2xl font-semibold mb-1">User settings</h1>
+                <p class="text-muted-foreground">Manage your account settings here.</p>
+              </div>
 
               <div class="mt-6 flex flex-col gap-6">
                 <UserEmailCard email={getUser().email} />

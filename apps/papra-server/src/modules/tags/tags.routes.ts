@@ -1,5 +1,6 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { documentIdSchema } from '../documents/documents.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
@@ -22,7 +23,7 @@ export function registerTagsRoutes(context: RouteDefinitionContext) {
 function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -56,7 +57,7 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
 function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -78,7 +79,7 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
@@ -113,7 +114,7 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
@@ -139,7 +140,7 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
 function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
-
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -170,7 +171,7 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
 function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
-
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,

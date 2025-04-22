@@ -1,6 +1,7 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
@@ -18,7 +19,7 @@ import { documentIdSchema } from './documents.schemas';
 import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
-export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) {
+export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
   setupGetDocumentsRoute(context);
   setupSearchDocumentsRoute(context);
@@ -36,6 +37,7 @@ export function registerDocumentsPrivateRoutes(context: RouteDefinitionContext) 
 function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
+    requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
     (context, next) => {
       const { maxUploadSize } = config.documentsStorage;
 
@@ -115,6 +117,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
 function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -158,6 +161,7 @@ function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
 function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/deleted',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -197,6 +201,7 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
 function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -223,6 +228,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
+    requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -250,6 +256,7 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
 function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -280,6 +287,7 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
 function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -316,6 +324,7 @@ function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) 
 function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/search',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -349,6 +358,7 @@ function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
 function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/statistics',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -377,6 +387,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
 function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -404,6 +415,7 @@ function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionConte
 function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -428,6 +440,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
 function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
+    requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,

@@ -1,9 +1,28 @@
+import type { ApiKey } from '../api-keys/api-keys.types';
 import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { defineHandler } from './demo-api-mock.models';
-import { documentFileStorage, documentStorage, organizationStorage, tagDocumentStorage, taggingRuleStorage, tagStorage } from './demo.storage';
+import {
+  apiKeyStorage,
+  documentFileStorage,
+  documentStorage,
+  organizationStorage,
+  tagDocumentStorage,
+  taggingRuleStorage,
+  tagStorage,
+} from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
+
+const corpus = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+function randomString({ length = 10 }: { length?: number } = {}) {
+  return Array.from({ length }, () => corpus[Math.floor(Math.random() * corpus.length)]).join('');
+}
+
+function createId({ prefix }: { prefix: string }) {
+  return `${prefix}_${randomString({ length: 24 })}`;
+}
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
   if (!condition) {
@@ -114,7 +133,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(file, { status: 400 });
 
       const document = {
-        id: `doc_${Math.random().toString(36).slice(2)}`,
+        id: createId({ prefix: 'doc' }),
         organizationId,
         name: file.name,
         originalName: file.name,
@@ -311,7 +330,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       const tag = {
-        id: `tag_${Math.random().toString(36).slice(2)}`,
+        id: createId({ prefix: 'tag' }),
         organizationId,
         name: get(body, 'name'),
         color: get(body, 'color'),
@@ -373,7 +392,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(tagId, { status: 400 });
 
       const tagDocument = {
-        id: `tagDoc_${Math.random().toString(36).slice(2)}`,
+        id: createId({ prefix: 'tagDoc' }),
         tagId,
         documentId,
         createdAt: new Date(),
@@ -412,7 +431,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     method: 'POST',
     handler: async ({ body }) => {
       const organization = {
-        id: `org_${Math.random().toString(36).slice(2)}`,
+        id: createId({ prefix: 'org' }),
         name: get(body, 'name'),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -476,7 +495,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     method: 'POST',
     handler: async ({ params: { organizationId }, body }) => {
       const taggingRule = {
-        id: `tr_${Math.random().toString(36).slice(2)}`,
+        id: createId({ prefix: 'tr' }),
         organizationId,
         name: get(body, 'name'),
         description: get(body, 'description'),
@@ -543,6 +562,48 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const key = `${organizationId}:${documentId}`;
 
       await documentStorage.removeItem(key);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/api-keys',
+    method: 'GET',
+    handler: async () => {
+      const apiKeys = await getValues(apiKeyStorage);
+
+      return { apiKeys };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/api-keys',
+    method: 'POST',
+    handler: async ({ body }) => {
+      const token = `ppapi_${randomString({ length: 64 })}`;
+
+      const apiKey = {
+        id: createId({ prefix: 'apiKey' }),
+        name: get(body, 'name'),
+        permissions: get(body, 'permissions'),
+        organizationIds: get(body, 'organizationIds'),
+        allOrganizations: get(body, 'allOrganizations'),
+        expiresAt: get(body, 'expiresAt'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        prefix: token.slice(0, 11),
+      } as ApiKey;
+
+      await apiKeyStorage.setItem(apiKey.id, apiKey);
+
+      return { apiKey, token };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/api-keys/:apiKeyId',
+    method: 'DELETE',
+    handler: async ({ params: { apiKeyId } }) => {
+      await apiKeyStorage.removeItem(apiKeyId);
     },
   }),
 };

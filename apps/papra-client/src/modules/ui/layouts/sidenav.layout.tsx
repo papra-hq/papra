@@ -242,6 +242,11 @@ export const SidenavLayout: ParentComponent<{
                   Account settings
                 </DropdownMenuItem>
 
+                <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/api-keys">
+                  <div class="i-tabler-key size-4 text-muted-foreground"></div>
+                  API keys
+                </DropdownMenuItem>
+
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
                     <div class="i-tabler-language size-4 text-muted-foreground"></div>

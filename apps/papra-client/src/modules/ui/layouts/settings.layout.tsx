@@ -1,34 +1,47 @@
 import type { ParentComponent } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { A } from '@solidjs/router';
 import { Button } from '../components/button';
+import { SideNav } from './sidenav.layout';
 
 export const SettingsLayout: ParentComponent = (props) => {
-  const navigation = [
+  const { t } = useI18n();
+
+  const getMainMenuItems = () => [
     {
-      name: 'Account',
-      href: '/settings/account',
+      label: t('layout.menu.account'),
+      icon: 'i-tabler-user',
+      href: '/settings',
     },
     {
-      name: 'Billing & Plan',
-      href: '/settings/billing',
+      label: t('layout.menu.api-keys'),
+      icon: 'i-tabler-key',
+      href: '/api-keys',
     },
   ];
 
   return (
-    <div class="p-6 max-w-5xl mx-auto mt-4 pb-32">
-      <div class="flex justify-between items-center mb-2">
-        <h1 class="text-2xl font-bold">Settings</h1>
-      </div>
+    <div class="flex flex-row h-screen min-h-0">
+      <div class="w-350px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
 
-      <div class="flex gap-6 mb-6 border-b">
-        {navigation.map(item => (
-          <Button as={A} href={item.href} variant="ghost" class="px-0 border-b border-transparent text-muted-foreground rounded-b-none !bg-transparent" activeClass="!text-foreground !border-foreground">
-            {item.name}
-          </Button>
-        ))}
-      </div>
+        <SideNav
+          mainMenu={getMainMenuItems()}
+          header={() => (
+            <div class="pl-6 py-3 border-b border-b-border flex items-center gap-1">
+              <Button variant="ghost" size="icon" class="text-muted-foreground" as={A} href="/">
+                <div class="i-tabler-arrow-left size-5"></div>
+              </Button>
+              <h1 class="text-lg font-bold">
+                {t('layout.menu.settings')}
+              </h1>
+            </div>
+          )}
+        />
 
-      {props.children}
+      </div>
+      <div class="flex-1 min-h-0 flex flex-col">
+        {props.children}
+      </div>
     </div>
   );
 };

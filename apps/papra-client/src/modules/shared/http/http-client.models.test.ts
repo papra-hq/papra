@@ -24,6 +24,8 @@ describe('http-client models', () => {
         createdAt: '2021-01-01T00:00:00.000Z',
         updatedAt: '2021-01-02T00:00:00.000Z',
         deletedAt: '2021-01-03T00:00:00.000Z',
+        expiresAt: '2021-01-04T00:00:00.000Z',
+        lastUsedAt: '2021-01-05T00:00:00.000Z',
         foo: 'bar',
         baz: 'qux',
       };
@@ -34,6 +36,8 @@ describe('http-client models', () => {
         createdAt: new Date('2021-01-01T00:00:00.000Z'),
         updatedAt: new Date('2021-01-02T00:00:00.000Z'),
         deletedAt: new Date('2021-01-03T00:00:00.000Z'),
+        expiresAt: new Date('2021-01-04T00:00:00.000Z'),
+        lastUsedAt: new Date('2021-01-05T00:00:00.000Z'),
         foo: 'bar',
         baz: 'qux',
       });

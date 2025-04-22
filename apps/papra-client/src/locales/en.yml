@@ -105,6 +105,9 @@ layout:
     integrations: Integrations
     deleted-documents: Deleted documents
     organization-settings: Organization settings
+    api-keys: API keys
+    settings: Settings
+    account: Account
 
 tagging-rules:
   field:
@@ -217,3 +220,56 @@ api-errors:
   intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
   user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
   default: An error occurred while processing your request.
+
+api-keys:
+  permissions:
+    documents:
+      title: Documents
+      documents:create: Create documents
+      documents:read: Read documents
+      documents:update: Update documents
+      documents:delete: Delete documents
+    tags:
+      title: Tags
+      tags:create: Create tags
+      tags:read: Read tags
+      tags:update: Update tags
+      tags:delete: Delete tags
+  create:
+    title: Create API key
+    description: Create a new API key to access the Papra API.
+    success: The API key has been created successfully.
+    back: Back to API keys
+    form:
+      name:
+        label: Name
+        placeholder: 'Example: My API key'
+        required: Please enter a name for the API key
+      permissions:
+        label: Permissions
+        description: Select the permissions for the API key.
+        required: Please select at least one permission
+      submit: Create API key
+    created:
+      title: API key created
+      description: The API key has been created successfully. Save it in a secure location as it will not be displayed again.
+  list:
+    title: API keys
+    description: Manage your API keys here.
+    delete: Delete
+    create: Create API key
+    empty:
+      title: No API keys
+      description: Create an API key to access the Papra API.
+    card:
+      last-used: Last used
+      never: Never
+      created: Created
+      delete: Delete
+  delete:
+    success: The API key has been deleted successfully
+    confirm:
+      title: Delete API key
+      message: Are you sure you want to delete this API key? This action cannot be undone.
+      confirm-button: Delete
+      cancel-button: Cancel

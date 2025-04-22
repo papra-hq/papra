@@ -2,6 +2,7 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { verifySignature } from '@owlrelay/webhook';
 import { z } from 'zod';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
@@ -24,20 +25,18 @@ import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } fro
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
-export function registerIntakeEmailsPrivateRoutes(context: RouteDefinitionContext) {
+export function registerIntakeEmailsRoutes(context: RouteDefinitionContext) {
+  setupIngestIntakeEmailRoute(context);
   setupGetOrganizationIntakeEmailsRoute(context);
   setupCreateIntakeEmailRoute(context);
   setupDeleteIntakeEmailRoute(context);
   setupUpdateIntakeEmailRoute(context);
 }
 
-export function registerIntakeEmailsPublicRoutes(context: RouteDefinitionContext) {
-  setupIngestIntakeEmailRoute(context);
-}
-
 function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/intake-emails',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -60,6 +59,7 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
 function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/intake-emails',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -91,6 +91,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
 function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       intakeEmailId: intakeEmailIdSchema,
@@ -115,6 +116,7 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
 function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
+    requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
       intakeEmailId: intakeEmailIdSchema,
