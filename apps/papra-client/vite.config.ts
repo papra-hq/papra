@@ -4,11 +4,11 @@ import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { version } from './package.json';
 import { i18nTypesPlugin } from './src/plugins/i18n-types/i18n-types.plugin';
-import { yamlFlattenPlugin } from './src/plugins/yaml-flattened/yaml-flattened.plugin';
+import { yamlPlugin } from './src/plugins/yaml/yaml.plugin';
 
 export default defineConfig({
   plugins: [
-    yamlFlattenPlugin(),
+    yamlPlugin(),
     unoCssPlugin(),
     solidPlugin(),
     i18nTypesPlugin(),

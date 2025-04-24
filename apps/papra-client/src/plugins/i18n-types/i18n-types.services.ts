@@ -2,7 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { cwd as getCwd } from 'node:process';
-import { flattenYaml } from '../yaml-flattened/yaml-flattened.models';
+import { parse } from 'yaml';
 
 export async function generateI18nTypes({ cwd = getCwd() }: { cwd?: string } = {}) {
   try {
@@ -10,7 +10,7 @@ export async function generateI18nTypes({ cwd = getCwd() }: { cwd?: string } = {
     const outputPath = path.join(cwd, 'src/modules/i18n/locales.types.ts');
 
     const enLocales = await readFile(yamlPath, 'utf-8');
-    const parsedLocales = flattenYaml({ code: enLocales });
+    const parsedLocales = parse(enLocales);
     const localKeys = Object.keys(parsedLocales);
 
     const localesTypeDefinition = `

@@ -1,275 +1,208 @@
-auth:
-  request-password-reset:
-    title: Reset your password
-    description: Enter your email to reset your password.
-    requested: If an account exists for this email, we've sent you an email to reset your password.
-    back-to-login: Back to login
-    form:
-      email:
-        label: Email
-        placeholder: 'Example: ada@papra.app'
-        required: Please enter your email address
-        invalid: This email address is invalid
-      submit: Request password reset
+auth.request-password-reset.title: Reset your password
+auth.request-password-reset.description: Enter your email to reset your password.
+auth.request-password-reset.requested: If an account exists for this email, we've sent you an email to reset your password.
+auth.request-password-reset.back-to-login: Back to login
+auth.request-password-reset.form.email.label: Email
+auth.request-password-reset.form.email.placeholder: 'Example: ada@papra.app'
+auth.request-password-reset.form.email.required: Please enter your email address
+auth.request-password-reset.form.email.invalid: This email address is invalid
+auth.request-password-reset.form.submit: Request password reset
 
-  reset-password:
-    title: Reset your password
-    description: Enter your new password to reset your password.
-    reset: Your password has been reset.
-    back-to-login: Back to login
-    form:
-      new-password:
-        label: New password
-        placeholder: 'Example: **********'
-        required: Please enter your new password
-        min-length: Password must be at least {{ minLength }} characters
-        max-length: Password must be less than {{ maxLength }} characters
-      submit: Reset password
+auth.reset-password.title: Reset your password
+auth.reset-password.description: Enter your new password to reset your password.
+auth.reset-password.reset: Your password has been reset.
+auth.reset-password.back-to-login: Back to login
+auth.reset-password.form.new-password.label: New password
+auth.reset-password.form.new-password.placeholder: 'Example: **********'
+auth.reset-password.form.new-password.required: Please enter your new password
+auth.reset-password.form.new-password.min-length: Password must be at least {{ minLength }} characters
+auth.reset-password.form.new-password.max-length: Password must be less than {{ maxLength }} characters
+auth.reset-password.form.submit: Reset password
 
-  email-provider:
-    open: Open {{ provider }}
+auth.email-provider.open: Open {{ provider }}
 
-  login:
-    title: Login to Papra
-    description: Enter your email or use social login to access your Papra account.
-    login-with-provider: Login with {{ provider }}
-    no-account: Don't have an account?
-    register: Register
-    form:
-      email:
-        label: Email
-        placeholder: 'Example: ada@papra.app'
-        required: Please enter your email address
-        invalid: This email address is invalid
-      password:
-        label: Password
-        placeholder: Set a password
-        required: Please enter your password
-      remember-me:
-        label: Remember me
-      forgot-password:
-        label: Forgot password?
-      submit: Login
+auth.login.title: Login to Papra
+auth.login.description: Enter your email or use social login to access your Papra account.
+auth.login.login-with-provider: Login with {{ provider }}
+auth.login.no-account: Don't have an account?
+auth.login.register: Register
+auth.login.form.email.label: Email
+auth.login.form.email.placeholder: 'Example: ada@papra.app'
+auth.login.form.email.required: Please enter your email address
+auth.login.form.email.invalid: This email address is invalid
+auth.login.form.password.label: Password
+auth.login.form.password.placeholder: Set a password
+auth.login.form.password.required: Please enter your password
+auth.login.form.remember-me.label: Remember me
+auth.login.form.forgot-password.label: Forgot password?
+auth.login.form.submit: Login
 
-  register:
-    title: Register to Papra
-    description: Enter your email or use social login to access your Papra account.
-    register-with-email: Register with email
-    register-with-provider: Register with {{ provider }}
-    providers:
-      google: Google
-      github: GitHub
-    have-account: Already have an account?
-    login: Login
-    registration-disabled:
-      title: Registration is disabled
-      description: The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.
-    form:
-      email:
-        label: Email
-        placeholder: 'Example: ada@papra.app'
-        required: Please enter your email address
-        invalid: This email address is invalid
-      password:
-        label: Password
-        placeholder: Set a password
-        required: Please enter your password
-        min-length: Password must be at least {{ minLength }} characters
-        max-length: Password must be less than {{ maxLength }} characters
-      name:
-        label: Name
-        placeholder: 'Example: Ada Lovelace'
-        required: Please enter your name
-        max-length: Name must be less than {{ maxLength }} characters
-      submit: Register
-  email-validation-required:
-    title: Verify your email
-    description: A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.
-  legal-links:
-    description: By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.
-    terms: Terms of Service
-    privacy: Privacy Policy
+auth.register.title: Register to Papra
+auth.register.description: Enter your email or use social login to access your Papra account.
+auth.register.register-with-email: Register with email
+auth.register.register-with-provider: Register with {{ provider }}
+auth.register.providers.google: Google
+auth.register.providers.github: GitHub
+auth.register.have-account: Already have an account?
+auth.register.login: Login
+auth.register.registration-disabled.title: Registration is disabled
+auth.register.registration-disabled.description: The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.
+auth.register.form.email.label: Email
+auth.register.form.email.placeholder: 'Example: ada@papra.app'
+auth.register.form.email.required: Please enter your email address
+auth.register.form.email.invalid: This email address is invalid
+auth.register.form.password.label: Password
+auth.register.form.password.placeholder: Set a password
+auth.register.form.password.required: Please enter your password
+auth.register.form.password.min-length: Password must be at least {{ minLength }} characters
+auth.register.form.password.max-length: Password must be less than {{ maxLength }} characters
+auth.register.form.name.label: Name
+auth.register.form.name.placeholder: 'Example: Ada Lovelace'
+auth.register.form.name.required: Please enter your name
+auth.register.form.name.max-length: Name must be less than {{ maxLength }} characters
+auth.register.form.submit: Register
 
-tags:
-  no-tags:
-    title: No tags yet
-    description: This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
-    create-tag: Create tag
+auth.email-validation-required.title: Verify your email
+auth.email-validation-required.description: A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.
 
-layout:
-  menu:
-    home: Home
-    documents: Documents
-    tags: Tags
-    tagging-rules: Tagging rules
-    integrations: Integrations
-    deleted-documents: Deleted documents
-    organization-settings: Organization settings
-    api-keys: API keys
-    settings: Settings
-    account: Account
+auth.legal-links.description: By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.
+auth.legal-links.terms: Terms of Service
+auth.legal-links.privacy: Privacy Policy
 
-tagging-rules:
-  field:
-    name: document name
-    content: document content
-  operator:
-    equals: equals
-    not-equals: not equals
-    contains: contains
-    not-contains: not contains
-    starts-with: starts with
-    ends-with: ends with
-  list:
-    title: Tagging rules
-    description: Manage your organization's tagging rules, to automatically tag documents based on conditions you define.
-    demo-warning: 'Note: As this is a demo environment (with no server), tagging rules will not be applied to newly added documents.'
-    no-tagging-rules:
-      title: No tagging rules
-      description: Create a tagging rule to automatically tag your added documents based on conditions you define.
-      create-tagging-rule: Create tagging rule
-    card:
-      no-conditions: No conditions
-      one-condition: 1 condition
-      conditions: '{{ count }} conditions'
-      delete: Delete rule
-      edit: Edit rule
-  create:
-    title: Create tagging rule
-    success: Tagging rule created successfully
-    error: Failed to create tagging rule
-    submit: Create rule
-  form:
-    name:
-      label: Name
-      placeholder: 'Example: Tag invoices'
-      min-length: Please enter a name for the rule
-      max-length: The name must be less than 64 characters
-    description:
-      label: Description
-      placeholder: 'Example: Tag documents with "invoice" in the name'
-      max-length: The description must be less than 256 characters
-    conditions:
-      label: Conditions
-      description: Define the conditions that must be met for the rule to apply. All conditions must be met for the rule to apply.
-      add-condition: Add condition
-      no-conditions:
-        title: No conditions
-        description: You didn't add any conditions to this rule. This rule will apply its tags to all documents.
-        confirm: Apply rule without conditions
-        cancel: Cancel
-      field:
-        label: Field
-      operator:
-        label: Operator
-      value:
-        label: Value
-        placeholder: 'Example: invoice'
-        min-length: Please enter a value for the condition
-    tags:
-      label: Tags
-      description: Select the tags to apply to the added documents that match the conditions
-      min-length: At least one tag to apply is required
-      add-tag: Create tag
-    submit: Create rule
-  update:
-    title: Update tagging rule
-    success: Tagging rule updated successfully
-    error: Failed to update tagging rule
-    submit: Update rule
-    cancel: Cancel
-demo:
-  popup:
-    description: This is a demo environment, all data is save to your browser local storage.
-    discord: Join the {{ discordLink }} to get support, propose features or just chat.
-    discord-link-label: Discord server
-    reset: Reset demo data
-    hide: Hide
+tags.no-tags.title: No tags yet
+tags.no-tags.description: This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
+tags.no-tags.create-tag: Create tag
 
-trash:
-  delete-all:
-    button: Delete all
-    confirm:
-      title: Permanently delete all documents?
-      description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.
-      label: Delete
-      cancel: Cancel
-  delete:
-    button: Delete
-    confirm:
-      title: Permanently delete document?
-      description: Are you sure you want to permanently delete this document from the trash? This action cannot be undone.
-      label: Delete
-      cancel: Cancel
-  deleted:
-    success:
-      title: Document deleted
-      description: The document has been permanently deleted.
+layout.menu.home: Home
+layout.menu.documents: Documents
+layout.menu.tags: Tags
+layout.menu.tagging-rules: Tagging rules
+layout.menu.integrations: Integrations
+layout.menu.deleted-documents: Deleted documents
+layout.menu.organization-settings: Organization settings
+layout.menu.api-keys: API keys
+layout.menu.settings: Settings
+layout.menu.account: Account
 
-import-documents:
-  title:
-    error: '{{ count }} documents failed'
-    success: '{{ count }} documents imported'
-    pending: '{{ count }} / {{ total }} documents imported'
-    none: Import documents
-  no-import-in-progress: No document import in progress
+tagging-rules.field.name: document name
+tagging-rules.field.content: document content
+tagging-rules.operator.equals: equals
+tagging-rules.operator.not-equals: not equals
+tagging-rules.operator.contains: contains
+tagging-rules.operator.not-contains: not contains
+tagging-rules.operator.starts-with: starts with
+tagging-rules.operator.ends-with: ends with
+tagging-rules.list.title: Tagging rules
+tagging-rules.list.description: Manage your organization's tagging rules, to automatically tag documents based on conditions you define.
+tagging-rules.list.demo-warning: 'Note: As this is a demo environment (with no server), tagging rules will not be applied to newly added documents.'
+tagging-rules.list.no-tagging-rules.title: No tagging rules
+tagging-rules.list.no-tagging-rules.description: Create a tagging rule to automatically tag your added documents based on conditions you define.
+tagging-rules.list.no-tagging-rules.create-tagging-rule: Create tagging rule
+tagging-rules.list.card.no-conditions: No conditions
+tagging-rules.list.card.one-condition: 1 condition
+tagging-rules.list.card.conditions: '{{ count }} conditions'
+tagging-rules.list.card.delete: Delete rule
+tagging-rules.list.card.edit: Edit rule
+tagging-rules.create.title: Create tagging rule
+tagging-rules.create.success: Tagging rule created successfully
+tagging-rules.create.error: Failed to create tagging rule
+tagging-rules.create.submit: Create rule
+tagging-rules.form.name.label: Name
+tagging-rules.form.name.placeholder: 'Example: Tag invoices'
+tagging-rules.form.name.min-length: Please enter a name for the rule
+tagging-rules.form.name.max-length: The name must be less than 64 characters
+tagging-rules.form.description.label: Description
+tagging-rules.form.description.placeholder: "Example: Tag documents with 'invoice' in the name"
+tagging-rules.form.description.max-length: The description must be less than 256 characters
+tagging-rules.form.conditions.label: Conditions
+tagging-rules.form.conditions.description: Define the conditions that must be met for the rule to apply. All conditions must be met for the rule to apply.
+tagging-rules.form.conditions.add-condition: Add condition
+tagging-rules.form.conditions.no-conditions.title: No conditions
+tagging-rules.form.conditions.no-conditions.description: You didn't add any conditions to this rule. This rule will apply its tags to all documents.
+tagging-rules.form.conditions.no-conditions.confirm: Apply rule without conditions
+tagging-rules.form.conditions.no-conditions.cancel: Cancel
+tagging-rules.form.conditions.field.label: Field
+tagging-rules.form.conditions.operator.label: Operator
+tagging-rules.form.conditions.value.label: Value
+tagging-rules.form.conditions.value.placeholder: 'Example: invoice'
+tagging-rules.form.conditions.value.min-length: Please enter a value for the condition
+tagging-rules.form.tags.label: Tags
+tagging-rules.form.tags.description: Select the tags to apply to the added documents that match the conditions
+tagging-rules.form.tags.min-length: At least one tag to apply is required
+tagging-rules.form.tags.add-tag: Create tag
+tagging-rules.form.submit: Create rule
+tagging-rules.update.title: Update tagging rule
+tagging-rules.update.success: Tagging rule updated successfully
+tagging-rules.update.error: Failed to update tagging rule
+tagging-rules.update.submit: Update rule
+tagging-rules.update.cancel: Cancel
 
-api-errors:
-  document.already_exists: The document already exists
-  document.file_too_big: The document file is too big
-  intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
-  user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
-  default: An error occurred while processing your request.
+demo.popup.description: This is a demo environment, all data is save to your browser local storage.
+demo.popup.discord: Join the {{ discordLink }} to get support, propose features or just chat.
+demo.popup.discord-link-label: Discord server
+demo.popup.reset: Reset demo data
+demo.popup.hide: Hide
 
-api-keys:
-  permissions:
-    documents:
-      title: Documents
-      documents:create: Create documents
-      documents:read: Read documents
-      documents:update: Update documents
-      documents:delete: Delete documents
-    tags:
-      title: Tags
-      tags:create: Create tags
-      tags:read: Read tags
-      tags:update: Update tags
-      tags:delete: Delete tags
-  create:
-    title: Create API key
-    description: Create a new API key to access the Papra API.
-    success: The API key has been created successfully.
-    back: Back to API keys
-    form:
-      name:
-        label: Name
-        placeholder: 'Example: My API key'
-        required: Please enter a name for the API key
-      permissions:
-        label: Permissions
-        description: Select the permissions for the API key.
-        required: Please select at least one permission
-      submit: Create API key
-    created:
-      title: API key created
-      description: The API key has been created successfully. Save it in a secure location as it will not be displayed again.
-  list:
-    title: API keys
-    description: Manage your API keys here.
-    delete: Delete
-    create: Create API key
-    empty:
-      title: No API keys
-      description: Create an API key to access the Papra API.
-    card:
-      last-used: Last used
-      never: Never
-      created: Created
-      delete: Delete
-  delete:
-    success: The API key has been deleted successfully
-    confirm:
-      title: Delete API key
-      message: Are you sure you want to delete this API key? This action cannot be undone.
-      confirm-button: Delete
-      cancel-button: Cancel
+trash.delete-all.button: Delete all
+trash.delete-all.confirm.title: Permanently delete all documents?
+trash.delete-all.confirm.description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.
+trash.delete-all.confirm.label: Delete
+trash.delete-all.confirm.cancel: Cancel
+trash.delete.button: Delete
+trash.delete.confirm.title: Permanently delete document?
+trash.delete.confirm.description: Are you sure you want to permanently delete this document from the trash? This action cannot be undone.
+trash.delete.confirm.label: Delete
+trash.delete.confirm.cancel: Cancel
+trash.deleted.success.title: Document deleted
+trash.deleted.success.description: The document has been permanently deleted.
+
+import-documents.title.error: '{{ count }} documents failed'
+import-documents.title.success: '{{ count }} documents imported'
+import-documents.title.pending: '{{ count }} / {{ total }} documents imported'
+import-documents.title.none: Import documents
+import-documents.no-import-in-progress: No document import in progress
+
+api-errors.document.already_exists: The document already exists
+api-errors.document.file_too_big: The document file is too big
+api-errors.intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
+api-errors.user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
+api-errors.default: An error occurred while processing your request.
+
+api-keys.permissions.documents.title: Documents
+api-keys.permissions.documents.documents:create: Create documents
+api-keys.permissions.documents.documents:read: Read documents
+api-keys.permissions.documents.documents:update: Update documents
+api-keys.permissions.documents.documents:delete: Delete documents
+api-keys.permissions.tags.title: Tags
+api-keys.permissions.tags.tags:create: Create tags
+api-keys.permissions.tags.tags:read: Read tags
+api-keys.permissions.tags.tags:update: Update tags
+api-keys.permissions.tags.tags:delete: Delete tags
+api-keys.create.title: Create API key
+api-keys.create.description: Create a new API key to access the Papra API.
+api-keys.create.success: The API key has been created successfully.
+api-keys.create.back: Back to API keys
+api-keys.create.form.name.label: Name
+api-keys.create.form.name.placeholder: 'Example: My API key'
+api-keys.create.form.name.required: Please enter a name for the API key
+api-keys.create.form.permissions.label: Permissions
+api-keys.create.form.permissions.description: Select the permissions for the API key.
+api-keys.create.form.permissions.required: Please select at least one permission
+api-keys.create.form.submit: Create API key
+api-keys.create.created.title: API key created
+api-keys.create.created.description: The API key has been created successfully. Save it in a secure location as it will not be displayed again.
+api-keys.list.title: API keys
+api-keys.list.description: Manage your API keys here.
+api-keys.list.delete: Delete
+api-keys.list.create: Create API key
+api-keys.list.empty.title: No API keys
+api-keys.list.empty.description: Create an API key to access the Papra API.
+api-keys.list.card.last-used: Last used
+api-keys.list.card.never: Never
+api-keys.list.card.created: Created
+api-keys.list.card.delete: Delete
+api-keys.delete.success: The API key has been deleted successfully
+api-keys.delete.confirm.title: Delete API key
+api-keys.delete.confirm.message: Are you sure you want to delete this API key? This action cannot be undone.
+api-keys.delete.confirm.confirm-button: Delete
+api-keys.delete.confirm.cancel-button: Cancel

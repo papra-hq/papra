@@ -2,7 +2,7 @@ import type { Accessor, ParentComponent, Setter } from 'solid-js';
 import type { LocaleKeys } from './locales.types';
 import { makePersisted } from '@solid-primitives/storage';
 import { createContext, createEffect, createResource, createSignal, Show, useContext } from 'solid-js';
-import defaultDict from '../../locales/en.yml?flattened';
+import defaultDict from '../../locales/en.yml';
 import { locales } from './i18n.constants';
 import { createFragmentTranslator, createTranslator, findMatchingLocale } from './i18n.models';
 
@@ -28,7 +28,7 @@ export function useI18n() {
 }
 
 async function fetchDictionary(locale: Locale): Promise<Dictionary> {
-  const { default: dict } = await import(`../../locales/${locale}.yml?flattened`);
+  const { default: dict } = await import(`../../locales/${locale}.yml`);
 
   return {
     ...defaultDict,
