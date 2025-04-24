@@ -60,7 +60,7 @@ pnpm script:generate-i18n-types
 ```
 
 - This command will update the file [`locales.types.ts`](./apps/papra-client/src/modules/i18n/locale.types.ts) with the new/removed keys.
-- Will developing you can use `pnpm script:generate-i18n-types:watch` to automatically update the types when you touch the  [`en.yml`](./apps/papra-client/src/locales/en.yml) file.
+- When developing in papra-client (using `pnpm dev`), the i18n types definition will automatically update when you touch the  [`en.yml`](./apps/papra-client/src/locales/en.yml) file, so no need to run the command above.
 
 ## Development Setup
 

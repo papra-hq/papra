@@ -3,6 +3,7 @@ import unoCssPlugin from 'unocss/vite';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { version } from './package.json';
+import { i18nTypesPlugin } from './src/plugins/i18n-types/i18n-types.plugin';
 import { yamlFlattenPlugin } from './src/plugins/yaml-flattened/yaml-flattened.plugin';
 
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
     yamlFlattenPlugin(),
     unoCssPlugin(),
     solidPlugin(),
+    i18nTypesPlugin(),
   ],
   define: {
     'import.meta.env.VITE_PAPRA_VERSION': JSON.stringify(version),

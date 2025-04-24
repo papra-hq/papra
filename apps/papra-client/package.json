@@ -25,8 +25,7 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "script:get-missing-i18n-keys": "tsx src/scripts/get-missing-i18n-keys.script.ts",
-    "script:generate-i18n-types": "tsx src/scripts/generate-i18n-types.script.ts",
-    "script:generate-i18n-types:watch": "tsx watch --include src/locales/en.yml src/scripts/generate-i18n-types.script.ts"
+    "script:generate-i18n-types": "tsx src/scripts/generate-i18n-types.script.ts"
   },
   "dependencies": {
     "@corentinth/chisels": "^1.0.2",
