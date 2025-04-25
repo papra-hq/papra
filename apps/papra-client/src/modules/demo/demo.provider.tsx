@@ -1,5 +1,6 @@
+import type { Component } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { type Component, createSignal } from 'solid-js';
+import { createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { buildTimeConfig } from '../config/config';
 import { useI18n } from '../i18n/i18n.provider';

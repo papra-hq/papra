@@ -212,7 +212,7 @@ async function getDocumentById({ documentId, organizationId, db }: { documentId:
   };
 }
 
-async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string;userId: string; db: Database; now?: Date }) {
+async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string; userId: string; db: Database; now?: Date }) {
   await db
     .update(documentsTable)
     .set({
@@ -228,7 +228,7 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
     );
 }
 
-async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string;organizationId: string; name?: string; userId?: string; db: Database }) {
+async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string; organizationId: string; name?: string; userId?: string; db: Database }) {
   const [document] = await db
     .update(documentsTable)
     .set({

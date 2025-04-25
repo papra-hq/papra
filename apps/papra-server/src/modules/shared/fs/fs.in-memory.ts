@@ -1,6 +1,7 @@
 import type { NestedDirectoryJSON } from 'memfs';
+import type { FsNative } from './fs.services';
 import { memfs } from 'memfs';
-import { createFsServices, type FsNative } from './fs.services';
+import { createFsServices } from './fs.services';
 
 export function createInMemoryFsServices(volume: NestedDirectoryJSON) {
   const { vol } = memfs(volume);

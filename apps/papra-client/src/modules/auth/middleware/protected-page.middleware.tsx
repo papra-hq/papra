@@ -1,5 +1,6 @@
+import type { Component } from 'solid-js';
 import { Navigate } from '@solidjs/router';
-import { type Component, Suspense } from 'solid-js';
+import { Suspense } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { match } from 'ts-pattern';
 import { useSession } from '../auth.services';

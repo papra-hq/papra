@@ -1,7 +1,8 @@
+import type { Component, ComponentProps } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
-import { type Component, type ComponentProps, splitProps } from 'solid-js';
+import { splitProps } from 'solid-js';
 
 const providers = [
   {

@@ -1,4 +1,5 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
+import type { Component, JSX } from 'solid-js';
 import type { IntakeEmail } from '../intake-emails.types';
 import { useConfig } from '@/modules/config/config.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -16,8 +17,7 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
-import { createSignal } from 'solid-js';
+import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEmail } from '../intake-emails.services';
 

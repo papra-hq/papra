@@ -1,6 +1,7 @@
+import type { Component } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createEffect, For, on } from 'solid-js';
+import { createEffect, For, on } from 'solid-js';
 import { fetchOrganizations } from '../organizations.services';
 
 export const OrganizationsPage: Component = () => {

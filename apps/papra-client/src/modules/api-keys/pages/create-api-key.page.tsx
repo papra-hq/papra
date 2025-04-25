@@ -1,3 +1,4 @@
+import type { Component } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -7,7 +8,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { setValue } from '@modular-forms/solid';
 import { A } from '@solidjs/router';
-import { type Component, createSignal, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import * as v from 'valibot';
 import { API_KEY_PERMISSIONS_LIST } from '../api-keys.constants';
 import { createApiKey } from '../api-keys.services';

@@ -3,9 +3,10 @@ import type {
   TooltipContentProps,
   TooltipRootProps,
 } from '@kobalte/core/tooltip';
+import type { ValidComponent } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 import { Tooltip as TooltipPrimitive } from '@kobalte/core/tooltip';
-import { mergeProps, splitProps, type ValidComponent } from 'solid-js';
+import { mergeProps, splitProps } from 'solid-js';
 
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 

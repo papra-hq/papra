@@ -8,7 +8,7 @@ export async function getValues<T extends StorageValue>(storage: Storage<T>): Pr
   return values;
 }
 
-export async function findOne<T extends StorageValue>(storage: Storage<T>, predicate: (value: T) => boolean): Promise< T | null> {
+export async function findOne<T extends StorageValue>(storage: Storage<T>, predicate: (value: T) => boolean): Promise<T | null> {
   const values = await getValues(storage);
   const found = values.find(predicate);
 

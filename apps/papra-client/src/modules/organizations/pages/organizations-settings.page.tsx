@@ -1,3 +1,4 @@
+import type { Component } from 'solid-js';
 import type { Organization } from '../organizations.types';
 import { buildTimeConfig } from '@/modules/config/config';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -10,7 +11,7 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createSignal, Show, Suspense } from 'solid-js';
+import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useDeleteOrganization, useUpdateOrganization } from '../organizations.composables';
 import { organizationNameSchema } from '../organizations.schemas';

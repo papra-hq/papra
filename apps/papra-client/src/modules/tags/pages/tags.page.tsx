@@ -1,4 +1,5 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
+import type { Component, JSX } from 'solid-js';
 import type { Tag as TagType } from '../tags.types';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -15,7 +16,7 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { getValues } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createSignal, For, type JSX, Show, Suspense } from 'solid-js';
+import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { Tag } from '../components/tag.component';
 import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';

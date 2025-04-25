@@ -1,17 +1,18 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
+import type { Component, ComponentProps, JSX, ParentComponent } from 'solid-js';
 import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
+
 import { useConfig } from '@/modules/config/config.provider';
-
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
-import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 
+import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { A, useNavigate, useParams } from '@solidjs/router';
-import { type Component, type ComponentProps, type JSX, type ParentComponent, Show, Suspense } from 'solid-js';
+import { Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';

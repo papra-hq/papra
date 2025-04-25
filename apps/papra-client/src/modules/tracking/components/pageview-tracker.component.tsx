@@ -1,5 +1,6 @@
+import type { Component } from 'solid-js';
 import { useCurrentMatches } from '@solidjs/router';
-import { type Component, createEffect, on } from 'solid-js';
+import { createEffect, on } from 'solid-js';
 import { trackingServices } from '../tracking.services';
 
 export const PageViewTracker: Component = () => {

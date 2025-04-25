@@ -1,23 +1,30 @@
 import type { Database } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
+import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
+import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import type { TagsRepository } from '../tags/tags.repository';
+import type { TrackingServices } from '../tracking/tracking.services';
+import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
+import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
 import { extractTextFromFile } from '@papra/lecture';
 import pLimit from 'p-limit';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
-import { createPlansRepository, type PlansRepository } from '../plans/plans.repository';
+import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
-import { createSubscriptionsRepository, type SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { createTaggingRulesRepository, type TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
-import { createTagsRepository, type TagsRepository } from '../tags/tags.repository';
-import { createTrackingServices, type TrackingServices } from '../tracking/tracking.services';
+import { createTagsRepository } from '../tags/tags.repository';
+import { createTrackingServices } from '../tracking/tracking.services';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
-import { createDocumentsRepository, type DocumentsRepository } from './documents.repository';
+import { createDocumentsRepository } from './documents.repository';
 import { getFileSha256Hash } from './documents.services';
-import { createDocumentStorageService, type DocumentStorageService } from './storage/documents.storage.services';
+import { createDocumentStorageService } from './storage/documents.storage.services';
 
 const logger = createLogger({ namespace: 'documents:usecases' });
 
