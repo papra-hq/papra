@@ -231,7 +231,7 @@ export const DocumentPage: Component = () => {
 
                   <Separator class="my-3" />
 
-                  <Tabs defaultValue="info" class="w-full" value="content">
+                  <Tabs defaultValue="info" class="w-full">
                     <TabsList class="w-full h-8">
                       <TabsTrigger value="info">Info</TabsTrigger>
                       <TabsTrigger value="content">Content</TabsTrigger>
