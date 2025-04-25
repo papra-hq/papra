@@ -1,13 +1,22 @@
 packages:
-  - 'packages/*'
-  - 'apps/*'
+  - packages/*
+  - apps/*
 
 catalog:
-  "@antfu/eslint-config": ^3.6.2
-  "@types/node": ^22.5.4
+  '@antfu/eslint-config': ^3.6.2
+  '@types/node': ^22.5.4
   eslint: ^9.10.0
   tsx: ^4.17.0
   typescript: ^5.6.2
   vitest: ^3.0.5
-  "@vitest/coverage-v8": ^3.0.2
+  '@vitest/coverage-v8': ^3.0.2
   better-auth: ^1.2.4
+
+ignoredBuiltDependencies:
+  - esbuild
+  - tesseract.js
+
+onlyBuiltDependencies:
+  - canvas
+  - core-js
+  - sharp
