@@ -1,0 +1,208 @@
+auth.request-password-reset.title: Restablecer tu contraseña
+auth.request-password-reset.description: Ingresa tu correo electronico para restablecer tu contraseña.
+auth.request-password-reset.requested: Si existe una cuenta para este correo electrónico, te hemos enviado un correo para restablecer tu contraseña.
+auth.request-password-reset.back-to-login: Volver al inicio de sesión
+auth.request-password-reset.form.email.label: Correo electrónico
+auth.request-password-reset.form.email.placeholder: 'Ejemplo: ada@papra.app'
+auth.request-password-reset.form.email.required: Por favor, introduce tu dirección de correo electrónico
+auth.request-password-reset.form.email.invalid: Esta dirección de correo electrónico no es válida
+auth.request-password-reset.form.submit: Solicitar restablecimiento de contraseña
+
+auth.reset-password.title: Restablece tu contraseña
+auth.reset-password.description: Introduce tu nueva contraseña para restablecerla.
+auth.reset-password.reset: Tu contraseña ha sido restablecida.
+auth.reset-password.back-to-login: Volver al inicio de sesión
+auth.reset-password.form.new-password.label: Nueva contraseña
+auth.reset-password.form.new-password.placeholder: 'Ejemplo: **********'
+auth.reset-password.form.new-password.required: Por favor, introduce tu nueva contraseña
+auth.reset-password.form.new-password.min-length: La contraseña debe tener al menos {{ minLength }} caracteres
+auth.reset-password.form.new-password.max-length: La contraseña debe tener menos de {{ maxLength }} caracteres
+auth.reset-password.form.submit: Restablecer contraseña
+
+auth.email-provider.open: Abrir {{ provider }}
+
+auth.login.title: Iniciar sesión en Papra
+auth.login.description: Introduce tu correo electrónico o usa inicio de sesión social para acceder a tu cuenta Papra.
+auth.login.login-with-provider: Iniciar sesión con {{ provider }}
+auth.login.no-account: ¿No tienes una cuenta?
+auth.login.register: Registrarse
+auth.login.form.email.label: Correo electrónico
+auth.login.form.email.placeholder: 'Ejemplo: ada@papra.app'
+auth.login.form.email.required: Por favor, introduce tu dirección de correo electrónico
+auth.login.form.email.invalid: Esta dirección de correo electrónico no es válida
+auth.login.form.password.label: Contraseña
+auth.login.form.password.placeholder: Establecer una contraseña
+auth.login.form.password.required: Por favor, introduce tu contraseña
+auth.login.form.remember-me.label: Recordarme
+auth.login.form.forgot-password.label: ¿Olvidaste la contraseña?
+auth.login.form.submit: Iniciar sesión
+
+auth.register.title: Registrarse en Papra
+auth.register.description: Introduce tu correo electrónico o usa inicio de sesión social para acceder a tu cuenta Papra.
+auth.register.register-with-email: Registrarse con correo electrónico
+auth.register.register-with-provider: Registrarse con {{ provider }}
+auth.register.providers.google: Google
+auth.register.providers.github: GitHub
+auth.register.have-account: ¿Ya tienes una cuenta?
+auth.register.login: Iniciar sesión
+auth.register.registration-disabled.title: El registro está desactivado
+auth.register.registration-disabled.description: La creación de nuevas cuentas está actualmente desactivada en esta instancia de Papra. Solo los usuarios con cuentas existentes pueden iniciar sesión. Si crees que esto es un error, por favor contacta con el administrador de esta instancia.
+auth.register.form.email.label: Correo electrónico
+auth.register.form.email.placeholder: 'Ejemplo: ada@papra.app'
+auth.register.form.email.required: Por favor, introduce tu dirección de correo electrónico
+auth.register.form.email.invalid: Esta dirección de correo electrónico no es válida
+auth.register.form.password.label: Contraseña
+auth.register.form.password.placeholder: Establecer una contraseña
+auth.register.form.password.required: Por favor, introduce tu contraseña
+auth.register.form.password.min-length: La contraseña debe tener al menos {{ minLength }} caracteres
+auth.register.form.password.max-length: La contraseña debe tener menos de {{ maxLength }} caracteres
+auth.register.form.name.label: Nombre
+auth.register.form.name.placeholder: 'Ejemplo: Ada Lovelace'
+auth.register.form.name.required: Por favor, introduce tu nombre
+auth.register.form.name.max-length: El nombre debe tener menos de {{ maxLength }} caracteres
+auth.register.form.submit: Registrarse
+
+auth.email-validation-required.title: Verifica tu correo electrónico
+auth.email-validation-required.description: Se ha enviado un correo de verificación a tu dirección de correo electrónico. Por favor, verifica tu dirección de correo electrónico haciendo clic en el enlace del correo.
+
+auth.legal-links.description: Al continuar, reconoces que entiendes y aceptas los {{ terms }} y la {{ privacy }}.
+auth.legal-links.terms: Términos de Servicio
+auth.legal-links.privacy: Política de Privacidad
+
+tags.no-tags.title: Aún no hay etiquetas
+tags.no-tags.description: Esta organización aún no tiene etiquetas. Las etiquetas se utilizan para categorizar documentos. Puedes añadir etiquetas a tus documentos para facilitar su búsqueda y organización.
+tags.no-tags.create-tag: Crear etiqueta
+
+layout.menu.home: Inicio
+layout.menu.documents: Documentos
+layout.menu.tags: Etiquetas
+layout.menu.tagging-rules: Reglas de etiquetado
+layout.menu.integrations: Integraciones
+layout.menu.deleted-documents: Documentos eliminados
+layout.menu.organization-settings: Configuración de la organización
+layout.menu.api-keys: Claves API
+layout.menu.settings: Configuración
+layout.menu.account: Cuenta
+
+tagging-rules.field.name: nombre del documento
+tagging-rules.field.content: contenido del documento
+tagging-rules.operator.equals: igual a
+tagging-rules.operator.not-equals: no igual a
+tagging-rules.operator.contains: contiene
+tagging-rules.operator.not-contains: no contiene
+tagging-rules.operator.starts-with: comienza con
+tagging-rules.operator.ends-with: termina con
+tagging-rules.list.title: Reglas de etiquetado
+tagging-rules.list.description: Gestiona las reglas de etiquetado de tu organización, para etiquetar automáticamente documentos según las condiciones que definas.
+tagging-rules.list.demo-warning: 'Nota: Como este es un entorno de demostración (sin servidor), las reglas de etiquetado no se aplicarán a los documentos recién añadidos.'
+tagging-rules.list.no-tagging-rules.title: No hay reglas de etiquetado
+tagging-rules.list.no-tagging-rules.description: Crea una regla de etiquetado para etiquetar automáticamente tus documentos añadidos según las condiciones que definas.
+tagging-rules.list.no-tagging-rules.create-tagging-rule: Crear regla de etiquetado
+tagging-rules.list.card.no-conditions: Sin condiciones
+tagging-rules.list.card.one-condition: 1 condición
+tagging-rules.list.card.conditions: '{{ count }} condiciones'
+tagging-rules.list.card.delete: Eliminar regla
+tagging-rules.list.card.edit: Editar regla
+tagging-rules.create.title: Crear regla de etiquetado
+tagging-rules.create.success: Regla de etiquetado creada con éxito
+tagging-rules.create.error: Error al crear la regla de etiquetado
+tagging-rules.create.submit: Crear regla
+tagging-rules.form.name.label: Nombre
+tagging-rules.form.name.placeholder: 'Ejemplo: Etiquetar facturas'
+tagging-rules.form.name.min-length: Por favor, introduce un nombre para la regla
+tagging-rules.form.name.max-length: El nombre debe tener menos de 64 caracteres
+tagging-rules.form.description.label: Descripción
+tagging-rules.form.description.placeholder: "Ejemplo: Etiquetar documentos con 'factura' en el nombre"
+tagging-rules.form.description.max-length: La descripción debe tener menos de 256 caracteres
+tagging-rules.form.conditions.label: Condiciones
+tagging-rules.form.conditions.description: Define las condiciones que deben cumplirse para que se aplique la regla. Todas las condiciones deben cumplirse para que se aplique la regla.
+tagging-rules.form.conditions.add-condition: Añadir condición
+tagging-rules.form.conditions.no-conditions.title: Sin condiciones
+tagging-rules.form.conditions.no-conditions.description: No has añadido ninguna condición a esta regla. Esta regla aplicará sus etiquetas a todos los documentos.
+tagging-rules.form.conditions.no-conditions.confirm: Aplicar regla sin condiciones
+tagging-rules.form.conditions.no-conditions.cancel: Cancelar
+tagging-rules.form.conditions.field.label: Campo
+tagging-rules.form.conditions.operator.label: Operador
+tagging-rules.form.conditions.value.label: Valor
+tagging-rules.form.conditions.value.placeholder: 'Ejemplo: factura'
+tagging-rules.form.conditions.value.min-length: Por favor, introduce un valor para la condición
+tagging-rules.form.tags.label: Etiquetas
+tagging-rules.form.tags.description: Selecciona las etiquetas a aplicar a los documentos añadidos que cumplan las condiciones
+tagging-rules.form.tags.min-length: Se requiere al menos una etiqueta para aplicar
+tagging-rules.form.tags.add-tag: Crear etiqueta
+tagging-rules.form.submit: Crear regla
+tagging-rules.update.title: Actualizar regla de etiquetado
+tagging-rules.update.success: Regla de etiquetado actualizada con éxito
+tagging-rules.update.error: Error al actualizar la regla de etiquetado
+tagging-rules.update.submit: Actualizar regla
+tagging-rules.update.cancel: Cancelar
+
+demo.popup.description: Este es un entorno de demostración, todos los datos se guardan en el almacenamiento local de tu navegador.
+demo.popup.discord: Únete al {{ discordLink }} para obtener soporte, proponer funciones o simplemente charlar.
+demo.popup.discord-link-label: Servidor de Discord
+demo.popup.reset: Restablecer datos de demostración
+demo.popup.hide: Ocultar
+
+trash.delete-all.button: Eliminar todo
+trash.delete-all.confirm.title: ¿Eliminar permanentemente todos los documentos?
+trash.delete-all.confirm.description: ¿Estás seguro de que quieres eliminar permanentemente todos los documentos de la papelera? Esta acción no se puede deshacer.
+trash.delete-all.confirm.label: Eliminar
+trash.delete-all.confirm.cancel: Cancelar
+trash.delete.button: Eliminar
+trash.delete.confirm.title: ¿Eliminar permanentemente el documento?
+trash.delete.confirm.description: ¿Estás seguro de que quieres eliminar permanentemente este documento de la papelera? Esta acción no se puede deshacer.
+trash.delete.confirm.label: Eliminar
+trash.delete.confirm.cancel: Cancelar
+trash.deleted.success.title: Documento eliminado
+trash.deleted.success.description: El documento ha sido eliminado permanentemente.
+
+import-documents.title.error: '{{ count }} documentos fallidos'
+import-documents.title.success: '{{ count }} documentos importados'
+import-documents.title.pending: '{{ count }} / {{ total }} documentos importados'
+import-documents.title.none: Importar documentos
+import-documents.no-import-in-progress: No hay importación de documentos en progreso
+
+api-errors.document.already_exists: El documento ya existe
+api-errors.document.file_too_big: El archivo del documento es demasiado grande
+api-errors.intake_email.limit_reached: Se ha alcanzado el número máximo de correos electrónicos de entrada para esta organización. Por favor, actualiza tu plan para crear más correos electrónicos de entrada.
+api-errors.user.max_organization_count_reached: Has alcanzado el número máximo de organizaciones que puedes crear, si necesitas crear más, por favor contacta con soporte.
+api-errors.default: Ha ocurrido un error al procesar tu solicitud.
+
+api-keys.permissions.documents.title: Documentos
+api-keys.permissions.documents.documents:create: Crear documentos
+api-keys.permissions.documents.documents:read: Leer documentos
+api-keys.permissions.documents.documents:update: Actualizar documentos
+api-keys.permissions.documents.documents:delete: Eliminar documentos
+api-keys.permissions.tags.title: Etiquetas
+api-keys.permissions.tags.tags:create: Crear etiquetas
+api-keys.permissions.tags.tags:read: Leer etiquetas
+api-keys.permissions.tags.tags:update: Actualizar etiquetas
+api-keys.permissions.tags.tags:delete: Eliminar etiquetas
+api-keys.create.title: Crear clave API
+api-keys.create.description: Crea una nueva clave API para acceder a la API de Papra.
+api-keys.create.success: La clave API ha sido creada con éxito.
+api-keys.create.back: Volver a claves API
+api-keys.create.form.name.label: Nombre
+api-keys.create.form.name.placeholder: 'Ejemplo: Mi clave API'
+api-keys.create.form.name.required: Por favor, introduce un nombre para la clave API
+api-keys.create.form.permissions.label: Permisos
+api-keys.create.form.permissions.description: Selecciona los permisos para la clave API.
+api-keys.create.form.permissions.required: Por favor, selecciona al menos un permiso
+api-keys.create.form.submit: Crear clave API
+api-keys.create.created.title: Clave API creada
+api-keys.create.created.description: La clave API ha sido creada con éxito. Guárdala en un lugar seguro ya que no se mostrará de nuevo.
+api-keys.list.title: Claves API
+api-keys.list.description: Gestiona tus claves API aquí.
+api-keys.list.delete: Eliminar
+api-keys.list.create: Crear clave API
+api-keys.list.empty.title: No hay claves API
+api-keys.list.empty.description: Crea una clave API para acceder a la API de Papra.
+api-keys.list.card.last-used: Último uso
+api-keys.list.card.never: Nunca
+api-keys.list.card.created: Creada
+api-keys.list.card.delete: Eliminar
+api-keys.delete.success: La clave API ha sido eliminada con éxito
+api-keys.delete.confirm.title: Eliminar clave API
+api-keys.delete.confirm.message: ¿Estás seguro de que quieres eliminar esta clave API? Esta acción no se puede deshacer.
+api-keys.delete.confirm.confirm-button: Eliminar
+api-keys.delete.confirm.cancel-button: Cancelar
