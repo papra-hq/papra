@@ -4,6 +4,7 @@ export type Document = {
   id: string;
   organizationId: string;
   name: string;
+  originalName: string;
   mimeType: string;
   originalSize: number;
   createdAt: Date;

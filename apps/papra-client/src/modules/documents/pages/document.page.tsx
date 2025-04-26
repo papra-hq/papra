@@ -12,12 +12,12 @@ import { Separator } from '@/modules/ui/components/separator';
 import { createToast } from '@/modules/ui/components/sonner';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { TextArea } from '@/modules/ui/components/textarea';
-import { TextFieldRoot } from '@/modules/ui/components/textfield';
+import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries } from '@tanstack/solid-query';
+import { createMutation, createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
-import { createSignal } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
@@ -57,6 +57,35 @@ export const DocumentPage: Component = () => {
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
+  const [isEditingName, setIsEditingName] = createSignal(false);
+  const [editName, setEditName] = createSignal('');
+  const [nameInputRef, setNameInputRef] = createSignal<HTMLInputElement>();
+
+  createEffect(() => {
+    if (isEditingName() && nameInputRef()) {
+      nameInputRef()?.select();
+    }
+  });
+
+  const updateMutation = createMutation(() => ({
+    mutationFn: async ({ name }: { name: string }) => {
+      await updateDocument({
+        documentId: params.documentId,
+        organizationId: params.organizationId,
+        name,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+      });
+      setIsEditingName(false);
+      createToast({
+        type: 'success',
+        message: 'Document name updated successfully',
+      });
+    },
+  }));
 
   const queries = createQueries(() => ({
     queries: [
@@ -137,7 +166,56 @@ export const DocumentPage: Component = () => {
             {getDocument => (
               <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
-                  <h1 class="text-xl font-semibold">{getDocument().name}</h1>
+                  <div class="flex items-center gap-2">
+                    <Show
+                      when={isEditingName()}
+                      fallback={(
+                        <div class="flex items-center gap-2">
+                          <h1 class="text-xl font-semibold">{getDocument().name}</h1>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditName(getDocument().name);
+                              setIsEditingName(true);
+                            }}
+                          >
+                            <div class="i-tabler-edit size-4" />
+                          </Button>
+                        </div>
+                      )}
+                    >
+                      <div class="flex items-center gap-2">
+                        <TextFieldRoot>
+                          <TextField
+                            value={editName()}
+                            onInput={e => setEditName(e.currentTarget.value)}
+                            class="text-xl font-semibold h-8"
+                            ref={setNameInputRef}
+                          />
+                        </TextFieldRoot>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          class="text-green-500"
+                          onClick={() => {
+                            updateMutation.mutate({ name: editName() });
+                          }}
+                          isLoading={updateMutation.isPending}
+                        >
+                          <div class="i-tabler-check size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          class="text-red-500"
+                          onClick={() => setIsEditingName(false)}
+                        >
+                          <div class="i-tabler-x size-4" />
+                        </Button>
+                      </div>
+                    </Show>
+                  </div>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
                   <div class="flex gap-2 mb-2">
@@ -248,6 +326,11 @@ export const DocumentPage: Component = () => {
                         {
                           label: 'Name',
                           value: getDocument().name,
+                          icon: 'i-tabler-label',
+                        },
+                        {
+                          label: 'File Name',
+                          value: getDocument().originalName,
                           icon: 'i-tabler-file-text',
                         },
                         {
