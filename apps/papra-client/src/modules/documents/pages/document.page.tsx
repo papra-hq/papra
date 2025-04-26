@@ -10,10 +10,10 @@ import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { createToast } from '@/modules/ui/components/sonner';
-import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { formatBytes, safely } from '@corentinth/chisels';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { TextArea } from '@/modules/ui/components/textarea';
+import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createMutation, createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
@@ -57,7 +57,7 @@ export const DocumentPage: Component = () => {
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
-  const [isEditing, setIsEditing] = createSignal(false);
+  const [isEditingName, setIsEditingName] = createSignal(false);
   const [editName, setEditName] = createSignal('');
 
   const updateMutation = createMutation(() => ({
@@ -72,7 +72,7 @@ export const DocumentPage: Component = () => {
       queryClient.invalidateQueries({
         queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
       });
-      setIsEditing(false);
+      setIsEditingName(false);
       createToast({
         type: 'success',
         message: 'Document name updated successfully',
@@ -161,7 +161,7 @@ export const DocumentPage: Component = () => {
                 <div class="flex-1">
                   <div class="flex items-center gap-2">
                     <Show
-                      when={isEditing()}
+                      when={isEditingName()}
                       fallback={(
                         <div class="flex items-center gap-2">
                           <h1 class="text-xl font-semibold">{getDocument().name}</h1>
@@ -170,7 +170,7 @@ export const DocumentPage: Component = () => {
                             size="sm"
                             onClick={() => {
                               setEditName(getDocument().name);
-                              setIsEditing(true);
+                              setIsEditingName(true);
                             }}
                           >
                             <div class="i-tabler-edit size-4" />
@@ -201,7 +201,7 @@ export const DocumentPage: Component = () => {
                           variant="ghost"
                           size="sm"
                           class="text-red-500"
-                          onClick={() => setIsEditing(false)}
+                          onClick={() => setIsEditingName(false)}
                         >
                           <div class="i-tabler-x size-4" />
                         </Button>
