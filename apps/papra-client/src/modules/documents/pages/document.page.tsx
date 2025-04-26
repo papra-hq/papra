@@ -17,7 +17,7 @@ import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createMutation, createQueries } from '@tanstack/solid-query';
 import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
-import { createSignal } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
@@ -59,6 +59,13 @@ export const DocumentPage: Component = () => {
   const { config } = useConfig();
   const [isEditingName, setIsEditingName] = createSignal(false);
   const [editName, setEditName] = createSignal('');
+  const [nameInputRef, setNameInputRef] = createSignal<HTMLInputElement>();
+
+  createEffect(() => {
+    if (isEditingName() && nameInputRef()) {
+      nameInputRef()?.select();
+    }
+  });
 
   const updateMutation = createMutation(() => ({
     mutationFn: async ({ name }: { name: string }) => {
@@ -184,6 +191,7 @@ export const DocumentPage: Component = () => {
                             value={editName()}
                             onInput={e => setEditName(e.currentTarget.value)}
                             class="text-xl font-semibold h-8"
+                            ref={setNameInputRef}
                           />
                         </TextFieldRoot>
                         <Button
