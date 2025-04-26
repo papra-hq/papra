@@ -3,7 +3,7 @@ import type { Config } from '../config/config.types';
 import type { TaskDefinition } from './tasks.models';
 import cron from 'node-cron';
 import { createLogger, wrapWithLoggerContext } from '../shared/logger/logger';
-import { generateId } from '../shared/random';
+import { generateId } from '../shared/random/ids';
 
 export { createTaskScheduler };
 

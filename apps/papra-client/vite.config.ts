@@ -3,13 +3,15 @@ import unoCssPlugin from 'unocss/vite';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import { version } from './package.json';
-import { yamlFlattenPlugin } from './src/plugins/yaml-flattened/yaml-flattened.plugin';
+import { i18nTypesPlugin } from './src/plugins/i18n-types/i18n-types.plugin';
+import { yamlPlugin } from './src/plugins/yaml/yaml.plugin';
 
 export default defineConfig({
   plugins: [
-    yamlFlattenPlugin(),
+    yamlPlugin(),
     unoCssPlugin(),
     solidPlugin(),
+    i18nTypesPlugin(),
   ],
   define: {
     'import.meta.env.VITE_PAPRA_VERSION': JSON.stringify(version),
@@ -17,7 +19,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
+      '/api/': {
         target: 'http://localhost:1221',
       },
     },

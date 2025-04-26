@@ -24,5 +24,7 @@ export function coerceDates<T extends Record<string, any>>(obj: T): CoerceDates<
     ...('createdAt' in obj ? { createdAt: toDate(obj.createdAt) } : {}),
     ...('updatedAt' in obj ? { updatedAt: toDate(obj.updatedAt) } : {}),
     ...('deletedAt' in obj ? { deletedAt: toDate(obj.deletedAt) } : {}),
+    ...('expiresAt' in obj ? { expiresAt: toDate(obj.expiresAt) } : {}),
+    ...('lastUsedAt' in obj ? { lastUsedAt: toDate(obj.lastUsedAt) } : {}),
   };
 }

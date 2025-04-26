@@ -277,6 +277,9 @@ importers:
       mime-types:
         specifier: ^3.0.1
         version: 3.0.1
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
       node-cron:
         specifier: ^3.0.3
         version: 3.0.3
@@ -5238,6 +5241,11 @@ packages:
   nanoid@3.3.10:
     resolution: {integrity: sha512-vSJJTG+t/dIKAUhUDw/dLdZ9s//5OxcHqLaDWWrW4Cdq7o6tdLIczUkMXt2MBNmk6sJRZBZRXVixs7URY1CmIg==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   nanostores@0.11.4:
@@ -12803,6 +12811,8 @@ snapshots:
     optional: true
 
   nanoid@3.3.10: {}
+
+  nanoid@5.1.5: {}
 
   nanostores@0.11.4: {}
 

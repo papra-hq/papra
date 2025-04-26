@@ -1,14 +1,16 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { z } from 'zod';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { tagIdRegex } from '../tags/tags.constants';
-import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS, taggingRuleIdRegex } from './tagging-rules.constants';
+import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
+import { taggingRuleIdSchema } from './tagging-rules.schemas';
 import { createTaggingRule } from './tagging-rules.usecases';
 
 export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
@@ -22,8 +24,9 @@ export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
 function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tagging-rules',
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -47,8 +50,9 @@ function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionConte
 function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tagging-rules',
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
     validateJsonBody(z.object({
       name: z.string().min(1).max(64),
@@ -82,9 +86,10 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      taggingRuleId: z.string().regex(taggingRuleIdRegex),
+      organizationId: organizationIdSchema,
+      taggingRuleId: taggingRuleIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -106,9 +111,10 @@ function setupDeleteTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
 function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      taggingRuleId: z.string().regex(taggingRuleIdRegex),
+      organizationId: organizationIdSchema,
+      taggingRuleId: taggingRuleIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -132,9 +138,10 @@ function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      taggingRuleId: z.string().regex(taggingRuleIdRegex),
+      organizationId: organizationIdSchema,
+      taggingRuleId: taggingRuleIdSchema,
     })),
     validateJsonBody(z.object({
       name: z.string().min(1).max(64),

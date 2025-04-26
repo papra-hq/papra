@@ -22,11 +22,11 @@ We follow a **GitHub Flow** model where all PRs should target the `main` branch,
 
 - Each PR should be small and atomic. Please avoid solving multiple unrelated issues in a single PR.
 - Ensure that the **CI is green** before submitting. Some of the following checks are automatically run for each package: linting, type checking, testing, and building.
-- PRs without a corresponding issue are welcome.
 - If your PR fixes an issue, please reference the issue number in the PR description.
 - If your PR adds a new feature, please include tests and update the documentation if necessary.
 - Be prepared to address feedback and iterate on your PR.
 - Resolving merge conflicts is part of the PR author's responsibility.
+- Draft PRs are welcome to get feedback early on your work but only when requested, they'll not be reviewed.
 
 ### Branching
 
@@ -60,7 +60,7 @@ pnpm script:generate-i18n-types
 ```
 
 - This command will update the file [`locales.types.ts`](./apps/papra-client/src/modules/i18n/locale.types.ts) with the new/removed keys.
-- Will developing you can use `pnpm script:generate-i18n-types:watch` to automatically update the types when you touch the  [`en.yml`](./apps/papra-client/src/locales/en.yml) file.
+- When developing in papra-client (using `pnpm dev`), the i18n types definition will automatically update when you touch the  [`en.yml`](./apps/papra-client/src/locales/en.yml) file, so no need to run the command above.
 
 ## Development Setup
 

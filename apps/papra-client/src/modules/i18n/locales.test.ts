@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'vitest';
 
-const rawLocales = import.meta.glob('../../locales/*.yml', { eager: true, query: '?flattened' });
-const { en: defaultLocal, ...locales } = Object.fromEntries(
+const rawLocales = import.meta.glob('../../locales/*.yml', { eager: true });
+const locales = Object.fromEntries(
   Object.entries(rawLocales).map(([key, value]: [string, any]) => [key.replace('../../locales/', '').replace('.yml', ''), value.default]),
 );
+
+const { en: defaultLocal } = locales;
 
 describe('locales', () => {
   for (const [locale, translations] of Object.entries(locales)) {

@@ -1,12 +1,15 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
+import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { documentIdSchema } from '../documents/documents.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { TagColorRegex } from './tags.constants';
 import { createTagsRepository } from './tags.repository';
+import { tagIdSchema } from './tags.schemas';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
@@ -20,9 +23,9 @@ export function registerTagsRoutes(context: RouteDefinitionContext) {
 function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
 
     validateJsonBody(z.object({
@@ -54,9 +57,9 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
 function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
+      organizationId: organizationIdSchema,
     })),
 
     async (context) => {
@@ -76,10 +79,10 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      tagId: tagIdSchema,
     })),
 
     validateJsonBody(z.object({
@@ -111,10 +114,10 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
-
+    requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      tagId: tagIdSchema,
     })),
 
     async (context) => {
@@ -137,14 +140,14 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
 function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
-
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
     })),
 
     validateJsonBody(z.object({
-      tagId: z.string(),
+      tagId: tagIdSchema,
     })),
 
     async (context) => {
@@ -168,11 +171,11 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
 function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
-
+    requireAuthentication(),
     validateParams(z.object({
-      organizationId: z.string().regex(organizationIdRegex),
-      documentId: z.string(),
-      tagId: z.string(),
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
+      tagId: tagIdSchema,
     })),
 
     async (context) => {

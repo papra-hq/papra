@@ -34,6 +34,7 @@ COPY --from=build /app/apps/papra-client/dist ./public
 
 EXPOSE 1221
 
+ENV NODE_ENV=production
 ENV SERVER_SERVE_PUBLIC_DIR=true
 ENV DATABASE_URL=file:./app-data/db/db.sqlite
 ENV DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents

@@ -1,4 +1,5 @@
 import type { Database } from './database.types';
+import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.tables';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
@@ -35,6 +36,8 @@ const seedTables = {
   taggingRules: taggingRulesTable,
   taggingRuleConditions: taggingRuleConditionsTable,
   taggingRuleActions: taggingRuleActionsTable,
+  apiKeys: apiKeysTable,
+  apiKeyOrganizations: apiKeyOrganizationsTable,
 } as const;
 
 type SeedTablesRows = {

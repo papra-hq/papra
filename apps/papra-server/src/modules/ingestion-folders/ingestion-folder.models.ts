@@ -1,5 +1,5 @@
 import { isAbsolute, join, parse, sep as pathSeparator, relative } from 'node:path';
-import { organizationIdRegex } from '../organizations/organizations.constants';
+import { ORGANIZATION_ID_REGEX } from '../organizations/organizations.constants';
 
 export function normalizeFilePathToIngestionFolder({
   filePath,
@@ -16,7 +16,7 @@ export function normalizeFilePathToIngestionFolder({
 export function getOrganizationIdFromFilePath({ relativeFilePath }: { relativeFilePath: string }) {
   const [maybeOrganizationId] = relativeFilePath.split(pathSeparator);
 
-  if (!maybeOrganizationId || !organizationIdRegex.test(maybeOrganizationId)) {
+  if (!maybeOrganizationId || !ORGANIZATION_ID_REGEX.test(maybeOrganizationId)) {
     return { organizationId: undefined };
   }
 

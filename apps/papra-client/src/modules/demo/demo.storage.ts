@@ -1,3 +1,4 @@
+import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Document } from '../documents/documents.types';
 import type { Organization } from '../organizations/organizations.types';
 import type { TaggingRule } from '../tagging-rules/tagging-rules.types';
@@ -16,6 +17,7 @@ export const documentFileStorage = prefixStorage(storage, 'documentFiles');
 export const tagStorage = prefixStorage<Omit<Tag, 'documentsCount'>>(storage, 'tags');
 export const tagDocumentStorage = prefixStorage<{ documentId: string; tagId: string; id: string }>(storage, 'tagDocuments');
 export const taggingRuleStorage = prefixStorage<TaggingRule>(storage, 'taggingRules');
+export const apiKeyStorage = prefixStorage<ApiKey>(storage, 'apiKeys');
 
 export async function clearDemoStorage() {
   await storage.clear();

@@ -11,5 +11,6 @@ export type Document = {
   isDeleted?: boolean;
   deletedAt?: Date;
   deletedBy?: string;
+  content: string;
   tags: Tag[];
 };
