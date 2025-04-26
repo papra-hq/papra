@@ -40,16 +40,16 @@ importers:
     dependencies:
       '@astrojs/starlight':
         specifier: ^0.31.0
-        version: 0.31.1(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+        version: 0.31.1(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       astro:
         specifier: ^5.1.5
-        version: 5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+        version: 5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       sharp:
         specifier: ^0.32.5
         version: 0.32.6
       starlight-theme-rapide:
         specifier: ^0.3.0
-        version: 0.3.0(@astrojs/starlight@0.31.1(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
+        version: 0.3.0(@astrojs/starlight@0.31.1(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)))
       zod-to-json-schema:
         specifier: ^3.24.5
         version: 3.24.5(zod@3.24.2)
@@ -74,7 +74,7 @@ importers:
         version: 1.3.1(eslint@9.22.0(jiti@2.4.2))(typescript@5.8.2)
       figue:
         specifier: ^2.2.2
-        version: 2.2.2(zod@3.24.2)
+        version: 2.2.3(zod@3.24.2)
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -161,7 +161,7 @@ importers:
         version: 1.1.1(@unocss/preset-wind@66.1.0-beta.5)(unocss@0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@5.4.14(@types/node@22.13.10))(vue@3.5.13(typescript@5.8.2)))
       unstorage:
         specifier: ^1.14.4
-        version: 1.15.0(idb-keyval@6.2.1)
+        version: 1.15.0(@azure/storage-blob@12.27.0)(idb-keyval@6.2.1)
       valibot:
         specifier: 1.0.0-beta.10
         version: 1.0.0-beta.10(typescript@5.8.2)
@@ -217,6 +217,9 @@ importers:
       '@aws-sdk/lib-storage':
         specifier: ^3.722.0
         version: 3.758.0(@aws-sdk/client-s3@3.758.0)
+      '@azure/storage-blob':
+        specifier: ^12.27.0
+        version: 12.27.0
       '@corentinth/chisels':
         specifier: ^1.1.0
         version: 1.1.0
@@ -601,6 +604,54 @@ packages:
 
   '@aws-sdk/xml-builder@3.734.0':
     resolution: {integrity: sha512-Zrjxi5qwGEcUsJ0ru7fRtW74WcTS0rbLcehoFB+rN1GRi2hbLcFaYs4PwVA5diLeAJH0gszv3x4Hr/S87MfbKQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/abort-controller@2.1.2':
+    resolution: {integrity: sha512-nBrLsEWm4J2u5LpAPjxADTlq3trDgVZZXHNKabeXZtpq3d3AbN/KGO82R87rdDz5/lYB024rtEf10/q0urNgsA==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-auth@1.9.0':
+    resolution: {integrity: sha512-FPwHpZywuyasDSLMqJ6fhbOK3TqUdviZNF8OqRGA4W5Ewib2lEEZ+pBsYcBa88B2NGO/SEnYPGhyBqNlE8ilSw==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-client@1.9.3':
+    resolution: {integrity: sha512-/wGw8fJ4mdpJ1Cum7s1S+VQyXt1ihwKLzfabS1O/RDADnmzVc01dHn44qD0BvGH6KlZNzOMW95tEpKqhkCChPA==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-http-compat@2.2.0':
+    resolution: {integrity: sha512-1kW8ZhN0CfbNOG6C688z5uh2yrzALE7dDXHiR9dY4vt+EbhGZQSbjDa5bQd2rf3X2pdWMsXbqbArxUyeNdvtmg==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-lro@2.7.2':
+    resolution: {integrity: sha512-0YIpccoX8m/k00O7mDDMdJpbr6mf1yWo2dfmxt5A8XVZVVMz2SSKaEbMCeJRvgQ0IaSlqhjT47p4hVIRRy90xw==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-paging@1.6.2':
+    resolution: {integrity: sha512-YKWi9YuCU04B55h25cnOYZHxXYtEvQEbKST5vqRga7hWY9ydd3FZHdeQF8pyh+acWZvppw13M/LMGx0LABUVMA==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-rest-pipeline@1.19.1':
+    resolution: {integrity: sha512-zHeoI3NCs53lLBbWNzQycjnYKsA1CVKlnzSNuSFcUDwBp8HHVObePxrM7HaX+Ha5Ks639H7chNC9HOaIhNS03w==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-tracing@1.2.0':
+    resolution: {integrity: sha512-UKTiEJPkWcESPYJz3X5uKRYyOcJD+4nYph+KpfdPRnQJVrZfk0KJgdnaAWKfhsBBtAf/D58Az4AvCJEmWgIBAg==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-util@1.11.0':
+    resolution: {integrity: sha512-DxOSLua+NdpWoSqULhjDyAZTXFdP/LKkqtYuxxz1SCN289zk3OG8UOpnCQAz/tygyACBtWp/BoO72ptK7msY8g==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/core-xml@1.4.5':
+    resolution: {integrity: sha512-gT4H8mTaSXRz7eGTuQyq1aIJnJqeXzpOe9Ay7Z3FrCouer14CbV3VzjnJrNrQfbBpGBLO9oy8BmrY75A0p53cA==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/logger@1.1.4':
+    resolution: {integrity: sha512-4IXXzcCdLdlXuCG+8UKEwLA1T1NHqUfanhXYHiQTn+6sfWCZXduqbtXDGceg3Ce5QxTGo7EqmbV6Bi+aqKuClQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@azure/storage-blob@12.27.0':
+    resolution: {integrity: sha512-IQjj9RIzAKatmNca3D6bT0qJ+Pkox1WZGOg2esJF2YLHb45pQKOwGPIAV+w3rfgkj7zV3RMxpn/c6iftzSOZJQ==}
     engines: {node: '>=18.0.0'}
 
   '@babel/code-frame@7.26.2':
@@ -4274,6 +4325,10 @@ packages:
     resolution: {integrity: sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==}
     hasBin: true
 
+  fast-xml-parser@5.2.1:
+    resolution: {integrity: sha512-Kqq/ewnRACQ20e0BlQ5KqHRYWRBp7yv+jttK4Yj2yY+2ldgCoxJkrP1NHUhjypsJ+eQXlGJ/jebM3wa60s1rbQ==}
+    hasBin: true
+
   fastq@1.18.0:
     resolution: {integrity: sha512-QKHXPW0hD8g4UET03SdOdunzSouc9N4AuHdsX8XNcTsuz+yYFILVNIX4l9yHABMhiEI9Db0JTTIpu0wB+Y1QQw==}
 
@@ -4291,11 +4346,6 @@ packages:
 
   fflate@0.4.8:
     resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
-
-  figue@2.2.2:
-    resolution: {integrity: sha512-uBRYZlDcCw3xBNGDPpO89W34HM/MSnHdBwKZzuTV4J4OHMg8NfGXskInS/03xoQoYoQeD0t1CBrCr207K3UReg==}
-    peerDependencies:
-      zod: ^3.22.4
 
   figue@2.2.3:
     resolution: {integrity: sha512-Dwj/Na3KuiGeFhiM2AieEcMhgXDbHfdWrRcSGdfAspeWTEC8OXleY/Mf+yty4YIK4gxpgQcpKhQm84XTMvXUqg==}
@@ -4879,7 +4929,6 @@ packages:
 
   libsql@0.4.7:
     resolution: {integrity: sha512-T9eIRCs6b0J1SHKYIvD8+KCJMcWZ900iZyxdnSCdqxN12Z1ijzT+jY5nrk72Jw4B0HGzms2NgpryArlJqvc3Lw==}
-    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   lines-and-columns@1.2.4:
@@ -5283,6 +5332,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-native@1.6.4:
     resolution: {integrity: sha512-IhOigYzAKHd244OC0JIMIUrjzctirCmPkaIfhDeGcEETWof5zKYUW7e7MYvChGWh/4CJeXEgsRyGzuF334rOOQ==}
@@ -6093,6 +6143,9 @@ packages:
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
+
+  strnum@2.0.5:
+    resolution: {integrity: sha512-YAT3K/sgpCUxhxNMrrdhtod3jckkpYwH6JAuwmUdXZsmzH1wUyzTMrrK2wYCEEqlKwrWDd35NeuUkbBy/1iK+Q==}
 
   style-to-js@1.1.16:
     resolution: {integrity: sha512-/Q6ld50hKYPH3d/r6nr117TZkHR0w0kGGIVfpG9N6D8NymRPM9RqCUv4pRpJ62E5DqOYx2AFpbZMyCPnjQCnOw==}
@@ -6972,12 +7025,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@4.2.3(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
+  '@astrojs/mdx@4.2.3(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.1
       '@mdx-js/mdx': 3.1.0(acorn@8.14.1)
       acorn: 8.14.1
-      astro: 5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro: 5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       es-module-lexer: 1.6.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -7001,16 +7054,16 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.24.2
 
-  '@astrojs/starlight@0.31.1(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
+  '@astrojs/starlight@0.31.1(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))':
     dependencies:
-      '@astrojs/mdx': 4.2.3(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/mdx': 4.2.3(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       '@astrojs/sitemap': 3.3.0
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
-      astro-expressive-code: 0.40.2(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      astro: 5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro-expressive-code: 0.40.2(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -7511,6 +7564,96 @@ snapshots:
     dependencies:
       '@smithy/types': 4.1.0
       tslib: 2.8.1
+
+  '@azure/abort-controller@2.1.2':
+    dependencies:
+      tslib: 2.8.1
+
+  '@azure/core-auth@1.9.0':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-util': 1.11.0
+      tslib: 2.8.1
+
+  '@azure/core-client@1.9.3':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-auth': 1.9.0
+      '@azure/core-rest-pipeline': 1.19.1
+      '@azure/core-tracing': 1.2.0
+      '@azure/core-util': 1.11.0
+      '@azure/logger': 1.1.4
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@azure/core-http-compat@2.2.0':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-client': 1.9.3
+      '@azure/core-rest-pipeline': 1.19.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@azure/core-lro@2.7.2':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-util': 1.11.0
+      '@azure/logger': 1.1.4
+      tslib: 2.8.1
+
+  '@azure/core-paging@1.6.2':
+    dependencies:
+      tslib: 2.8.1
+
+  '@azure/core-rest-pipeline@1.19.1':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-auth': 1.9.0
+      '@azure/core-tracing': 1.2.0
+      '@azure/core-util': 1.11.0
+      '@azure/logger': 1.1.4
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@azure/core-tracing@1.2.0':
+    dependencies:
+      tslib: 2.8.1
+
+  '@azure/core-util@1.11.0':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      tslib: 2.8.1
+
+  '@azure/core-xml@1.4.5':
+    dependencies:
+      fast-xml-parser: 5.2.1
+      tslib: 2.8.1
+
+  '@azure/logger@1.1.4':
+    dependencies:
+      tslib: 2.8.1
+
+  '@azure/storage-blob@12.27.0':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-auth': 1.9.0
+      '@azure/core-client': 1.9.3
+      '@azure/core-http-compat': 2.2.0
+      '@azure/core-lro': 2.7.2
+      '@azure/core-paging': 1.6.2
+      '@azure/core-rest-pipeline': 1.19.1
+      '@azure/core-tracing': 1.2.0
+      '@azure/core-util': 1.11.0
+      '@azure/core-xml': 1.4.5
+      '@azure/logger': 1.1.4
+      events: 3.3.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@babel/code-frame@7.26.2':
     dependencies:
@@ -10110,12 +10253,12 @@ snapshots:
       - supports-color
       - typescript
 
-  astro-expressive-code@0.40.2(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
+  astro-expressive-code@0.40.2(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)):
     dependencies:
-      astro: 5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
+      astro: 5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
       rehype-expressive-code: 0.40.2
 
-  astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0):
+  astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0):
     dependencies:
       '@astrojs/compiler': 2.11.0
       '@astrojs/internal-helpers': 0.6.1
@@ -10164,7 +10307,7 @@ snapshots:
       tsconfck: 3.1.5(typescript@5.8.2)
       ultrahtml: 1.5.3
       unist-util-visit: 5.0.0
-      unstorage: 1.15.0(idb-keyval@6.2.1)
+      unstorage: 1.15.0(@azure/storage-blob@12.27.0)(idb-keyval@6.2.1)
       vfile: 6.0.3
       vite: 6.2.4(@types/node@22.13.10)(jiti@2.4.2)(tsx@4.19.3)(yaml@2.7.0)
       vitefu: 1.0.6(vite@6.2.4(@types/node@22.13.10)(jiti@2.4.2)(tsx@4.19.3)(yaml@2.7.0))
@@ -11368,6 +11511,10 @@ snapshots:
     dependencies:
       strnum: 1.1.2
 
+  fast-xml-parser@5.2.1:
+    dependencies:
+      strnum: 2.0.5
+
   fastq@1.18.0:
     dependencies:
       reusify: 1.0.4
@@ -11382,10 +11529,6 @@ snapshots:
       web-streams-polyfill: 3.3.3
 
   fflate@0.4.8: {}
-
-  figue@2.2.2(zod@3.24.2):
-    dependencies:
-      zod: 3.24.2
 
   figue@2.2.3(zod@3.24.2):
     dependencies:
@@ -13781,9 +13924,9 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-theme-rapide@0.3.0(@astrojs/starlight@0.31.1(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
+  starlight-theme-rapide@0.3.0(@astrojs/starlight@0.31.1(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))):
     dependencies:
-      '@astrojs/starlight': 0.31.1(astro@5.5.6(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
+      '@astrojs/starlight': 0.31.1(astro@5.5.6(@azure/storage-blob@12.27.0)(@types/node@22.13.10)(idb-keyval@6.2.1)(jiti@2.4.2)(rollup@4.39.0)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0))
 
   std-env@3.8.0: {}
 
@@ -13850,6 +13993,8 @@ snapshots:
       qs: 6.14.0
 
   strnum@1.1.2: {}
+
+  strnum@2.0.5: {}
 
   style-to-js@1.1.16:
     dependencies:
@@ -14157,7 +14302,7 @@ snapshots:
       - encoding
       - supports-color
 
-  unstorage@1.15.0(idb-keyval@6.2.1):
+  unstorage@1.15.0(@azure/storage-blob@12.27.0)(idb-keyval@6.2.1):
     dependencies:
       anymatch: 3.1.3
       chokidar: 4.0.3
@@ -14168,6 +14313,7 @@ snapshots:
       ofetch: 1.4.1
       ufo: 1.5.4
     optionalDependencies:
+      '@azure/storage-blob': 12.27.0
       idb-keyval: 6.2.1
 
   update-browserslist-db@1.1.1(browserslist@4.24.3):

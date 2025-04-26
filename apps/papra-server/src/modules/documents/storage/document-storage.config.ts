@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
 import { S3_STORAGE_DRIVER_NAME } from './drivers/s3/s3.storage-driver';
+import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 
 export const documentStorageConfig = {
   maxUploadSize: {
@@ -12,8 +13,8 @@ export const documentStorageConfig = {
     env: 'DOCUMENT_STORAGE_MAX_UPLOAD_SIZE',
   },
   driver: {
-    doc: `The driver to use for document storage, values can be one of: ${[FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME].map(x => `\`${x}\``).join(', ')}`,
-    schema: z.enum([FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME]),
+    doc: `The driver to use for document storage, values can be one of: ${[FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME, AZ_BLOB_STORAGE_DRIVER_NAME].map(x => `\`${x}\``).join(', ')}`,
+    schema: z.enum([FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME, AZ_BLOB_STORAGE_DRIVER_NAME]),
     default: FS_STORAGE_DRIVER_NAME,
     env: 'DOCUMENT_STORAGE_DRIVER',
   },
@@ -56,6 +57,26 @@ export const documentStorageConfig = {
         schema: z.string().optional(),
         default: undefined,
         env: 'DOCUMENT_STORAGE_S3_ENDPOINT',
+      },
+    },
+    azureBlob: {
+      accountName: {
+        doc: 'The Azure Blob Storage account name',
+        schema: z.string(),
+        default: '',
+        env: 'DOCUMENT_STORAGE_AZURE_BLOB_ACCOUNT_NAME',
+      },
+      accountKey: {
+        doc: 'The Azure Blob Storage account key',
+        schema: z.string(),
+        default: '',
+        env: 'DOCUMENT_STORAGE_AZURE_BLOB_ACCOUNT_KEY',
+      },
+      containerName: {
+        doc: 'The Azure Blob Storage container name',
+        schema: z.string(),
+        default: '',
+        env: 'DOCUMENT_STORAGE_AZURE_BLOB_CONTAINER_NAME',
       },
     },
   },
