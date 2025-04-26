@@ -326,6 +326,11 @@ export const DocumentPage: Component = () => {
                         {
                           label: 'Name',
                           value: getDocument().name,
+                          icon: 'i-tabler-label',
+                        },
+                        {
+                          label: 'File Name',
+                          value: getDocument().originalName,
                           icon: 'i-tabler-file-text',
                         },
                         {
