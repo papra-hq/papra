@@ -14,7 +14,7 @@ export const azBlobStorageDriverFactory = defineStorageDriver(async ({ config })
     name: AZ_BLOB_STORAGE_DRIVER_NAME,
     saveFile: async ({ file, storageKey }) => {
       const containerClient = blobServiceClient.getContainerClient(containerName);
-      await containerClient.uploadBlockBlob(storageKey, file.stream(), file.size);
+      await containerClient.uploadBlockBlob(storageKey, Readable.fromWeb(file.stream()), file.size);
       return { storageKey };
     },
     getFileStream: async ({ storageKey }) => {
