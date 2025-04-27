@@ -104,6 +104,7 @@ export const documentStorageConfig = {
         schema: z.string(),
         default: '',
         env: 'DOCUMENT_STORAGE_AZURE_BLOB_CONTAINER_NAME',
+      },
     },
   },
 } as const satisfies ConfigDefinition;
