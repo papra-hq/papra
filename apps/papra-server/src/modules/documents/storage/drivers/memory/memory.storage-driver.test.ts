@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { inMemoryStorageDriverFactory } from './memory.storage-driver';
 
 describe('memory storage-driver', () => {
@@ -25,7 +26,7 @@ describe('memory storage-driver', () => {
 
       await inMemoryStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' });
 
-      await expect(inMemoryStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow('File not found');
+      await expect(inMemoryStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
     });
 
     test('mainly for testing purposes, a _getStorage() method is available to access the internal storage map', async () => {
