@@ -29,7 +29,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getExpiredDeletedDocuments,
       getOrganizationStats,
       getOrganizationDocumentBySha256Hash,
-      getAllOrganizationTrashDocumentIds,
+      getAllOrganizationTrashDocuments,
       updateDocument,
     },
     { db },
@@ -212,7 +212,7 @@ async function getDocumentById({ documentId, organizationId, db }: { documentId:
   };
 }
 
-async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string;userId: string; db: Database; now?: Date }) {
+async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string; userId: string; db: Database; now?: Date }) {
   await db
     .update(documentsTable)
     .set({
@@ -228,7 +228,7 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
     );
 }
 
-async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string;organizationId: string; name?: string; userId?: string; db: Database }) {
+async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string; organizationId: string; name?: string; userId?: string; db: Database }) {
   const [document] = await db
     .update(documentsTable)
     .set({
@@ -258,6 +258,7 @@ async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new
 
   const documents = await db.select({
     id: documentsTable.id,
+    originalStorageKey: documentsTable.originalStorageKey,
   }).from(documentsTable).where(
     and(
       eq(documentsTable.isDeleted, true),
@@ -266,7 +267,7 @@ async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new
   );
 
   return {
-    documentIds: documents.map(document => document.id),
+    documents,
   };
 }
 
@@ -312,9 +313,10 @@ async function getOrganizationStats({ organizationId, db }: { organizationId: st
   };
 }
 
-async function getAllOrganizationTrashDocumentIds({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getAllOrganizationTrashDocuments({ organizationId, db }: { organizationId: string; db: Database }) {
   const documents = await db.select({
     id: documentsTable.id,
+    originalStorageKey: documentsTable.originalStorageKey,
   }).from(documentsTable).where(
     and(
       eq(documentsTable.organizationId, organizationId),
@@ -323,7 +325,7 @@ async function getAllOrganizationTrashDocumentIds({ organizationId, db }: { orga
   );
 
   return {
-    documentIds: documents.map(document => document.id),
+    documents,
   };
 }
 

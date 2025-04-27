@@ -1,3 +1,4 @@
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
@@ -18,7 +19,7 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
       const fileEntry = storage.get(storageKey);
 
       if (!fileEntry) {
-        throw new Error('File not found');
+        throw createFileNotFoundError();
       }
 
       return {

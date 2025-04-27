@@ -130,7 +130,7 @@ async function createTaggingRuleConditions({ taggingRuleId, conditions, db }: { 
   field: TaggingRuleField;
   operator: TaggingRuleOperator;
   value: string;
-}[]; db: Database ; }) {
+}[]; db: Database; }) {
   await db
     .insert(taggingRuleConditionsTable)
     .values(conditions.map(condition => ({ ...condition, taggingRuleId })));

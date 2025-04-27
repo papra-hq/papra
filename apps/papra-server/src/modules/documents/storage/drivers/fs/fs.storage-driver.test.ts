@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { fsStorageDriverFactory } from './fs.storage-driver';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
@@ -114,7 +115,7 @@ describe('storage driver', () => {
 
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
-        await expect(fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow('File not found');
+        await expect(fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });
     });
 
@@ -162,7 +163,7 @@ describe('storage driver', () => {
 
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
-        await expect(fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow('File not found');
+        await expect(fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });
     });
   });

@@ -1,6 +1,7 @@
 import type { Tag } from '@/modules/tags/tags.types';
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import type { ColumnDef } from '@tanstack/solid-table';
+import type { Accessor, Component, Setter } from 'solid-js';
 import type { Document } from '../documents.types';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { cn } from '@/modules/shared/style/cn';
@@ -12,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components
 import { formatBytes } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
-import { type Accessor, type Component, For, Match, type Setter, Show, Switch } from 'solid-js';
+import { For, Match, Show, Switch } from 'solid-js';
 import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
 

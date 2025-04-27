@@ -1,3 +1,4 @@
+import type { Component } from 'solid-js';
 import type { TaggingRule, TaggingRuleForCreation } from '../tagging-rules.types';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -11,7 +12,7 @@ import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { insert, remove, setValue } from '@modular-forms/solid';
 import { A } from '@solidjs/router';
-import { type Component, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 import * as v from 'valibot';
 import { TAGGING_RULE_FIELDS, TAGGING_RULE_FIELDS_LOCALIZATION_KEYS, TAGGING_RULE_OPERATORS, TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS } from '../tagging-rules.constants';
 

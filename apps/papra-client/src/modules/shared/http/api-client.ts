@@ -1,6 +1,7 @@
+import type { HttpClientOptions, ResponseType } from './http-client';
 import { buildTimeConfig } from '@/modules/config/config';
 import { safely } from '@corentinth/chisels';
-import { httpClient, type HttpClientOptions, type ResponseType } from './http-client';
+import { httpClient } from './http-client';
 import { isHttpErrorWithStatusCode } from './http-errors';
 
 export async function apiClient<T, R extends ResponseType = 'json'>({

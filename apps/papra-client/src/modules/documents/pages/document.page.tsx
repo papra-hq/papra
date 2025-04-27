@@ -1,3 +1,4 @@
+import type { Component, JSX } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
@@ -16,8 +17,7 @@ import { TextFieldRoot } from '@/modules/ui/components/textfield';
 import { formatBytes, safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries } from '@tanstack/solid-query';
-import { type Component, For, type JSX, Show, Suspense } from 'solid-js';
-import { createSignal } from 'solid-js';
+import { createSignal, For, Show, Suspense } from 'solid-js';
 import { DocumentPreview } from '../components/document-preview.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';

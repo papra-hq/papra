@@ -1,3 +1,4 @@
+import type { Component } from 'solid-js';
 import type { SsoProviderKey } from '../auth.types';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -7,7 +8,7 @@ import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/component
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { A, useNavigate } from '@solidjs/router';
-import { type Component, createSignal, For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs, isEmailVerificationRequiredError } from '../auth.models';

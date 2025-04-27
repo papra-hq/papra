@@ -1,7 +1,8 @@
+import type { Component } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxTrigger } from '@/modules/ui/components/combobox';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createSignal, For } from 'solid-js';
+import { createSignal, For } from 'solid-js';
 import { fetchTags } from '../tags.services';
 import { Tag as TagComponent } from './tag.component';
 

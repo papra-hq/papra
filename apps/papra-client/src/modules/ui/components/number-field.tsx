@@ -138,9 +138,9 @@ export function NumberFieldDecrementTrigger<T extends ValidComponent = 'button',
   );
 }
 
-type numberFieldIncrementTriggerProps<T extends ValidComponent = 'button'> = VoidProps< NumberFieldIncrementTriggerProps<T> & { class?: string }>;
+type numberFieldIncrementTriggerProps<T extends ValidComponent = 'button'> = VoidProps<NumberFieldIncrementTriggerProps<T> & { class?: string }>;
 
-export function NumberFieldIncrementTrigger< T extends ValidComponent = 'button',>(props: PolymorphicProps<T, numberFieldIncrementTriggerProps<T>>) {
+export function NumberFieldIncrementTrigger<T extends ValidComponent = 'button',>(props: PolymorphicProps<T, numberFieldIncrementTriggerProps<T>>) {
   const [local, rest] = splitProps(props as numberFieldIncrementTriggerProps, ['class']);
 
   return (

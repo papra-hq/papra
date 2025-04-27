@@ -1,11 +1,12 @@
 import type { ParentComponent } from 'solid-js';
+import type { Config, RuntimePublicConfig } from './config';
 import { createQuery } from '@tanstack/solid-query';
 import { merge } from 'lodash-es';
 import { createContext, Match, Switch, useContext } from 'solid-js';
 import { Button } from '../ui/components/button';
 import { EmptyState } from '../ui/components/empty';
 import { createToast } from '../ui/components/sonner';
-import { buildTimeConfig, type Config, type RuntimePublicConfig } from './config';
+import { buildTimeConfig } from './config';
 import { fetchPublicConfig } from './config.services';
 
 const ConfigContext = createContext<{

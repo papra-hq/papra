@@ -1,6 +1,7 @@
 import { env } from 'node:process';
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import starlightLinksValidator from 'starlight-links-validator';
 import starlightThemeRapide from 'starlight-theme-rapide';
 import { sidebar } from './src/content/navigation';
 import posthogRawScript from './src/scripts/posthog.script.js?raw';
@@ -16,18 +17,18 @@ export default defineConfig({
   site: 'https://docs.papra.app',
   integrations: [
     starlight({
-      plugins: [starlightThemeRapide()],
+      plugins: [starlightThemeRapide(), starlightLinksValidator({ exclude: ['http://localhost:1221'] })],
       title: 'Papra Docs',
       logo: {
         dark: './src/assets/logo-dark.svg',
         light: './src/assets/logo-light.svg',
         alt: 'Papra Logo',
       },
-      social: {
-        github: 'https://github.com/papra-hq/papra',
-        blueSky: 'https://bsky.app/profile/papra.app',
-        discord: 'https://papra.app/discord',
-      },
+      social: [
+        { href: 'https://github.com/papra-hq/papra', icon: 'github', label: 'GitHub' },
+        { href: 'https://bsky.app/profile/papra.app', icon: 'blueSky', label: 'BlueSky' },
+        { href: 'https://papra.app/discord', icon: 'discord', label: 'Discord' },
+      ],
       expressiveCode: {
         themes: ['vitesse-black', 'vitesse-light'],
       },

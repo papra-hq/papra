@@ -50,7 +50,7 @@ type TaskError = {
 
 type Task = TaskSuccess | TaskError | {
   file: File;
-  status: 'pending' | 'uploading' ;
+  status: 'pending' | 'uploading';
 };
 
 export const DocumentUploadProvider: ParentComponent = (props) => {

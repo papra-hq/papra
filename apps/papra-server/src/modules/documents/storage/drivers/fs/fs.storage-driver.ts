@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import stream from 'node:stream';
 import { get } from 'lodash-es';
 import { checkFileExists, deleteFile, ensureDirectoryExists } from '../../../../shared/fs/fs.services';
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
@@ -47,7 +48,7 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
       const fileExists = await checkFileExists({ path: storagePath });
 
       if (!fileExists) {
-        throw new Error('File not found');
+        throw createFileNotFoundError();
       }
 
       const readStream = fs.createReadStream(storagePath);
@@ -62,7 +63,7 @@ export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => 
         await deleteFile({ filePath: storagePath });
       } catch (error) {
         if (get(error, 'code') === 'ENOENT') {
-          throw new Error('File not found');
+          throw createFileNotFoundError();
         }
 
         throw error;

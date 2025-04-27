@@ -25,14 +25,14 @@ export const ingestionFolderConfig = {
     },
     pollingInterval: {
       doc: 'When polling is used, this is the interval at which the watcher checks for changes in the ingestion folder (in milliseconds)',
-      schema: z.number(),
+      schema: z.coerce.number().int().positive(),
       default: 2_000,
       env: 'INGESTION_FOLDER_WATCHER_POLLING_INTERVAL_MS',
     },
   },
   processingConcurrency: {
     doc: 'The number of files that can be processed concurrently by the server. Increasing this can improve processing speed, but it will also increase CPU and memory usage.',
-    schema: z.number().int().positive().min(1),
+    schema: z.coerce.number().int().positive().min(1),
     default: 1,
     env: 'INGESTION_FOLDER_PROCESSING_CONCURRENCY',
   },

@@ -1,6 +1,7 @@
 import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const S3_STORAGE_DRIVER_NAME = 's3' as const;
@@ -41,7 +42,7 @@ export const s3StorageDriverFactory = defineStorageDriver(async ({ config }) => 
       }));
 
       if (!Body) {
-        throw new Error('File not found or has no content');
+        throw createFileNotFoundError();
       }
 
       return { fileStream: Body.transformToWebStream() };

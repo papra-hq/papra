@@ -1,3 +1,4 @@
+import type { Component } from 'solid-js';
 import { signOut } from '@/modules/auth/auth.services';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
@@ -6,7 +7,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
-import { type Component, createSignal, Show, Suspense } from 'solid-js';
+import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useUpdateCurrentUser } from '../users.composables';
 import { nameSchema } from '../users.schemas';
