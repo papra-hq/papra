@@ -1,10 +1,10 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 import { B2_STORAGE_DRIVER_NAME } from './drivers/b2/b2.storage-driver';
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
 import { S3_STORAGE_DRIVER_NAME } from './drivers/s3/s3.storage-driver';
-import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 
 export const documentStorageConfig = {
   maxUploadSize: {
