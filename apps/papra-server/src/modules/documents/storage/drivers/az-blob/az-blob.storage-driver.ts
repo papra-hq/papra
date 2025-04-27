@@ -23,7 +23,7 @@ export const azBlobStorageDriverFactory = defineStorageDriver(async ({ config })
       const { readableStreamBody } = await blockBlobClient.download();
 
       if (!readableStreamBody) {
-        throw new Error('File not found or has no content');
+        throw createFileNotFoundError();
       }
 
       return { fileStream: Readable.toWeb(readableStreamBody as Readable) };
