@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 import B2 from 'backblaze-b2';
 
+import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const B2_STORAGE_DRIVER_NAME = 'b2' as const;
@@ -27,7 +28,7 @@ export const b2StorageDriverFactory = defineStorageDriver(async ({ config }) => 
         data: Buffer.from(await file.arrayBuffer()),
       });
       if (upload.status !== 200) {
-        throw new Error('Error uploading file');
+        throw createFileNotFoundError();
       }
       return { storageKey };
     },
@@ -39,7 +40,7 @@ export const b2StorageDriverFactory = defineStorageDriver(async ({ config }) => 
         responseType: 'stream',
       });
       if (!response.data) {
-        throw new Error('File not found or has no content');
+        throw createFileNotFoundError();
       }
       return { fileStream: response.data };
     },
