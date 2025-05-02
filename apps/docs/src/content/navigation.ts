@@ -36,6 +36,10 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
     label: 'Resources',
     items: [
       {
+        label: 'CLI Documentation',
+        slug: 'resources/cli',
+      },
+      {
         label: 'Security Policy',
         link: 'https://github.com/papra-hq/papra/blob/main/SECURITY.md',
         attrs: {

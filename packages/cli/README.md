@@ -1,0 +1,81 @@
+# Papra CLI
+
+The Papra CLI is a command-line interface tool that helps you interact with the Papra platform from your terminal.
+
+## Installation
+
+For the moment, the CLI is only available as an NPM package.
+
+```bash
+# using pnpm
+pnpm i -g @papra/cli
+
+# or using npm
+npm i -g @papra/cli
+
+# or using yarn
+yarn add -g @papra/cli
+```
+
+The CLI will be installed globally, so you can use it from anywhere in your system with the `papra` command.
+
+## Configuration
+
+Before using the CLI, you need to configure it with your API credentials.
+
+### Initial Setup
+
+To initialize the configuration, run:
+
+```bash
+papra config init
+```
+
+This command will prompt you for:
+- **Instance URL**: Your Papra instance URL (e.g., `https://api.papra.app`)
+- **API Key**: Your personal API key (can be created in your User Settings)
+
+### Managing Configuration
+
+You can manage your configuration using the following commands:
+
+- `papra config list`: View your current configuration
+- `papra config set api-key`: Set or update your API key
+- `papra config set api-url`: Set or update your instance URL
+- `papra config set default-org-id`: Set a default organization ID
+
+### Organization IDs
+
+Since Papra supports multiple organizations, you may need to specify the organization ID when importing documents for example. If want, you can set a default organization ID in your configuration.
+
+```bash
+papra config set default-org-id <organization-id>
+papra documents import <file-path>
+
+# or
+papra documents import -o <organization-id> <file-path>
+```
+
+## Available Commands
+
+### Importing documents
+
+The `import` command allows you to import a document into your Papra organization.
+
+```bash
+papra documents import -o <organization-id> <file-path>
+```
+
+## Getting Help
+
+For more information about any command, you can use the `--help` flag:
+
+```bash
+papra --help
+papra config --help
+papra documents --help
+```
+
+## About the CLI
+
+The CLI is built using the [citty](https://github.com/unjs/citty) framework and the [Papra TS SDK](https://github.com/papra-hq/papra/tree/main/packages/api-sdk).

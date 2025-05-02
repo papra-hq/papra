@@ -17,8 +17,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.34.1",
-    "astro": "^5.7.5",
+    "@astrojs/starlight": "^0.34.2",
+    "astro": "^5.7.10",
     "sharp": "^0.32.5",
     "starlight-links-validator": "^0.16.0",
     "starlight-theme-rapide": "^0.5.0",

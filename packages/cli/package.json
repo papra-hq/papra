@@ -27,6 +27,7 @@
     "papra": "./bin/papra.mjs"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {

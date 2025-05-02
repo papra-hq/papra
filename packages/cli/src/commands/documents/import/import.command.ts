@@ -19,7 +19,6 @@ export const importCommand = defineCommand({
     path: {
       type: 'positional',
       description: 'The path to the document to import',
-      alias: 'p',
       valueHint: './document.pdf',
     },
     organizationId: organizationIdArgument,
