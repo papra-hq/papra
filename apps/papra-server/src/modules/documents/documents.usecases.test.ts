@@ -9,6 +9,7 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -31,6 +32,7 @@ describe('documents usecases', () => {
       const trackingServices = createDummyTrackingServices();
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -49,6 +51,7 @@ describe('documents usecases', () => {
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       expect(document).to.include({
@@ -90,7 +93,7 @@ describe('documents usecases', () => {
       const trackingServices = createDummyTrackingServices();
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-
+      const webhookRepository = createWebhookRepository({ db });
       let documentIdIndex = 1;
       const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -110,6 +113,7 @@ describe('documents usecases', () => {
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       expect(document1).to.include({
@@ -138,6 +142,7 @@ describe('documents usecases', () => {
           trackingServices,
           taggingRulesRepository,
           tagsRepository,
+          webhookRepository,
         }),
       ).rejects.toThrow(
         createDocumentAlreadyExistsError(),
@@ -204,7 +209,7 @@ describe('documents usecases', () => {
       const trackingServices = createDummyTrackingServices();
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-
+      const webhookRepository = createWebhookRepository({ db });
       // 3. Re-create the document
       const { document: documentRestored } = await createDocument({
         file: new File(['hello world'], 'file-2.txt', { type: 'text/plain' }),
@@ -216,6 +221,7 @@ describe('documents usecases', () => {
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       expect(documentRestored).to.deep.include({
@@ -256,6 +262,7 @@ describe('documents usecases', () => {
       const trackingServices = createDummyTrackingServices();
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
       const generateDocumentId = () => 'doc_1';
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -280,6 +287,7 @@ describe('documents usecases', () => {
           trackingServices,
           taggingRulesRepository,
           tagsRepository,
+          webhookRepository,
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 

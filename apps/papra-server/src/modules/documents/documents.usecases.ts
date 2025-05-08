@@ -6,6 +6,7 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
+import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
@@ -20,6 +21,8 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createTrackingServices } from '../tracking/tracking.services';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { triggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -32,7 +35,7 @@ export async function extractDocumentText({ file }: { file: File }) {
   const { textContent, error, extractorName } = await extractTextFromFile({ file });
 
   if (error) {
-    logger.error({ error, extractorName }, 'Error while attempting to extract text from PDF');
+    logger.error({ error, extractorName }, 'Error while extracting text from document');
   }
 
   return {
@@ -52,6 +55,7 @@ export async function createDocument({
   trackingServices,
   taggingRulesRepository,
   tagsRepository,
+  webhookRepository,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
   file: File;
@@ -65,6 +69,7 @@ export async function createDocument({
   trackingServices: TrackingServices;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
   logger?: Logger;
 }) {
   const {
@@ -112,6 +117,19 @@ export async function createDocument({
 
   await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
 
+  await triggerWebhooks({
+    webhookRepository,
+    organizationId,
+    event: 'document:created',
+    payload: {
+      documentId: document.id,
+      organizationId,
+      name: document.name,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
+    },
+  });
+
   return { document };
 }
 
@@ -137,6 +155,7 @@ export async function createDocumentCreationUsecase({
     trackingServices: createTrackingServices({ config }),
     taggingRulesRepository: createTaggingRulesRepository({ db }),
     tagsRepository: createTagsRepository({ db }),
+    webhookRepository: createWebhookRepository({ db }),
     generateDocumentId,
     logger,
   };

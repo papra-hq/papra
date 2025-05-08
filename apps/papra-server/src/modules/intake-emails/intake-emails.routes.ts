@@ -17,6 +17,7 @@ import { validateFormData, validateJsonBody, validateParams } from '../shared/va
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
@@ -196,6 +197,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: email.from.address,
@@ -209,6 +211,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       return context.body(null, 202);

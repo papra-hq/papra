@@ -11,8 +11,8 @@ function setValidParams(path: string) {
     .replaceAll(':tagId', 'tag_444444444444444444444444')
     .replaceAll(':taggingRuleId', 'rule_555555555555555555555555')
     .replaceAll(':intakeEmailId', 'email_666666666666666666666666')
-    .replaceAll(':apiKeyId', 'api_key_777777777777777777777777');
-
+    .replaceAll(':apiKeyId', 'api_key_777777777777777777777777')
+    .replaceAll(':webhookId', 'wbh_888888888888888888888888');
   // throw if there are any remaining params
   if (newPath.match(/:(\w+)/g)) {
     throw new Error(`Add a dummy value for the params in ${path}`);

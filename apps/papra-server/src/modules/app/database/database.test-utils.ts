@@ -7,6 +7,7 @@ import { organizationSubscriptionsTable } from '../../subscriptions/subscription
 import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from '../../tagging-rules/tagging-rules.tables';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
+import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from '../../webhooks/webhooks.tables';
 import { setupDatabase } from './database';
 import { runMigrations } from './database.services';
 
@@ -38,6 +39,9 @@ const seedTables = {
   taggingRuleActions: taggingRuleActionsTable,
   apiKeys: apiKeysTable,
   apiKeyOrganizations: apiKeyOrganizationsTable,
+  webhooks: webhooksTable,
+  webhookEvents: webhookEventsTable,
+  webhookDeliveries: webhookDeliveriesTable,
 } as const;
 
 type SeedTablesRows = {

@@ -1,5 +1,5 @@
 {
-  "name": "@papra/papra-app-server",
+  "name": "@papra/app-server",
   "type": "module",
   "version": "0.3.0",
   "packageManager": "pnpm@10.9.0",
@@ -41,6 +41,7 @@
     "@owlrelay/api-sdk": "^0.0.2",
     "@owlrelay/webhook": "^0.0.3",
     "@papra/lecture": "^0.0.4",
+    "@papra/webhooks": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
     "backblaze-b2": "^1.7.0",
     "better-auth": "catalog:",

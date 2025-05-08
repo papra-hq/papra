@@ -12,6 +12,8 @@ import { validateFormData, validateJsonBody, validateParams, validateQuery } fro
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { triggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -93,6 +95,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
 
       const { document } = await createDocument({
         file,
@@ -105,6 +108,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       return context.json({
@@ -240,11 +244,18 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-
+      const webhookRepository = createWebhookRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
       await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
+
+      await triggerWebhooks({
+        webhookRepository,
+        organizationId,
+        event: 'document:deleted',
+        payload: { documentId, organizationId },
+      });
 
       return context.json({
         success: true,

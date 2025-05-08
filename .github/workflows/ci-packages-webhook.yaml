@@ -1,4 +1,4 @@
-name: CI - App Server
+name: CI - Webhooks
 
 on:
   pull_request:
@@ -7,12 +7,12 @@ on:
       - main
 
 jobs:
-  ci-apps-papra-server:
-    name: CI - Papra Server
+  ci-packages-webhooks:
+    name: CI - Webhooks
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/papra-server
+        working-directory: packages/webhooks
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -26,9 +26,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: |
-          pnpm i --frozen-lockfile
-          pnpm --filter "@papra/app-server^..." build
+        run: pnpm i
 
       - name: Run linters
         run: pnpm lint

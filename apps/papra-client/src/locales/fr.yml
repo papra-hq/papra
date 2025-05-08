@@ -77,9 +77,8 @@ layout.menu.home: Accueil
 layout.menu.documents: Documents
 layout.menu.tags: Tags
 layout.menu.tagging-rules: Règles de catégorisation
-layout.menu.integrations: Intégrations
 layout.menu.deleted-documents: Documents supprimés
-layout.menu.organization-settings: Paramètres de l'organisation
+layout.menu.organization-settings: Paramètres
 layout.menu.api-keys: API keys
 layout.menu.settings: Paramètres
 layout.menu.account: Compte
@@ -123,9 +122,6 @@ tagging-rules.form.conditions.no-conditions.title: Aucune condition
 tagging-rules.form.conditions.no-conditions.description: Vous n'avez pas ajouté de conditions à cette règle. Cette règle appliquera ses tags à tous les documents.
 tagging-rules.form.conditions.no-conditions.confirm: Appliquer la règle sans conditions
 tagging-rules.form.conditions.no-conditions.cancel: Annuler
-tagging-rules.form.conditions.field.label: Champ
-tagging-rules.form.conditions.operator.label: Opérateur
-tagging-rules.form.conditions.value.label: Valeur
 tagging-rules.form.conditions.value.placeholder: 'Exemple: facture'
 tagging-rules.form.conditions.value.min-length: Veuillez entrer une valeur pour la condition
 tagging-rules.form.tags.label: Tags
@@ -134,7 +130,6 @@ tagging-rules.form.tags.min-length: Au moins un tag à appliquer est requis
 tagging-rules.form.tags.add-tag: Créer un tag
 tagging-rules.form.submit: Créer la règle
 tagging-rules.update.title: Mettre à jour la règle de catégorisation
-tagging-rules.update.success: Règle de catégorisation mise à jour avec succès
 tagging-rules.update.error: Échec de la mise à jour de la règle de catégorisation
 tagging-rules.update.submit: Mettre à jour la règle
 tagging-rules.update.cancel: Annuler
@@ -188,21 +183,18 @@ api-keys.create.form.name.label: Nom
 api-keys.create.form.name.placeholder: 'Exemple: Ma clé API'
 api-keys.create.form.name.required: Veuillez entrer un nom pour la clé API
 api-keys.create.form.permissions.label: Permissions
-api-keys.create.form.permissions.description: Sélectionnez les permissions pour la clé API.
 api-keys.create.form.permissions.required: Veuillez sélectionner au moins une permission
 api-keys.create.form.submit: Créer la clé API
 api-keys.create.created.title: Clé API créée
 api-keys.create.created.description: La clé API a été créée avec succès. Enregistrez-la dans un endroit sûr car elle ne sera plus affichée.
 api-keys.list.title: Clés API
 api-keys.list.description: Gérez vos clés API ici.
-api-keys.list.delete: Supprimer
 api-keys.list.create: Créer une clé API
 api-keys.list.empty.title: Aucune clé API
 api-keys.list.empty.description: Créez une clé API pour accéder à l'API de Papra.
 api-keys.list.card.last-used: Dernière utilisation
 api-keys.list.card.never: Jamais
 api-keys.list.card.created: Créée
-api-keys.list.card.delete: Supprimer
 api-keys.delete.success: La clé API a été supprimée avec succès
 api-keys.delete.confirm.title: Supprimer la clé API
 api-keys.delete.confirm.message: Êtes-vous sûr de vouloir supprimer cette clé API ? Cette action est irréversible.

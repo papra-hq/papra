@@ -15,6 +15,7 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsTable } from './intake-emails.tables';
@@ -37,6 +38,7 @@ describe('intake-emails usecases', () => {
         const trackingServices = createDummyTrackingServices();
         const taggingRulesRepository = createTaggingRulesRepository({ db });
         const tagsRepository = createTagsRepository({ db });
+        const webhookRepository = createWebhookRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -53,6 +55,7 @@ describe('intake-emails usecases', () => {
           trackingServices,
           taggingRulesRepository,
           tagsRepository,
+          webhookRepository,
         });
 
         const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
@@ -82,6 +85,7 @@ describe('intake-emails usecases', () => {
         const trackingServices = createDummyTrackingServices();
         const taggingRulesRepository = createTaggingRulesRepository({ db });
         const tagsRepository = createTagsRepository({ db });
+        const webhookRepository = createWebhookRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -96,6 +100,7 @@ describe('intake-emails usecases', () => {
           logger,
           taggingRulesRepository,
           tagsRepository,
+          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -118,6 +123,7 @@ describe('intake-emails usecases', () => {
         const trackingServices = createDummyTrackingServices();
         const taggingRulesRepository = createTaggingRulesRepository({ db });
         const tagsRepository = createTagsRepository({ db });
+        const webhookRepository = createWebhookRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -132,6 +138,7 @@ describe('intake-emails usecases', () => {
           taggingRulesRepository,
           tagsRepository,
           logger,
+          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -159,6 +166,7 @@ describe('intake-emails usecases', () => {
         const trackingServices = createDummyTrackingServices();
         const taggingRulesRepository = createTaggingRulesRepository({ db });
         const tagsRepository = createTagsRepository({ db });
+        const webhookRepository = createWebhookRepository({ db });
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
@@ -173,6 +181,7 @@ describe('intake-emails usecases', () => {
           taggingRulesRepository,
           tagsRepository,
           logger,
+          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -211,6 +220,7 @@ describe('intake-emails usecases', () => {
       const trackingServices = createDummyTrackingServices();
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
@@ -226,6 +236,7 @@ describe('intake-emails usecases', () => {
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       });
 
       const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));

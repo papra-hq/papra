@@ -20,17 +20,19 @@ import { CreateOrganizationPage } from './modules/organizations/pages/create-org
 import { OrganizationPage } from './modules/organizations/pages/organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
-import { ComingSoonPage } from './modules/shared/pages/coming-soon.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
 import { CreateTaggingRulePage } from './modules/tagging-rules/pages/create-tagging-rule.page';
 import { TaggingRulesPage } from './modules/tagging-rules/pages/tagging-rules.page';
 import { UpdateTaggingRulePage } from './modules/tagging-rules/pages/update-tagging-rule.page';
 import { TagsPage } from './modules/tags/pages/tags.page';
-import { IntegrationsLayout } from './modules/ui/layouts/integrations.layout';
+import { OrganizationSettingsLayout } from './modules/ui/layouts/organization-settings.layout';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { SettingsLayout } from './modules/ui/layouts/settings.layout';
 import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
+import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
+import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
+import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
 
 export const routes: RouteDefinition[] = [
   {
@@ -107,10 +109,6 @@ export const routes: RouteDefinition[] = [
                 component: DocumentPage,
               },
               {
-                path: '/settings',
-                component: OrganizationsSettingsPage,
-              },
-              {
                 path: '/deleted',
                 component: DeletedDocumentsPage,
               },
@@ -130,19 +128,32 @@ export const routes: RouteDefinition[] = [
                 path: '/tagging-rules/:taggingRuleId',
                 component: UpdateTaggingRulePage,
               },
+
+            ],
+          },
+          {
+            path: '/:organizationId/settings',
+            component: OrganizationSettingsLayout,
+            children: [
               {
                 path: '/',
-                component: IntegrationsLayout,
-                children: [
-                  {
-                    path: '/intake-emails',
-                    component: IntakeEmailsPage,
-                  },
-                  {
-                    path: '/api-keys',
-                    component: ComingSoonPage,
-                  },
-                ],
+                component: OrganizationsSettingsPage,
+              },
+              {
+                path: '/webhooks/create',
+                component: CreateWebhookPage,
+              },
+              {
+                path: '/webhooks/:webhookId',
+                component: EditWebhookPage,
+              },
+              {
+                path: '/intake-emails',
+                component: IntakeEmailsPage,
+              },
+              {
+                path: '/webhooks',
+                component: WebhooksPage,
               },
             ],
           },

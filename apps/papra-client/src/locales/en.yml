@@ -77,12 +77,14 @@ layout.menu.home: Home
 layout.menu.documents: Documents
 layout.menu.tags: Tags
 layout.menu.tagging-rules: Tagging rules
-layout.menu.integrations: Integrations
 layout.menu.deleted-documents: Deleted documents
-layout.menu.organization-settings: Organization settings
+layout.menu.organization-settings: Settings
 layout.menu.api-keys: API keys
 layout.menu.settings: Settings
 layout.menu.account: Account
+layout.menu.general-settings: General settings
+layout.menu.intake-emails: Intake emails
+layout.menu.webhooks: Webhooks
 
 tagging-rules.field.name: document name
 tagging-rules.field.content: document content
@@ -121,9 +123,6 @@ tagging-rules.form.conditions.no-conditions.title: No conditions
 tagging-rules.form.conditions.no-conditions.description: You didn't add any conditions to this rule. This rule will apply its tags to all documents.
 tagging-rules.form.conditions.no-conditions.confirm: Apply rule without conditions
 tagging-rules.form.conditions.no-conditions.cancel: Cancel
-tagging-rules.form.conditions.field.label: Field
-tagging-rules.form.conditions.operator.label: Operator
-tagging-rules.form.conditions.value.label: Value
 tagging-rules.form.conditions.value.placeholder: 'Example: invoice'
 tagging-rules.form.conditions.value.min-length: Please enter a value for the condition
 tagging-rules.form.tags.label: Tags
@@ -132,7 +131,6 @@ tagging-rules.form.tags.min-length: At least one tag to apply is required
 tagging-rules.form.tags.add-tag: Create tag
 tagging-rules.form.submit: Create rule
 tagging-rules.update.title: Update tagging rule
-tagging-rules.update.success: Tagging rule updated successfully
 tagging-rules.update.error: Failed to update tagging rule
 tagging-rules.update.submit: Update rule
 tagging-rules.update.cancel: Cancel
@@ -186,23 +184,62 @@ api-keys.create.form.name.label: Name
 api-keys.create.form.name.placeholder: 'Example: My API key'
 api-keys.create.form.name.required: Please enter a name for the API key
 api-keys.create.form.permissions.label: Permissions
-api-keys.create.form.permissions.description: Select the permissions for the API key.
 api-keys.create.form.permissions.required: Please select at least one permission
 api-keys.create.form.submit: Create API key
 api-keys.create.created.title: API key created
 api-keys.create.created.description: The API key has been created successfully. Save it in a secure location as it will not be displayed again.
 api-keys.list.title: API keys
 api-keys.list.description: Manage your API keys here.
-api-keys.list.delete: Delete
 api-keys.list.create: Create API key
 api-keys.list.empty.title: No API keys
 api-keys.list.empty.description: Create an API key to access the Papra API.
 api-keys.list.card.last-used: Last used
 api-keys.list.card.never: Never
 api-keys.list.card.created: Created
-api-keys.list.card.delete: Delete
 api-keys.delete.success: The API key has been deleted successfully
 api-keys.delete.confirm.title: Delete API key
 api-keys.delete.confirm.message: Are you sure you want to delete this API key? This action cannot be undone.
 api-keys.delete.confirm.confirm-button: Delete
 api-keys.delete.confirm.cancel-button: Cancel
+
+webhooks.list.title: Webhooks
+webhooks.list.description: Manage your organization webhooks
+webhooks.list.empty.title: No webhooks
+webhooks.list.empty.description: Create your first webhook to start receiving events
+webhooks.list.create: Create webhook
+webhooks.list.card.last-triggered: Last triggered
+webhooks.list.card.never: Never
+webhooks.list.card.created: Created
+
+webhooks.create.title: Create webhook
+webhooks.create.description: Create a new webhook to receive events
+webhooks.create.success: Webhook created successfully
+webhooks.create.back: Back
+webhooks.create.form.submit: Create webhook
+webhooks.create.form.name.label: Webhook name
+webhooks.create.form.name.placeholder: Enter webhook name
+webhooks.create.form.name.required: Name is required
+webhooks.create.form.url.label: Webhook URL
+webhooks.create.form.url.placeholder: Enter webhook URL
+webhooks.create.form.url.required: URL is required
+webhooks.create.form.url.invalid: URL is invalid
+webhooks.create.form.secret.label: Secret
+webhooks.create.form.secret.placeholder: Enter webhook secret
+webhooks.create.form.events.label: Events
+webhooks.create.form.events.required: At least one event is required
+webhooks.update.title: Edit webhook
+webhooks.update.description: Update your webhook details
+webhooks.update.success: Webhook updated successfully
+webhooks.update.submit: Update webhook
+webhooks.update.cancel: Cancel
+webhooks.update.form.secret.placeholder: Enter new secret
+webhooks.update.form.secret.placeholder-redacted: '[Redacted secret]'
+webhooks.update.form.rotate-secret.button: Rotate secret
+webhooks.delete.success: Webhook deleted successfully
+webhooks.delete.confirm.title: Delete webhook
+webhooks.delete.confirm.message: Are you sure you want to delete this webhook?
+webhooks.delete.confirm.confirm-button: Delete
+webhooks.delete.confirm.cancel-button: Cancel
+
+webhooks.events.documents.document:created.description: Document created
+webhooks.events.documents.document:deleted.description: Document deleted

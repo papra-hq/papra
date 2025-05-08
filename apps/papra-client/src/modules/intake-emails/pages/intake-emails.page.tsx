@@ -211,9 +211,9 @@ export const IntakeEmailsPage: Component = () => {
   };
 
   return (
-    <Card class="p-6">
+    <div class="p-6 max-w-screen-md mx-auto mt-10">
 
-      <h2 class="text-base font-bold">Intake Emails</h2>
+      <h1 class="text-xl font-semibold">Intake Emails</h1>
 
       <p class="text-muted-foreground mt-1">
         Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.
@@ -264,7 +264,7 @@ export const IntakeEmailsPage: Component = () => {
               <div class="flex flex-col gap-2">
                 <For each={intakeEmails()}>
                   {intakeEmail => (
-                    <div class="flex items-center justify-between border rounded-lg p-4">
+                    <div class="flex items-center justify-between border rounded-lg p-4 bg-card">
                       <div class="flex items-center gap-4">
                         <div class="bg-muted size-9 rounded-lg flex items-center justify-center">
                           <div class={cn('i-tabler-mail size-5', intakeEmail.isEnabled ? 'text-primary' : 'text-muted-foreground')} />
@@ -342,6 +342,6 @@ export const IntakeEmailsPage: Component = () => {
           )}
         </Show>
       </Suspense>
-    </Card>
+    </div>
   );
 };

@@ -1,5 +1,5 @@
 {
-  "name": "@papra/papra-app-client",
+  "name": "@papra/app-client",
   "type": "module",
   "version": "0.3.0",
   "packageManager": "pnpm@10.9.0",
@@ -63,6 +63,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "jsdom": "^25.0.0",
+    "tinyglobby": "^0.2.13",
     "tsx": "^4.19.1",
     "typescript": "catalog:",
     "unocss": "0.65.0-beta.2",

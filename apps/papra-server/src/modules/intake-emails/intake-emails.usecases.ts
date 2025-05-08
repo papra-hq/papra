@@ -6,6 +6,7 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
+import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
 import { safely } from '@corentinth/chisels';
@@ -54,6 +55,7 @@ export function processIntakeEmailIngestion({
   trackingServices,
   taggingRulesRepository,
   tagsRepository,
+  webhookRepository,
 }: {
   fromAddress: string;
   recipientsAddresses: string[];
@@ -66,6 +68,7 @@ export function processIntakeEmailIngestion({
   trackingServices: TrackingServices;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
 }) {
   return Promise.all(
     recipientsAddresses.map(recipientAddress => safely(
@@ -81,6 +84,7 @@ export function processIntakeEmailIngestion({
         trackingServices,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
       }),
     )),
   );
@@ -99,6 +103,7 @@ export async function ingestEmailForRecipient({
   subscriptionsRepository,
   taggingRulesRepository,
   tagsRepository,
+  webhookRepository,
 }: {
   fromAddress: string;
   recipientAddress: string;
@@ -111,6 +116,7 @@ export async function ingestEmailForRecipient({
   trackingServices: TrackingServices;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
   logger?: Logger;
 }) {
   const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
@@ -151,6 +157,7 @@ export async function ingestEmailForRecipient({
       trackingServices,
       taggingRulesRepository,
       tagsRepository,
+      webhookRepository,
     }));
 
     if (error) {
