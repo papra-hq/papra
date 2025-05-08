@@ -4,7 +4,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g corepack@latest
 RUN corepack enable
-RUN corepack prepare pnpm@9.15.4 --activate
+RUN corepack prepare pnpm@10.9.0 --activate
 
 # Build stage
 FROM base AS build
@@ -15,15 +15,16 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY apps/papra-client/package.json apps/papra-client/package.json
 COPY apps/papra-server/package.json apps/papra-server/package.json
+COPY packages/webhooks/package.json packages/webhooks/package.json
 
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
 
-RUN pnpm --filter @papra/papra-app-client run build && \
-    pnpm --filter @papra/papra-app-server run build
+RUN pnpm --filter "@papra/app-client..." run build && \
+    pnpm --filter "@papra/app-server..." run build
 
-RUN pnpm deploy --filter=@papra/papra-app-server --prod /prod/papra-server
+RUN pnpm deploy --filter=@papra/app-server --legacy --prod /prod/papra-server
 
 FROM base
 
