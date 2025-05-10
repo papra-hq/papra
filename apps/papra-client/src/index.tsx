@@ -9,6 +9,7 @@ import { render, Suspense } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';
+import { DevTools } from './modules/dev-tools/components/dev-tools.components';
 import { I18nProvider } from './modules/i18n/i18n.provider';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
@@ -33,6 +34,7 @@ render(
           <QueryClientProvider client={queryClient}>
             <PageViewTracker />
             <IdentifyUser />
+            <DevTools />
 
             <Suspense>
               <I18nProvider>
