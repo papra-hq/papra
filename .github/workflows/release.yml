@@ -38,7 +38,6 @@ jobs:
           publish: pnpm exec changeset publish
           commit: "chore(release): update versions"
           title: "chore(release): update versions"
-          commitMode: "github-api"
         env:
           GITHUB_TOKEN: ${{ secrets.CHANGESET_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
