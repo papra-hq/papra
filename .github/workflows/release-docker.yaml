@@ -3,7 +3,7 @@ name: Release new versions
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '@papra/app-server@*'
 
 permissions:
   contents: read
@@ -15,13 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get release version from tag
-        if: ${{ github.event_name == 'push' }}
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/@papra/app-server@}" >> $GITHUB_ENV
     
-      - name: Get release version from input
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "RELEASE_VERSION=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 

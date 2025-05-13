@@ -9,9 +9,11 @@
   "scripts": {
     "docker:build:root": "docker build -t papra -f docker/Dockerfile .",
     "docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless .",
-    "release": "bumpp --commit --tag --push --recursive"
+    "version": "changeset version && pnpm install --no-frozen-lockfile",
+    "changeset": "changeset"
   },
-  "dependencies": {
-    "bumpp": "^9.10.0"
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.3"
   }
 }

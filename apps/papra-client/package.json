@@ -2,6 +2,7 @@
   "name": "@papra/app-client",
   "type": "module",
   "version": "0.3.0",
+  "private": true,
   "packageManager": "pnpm@10.9.0",
   "description": "Papra frontend client",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",

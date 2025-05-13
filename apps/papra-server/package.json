@@ -2,6 +2,7 @@
   "name": "@papra/app-server",
   "type": "module",
   "version": "0.3.0",
+  "private": true,
   "packageManager": "pnpm@10.9.0",
   "description": "Papra app server",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
