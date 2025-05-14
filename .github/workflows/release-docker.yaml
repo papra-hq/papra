@@ -1,9 +1,12 @@
 name: Release new versions
 
 on:
-  push:
-    tags:
-      - '@papra/app-server@*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -14,9 +17,6 @@ jobs:
     name: Release Docker images
     runs-on: ubuntu-latest
     steps:
-      - name: Get release version from tag
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/@papra/app-server@}" >> $GITHUB_ENV
-    
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
@@ -48,9 +48,9 @@ jobs:
           push: true
           tags: |
             corentinth/papra:latest-root
-            corentinth/papra:${{ env.RELEASE_VERSION }}-root
+            corentinth/papra:${{ inputs.version }}-root
             ghcr.io/papra-hq/papra:latest-root
-            ghcr.io/papra-hq/papra:${{ env.RELEASE_VERSION }}-root
+            ghcr.io/papra-hq/papra:${{ inputs.version }}-root
 
       - name: Build and push rootless Docker image
         uses: docker/build-push-action@v6
@@ -62,7 +62,7 @@ jobs:
           tags: |
             corentinth/papra:latest
             corentinth/papra:latest-rootless
-            corentinth/papra:${{ env.RELEASE_VERSION }}-rootless
+            corentinth/papra:${{ inputs.version }}-rootless
             ghcr.io/papra-hq/papra:latest
             ghcr.io/papra-hq/papra:latest-rootless
-            ghcr.io/papra-hq/papra:${{ env.RELEASE_VERSION }}-rootless
+            ghcr.io/papra-hq/papra:${{ inputs.version }}-rootless
