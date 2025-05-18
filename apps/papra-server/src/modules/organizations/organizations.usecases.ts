@@ -1,13 +1,21 @@
 import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
+import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
+import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import type { UsersRepository } from '../users/users.repository';
 import type { OrganizationsRepository } from './organizations.repository';
+import type { OrganizationRole } from './organizations.types';
+import { buildUrl } from '@corentinth/chisels';
+import { createForbiddenError } from '../app/auth/auth.errors';
 import { getOrganizationPlan } from '../plans/plans.usecases';
+import { sanitize } from '../shared/html/html';
+import { createLogger } from '../shared/logger/logger';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationDocumentStorageLimitReachedError, createOrganizationNotFoundError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError } from './organizations.errors';
+import { createOrganizationDocumentStorageLimitReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import { canUserRemoveMemberFromOrganization } from './organizations.models';
 
 export async function createOrganization({ name, userId, organizationsRepository }: { name: string; userId: string; organizationsRepository: OrganizationsRepository }) {
   const { organization } = await organizationsRepository.saveOrganization({ organization: { name } });
@@ -129,4 +137,180 @@ export async function ensureUserIsOwnerOfOrganization({
   if (organizationOwner.id !== userId) {
     throw createUserNotOrganizationOwnerError();
   }
+}
+
+export async function removeMemberFromOrganization({
+  memberId,
+  userId,
+  organizationId,
+  organizationsRepository,
+  logger = createLogger({ namespace: 'organizations.usecases' }),
+}: {
+  memberId: string;
+  userId: string;
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+  logger?: Logger;
+}) {
+  const [{ member }, { member: currentUser }] = await Promise.all([
+    organizationsRepository.getOrganizationMemberByMemberId({ memberId, organizationId }),
+    organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId }),
+  ]);
+
+  if (!member || !currentUser) {
+    logger.error({ memberId, userId, organizationId }, 'Member or current user not found in organization');
+    throw createForbiddenError();
+  }
+
+  const userRole = currentUser.role;
+  const memberRole = member.role;
+
+  if (!canUserRemoveMemberFromOrganization({ userRole, memberRole })) {
+    logger.error({
+      memberId,
+      userId,
+      organizationId,
+      userRole,
+      memberRole,
+    }, 'User does not have permission to remove member from organization');
+    throw createForbiddenError();
+  }
+
+  await organizationsRepository.removeUserFromOrganization({ userId: member.userId, organizationId });
+}
+
+export async function checkIfUserHasReachedOrganizationInvitationLimit({
+  userId,
+  maxInvitationsPerDay,
+  organizationsRepository,
+}: {
+  userId: string;
+  maxInvitationsPerDay: number;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { userInvitationCount } = await organizationsRepository.getTodayUserInvitationCount({ userId });
+
+  if (userInvitationCount >= maxInvitationsPerDay) {
+    throw createUserOrganizationInvitationLimitReachedError();
+  }
+}
+
+export async function inviteMemberToOrganization({
+  email,
+  role,
+  organizationId,
+  organizationsRepository,
+  inviterId,
+  expirationDelayDays,
+  maxInvitationsPerDay,
+  now = new Date(),
+  logger = createLogger({ namespace: 'organizations.usecases' }),
+  emailsServices,
+  config,
+}: {
+  email: string;
+  role: OrganizationRole;
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+  inviterId: string;
+  expirationDelayDays: number;
+  maxInvitationsPerDay: number;
+  now?: Date;
+  logger?: Logger;
+  emailsServices: EmailsServices;
+  config: Config;
+}) {
+  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({ userId: inviterId, organizationId });
+
+  if (!inviterMember) {
+    logger.error({ inviterId, organizationId }, 'Inviter not found in organization');
+    throw createUserNotInOrganizationError();
+  }
+
+  if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
+    logger.error({ inviterId, organizationId }, 'Inviter does not have permission to invite members to organization');
+    throw createForbiddenError();
+  }
+
+  if (role === ORGANIZATION_ROLES.OWNER) {
+    logger.error({ inviterId, organizationId }, 'Cannot create another owner in organization');
+    throw createForbiddenError();
+  }
+
+  const { member } = await organizationsRepository.getOrganizationMemberByEmail({ email, organizationId });
+
+  if (member) {
+    logger.error({ inviterId, organizationId, email, memberId: member.id, memberUserId: member.userId }, 'User already in organization');
+    throw createUserAlreadyInOrganizationError();
+  }
+
+  const { invitation } = await organizationsRepository.getInvitationForEmailAndOrganization({ email, organizationId });
+
+  if (invitation) {
+    logger.error({ inviterId, organizationId, email, invitationId: invitation.id }, 'Invitation already exists');
+    throw createOrganizationInvitationAlreadyExistsError();
+  }
+
+  await checkIfUserHasReachedOrganizationInvitationLimit({
+    userId: inviterId,
+    maxInvitationsPerDay,
+    organizationsRepository,
+  });
+
+  const { organizationInvitation } = await organizationsRepository.saveOrganizationInvitation({
+    organizationId,
+    email,
+    role,
+    inviterId,
+    expirationDelayDays,
+    now,
+  });
+
+  await sendOrganizationInvitationEmail({
+    email,
+    organizationId,
+    organizationsRepository,
+    emailsServices,
+    config,
+  });
+
+  return { organizationInvitation };
+}
+
+export async function sendOrganizationInvitationEmail({
+  email,
+  organizationId,
+  organizationsRepository,
+  emailsServices,
+  config,
+}: {
+  email: string;
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+  emailsServices: EmailsServices;
+  config: Config;
+}) {
+  const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+  if (!organization) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const invitationLink = buildUrl({
+    baseUrl: config.client.baseUrl,
+    path: '/invitations',
+  });
+
+  const organizationName = sanitize(organization.name);
+
+  await emailsServices.sendEmail({
+    to: email,
+    subject: 'You are invited to join an organization',
+    html: `
+      <p>You are invited to join ${organizationName} on Papra.</p>
+      <p>See <a href="${invitationLink}">${invitationLink}</a> to review and accept or reject your invitations.</p>
+      <p>If you are not interested in joining this organization, you can ignore this email.</p>
+      <p>Best regards,<br />The Papra Team</p>
+    `,
+  });
 }

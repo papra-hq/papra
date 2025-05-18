@@ -1,6 +1,11 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX } from 'solid-js';
 import type { IntakeEmail } from '../intake-emails.types';
+import { safely } from '@corentinth/chisels';
+import { useParams } from '@solidjs/router';
+import { createQuery } from '@tanstack/solid-query';
+import { createSignal, For, Show, Suspense } from 'solid-js';
+import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
@@ -14,11 +19,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { safely } from '@corentinth/chisels';
-import { useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
-import { createSignal, For, Show, Suspense } from 'solid-js';
-import * as v from 'valibot';
 import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEmail } from '../intake-emails.services';
 
 const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) => JSX.Element; intakeEmails: IntakeEmail }> = (props) => {

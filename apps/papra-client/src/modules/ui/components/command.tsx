@@ -9,9 +9,9 @@ import type {
   CommandRootProps,
 } from 'cmdk-solid';
 import type { ComponentProps, VoidProps } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Command as CommandPrimitive } from 'cmdk-solid';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 import { Dialog, DialogContent } from './dialog';
 
 export function Command(props: CommandRootProps) {

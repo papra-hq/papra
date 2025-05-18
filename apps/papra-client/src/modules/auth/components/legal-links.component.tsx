@@ -1,9 +1,9 @@
 import type { Component } from 'solid-js';
+import { A } from '@solidjs/router';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createVitrineUrl } from '@/modules/shared/utils/urls';
 import { Button } from '@/modules/ui/components/button';
-import { A } from '@solidjs/router';
 
 export const AuthLegalLinks: Component = () => {
   const { config } = useConfig();

@@ -1,9 +1,9 @@
 import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
+import { A } from '@solidjs/router';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
-import { A } from '@solidjs/router';
 import { useDeleteDocument } from '../documents.composables';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {

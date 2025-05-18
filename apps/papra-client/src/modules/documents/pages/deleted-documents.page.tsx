@@ -1,5 +1,8 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
+import { useParams } from '@solidjs/router';
+import { createMutation, createQuery, keepPreviousData } from '@tanstack/solid-query';
+import { createSignal, Show, Suspense } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -8,9 +11,6 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
-import { useParams } from '@solidjs/router';
-import { createMutation, createQuery, keepPreviousData } from '@tanstack/solid-query';
-import { createSignal, Show, Suspense } from 'solid-js';
 import { DocumentsPaginatedList } from '../components/documents-list.component';
 import { useRestoreDocument } from '../documents.composables';
 import { deleteAllTrashDocuments, deleteTrashDocument, fetchOrganizationDeletedDocuments } from '../documents.services';

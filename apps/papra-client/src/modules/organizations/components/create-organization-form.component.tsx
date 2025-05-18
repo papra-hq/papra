@@ -1,10 +1,10 @@
 import type { Component } from 'solid-js';
+import { safely } from '@corentinth/chisels';
+import * as v from 'valibot';
 import { createForm } from '@/modules/shared/form/form';
 import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { safely } from '@corentinth/chisels';
-import * as v from 'valibot';
 import { organizationNameSchema } from '../organizations.schemas';
 
 export const CreateOrganizationForm: Component<{

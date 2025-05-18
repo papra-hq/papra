@@ -4,9 +4,9 @@ import type {
   TooltipRootProps,
 } from '@kobalte/core/tooltip';
 import type { ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Tooltip as TooltipPrimitive } from '@kobalte/core/tooltip';
 import { mergeProps, splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 

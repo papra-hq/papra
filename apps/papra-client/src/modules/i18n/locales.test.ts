@@ -40,6 +40,7 @@ describe('locales', () => {
       /^auth\.register\.providers\.[a-z0-9:]+$/, // auth.register.providers.google
       /^webhooks\.events\.documents\.[a-z0-9:]+.description$/, // webhooks.events.organization.organization:created
       /^api-keys\.permissions\.[a-z0-9:]+\.[a-z0-9:]+$/, // api-keys.permissions.documents.documents:delete
+      /^organizations\.members\.roles\.[a-z0-9]+$/, // organizations.members.roles.admin
     ];
 
     const keys = new Set(

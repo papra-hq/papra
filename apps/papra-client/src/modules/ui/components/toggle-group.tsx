@@ -5,9 +5,9 @@ import type {
 } from '@kobalte/core/toggle-group';
 import type { VariantProps } from 'class-variance-authority';
 import type { Accessor, ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { ToggleGroup as ToggleGroupPrimitive } from '@kobalte/core/toggle-group';
 import { createContext, createMemo, splitProps, useContext } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 import { toggleVariants } from './toggle';
 
 const ToggleGroupContext = createContext<Accessor<VariantProps<typeof toggleVariants>>>();

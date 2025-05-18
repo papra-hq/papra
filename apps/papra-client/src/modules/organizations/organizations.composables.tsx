@@ -1,6 +1,6 @@
+import { useNavigate } from '@solidjs/router';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { createToast } from '@/modules/ui/components/sonner';
-import { useNavigate } from '@solidjs/router';
 import { createOrganization, deleteOrganization, updateOrganization } from './organizations.services';
 
 export function useCreateOrganization() {

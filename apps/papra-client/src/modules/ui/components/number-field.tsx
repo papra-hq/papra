@@ -9,9 +9,9 @@ import type {
 } from '@kobalte/core/number-field';
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
 import type { ComponentProps, ValidComponent, VoidProps } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { NumberField as NumberFieldPrimitive } from '@kobalte/core/number-field';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 import { textfieldLabel } from './textfield';
 
 export const NumberFieldHiddenInput = NumberFieldPrimitive.HiddenInput;

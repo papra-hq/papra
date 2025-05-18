@@ -29,3 +29,21 @@ export const createUserNotOrganizationOwnerError = createErrorFactory({
   code: 'user.not_organization_owner',
   statusCode: 403,
 });
+
+export const createUserOrganizationInvitationLimitReachedError = createErrorFactory({
+  message: 'You have reached the maximum number of invitations.',
+  code: 'user.organization_invitation_limit_reached',
+  statusCode: 429,
+});
+
+export const createOrganizationInvitationAlreadyExistsError = createErrorFactory({
+  message: 'An invitation for this email already exists.',
+  code: 'organization.invitation_already_exists',
+  statusCode: 400,
+});
+
+export const createUserAlreadyInOrganizationError = createErrorFactory({
+  message: 'This user is already in this organization.',
+  code: 'user.already_in_organization',
+  statusCode: 400,
+});

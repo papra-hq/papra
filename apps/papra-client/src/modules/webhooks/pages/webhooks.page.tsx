@@ -1,15 +1,15 @@
 import type { Component } from 'solid-js';
 import type { Webhook } from '../webhooks.types';
+import { A, useParams } from '@solidjs/router';
+import { createMutation, createQuery } from '@tanstack/solid-query';
+import { format } from 'date-fns';
+import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
-import { A, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
-import { format } from 'date-fns';
-import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { deleteWebhook, fetchWebhooks } from '../webhooks.services';
 
 export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {

@@ -1,17 +1,19 @@
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { describe, expect, test } from 'vitest';
+import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
+import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError, createOrganizationNotFoundError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from './organizations.usecases';
+import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, removeMemberFromOrganization } from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -349,6 +351,116 @@ describe('organizations usecases', () => {
       ).rejects.toThrow(
         createUserNotOrganizationOwnerError(),
       );
+    });
+  });
+
+  describe('removeMemberFromOrganization', () => {
+    test('a admin can remove himself from the organization', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+          { id: 'user-2', email: 'user-2@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { id: 'member-1', organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.ADMIN },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      await removeMemberFromOrganization({
+        memberId: 'member-2',
+        userId: 'user-2',
+        organizationId: 'organization-1',
+        organizationsRepository,
+      });
+
+      const remainingMembers = await db.select().from(organizationMembersTable);
+
+      expect(remainingMembers.length).to.equal(1);
+      expect(remainingMembers[0].id).to.equal('member-1');
+    });
+
+    test('a member (not admin nor owner) cannot remove anyone from the organization', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+          { id: 'user-2', email: 'user-2@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { id: 'member-1', organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.MEMBER },
+          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.MEMBER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await expect(
+        removeMemberFromOrganization({
+          memberId: 'member-2',
+          userId: 'user-2',
+          organizationId: 'organization-1',
+          organizationsRepository,
+          logger,
+        }),
+      ).rejects.toThrow(createForbiddenError());
+
+      expect(getLogs({ excludeTimestampMs: true })).to.eql([
+        {
+          level: 'error',
+          message: 'User does not have permission to remove member from organization',
+          namespace: 'test',
+          data: {
+            memberId: 'member-2',
+            userId: 'user-2',
+            organizationId: 'organization-1',
+            userRole: 'member',
+            memberRole: 'member',
+          },
+        },
+      ]);
+    });
+
+    test('one cannot remove a user from another organization', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+          { id: 'user-2', email: 'user-2@example.com' },
+        ],
+        organizations: [
+          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-2', name: 'Organization 2' },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await expect(
+        removeMemberFromOrganization({
+          memberId: 'member-2',
+          userId: 'user-2',
+          organizationId: 'organization-1',
+          organizationsRepository,
+          logger,
+        }),
+      ).rejects.toThrow(createForbiddenError());
+
+      expect(getLogs({ excludeTimestampMs: true })).to.eql([
+        {
+          level: 'error',
+          message: 'Member or current user not found in organization',
+          namespace: 'test',
+          data: {
+            memberId: 'member-2',
+            userId: 'user-2',
+            organizationId: 'organization-1',
+          },
+        },
+      ]);
     });
   });
 });

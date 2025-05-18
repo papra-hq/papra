@@ -12,7 +12,10 @@ function setValidParams(path: string) {
     .replaceAll(':taggingRuleId', 'rule_555555555555555555555555')
     .replaceAll(':intakeEmailId', 'email_666666666666666666666666')
     .replaceAll(':apiKeyId', 'api_key_777777777777777777777777')
-    .replaceAll(':webhookId', 'wbh_888888888888888888888888');
+    .replaceAll(':webhookId', 'wbh_888888888888888888888888')
+    .replaceAll(':memberId', 'org_mem_999999999999999999999999')
+    .replaceAll(':invitationId', 'inv_101010101010101010101010');
+
   // throw if there are any remaining params
   if (newPath.match(/:(\w+)/g)) {
     throw new Error(`Add a dummy value for the params in ${path}`);

@@ -269,7 +269,7 @@ describe('documents usecases', () => {
       const userId = 'user-1';
       const organizationId = 'organization-1';
 
-      expect(
+      await expect(
         createDocument({
           file,
           userId,

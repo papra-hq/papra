@@ -1,10 +1,10 @@
 import type { Component } from 'solid-js';
+import { useParams } from '@solidjs/router';
+import { createSignal } from 'solid-js';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
-import { useParams } from '@solidjs/router';
-import { createSignal } from 'solid-js';
 import { uploadDocument } from '../documents.services';
 
 export const DocumentUploadArea: Component<{ organizationId?: string }> = (props) => {

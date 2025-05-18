@@ -4,9 +4,10 @@ import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createUsersRepository } from '../users/users.repository';
-import { organizationIdSchema } from './organization.schemas';
+import { memberIdSchema, organizationIdSchema } from './organization.schemas';
+import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
-import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization } from './organizations.usecases';
 
 export async function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
@@ -14,6 +15,9 @@ export async function registerOrganizationsRoutes(context: RouteDefinitionContex
   setupGetOrganizationRoute(context);
   setupUpdateOrganizationRoute(context);
   setupDeleteOrganizationRoute(context);
+  setupGetOrganizationMembersRoute(context);
+  setupRemoveOrganizationMemberRoute(context);
+  setupInviteOrganizationMemberRoute(context);
 }
 
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
@@ -125,6 +129,88 @@ function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       await organizationsRepository.deleteOrganization({ organizationId });
+
+      return context.body(null, 204);
+    },
+  );
+}
+
+function setupGetOrganizationMembersRoute({ app, db }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/:organizationId/members',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { members } = await organizationsRepository.getOrganizationMembers({ organizationId });
+
+      return context.json({ members });
+    },
+  );
+}
+
+function setupRemoveOrganizationMemberRoute({ app, db }: RouteDefinitionContext) {
+  app.delete(
+    '/api/organizations/:organizationId/members/:memberId',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+      memberId: memberIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, memberId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await removeMemberFromOrganization({ memberId, userId, organizationId, organizationsRepository });
+
+      return context.body(null, 204);
+    },
+  );
+}
+
+function setupInviteOrganizationMemberRoute({ app, db, config, emailsServices }: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/members/invitations',
+    requireAuthentication(),
+    validateJsonBody(z.object({
+      email: z.string().email().toLowerCase(),
+      role: z.enum([ORGANIZATION_ROLES.ADMIN, ORGANIZATION_ROLES.MEMBER]),
+    })),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+      const { email, role } = context.req.valid('json');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      await inviteMemberToOrganization({
+        email,
+        role,
+        organizationId,
+        organizationsRepository,
+        inviterId: userId,
+        expirationDelayDays: config.organizations.invitationExpirationDelayDays,
+        maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
+        emailsServices,
+        config,
+      });
 
       return context.body(null, 204);
     },

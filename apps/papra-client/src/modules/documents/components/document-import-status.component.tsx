@@ -1,15 +1,15 @@
 import type { ParentComponent } from 'solid-js';
 import type { Document } from '../documents.types';
-import { useI18n } from '@/modules/i18n/i18n.provider';
-import { promptUploadFiles } from '@/modules/shared/files/upload';
-import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
-import { cn } from '@/modules/shared/style/cn';
-import { Button } from '@/modules/ui/components/button';
 import { safely } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
 import { throttle } from 'lodash-es';
 import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import { useI18n } from '@/modules/i18n/i18n.provider';
+import { promptUploadFiles } from '@/modules/shared/files/upload';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
+import { cn } from '@/modules/shared/style/cn';
+import { Button } from '@/modules/ui/components/button';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { uploadDocument } from '../documents.services';
 
@@ -17,7 +17,7 @@ const DocumentUploadContext = createContext<{
   uploadDocuments: (args: { files: File[]; organizationId: string }) => Promise<void>;
 }>();
 
-export function useDocumentUpload({ organizationId }: { organizationId: string }) {
+export function useDocumentUpload({ getOrganizationId }: { getOrganizationId: () => string }) {
   const context = useContext(DocumentUploadContext);
 
   if (!context) {
@@ -27,11 +27,11 @@ export function useDocumentUpload({ organizationId }: { organizationId: string }
   const { uploadDocuments } = context;
 
   return {
-    uploadDocuments: async ({ files }: { files: File[] }) => uploadDocuments({ files, organizationId }),
+    uploadDocuments: async ({ files }: { files: File[] }) => uploadDocuments({ files, organizationId: getOrganizationId() }),
     promptImport: async () => {
       const { files } = await promptUploadFiles();
 
-      await uploadDocuments({ files, organizationId });
+      await uploadDocuments({ files, organizationId: getOrganizationId() });
     },
   };
 }

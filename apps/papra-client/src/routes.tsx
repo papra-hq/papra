@@ -14,9 +14,12 @@ import { DeletedDocumentsPage } from './modules/documents/pages/deleted-document
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.page';
+import { InvitationsPage } from './modules/invitations/pages/invitations.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
+import { InviteMemberPage } from './modules/organizations/pages/invite-member.page';
+import { MembersPage } from './modules/organizations/pages/members.page';
 import { OrganizationPage } from './modules/organizations/pages/organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
@@ -128,6 +131,14 @@ export const routes: RouteDefinition[] = [
                 path: '/tagging-rules/:taggingRuleId',
                 component: UpdateTaggingRulePage,
               },
+              {
+                path: '/members',
+                component: MembersPage,
+              },
+              {
+                path: '/invite',
+                component: InviteMemberPage,
+              },
 
             ],
           },
@@ -184,6 +195,10 @@ export const routes: RouteDefinition[] = [
       {
         path: '/api-keys/create',
         component: CreateApiKeyPage,
+      },
+      {
+        path: '/invitations',
+        component: InvitationsPage,
       },
     ],
   },

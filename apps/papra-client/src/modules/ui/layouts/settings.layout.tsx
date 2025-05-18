@@ -1,6 +1,6 @@
 import type { ParentComponent } from 'solid-js';
-import { useI18n } from '@/modules/i18n/i18n.provider';
 import { A } from '@solidjs/router';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '../components/button';
 import { SideNav } from './sidenav.layout';
 
@@ -17,6 +17,11 @@ export const SettingsLayout: ParentComponent = (props) => {
       label: t('layout.menu.api-keys'),
       icon: 'i-tabler-key',
       href: '/api-keys',
+    },
+    {
+      label: t('layout.menu.invitations'),
+      icon: 'i-tabler-mail',
+      href: '/invitations',
     },
   ];
 

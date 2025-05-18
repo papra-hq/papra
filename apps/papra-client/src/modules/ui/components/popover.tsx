@@ -4,9 +4,9 @@ import type {
   PopoverRootProps,
 } from '@kobalte/core/popover';
 import type { ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Popover as PopoverPrimitive } from '@kobalte/core/popover';
 import { mergeProps, splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const PopoverTrigger = PopoverPrimitive.Trigger;
 export const PopoverTitle = PopoverPrimitive.Title;

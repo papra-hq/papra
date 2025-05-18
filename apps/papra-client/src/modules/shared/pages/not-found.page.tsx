@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
-import { Button } from '@/modules/ui/components/button';
 import { A } from '@solidjs/router';
+import { Button } from '@/modules/ui/components/button';
 
 export const NotFoundPage: Component = () => {
   return (

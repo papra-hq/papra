@@ -1,8 +1,8 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
-import { Card } from '@/modules/ui/components/card';
 import { createQuery } from '@tanstack/solid-query';
 import { createResource, Match, Suspense, Switch } from 'solid-js';
+import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
 import { PdfViewer } from './pdf-viewer.component';
 

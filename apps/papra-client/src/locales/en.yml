@@ -85,7 +85,8 @@ layout.menu.account: Account
 layout.menu.general-settings: General settings
 layout.menu.intake-emails: Intake emails
 layout.menu.webhooks: Webhooks
-
+layout.menu.members: Members
+layout.menu.invitations: Invitations
 tagging-rules.field.name: document name
 tagging-rules.field.content: document content
 tagging-rules.operator.equals: equals
@@ -165,6 +166,9 @@ api-errors.document.file_too_big: The document file is too big
 api-errors.intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
 api-errors.user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
 api-errors.default: An error occurred while processing your request.
+api-errors.organization.invitation_already_exists: An invitation for this email already exists in this organization.
+api-errors.user.already_in_organization: This user is already in this organization.
+api-errors.user.organization_invitation_limit_reached: The maximum number of invitations has been reached for today. Please try again tomorrow.
 
 api-keys.permissions.documents.title: Documents
 api-keys.permissions.documents.documents:create: Create documents
@@ -243,3 +247,41 @@ webhooks.delete.confirm.cancel-button: Cancel
 
 webhooks.events.documents.document:created.description: Document created
 webhooks.events.documents.document:deleted.description: Document deleted
+
+organizations.members.title: Members
+organizations.members.description: Manage your organization members
+organizations.members.invite-member: Invite member
+organizations.members.remove-from-organization: Remove from organization
+organizations.members.roles.owner: Owner
+organizations.members.roles.admin: Admin
+organizations.members.roles.member: Member
+organizations.members.delete.confirm.title: Remove member
+organizations.members.delete.confirm.message: Are you sure you want to remove this member from the organization?
+organizations.members.delete.confirm.confirm-button: Remove
+organizations.members.delete.confirm.cancel-button: Cancel
+organizations.members.delete.success: Member removed from organization
+
+organizations.invite-member.title: Invite member
+organizations.invite-member.description: Invite a member to your organization
+organizations.invite-member.form.email.label: Email
+organizations.invite-member.form.email.placeholder: 'Example: ada@papra.app'
+organizations.invite-member.form.email.required: Please enter a valid email address
+organizations.invite-member.form.role.label: Role
+organizations.invite-member.form.submit: Invite to organization
+organizations.invite-member.success.message: Member invited
+organizations.invite-member.success.description: The email has been invited to the organization.
+organizations.invite-member.error.message: Failed to invite member
+
+invitations.list.title: Invitations
+invitations.list.description: Manage your organization invitations
+invitations.list.empty.title: No pending invitations
+invitations.list.empty.description: You haven't been invited to any organizations yet.
+invitations.list.headers.organization: Organization
+invitations.list.headers.created: Created
+invitations.list.headers.actions: Actions
+invitations.list.actions.accept: Accept
+invitations.list.actions.reject: Reject
+invitations.list.actions.accept.success.message: Invitation accepted
+invitations.list.actions.accept.success.description: The invitation has been accepted.
+invitations.list.actions.reject.success.message: Invitation rejected
+invitations.list.actions.reject.success.description: The invitation has been rejected.

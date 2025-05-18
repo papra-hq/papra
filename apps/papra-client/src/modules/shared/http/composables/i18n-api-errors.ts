@@ -1,6 +1,6 @@
 import type { LocaleKeys } from '@/modules/i18n/locales.types';
-import { useI18n } from '@/modules/i18n/i18n.provider';
 import { get } from 'lodash-es';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 
 export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof useI18n>['t'] } = {}) {
   const getTranslationFromApiErrorCode = ({ code }: { code: string }) => {

@@ -1,9 +1,9 @@
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
 import type { ProgressRootProps } from '@kobalte/core/progress';
 import type { ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Progress as ProgressPrimitive } from '@kobalte/core/progress';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const ProgressLabel = ProgressPrimitive.Label;
 export const ProgressValueLabel = ProgressPrimitive.ValueLabel;

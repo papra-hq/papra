@@ -1,8 +1,8 @@
 import type { Component } from 'solid-js';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { createEffect, on } from 'solid-js';
+import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { CreateOrganizationForm } from '../components/create-organization-form.component';
 import { useCreateOrganization } from '../organizations.composables';
 import { fetchOrganizations } from '../organizations.services';

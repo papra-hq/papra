@@ -1,18 +1,19 @@
 import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import type { Component, ComponentProps, JSX, ParentComponent } from 'solid-js';
+import { A, useNavigate, useParams } from '@solidjs/router';
+import { Show, Suspense } from 'solid-js';
+
 import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 
 import { useConfig } from '@/modules/config/config.provider';
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
-
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { usePendingInvitationsCount } from '@/modules/invitations/composables/usePendingInvitationsCount';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { A, useNavigate, useParams } from '@solidjs/router';
-import { Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
@@ -180,8 +181,10 @@ export const SidenavLayout: ParentComponent<{
   const params = useParams();
   const { openCommandPalette } = useCommandPalette();
   const navigate = useNavigate();
+  const { getPendingInvitationsCount } = usePendingInvitationsCount();
+  const { t } = useI18n();
 
-  const { promptImport, uploadDocuments } = useDocumentUpload({ organizationId: params.organizationId });
+  const { promptImport, uploadDocuments } = useDocumentUpload({ getOrganizationId: () => params.organizationId });
 
   return (
     <div class="flex flex-row h-screen min-h-0">
@@ -232,8 +235,13 @@ export const SidenavLayout: ParentComponent<{
             </DropdownMenu>
 
             <DropdownMenu>
-              <DropdownMenuTrigger as={Button} class="text-base hidden sm:flex" variant="outline" aria-label="User menu" size="icon">
+              <DropdownMenuTrigger as={Button} class="relative text-base hidden sm:flex" variant="outline" aria-label="User menu" size="icon">
                 <div class="i-tabler-user size-4"></div>
+                <Show when={getPendingInvitationsCount() > 0}>
+                  <div class="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-xl text-xs px-1.5 py-0.8 font-bold leading-none">
+                    {getPendingInvitationsCount() }
+                  </div>
+                </Show>
               </DropdownMenuTrigger>
               <DropdownMenuContent class="w-42">
                 <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/settings">
@@ -244,6 +252,16 @@ export const SidenavLayout: ParentComponent<{
                 <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/api-keys">
                   <div class="i-tabler-key size-4 text-muted-foreground"></div>
                   API keys
+                </DropdownMenuItem>
+
+                <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/invitations">
+                  <div class="i-tabler-mail-plus size-4 text-muted-foreground"></div>
+                  {t('layout.menu.invitations')}
+                  <Show when={getPendingInvitationsCount() > 0}>
+                    <div class="ml-auto bg-primary text-primary-foreground rounded-xl text-xs px-1.5 py-0.8 font-bold leading-none">
+                      {getPendingInvitationsCount() }
+                    </div>
+                  </Show>
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>

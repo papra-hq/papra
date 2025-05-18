@@ -7,10 +7,10 @@ import type {
   TextFieldRootProps,
 } from '@kobalte/core/text-field';
 import type { ValidComponent, VoidProps } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { TextField as TextFieldPrimitive } from '@kobalte/core/text-field';
 import { cva } from 'class-variance-authority';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 type textFieldProps<T extends ValidComponent = 'div'> =
   TextFieldRootProps<T> & {

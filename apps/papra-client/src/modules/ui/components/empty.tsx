@@ -1,6 +1,6 @@
 import type { Component, ComponentProps, JSX } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const EmptyState: Component<{
   title: JSX.Element;

@@ -1,7 +1,7 @@
 import type { FetchOptions, ResponseType } from 'ofetch';
+import { ofetch } from 'ofetch';
 import { buildTimeConfig } from '@/modules/config/config';
 import { demoHttpClient } from '@/modules/demo/demo-http-client';
-import { ofetch } from 'ofetch';
 
 export { ResponseType };
 export type HttpClientOptions<R extends ResponseType = 'json'> = Omit<FetchOptions<R>, 'baseURL'> & { url: string; baseUrl?: string };

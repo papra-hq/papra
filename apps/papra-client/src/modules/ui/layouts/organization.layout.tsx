@@ -1,14 +1,14 @@
-import type { Organization } from '@/modules/organizations/organizations.types';
-
 import type { Component, ParentComponent } from 'solid-js';
 
-import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
-import { useI18n } from '@/modules/i18n/i18n.provider';
-import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import type { Organization } from '@/modules/organizations/organizations.types';
+
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries, createQuery } from '@tanstack/solid-query';
 import { get } from 'lodash-es';
 import { createEffect, on } from 'solid-js';
+import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
+import { useI18n } from '@/modules/i18n/i18n.provider';
+import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 import {
   Select,
   SelectContent,
@@ -45,7 +45,11 @@ const OrganizationLayoutSideNav: Component = () => {
       icon: 'i-tabler-list-check',
       href: `/organizations/${params.organizationId}/tagging-rules`,
     },
-
+    {
+      label: t('layout.menu.members'),
+      icon: 'i-tabler-users',
+      href: `/organizations/${params.organizationId}/members`,
+    },
   ];
 
   const getFooterMenuItems = () => [

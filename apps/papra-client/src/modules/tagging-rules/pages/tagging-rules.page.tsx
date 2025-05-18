@@ -1,14 +1,14 @@
 import type { Component } from 'solid-js';
 import type { TaggingRule } from '../tagging-rules.types';
+import { A, useParams } from '@solidjs/router';
+import { createMutation, createQuery } from '@tanstack/solid-query';
+import { For, Match, Show, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
-import { A, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
-import { For, Match, Show, Switch } from 'solid-js';
 import { deleteTaggingRule, fetchTaggingRules } from '../tagging-rules.services';
 
 const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {

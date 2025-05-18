@@ -1,6 +1,11 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX } from 'solid-js';
 import type { Tag as TagType } from '../tags.types';
+import { getValues } from '@modular-forms/solid';
+import { A, useParams } from '@solidjs/router';
+import { createQuery } from '@tanstack/solid-query';
+import { createSignal, For, Show, Suspense } from 'solid-js';
+import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { timeAgo } from '@/modules/shared/date/time-ago';
@@ -13,11 +18,6 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { getValues } from '@modular-forms/solid';
-import { A, useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
-import { createSignal, For, Show, Suspense } from 'solid-js';
-import * as v from 'valibot';
 import { Tag } from '../components/tag.component';
 import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';
 

@@ -1,7 +1,15 @@
 import type { AsDto } from '../shared/http/http-client.types';
-import type { Organization } from './organizations.types';
+import type { Organization, OrganizationMember, OrganizationMemberRole } from './organizations.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
+
+export async function inviteOrganizationMember({ organizationId, email, role }: { organizationId: string; email: string; role: OrganizationMemberRole }) {
+  await apiClient({
+    path: `/api/organizations/${organizationId}/members/invitations`,
+    method: 'POST',
+    body: { email, role },
+  });
+}
 
 export async function fetchOrganizations() {
   const { organizations } = await apiClient<{ organizations: AsDto<Organization>[] }>({
@@ -52,6 +60,24 @@ export async function fetchOrganization({ organizationId }: { organizationId: st
 export async function deleteOrganization({ organizationId }: { organizationId: string }) {
   await apiClient({
     path: `/api/organizations/${organizationId}`,
+    method: 'DELETE',
+  });
+}
+
+export async function fetchOrganizationMembers({ organizationId }: { organizationId: string }) {
+  const { members } = await apiClient<{ members: AsDto<OrganizationMember>[] }>({
+    path: `/api/organizations/${organizationId}/members`,
+    method: 'GET',
+  });
+
+  return {
+    members: members.map(({ user, ...rest }) => coerceDates({ user: coerceDates(user), ...rest })),
+  };
+}
+
+export async function removeOrganizationMember({ organizationId, memberId }: { organizationId: string; memberId: string }) {
+  await apiClient({
+    path: `/api/organizations/${organizationId}/members/${memberId}`,
     method: 'DELETE',
   });
 }

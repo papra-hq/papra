@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { createSignal, onCleanup } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const GlobalDropArea: Component<{ onFilesDrop?: (args: { files: File[] }) => void }> = (props) => {
   const [isDragging, setIsDragging] = createSignal(false);

@@ -3,6 +3,7 @@ import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
+import { registerInvitationsRoutes } from '../invitations/invitations.routes';
 import { registerOrganizationsRoutes } from '../organizations/organizations.routes';
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
@@ -25,4 +26,5 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerTaggingRulesRoutes(context);
   registerApiKeysRoutes(context);
   registerWebhooksRoutes(context);
+  registerInvitationsRoutes(context);
 }

@@ -6,10 +6,10 @@ import type {
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
 import type { VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Dialog as DialogPrimitive } from '@kobalte/core/dialog';
 import { cva } from 'class-variance-authority';
 import { mergeProps, splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const Sheet = DialogPrimitive;
 export const SheetTrigger = DialogPrimitive.Trigger;

@@ -1,13 +1,13 @@
 import type { Component } from 'solid-js';
+import { formatBytes } from '@corentinth/chisels';
+import { useParams } from '@solidjs/router';
+import { createQueries, keepPreviousData } from '@tanstack/solid-query';
+import { createSignal, Show, Suspense } from 'solid-js';
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
 import { useUploadDocuments } from '@/modules/documents/documents.composables';
 import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
 import { Button } from '@/modules/ui/components/button';
-import { formatBytes } from '@corentinth/chisels';
-import { useParams } from '@solidjs/router';
-import { createQueries, keepPreviousData } from '@tanstack/solid-query';
-import { createSignal, Show, Suspense } from 'solid-js';
 
 export const OrganizationPage: Component = () => {
   const params = useParams();

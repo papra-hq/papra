@@ -1,8 +1,8 @@
-import type { LocaleKeys } from '@/modules/i18n/locales.types';
 import type { Component } from 'solid-js';
+import type { LocaleKeys } from '@/modules/i18n/locales.types';
+import { createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/components/checkbox';
-import { createSignal, For } from 'solid-js';
 import { API_KEY_PERMISSIONS } from '../api-keys.constants';
 
 export const ApiKeyPermissionsPicker: Component<{ permissions: string[]; onChange: (permissions: string[]) => void }> = (props) => {

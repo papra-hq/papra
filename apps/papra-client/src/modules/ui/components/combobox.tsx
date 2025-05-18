@@ -6,9 +6,9 @@ import type {
 } from '@kobalte/core/combobox';
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
 import type { JSX, ParentProps, ValidComponent, VoidProps } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Combobox as ComboboxPrimitive } from '@kobalte/core/combobox';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const Combobox = ComboboxPrimitive;
 export const ComboboxDescription = ComboboxPrimitive.Description;

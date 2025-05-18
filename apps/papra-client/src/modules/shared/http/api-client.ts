@@ -1,6 +1,6 @@
 import type { HttpClientOptions, ResponseType } from './http-client';
-import { buildTimeConfig } from '@/modules/config/config';
 import { safely } from '@corentinth/chisels';
+import { buildTimeConfig } from '@/modules/config/config';
 import { httpClient } from './http-client';
 import { isHttpErrorWithStatusCode } from './http-errors';
 

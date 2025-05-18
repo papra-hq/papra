@@ -5,9 +5,9 @@ import type {
 } from '@kobalte/core/dialog';
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
 import type { ComponentProps, ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Dialog as DialogPrimitive } from '@kobalte/core/dialog';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const Dialog = DialogPrimitive;
 export const DialogTrigger = DialogPrimitive.Trigger;

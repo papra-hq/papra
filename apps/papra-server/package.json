@@ -25,7 +25,7 @@
     "clean:db": "rm db.sqlite",
     "clean:storage": "rm -rf local-documents",
     "clean:all": "pnpm clean:db && pnpm clean:storage",
-    "dev:reset": "pnpm clean:all && pnpm migrate:push",
+    "dev:reset": "pnpm clean:all && pnpm migrate:up",
     "script:send-intake-email": "tsx --env-file-if-exists=.env src/scripts/send-intake-email.script.ts | crowlog-pretty",
     "stripe:webhook": "stripe listen --forward-to localhost:1221/api/stripe/webhook"
   },
@@ -49,7 +49,7 @@
     "c12": "^3.0.2",
     "chokidar": "^4.0.3",
     "date-fns": "^4.1.0",
-    "drizzle-kit": "^0.30.1",
+    "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.38.3",
     "figue": "^2.2.3",
     "hono": "^4.6.15",
@@ -62,6 +62,7 @@
     "picomatch": "^4.0.2",
     "posthog-node": "^4.11.1",
     "resend": "^4.1.2",
+    "sanitize-html": "^2.17.0",
     "stripe": "^17.7.0",
     "tsx": "^4.19.2",
     "zod": "^3.24.1"
@@ -76,6 +77,7 @@
     "@types/node": "^22.10.2",
     "@types/node-cron": "^3.0.11",
     "@types/picomatch": "^4.0.0",
+    "@types/sanitize-html": "^2.16.0",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "^0.24.2",
     "eslint": "catalog:",

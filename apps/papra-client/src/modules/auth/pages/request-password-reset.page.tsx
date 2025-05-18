@@ -1,13 +1,13 @@
 import type { Component } from 'solid-js';
+import { buildUrl } from '@corentinth/chisels';
+import { A, useNavigate } from '@solidjs/router';
+import { createSignal, onMount } from 'solid-js';
+import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { buildUrl } from '@corentinth/chisels';
-import { A, useNavigate } from '@solidjs/router';
-import { createSignal, onMount } from 'solid-js';
-import * as v from 'valibot';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { forgetPassword } from '../auth.services';
 import { OpenEmailProvider } from '../components/open-email-provider.component';

@@ -1,12 +1,12 @@
 import type { Component, ParentComponent } from 'solid-js';
 
-import { signOut } from '@/modules/auth/auth.services';
+import { A, useNavigate } from '@solidjs/router';
 
+import { For, Show, Suspense } from 'solid-js';
+import { signOut } from '@/modules/auth/auth.services';
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { A, useNavigate } from '@solidjs/router';
-import { For, Show, Suspense } from 'solid-js';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 

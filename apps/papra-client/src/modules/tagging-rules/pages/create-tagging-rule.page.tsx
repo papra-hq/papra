@@ -1,9 +1,9 @@
 import type { Component } from 'solid-js';
 import type { TaggingRuleForCreation } from '../tagging-rules.types';
-import { useI18n } from '@/modules/i18n/i18n.provider';
-import { createToast } from '@/modules/ui/components/sonner';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createMutation } from '@tanstack/solid-query';
+import { useI18n } from '@/modules/i18n/i18n.provider';
+import { createToast } from '@/modules/ui/components/sonner';
 import { TaggingRuleForm } from '../components/tagging-rule-form.component';
 import { createTaggingRule } from '../tagging-rules.services';
 

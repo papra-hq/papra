@@ -1,14 +1,14 @@
 import type { Component } from 'solid-js';
 import type { ssoProviders } from '../auth.constants';
+import { A, useNavigate } from '@solidjs/router';
+import { createSignal, For, Show } from 'solid-js';
+import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A, useNavigate } from '@solidjs/router';
-import { createSignal, For, Show } from 'solid-js';
-import * as v from 'valibot';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
 import { signIn, signUp } from '../auth.services';

@@ -1,11 +1,13 @@
 import type { Database } from '../app/database/database.types';
-import type { DbInsertableOrganization } from './organizations.types';
+import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, count, eq, getTableColumns } from 'drizzle-orm';
+import { addDays, startOfDay } from 'date-fns';
+import { and, count, eq, getTableColumns, gte } from 'drizzle-orm';
+import { omit } from 'lodash-es';
 import { omitUndefined } from '../shared/utils';
 import { usersTable } from '../users/users.table';
-import { ORGANIZATION_ROLES } from './organizations.constants';
-import { organizationMembersTable, organizationsTable } from './organizations.table';
+import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
+import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 
 export type OrganizationsRepository = ReturnType<typeof createOrganizationsRepository>;
 
@@ -23,6 +25,19 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getOrganizationOwner,
       getOrganizationMembersCount,
       getAllOrganizationIds,
+      getOrganizationMembers,
+      removeUserFromOrganization,
+      updateOrganizationMemberRole,
+      getOrganizationMemberByUserId,
+      getOrganizationMemberByMemberId,
+      saveOrganizationInvitation,
+      getTodayUserInvitationCount,
+      getPendingOrganizationInvitationsForEmail,
+      getOrganizationInvitationById,
+      updateOrganizationInvitation,
+      getPendingInvitationsCount,
+      getInvitationForEmailAndOrganization,
+      getOrganizationMemberByEmail,
     },
     { db },
   );
@@ -48,7 +63,7 @@ async function getUserOrganizations({ userId, db }: { userId: string; db: Databa
   };
 }
 
-async function addUserToOrganization({ userId, organizationId, role, db }: { userId: string; organizationId: string; role: string; db: Database }) {
+async function addUserToOrganization({ userId, organizationId, role, db }: { userId: string; organizationId: string; role: OrganizationRole; db: Database }) {
   await db.insert(organizationMembersTable).values({ userId, organizationId, role });
 }
 
@@ -146,5 +161,214 @@ async function getAllOrganizationIds({ db }: { db: Database }) {
 
   return {
     organizationIds: organizationIds.map(({ id }) => id),
+  };
+}
+
+async function getOrganizationMembers({ organizationId, db }: { organizationId: string; db: Database }) {
+  const members = await db
+    .select()
+    .from(organizationMembersTable)
+    .leftJoin(usersTable, eq(organizationMembersTable.userId, usersTable.id))
+    .where(
+      eq(organizationMembersTable.organizationId, organizationId),
+    );
+
+  return {
+    members: members.map(({ organization_members, users }) => ({
+      ...organization_members,
+      user: users,
+    })),
+  };
+}
+
+async function removeUserFromOrganization({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
+  await db
+    .delete(organizationMembersTable)
+    .where(
+      and(
+        eq(organizationMembersTable.userId, userId),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
+}
+
+async function updateOrganizationMemberRole({ userId, organizationId, role, db }: { userId: string; organizationId: string; role: OrganizationRole; db: Database }) {
+  await db
+    .update(organizationMembersTable)
+    .set({ role })
+    .where(
+      and(
+        eq(organizationMembersTable.userId, userId),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
+}
+
+async function getOrganizationMemberByUserId({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
+  const [member] = await db
+    .select()
+    .from(organizationMembersTable)
+    .where(
+      and(
+        eq(organizationMembersTable.userId, userId),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
+
+  return { member };
+}
+
+async function getOrganizationMemberByMemberId({ memberId, organizationId, db }: { memberId: string; organizationId: string; db: Database }) {
+  const [member] = await db
+    .select()
+    .from(organizationMembersTable)
+    .where(
+      and(
+        eq(organizationMembersTable.id, memberId),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
+
+  return { member };
+}
+
+async function saveOrganizationInvitation({
+  organizationId,
+  email,
+  role,
+  inviterId,
+  db,
+  expirationDelayDays = 7,
+  now = new Date(),
+}: {
+  organizationId: string;
+  email: string;
+  role: OrganizationRole;
+  inviterId: string;
+  db: Database;
+  expirationDelayDays?: number;
+  now?: Date;
+}) {
+  const [organizationInvitation] = await db
+    .insert(organizationInvitationsTable)
+    .values({
+      organizationId,
+      email,
+      role,
+      inviterId,
+      status: ORGANIZATION_INVITATION_STATUS.PENDING,
+      expiresAt: addDays(now, expirationDelayDays),
+    })
+    .returning();
+
+  return { organizationInvitation };
+}
+
+async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { userId: string; db: Database; now?: Date }) {
+  const [{ userInvitationCount }] = await db
+    .select({
+      userInvitationCount: count(organizationInvitationsTable.id),
+    })
+    .from(organizationInvitationsTable)
+    .where(
+      and(
+        eq(organizationInvitationsTable.inviterId, userId),
+        gte(organizationInvitationsTable.createdAt, startOfDay(now)),
+      ),
+    );
+
+  return {
+    userInvitationCount,
+  };
+}
+
+async function getPendingOrganizationInvitationsForEmail({ email, db }: { email: string; db: Database }) {
+  const rawInvitations = await db
+    .select()
+    .from(organizationInvitationsTable)
+    .leftJoin(organizationsTable, eq(organizationInvitationsTable.organizationId, organizationsTable.id))
+    .where(
+      and(
+
+        eq(organizationInvitationsTable.email, email),
+        eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+      ),
+    );
+
+  const invitations = rawInvitations.map(({ organization_invitations, organizations }) => ({
+    ...omit(organization_invitations, ''),
+    organization: organizations,
+  }));
+
+  return {
+    invitations,
+  };
+}
+
+async function getOrganizationInvitationById({ invitationId, db }: { invitationId: string; db: Database }) {
+  const [invitation] = await db
+    .select()
+    .from(organizationInvitationsTable)
+    .where(
+      eq(organizationInvitationsTable.id, invitationId),
+    );
+
+  return {
+    invitation,
+  };
+}
+
+async function updateOrganizationInvitation({ invitationId, status, db }: { invitationId: string; status: OrganizationInvitationStatus; db: Database }) {
+  await db.update(organizationInvitationsTable).set({ status }).where(eq(organizationInvitationsTable.id, invitationId));
+}
+
+async function getPendingInvitationsCount({ email, db }: { email: string; db: Database }) {
+  const [{ pendingInvitationsCount }] = await db
+    .select({
+      pendingInvitationsCount: count(organizationInvitationsTable.id),
+    })
+    .from(organizationInvitationsTable)
+    .where(
+      and(
+        eq(organizationInvitationsTable.email, email),
+        eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+      ),
+    );
+
+  return {
+    pendingInvitationsCount,
+  };
+}
+
+async function getInvitationForEmailAndOrganization({ email, organizationId, db }: { email: string; organizationId: string; db: Database }) {
+  const [invitation] = await db
+    .select()
+    .from(organizationInvitationsTable)
+    .where(
+      and(
+        eq(organizationInvitationsTable.email, email),
+        eq(organizationInvitationsTable.organizationId, organizationId),
+      ),
+    );
+
+  return {
+    invitation,
+  };
+}
+
+async function getOrganizationMemberByEmail({ email, organizationId, db }: { email: string; organizationId: string; db: Database }) {
+  const [rawMember] = await db
+    .select()
+    .from(organizationMembersTable)
+    .leftJoin(usersTable, eq(organizationMembersTable.userId, usersTable.id))
+    .where(
+      and(
+        eq(usersTable.email, email),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
+
+  return {
+    member: rawMember ? rawMember.organization_members : null,
   };
 }

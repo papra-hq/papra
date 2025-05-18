@@ -1,11 +1,11 @@
 import type { Component } from 'solid-js';
-import { fetchOrganization } from '@/modules/organizations/organizations.services';
-import { Tag } from '@/modules/tags/components/tag.component';
-import { fetchTags } from '@/modules/tags/tags.services';
 import { useParams, useSearchParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { castArray } from 'lodash-es';
 import { createSignal, For, Show, Suspense } from 'solid-js';
+import { fetchOrganization } from '@/modules/organizations/organizations.services';
+import { Tag } from '@/modules/tags/components/tag.component';
+import { fetchTags } from '@/modules/tags/tags.services';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
 import { fetchOrganizationDocuments } from '../documents.services';

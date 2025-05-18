@@ -1,11 +1,11 @@
 import type { Component } from 'solid-js';
 import type { TaggingRuleForCreation } from '../tagging-rules.types';
-import { useI18n } from '@/modules/i18n/i18n.provider';
-import { queryClient } from '@/modules/shared/query/query-client';
-import { createToast } from '@/modules/ui/components/sonner';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createMutation, createQuery } from '@tanstack/solid-query';
 import { Show } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
+import { queryClient } from '@/modules/shared/query/query-client';
+import { createToast } from '@/modules/ui/components/sonner';
 import { TaggingRuleForm } from '../components/tagging-rule-form.component';
 import { getTaggingRule, updateTaggingRule } from '../tagging-rules.services';
 

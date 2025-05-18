@@ -5,9 +5,9 @@ import type {
   SelectTriggerProps,
 } from '@kobalte/core/select';
 import type { ParentProps, ValidComponent } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { Select as SelectPrimitive } from '@kobalte/core/select';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 export const Select = SelectPrimitive;
 export const SelectValue = SelectPrimitive.Value;

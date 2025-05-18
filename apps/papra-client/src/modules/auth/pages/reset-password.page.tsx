@@ -1,12 +1,12 @@
 import type { Component } from 'solid-js';
+import { A, Navigate, useNavigate, useSearchParams } from '@solidjs/router';
+import { createSignal, onMount } from 'solid-js';
+import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { A, Navigate, useNavigate, useSearchParams } from '@solidjs/router';
-import { createSignal, onMount } from 'solid-js';
-import * as v from 'valibot';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { resetPassword } from '../auth.services';
 

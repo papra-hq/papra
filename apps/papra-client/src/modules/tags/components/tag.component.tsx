@@ -1,7 +1,7 @@
 import type { Component, ComponentProps } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 import { A } from '@solidjs/router';
 import { splitProps } from 'solid-js';
+import { cn } from '@/modules/shared/style/cn';
 
 type TagProps = {
   name?: string;

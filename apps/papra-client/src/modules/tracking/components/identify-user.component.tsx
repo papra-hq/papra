@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
+import { createEffect } from 'solid-js';
 import { useSession } from '@/modules/auth/auth.services';
 import { buildTimeConfig } from '@/modules/config/config';
-import { createEffect } from 'solid-js';
 import { trackingServices } from '../tracking.services';
 
 export const IdentifyUser: Component = () => {
