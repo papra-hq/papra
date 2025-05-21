@@ -1,5 +1,6 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
+import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
@@ -18,6 +19,7 @@ export async function registerOrganizationsRoutes(context: RouteDefinitionContex
   setupGetOrganizationMembersRoute(context);
   setupRemoveOrganizationMemberRoute(context);
   setupInviteOrganizationMemberRoute(context);
+  setupGetMembershipRoute(context);
 }
 
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
@@ -176,6 +178,30 @@ function setupRemoveOrganizationMemberRoute({ app, db }: RouteDefinitionContext)
       await removeMemberFromOrganization({ memberId, userId, organizationId, organizationsRepository });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupGetMembershipRoute({ app, db }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/:organizationId/members/me',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { member } = await organizationsRepository.getOrganizationMemberByUserId({ organizationId, userId });
+
+      if (!member) {
+        throw createForbiddenError();
+      }
+
+      return context.json({ member });
     },
   );
 }

@@ -81,3 +81,14 @@ export async function removeOrganizationMember({ organizationId, memberId }: { o
     method: 'DELETE',
   });
 }
+
+export async function getMembership({ organizationId }: { organizationId: string }) {
+  const { member } = await apiClient<{ member: AsDto<OrganizationMember> }>({
+    path: `/api/organizations/${organizationId}/members/me`,
+    method: 'GET',
+  });
+
+  return {
+    member: coerceDates(member),
+  };
+}

@@ -1,7 +1,9 @@
-import { useNavigate } from '@solidjs/router';
+import { useNavigate, useParams } from '@solidjs/router';
+import { useQuery } from '@tanstack/solid-query';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { createToast } from '@/modules/ui/components/sonner';
-import { createOrganization, deleteOrganization, updateOrganization } from './organizations.services';
+import { ORGANIZATION_ROLES } from './organizations.constants';
+import { createOrganization, deleteOrganization, getMembership, updateOrganization } from './organizations.services';
 
 export function useCreateOrganization() {
   const navigate = useNavigate();
@@ -48,5 +50,31 @@ export function useDeleteOrganization() {
 
       navigate('/organizations');
     },
+  };
+}
+
+export function useCurrentUserRole({ organizationId }: { organizationId?: string } = {}) {
+  const params = useParams();
+
+  const getOrganizationId = () => organizationId ?? params.organizationId;
+
+  const query = useQuery(() => ({
+    queryKey: ['organizations', getOrganizationId(), 'members', 'me'],
+    queryFn: () => getMembership({ organizationId: getOrganizationId() }),
+  }));
+
+  const getRole = () => query.data?.member.role;
+  const getIsMember = () => getRole() === ORGANIZATION_ROLES.MEMBER;
+  const getIsAdmin = () => getRole() === ORGANIZATION_ROLES.ADMIN;
+  const getIsOwner = () => getRole() === ORGANIZATION_ROLES.OWNER;
+  const getIsAtLeastAdmin = () => getIsAdmin() || getIsOwner();
+
+  return {
+    query,
+    getRole,
+    getIsMember,
+    getIsAdmin,
+    getIsOwner,
+    getIsAtLeastAdmin,
   };
 }

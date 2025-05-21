@@ -240,6 +240,7 @@ export type LocaleKeys =
   | 'organizations.members.title'
   | 'organizations.members.description'
   | 'organizations.members.invite-member'
+  | 'organizations.members.invite-member-disabled-tooltip'
   | 'organizations.members.remove-from-organization'
   | 'organizations.members.roles.owner'
   | 'organizations.members.roles.admin'

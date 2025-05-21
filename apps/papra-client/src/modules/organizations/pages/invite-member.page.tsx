@@ -1,8 +1,8 @@
 import type { Component } from 'solid-js';
 import { setValue } from '@modular-forms/solid';
-import { useParams } from '@solidjs/router';
+import { useNavigate, useParams } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
-import { Show } from 'solid-js';
+import { onMount, Show } from 'solid-js';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
@@ -22,6 +22,7 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from '@/modules/ui/components/textfield';
+import { useCurrentUserRole } from '../organizations.composables';
 import { ORGANIZATION_ROLES } from '../organizations.constants';
 import { inviteOrganizationMember } from '../organizations.services';
 
@@ -31,6 +32,14 @@ export const InviteMemberPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
   const { getErrorMessage } = useI18nApiErrors({ t });
+  const { getIsAtLeastAdmin } = useCurrentUserRole({ organizationId: params.organizationId });
+  const navigate = useNavigate();
+
+  onMount(() => {
+    if (!getIsAtLeastAdmin()) {
+      navigate(`/organizations/${params.organizationId}`);
+    }
+  });
 
   const tRole = (role: InvitableRole) => t(`organizations.members.roles.${role}`);
 

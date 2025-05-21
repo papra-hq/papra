@@ -251,6 +251,7 @@ webhooks.events.documents.document:deleted.description: Document deleted
 organizations.members.title: Members
 organizations.members.description: Manage your organization members
 organizations.members.invite-member: Invite member
+organizations.members.invite-member-disabled-tooltip: Only admins or owners can invite members to the organization
 organizations.members.remove-from-organization: Remove from organization
 organizations.members.roles.owner: Owner
 organizations.members.roles.admin: Admin

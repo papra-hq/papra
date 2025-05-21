@@ -3,7 +3,7 @@ import type { OrganizationMemberRole } from '../organizations.types';
 import { A, useParams } from '@solidjs/router';
 import { createMutation, createQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -11,6 +11,8 @@ import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
+import { useCurrentUserRole } from '../organizations.composables';
 import { ORGANIZATION_ROLES } from '../organizations.constants';
 import { fetchOrganizationMembers, removeOrganizationMember } from '../organizations.services';
 
@@ -22,6 +24,8 @@ const MemberList: Component = () => {
     queryKey: ['organizations', params.organizationId, 'members'],
     queryFn: () => fetchOrganizationMembers({ organizationId: params.organizationId }),
   }));
+
+  const { getIsAtLeastAdmin } = useCurrentUserRole({ organizationId: params.organizationId });
 
   const removeMemberMutation = createMutation(() => ({
     mutationFn: ({ memberId }: { memberId: string }) => removeOrganizationMember({ organizationId: params.organizationId, memberId }),
@@ -71,7 +75,7 @@ const MemberList: Component = () => {
             <DropdownMenuContent>
               <DropdownMenuItem
                 onClick={() => handleDelete({ memberId: data.row.original.id })}
-                disabled={data.row.original.role === ORGANIZATION_ROLES.OWNER}
+                disabled={data.row.original.role === ORGANIZATION_ROLES.OWNER || !getIsAtLeastAdmin()}
               >
                 <div class="i-tabler-user-x size-4 mr-2" />
                 {t('organizations.members.remove-from-organization')}
@@ -109,6 +113,7 @@ const MemberList: Component = () => {
 export const MembersPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
+  const { getIsAtLeastAdmin } = useCurrentUserRole({ organizationId: params.organizationId });
 
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4">
@@ -121,10 +126,27 @@ export const MembersPage: Component = () => {
             {t('organizations.members.description')}
           </p>
         </div>
-        <Button as={A} href={`/organizations/${params.organizationId}/invite`}>
-          <div class="i-tabler-plus size-4 mr-2" />
-          {t('organizations.members.invite-member')}
-        </Button>
+        <Show
+          when={getIsAtLeastAdmin()}
+          fallback={(
+            <Tooltip>
+              <TooltipTrigger>
+                <Button disabled>
+                  <div class="i-tabler-plus size-4 mr-2" />
+                  {t('organizations.members.invite-member')}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t('organizations.members.invite-member-disabled-tooltip')}
+              </TooltipContent>
+            </Tooltip>
+          )}
+        >
+          <Button as={A} href={`/organizations/${params.organizationId}/invite`}>
+            <div class="i-tabler-plus size-4 mr-2" />
+            {t('organizations.members.invite-member')}
+          </Button>
+        </Show>
       </div>
 
       <MemberList />
