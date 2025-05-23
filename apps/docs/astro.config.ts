@@ -3,7 +3,9 @@ import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightThemeRapide from 'starlight-theme-rapide';
+import UnoCSS from 'unocss/astro';
 import { sidebar } from './src/content/navigation';
+
 import posthogRawScript from './src/scripts/posthog.script.js?raw';
 
 const posthogApiKey = env.POSTHOG_API_KEY;
@@ -16,6 +18,7 @@ const posthogScript = posthogRawScript.replace('[POSTHOG-API-KEY]', posthogApiKe
 export default defineConfig({
   site: 'https://docs.papra.app',
   integrations: [
+    UnoCSS(),
     starlight({
       plugins: [starlightThemeRapide(), starlightLinksValidator({ exclude: ['http://localhost:1221'] })],
       title: 'Papra Docs',
@@ -38,7 +41,7 @@ export default defineConfig({
       sidebar,
       favicon: '/favicon.svg',
       head: [
-        // Add ICO favicon fallback for Safari.
+      // Add ICO favicon fallback for Safari.
         {
           tag: 'link',
           attrs: {

@@ -1,0 +1,363 @@
+---
+import { codeToHtml } from 'shiki';
+
+const images = {
+  GitHub: 'ghcr.io/papra-hq/papra',
+  DockerHub: 'corentinth/papra',
+};
+
+const defaultDockerCompose = `
+services:
+  papra:
+    image: ghcr.io/papra-hq/papra:latest
+    container_name: papra
+    restart: unless-stopped
+    ports:
+      - 1221:1221
+    environment:
+      - AUTH_SECRET=change-me
+    volumes:
+      - ./app-data:/app/app-data
+    user: 1000:1000
+`.trim();
+
+const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
+---
+
+<p>This tool will help you generate a custom docker-compose.yml file for Papra, tailored to your needs. You can personalize the service name, the port, the auth secret, and the source image.</p>
+
+<h2 class="mt-8 mb-2">General settings</h2>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="port" class="min-w-32">External port</label>
+  <input id="port" class="input-field" value="1221" type="number" min="1024" max="65535" placeholder="eg: 1221" />
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="source" class="min-w-32">Image source</label>
+  <select class="input-field mt-0" id="source">
+    {Object.entries(images).map(([registry, imageName]) => <option class="bg-background" value={imageName}>{`${registry} - ${imageName}`}</option>)}
+  </select>
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="service-name" class="min-w-32">Service Name</label>
+  <input id="service-name" class="input-field" value="papra" type="text" placeholder="eg: papra" />
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label
+    for="auth-secret"
+    class="min-w-32"
+  >
+  Auth secret
+  </label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <input class="input-field font-mono" id="auth-secret" type="text" placeholder="eg: 1234567890" />
+    <button class="btn bg-muted" id="refresh-secret"> Refresh </button>
+  </div>
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="volume-path" class="min-w-32">Volume path</label>
+  <input id="volume-path" class="input-field" value="./app-data" type="text" placeholder="eg: ./app-data" />
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="privileged-mode" class="min-w-32">Privileged mode</label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <select class="input-field mt-0" id="privileged-mode">
+      <option value="false" class="bg-background">Rootless</option>
+      <option value="true" class="bg-background">Root</option>
+    </select>
+  </div>
+</div>
+
+<h2 class="mt-8 mb-2">Ingestion folder</h2>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="ingestion-enabled" class="min-w-32">Enable ingestion</label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <select class="input-field mt-0" id="ingestion-enabled">
+      <option value="false" class="bg-background">Disabled</option>
+      <option value="true" class="bg-background">Enabled</option>
+    </select>
+  </div>
+</div>
+
+<div class="flex items-center gap-2 mt-1" id="ingestion-path-container" style="display: none;">
+  <label for="ingestion-path" class="min-w-32">Ingestion path</label>
+  <input id="ingestion-path" class="input-field" value="./ingestion" type="text" placeholder="eg: ./ingestion" />
+</div>
+
+<h2 class="mt-8 mb-2">Intake emails</h2>
+<div class="flex items-center gap-2 mt-1">
+  <label for="intake-email-enabled" class="min-w-32">Enabled</label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <select class="input-field mt-0" id="intake-email-enabled">
+      <option value="false" class="bg-background">Disabled</option>
+      <option value="true" class="bg-background">Enabled</option>
+    </select>
+  </div>
+</div>
+
+<div class="flex items-center gap-2 mt-1" id="intake-email-driver-container" style="display: none;">
+  <label for="intake-email-driver" class="min-w-32">Driver</label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <select class="input-field mt-0" id="intake-email-driver">
+      <option value="owlrelay" class="bg-background">OwlRelay</option>
+      <option value="random-username" class="bg-background">Cloudflare Email Worker</option>
+    </select>
+  </div>
+</div>
+
+<div id="intake-email-owlrelay-config" style="display: none;" class="mt-1">
+  <div class="flex items-center gap-2 mt-1">
+    <label for="intake-email-owlrelay-api-key" class="min-w-32">API Key</label>
+    <input id="intake-email-owlrelay-api-key" class="input-field" type="text" placeholder="owrl_*****" />
+  </div>
+  <div class="flex items-center gap-2 mt-1">
+    <label for="intake-email-owlrelay-webhook-url" class="min-w-32">Webhook URL</label>
+    <input id="intake-email-owlrelay-webhook-url" class="input-field" type="text" placeholder="https://your-instance.com/api/intake-emails/ingest" />
+  </div>
+</div>
+
+<div id="intake-email-cf-worker-config" style="display: none;" class="mt-1">
+  <div class="flex items-center gap-2 mt-1">
+    <label for="intake-email-cf-email-domain" class="min-w-32">Email domain</label>
+    <input id="intake-email-cf-email-domain" class="input-field" type="text" placeholder="papra.email" />
+  </div>
+</div>
+
+<div class="flex items-center gap-2 mt-1" id="intake-email-webhook-secret-container" style="display: none;">
+  <label for="intake-email-webhook-secret" class="min-w-32">Webhook secret</label>
+  <div class="flex items-center gap-2 mt-0 w-full">
+    <input class="input-field font-mono" id="intake-email-webhook-secret" type="text" placeholder="a-random-key" />
+    <button class="btn bg-muted" id="refresh-webhook-secret">Refresh</button>
+  </div>
+</div>
+
+<div id="docker-compose-output" class="mt-12" set:html={dcHtml} />
+
+<div class="flex items-center gap-2 mt-4">
+  <button class="btn bg-muted mt-0" id="download-button">Download docker-compose.yml</button>
+  <button class="btn bg-muted mt-0" id="copy-button">Copy to clipboard</button>
+</div>
+
+
+<script>
+import { codeToHtml } from 'shiki';
+import { stringify } from 'yaml';
+
+const portInput = document.getElementById('port') as HTMLInputElement;
+const sourceSelect = document.getElementById('source') as HTMLSelectElement;
+const serviceNameInput = document.getElementById('service-name') as HTMLInputElement;
+const authSecretInput = document.getElementById('auth-secret') as HTMLInputElement;
+const refreshSecretButton = document.getElementById('refresh-secret');
+const copyButton = document.getElementById('copy-button');
+const dockerComposeOutput = document.getElementById('docker-compose-output');
+const downloadButton = document.getElementById('download-button');
+const volumePathInput = document.getElementById('volume-path') as HTMLInputElement;
+const privilegedModeSelect = document.getElementById('privileged-mode') as HTMLSelectElement;
+const ingestionEnabledSelect = document.getElementById('ingestion-enabled') as HTMLSelectElement;
+const ingestionPathInput = document.getElementById('ingestion-path') as HTMLInputElement;
+const ingestionPathContainer = document.getElementById('ingestion-path-container') as HTMLDivElement;
+const intakeEmailEnabledSelect = document.getElementById('intake-email-enabled') as HTMLSelectElement;
+const intakeDriverSelect = document.getElementById('intake-email-driver') as HTMLSelectElement;
+const owlrelayConfig = document.getElementById('intake-email-owlrelay-config') as HTMLDivElement;
+const cfWorkerConfig = document.getElementById('intake-email-cf-worker-config') as HTMLDivElement;
+const owlrelayApiKeyInput = document.getElementById('intake-email-owlrelay-api-key') as HTMLInputElement;
+const owlrelayWebhookUrlInput = document.getElementById('intake-email-owlrelay-webhook-url') as HTMLInputElement;
+const cfEmailDomainInput = document.getElementById('intake-email-cf-email-domain') as HTMLInputElement;
+const webhookSecretInput = document.getElementById('intake-email-webhook-secret') as HTMLInputElement;
+const refreshWebhookSecretButton = document.getElementById('refresh-webhook-secret');
+
+function getRandomString() {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({ length: 48 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+}
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text);
+}
+
+function getDockerComposeYml() {
+  const serviceName = serviceNameInput.value;
+  const isRootless = privilegedModeSelect.value === 'false';
+  const image = sourceSelect.value;
+  const port = portInput.value;
+  const authSecret = authSecretInput.value;
+  const volumePath = volumePathInput.value;
+  const isIngestionEnabled = ingestionEnabledSelect.value === 'true';
+  const ingestionPath = ingestionPathInput.value;
+  const intakeEmailEnabled = intakeEmailEnabledSelect.value === 'true';
+  const intakeDriver = intakeDriverSelect.value;
+  const webhookSecret = webhookSecretInput.value;
+
+  const version = isRootless ? 'latest' : 'latest-root';
+  const fullImage = `${image}:${version}`;
+
+  const environment = [
+    `AUTH_SECRET=${authSecret}`,
+    isIngestionEnabled && 'INGESTION_FOLDER_IS_ENABLED=true',
+    intakeEmailEnabled && 'INTAKE_EMAILS_IS_ENABLED=true',
+    intakeEmailEnabled && `INTAKE_EMAILS_DRIVER=${intakeDriver}`,
+    intakeEmailEnabled && `INTAKE_EMAILS_WEBHOOK_SECRET=${webhookSecret}`,
+    intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayApiKeyInput.value && `OWLRELAY_API_KEY=${owlrelayApiKeyInput.value}`,
+    intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayWebhookUrlInput.value && `OWLRELAY_WEBHOOK_URL=${owlrelayWebhookUrlInput.value}`,
+    intakeEmailEnabled && intakeDriver === 'random-username' && cfEmailDomainInput.value && `INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=${cfEmailDomainInput.value}`,
+  ].flat().filter(Boolean);
+
+  const volumes = [
+    `${volumePath}:/app/app-data`,
+    isIngestionEnabled && `${ingestionPath}:/app/ingestion`,
+  ].filter(Boolean);
+
+  const dc = {
+    services: {
+      [serviceName]: {
+        image: fullImage,
+        container_name: serviceName,
+        restart: 'unless-stopped',
+        ports: [`${port}:1221`],
+        environment,
+        volumes,
+        ...(isRootless && {
+          user: '1000:1000',
+        }),
+      },
+    },
+  };
+
+  return stringify(dc);
+}
+
+async function updateDockerCompose() {
+  const dockerCompose = getDockerComposeYml();
+
+  const html = await codeToHtml(dockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
+
+  if (dockerComposeOutput) {
+    dockerComposeOutput.innerHTML = html;
+  }
+}
+
+function handleCopy() {
+  const dockerCompose = getDockerComposeYml();
+
+  copyToClipboard(dockerCompose);
+
+  if (copyButton) {
+    copyButton.textContent = 'Copied!';
+  }
+
+  setTimeout(() => {
+    if (copyButton) {
+      copyButton.textContent = 'Copy to clipboard';
+    }
+  }, 1000);
+}
+
+function handleRefreshSecret() {
+  authSecretInput.value = getRandomString();
+  updateDockerCompose();
+}
+
+function handleDownload() {
+  const dockerCompose = getDockerComposeYml();
+
+  const blob = new Blob([dockerCompose], { type: 'text/yaml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'docker-compose.yml';
+  a.click();
+}
+
+function handleIngestionEnabledChange() {
+  const isEnabled = ingestionEnabledSelect.value === 'true';
+  ingestionPathContainer.style.display = isEnabled ? 'flex' : 'none';
+  updateDockerCompose();
+}
+
+function handleIntakeEmailEnabledChange() {
+  const isEnabled = intakeEmailEnabledSelect.value === 'true';
+  const driverContainer = document.getElementById('intake-email-driver-container');
+  const webhookSecretContainer = document.getElementById('intake-email-webhook-secret-container');
+
+  if (driverContainer) {
+    driverContainer.style.display = isEnabled ? 'flex' : 'none';
+  }
+  if (webhookSecretContainer) {
+    webhookSecretContainer.style.display = isEnabled ? 'flex' : 'none';
+  }
+
+  if (!isEnabled) {
+    // Reset driver-specific configs when disabled
+    if (owlrelayConfig) {
+      owlrelayConfig.style.display = 'none';
+    }
+    if (cfWorkerConfig) {
+      cfWorkerConfig.style.display = 'none';
+    }
+  } else {
+    // Show the appropriate driver config
+    handleIntakeDriverChange();
+  }
+
+  updateDockerCompose();
+}
+
+function handleIntakeDriverChange() {
+  const driver = intakeDriverSelect.value;
+  const isEnabled = intakeEmailEnabledSelect.value === 'true';
+
+  if (!isEnabled) {
+    return;
+  }
+
+  if (owlrelayConfig) {
+    owlrelayConfig.style.display = driver === 'owlrelay' ? 'block' : 'none';
+  }
+  if (cfWorkerConfig) {
+    cfWorkerConfig.style.display = driver === 'random-username' ? 'block' : 'none';
+  }
+
+  updateDockerCompose();
+}
+
+function handleRefreshWebhookSecret() {
+  webhookSecretInput.value = getRandomString();
+  updateDockerCompose();
+}
+
+// Add event listeners
+portInput.addEventListener('input', updateDockerCompose);
+sourceSelect.addEventListener('change', updateDockerCompose);
+serviceNameInput.addEventListener('input', updateDockerCompose);
+authSecretInput.addEventListener('input', updateDockerCompose);
+refreshSecretButton?.addEventListener('click', handleRefreshSecret);
+copyButton?.addEventListener('click', handleCopy);
+downloadButton?.addEventListener('click', handleDownload);
+volumePathInput.addEventListener('input', updateDockerCompose);
+privilegedModeSelect.addEventListener('change', updateDockerCompose);
+ingestionEnabledSelect.addEventListener('change', handleIngestionEnabledChange);
+ingestionPathInput.addEventListener('input', updateDockerCompose);
+intakeEmailEnabledSelect.addEventListener('change', handleIntakeEmailEnabledChange);
+intakeDriverSelect.addEventListener('change', handleIntakeDriverChange);
+owlrelayApiKeyInput.addEventListener('input', updateDockerCompose);
+owlrelayWebhookUrlInput.addEventListener('input', updateDockerCompose);
+cfEmailDomainInput.addEventListener('input', updateDockerCompose);
+webhookSecretInput.addEventListener('input', updateDockerCompose);
+refreshWebhookSecretButton?.addEventListener('click', handleRefreshWebhookSecret);
+
+authSecretInput.value = getRandomString();
+
+// Initial render
+updateDockerCompose();
+
+// Initial setup
+handleIngestionEnabledChange();
+handleIntakeEmailEnabledChange();
+webhookSecretInput.value = getRandomString();
+</script>

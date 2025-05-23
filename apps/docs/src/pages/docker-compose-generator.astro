@@ -1,0 +1,15 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import DockerComposeGeneratorComp from '../docker-compose-generator/dc-generator.astro';
+---
+
+<StarlightPage
+  frontmatter={{
+        title: 'Papra docker-compose.yml generator',
+        description: 'Generate a custom docker-compose.yml file for Papra, tailored to your needs.',
+        tableOfContents: false,
+
+    }}
+>
+    <DockerComposeGeneratorComp />
+</StarlightPage>
