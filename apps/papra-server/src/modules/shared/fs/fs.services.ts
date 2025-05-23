@@ -21,8 +21,16 @@ export function createFsServices({ fs = fsNative }: { fs?: FsNative } = {}) {
   );
 }
 
-export async function ensureDirectoryExists({ path, fs = fsNative }: { path: string; fs?: FsNative }) {
+export async function ensureDirectoryExists({ path, fs = fsNative }: { path: string; fs?: FsNative }): Promise<{ hasBeenCreated: boolean }> {
+  const exists = await fs.access(path, fs.constants.F_OK).then(() => true).catch(() => false);
+
+  if (exists) {
+    return { hasBeenCreated: false };
+  }
+
   await fs.mkdir(path, { recursive: true });
+
+  return { hasBeenCreated: true };
 }
 
 export async function checkFileExists({ path, fs = fsNative }: { path: string; fs?: FsNative }) {
