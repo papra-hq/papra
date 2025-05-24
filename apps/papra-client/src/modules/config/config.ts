@@ -18,6 +18,11 @@ export const buildTimeConfig = {
     providers: {
       github: { isEnabled: asBoolean(import.meta.env.VITE_AUTH_PROVIDERS_GITHUB_IS_ENABLED, false) },
       google: { isEnabled: asBoolean(import.meta.env.VITE_AUTH_PROVIDERS_GOOGLE_IS_ENABLED, false) },
+      customs: [] as {
+        providerId: string;
+        providerName: string;
+        providerIconUrl: string;
+      }[],
     },
   },
   documents: {

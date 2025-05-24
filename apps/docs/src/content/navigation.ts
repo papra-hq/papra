@@ -30,6 +30,10 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
         label: 'Setup Ingestion Folder',
         slug: 'guides/setup-ingestion-folder',
       },
+      {
+        label: 'Setup Custom OAuth2 Providers',
+        slug: 'guides/setup-custom-oauth2-providers',
+      },
     ],
   },
   {

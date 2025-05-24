@@ -1,0 +1,181 @@
+---
+title: Setup Custom OAuth2 Providers
+description: Step-by-step guide to setup custom OAuth2 providers for authentication in your Papra instance.
+slug: guides/setup-custom-oauth2-providers
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+This guide will show you how to configure custom OAuth2 providers for authentication in your Papra instance.
+
+<Aside type="note">
+  Papra's OAuth2 implementation is based on the [Better Auth Generic OAuth plugin](https://www.better-auth.com/docs/plugins/generic-oauth). For more detailed information about the configuration options and advanced usage, please refer to their documentation.
+</Aside>
+
+## Prerequisites
+
+In order to follow this guide, you need:
+- A custom OAuth2 provider
+- An accessible Papra instance
+- Basic understanding of OAuth2 flows
+
+## Configuration
+
+To set up custom OAuth2 providers, you'll need to configure the `AUTH_PROVIDERS_CUSTOMS` environment variable with an array of provider configurations. Here's an example:
+
+```bash
+AUTH_PROVIDERS_CUSTOMS='[
+  {
+    "providerId": "custom-oauth2",
+    "providerName": "Custom OAuth2",
+    "providerIconUrl": "https://api.iconify.design/tabler:login-2.svg",
+    "clientId": "your-client-id",
+    "clientSecret": "your-client-secret",
+    "type": "oidc",
+    "discoveryUrl": "https://your-provider.tld/.well-known/openid-configuration",
+    "scopes": ["openid", "profile", "email"]
+  }
+]'
+```
+
+Each provider configuration supports the following fields:
+
+- `providerId`: A unique identifier for the OAuth provider
+- `providerName`: The display name of the provider
+- `providerIconUrl`: URL of the icon to display (optional) you can use a base64 encoded image or an url to a remote image.
+- `clientId`: OAuth client ID
+- `clientSecret`: OAuth client secret
+- `type`: Type of OAuth flow ("oauth2" or "oidc")
+- `discoveryUrl`: URL to fetch OAuth 2.0 configuration (recommended for OIDC providers)
+- `authorizationUrl`: URL for the authorization endpoint (required for OAuth2 if not using discoveryUrl)
+- `tokenUrl`: URL for the token endpoint (required for OAuth2 if not using discoveryUrl)
+- `userInfoUrl`: URL for the user info endpoint (required for OAuth2 if not using discoveryUrl)
+- `scopes`: Array of OAuth scopes to request
+- `redirectURI`: Custom redirect URI (optional)
+- `responseType`: OAuth response type (defaults to "code")
+- `prompt`: Controls the authentication experience ("select_account", "consent", "login", "none")
+- `pkce`: Whether to use PKCE (Proof Key for Code Exchange)
+- `accessType`: Access type for the authorization request
+
+## Setup
+
+<Steps>
+
+1. **Configure your OAuth2 Provider**
+
+   First, you'll need to register your application with your OAuth2 provider. This typically involves:
+   - Creating a new application in your provider's dashboard
+   - Setting up the redirect URI (usually `https://<your-papra-instance>/api/auth/oauth2/callback/:providerId`)
+   - Obtaining the client ID and client secret
+   - Configuring the required scopes
+
+2. **Configure Papra**
+
+   Add the `AUTH_PROVIDERS_CUSTOMS` environment variable to your Papra instance. Here are some examples:
+
+   For OIDC providers:
+   ```json
+   [
+     {
+       "providerId": "custom-oauth2",
+       "providerName": "Custom OAuth2",
+       "providerIconUrl": "https://api.iconify.design/tabler:login-2.svg",
+       "clientId": "your-client-id",
+       "clientSecret": "your-client-secret",
+       "type": "oidc",
+       "discoveryUrl": "https://your-provider.tld/.well-known/openid-configuration",
+       "scopes": ["openid", "profile", "email"]
+     }
+   ]
+   ```
+
+   For standard OAuth2 providers:
+   ```json
+   [
+     {
+       "providerId": "custom-oauth2",
+       "providerName": "Custom OAuth2",
+       "providerIconUrl": "https://api.iconify.design/tabler:login-2.svg",
+       "clientId": "your-client-id",
+       "clientSecret": "your-client-secret",
+       "type": "oauth2",
+       "authorizationUrl": "https://your-provider.tld/oauth2/authorize",
+       "tokenUrl": "https://your-provider.tld/oauth2/token",
+       "userInfoUrl": "https://your-provider.tld/oauth2/userinfo",
+       "scopes": ["profile", "email"]
+     }
+   ]
+   ```
+
+   <Aside type="note">
+     The `discoveryUrl` is recommended for OIDC providers as it automatically configures all the necessary endpoints.
+     For standard OAuth2 providers, you'll need to specify the endpoints manually.
+   </Aside>
+
+3. **Test the Configuration**
+
+   - Restart your Papra instance to apply the changes
+   - Go to the login page
+   - You should see your custom OAuth2 providers as login options
+   - Try logging in with a test account
+
+</Steps>
+
+## Troubleshooting
+
+### Providers Not Showing Up
+
+If your OAuth2 providers are not showing up on the login page:
+- Check that the JSON configuration in `AUTH_PROVIDERS_CUSTOMS` is valid
+- Ensure all required fields are provided
+- Verify that the provider IDs are unique
+
+### Authentication Fails
+
+If authentication fails:
+- Verify that the redirect URI is correctly configured in your OAuth2 provider
+- Check that the client ID and client secret are correct
+- Ensure the required scopes are properly configured
+- Check the Papra logs for any error messages
+
+### OIDC Discovery Issues
+
+If you're using OIDC and experiencing issues:
+- Verify that the `discoveryUrl` is accessible
+- Check that the provider supports OIDC discovery
+- Ensure the provider's configuration is properly exposed through the discovery endpoint
+
+## Security Considerations
+
+<Aside type="caution">
+  Always use HTTPS for your OAuth2 endpoints and ensure your client secret is kept secure.
+  Consider using PKCE (Proof Key for Code Exchange) for additional security by setting `pkce: true` in your configuration.
+</Aside>
+
+## Multiple Providers
+
+You can configure multiple custom OAuth2 providers by adding them to the array:
+
+```json
+[
+  {
+    "providerId": "custom-oauth2-1",
+    "providerName": "Custom OAuth2 Provider 1",
+    "type": "oidc",
+    "discoveryUrl": "https://provider1.tld/.well-known/openid-configuration",
+    "clientId": "client-id-1",
+    "clientSecret": "client-secret-1",
+    "scopes": ["openid", "profile", "email"]
+  },
+  {
+    "providerId": "custom-oauth2-2",
+    "providerName": "Custom OAuth2 Provider 2",
+    "type": "oidc",
+    "discoveryUrl": "https://provider2.tld/.well-known/openid-configuration",
+    "clientId": "client-id-2",
+    "clientSecret": "client-secret-2",
+    "scopes": ["openid", "profile", "email"]
+  }
+]
+```

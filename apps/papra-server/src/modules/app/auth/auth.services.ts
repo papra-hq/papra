@@ -4,6 +4,7 @@ import type { Database } from '../database/database.types';
 import type { AuthEmailsServices } from './auth.emails.services';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { genericOAuth } from 'better-auth/plugins';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
 import { getTrustedOrigins } from './auth.models';
@@ -105,6 +106,11 @@ export function getAuth({
       changeEmail: { enabled: false },
       deleteUser: { enabled: false },
     },
+    plugins: [
+      ...(config.auth.providers.customs.length > 0
+        ? [genericOAuth({ config: config.auth.providers.customs })]
+        : []),
+    ],
   });
 
   return {

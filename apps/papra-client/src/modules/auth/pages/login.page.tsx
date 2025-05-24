@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import type { SsoProviderKey } from '../auth.types';
+import type { SsoProviderConfig } from '../auth.types';
 import { A, useNavigate } from '@solidjs/router';
 import { createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -12,7 +12,7 @@ import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs, isEmailVerificationRequiredError } from '../auth.models';
-import { signIn } from '../auth.services';
+import { authWithProvider, signIn } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
@@ -105,8 +105,8 @@ export const LoginPage: Component = () => {
 
   const [getShowEmailLogin, setShowEmailLogin] = createSignal(false);
 
-  const loginWithProvider = async (provider: { key: SsoProviderKey }) => {
-    await signIn.social({ provider: provider.key, callbackURL: config.baseUrl });
+  const loginWithProvider = async (provider: SsoProviderConfig) => {
+    await authWithProvider({ provider, config });
   };
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;

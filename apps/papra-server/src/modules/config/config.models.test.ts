@@ -30,6 +30,7 @@ describe('config models', () => {
             google: {
               isEnabled: false,
             },
+            customs: [],
           },
         },
         documents: {
@@ -55,6 +56,8 @@ describe('config models', () => {
               google: {
                 isEnabled: false,
               },
+              customs: [],
+
             },
           },
           documents: {

@@ -1,5 +1,8 @@
-import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
+import type { Config } from '../config/config';
 
+import type { SsoProviderConfig } from './auth.types';
+import { genericOAuthClient } from 'better-auth/client/plugins';
+import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
 import { buildTimeConfig } from '../config/config';
 import { trackingServices } from '../tracking/tracking.services';
 import { createDemoAuthClient } from './auth.demo.services';
@@ -7,6 +10,9 @@ import { createDemoAuthClient } from './auth.demo.services';
 export function createAuthClient() {
   const client = createBetterAuthClient({
     baseURL: buildTimeConfig.baseApiUrl,
+    plugins: [
+      genericOAuthClient(),
+    ],
   });
 
   return {
@@ -38,3 +44,17 @@ export const {
 } = buildTimeConfig.isDemoMode
   ? createDemoAuthClient()
   : createAuthClient();
+
+export async function authWithProvider({ provider, config }: { provider: SsoProviderConfig; config: Config }) {
+  const isCustomProvider = config.auth.providers.customs.some(({ providerId }) => providerId === provider.key);
+
+  if (isCustomProvider) {
+    signIn.oauth2({
+      providerId: provider.key,
+      callbackURL: config.baseUrl,
+    });
+    return;
+  }
+
+  await signIn.social({ provider: provider.key as 'github' | 'google', callbackURL: config.baseUrl });
+}

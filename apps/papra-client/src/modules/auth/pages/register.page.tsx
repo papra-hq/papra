@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import type { ssoProviders } from '../auth.constants';
+import type { SsoProviderConfig } from '../auth.types';
 import { A, useNavigate } from '@solidjs/router';
 import { createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -11,7 +11,7 @@ import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
-import { signIn, signUp } from '../auth.services';
+import { authWithProvider, signUp } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
@@ -133,8 +133,8 @@ export const RegisterPage: Component = () => {
 
   const [getShowEmailRegister, setShowEmailRegister] = createSignal(false);
 
-  const registerWithProvider = async (provider: typeof ssoProviders[number]) => {
-    await signIn.social({ provider: provider.key });
+  const registerWithProvider = async (provider: SsoProviderConfig) => {
+    await authWithProvider({ provider, config });
   };
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
@@ -169,7 +169,7 @@ export const RegisterPage: Component = () => {
                     name={provider.name}
                     icon={provider.icon}
                     onClick={() => registerWithProvider(provider)}
-                    label={t('auth.register.register-with-provider', { provider: t(`auth.register.providers.${provider.key}`) })}
+                    label={t('auth.register.register-with-provider', { provider: provider.name })}
                   />
                 )}
               </For>
