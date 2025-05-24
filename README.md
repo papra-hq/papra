@@ -61,9 +61,9 @@ Papra is currently in **beta**. The core functionality is stable and usable, but
 - **Content extraction**: Automatically extract text from images or scanned documents for search.
 - **Tagging Rules**: Automatically tag documents based on custom rules.
 - **Folder ingestion**: Automatically import documents from a folder.
+- **CLI**: Manage your documents from the command line.
+- **API, SDK and webhooks**: Build your own applications on top of Papra.
 - *In progress:* **i18n**: Support for multiple languages.
-- *Coming soon:* **SDK and API**: Build your own applications on top of Papra.
-- *Coming soon:* **CLI**: Manage your documents from the command line.
 - *Coming soon:* **Document sharing**: Share documents with others.
 - *Coming soon:* **Document requests**: Generate upload links for people to add documents.
 - *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
