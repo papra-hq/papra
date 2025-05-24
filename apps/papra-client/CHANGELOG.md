@@ -1,5 +1,17 @@
 # @papra/app-client
 
+## 0.5.0
+
+### Minor Changes
+
+- [#295](https://github.com/papra-hq/papra/pull/295) [`438a311`](https://github.com/papra-hq/papra/commit/438a31171c606138c4b7fa299fdd58dcbeaaf298) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for custom oauth2 providers
+
+- [#291](https://github.com/papra-hq/papra/pull/291) [`0627ec2`](https://github.com/papra-hq/papra/commit/0627ec25a422b7b820b08740cfc2905f9c55c00e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added invitation system to add users to an organization
+
+### Patch Changes
+
+- [#296](https://github.com/papra-hq/papra/pull/296) [`0ddc234`](https://github.com/papra-hq/papra/commit/0ddc2340f092cf6fe5bf2175b55fb46db7681c36) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix register page description
+
 ## 0.4.0
 
 ### Minor Changes
