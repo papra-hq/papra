@@ -1,5 +1,11 @@
 # @papra/app-server
 
+## 0.5.1
+
+### Patch Changes
+
+- [#302](https://github.com/papra-hq/papra/pull/302) [`b62ddf2`](https://github.com/papra-hq/papra/commit/b62ddf2bc4d1b134b14c847ffa30b65cb29489af) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Set email setting to dry-run by default in docker
+
 ## 0.5.0
 
 ### Minor Changes
