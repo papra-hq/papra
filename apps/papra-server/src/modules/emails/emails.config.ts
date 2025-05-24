@@ -1,24 +1,25 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
-import { booleanishSchema } from '../config/config.schemas';
+import { emailDriverFactoryNames } from './drivers/email-driver';
+import { LOGGER_EMAIL_DRIVER_NAME } from './drivers/logger/logger.email-driver';
+import { loggerEmailDriverConfig } from './drivers/logger/logger.email-driver.config';
+import { resendEmailDriverConfig } from './drivers/resend/resend.email-driver.config';
 
 export const emailsConfig = {
-  resendApiKey: {
-    doc: 'The API key for Resend (use to send emails)',
-    schema: z.string(),
-    default: 'set-me',
-    env: 'RESEND_API_KEY',
-  },
   fromEmail: {
     doc: 'The email address to send emails from',
     schema: z.string(),
     default: 'Papra <auth@mail.papra.app>',
     env: 'EMAILS_FROM_ADDRESS',
   },
-  dryRun: {
-    doc: 'Whether to run the email service in dry run mode',
-    schema: booleanishSchema,
-    default: false,
-    env: 'EMAILS_DRY_RUN',
+  driverName: {
+    doc: `The driver to use when sending emails, value can be one of: ${emailDriverFactoryNames.map(x => `\`${x}\``).join(', ')}. Using \`logger\` will not send anything but log them instead`,
+    schema: z.enum(emailDriverFactoryNames as [string, ...string[]]),
+    default: LOGGER_EMAIL_DRIVER_NAME,
+    env: 'EMAILS_DRIVER',
+  },
+  drivers: {
+    resend: resendEmailDriverConfig,
+    logger: loggerEmailDriverConfig,
   },
 } as const satisfies ConfigDefinition;

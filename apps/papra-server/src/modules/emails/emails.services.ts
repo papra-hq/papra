@@ -1,47 +1,30 @@
 import type { Config } from '../config/config.types';
-import { injectArguments } from '@corentinth/chisels';
-import { Resend } from 'resend';
+import type { EmailDriverName } from './drivers/email-driver';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
-
-const logger = createLogger({ namespace: 'emails.services' });
+import { emailDrivers } from './drivers/email-driver';
 
 export type EmailsServices = ReturnType<typeof createEmailsServices>;
 
 export function createEmailsServices({ config }: { config: Config }) {
-  return injectArguments(
-    {
-      sendEmail,
-    },
-    { config },
-  );
-}
+  const { driverName } = config.emails;
 
-async function sendEmail({ config, ...rest }: { from?: string; to: string | string[]; subject: string; config: Config; html: string }) {
-  const { resendApiKey, dryRun, fromEmail } = config.emails;
+  const emailDriver = emailDrivers[driverName as EmailDriverName];
 
-  if (dryRun) {
-    logger.info({ ...rest }, 'Dry run enabled, skipping email sending');
-    return { emailId: 'dry-run' };
-  }
-
-  const resend = new Resend(resendApiKey);
-
-  const { error, data } = await resend.emails.send({ from: fromEmail, ...rest });
-
-  if (error) {
-    logger.error({ error, ...rest }, 'Failed to send email');
+  if (!emailDriver) {
     throw createError({
-      code: 'email.send_failed',
-      message: 'Failed to send email',
+      message: `Invalid email driver ${driverName}`,
+      code: 'emails.invalid_driver',
       statusCode: 500,
       isInternal: true,
     });
   }
 
-  const { id: emailId } = data ?? {};
+  const logger = createLogger({ namespace: 'emails.services' });
 
-  logger.info({ emailId }, 'Email sent');
+  logger.info({ driverName }, 'Creating emails services');
 
-  return { emailId };
+  const emailServices = emailDriver({ config, logger });
+
+  return emailServices;
 }
