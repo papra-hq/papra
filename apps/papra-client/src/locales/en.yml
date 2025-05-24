@@ -38,7 +38,7 @@ auth.login.form.forgot-password.label: Forgot password?
 auth.login.form.submit: Login
 
 auth.register.title: Register to Papra
-auth.register.description: Enter your email or use social login to access your Papra account.
+auth.register.description: Create an account to start using Papra.
 auth.register.register-with-email: Register with email
 auth.register.register-with-provider: Register with {{ provider }}
 auth.register.providers.google: Google
