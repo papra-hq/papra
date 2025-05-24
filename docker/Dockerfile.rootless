@@ -51,5 +51,6 @@ ENV DATABASE_URL=file:./app-data/db/db.sqlite
 ENV DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents
 ENV PAPRA_CONFIG_DIR=./app-data
 ENV INGESTION_FOLDER_ROOT=./ingestion
+ENV EMAILS_DRY_RUN=true
 
 CMD ["pnpm", "start:with-migrations"]
