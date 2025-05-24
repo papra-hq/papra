@@ -6,15 +6,17 @@ import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } 
 import { For, Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuGroupLabel, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
 import { useCurrentUserRole } from '../organizations.composables';
 import { ORGANIZATION_ROLES } from '../organizations.constants';
-import { fetchOrganizationMembers, removeOrganizationMember } from '../organizations.services';
+import { getIsMemberRoleDisabled } from '../organizations.models';
+import { fetchOrganizationMembers, removeOrganizationMember, updateOrganizationMemberRole } from '../organizations.services';
 
 const MemberList: Component = () => {
   const params = useParams();
@@ -24,8 +26,9 @@ const MemberList: Component = () => {
     queryKey: ['organizations', params.organizationId, 'members'],
     queryFn: () => fetchOrganizationMembers({ organizationId: params.organizationId }),
   }));
+  const { getErrorMessage } = useI18nApiErrors({ t });
 
-  const { getIsAtLeastAdmin } = useCurrentUserRole({ organizationId: params.organizationId });
+  const { getIsAtLeastAdmin, getRole } = useCurrentUserRole({ organizationId: params.organizationId });
 
   const removeMemberMutation = createMutation(() => ({
     mutationFn: ({ memberId }: { memberId: string }) => removeOrganizationMember({ organizationId: params.organizationId, memberId }),
@@ -34,6 +37,23 @@ const MemberList: Component = () => {
 
       createToast({
         message: t('organizations.members.delete.success'),
+      });
+    },
+  }));
+
+  const updateMemberRoleMutation = createMutation(() => ({
+    mutationFn: ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) => updateOrganizationMemberRole({ organizationId: params.organizationId, memberId, role }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'members'] });
+
+      createToast({
+        message: t('organizations.members.update-role.success'),
+      });
+    },
+    onError: (error) => {
+      createToast({
+        message: getErrorMessage({ error }),
+        type: 'error',
       });
     },
   }));
@@ -58,6 +78,10 @@ const MemberList: Component = () => {
     removeMemberMutation.mutate({ memberId });
   };
 
+  const handleUpdateMemberRole = async ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) => {
+    await updateMemberRoleMutation.mutateAsync({ memberId, role });
+  };
+
   const table = createSolidTable({
     get data() {
       return query.data?.members ?? [];
@@ -80,6 +104,32 @@ const MemberList: Component = () => {
                 <div class="i-tabler-user-x size-4 mr-2" />
                 {t('organizations.members.remove-from-organization')}
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuGroup>
+                <DropdownMenuGroupLabel class="font-normal">{t('organizations.members.role')}</DropdownMenuGroupLabel>
+                <DropdownMenuRadioGroup value={data.row.original.role} onChange={role => handleUpdateMemberRole({ memberId: data.row.original.id, role: role as OrganizationMemberRole })}>
+                  <DropdownMenuRadioItem
+                    value={ORGANIZATION_ROLES.OWNER}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.OWNER })}
+                  >
+                    {t(`organizations.members.roles.owner`)}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value={ORGANIZATION_ROLES.ADMIN}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.ADMIN })}
+                  >
+                    {t(`organizations.members.roles.admin`)}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value={ORGANIZATION_ROLES.MEMBER}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.MEMBER })}
+                  >
+                    {t(`organizations.members.roles.member`)}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuGroup>
+
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

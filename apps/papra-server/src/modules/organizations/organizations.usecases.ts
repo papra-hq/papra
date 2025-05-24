@@ -314,3 +314,41 @@ export async function sendOrganizationInvitationEmail({
     `,
   });
 }
+
+export async function updateOrganizationMemberRole({
+  memberId,
+  userId,
+  organizationId,
+  organizationsRepository,
+  role,
+}: {
+  memberId: string;
+  userId: string;
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+  role: 'admin' | 'member';
+}) {
+  const { member } = await organizationsRepository.getOrganizationMemberByMemberId({ memberId, organizationId });
+
+  if (!member) {
+    throw createForbiddenError();
+  }
+
+  if (member.role === ORGANIZATION_ROLES.OWNER) {
+    throw createForbiddenError();
+  }
+
+  const { member: currentUser } = await organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId });
+
+  if (!currentUser) {
+    throw createUserNotInOrganizationError();
+  }
+
+  if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(currentUser.role)) {
+    throw createForbiddenError();
+  }
+
+  const { member: updatedMember } = await organizationsRepository.updateOrganizationMemberRole({ memberId, role });
+
+  return { member: updatedMember };
+}

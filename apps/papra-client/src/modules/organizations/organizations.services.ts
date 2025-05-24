@@ -92,3 +92,15 @@ export async function getMembership({ organizationId }: { organizationId: string
     member: coerceDates(member),
   };
 }
+
+export async function updateOrganizationMemberRole({ organizationId, memberId, role }: { organizationId: string; memberId: string; role: OrganizationMemberRole }) {
+  const { member } = await apiClient<{ member: AsDto<OrganizationMember> }>({
+    path: `/api/organizations/${organizationId}/members/${memberId}`,
+    method: 'PATCH',
+    body: { role },
+  });
+
+  return {
+    member: coerceDates(member),
+  };
+}

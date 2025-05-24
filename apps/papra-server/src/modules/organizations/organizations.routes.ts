@@ -8,7 +8,7 @@ import { createUsersRepository } from '../users/users.repository';
 import { memberIdSchema, organizationIdSchema } from './organization.schemas';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
-import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization, updateOrganizationMemberRole } from './organizations.usecases';
 
 export async function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
@@ -18,6 +18,7 @@ export async function registerOrganizationsRoutes(context: RouteDefinitionContex
   setupDeleteOrganizationRoute(context);
   setupGetOrganizationMembersRoute(context);
   setupRemoveOrganizationMemberRoute(context);
+  setupUpdateOrganizationMemberRoute(context);
   setupInviteOrganizationMemberRoute(context);
   setupGetMembershipRoute(context);
 }
@@ -178,6 +179,33 @@ function setupRemoveOrganizationMemberRoute({ app, db }: RouteDefinitionContext)
       await removeMemberFromOrganization({ memberId, userId, organizationId, organizationsRepository });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupUpdateOrganizationMemberRoute({ app, db }: RouteDefinitionContext) {
+  app.patch(
+    '/api/organizations/:organizationId/members/:memberId',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+      memberId: memberIdSchema,
+    })),
+    validateJsonBody(z.object({
+      role: z.enum([ORGANIZATION_ROLES.ADMIN, ORGANIZATION_ROLES.MEMBER]),
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, memberId } = context.req.valid('param');
+      const { role } = context.req.valid('json');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { member } = await updateOrganizationMemberRole({ memberId, organizationsRepository, userId, organizationId, role });
+
+      return context.json({ member });
     },
   );
 }

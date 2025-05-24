@@ -254,6 +254,7 @@ organizations.members.description: Manage your organization members
 organizations.members.invite-member: Invite member
 organizations.members.invite-member-disabled-tooltip: Only admins or owners can invite members to the organization
 organizations.members.remove-from-organization: Remove from organization
+organizations.members.role: Role
 organizations.members.roles.owner: Owner
 organizations.members.roles.admin: Admin
 organizations.members.roles.member: Member
@@ -262,6 +263,7 @@ organizations.members.delete.confirm.message: Are you sure you want to remove th
 organizations.members.delete.confirm.confirm-button: Remove
 organizations.members.delete.confirm.cancel-button: Cancel
 organizations.members.delete.success: Member removed from organization
+organizations.members.update-role.success: Member role updated
 
 organizations.invite-member.title: Invite member
 organizations.invite-member.description: Invite a member to your organization

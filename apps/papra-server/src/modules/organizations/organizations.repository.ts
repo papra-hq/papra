@@ -192,16 +192,16 @@ async function removeUserFromOrganization({ userId, organizationId, db }: { user
     );
 }
 
-async function updateOrganizationMemberRole({ userId, organizationId, role, db }: { userId: string; organizationId: string; role: OrganizationRole; db: Database }) {
-  await db
+async function updateOrganizationMemberRole({ memberId, role, db }: { memberId: string; role: OrganizationRole; db: Database }) {
+  const [updatedMember] = await db
     .update(organizationMembersTable)
     .set({ role })
     .where(
-      and(
-        eq(organizationMembersTable.userId, userId),
-        eq(organizationMembersTable.organizationId, organizationId),
-      ),
-    );
+      eq(organizationMembersTable.id, memberId),
+    )
+    .returning();
+
+  return { member: updatedMember };
 }
 
 async function getOrganizationMemberByUserId({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
