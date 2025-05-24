@@ -163,6 +163,7 @@ export type LocaleKeys =
   | 'api-errors.organization.invitation_already_exists'
   | 'api-errors.user.already_in_organization'
   | 'api-errors.user.organization_invitation_limit_reached'
+  | 'api-errors.demo.not_available'
   | 'api-keys.permissions.documents.title'
   | 'api-keys.permissions.documents.documents:create'
   | 'api-keys.permissions.documents.documents:read'

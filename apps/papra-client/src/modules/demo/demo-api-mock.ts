@@ -1,4 +1,5 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
+import type { Webhook } from '../webhooks/webhooks.types';
 import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
@@ -11,6 +12,7 @@ import {
   tagDocumentStorage,
   taggingRuleStorage,
   tagStorage,
+  webhooksStorage,
 } from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
 
@@ -566,6 +568,55 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
+    path: '/api/organizations/:organizationId/members',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      return {
+        members: [{
+          id: 'mem_1',
+          user: {
+            id: 'usr_1',
+            email: 'jane.doe@papra.app',
+            name: 'Jane Doe',
+          },
+          role: 'owner',
+          organizationId,
+        }],
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/members/invitations',
+    method: 'POST',
+    handler: async () => {
+      throw Object.assign(new FetchError('Not available in demo'), {
+        status: 501,
+        data: {
+          error: {
+            message: 'This feature is not available in demo',
+            code: 'demo.not_available',
+          },
+        },
+      });
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/members/me',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      return {
+        member: {
+          id: 'mem_1',
+          role: 'owner',
+          organizationId,
+        },
+      };
+    },
+  }),
+
+  ...defineHandler({
     path: '/api/api-keys',
     method: 'GET',
     handler: async () => {
@@ -604,6 +655,80 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     method: 'DELETE',
     handler: async ({ params: { apiKeyId } }) => {
       await apiKeyStorage.removeItem(apiKeyId);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/invitations/count',
+    method: 'GET',
+    handler: async () => ({ pendingInvitationsCount: 0 }),
+  }),
+
+  ...defineHandler({
+    path: '/api/invitations',
+    method: 'GET',
+    handler: async () => ({ invitations: [] }),
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/webhooks',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const webhooks = await findMany(webhooksStorage, webhook => webhook.organizationId === organizationId);
+
+      return { webhooks };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/webhooks',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const webhook: Webhook = {
+        id: createId({ prefix: 'webhook' }),
+        organizationId,
+        name: get(body, 'name'),
+        url: get(body, 'url'),
+        enabled: true,
+        events: get(body, 'events'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await webhooksStorage.setItem(webhook.id, webhook);
+
+      return { webhook };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/webhooks/:webhookId',
+    method: 'GET',
+    handler: async ({ params: { webhookId } }) => {
+      const webhook = await webhooksStorage.getItem(webhookId);
+      return { webhook };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/webhooks/:webhookId',
+    method: 'DELETE',
+    handler: async ({ params: { webhookId } }) => {
+      await webhooksStorage.removeItem(webhookId);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/webhooks/:webhookId',
+    method: 'PUT',
+    handler: async ({ params: { webhookId }, body }) => {
+      const webhook = await webhooksStorage.getItem(webhookId);
+
+      assert(webhook, { status: 404 });
+
+      await webhooksStorage.setItem(webhookId, Object.assign(webhook, body, { updatedAt: new Date() }));
+
+      return { webhook };
     },
   }),
 };

@@ -169,6 +169,7 @@ api-errors.default: An error occurred while processing your request.
 api-errors.organization.invitation_already_exists: An invitation for this email already exists in this organization.
 api-errors.user.already_in_organization: This user is already in this organization.
 api-errors.user.organization_invitation_limit_reached: The maximum number of invitations has been reached for today. Please try again tomorrow.
+api-errors.demo.not_available: This feature is not available in demo
 
 api-keys.permissions.documents.title: Documents
 api-keys.permissions.documents.documents:create: Create documents
