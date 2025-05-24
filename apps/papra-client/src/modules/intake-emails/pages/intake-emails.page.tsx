@@ -133,12 +133,27 @@ export const IntakeEmailsPage: Component = () => {
 
   if (!config.intakeEmails.isEnabled) {
     return (
-      <Card class="p-6">
-        <h2 class="text-base font-bold">Intake Emails</h2>
+      <div class="p-6 max-w-screen-md mx-auto mt-10">
+
+        <h1 class="text-xl font-semibold">Intake Emails</h1>
+
         <p class="text-muted-foreground mt-1">
-          Intake emails are disabled on this instance. Please contact your administrator to enable them.
+          Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.
         </p>
-      </Card>
+        <Card class="px-6 py-4 mt-4 flex items-center gap-4">
+          <div class="i-tabler-mail-off size-12 text-muted-foreground flex-shrink-0" />
+          <div>
+            <h2 class="text-base font-bold text-muted-foreground">Intake Emails are disabled</h2>
+            <p class="text-muted-foreground mt-1">
+              Intake emails are disabled on this instance. Please contact your administrator to enable them. See the
+              {' '}
+              <a href="https://docs.papra.app/guides/intake-emails-with-owlrelay/" target="_blank" class="text-primary">documentation</a>
+              {' '}
+              for more information.
+            </p>
+          </div>
+        </Card>
+      </div>
     );
   }
 
