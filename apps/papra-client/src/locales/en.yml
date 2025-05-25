@@ -1,3 +1,5 @@
+# Authentication
+
 auth.request-password-reset.title: Reset your password
 auth.request-password-reset.description: Enter your email to reset your password.
 auth.request-password-reset.requested: If an account exists for this email, we've sent you an email to reset your password.
@@ -69,24 +71,211 @@ auth.legal-links.description: By continuing, you acknowledge that you understand
 auth.legal-links.terms: Terms of Service
 auth.legal-links.privacy: Privacy Policy
 
+# User settings
+
+user.settings.title: User settings
+user.settings.description: Manage your account settings here.
+
+user.settings.email.title: Email address
+user.settings.email.description: Your email address cannot be changed.
+user.settings.email.label: Email address
+
+user.settings.name.title: Full name
+user.settings.name.description: Your full name is displayed to other organization members.
+user.settings.name.label: Full name
+user.settings.name.placeholder: Eg. John Doe
+user.settings.name.update: Update name
+user.settings.name.updated: Your full name has been updated
+
+user.settings.logout.title: Logout
+user.settings.logout.description: Logout from your account. You can login again later.
+user.settings.logout.button: Logout
+
+# Organizations
+
+organizations.list.title: Your organizations
+organizations.list.description: Organizations are a way to group your documents and manage access to them. You can create multiple organizations and invite your team members to collaborate.
+organizations.list.create-new: Create new organization
+
+organizations.details.no-documents.title: No documents
+organizations.details.no-documents.description: There are no documents in this organization yet. Start by uploading some documents.
+organizations.details.upload-documents: Upload documents
+organizations.details.documents-count: documents in total
+organizations.details.total-size: total size
+organizations.details.latest-documents: Latest imported documents
+
+organizations.create.title: Create a new organization
+organizations.create.description: Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.
+organizations.create.back: Back
+organizations.create.error.max-count-reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
+organizations.create.form.name.label: Organization name
+organizations.create.form.name.placeholder: Eg. Acme Inc.
+organizations.create.form.name.required: Please enter an organization name
+organizations.create.form.submit: Create organization
+organizations.create.success: Organization created successfully
+
+organizations.create-first.title: Create your organization
+organizations.create-first.description: Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.
+organizations.create-first.default-name: My organization
+organizations.create-first.user-name: "{{ name }}'s organization"
+
+organization.settings.title: Organization Settings
+organization.settings.page.title: Organization settings
+organization.settings.page.description: Manage your organization settings here.
+organization.settings.name.title: Organization name
+organization.settings.name.update: Update name
+organization.settings.name.placeholder: Eg. Acme Inc.
+organization.settings.name.updated: Organization name updated
+organization.settings.subscription.title: Subscription
+organization.settings.subscription.description: Manage your billing, invoices and payment methods.
+organization.settings.subscription.manage: Manage subscription
+organization.settings.subscription.error: Failed to get customer portal URL
+organization.settings.delete.title: Delete organization
+organization.settings.delete.description: Deleting this organization will permanently remove all data associated with it.
+organization.settings.delete.confirm.title: Delete organization
+organization.settings.delete.confirm.message: Are you sure you want to delete this organization? This action cannot be undone, and all data associated with this organization will be permanently removed.
+organization.settings.delete.confirm.confirm-button: Delete organization
+organization.settings.delete.confirm.cancel-button: Cancel
+organization.settings.delete.success: Organization deleted
+
+organizations.members.title: Members
+organizations.members.description: Manage your organization members
+organizations.members.invite-member: Invite member
+organizations.members.invite-member-disabled-tooltip: Only admins or owners can invite members to the organization
+organizations.members.remove-from-organization: Remove from organization
+organizations.members.role: Role
+organizations.members.roles.owner: Owner
+organizations.members.roles.admin: Admin
+organizations.members.roles.member: Member
+organizations.members.delete.confirm.title: Remove member
+organizations.members.delete.confirm.message: Are you sure you want to remove this member from the organization?
+organizations.members.delete.confirm.confirm-button: Remove
+organizations.members.delete.confirm.cancel-button: Cancel
+organizations.members.delete.success: Member removed from organization
+organizations.members.update-role.success: Member role updated
+organizations.members.table.headers.name: Name
+organizations.members.table.headers.email: Email
+organizations.members.table.headers.role: Role
+organizations.members.table.headers.actions: Actions
+
+organizations.invite-member.title: Invite member
+organizations.invite-member.description: Invite a member to your organization
+organizations.invite-member.form.email.label: Email
+organizations.invite-member.form.email.placeholder: 'Example: ada@papra.app'
+organizations.invite-member.form.email.required: Please enter a valid email address
+organizations.invite-member.form.role.label: Role
+organizations.invite-member.form.submit: Invite to organization
+organizations.invite-member.success.message: Member invited
+organizations.invite-member.success.description: The email has been invited to the organization.
+organizations.invite-member.error.message: Failed to invite member
+
+invitations.list.title: Invitations
+invitations.list.description: Manage your organization invitations
+invitations.list.empty.title: No pending invitations
+invitations.list.empty.description: You haven't been invited to any organizations yet.
+invitations.list.headers.organization: Organization
+invitations.list.headers.created: Created
+invitations.list.headers.actions: Actions
+invitations.list.actions.accept: Accept
+invitations.list.actions.reject: Reject
+invitations.list.actions.accept.success.message: Invitation accepted
+invitations.list.actions.accept.success.description: The invitation has been accepted.
+invitations.list.actions.reject.success.message: Invitation rejected
+invitations.list.actions.reject.success.description: The invitation has been rejected.
+
+# Documents
+
+documents.list.title: Documents
+documents.list.no-documents.title: No documents
+documents.list.no-documents.description: There are no documents in this organization yet. Start by uploading some documents.
+documents.list.no-results: No documents found
+
+documents.tabs.info: Info
+documents.tabs.content: Content
+documents.deleted.message: This document has been deleted and will be permanently removed in {{ days }} days.
+documents.actions.download: Download
+documents.actions.open-in-new-tab: Open in new tab
+documents.actions.restore: Restore
+documents.actions.delete: Delete
+documents.actions.edit: Edit
+documents.actions.cancel: Cancel
+documents.actions.save: Save
+documents.actions.saving: Saving...
+documents.content.alert: The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.
+documents.info.id: ID
+documents.info.name: Name
+documents.info.type: Type
+documents.info.size: Size
+documents.info.created-at: Created At
+documents.info.updated-at: Updated At
+documents.info.never: Never
+
+import-documents.title.error: '{{ count }} documents failed'
+import-documents.title.success: '{{ count }} documents imported'
+import-documents.title.pending: '{{ count }} / {{ total }} documents imported'
+import-documents.title.none: Import documents
+import-documents.no-import-in-progress: No document import in progress
+
+documents.deleted.title: Deleted documents
+documents.deleted.empty.title: No deleted documents
+documents.deleted.empty.description: You have no deleted documents. Documents that are deleted will be moved to the trash bin for {{ days }} days.
+documents.deleted.retention-notice: All deleted documents are stored in the trash bin for {{ days }} days. Passing this delay, the documents will be permanently deleted, and you will not be able to restore them.
+documents.deleted.deleted-at: Deleted
+documents.deleted.restoring: Restoring...
+documents.deleted.deleting: Deleting...
+
+trash.delete-all.button: Delete all
+trash.delete-all.confirm.title: Permanently delete all documents?
+trash.delete-all.confirm.description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.
+trash.delete-all.confirm.label: Delete
+trash.delete-all.confirm.cancel: Cancel
+trash.delete.button: Delete
+trash.delete.confirm.title: Permanently delete document?
+trash.delete.confirm.description: Are you sure you want to permanently delete this document from the trash? This action cannot be undone.
+trash.delete.confirm.label: Delete
+trash.delete.confirm.cancel: Cancel
+trash.deleted.success.title: Document deleted
+trash.deleted.success.description: The document has been permanently deleted.
+
+# Tags
+
 tags.no-tags.title: No tags yet
 tags.no-tags.description: This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
 tags.no-tags.create-tag: Create tag
 
-layout.menu.home: Home
-layout.menu.documents: Documents
-layout.menu.tags: Tags
-layout.menu.tagging-rules: Tagging rules
-layout.menu.deleted-documents: Deleted documents
-layout.menu.organization-settings: Settings
-layout.menu.api-keys: API keys
-layout.menu.settings: Settings
-layout.menu.account: Account
-layout.menu.general-settings: General settings
-layout.menu.intake-emails: Intake emails
-layout.menu.webhooks: Webhooks
-layout.menu.members: Members
-layout.menu.invitations: Invitations
+tags.title: Documents Tags
+tags.description: Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
+tags.create: Create tag
+tags.update: Update tag
+tags.delete: Delete tag
+tags.delete.confirm.title: Delete tag
+tags.delete.confirm.message: Are you sure you want to delete this tag? Deleting a tag will remove it from all documents.
+tags.delete.confirm.confirm-button: Delete
+tags.delete.confirm.cancel-button: Cancel
+tags.delete.success: Tag deleted successfully
+tags.create.success: Tag "{{ name }}" created successfully.
+tags.update.success: Tag "{{ name }}" updated successfully.
+tags.form.name.label: Name
+tags.form.name.placeholder: Eg. Contracts
+tags.form.name.required: Please enter a tag name
+tags.form.name.max-length: Tag name must be less than 64 characters
+tags.form.color.label: Color
+tags.form.color.placeholder: 'Eg. #FF0000'
+tags.form.color.required: Please enter a color
+tags.form.color.invalid: The hex color is badly formatted.
+tags.form.description.label: Description
+tags.form.description.optional: (optional)
+tags.form.description.placeholder: Eg. All the contracts signed by the company
+tags.form.description.max-length: Description must be less than 256 characters
+tags.form.no-description: No description
+tags.table.headers.tag: Tag
+tags.table.headers.description: Description
+tags.table.headers.documents: Documents
+tags.table.headers.created: Created
+tags.table.headers.actions: Actions
+
+# Tagging rules
+
 tagging-rules.field.name: document name
 tagging-rules.field.content: document content
 tagging-rules.operator.equals: equals
@@ -136,40 +325,42 @@ tagging-rules.update.error: Failed to update tagging rule
 tagging-rules.update.submit: Update rule
 tagging-rules.update.cancel: Cancel
 
-demo.popup.description: This is a demo environment, all data is save to your browser local storage.
-demo.popup.discord: Join the {{ discordLink }} to get support, propose features or just chat.
-demo.popup.discord-link-label: Discord server
-demo.popup.reset: Reset demo data
-demo.popup.hide: Hide
+# Intake emails
 
-trash.delete-all.button: Delete all
-trash.delete-all.confirm.title: Permanently delete all documents?
-trash.delete-all.confirm.description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.
-trash.delete-all.confirm.label: Delete
-trash.delete-all.confirm.cancel: Cancel
-trash.delete.button: Delete
-trash.delete.confirm.title: Permanently delete document?
-trash.delete.confirm.description: Are you sure you want to permanently delete this document from the trash? This action cannot be undone.
-trash.delete.confirm.label: Delete
-trash.delete.confirm.cancel: Cancel
-trash.deleted.success.title: Document deleted
-trash.deleted.success.description: The document has been permanently deleted.
+intake-emails.title: Intake Emails
+intake-emails.description: Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.
+intake-emails.disabled.title: Intake Emails are disabled
+intake-emails.disabled.description: Intake emails are disabled on this instance. Please contact your administrator to enable them. See the {{ documentation }} for more information.
+intake-emails.disabled.documentation: documentation
+intake-emails.info: Only enabled intake emails from allowed origins will be processed. You can enable or disable an intake email at any time.
+intake-emails.empty.title: No intake emails
+intake-emails.empty.description: Generate an intake address to easily ingest emails attachments.
+intake-emails.empty.generate: Generate intake email
+intake-emails.count: '{{ count }} intake email{{ plural }} for this organization'
+intake-emails.new: New intake email
+intake-emails.disabled-label: (Disabled)
+intake-emails.no-origins: No allowed email origins
+intake-emails.allowed-origins: Allowed from {{ count }} address{{ plural }}
+intake-emails.actions.enable: Enable
+intake-emails.actions.disable: Disable
+intake-emails.actions.manage-origins: Manage origins addresses
+intake-emails.actions.delete: Delete
+intake-emails.delete.confirm.title: Delete intake email?
+intake-emails.delete.confirm.message: Are you sure you want to delete this intake email? This action cannot be undone.
+intake-emails.delete.confirm.confirm-button: Delete intake email
+intake-emails.delete.confirm.cancel-button: Cancel
+intake-emails.delete.success: Intake email deleted
+intake-emails.create.success: Intake email created
+intake-emails.update.success.enabled: Intake email enabled
+intake-emails.update.success.disabled: Intake email disabled
+intake-emails.allowed-origins.title: Allowed origins
+intake-emails.allowed-origins.description: Only emails sent to {{ email }} from these origins will be processed. If no origins are specified, all emails will be discarded.
+intake-emails.allowed-origins.add.label: Add allowed origin email
+intake-emails.allowed-origins.add.placeholder: Eg. ada@papra.app
+intake-emails.allowed-origins.add.button: Add
+intake-emails.allowed-origins.add.error.exists: This email is already in the allowed origins for this intake email
 
-import-documents.title.error: '{{ count }} documents failed'
-import-documents.title.success: '{{ count }} documents imported'
-import-documents.title.pending: '{{ count }} / {{ total }} documents imported'
-import-documents.title.none: Import documents
-import-documents.no-import-in-progress: No document import in progress
-
-api-errors.document.already_exists: The document already exists
-api-errors.document.file_too_big: The document file is too big
-api-errors.intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
-api-errors.user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
-api-errors.default: An error occurred while processing your request.
-api-errors.organization.invitation_already_exists: An invitation for this email already exists in this organization.
-api-errors.user.already_in_organization: This user is already in this organization.
-api-errors.user.organization_invitation_limit_reached: The maximum number of invitations has been reached for today. Please try again tomorrow.
-api-errors.demo.not_available: This feature is not available in demo
+# API keys
 
 api-keys.permissions.documents.title: Documents
 api-keys.permissions.documents.documents:create: Create documents
@@ -207,6 +398,8 @@ api-keys.delete.confirm.message: Are you sure you want to delete this API key? T
 api-keys.delete.confirm.confirm-button: Delete
 api-keys.delete.confirm.cancel-button: Cancel
 
+# Webhooks
+
 webhooks.list.title: Webhooks
 webhooks.list.description: Manage your organization webhooks
 webhooks.list.empty.title: No webhooks
@@ -215,7 +408,6 @@ webhooks.list.create: Create webhook
 webhooks.list.card.last-triggered: Last triggered
 webhooks.list.card.never: Never
 webhooks.list.card.created: Created
-
 webhooks.create.title: Create webhook
 webhooks.create.description: Create a new webhook to receive events
 webhooks.create.success: Webhook created successfully
@@ -249,43 +441,65 @@ webhooks.delete.confirm.cancel-button: Cancel
 webhooks.events.documents.document:created.description: Document created
 webhooks.events.documents.document:deleted.description: Document deleted
 
-organizations.members.title: Members
-organizations.members.description: Manage your organization members
-organizations.members.invite-member: Invite member
-organizations.members.invite-member-disabled-tooltip: Only admins or owners can invite members to the organization
-organizations.members.remove-from-organization: Remove from organization
-organizations.members.role: Role
-organizations.members.roles.owner: Owner
-organizations.members.roles.admin: Admin
-organizations.members.roles.member: Member
-organizations.members.delete.confirm.title: Remove member
-organizations.members.delete.confirm.message: Are you sure you want to remove this member from the organization?
-organizations.members.delete.confirm.confirm-button: Remove
-organizations.members.delete.confirm.cancel-button: Cancel
-organizations.members.delete.success: Member removed from organization
-organizations.members.update-role.success: Member role updated
+# Navigation
 
-organizations.invite-member.title: Invite member
-organizations.invite-member.description: Invite a member to your organization
-organizations.invite-member.form.email.label: Email
-organizations.invite-member.form.email.placeholder: 'Example: ada@papra.app'
-organizations.invite-member.form.email.required: Please enter a valid email address
-organizations.invite-member.form.role.label: Role
-organizations.invite-member.form.submit: Invite to organization
-organizations.invite-member.success.message: Member invited
-organizations.invite-member.success.description: The email has been invited to the organization.
-organizations.invite-member.error.message: Failed to invite member
+layout.menu.home: Home
+layout.menu.documents: Documents
+layout.menu.tags: Tags
+layout.menu.tagging-rules: Tagging rules
+layout.menu.deleted-documents: Deleted documents
+layout.menu.organization-settings: Settings
+layout.menu.api-keys: API keys
+layout.menu.settings: Settings
+layout.menu.account: Account
+layout.menu.general-settings: General settings
+layout.menu.intake-emails: Intake emails
+layout.menu.webhooks: Webhooks
+layout.menu.members: Members
+layout.menu.invitations: Invitations
 
-invitations.list.title: Invitations
-invitations.list.description: Manage your organization invitations
-invitations.list.empty.title: No pending invitations
-invitations.list.empty.description: You haven't been invited to any organizations yet.
-invitations.list.headers.organization: Organization
-invitations.list.headers.created: Created
-invitations.list.headers.actions: Actions
-invitations.list.actions.accept: Accept
-invitations.list.actions.reject: Reject
-invitations.list.actions.accept.success.message: Invitation accepted
-invitations.list.actions.accept.success.description: The invitation has been accepted.
-invitations.list.actions.reject.success.message: Invitation rejected
-invitations.list.actions.reject.success.description: The invitation has been rejected.
+layout.theme.light: Light mode
+layout.theme.dark: Dark mode
+layout.theme.system: System mode
+
+layout.search.placeholder: Search...
+layout.menu.import-document: Import a document
+
+user-menu.account-settings: Account settings
+user-menu.api-keys: API keys
+user-menu.invitations: Invitations
+user-menu.language: Language
+user-menu.logout: Logout
+
+# Command palette
+
+command-palette.search.placeholder: Search commands or documents
+command-palette.no-results: No results found
+command-palette.sections.documents: Documents
+command-palette.sections.theme: Theme
+
+# API errors
+
+api-errors.document.already_exists: The document already exists
+api-errors.document.file_too_big: The document file is too big
+api-errors.intake_email.limit_reached: The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.
+api-errors.user.max_organization_count_reached: You have reached the maximum number of organizations you can create, if you need to create more, please contact support.
+api-errors.default: An error occurred while processing your request.
+api-errors.organization.invitation_already_exists: An invitation for this email already exists in this organization.
+api-errors.user.already_in_organization: This user is already in this organization.
+api-errors.user.organization_invitation_limit_reached: The maximum number of invitations has been reached for today. Please try again tomorrow.
+api-errors.demo.not_available: This feature is not available in demo
+
+# Not found
+
+not-found.title: 404 - Not Found
+not-found.description: Sorry, the page you are looking for does not seem to exist. Please check the URL and try again.
+not-found.back-to-home: Go back to home
+
+# Demo
+
+demo.popup.description: This is a demo environment, all data is save to your browser local storage.
+demo.popup.discord: Join the {{ discordLink }} to get support, propose features or just chat.
+demo.popup.discord-link-label: Discord server
+demo.popup.reset: Reset demo data
+demo.popup.hide: Hide

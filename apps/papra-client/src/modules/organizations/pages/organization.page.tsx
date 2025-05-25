@@ -7,10 +7,12 @@ import { DocumentUploadArea } from '@/modules/documents/components/document-uplo
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
 import { useUploadDocuments } from '@/modules/documents/documents.composables';
 import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 
 export const OrganizationPage: Component = () => {
   const params = useParams();
+  const { t } = useI18n();
   const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
 
   const query = createQueries(() => ({
@@ -39,11 +41,11 @@ export const OrganizationPage: Component = () => {
           ? (
               <>
                 <h2 class="text-xl font-bold ">
-                  No documents
+                  {t('organizations.details.no-documents.title')}
                 </h2>
 
                 <p class="text-muted-foreground mt-1 mb-6">
-                  There are no documents in this organization yet. Start by uploading some documents.
+                  {t('organizations.details.no-documents.description')}
                 </p>
 
                 <DocumentUploadArea />
@@ -57,7 +59,7 @@ export const OrganizationPage: Component = () => {
                   <Button onClick={promptImport} class="h-auto items-start flex-col gap-4 py-4 px-6">
                     <div class="i-tabler-upload size-6"></div>
 
-                    Upload documents
+                    {t('organizations.details.upload-documents')}
                   </Button>
 
                   <Show when={query[1].data?.organizationStats}>
@@ -69,7 +71,7 @@ export const OrganizationPage: Component = () => {
                               {organizationStats().documentsCount}
                             </span>
                             <span class="text-muted-foreground">
-                              documents in total
+                              {t('organizations.details.documents-count')}
                             </span>
                           </div>
                         </div>
@@ -80,7 +82,7 @@ export const OrganizationPage: Component = () => {
                               {formatBytes({ bytes: organizationStats().documentsSize, base: 1000 })}
                             </span>
                             <span class="text-muted-foreground">
-                              total size
+                              {t('organizations.details.total-size')}
                             </span>
                           </div>
                         </div>
@@ -90,7 +92,7 @@ export const OrganizationPage: Component = () => {
                 </div>
 
                 <h2 class="text-lg font-semibold mb-4">
-                  Latest imported documents
+                  {t('organizations.details.latest-documents')}
                 </h2>
 
                 <DocumentsPaginatedList

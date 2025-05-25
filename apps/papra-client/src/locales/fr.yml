@@ -1,3 +1,5 @@
+# Authentication
+
 auth.request-password-reset.title: Réinitialiser votre mot de passe
 auth.request-password-reset.description: Entrez votre email pour réinitialiser votre mot de passe.
 auth.request-password-reset.requested: Si un compte existe pour cet email, nous vous avons envoyé un email pour réinitialiser votre mot de passe.
@@ -69,30 +71,219 @@ auth.legal-links.description: En continuant, vous reconnaissez que vous comprene
 auth.legal-links.terms: Conditions d'utilisation
 auth.legal-links.privacy: Politique de confidentialité
 
+# User settings
+
+user.settings.title: Paramètres de l'utilisateur
+user.settings.description: Gérez vos paramètres de compte ici.
+
+user.settings.email.title: Adresse email
+user.settings.email.description: Votre adresse email ne peut pas être modifiée.
+user.settings.email.label: Adresse email
+
+user.settings.name.title: Nom complet
+user.settings.name.description: Votre nom complet est affiché aux autres membres de l'organisation.
+user.settings.name.label: Nom complet
+user.settings.name.placeholder: 'Exemple: John Doe'
+user.settings.name.update: Mettre à jour le nom
+user.settings.name.updated: Votre nom complet a été mis à jour
+
+user.settings.logout.title: Déconnexion
+user.settings.logout.description: Déconnectez-vous de votre compte. Vous pouvez vous reconnecter plus tard.
+user.settings.logout.button: Déconnexion
+
+# Organizations
+
+organizations.list.title: Vos organisations
+organizations.list.description: Les organisations sont un moyen de grouper vos documents et de gérer l'accès à eux. Vous pouvez créer plusieurs organisations et inviter vos membres de l'équipe à collaborer.
+organizations.list.create-new: Créer une nouvelle organisation
+
+organizations.details.no-documents.title: Aucun document
+organizations.details.no-documents.description: Il n'y a pas de documents dans cette organisation. Commencez par télécharger des documents.
+organizations.details.upload-documents: Télécharger des documents
+organizations.details.documents-count: documents en total
+organizations.details.total-size: taille totale
+organizations.details.latest-documents: Derniers documents importés
+
+organizations.create.title: Créer une nouvelle organisation
+organizations.create.description: Vos documents seront regroupés par organisation. Vous pouvez créer plusieurs organisations pour séparer vos documents, par exemple, pour les documents personnels et professionnels.
+organizations.create.back: Retour
+organizations.create.error.max-count-reached: Vous avez atteint le nombre maximum d'organisations que vous pouvez créer, si vous avez besoin de créer plus, veuillez contacter le support.
+organizations.create.form.name.label: Nom de l'organisation
+organizations.create.form.name.placeholder: 'Exemple: Acme Inc.'
+organizations.create.form.name.required: Veuillez entrer un nom pour l'organisation
+organizations.create.form.submit: Créer l'organisation
+organizations.create.success: Organisation créée avec succès
+
+organizations.create-first.title: Créer votre organisation
+organizations.create-first.description: Vos documents seront regroupés par organisation. Vous pouvez créer plusieurs organisations pour séparer vos documents, par exemple, pour les documents personnels et professionnels.
+organizations.create-first.default-name: Mon organisation
+organizations.create-first.user-name: "{{ name }}'s organisation"
+
+organization.settings.title: Paramètres de l'organisation
+organization.settings.page.title: Paramètres de l'organisation
+organization.settings.page.description: Gérez les paramètres de votre organisation ici.
+organization.settings.name.title: Nom de l'organisation
+organization.settings.name.update: Modifier le nom
+organization.settings.name.placeholder: 'Exemple: Acme Inc.'
+organization.settings.name.updated: Nom de l'organisation mis à jour
+organization.settings.subscription.title: Subscription
+organization.settings.subscription.description: Gérez votre facturation, vos factures et vos méthodes de paiement.
+organization.settings.subscription.manage: Gérer la souscription
+organization.settings.subscription.error: Échec de la récupération de l'URL du portail client
+organization.settings.delete.title: Supprimer l'organisation
+organization.settings.delete.description: Supprimer cette organisation supprimera définitivement toutes les données associées à elle.
+organization.settings.delete.confirm.title: Supprimer l'organisation
+organization.settings.delete.confirm.message: Êtes-vous sûr de vouloir supprimer cette organisation ? Cette action est irréversible, et toutes les données associées à cette organisation seront supprimées définitivement.
+organization.settings.delete.confirm.confirm-button: Supprimer l'organisation
+organization.settings.delete.confirm.cancel-button: Annuler
+organization.settings.delete.success: Organisation supprimée
+
+organizations.members.title: Membres
+organizations.members.description: Gérez les membres de votre organisation.
+organizations.members.invite-member: Inviter un membre
+organizations.members.invite-member-disabled-tooltip: Seuls les administrateurs ou les propriétaires peuvent inviter des membres à l'organisation
+organizations.members.remove-from-organization: Retirer de l'organisation
+organizations.members.role: Rôle
+organizations.members.roles.owner: Propriétaire
+organizations.members.roles.admin: Admin
+organizations.members.roles.member: Membre
+organizations.members.delete.confirm.title: Retirer un membre
+organizations.members.delete.confirm.message: Êtes-vous sûr de vouloir retirer ce membre de l'organisation ?
+organizations.members.delete.confirm.confirm-button: Retirer
+organizations.members.delete.confirm.cancel-button: Annuler
+organizations.members.delete.success: Membre retiré de l'organisation
+organizations.members.update-role.success: Rôle du membre mis à jour
+organizations.members.table.headers.name: Nom
+organizations.members.table.headers.email: Email
+organizations.members.table.headers.role: Rôle
+organizations.members.table.headers.actions: Actions
+
+organizations.invite-member.title: Inviter un membre
+organizations.invite-member.description: Invite un membre à votre organisation
+organizations.invite-member.form.email.label: Email
+organizations.invite-member.form.email.placeholder: 'Exemple: ada@papra.app'
+organizations.invite-member.form.email.required: Veuillez entrer une adresse email valide
+organizations.invite-member.form.role.label: Rôle
+organizations.invite-member.form.submit: Inviter à l'organisation
+organizations.invite-member.success.message: Membre invité
+organizations.invite-member.success.description: L'email a été invité à l'organisation.
+organizations.invite-member.error.message: Échec de l'invitation du membre
+
+invitations.list.title: Invitations
+invitations.list.description: Gérez les invitations de votre organisation.
+invitations.list.empty.title: Aucune invitation en attente
+invitations.list.empty.description: Vous n'avez pas été invité à aucune organisation.
+invitations.list.headers.organization: Organisation
+invitations.list.headers.created: Créé
+invitations.list.headers.actions: Actions
+invitations.list.actions.accept: Accepter
+invitations.list.actions.reject: Refuser
+invitations.list.actions.accept.success.message: Invitation acceptée
+invitations.list.actions.accept.success.description: L'invitation a été acceptée.
+invitations.list.actions.reject.success.message: Invitation refusée
+invitations.list.actions.reject.success.description: L'invitation a été refusée.
+
+# Documents
+
+documents.list.title: Documents
+documents.list.no-documents.title: Aucun document
+documents.list.no-documents.description: Il n'y a pas de documents dans cette organisation. Commencez par télécharger des documents.
+documents.list.no-results: Aucun document trouvé
+
+documents.tabs.info: Info
+documents.tabs.content: Contenu
+documents.deleted.message: Ce document a été supprimé et sera supprimé définitivement dans {{ days }} jours.
+documents.actions.download: Télécharger
+documents.actions.open-in-new-tab: Ouvrir dans un nouvel onglet
+documents.actions.restore: Restaurer
+documents.actions.delete: Supprimer
+documents.actions.edit: Modifier
+documents.actions.cancel: Annuler
+documents.actions.save: Enregistrer
+documents.actions.saving: Enregistrement...
+documents.content.alert: Le contenu du document est automatiquement extrait du document lors de l'import. Il est uniquement utilisé pour la recherche et l'indexation.
+documents.info.id: ID
+documents.info.name: Nom
+documents.info.type: Type
+documents.info.size: Taille
+documents.info.created-at: Créé le
+documents.info.updated-at: Mis à jour le
+documents.info.never: Jamais
+
+import-documents.title.error: '{{ count }} documents ont échoué'
+import-documents.title.success: '{{ count }} documents ont été importés'
+import-documents.title.pending: '{{ count }} / {{ total }} documents importés'
+import-documents.title.none: Importer des documents
+import-documents.no-import-in-progress: Aucune importation de documents en cours
+
+documents.deleted.title: Documents supprimés
+documents.deleted.empty.title: Aucun document supprimé
+documents.deleted.empty.description: Vous n'avez pas de documents supprimés. Les documents supprimés seront déplacés dans la corbeille pour {{ days }} jours.
+documents.deleted.retention-notice: Tous les documents supprimés sont stockés dans la corbeille pour {{ days }} jours. Passé ce délai, les documents seront supprimés définitivement, et vous ne pourrez plus les restaurer.
+documents.deleted.deleted-at: Supprimé
+documents.deleted.restoring: Restauration...
+documents.deleted.deleting: Suppression...
+
+trash.delete-all.button: Supprimer tous les documents
+trash.delete-all.confirm.title: Supprimer définitivement tous les documents ?
+trash.delete-all.confirm.description: Êtes-vous sûr de vouloir supprimer définitivement tous les documents de la corbeille ? Cette action est irréversible.
+trash.delete-all.confirm.label: Supprimer
+trash.delete-all.confirm.cancel: Annuler
+trash.delete.button: Supprimer
+trash.delete.confirm.title: Supprimer définitivement le document ?
+trash.delete.confirm.description: Êtes-vous sûr de vouloir supprimer définitivement ce document de la corbeille ? Cette action est irréversible.
+trash.delete.confirm.label: Supprimer
+trash.delete.confirm.cancel: Annuler
+trash.deleted.success.title: Document supprimé
+trash.deleted.success.description: Le document a été supprimé définitivement.
+
+# Tags
+
 tags.no-tags.title: Aucun tag
 tags.no-tags.description: Cette organisation n'a pas de tags. Les tags sont utilisés pour catégoriser les documents. Vous pouvez ajouter des tags à vos documents pour les rendre plus faciles à trouver et à organiser.
 tags.no-tags.create-tag: Créer un tag
 
-layout.menu.home: Accueil
-layout.menu.documents: Documents
-layout.menu.tags: Tags
-layout.menu.tagging-rules: Règles de catégorisation
-layout.menu.deleted-documents: Documents supprimés
-layout.menu.organization-settings: Paramètres
-layout.menu.api-keys: API keys
-layout.menu.settings: Paramètres
-layout.menu.account: Compte
+tags.title: Tags de documents
+tags.description: Les tags sont utilisés pour catégoriser les documents. Vous pouvez ajouter des tags à vos documents pour les rendre plus faciles à trouver et à organiser.
+tags.create: Créer un tag
+tags.update: Mettre à jour un tag
+tags.delete: Supprimer un tag
+tags.delete.confirm.title: Supprimer un tag
+tags.delete.confirm.message: Êtes-vous sûr de vouloir supprimer ce tag ? Supprimer un tag supprimera toutes les règles de catégorisation qui l'utilisent.
+tags.delete.confirm.confirm-button: Supprimer
+tags.delete.confirm.cancel-button: Annuler
+tags.delete.success: Tag supprimé avec succès
+tags.create.success: Tag "{{ name }}" créé avec succès.
+tags.update.success: Tag "{{ name }}" mis à jour avec succès.
+tags.form.name.label: Nom
+tags.form.name.placeholder: 'Exemple: Contrats'
+tags.form.name.required: Veuillez entrer un nom pour le tag
+tags.form.name.max-length: Le nom du tag doit contenir moins de 64 caractères
+tags.form.color.label: Couleur
+tags.form.color.placeholder: 'Exemple: #FF0000'
+tags.form.color.required: Veuillez entrer une couleur
+tags.form.color.invalid: La couleur hexadécimale est mal formatée.
+tags.form.description.label: Description
+tags.form.description.optional: (optionnel)
+tags.form.description.placeholder: "Exemple: Tous les contrats signés par l'entreprise"
+tags.form.description.max-length: La description doit contenir moins de 256 caractères
+tags.form.no-description: Aucune description
+tags.table.headers.tag: Tag
+tags.table.headers.description: Description
+tags.table.headers.documents: Documents
+tags.table.headers.created: Date de création
+tags.table.headers.actions: Actions
+
+# Tagging rules
 
 tagging-rules.field.name: nom du document
 tagging-rules.field.content: contenu du document
-
 tagging-rules.operator.equals: égal à
 tagging-rules.operator.not-equals: différent de
 tagging-rules.operator.contains: contient
 tagging-rules.operator.not-contains: ne contient pas
 tagging-rules.operator.starts-with: commence par
 tagging-rules.operator.ends-with: finit par
-
 tagging-rules.list.title: Règles de catégorisation
 tagging-rules.list.description: Gérez vos règles de catégorisation, pour catégoriser automatiquement les documents en fonction de conditions que vous définissez.
 tagging-rules.list.demo-warning: 'Note: Cette instance est une démo, les règles de catégorisation ne seront pas appliquées aux documents ajoutés.'
@@ -134,36 +325,42 @@ tagging-rules.update.error: Échec de la mise à jour de la règle de catégoris
 tagging-rules.update.submit: Mettre à jour la règle
 tagging-rules.update.cancel: Annuler
 
-demo.popup.description: Cette instance est une démo, toutes les données sont sauvegardées dans le stockage local de votre navigateur.
-demo.popup.discord: Rejoignez le {{ discordLink }} pour obtenir de l'aide, proposer des fonctionnalités ou simplement discuter.
-demo.popup.discord-link-label: Serveur Discord
-demo.popup.reset: Réinitialiser les données de la démo
-demo.popup.hide: Masquer
+# Intake emails
 
-trash.delete-all.button: Supprimer tous les documents
-trash.delete-all.confirm.title: Supprimer définitivement tous les documents ?
-trash.delete-all.confirm.description: Êtes-vous sûr de vouloir supprimer définitivement tous les documents de la corbeille ? Cette action est irréversible.
-trash.delete-all.confirm.label: Supprimer
-trash.delete-all.confirm.cancel: Annuler
-trash.delete.button: Supprimer
-trash.delete.confirm.title: Supprimer définitivement le document ?
-trash.delete.confirm.description: Êtes-vous sûr de vouloir supprimer définitivement ce document de la corbeille ? Cette action est irréversible.
-trash.delete.confirm.label: Supprimer
-trash.delete.confirm.cancel: Annuler
-trash.deleted.success.title: Document supprimé
-trash.deleted.success.description: Le document a été supprimé définitivement.
+intake-emails.title: Adresses de réception
+intake-emails.description: Les adresses de réception sont utilisées pour ingérer automatiquement les emails dans Papra. Il suffit de les envoyer à l'adresse de réception et leurs pièces jointes seront ajoutées à vos documents.
+intake-emails.disabled.title: Les adresses de réception sont désactivées
+intake-emails.disabled.description: Les adresses de réception sont désactivées sur cette instance. Veuillez contacter votre administrateur pour les activer. Voir la {{ documentation }} pour plus d'informations.
+intake-emails.disabled.documentation: documentation
+intake-emails.info: Seules les adresses de réception activées depuis les origines autorisées seront traitées. Vous pouvez activer ou désactiver une adresse de réception à tout moment.
+intake-emails.empty.title: Aucune adresse de réception
+intake-emails.empty.description: Générez une adresse de réception pour ingérer facilement les pièces jointes des emails.
+intake-emails.empty.generate: Générer une adresse de réception
+intake-emails.count: '{{ count }} intake email{{ plural }} for this organization'
+intake-emails.new: Nouvelle adresse de réception
+intake-emails.disabled-label: (Désactivé)
+intake-emails.no-origins: Aucune adresse de réception autorisée
+intake-emails.allowed-origins: Autorisées depuis {{ count }} adresse{{ plural }}
+intake-emails.actions.enable: Activer
+intake-emails.actions.disable: Désactiver
+intake-emails.actions.manage-origins: Gérer les adresses d'origine
+intake-emails.actions.delete: Supprimer
+intake-emails.delete.confirm.title: Supprimer l'adresse de réception ?
+intake-emails.delete.confirm.message: Êtes-vous sûr de vouloir supprimer cette adresse de réception ? Cette action est irréversible.
+intake-emails.delete.confirm.confirm-button: Supprimer l'adresse de réception
+intake-emails.delete.confirm.cancel-button: Annuler
+intake-emails.delete.success: Adresse de réception supprimée
+intake-emails.create.success: Adresse de réception créée
+intake-emails.update.success.enabled: Adresse de réception activée
+intake-emails.update.success.disabled: Adresse de réception désactivée
+intake-emails.allowed-origins.title: Adresses d'origine autorisées
+intake-emails.allowed-origins.description: Seuls les emails envoyés à {{ email }} depuis ces adresses d'origine seront traités. Si aucune adresse d'origine n'est spécifiée, tous les emails seront rejetés.
+intake-emails.allowed-origins.add.label: Ajouter une adresse d'origine autorisée
+intake-emails.allowed-origins.add.placeholder: 'Exemple: ada@papra.app'
+intake-emails.allowed-origins.add.button: Ajouter
+intake-emails.allowed-origins.add.error.exists: Cette adresse email est déjà dans les adresses d'origine autorisées pour cette adresse de réception
 
-import-documents.title.error: '{{ count }} documents ont échoué'
-import-documents.title.success: '{{ count }} documents ont été importés'
-import-documents.title.pending: '{{ count }} / {{ total }} documents importés'
-import-documents.title.none: Importer des documents
-import-documents.no-import-in-progress: Aucune importation de documents en cours
-
-api-errors.document.already_exists: Le document existe déjà
-api-errors.document.file_too_big: Le fichier du document est trop grand
-api-errors.intake_email.limit_reached: Le nombre maximum d'emails de réception pour cette organisation a été atteint. Veuillez mettre à niveau votre plan pour créer plus d'emails de réception.
-api-errors.user.max_organization_count_reached: Vous avez atteint le nombre maximum d'organisations que vous pouvez créer, si vous avez besoin de créer plus, veuillez contacter le support.
-api-errors.default: Une erreur est survenue lors du traitement de votre requête.
+# API keys
 
 api-keys.permissions.documents.title: Documents
 api-keys.permissions.documents.documents:create: Créer des documents
@@ -200,3 +397,109 @@ api-keys.delete.confirm.title: Supprimer la clé API
 api-keys.delete.confirm.message: Êtes-vous sûr de vouloir supprimer cette clé API ? Cette action est irréversible.
 api-keys.delete.confirm.confirm-button: Supprimer
 api-keys.delete.confirm.cancel-button: Annuler
+
+# Webhooks
+
+webhooks.list.title: Webhooks
+webhooks.list.description: Gérez vos webhooks ici.
+webhooks.list.empty.title: Aucun webhook
+webhooks.list.empty.description: Créez votre premier webhook pour commencer à recevoir des événements.
+webhooks.list.create: Créer un webhook
+webhooks.list.card.last-triggered: Dernière invocation
+webhooks.list.card.never: Jamais
+webhooks.list.card.created: Créée
+webhooks.create.title: Créer un webhook
+webhooks.create.description: Créez un webhook pour recevoir des événements lorsque des documents sont ajoutés à votre organisation.
+webhooks.create.success: Le webhook a été créé avec succès.
+webhooks.create.back: Retour aux webhooks
+webhooks.create.form.submit: Créer le webhook
+webhooks.create.form.name.label: Nom du webhook
+webhooks.create.form.name.placeholder: Entrez le nom du webhook
+webhooks.create.form.name.required: Le nom est requis
+webhooks.create.form.url.label: URL du webhook
+webhooks.create.form.url.placeholder: Entrez l'URL du webhook
+webhooks.create.form.url.required: L'URL est requise
+webhooks.create.form.url.invalid: L'URL est invalide
+webhooks.create.form.secret.label: Secret
+webhooks.create.form.secret.placeholder: Entrez le secret du webhook
+webhooks.create.form.events.label: Événements
+webhooks.create.form.events.required: Au moins un événement est requis
+webhooks.update.title: Modifier le webhook
+webhooks.update.description: Mettez à jour les détails de votre webhook
+webhooks.update.success: Le webhook a été mis à jour avec succès
+webhooks.update.submit: Mettre à jour le webhook
+webhooks.update.cancel: Annuler
+webhooks.update.form.secret.placeholder: Entrez un nouveau secret
+webhooks.update.form.secret.placeholder-redacted: '[Secret masqué]'
+webhooks.update.form.rotate-secret.button: Rotation du secret
+webhooks.delete.success: Le webhook a été supprimé avec succès
+webhooks.delete.confirm.title: Supprimer le webhook
+webhooks.delete.confirm.message: Êtes-vous sûr de vouloir supprimer ce webhook ? Cette action est irréversible.
+webhooks.delete.confirm.confirm-button: Supprimer
+webhooks.delete.confirm.cancel-button: Annuler
+
+webhooks.events.documents.document:created.description: Document créé
+webhooks.events.documents.document:deleted.description: Document supprimé
+
+# Navigation
+
+layout.menu.home: Accueil
+layout.menu.documents: Documents
+layout.menu.tags: Tags
+layout.menu.tagging-rules: Règles de catégorisation
+layout.menu.deleted-documents: Documents supprimés
+layout.menu.organization-settings: Paramètres
+layout.menu.api-keys: API keys
+layout.menu.settings: Paramètres
+layout.menu.account: Compte
+layout.menu.general-settings: Paramètres généraux
+layout.menu.intake-emails: Adresses de réception
+layout.menu.webhooks: Webhooks
+layout.menu.members: Membres
+layout.menu.invitations: Invitations
+
+layout.theme.light: Mode clair
+layout.theme.dark: Mode sombre
+layout.theme.system: Mode système
+
+layout.search.placeholder: Rechercher...
+layout.menu.import-document: Importer un document
+
+user-menu.account-settings: Paramètres du compte
+user-menu.api-keys: Clés d'API
+user-menu.invitations: Invitations
+user-menu.language: Langue
+user-menu.logout: Déconnexion
+
+# Command palette
+
+command-palette.search.placeholder: Rechercher des commandes ou des documents
+command-palette.no-results: Aucun résultat trouvé
+command-palette.sections.documents: Documents
+command-palette.sections.theme: Thème
+
+# API errors
+
+api-errors.document.already_exists: Le document existe déjà
+api-errors.document.file_too_big: Le fichier du document est trop grand
+api-errors.intake_email.limit_reached: Le nombre maximum d'emails de réception pour cette organisation a été atteint. Veuillez mettre à niveau votre plan pour créer plus d'emails de réception.
+api-errors.user.max_organization_count_reached: Vous avez atteint le nombre maximum d'organisations que vous pouvez créer, si vous avez besoin de créer plus, veuillez contacter le support.
+api-errors.default: Une erreur est survenue lors du traitement de votre requête.
+api-errors.organization.invitation_already_exists: Une invitation pour cet email existe déjà dans cette organisation.
+api-errors.user.already_in_organization: Cet utilisateur est déjà dans cette organisation.
+api-errors.user.organization_invitation_limit_reached: Le nombre maximum d'invitations a été atteint pour aujourd'hui. Veuillez réessayer demain.
+api-errors.demo.not_available: Cette fonctionnalité n'est pas disponible dans la démo
+
+# Not found
+
+not-found.title: 404 - Not Found
+not-found.description: Désolé, la page que vous cherchez n'existe pas. Veuillez vérifier l'URL et réessayer.
+not-found.back-to-home: Retour à l'accueil
+
+# Demo
+
+demo.popup.description: Cette instance est une démo, toutes les données sont sauvegardées dans le stockage local de votre navigateur.
+demo.popup.discord: Rejoignez le {{ discordLink }} pour obtenir de l'aide, proposer des fonctionnalités ou simplement discuter.
+demo.popup.discord-link-label: Serveur Discord
+demo.popup.reset: Réinitialiser la démo
+demo.popup.hide: Masquer

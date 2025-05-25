@@ -38,7 +38,7 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
                 <div class="i-tabler-arrow-left size-5"></div>
               </Button>
               <h1 class="text-base font-bold">
-                Organization Settings
+                {t('organization.settings.title')}
               </h1>
             </div>
           )}

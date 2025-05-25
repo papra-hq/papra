@@ -147,7 +147,7 @@ export const DocumentPage: Component = () => {
                       size="sm"
                     >
                       <div class="i-tabler-download size-4 mr-2"></div>
-                      Download
+                      {t('documents.actions.download')}
                     </Button>
 
                     <Button
@@ -156,7 +156,7 @@ export const DocumentPage: Component = () => {
                       size="sm"
                     >
                       <div class="i-tabler-eye size-4 mr-2"></div>
-                      Open in new tab
+                      {t('documents.actions.open-in-new-tab')}
                     </Button>
 
                     {getDocument().isDeleted
@@ -168,7 +168,7 @@ export const DocumentPage: Component = () => {
                             isLoading={getIsRestoring()}
                           >
                             <div class="i-tabler-refresh size-4 mr-2"></div>
-                            Restore
+                            {t('documents.actions.restore')}
                           </Button>
                         )
                       : (
@@ -178,7 +178,7 @@ export const DocumentPage: Component = () => {
                             onClick={deleteDoc}
                           >
                             <div class="i-tabler-trash size-4 mr-2"></div>
-                            Delete
+                            {t('documents.actions.delete')}
                           </Button>
                         )}
                   </div>
@@ -218,14 +218,10 @@ export const DocumentPage: Component = () => {
 
                   {getDocument().isDeleted && (
                     <Alert variant="destructive" class="mt-6">
-                      This document has been deleted and will be permanently removed in
-                      {' '}
-                      {getDaysBeforePermanentDeletion({
+                      {t('documents.deleted.message', { days: getDaysBeforePermanentDeletion({
                         document: getDocument(),
                         deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays,
-                      })}
-                      {' '}
-                      days.
+                      }) ?? 0 })}
                     </Alert>
                   )}
 
@@ -233,41 +229,41 @@ export const DocumentPage: Component = () => {
 
                   <Tabs defaultValue="info" class="w-full">
                     <TabsList class="w-full h-8">
-                      <TabsTrigger value="info">Info</TabsTrigger>
-                      <TabsTrigger value="content">Content</TabsTrigger>
+                      <TabsTrigger value="info">{t('documents.tabs.info')}</TabsTrigger>
+                      <TabsTrigger value="content">{t('documents.tabs.content')}</TabsTrigger>
                       <TabsIndicator />
                     </TabsList>
 
                     <TabsContent value="info">
                       <KeyValues data={[
                         {
-                          label: 'ID',
+                          label: t('documents.info.id'),
                           value: getDocument().id,
                           icon: 'i-tabler-id',
                         },
                         {
-                          label: 'Name',
+                          label: t('documents.info.name'),
                           value: getDocument().name,
                           icon: 'i-tabler-file-text',
                         },
                         {
-                          label: 'Type',
+                          label: t('documents.info.type'),
                           value: getDocument().mimeType,
                           icon: 'i-tabler-file-unknown',
                         },
                         {
-                          label: 'Size',
+                          label: t('documents.info.size'),
                           value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
                           icon: 'i-tabler-weight',
                         },
                         {
-                          label: 'Created At',
+                          label: t('documents.info.created-at'),
                           value: timeAgo({ date: getDocument().createdAt }),
                           icon: 'i-tabler-calendar',
                         },
                         {
-                          label: 'Updated At',
-                          value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">Never</span>,
+                          label: t('documents.info.updated-at'),
+                          value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
                           icon: 'i-tabler-calendar',
                         },
                       ]}
@@ -284,14 +280,14 @@ export const DocumentPage: Component = () => {
                             <div class="flex justify-end">
                               <Button variant="outline" onClick={handleEdit}>
                                 <div class="i-tabler-edit size-4 mr-2" />
-                                Edit
+                                {t('documents.actions.edit')}
                               </Button>
                             </div>
 
                             <Alert variant="muted" class="my-4 flex items-center gap-2">
                               <div class="i-tabler-info-circle size-8 flex-shrink-0" />
                               <AlertDescription>
-                                The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.
+                                {t('documents.content.alert')}
                               </AlertDescription>
                             </Alert>
                           </div>
@@ -307,10 +303,10 @@ export const DocumentPage: Component = () => {
                           </TextFieldRoot>
                           <div class="flex justify-end gap-2">
                             <Button variant="outline" onClick={handleCancel} disabled={isSaving()}>
-                              Cancel
+                              {t('documents.actions.cancel')}
                             </Button>
                             <Button onClick={handleSave} disabled={isSaving()}>
-                              {isSaving() ? 'Saving...' : 'Save'}
+                              {isSaving() ? t('documents.actions.saving') : t('documents.actions.save')}
                             </Button>
                           </div>
                         </div>

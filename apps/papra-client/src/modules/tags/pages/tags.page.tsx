@@ -26,25 +26,26 @@ const TagForm: Component<{
   initialValues?: { name?: string; color?: string; description?: string | null };
   submitLabel?: string;
 }> = (props) => {
+  const { t } = useI18n();
   const { form, Form, Field } = createForm({
     onSubmit: props.onSubmit,
     schema: v.object({
       name: v.pipe(
         v.string(),
         v.trim(),
-        v.nonEmpty('Please enter a tag name'),
-        v.maxLength(64, 'Tag name must be less than 64 characters'),
+        v.nonEmpty(t('tags.form.name.required')),
+        v.maxLength(64, t('tags.form.name.max-length')),
       ),
       color: v.pipe(
         v.string(),
         v.trim(),
-        v.nonEmpty('Please enter a color'),
-        v.hexColor('The hex color is badly formatted.'),
+        v.nonEmpty(t('tags.form.color.required')),
+        v.hexColor(t('tags.form.color.invalid')),
       ),
       description: v.pipe(
         v.string(),
         v.trim(),
-        v.maxLength(256, 'Description must be less than 256 characters'),
+        v.maxLength(256, t('tags.form.description.max-length')),
       ),
     }),
     initialValues: {
@@ -60,8 +61,8 @@ const TagForm: Component<{
       <Field name="name">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="name">Name</TextFieldLabel>
-            <TextField type="text" id="name" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. Contracts" />
+            <TextFieldLabel for="name">{t('tags.form.name.label')}</TextFieldLabel>
+            <TextField type="text" id="name" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.name.placeholder')} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -70,8 +71,8 @@ const TagForm: Component<{
       <Field name="color">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="color">Color</TextFieldLabel>
-            <TextField id="color" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. #FF0000" />
+            <TextFieldLabel for="color">{t('tags.form.color.label')}</TextFieldLabel>
+            <TextField id="color" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.color.placeholder')} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -81,10 +82,10 @@ const TagForm: Component<{
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="description">
-              Description
-              <span class="font-normal ml-1 text-muted-foreground">(optional)</span>
+              {t('tags.form.description.label')}
+              <span class="font-normal ml-1 text-muted-foreground">{t('tags.form.description.optional')}</span>
             </TextFieldLabel>
-            <TextArea id="description" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder="Eg. All the contracts signed by the company" />
+            <TextArea id="description" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.description.placeholder')} />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -92,7 +93,7 @@ const TagForm: Component<{
 
       <div class="flex flex-row-reverse justify-between items-center mt-6">
         <Button type="submit">
-          {props.submitLabel ?? 'Create tag'}
+          {props.submitLabel ?? t('tags.create')}
         </Button>
 
         {getFormValues().name && (
@@ -110,6 +111,7 @@ export const CreateTagModal: Component<{
   organizationId: string;
 }> = (props) => {
   const [getIsModalOpen, setIsModalOpen] = createSignal(false);
+  const { t } = useI18n();
 
   const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
     await createTag({
@@ -125,7 +127,7 @@ export const CreateTagModal: Component<{
     });
 
     createToast({
-      message: `Tag "${name}" created successfully.`,
+      message: t('tags.create.success', { name }),
       type: 'success',
     });
 
@@ -137,7 +139,7 @@ export const CreateTagModal: Component<{
       <DialogTrigger as={props.children} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a new tag</DialogTitle>
+          <DialogTitle>{t('tags.create')}</DialogTitle>
         </DialogHeader>
 
         <TagForm onSubmit={onSubmit} initialValues={{ color: '#d8ff75' }} />
@@ -152,6 +154,7 @@ const UpdateTagModal: Component<{
   tag: TagType;
 }> = (props) => {
   const [getIsModalOpen, setIsModalOpen] = createSignal(false);
+  const { t } = useI18n();
 
   const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
     await updateTag({
@@ -168,7 +171,7 @@ const UpdateTagModal: Component<{
     });
 
     createToast({
-      message: `Tag "${name}" updated successfully.`,
+      message: t('tags.update.success', { name }),
       type: 'success',
     });
 
@@ -180,10 +183,10 @@ const UpdateTagModal: Component<{
       <DialogTrigger as={props.children} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update tag</DialogTitle>
+          <DialogTitle>{t('tags.update')}</DialogTitle>
         </DialogHeader>
 
-        <TagForm onSubmit={onSubmit} initialValues={props.tag} submitLabel="Update tag" />
+        <TagForm onSubmit={onSubmit} initialValues={props.tag} submitLabel={t('tags.update')} />
       </DialogContent>
     </Dialog>
   );
@@ -201,14 +204,14 @@ export const TagsPage: Component = () => {
 
   const del = async ({ tag }: { tag: TagType }) => {
     const confirmed = await confirm({
-      title: 'Delete tag',
-      message: 'Are you sure you want to delete this tag? Deleting a tag will remove it from all documents.',
+      title: t('tags.delete.confirm.title'),
+      message: t('tags.delete.confirm.message'),
       cancelButton: {
-        text: 'Cancel',
+        text: t('tags.delete.confirm.cancel-button'),
         variant: 'secondary',
       },
       confirmButton: {
-        text: 'Delete',
+        text: t('tags.delete.confirm.confirm-button'),
         variant: 'destructive',
       },
     });
@@ -228,7 +231,7 @@ export const TagsPage: Component = () => {
     });
 
     createToast({
-      message: `Tag deleted successfully.`,
+      message: t('tags.delete.success'),
       type: 'success',
     });
   };
@@ -261,11 +264,11 @@ export const TagsPage: Component = () => {
               <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
                 <div>
                   <h2 class="text-xl font-bold ">
-                    Documents Tags
+                    {t('tags.title')}
                   </h2>
 
                   <p class="text-muted-foreground mt-1">
-                    Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.
+                    {t('tags.description')}
                   </p>
                 </div>
 
@@ -274,7 +277,7 @@ export const TagsPage: Component = () => {
                     {props => (
                       <Button class="w-full" {...props}>
                         <div class="i-tabler-plus size-4 mr-2" />
-                        Create tag
+                        {t('tags.create')}
                       </Button>
                     )}
                   </CreateTagModal>
@@ -284,12 +287,12 @@ export const TagsPage: Component = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Tag</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Documents</TableHead>
-                    <TableHead>Created</TableHead>
+                    <TableHead>{t('tags.table.headers.tag')}</TableHead>
+                    <TableHead>{t('tags.table.headers.description')}</TableHead>
+                    <TableHead>{t('tags.table.headers.documents')}</TableHead>
+                    <TableHead>{t('tags.table.headers.created')}</TableHead>
                     <TableHead class="text-right">
-                      Actions
+                      {t('tags.table.headers.actions')}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -302,7 +305,7 @@ export const TagsPage: Component = () => {
                             <Tag name={tag.name} color={tag.color} />
                           </div>
                         </TableCell>
-                        <TableCell>{tag.description || <span class="text-muted-foreground">No description</span>}</TableCell>
+                        <TableCell>{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
                         <TableCell>
                           <A href={`/organizations/${params.organizationId}/documents?tags=${tag.id}`} class="inline-flex items-center gap-1 hover:underline">
                             <div class="i-tabler-file-text size-5 text-muted-foreground" />

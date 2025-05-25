@@ -87,10 +87,10 @@ const MemberList: Component = () => {
       return query.data?.members ?? [];
     },
     columns: [
-      { header: 'Name', accessorKey: 'user.name' },
-      { header: 'Email', accessorKey: 'user.email' },
-      { header: 'Role', accessorKey: 'role', cell: data => t(`organizations.members.roles.${data.getValue<OrganizationMemberRole>()}`) },
-      { header: 'Actions', id: 'actions', cell: data => (
+      { header: t('organizations.members.table.headers.name'), accessorKey: 'user.name' },
+      { header: t('organizations.members.table.headers.email'), accessorKey: 'user.email' },
+      { header: t('organizations.members.table.headers.role'), accessorKey: 'role', cell: data => t(`organizations.members.roles.${data.getValue<OrganizationMemberRole>()}`) },
+      { header: t('organizations.members.table.headers.actions'), id: 'actions', cell: data => (
         <div class="flex items-center justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger as={Button} variant="ghost" size="icon">

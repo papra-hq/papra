@@ -1,20 +1,22 @@
 import type { Component } from 'solid-js';
 import { A } from '@solidjs/router';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 
 export const NotFoundPage: Component = () => {
+  const { t } = useI18n();
   return (
     <div class="h-screen flex flex-col items-center justify-center p-6">
 
       <div class="flex items-center flex-row sm:gap-24">
         <div class="max-w-350px">
-          <h1 class="text-xl mr-4 py-2">404 - Not Found</h1>
+          <h1 class="text-xl mr-4 py-2">{t('not-found.title')}</h1>
           <p class="text-muted-foreground">
-            Sorry, the page you are looking for does seem to exist. Please check the URL and try again.
+            {t('not-found.description')}
           </p>
           <Button as={A} href="/" class="mt-4" variant="default">
             <div class="i-tabler-arrow-left mr-2"></div>
-            Go back to home
+            {t('not-found.back-to-home')}
           </Button>
         </div>
 

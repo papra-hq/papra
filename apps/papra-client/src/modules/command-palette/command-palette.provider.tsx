@@ -5,6 +5,7 @@ import { debounce } from 'lodash-es';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
 import { getDocumentIcon } from '../documents/document.models';
 import { searchDocuments } from '../documents/documents.services';
+import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
 import { useThemeStore } from '../theme/theme.store';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandLoading } from '../ui/components/command';
@@ -29,8 +30,10 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const [getIsCommandPaletteOpen, setIsCommandPaletteOpen] = createSignal(false);
   const [getMatchingDocuments, setMatchingDocuments] = createSignal<Document[]>([]);
   const [getSearchQuery, setSearchQuery] = createSignal('');
-  const params = useParams();
   const [getIsLoading, setIsLoading] = createSignal(false);
+
+  const params = useParams();
+  const { t } = useI18n();
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -82,7 +85,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     options: { label: string; icon: string; action: () => void; forceMatch?: boolean }[];
   }[] => [
     {
-      label: 'Documents',
+      label: t('command-palette.sections.documents'),
       forceMatch: true,
       options: getMatchingDocuments().map(document => ({
         label: document.name,
@@ -92,20 +95,20 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
       })),
     },
     {
-      label: `Theme`,
+      label: t('command-palette.sections.theme'),
       options: [
         {
-          label: 'Switch to light mode',
+          label: t('layout.theme.light'),
           icon: 'i-tabler-sun',
           action: () => setColorMode({ mode: 'light' }),
         },
         {
-          label: 'Switch to dark mode',
+          label: t('layout.theme.dark'),
           icon: 'i-tabler-moon',
           action: () => setColorMode({ mode: 'dark' }),
         },
         {
-          label: 'Switch to system',
+          label: t('layout.theme.system'),
           icon: 'i-tabler-device-laptop',
           action: () => setColorMode({ mode: 'system' }),
         },
@@ -132,7 +135,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
         onOpenChange={setIsCommandPaletteOpen}
       >
 
-        <CommandInput onValueChange={setSearchQuery} placeholder="Search commands or documents" />
+        <CommandInput onValueChange={setSearchQuery} placeholder={t('command-palette.search.placeholder')} />
         <CommandList>
           <Show when={getIsLoading()}>
             <CommandLoading>
@@ -142,7 +145,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
           <Show when={!getIsLoading()}>
             <Show when={getMatchingDocuments().length === 0}>
               <CommandEmpty>
-                No results found.
+                {t('command-palette.no-results')}
               </CommandEmpty>
             </Show>
 

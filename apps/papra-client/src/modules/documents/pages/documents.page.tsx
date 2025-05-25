@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { castArray } from 'lodash-es';
 import { createSignal, For, Show, Suspense } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization } from '@/modules/organizations/organizations.services';
 import { Tag } from '@/modules/tags/components/tag.component';
 import { fetchTags } from '@/modules/tags/tags.services';
@@ -12,6 +13,7 @@ import { fetchOrganizationDocuments } from '../documents.services';
 
 export const DocumentsPage: Component = () => {
   const params = useParams();
+  const { t } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
 
@@ -51,11 +53,11 @@ export const DocumentsPage: Component = () => {
           ? (
               <>
                 <h2 class="text-xl font-bold ">
-                  No documents
+                  {t('documents.list.no-documents.title')}
                 </h2>
 
                 <p class="text-muted-foreground mt-1 mb-6">
-                  There are no documents in this organization yet. Start by uploading some documents.
+                  {t('documents.list.no-documents.description')}
                 </p>
 
                 <DocumentUploadArea />
@@ -65,7 +67,7 @@ export const DocumentsPage: Component = () => {
           : (
               <>
                 <h2 class="text-lg font-semibold mb-4">
-                  Documents
+                  {t('documents.list.title')}
                 </h2>
                 <Show when={hasFilters()}>
                   <div class="flex flex-wrap gap-2 mb-4">
@@ -83,7 +85,7 @@ export const DocumentsPage: Component = () => {
 
                 <Show when={hasFilters() && query[0].data?.documentsCount === 0}>
                   <p class="text-muted-foreground mt-1 mb-6">
-                    No documents found
+                    {t('documents.list.no-results')}
                   </p>
                 </Show>
 

@@ -14,7 +14,7 @@ import { usePendingInvitationsCount } from '@/modules/invitations/composables/us
 import { cn } from '@/modules/shared/style/cn';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
 
@@ -127,20 +127,21 @@ export const SideNav: Component<{
 
 export const ThemeSwitcher: Component = () => {
   const themeStore = useThemeStore();
+  const { t } = useI18n();
 
   return (
     <>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'light' })} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-sun text-lg"></div>
-        Light Mode
+        {t('layout.theme.light')}
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'dark' })} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-moon text-lg"></div>
-        Dark Mode
+        {t('layout.theme.dark')}
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'system' })} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-device-laptop text-lg"></div>
-        System Mode
+        {t('layout.theme.system')}
       </DropdownMenuItem>
     </>
   );
@@ -154,9 +155,9 @@ export const LanguageSwitcher: Component = () => {
   });
 
   return (
-    <>
+    <DropdownMenuRadioGroup value={getLocale()} onChange={setLocale}>
       {locales.map(locale => (
-        <DropdownMenuItem onClick={() => setLocale(locale.key)} class={cn('cursor-pointer', { 'font-bold': getLocale() === locale.key })}>
+        <DropdownMenuRadioItem value={locale.key} disabled={getLocale() === locale.key}>
           <span translate="no" lang={getLocale() === locale.key ? undefined : locale.key}>
             {locale.name}
           </span>
@@ -167,9 +168,9 @@ export const LanguageSwitcher: Component = () => {
               )
             </span>
           </Show>
-        </DropdownMenuItem>
+        </DropdownMenuRadioItem>
       ))}
-    </>
+    </DropdownMenuRadioGroup>
   );
 };
 
@@ -210,7 +211,7 @@ export const SidenavLayout: ParentComponent<{
             {(props.showSearch ?? true) && (
               <Button variant="outline" class="lg:min-w-64  justify-start" onClick={openCommandPalette}>
                 <div class="i-tabler-search size-4 mr-2"></div>
-                Search...
+                {t('layout.search.placeholder')}
               </Button>
             )}
           </div>
@@ -220,7 +221,7 @@ export const SidenavLayout: ParentComponent<{
             <Button onClick={promptImport}>
               <div class="i-tabler-upload size-4"></div>
               <span class="hidden sm:inline ml-2">
-                Import a document
+                {t('layout.menu.import-document')}
               </span>
             </Button>
 
@@ -243,20 +244,20 @@ export const SidenavLayout: ParentComponent<{
                   </div>
                 </Show>
               </DropdownMenuTrigger>
-              <DropdownMenuContent class="w-42">
+              <DropdownMenuContent class="min-w-48">
                 <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/settings">
                   <div class="i-tabler-settings size-4 text-muted-foreground"></div>
-                  Account settings
+                  {t('user-menu.account-settings')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/api-keys">
                   <div class="i-tabler-key size-4 text-muted-foreground"></div>
-                  API keys
+                  {t('user-menu.api-keys')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem class="flex items-center gap-2 cursor-pointer" as={A} href="/invitations">
                   <div class="i-tabler-mail-plus size-4 text-muted-foreground"></div>
-                  {t('layout.menu.invitations')}
+                  {t('user-menu.invitations')}
                   <Show when={getPendingInvitationsCount() > 0}>
                     <div class="ml-auto bg-primary text-primary-foreground rounded-xl text-xs px-1.5 py-0.8 font-bold leading-none">
                       {getPendingInvitationsCount() }
@@ -265,12 +266,13 @@ export const SidenavLayout: ParentComponent<{
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>
+
                   <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
                     <div class="i-tabler-language size-4 text-muted-foreground"></div>
-                    Language
+                    {t('user-menu.language')}
                   </DropdownMenuSubTrigger>
 
-                  <DropdownMenuSubContent>
+                  <DropdownMenuSubContent class="min-w-48">
                     <LanguageSwitcher />
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
@@ -283,7 +285,7 @@ export const SidenavLayout: ParentComponent<{
                   class="flex items-center gap-2 cursor-pointer"
                 >
                   <div class="i-tabler-logout size-4 text-muted-foreground"></div>
-                  Logout
+                  {t('user-menu.logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

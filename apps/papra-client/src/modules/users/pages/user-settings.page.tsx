@@ -4,6 +4,7 @@ import { createQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { signOut } from '@/modules/auth/auth.services';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
@@ -16,6 +17,7 @@ import { fetchCurrentUser } from '../users.services';
 const LogoutCard: Component = () => {
   const [getIsLoading, setIsLoading] = createSignal(false);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -26,29 +28,31 @@ const LogoutCard: Component = () => {
   return (
     <Card class="flex flex-row justify-between items-center p-6 border-destructive">
       <div class="flex flex-col gap-1.5">
-        <CardTitle>Logout</CardTitle>
+        <CardTitle>{t('user.settings.logout.title')}</CardTitle>
         <CardDescription>
-          Logout from your account. You can login again later.
+          {t('user.settings.logout.description')}
         </CardDescription>
       </div>
       <Button onClick={handleLogout} variant="destructive" isLoading={getIsLoading()}>
-        Logout
+        {t('user.settings.logout.button')}
       </Button>
     </Card>
   );
 };
 
 const UserEmailCard: Component<{ email: string }> = (props) => {
+  const { t } = useI18n();
+
   return (
     <Card>
       <CardHeader class="border-b">
-        <CardTitle>Email address</CardTitle>
-        <CardDescription>Your email address cannot be changed.</CardDescription>
+        <CardTitle>{t('user.settings.email.title')}</CardTitle>
+        <CardDescription>{t('user.settings.email.description')}</CardDescription>
       </CardHeader>
       <CardContent class="pt-6">
         <TextFieldRoot>
           <TextFieldLabel for="email" class="sr-only">
-            Email address
+            {t('user.settings.email.label')}
           </TextFieldLabel>
           <TextField id="email" value={props.email} disabled readOnly />
         </TextFieldRoot>
@@ -59,6 +63,7 @@ const UserEmailCard: Component<{ email: string }> = (props) => {
 
 const UpdateFullNameCard: Component<{ name: string }> = (props) => {
   const { updateCurrentUser } = useUpdateCurrentUser();
+  const { t } = useI18n();
 
   const { form, Form, Field } = createForm({
     schema: v.object({
@@ -72,15 +77,15 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
         name: name.trim(),
       });
 
-      createToast({ type: 'success', message: 'Your full name has been updated' });
+      createToast({ type: 'success', message: t('user.settings.name.updated') });
     },
   });
 
   return (
     <Card>
       <CardHeader class="border-b">
-        <CardTitle>Full name</CardTitle>
-        <CardDescription>Your full name is displayed to other organization members.</CardDescription>
+        <CardTitle>{t('user.settings.name.title')}</CardTitle>
+        <CardDescription>{t('user.settings.name.description')}</CardDescription>
       </CardHeader>
 
       <Form>
@@ -89,13 +94,13 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
             {(field, inputProps) => (
               <TextFieldRoot class="flex flex-col gap-1">
                 <TextFieldLabel for="name" class="sr-only">
-                  Full name
+                  {t('user.settings.name.label')}
                 </TextFieldLabel>
                 <div class="flex gap-2 flex-col sm:flex-row">
                   <TextField
                     type="text"
                     id="name"
-                    placeholder="Eg. John Doe"
+                    placeholder={t('user.settings.name.placeholder')}
                     {...inputProps}
                     value={field.value}
                     aria-invalid={Boolean(field.error)}
@@ -106,7 +111,7 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
                     class="flex-shrink-0"
                     disabled={field.value?.trim() === props.name}
                   >
-                    Update name
+                    {t('user.settings.name.update')}
                   </Button>
                 </div>
                 {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
@@ -122,6 +127,7 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
 };
 
 export const UserSettingsPage: Component = () => {
+  const { t } = useI18n();
   const query = createQuery(() => ({
     queryKey: ['users', 'me'],
     queryFn: fetchCurrentUser,
@@ -134,8 +140,8 @@ export const UserSettingsPage: Component = () => {
           {getUser => (
             <>
               <div class="border-b pb-4">
-                <h1 class="text-2xl font-semibold mb-1">User settings</h1>
-                <p class="text-muted-foreground">Manage your account settings here.</p>
+                <h1 class="text-2xl font-semibold mb-1">{t('user.settings.title')}</h1>
+                <p class="text-muted-foreground">{t('user.settings.description')}</p>
               </div>
 
               <div class="mt-6 flex flex-col gap-6">

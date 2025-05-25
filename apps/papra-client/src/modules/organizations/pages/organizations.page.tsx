@@ -2,10 +2,12 @@ import type { Component } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
 import { createEffect, For, on } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganizations } from '../organizations.services';
 
 export const OrganizationsPage: Component = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const queries = createQuery(() => ({
     queryKey: ['organizations'],
@@ -24,11 +26,11 @@ export const OrganizationsPage: Component = () => {
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
       <h2 class="text-xl font-bold mb-2">
-        Your organizations
+        {t('organizations.list.title')}
       </h2>
 
       <p class="text-muted-foreground mb-6">
-        Organizations are a way to group your documents and manage access to them. You can create multiple organizations and invite your team members to collaborate.
+        {t('organizations.list.description')}
       </p>
 
       <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -43,7 +45,6 @@ export const OrganizationsPage: Component = () => {
               </div>
 
               <div class="p-4">
-
                 <div class="w-full text-left font-bold truncate block">
                   {organization.name}
                 </div>
@@ -56,7 +57,7 @@ export const OrganizationsPage: Component = () => {
           <div class="i-tabler-plus size-16 text-muted-foreground op-50 group-hover:(text-primary op-100) transition" />
 
           <div class="font-bold block text-muted-foreground">
-            Create new organization
+            {t('organizations.list.create-new')}
           </div>
         </A>
       </div>

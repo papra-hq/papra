@@ -6,6 +6,7 @@ import { createQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { buildTimeConfig } from '@/modules/config/config';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
 import { getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
@@ -20,24 +21,25 @@ import { fetchOrganization } from '../organizations.services';
 const DeleteOrganizationCard: Component<{ organization: Organization }> = (props) => {
   const { deleteOrganization } = useDeleteOrganization();
   const { confirm } = useConfirmModal();
+  const { t } = useI18n();
 
   const handleDelete = async () => {
     const confirmed = await confirm({
-      title: 'Delete organization',
-      message: 'Are you sure you want to delete this organization? This action cannot be undone, and all data associated with this organization will be permanently removed.',
+      title: t('organization.settings.delete.confirm.title'),
+      message: t('organization.settings.delete.confirm.message'),
       confirmButton: {
-        text: 'Delete organization',
+        text: t('organization.settings.delete.confirm.confirm-button'),
         variant: 'destructive',
       },
       cancelButton: {
-        text: 'Cancel',
+        text: t('organization.settings.delete.confirm.cancel-button'),
       },
     });
 
     if (confirmed) {
       await deleteOrganization({ organizationId: props.organization.id });
 
-      createToast({ type: 'success', message: 'Organization deleted' });
+      createToast({ type: 'success', message: t('organization.settings.delete.success') });
     }
   };
 
@@ -45,15 +47,15 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
     <div>
       <Card class="border-destructive">
         <CardHeader class="border-b">
-          <CardTitle>Delete organization</CardTitle>
+          <CardTitle>{t('organization.settings.delete.title')}</CardTitle>
           <CardDescription>
-            Deleting this organization will permanently remove all data associated with it.
+            {t('organization.settings.delete.description')}
           </CardDescription>
         </CardHeader>
 
         <CardFooter class="pt-6">
           <Button onClick={handleDelete} variant="destructive">
-            Delete organization
+            {t('organization.settings.delete.confirm.confirm-button')}
           </Button>
         </CardFooter>
       </Card>
@@ -63,6 +65,7 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
 
 export const SubscriptionCard: Component<{ organization: Organization }> = (props) => {
   const [getIsLoading, setIsLoading] = createSignal(false);
+  const { t } = useI18n();
 
   const goToCustomerPortal = async () => {
     setIsLoading(true);
@@ -70,7 +73,7 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
     const [result, error] = await safely(getCustomerPortalUrl({ organizationId: props.organization.id }));
 
     if (error) {
-      createToast({ type: 'error', message: 'Failed to get customer portal URL' });
+      createToast({ type: 'error', message: t('organization.settings.subscription.error') });
       setIsLoading(false);
 
       return;
@@ -86,13 +89,13 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
   return (
     <Card class="flex flex-col sm:flex-row justify-between gap-4 sm:items-center p-6 ">
       <div>
-        <div class="font-semibold">Subscription</div>
+        <div class="font-semibold">{t('organization.settings.subscription.title')}</div>
         <div class="text-sm text-muted-foreground">
-          Manage your billing, invoices and payment methods.
+          {t('organization.settings.subscription.description')}
         </div>
       </div>
       <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0" disabled={buildTimeConfig.isDemoMode}>
-        Manage subscription
+        {t('organization.settings.subscription.manage')}
       </Button>
     </Card>
   );
@@ -100,6 +103,7 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
 
 const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (props) => {
   const { updateOrganization } = useUpdateOrganization();
+  const { t } = useI18n();
 
   const { form, Form, Field } = createForm({
     schema: v.object({
@@ -114,7 +118,7 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
         organizationName: organizationName.trim(),
       });
 
-      createToast({ type: 'success', message: 'Organization name updated' });
+      createToast({ type: 'success', message: t('organization.settings.name.updated') });
     },
   });
 
@@ -122,24 +126,22 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
     <div>
       <Card>
         <CardHeader class="border-b">
-          <CardTitle>Organization name</CardTitle>
-
+          <CardTitle>{t('organization.settings.name.title')}</CardTitle>
         </CardHeader>
 
         <Form>
           <CardContent class="pt-6 ">
-
             <Field name="organizationName">
               {(field, inputProps) => (
                 <TextFieldRoot class="flex flex-col gap-1">
                   <TextFieldLabel for="organizationName" class="sr-only">
-                    Organization name
+                    {t('organization.settings.name.title')}
                   </TextFieldLabel>
                   <div class="flex gap-2 flex-col sm:flex-row">
-                    <TextField type="text" id="organizationName" placeholder="Eg. Acme Inc." {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+                    <TextField type="text" id="organizationName" placeholder={t('organization.settings.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
 
                     <Button type="submit" isLoading={form.submitting} class="flex-shrink-0" disabled={field.value?.trim() === props.organization.name}>
-                      Update name
+                      {t('organization.settings.name.update')}
                     </Button>
                   </div>
                   {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
@@ -149,7 +151,6 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
 
             <div class="text-red-500 text-sm">{form.response.message}</div>
           </CardContent>
-
         </Form>
       </Card>
     </div>
@@ -158,6 +159,7 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
 
 export const OrganizationsSettingsPage: Component = () => {
   const params = useParams();
+  const { t } = useI18n();
 
   const query = createQuery(() => ({
     queryKey: ['organizations', params.organizationId],
@@ -171,11 +173,11 @@ export const OrganizationsSettingsPage: Component = () => {
           { getOrganization => (
             <>
               <h1 class="text-xl font-semibold mb-2">
-                Organization settings
+                {t('organization.settings.page.title')}
               </h1>
 
               <p class="text-muted-foreground">
-                Manage your organization settings here.
+                {t('organization.settings.page.description')}
               </p>
 
               <div class="mt-6 flex flex-col gap-6">

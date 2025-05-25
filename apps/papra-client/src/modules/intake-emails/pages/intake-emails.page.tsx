@@ -7,6 +7,7 @@ import { createQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
 import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
@@ -23,6 +24,7 @@ import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEm
 
 const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) => JSX.Element; intakeEmails: IntakeEmail }> = (props) => {
   const [getAllowedOrigins, setAllowedOrigins] = createSignal([...props.intakeEmails.allowedOrigins]);
+  const { t } = useI18n();
 
   const update = async () => {
     await updateIntakeEmail({
@@ -47,7 +49,7 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
     }),
     onSubmit: async ({ email }) => {
       if (getAllowedOrigins().includes(email)) {
-        throw new Error('This email is already in the allowed origins for this intake email');
+        throw new Error(t('intake-emails.allowed-origins.add.error.exists'));
       }
 
       setAllowedOrigins(origins => [...origins, email]);
@@ -67,13 +69,9 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Allowed origins</DialogTitle>
+          <DialogTitle>{t('intake-emails.allowed-origins.title')}</DialogTitle>
           <DialogDescription>
-            Only emails sent to
-            {' '}
-            <span class="font-medium text-primary">{props.intakeEmails.emailAddress}</span>
-            {' '}
-            from these origins will be processed. If no origins are specified, all emails will be discarded.
+            {t('intake-emails.allowed-origins.description', { email: props.intakeEmails.emailAddress })}
           </DialogDescription>
         </DialogHeader>
 
@@ -81,13 +79,13 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
           <Field name="email">
             {(field, inputProps) => (
               <TextFieldRoot class="flex flex-col gap-1 mb-4 mt-4">
-                <TextFieldLabel for="email">Add allowed origin email</TextFieldLabel>
+                <TextFieldLabel for="email">{t('intake-emails.allowed-origins.add.label')}</TextFieldLabel>
 
                 <div class="flex items-center gap-2">
-                  <TextField type="email" id="email" placeholder="Eg. ada@papra.app" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+                  <TextField type="email" id="email" placeholder={t('intake-emails.allowed-origins.add.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
                   <Button type="submit">
                     <div class="i-tabler-plus size-4 mr-2" />
-                    Add
+                    {t('intake-emails.allowed-origins.add.button')}
                   </Button>
                 </div>
 
@@ -130,26 +128,28 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
 
 export const IntakeEmailsPage: Component = () => {
   const { config } = useConfig();
+  const { t, te } = useI18n();
 
   if (!config.intakeEmails.isEnabled) {
     return (
       <div class="p-6 max-w-screen-md mx-auto mt-10">
-
-        <h1 class="text-xl font-semibold">Intake Emails</h1>
+        <h1 class="text-xl font-semibold">{t('intake-emails.title')}</h1>
 
         <p class="text-muted-foreground mt-1">
-          Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.
+          {t('intake-emails.description')}
         </p>
         <Card class="px-6 py-4 mt-4 flex items-center gap-4">
           <div class="i-tabler-mail-off size-12 text-muted-foreground flex-shrink-0" />
           <div>
-            <h2 class="text-base font-bold text-muted-foreground">Intake Emails are disabled</h2>
+            <h2 class="text-base font-bold text-muted-foreground">{t('intake-emails.disabled.title')}</h2>
             <p class="text-muted-foreground mt-1">
-              Intake emails are disabled on this instance. Please contact your administrator to enable them. See the
-              {' '}
-              <a href="https://docs.papra.app/guides/intake-emails-with-owlrelay/" target="_blank" class="text-primary">documentation</a>
-              {' '}
-              for more information.
+              {te('intake-emails.disabled.description', {
+                documentation: (
+                  <a href="https://docs.papra.app/guides/intake-emails-with-owlrelay/" target="_blank" class="text-primary">
+                    {t('intake-emails.disabled.documentation')}
+                  </a>
+                ),
+              })}
             </p>
           </div>
         </Card>
@@ -170,7 +170,7 @@ export const IntakeEmailsPage: Component = () => {
 
     if (isHttpErrorWithCode({ error, code: 'intake_email.limit_reached' })) {
       createToast({
-        message: 'The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.',
+        message: t('api-errors.intake_email.limit_reached'),
         type: 'error',
       });
 
@@ -184,20 +184,20 @@ export const IntakeEmailsPage: Component = () => {
     await query.refetch();
 
     createToast({
-      message: 'Intake email created',
+      message: t('intake-emails.create.success'),
       type: 'success',
     });
   };
 
   const deleteEmail = async ({ intakeEmailId }: { intakeEmailId: string }) => {
     const confirmed = await confirm({
-      title: 'Delete intake email?',
-      message: 'Are you sure you want to delete this intake email? This action cannot be undone.',
+      title: t('intake-emails.delete.confirm.title'),
+      message: t('intake-emails.delete.confirm.message'),
       cancelButton: {
-        text: 'Cancel',
+        text: t('intake-emails.delete.confirm.cancel-button'),
       },
       confirmButton: {
-        text: 'Delete intake email',
+        text: t('intake-emails.delete.confirm.confirm-button'),
         variant: 'destructive',
       },
     });
@@ -210,7 +210,7 @@ export const IntakeEmailsPage: Component = () => {
     await query.refetch();
 
     createToast({
-      message: 'Intake email deleted',
+      message: t('intake-emails.delete.success'),
       type: 'success',
     });
   };
@@ -220,27 +220,25 @@ export const IntakeEmailsPage: Component = () => {
     await query.refetch();
 
     createToast({
-      message: `Intake email ${isEnabled ? 'enabled' : 'disabled'}`,
+      message: isEnabled ? t('intake-emails.update.success.enabled') : t('intake-emails.update.success.disabled'),
       type: 'success',
     });
   };
 
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-10">
-
-      <h1 class="text-xl font-semibold">Intake Emails</h1>
+      <h1 class="text-xl font-semibold">{t('intake-emails.title')}</h1>
 
       <p class="text-muted-foreground mt-1">
-        Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.
+        {t('intake-emails.description')}
       </p>
 
       <Alert variant="default" class="mt-4 flex items-center gap-4 xl:gap-4 text-muted-foreground">
         <div class="i-tabler-info-circle size-10 xl:size-8 text-primary flex-shrink-0 " />
 
         <AlertDescription>
-          Only enabled intake emails from allowed origins will be processed. You can enable or disable an intake email at any time.
+          {t('intake-emails.info')}
         </AlertDescription>
-
       </Alert>
 
       <Suspense>
@@ -251,14 +249,14 @@ export const IntakeEmailsPage: Component = () => {
               fallback={(
                 <div class="mt-4 py-8 border-2 border-dashed rounded-lg text-center">
                   <EmptyState
-                    title="No intake emails"
-                    description="Generate an intake address to easily ingest emails attachments."
+                    title={t('intake-emails.empty.title')}
+                    description={t('intake-emails.empty.description')}
                     class="pt-0"
                     icon="i-tabler-mail"
                     cta={(
                       <Button variant="secondary" onClick={createEmail}>
                         <div class="i-tabler-plus size-4 mr-2" />
-                        Generate intake email
+                        {t('intake-emails.empty.generate')}
                       </Button>
                     )}
                   />
@@ -267,12 +265,15 @@ export const IntakeEmailsPage: Component = () => {
             >
               <div class="mt-4 mb-4 flex items-center justify-between">
                 <div class="text-muted-foreground">
-                  {`${intakeEmails().length} intake email${intakeEmails().length > 1 ? 's' : ''} for this organization`}
+                  {t('intake-emails.count', {
+                    count: intakeEmails().length,
+                    plural: intakeEmails().length > 1 ? 's' : '',
+                  })}
                 </div>
 
                 <Button onClick={createEmail}>
                   <div class="i-tabler-plus size-4 mr-2" />
-                  New intake email
+                  {t('intake-emails.new')}
                 </Button>
               </div>
 
@@ -290,9 +291,8 @@ export const IntakeEmailsPage: Component = () => {
                             {intakeEmail.emailAddress}
 
                             <Show when={!intakeEmail.isEnabled}>
-                              <span class="text-muted-foreground text-xs ml-2">(Disabled)</span>
+                              <span class="text-muted-foreground text-xs ml-2">{t('intake-emails.disabled-label')}</span>
                             </Show>
-
                           </div>
 
                           <Show
@@ -300,14 +300,16 @@ export const IntakeEmailsPage: Component = () => {
                             fallback={(
                               <div class="text-xs text-warning flex items-center gap-1.5">
                                 <div class="i-tabler-alert-triangle size-3.75" />
-                                No allowed email origins
+                                {t('intake-emails.no-origins')}
                               </div>
                             )}
                           >
                             <div class="text-xs text-muted-foreground flex items-center gap-2">
-                              {`Allowed from ${intakeEmail.allowedOrigins.length} address${intakeEmail.allowedOrigins.length > 1 ? 'es' : ''}`}
+                              {t('intake-emails.allowed-origins', {
+                                count: intakeEmail.allowedOrigins.length,
+                                plural: intakeEmail.allowedOrigins.length > 1 ? 'es' : '',
+                              })}
                             </div>
-
                           </Show>
                         </div>
                       </div>
@@ -318,7 +320,7 @@ export const IntakeEmailsPage: Component = () => {
                           onClick={() => updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled })}
                         >
                           <div class="i-tabler-power size-4 mr-2" />
-                          {intakeEmail.isEnabled ? 'Disable' : 'Enable'}
+                          {intakeEmail.isEnabled ? t('intake-emails.actions.disable') : t('intake-emails.actions.enable')}
                         </Button>
 
                         <AllowedOriginsDialog intakeEmails={intakeEmail}>
@@ -330,7 +332,7 @@ export const IntakeEmailsPage: Component = () => {
                               class="flex items-center gap-2 leading-none"
                             >
                               <div class="i-tabler-edit size-4" />
-                              Manage origins addresses
+                              {t('intake-emails.actions.manage-origins')}
                             </Button>
                           )}
                         </AllowedOriginsDialog>
@@ -342,18 +344,14 @@ export const IntakeEmailsPage: Component = () => {
                           class="text-red"
                         >
                           <div class="i-tabler-trash size-4 mr-2" />
-
-                          Delete
+                          {t('intake-emails.actions.delete')}
                         </Button>
                       </div>
                     </div>
                   )}
                 </For>
-
               </div>
-
             </Show>
-
           )}
         </Show>
       </Suspense>
