@@ -4,6 +4,7 @@ import { emailDriverFactoryNames } from './drivers/email-driver';
 import { LOGGER_EMAIL_DRIVER_NAME } from './drivers/logger/logger.email-driver';
 import { loggerEmailDriverConfig } from './drivers/logger/logger.email-driver.config';
 import { resendEmailDriverConfig } from './drivers/resend/resend.email-driver.config';
+import { smtpEmailDriverConfig } from './drivers/smtp/smtp.email-driver.config';
 
 export const emailsConfig = {
   fromEmail: {
@@ -21,5 +22,6 @@ export const emailsConfig = {
   drivers: {
     resend: resendEmailDriverConfig,
     logger: loggerEmailDriverConfig,
+    smtp: smtpEmailDriverConfig,
   },
 } as const satisfies ConfigDefinition;
