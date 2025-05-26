@@ -52,7 +52,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@types/mime-types": "^2.1.4",
-    "@types/node": "^22.15.3",
+    "@types/node": "catalog:",
     "eslint": "catalog:",
     "tsx": "^4.19.3",
     "typescript": "catalog:",
