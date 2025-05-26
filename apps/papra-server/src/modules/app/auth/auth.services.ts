@@ -84,7 +84,7 @@ export function getAuth({
 
     advanced: {
       // Drizzle tables handle the id generation
-      generateId: false,
+      database: { generateId: false },
     },
     socialProviders: {
       github: {
