@@ -86,9 +86,11 @@ export const EmailLoginForm: Component = () => {
           )}
         </Field>
 
-        <Button variant="link" as={A} class="inline p-0! h-auto" href="/request-password-reset">
-          {t('auth.login.form.forgot-password.label')}
-        </Button>
+        <Show when={config.auth.isPasswordResetEnabled}>
+          <Button variant="link" as={A} class="inline p-0! h-auto" href="/request-password-reset">
+            {t('auth.login.form.forgot-password.label')}
+          </Button>
+        </Show>
       </div>
 
       <Button type="submit" class="w-full">{t('auth.login.form.submit')}</Button>
