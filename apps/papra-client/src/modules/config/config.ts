@@ -37,6 +37,7 @@ export const buildTimeConfig = {
     isEnabled: asBoolean(import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED, false),
     emailGenerationDomain: asString(import.meta.env.VITE_INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN),
   },
+  isSubscriptionsEnabled: asBoolean(import.meta.env.VITE_IS_SUBSCRIPTIONS_ENABLED, false),
 } as const;
 
 export type Config = typeof buildTimeConfig;

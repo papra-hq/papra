@@ -6,6 +6,7 @@ import { createQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { buildTimeConfig } from '@/modules/config/config';
+import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
@@ -64,6 +65,12 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
 };
 
 export const SubscriptionCard: Component<{ organization: Organization }> = (props) => {
+  const { config } = useConfig();
+
+  if (!config.isSubscriptionsEnabled) {
+    return null;
+  }
+
   const [getIsLoading, setIsLoading] = createSignal(false);
   const { t } = useI18n();
 
