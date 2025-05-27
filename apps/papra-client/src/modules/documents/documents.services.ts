@@ -194,15 +194,17 @@ export async function updateDocument({
   documentId,
   organizationId,
   content,
+  name,
 }: {
   documentId: string;
   organizationId: string;
-  content: string;
+  content?: string;
+  name?: string;
 }) {
   const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'PATCH',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
-    body: { content },
+    body: { content, name },
   });
 
   return {

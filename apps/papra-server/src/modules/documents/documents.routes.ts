@@ -457,7 +457,7 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
       documentId: documentIdSchema,
     })),
     validateJsonBody(z.object({
-      name: z.string().min(1).optional(),
+      name: z.string().min(1).max(255).optional(),
       content: z.string().min(1).optional(),
     }).refine(data => data.name !== undefined || data.content !== undefined, {
       message: 'At least one of \'name\' or \'content\' must be provided',

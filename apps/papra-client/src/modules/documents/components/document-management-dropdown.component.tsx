@@ -5,9 +5,11 @@ import { A } from '@solidjs/router';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { useDeleteDocument } from '../documents.composables';
+import { useRenameDocumentDialog } from './rename-document-button.component';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
   const { deleteDocument } = useDeleteDocument();
+  const { openRenameDialog } = useRenameDocumentDialog();
 
   const deleteDoc = () => deleteDocument({
     documentId: props.document.id,
@@ -16,6 +18,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
   });
 
   return (
+
     <DropdownMenu>
       <DropdownMenuTrigger
         as={(props: DropdownMenuSubTriggerProps) => (
@@ -35,6 +38,18 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
         </DropdownMenuItem>
 
         <DropdownMenuItem
+          class="cursor-pointer"
+          onClick={() => openRenameDialog({
+            documentId: props.document.id,
+            organizationId: props.document.organizationId,
+            documentName: props.document.name,
+          })}
+        >
+          <div class="i-tabler-pencil size-4 mr-2"></div>
+          <span>Rename document</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
           class="cursor-pointer text-red"
           onClick={() => deleteDoc()}
         >
@@ -43,5 +58,6 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
   );
 };

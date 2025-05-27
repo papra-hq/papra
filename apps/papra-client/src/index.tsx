@@ -9,6 +9,7 @@ import { render, Suspense } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';
+import { RenameDocumentDialogProvider } from './modules/documents/components/rename-document-button.component';
 import { I18nProvider } from './modules/i18n/i18n.provider';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
@@ -44,9 +45,11 @@ render(
                   >
                     <CommandPaletteProvider>
                       <ConfigProvider>
-                        <div class="min-h-screen font-sans text-sm font-400">
-                          {props.children}
-                        </div>
+                        <RenameDocumentDialogProvider>
+                          <div class="min-h-screen font-sans text-sm font-400">
+                            {props.children}
+                          </div>
+                        </RenameDocumentDialogProvider>
                         <DemoIndicator />
                       </ConfigProvider>
 

@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modul
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextFieldRoot } from '@/modules/ui/components/textfield';
 import { DocumentPreview } from '../components/document-preview.component';
+import { useRenameDocumentDialog } from '../components/rename-document-button.component';
 import { getDaysBeforePermanentDeletion } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
 import { fetchDocument, fetchDocumentFile, updateDocument } from '../documents.services';
@@ -57,6 +58,7 @@ export const DocumentPage: Component = () => {
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
+  const { openRenameDialog } = useRenameDocumentDialog();
 
   const queries = createQueries(() => ({
     queries: [
@@ -137,7 +139,21 @@ export const DocumentPage: Component = () => {
             {getDocument => (
               <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
-                  <h1 class="text-xl font-semibold">{getDocument().name}</h1>
+                  <Button
+                    variant="ghost"
+                    class="flex items-center gap-2 group bg-transparent! px-0"
+                    onClick={() => openRenameDialog({
+                      documentId: getDocument().id,
+                      organizationId: params.organizationId,
+                      documentName: getDocument().name,
+                    })}
+                  >
+                    <h1 class="text-xl font-semibold">
+                      {getDocument().name}
+                    </h1>
+
+                    <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors"></div>
+                  </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
                   <div class="flex gap-2 mb-2">
@@ -243,7 +259,21 @@ export const DocumentPage: Component = () => {
                         },
                         {
                           label: t('documents.info.name'),
-                          value: getDocument().name,
+                          value: (
+                            <Button
+                              variant="ghost"
+                              class="flex items-center gap-2 group bg-transparent! p-0 h-auto"
+                              onClick={() => openRenameDialog({
+                                documentId: getDocument().id,
+                                organizationId: params.organizationId,
+                                documentName: getDocument().name,
+                              })}
+                            >
+                              {getDocument().name}
+
+                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors"></div>
+                            </Button>
+                          ),
                           icon: 'i-tabler-file-text',
                         },
                         {
