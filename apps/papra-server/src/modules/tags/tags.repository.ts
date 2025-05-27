@@ -4,8 +4,9 @@ import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, eq, getTableColumns, isNull, or } from 'drizzle-orm';
 import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
+import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { omitUndefined } from '../shared/utils';
-import { createDocumentAlreadyHasTagError } from './tags.errors';
+import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
 import { documentsTagsTable, tagsTable } from './tags.table';
 
 export type TagsRepository = ReturnType<typeof createTagsRepository>;
@@ -50,7 +51,17 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
 }
 
 async function createTag({ tag, db }: { tag: DbInsertableTag; db: Database }) {
-  const [createdTag] = await db.insert(tagsTable).values(tag).returning();
+  const [result, error] = await safely(db.insert(tagsTable).values(tag).returning());
+
+  if (isUniqueConstraintError({ error })) {
+    throw createTagAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  const [createdTag] = result;
 
   return { tag: createdTag };
 }

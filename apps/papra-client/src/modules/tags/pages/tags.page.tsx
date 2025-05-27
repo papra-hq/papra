@@ -1,6 +1,7 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX } from 'solid-js';
 import type { Tag as TagType } from '../tags.types';
+import { safely } from '@corentinth/chisels';
 import { getValues } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
 import { createQuery } from '@tanstack/solid-query';
@@ -10,6 +11,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { createForm } from '@/modules/shared/form/form';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
@@ -112,14 +114,23 @@ export const CreateTagModal: Component<{
 }> = (props) => {
   const [getIsModalOpen, setIsModalOpen] = createSignal(false);
   const { t } = useI18n();
+  const { getErrorMessage } = useI18nApiErrors({ t });
 
   const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
-    await createTag({
+    const [,error] = await safely(createTag({
       name,
       color,
       description,
       organizationId: props.organizationId,
-    });
+    }));
+
+    if (error) {
+      createToast({
+        message: getErrorMessage({ error }),
+        type: 'error',
+      });
+      return;
+    }
 
     await queryClient.invalidateQueries({
       queryKey: ['organizations', props.organizationId],

@@ -5,3 +5,9 @@ export const createDocumentAlreadyHasTagError = createErrorFactory({
   code: 'documents.already_has_tag',
   statusCode: 400,
 });
+
+export const createTagAlreadyExistsError = createErrorFactory({
+  message: 'Tag already exists',
+  code: 'tags.already_exists',
+  statusCode: 400,
+});

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { createDocumentAlreadyHasTagError } from './tags.errors';
+import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 
 describe('tags repository', () => {
@@ -149,6 +149,24 @@ describe('tags repository', () => {
           updatedAt: new Date('2021-01-03'),
         },
       ]);
+    });
+  });
+
+  describe('createTag', () => {
+    test('when a tag with the same name already exists for the same organization, it throws an error', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      await tagsRepository.createTag({
+        tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' },
+      });
+
+      await expect(
+        tagsRepository.createTag({ tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' } }),
+      ).rejects.toThrow(createTagAlreadyExistsError());
     });
   });
 });

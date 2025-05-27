@@ -498,6 +498,7 @@ api-errors.organization.invitation_already_exists: An invitation for this email 
 api-errors.user.already_in_organization: This user is already in this organization.
 api-errors.user.organization_invitation_limit_reached: The maximum number of invitations has been reached for today. Please try again tomorrow.
 api-errors.demo.not_available: This feature is not available in demo
+api-errors.tags.already_exists: A tag with this name already exists for this organization
 
 # Not found
 

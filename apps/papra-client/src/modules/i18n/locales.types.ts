@@ -443,6 +443,7 @@ export type LocaleKeys =
   | 'api-errors.user.already_in_organization'
   | 'api-errors.user.organization_invitation_limit_reached'
   | 'api-errors.demo.not_available'
+  | 'api-errors.tags.already_exists'
   | 'not-found.title'
   | 'not-found.description'
   | 'not-found.back-to-home'
