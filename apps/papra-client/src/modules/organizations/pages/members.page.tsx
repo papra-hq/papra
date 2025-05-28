@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { OrganizationMemberRole } from '../organizations.types';
 import { A, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { For, Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -22,7 +22,7 @@ const MemberList: Component = () => {
   const params = useParams();
   const { t } = useI18n();
   const { confirm } = useConfirmModal();
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'members'],
     queryFn: () => fetchOrganizationMembers({ organizationId: params.organizationId }),
   }));
@@ -30,7 +30,7 @@ const MemberList: Component = () => {
 
   const { getIsAtLeastAdmin, getRole } = useCurrentUserRole({ organizationId: params.organizationId });
 
-  const removeMemberMutation = createMutation(() => ({
+  const removeMemberMutation = useMutation(() => ({
     mutationFn: ({ memberId }: { memberId: string }) => removeOrganizationMember({ organizationId: params.organizationId, memberId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'members'] });
@@ -41,7 +41,7 @@ const MemberList: Component = () => {
     },
   }));
 
-  const updateMemberRoleMutation = createMutation(() => ({
+  const updateMemberRoleMutation = useMutation(() => ({
     mutationFn: ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) => updateOrganizationMemberRole({ organizationId: params.organizationId, memberId, role }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'members'] });

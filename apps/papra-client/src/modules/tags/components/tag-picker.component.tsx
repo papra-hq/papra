@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import type { Tag } from '../tags.types';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For } from 'solid-js';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxTrigger } from '@/modules/ui/components/combobox';
 import { fetchTags } from '../tags.services';
@@ -15,7 +15,7 @@ export const DocumentTagPicker: Component<{
 }> = (props) => {
   const [getSelectedTagIds, setSelectedTagIds] = createSignal<string[]>(props.tagIds);
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'tags'],
     queryFn: () => fetchTags({ organizationId: props.organizationId }),
   }));

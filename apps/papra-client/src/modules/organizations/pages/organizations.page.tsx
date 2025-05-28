@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import { A, useNavigate } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createEffect, For, on } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganizations } from '../organizations.services';
@@ -9,13 +9,13 @@ export const OrganizationsPage: Component = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const queries = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations'],
     queryFn: fetchOrganizations,
   }));
 
   createEffect(on(
-    () => queries.data?.organizations,
+    () => query.data?.organizations,
     (orgs) => {
       if (orgs && orgs.length === 0) {
         navigate('/organizations/first');
@@ -34,7 +34,7 @@ export const OrganizationsPage: Component = () => {
       </p>
 
       <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <For each={queries.data?.organizations}>
+        <For each={query.data?.organizations}>
           {organization => (
             <A
               href={`/organizations/${organization.id}`}

@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { TaggingRuleForCreation } from '../tagging-rules.types';
 import { useNavigate, useParams } from '@solidjs/router';
-import { createMutation } from '@tanstack/solid-query';
+import { useMutation } from '@tanstack/solid-query';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TaggingRuleForm } from '../components/tagging-rule-form.component';
@@ -12,7 +12,7 @@ export const CreateTaggingRulePage: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const createTaggingRuleMutation = createMutation(() => ({
+  const createTaggingRuleMutation = useMutation(() => ({
     mutationFn: async ({ taggingRule }: { taggingRule: TaggingRuleForCreation }) => {
       await createTaggingRule({ taggingRule, organizationId: params.organizationId });
     },

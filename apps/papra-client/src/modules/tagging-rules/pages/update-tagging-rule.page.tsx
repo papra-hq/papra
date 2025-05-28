@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { TaggingRuleForCreation } from '../tagging-rules.types';
 import { useNavigate, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -14,12 +14,12 @@ export const UpdateTaggingRulePage: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tagging-rules', params.taggingRuleId],
     queryFn: () => getTaggingRule({ organizationId: params.organizationId, taggingRuleId: params.taggingRuleId }),
   }));
 
-  const updateTaggingRuleMutation = createMutation(() => ({
+  const updateTaggingRuleMutation = useMutation(() => ({
     mutationFn: async ({ taggingRule }: { taggingRule: TaggingRuleForCreation }) => {
       await updateTaggingRule({ organizationId: params.organizationId, taggingRuleId: params.taggingRuleId, taggingRule });
     },

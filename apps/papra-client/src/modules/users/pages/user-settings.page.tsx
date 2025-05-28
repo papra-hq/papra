@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { signOut } from '@/modules/auth/auth.services';
@@ -128,7 +128,7 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
 
 export const UserSettingsPage: Component = () => {
   const { t } = useI18n();
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['users', 'me'],
     queryFn: fetchCurrentUser,
   }));

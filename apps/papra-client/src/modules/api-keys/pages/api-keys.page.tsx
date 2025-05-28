@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { ApiKey } from '../api-keys.types';
 import { A } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { format } from 'date-fns';
 import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -16,7 +16,7 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
   const { t } = useI18n();
   const { confirm } = useConfirmModal();
 
-  const deleteApiKeyMutation = createMutation(() => ({
+  const deleteApiKeyMutation = useMutation(() => ({
     mutationFn: deleteApiKey,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['api-keys'] });
@@ -85,7 +85,7 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
 
 export const ApiKeysPage: Component = () => {
   const { t } = useI18n();
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['api-keys'],
     queryFn: () => fetchApiKeys(),
   }));

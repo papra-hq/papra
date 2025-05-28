@@ -1,6 +1,6 @@
 import type { ParentComponent } from 'solid-js';
 import type { Config, RuntimePublicConfig } from './config';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { merge } from 'lodash-es';
 import { createContext, Match, Switch, useContext } from 'solid-js';
 import { Button } from '../ui/components/button';
@@ -24,7 +24,7 @@ export function useConfig() {
 }
 
 export const ConfigProvider: ParentComponent = (props) => {
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['config'],
     queryFn: fetchPublicConfig,
   }));

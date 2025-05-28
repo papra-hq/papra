@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { TaggingRule } from '../tagging-rules.types';
 import { A, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { For, Match, Show, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -28,7 +28,7 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
     return t('tagging-rules.list.card.conditions', { count });
   };
 
-  const deleteTaggingRuleMutation = createMutation(() => ({
+  const deleteTaggingRuleMutation = useMutation(() => ({
     mutationFn: async () => {
       await deleteTaggingRule({ organizationId: props.taggingRule.organizationId, taggingRuleId: props.taggingRule.id });
     },
@@ -82,7 +82,7 @@ export const TaggingRulesPage: Component = () => {
   const { config } = useConfig();
   const params = useParams();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tagging-rules'],
     queryFn: () => fetchTaggingRules({ organizationId: params.organizationId }),
   }));

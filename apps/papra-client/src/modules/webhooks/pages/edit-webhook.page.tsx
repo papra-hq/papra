@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 import type { Webhook } from '../webhooks.types';
 import { setValue } from '@modular-forms/solid';
 import { A, useNavigate, useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -171,7 +171,7 @@ export const EditWebhookPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
 
-  const webhookQuery = createQuery(() => ({
+  const webhookQuery = useQuery(() => ({
     queryKey: ['webhook', params.organizationId, params.webhookId],
     queryFn: () => fetchWebhook({
       organizationId: params.organizationId,

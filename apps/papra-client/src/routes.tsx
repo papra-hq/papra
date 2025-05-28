@@ -1,6 +1,6 @@
 import type { RouteDefinition } from '@solidjs/router';
 import { Navigate, useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
@@ -47,7 +47,7 @@ export const routes: RouteDefinition[] = [
         component: () => {
           const { getLatestOrganizationId } = useCurrentUser();
 
-          const query = createQuery(() => ({
+          const query = useQuery(() => ({
             queryKey: ['organizations'],
             queryFn: fetchOrganizations,
           }));

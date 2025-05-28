@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useParams } from '@solidjs/router';
-import { createMutation, createQuery, keepPreviousData } from '@tanstack/solid-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -42,7 +42,7 @@ const PermanentlyDeleteTrashDocumentButton: Component<{ document: Document; orga
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
 
-  const deleteMutation = createMutation(() => ({
+  const deleteMutation = useMutation(() => ({
     mutationFn: async () => {
       await deleteTrashDocument({ documentId: props.document.id, organizationId: props.organizationId });
     },
@@ -98,7 +98,7 @@ const DeleteAllTrashDocumentsButton: Component<{ organizationId: string }> = (pr
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
 
-  const deleteAllMutation = createMutation(() => ({
+  const deleteAllMutation = useMutation(() => ({
     mutationFn: async () => {
       await deleteAllTrashDocuments({ organizationId: props.organizationId });
     },
@@ -151,7 +151,7 @@ export const DeletedDocumentsPage: Component = () => {
   const { config } = useConfig();
   const { t } = useI18n();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'deleted', getPagination()],
     queryFn: () => fetchOrganizationDeletedDocuments({
       organizationId: params.organizationId,

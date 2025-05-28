@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Webhook } from '../webhooks.types';
 import { A, useParams } from '@solidjs/router';
-import { createMutation, createQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { format } from 'date-fns';
 import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -17,7 +17,7 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
   const { confirm } = useConfirmModal();
   const params = useParams();
 
-  const deleteWebhookMutation = createMutation(() => ({
+  const deleteWebhookMutation = useMutation(() => ({
     mutationFn: deleteWebhook,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
@@ -95,7 +95,7 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
 export const WebhooksPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['webhooks', params.organizationId],
     queryFn: () => fetchWebhooks({ organizationId: params.organizationId }),
   }));

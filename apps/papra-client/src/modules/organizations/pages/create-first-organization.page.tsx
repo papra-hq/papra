@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
@@ -24,13 +24,13 @@ export const CreateFirstOrganizationPage: Component = () => {
     return t('organizations.create-first.default-name');
   };
 
-  const queries = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations'],
     queryFn: fetchOrganizations,
   }));
 
   createEffect(on(
-    () => queries.data?.organizations,
+    () => query.data?.organizations,
     (orgs) => {
       if (orgs && orgs.length > 0) {
         navigate('/organizations/create');

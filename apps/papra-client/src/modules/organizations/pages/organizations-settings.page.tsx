@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 import type { Organization } from '../organizations.types';
 import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { buildTimeConfig } from '@/modules/config/config';
@@ -168,7 +168,7 @@ export const OrganizationsSettingsPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
     queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));

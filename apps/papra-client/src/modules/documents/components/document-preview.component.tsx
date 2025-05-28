@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createResource, Match, Suspense, Switch } from 'solid-js';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
@@ -35,7 +35,7 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
   const getIsImage = () => imageMimeType.includes(props.document.mimeType);
   const getIsPdf = () => pdfMimeType.includes(props.document.mimeType);
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, 'file'],
     queryFn: () => fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
   }));

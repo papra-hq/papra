@@ -3,7 +3,7 @@ import type { Component, JSX } from 'solid-js';
 import type { IntakeEmail } from '../intake-emails.types';
 import { safely } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
@@ -160,7 +160,7 @@ export const IntakeEmailsPage: Component = () => {
   const params = useParams();
   const { confirm } = useConfirmModal();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'intake-emails'],
     queryFn: () => fetchIntakeEmails({ organizationId: params.organizationId }),
   }));

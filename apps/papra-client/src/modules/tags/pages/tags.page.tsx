@@ -4,7 +4,7 @@ import type { Tag as TagType } from '../tags.types';
 import { safely } from '@corentinth/chisels';
 import { getValues } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
-import { createQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -208,7 +208,7 @@ export const TagsPage: Component = () => {
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
     queryFn: () => fetchTags({ organizationId: params.organizationId }),
   }));

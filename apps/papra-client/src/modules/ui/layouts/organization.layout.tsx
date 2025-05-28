@@ -3,7 +3,7 @@ import type { Component, ParentComponent } from 'solid-js';
 import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries, createQuery } from '@tanstack/solid-query';
+import { createQueries, useQuery } from '@tanstack/solid-query';
 import { get } from 'lodash-es';
 import { createEffect, on } from 'solid-js';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
@@ -148,7 +148,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
     queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));
