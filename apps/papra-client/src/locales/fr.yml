@@ -192,6 +192,7 @@ documents.list.no-results: Aucun document trouvé
 
 documents.tabs.info: Info
 documents.tabs.content: Contenu
+documents.tabs.activity: Activité
 documents.deleted.message: Ce document a été supprimé et sera supprimé définitivement dans {{ days }} jours.
 documents.actions.download: Télécharger
 documents.actions.open-in-new-tab: Ouvrir dans un nouvel onglet
@@ -245,6 +246,20 @@ trash.delete.confirm.label: Supprimer
 trash.delete.confirm.cancel: Annuler
 trash.deleted.success.title: Document supprimé
 trash.deleted.success.description: Le document a été supprimé définitivement.
+
+activity.document.created: Le document a été créé
+activity.document.updated.single: Le {{ field }} a été mis à jour
+activity.document.updated.multiple: Les {{ fields }} ont été mis à jour
+activity.document.updated: Le document a été mis à jour
+activity.document.deleted: Le document a été supprimé
+activity.document.restored: Le document a été restauré
+activity.document.tagged: Le tag {{ tag }} a été ajouté
+activity.document.untagged: Le tag {{ tag }} a été supprimé
+
+activity.document.user.name: par {{ name }}
+
+activity.load-more: Charger plus
+activity.no-more-activities: Aucune activité pour ce document
 
 # Tags
 
