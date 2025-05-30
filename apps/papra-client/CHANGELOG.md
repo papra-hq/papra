@@ -1,5 +1,19 @@
 # @papra/app-client
 
+## 0.6.0
+
+### Minor Changes
+
+- [#317](https://github.com/papra-hq/papra/pull/317) [`79c1d32`](https://github.com/papra-hq/papra/commit/79c1d3206b140cf8b3d33ef8bda6098dcf4c9c9c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added document activity log
+
+### Patch Changes
+
+- [#309](https://github.com/papra-hq/papra/pull/309) [`d4f72e8`](https://github.com/papra-hq/papra/commit/d4f72e889a4d39214de998942bc0eb88cd5cee3d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Disable "Manage subscription" from organization setting by default
+
+- [#308](https://github.com/papra-hq/papra/pull/308) [`759a3ff`](https://github.com/papra-hq/papra/commit/759a3ff713db8337061418b9c9b122b957479343) Thanks [@CorentinTh](https://github.com/CorentinTh)! - I18n: full support for French language
+
+- [#312](https://github.com/papra-hq/papra/pull/312) [`e5ef40f`](https://github.com/papra-hq/papra/commit/e5ef40f36c27ea25dc8a79ef2805d673761eec2a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an issue with the reset-password page navigation guard that prevented reset
+
 ## 0.5.1
 
 ## 0.5.0
