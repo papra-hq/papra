@@ -1,21 +1,15 @@
-import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
 import { createInMemoryLoggerTransport } from '@crowlog/logger';
 import { asc } from 'drizzle-orm';
 import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { createDocumentsRepository } from '../documents/documents.repository';
+import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
-import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
+import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
-import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
-import { createTagsRepository } from '../tags/tags.repository';
-import { createDummyTrackingServices } from '../tracking/tracking.services';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsTable } from './intake-emails.tables';
@@ -31,14 +25,14 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-        const documentsRepository = createDocumentsRepository({ db });
-        const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-        const subscriptionsRepository = createSubscriptionsRepository({ db });
-        const trackingServices = createDummyTrackingServices();
-        const taggingRulesRepository = createTaggingRulesRepository({ db });
-        const tagsRepository = createTagsRepository({ db });
-        const webhookRepository = createWebhookRepository({ db });
+
+        const createDocument = await createDocumentCreationUsecase({
+          db,
+          config: overrideConfig({
+            documentsStorage: { driver: 'in-memory' },
+            organizationPlans: { isFreePlanUnlimited: true },
+          }),
+        });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
@@ -48,14 +42,7 @@ describe('intake-emails usecases', () => {
             new File(['content2'], 'file2.txt', { type: 'text/plain' }),
           ],
           intakeEmailsRepository,
-          documentsRepository,
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          trackingServices,
-          taggingRulesRepository,
-          tagsRepository,
-          webhookRepository,
+          createDocument,
         });
 
         const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
@@ -78,29 +65,22 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-        const documentsRepository = createDocumentsRepository({ db });
-        const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-        const subscriptionsRepository = createSubscriptionsRepository({ db });
-        const trackingServices = createDummyTrackingServices();
-        const taggingRulesRepository = createTaggingRulesRepository({ db });
-        const tagsRepository = createTagsRepository({ db });
-        const webhookRepository = createWebhookRepository({ db });
+
+        const createDocument = await createDocumentCreationUsecase({
+          db,
+          config: overrideConfig({
+            documentsStorage: { driver: 'in-memory' },
+            organizationPlans: { isFreePlanUnlimited: true },
+          }),
+        });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
           recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
-          documentsRepository,
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          trackingServices,
+          createDocument,
           logger,
-          taggingRulesRepository,
-          tagsRepository,
-          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -116,29 +96,22 @@ describe('intake-emails usecases', () => {
         const { db } = await createInMemoryDatabase();
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-        const documentsRepository = createDocumentsRepository({ db });
-        const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-        const subscriptionsRepository = createSubscriptionsRepository({ db });
-        const trackingServices = createDummyTrackingServices();
-        const taggingRulesRepository = createTaggingRulesRepository({ db });
-        const tagsRepository = createTagsRepository({ db });
-        const webhookRepository = createWebhookRepository({ db });
+
+        const createDocument = await createDocumentCreationUsecase({
+          db,
+          config: overrideConfig({
+            documentsStorage: { driver: 'in-memory' },
+            organizationPlans: { isFreePlanUnlimited: true },
+          }),
+        });
 
         await ingestEmailForRecipient({
           fromAddress: 'foo@example.fr',
           recipientAddress: 'bar@example.fr',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
-          documentsRepository,
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          trackingServices,
-          taggingRulesRepository,
-          tagsRepository,
+          createDocument,
           logger,
-          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -159,29 +132,22 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-        const documentsRepository = createDocumentsRepository({ db });
-        const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-        const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-        const subscriptionsRepository = createSubscriptionsRepository({ db });
-        const trackingServices = createDummyTrackingServices();
-        const taggingRulesRepository = createTaggingRulesRepository({ db });
-        const tagsRepository = createTagsRepository({ db });
-        const webhookRepository = createWebhookRepository({ db });
+
+        const createDocument = await createDocumentCreationUsecase({
+          db,
+          config: overrideConfig({
+            documentsStorage: { driver: 'in-memory' },
+            organizationPlans: { isFreePlanUnlimited: true },
+          }),
+        });
 
         await ingestEmailForRecipient({
           fromAddress: 'a-non-allowed-adress@example.fr',
           recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
-          documentsRepository,
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          trackingServices,
-          taggingRulesRepository,
-          tagsRepository,
+          createDocument,
           logger,
-          webhookRepository,
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
@@ -213,14 +179,14 @@ describe('intake-emails usecases', () => {
       });
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const trackingServices = createDummyTrackingServices();
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config: overrideConfig({
+          documentsStorage: { driver: 'in-memory' },
+          organizationPlans: { isFreePlanUnlimited: true },
+        }),
+      });
 
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
@@ -229,14 +195,7 @@ describe('intake-emails usecases', () => {
           new File(['content1'], 'file1.txt', { type: 'text/plain' }),
         ],
         intakeEmailsRepository,
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
+        createDocument,
       });
 
       const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));

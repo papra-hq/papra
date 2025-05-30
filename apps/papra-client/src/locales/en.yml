@@ -192,6 +192,7 @@ documents.list.no-results: No documents found
 
 documents.tabs.info: Info
 documents.tabs.content: Content
+documents.tabs.activity: Activity
 documents.deleted.message: This document has been deleted and will be permanently removed in {{ days }} days.
 documents.actions.download: Download
 documents.actions.open-in-new-tab: Open in new tab
@@ -245,6 +246,20 @@ trash.delete.confirm.label: Delete
 trash.delete.confirm.cancel: Cancel
 trash.deleted.success.title: Document deleted
 trash.deleted.success.description: The document has been permanently deleted.
+
+activity.document.created: The document has been created
+activity.document.updated.single: The {{ field }} has been updated
+activity.document.updated.multiple: The {{ fields }} have been updated
+activity.document.updated: The document has been updated
+activity.document.deleted: The document has been deleted
+activity.document.restored: The document has been restored
+activity.document.tagged: Tag {{ tag }} has been added
+activity.document.untagged: Tag {{ tag }} has been removed
+
+activity.document.user.name: by {{ name }}
+
+activity.load-more: Load more
+activity.no-more-activities: No more activities for this document
 
 # Tags
 

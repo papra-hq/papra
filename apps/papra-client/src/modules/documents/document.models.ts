@@ -1,3 +1,4 @@
+import type { DocumentActivityEvent } from './documents.types';
 import { addDays, differenceInDays } from 'date-fns';
 
 export const iconByFileType = {
@@ -78,4 +79,17 @@ export function getDocumentNameExtension({ name }: { name: string }) {
   }
 
   return dotSplittedName[dotCount];
+}
+
+export const documentActivityIcon: Record<DocumentActivityEvent, string> = {
+  created: 'i-tabler-file-plus',
+  updated: 'i-tabler-file-diff',
+  deleted: 'i-tabler-file-x',
+  restored: 'i-tabler-file-check',
+  tagged: 'i-tabler-tag',
+  untagged: 'i-tabler-tag-off',
+} as const;
+
+export function getDocumentActivityIcon({ event }: { event: DocumentActivityEvent }) {
+  return documentActivityIcon[event] ?? 'i-tabler-file';
 }

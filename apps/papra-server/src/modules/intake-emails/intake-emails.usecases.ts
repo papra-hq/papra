@@ -1,16 +1,10 @@
-import type { DocumentsRepository } from '../documents/documents.repository';
-import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
+import type { CreateDocumentUsecase } from '../documents/documents.usecases';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
-import type { TagsRepository } from '../tags/tags.repository';
-import type { TrackingServices } from '../tracking/tracking.services';
-import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
 import { safely } from '@corentinth/chisels';
-import { createDocument } from '../documents/documents.usecases';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
 import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } from './intake-emails.errors';
@@ -48,27 +42,13 @@ export function processIntakeEmailIngestion({
   recipientsAddresses,
   attachments,
   intakeEmailsRepository,
-  documentsRepository,
-  documentsStorageService,
-  plansRepository,
-  subscriptionsRepository,
-  trackingServices,
-  taggingRulesRepository,
-  tagsRepository,
-  webhookRepository,
+  createDocument,
 }: {
   fromAddress: string;
   recipientsAddresses: string[];
   attachments: File[];
   intakeEmailsRepository: IntakeEmailsRepository;
-  documentsRepository: DocumentsRepository;
-  documentsStorageService: DocumentStorageService;
-  plansRepository: PlansRepository;
-  subscriptionsRepository: SubscriptionsRepository;
-  trackingServices: TrackingServices;
-  taggingRulesRepository: TaggingRulesRepository;
-  tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  createDocument: CreateDocumentUsecase;
 }) {
   return Promise.all(
     recipientsAddresses.map(recipientAddress => safely(
@@ -77,14 +57,7 @@ export function processIntakeEmailIngestion({
         recipientAddress,
         attachments,
         intakeEmailsRepository,
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
+        createDocument,
       }),
     )),
   );
@@ -95,29 +68,15 @@ export async function ingestEmailForRecipient({
   recipientAddress,
   attachments,
   intakeEmailsRepository,
-  documentsRepository,
-  documentsStorageService,
   logger = createLogger({ namespace: 'intake-emails.ingest' }),
-  plansRepository,
-  trackingServices,
-  subscriptionsRepository,
-  taggingRulesRepository,
-  tagsRepository,
-  webhookRepository,
+  createDocument,
 }: {
   fromAddress: string;
   recipientAddress: string;
   attachments: File[];
   intakeEmailsRepository: IntakeEmailsRepository;
-  documentsRepository: DocumentsRepository;
-  documentsStorageService: DocumentStorageService;
-  plansRepository: PlansRepository;
-  subscriptionsRepository: SubscriptionsRepository;
-  trackingServices: TrackingServices;
-  taggingRulesRepository: TaggingRulesRepository;
-  tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
   logger?: Logger;
+  createDocument: CreateDocumentUsecase;
 }) {
   const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
 
@@ -150,14 +109,6 @@ export async function ingestEmailForRecipient({
     const [result, error] = await safely(createDocument({
       file,
       organizationId: intakeEmail.organizationId,
-      documentsStorageService,
-      documentsRepository,
-      plansRepository,
-      subscriptionsRepository,
-      trackingServices,
-      taggingRulesRepository,
-      tagsRepository,
-      webhookRepository,
     }));
 
     if (error) {

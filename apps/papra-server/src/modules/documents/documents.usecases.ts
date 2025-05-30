@@ -7,6 +7,7 @@ import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repo
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { WebhookRepository } from '../webhooks/webhook.repository';
+import type { DocumentActivityRepository } from './document-activity/document-activity.repository';
 import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
@@ -23,6 +24,8 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createTrackingServices } from '../tracking/tracking.services';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { triggerWebhooks } from '../webhooks/webhook.usecases';
+import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
+import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -56,6 +59,7 @@ export async function createDocument({
   taggingRulesRepository,
   tagsRepository,
   webhookRepository,
+  documentActivityRepository,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
   file: File;
@@ -70,6 +74,7 @@ export async function createDocument({
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;
 }) {
   const {
@@ -115,6 +120,13 @@ export async function createDocument({
       logger,
     });
 
+  deferRegisterDocumentActivityLog({
+    documentId: document.id,
+    event: 'created',
+    userId,
+    documentActivityRepository,
+  });
+
   await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
 
   await triggerWebhooks({
@@ -134,38 +146,32 @@ export async function createDocument({
 }
 
 export type CreateDocumentUsecase = Awaited<ReturnType<typeof createDocumentCreationUsecase>>;
+export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>[0], 'file' | 'userId' | 'organizationId'>;
+
 export async function createDocumentCreationUsecase({
   db,
   config,
-  logger = createLogger({ namespace: 'documents:usecases' }),
-  generateDocumentId = generateDocumentIdImpl,
-  documentsStorageService,
+  ...initialDeps
 }: {
   db: Database;
   config: Config;
-  logger?: Logger;
-  documentsStorageService?: DocumentStorageService;
-  generateDocumentId?: () => string;
-}) {
+} & Partial<DocumentUsecaseDependencies>) {
   const deps = {
-    documentsRepository: createDocumentsRepository({ db }),
-    documentsStorageService: documentsStorageService ?? await createDocumentStorageService({ config }),
-    plansRepository: createPlansRepository({ config }),
-    subscriptionsRepository: createSubscriptionsRepository({ db }),
-    trackingServices: createTrackingServices({ config }),
-    taggingRulesRepository: createTaggingRulesRepository({ db }),
-    tagsRepository: createTagsRepository({ db }),
-    webhookRepository: createWebhookRepository({ db }),
-    generateDocumentId,
-    logger,
+    documentsRepository: initialDeps.documentsRepository ?? createDocumentsRepository({ db }),
+    documentsStorageService: initialDeps.documentsStorageService ?? await createDocumentStorageService({ config }),
+    plansRepository: initialDeps.plansRepository ?? createPlansRepository({ config }),
+    subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
+    trackingServices: initialDeps.trackingServices ?? createTrackingServices({ config }),
+    taggingRulesRepository: initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
+    tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
+    webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
+    documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
+
+    generateDocumentId: initialDeps.generateDocumentId,
+    logger: initialDeps.logger,
   };
 
-  return async ({ file, userId, organizationId }: { file: File; userId?: string; organizationId: string }) => createDocument({
-    file,
-    userId,
-    organizationId,
-    ...deps,
-  });
+  return async (args: { file: File; userId?: string; organizationId: string }) => createDocument({ ...args, ...deps });
 }
 
 async function handleExistingDocument({

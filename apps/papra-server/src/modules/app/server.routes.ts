@@ -1,6 +1,7 @@
 import type { RouteDefinitionContext } from './server.types';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
+import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
@@ -27,4 +28,5 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerApiKeysRoutes(context);
   registerWebhooksRoutes(context);
   registerInvitationsRoutes(context);
+  registerDocumentActivityRoutes(context);
 }

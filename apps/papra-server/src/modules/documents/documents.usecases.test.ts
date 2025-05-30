@@ -1,19 +1,15 @@
-import type { Config } from '../config/config.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { createPlansRepository } from '../plans/plans.repository';
+import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
-import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
-import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
-import { createDummyTrackingServices } from '../tracking/tracking.services';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocument } from './documents.usecases';
+import { createDocumentCreationUsecase } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
 describe('documents usecases', () => {
@@ -25,15 +21,18 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const trackingServices = createDummyTrackingServices();
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
-      const generateDocumentId = () => 'doc_1';
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => 'doc_1',
+        documentsStorageService,
+      });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
@@ -43,15 +42,6 @@ describe('documents usecases', () => {
         file,
         userId,
         organizationId,
-        documentsRepository,
-        documentsStorageService,
-        generateDocumentId,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
       });
 
       expect(document).to.include({
@@ -86,16 +76,20 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const trackingServices = createDummyTrackingServices();
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      const documentsStorageService = await createDocumentStorageService({ config });
+
       let documentIdIndex = 1;
-      const generateDocumentId = () => `doc_${documentIdIndex++}`;
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => `doc_${documentIdIndex++}`,
+        documentsStorageService,
+      });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
@@ -105,15 +99,6 @@ describe('documents usecases', () => {
         file,
         userId,
         organizationId,
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        generateDocumentId,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
       });
 
       expect(document1).to.include({
@@ -134,15 +119,6 @@ describe('documents usecases', () => {
           file,
           userId,
           organizationId,
-          documentsRepository,
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          generateDocumentId,
-          trackingServices,
-          taggingRulesRepository,
-          tagsRepository,
-          webhookRepository,
         }),
       ).rejects.toThrow(
         createDocumentAlreadyExistsError(),
@@ -202,26 +178,20 @@ describe('documents usecases', () => {
         ],
       });
 
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const trackingServices = createDummyTrackingServices();
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+      });
+
       // 3. Re-create the document
       const { document: documentRestored } = await createDocument({
         file: new File(['hello world'], 'file-2.txt', { type: 'text/plain' }),
         organizationId: 'organization-1',
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
       });
 
       expect(documentRestored).to.deep.include({
@@ -255,15 +225,25 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config: { documentsStorage: { driver: 'in-memory' } } as Config });
-      const plansRepository = createPlansRepository({ config: { organizationPlans: { isFreePlanUnlimited: true } } as Config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const trackingServices = createDummyTrackingServices();
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
-      const generateDocumentId = () => 'doc_1';
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => 'doc_1',
+        documentsRepository: {
+          ...documentsRepository,
+          saveOrganizationDocument: async () => {
+            throw new Error('Macron, explosion!');
+          },
+        },
+      });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
@@ -274,20 +254,6 @@ describe('documents usecases', () => {
           file,
           userId,
           organizationId,
-          documentsRepository: {
-            ...documentsRepository,
-            saveOrganizationDocument: async () => {
-              throw new Error('Macron, explosion!');
-            },
-          },
-          documentsStorageService,
-          plansRepository,
-          subscriptionsRepository,
-          generateDocumentId,
-          trackingServices,
-          taggingRulesRepository,
-          tagsRepository,
-          webhookRepository,
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 
@@ -298,6 +264,57 @@ describe('documents usecases', () => {
       await expect(
         documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' }),
       ).rejects.toThrow('File not found');
+    });
+
+    test('when a document is created by a user, a document activity log is registered with the user id', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      let documentIdIndex = 1;
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => `doc_${documentIdIndex++}`,
+      });
+
+      await createDocument({
+        file: new File(['content-1'], 'file.txt', { type: 'text/plain' }),
+        userId: 'user-1',
+        organizationId: 'organization-1',
+      });
+
+      await createDocument({
+        file: new File(['content-2'], 'file.txt', { type: 'text/plain' }),
+        organizationId: 'organization-1',
+      });
+
+      await nextTick();
+
+      const documentActivityLogRecords = await db.select().from(documentActivityLogTable);
+
+      expect(documentActivityLogRecords.length).to.eql(2);
+
+      expect(documentActivityLogRecords[0]).to.deep.include({
+        event: 'created',
+        eventData: null,
+        userId: 'user-1',
+        documentId: 'doc_1',
+      });
+
+      expect(documentActivityLogRecords[1]).to.deep.include({
+        event: 'created',
+        eventData: null,
+        userId: null,
+        documentId: 'doc_2',
+      });
     });
   });
 });

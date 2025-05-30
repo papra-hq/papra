@@ -43,6 +43,13 @@
       "when": 1747575029264,
       "tag": "0005_organizations-invitations-improvement",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1748554484124,
+      "tag": "0006_document-activity-log",
+      "breakpoints": true
     }
   ]
 }

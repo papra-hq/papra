@@ -2,6 +2,8 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createDocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
+import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
 import { documentIdSchema } from '../documents/documents.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
@@ -158,10 +160,19 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       await tagsRepository.addTagToDocument({ tagId, documentId });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'tagged',
+        userId,
+        documentActivityRepository,
+        tagId,
+      });
 
       return context.body(null, 204);
     },
@@ -185,10 +196,19 @@ function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       await tagsRepository.removeTagFromDocument({ tagId, documentId });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'untagged',
+        userId,
+        documentActivityRepository,
+        tagId,
+      });
 
       return context.body(null, 204);
     },

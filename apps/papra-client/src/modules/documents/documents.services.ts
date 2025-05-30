@@ -1,5 +1,5 @@
 import type { AsDto } from '../shared/http/http-client.types';
-import type { Document } from './documents.types';
+import type { Document, DocumentActivity } from './documents.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates, getFormData } from '../shared/http/http-client.models';
 
@@ -209,5 +209,30 @@ export async function updateDocument({
 
   return {
     document: coerceDates(document),
+  };
+}
+
+export async function fetchDocumentActivities({
+  documentId,
+  organizationId,
+  pageIndex,
+  pageSize,
+}: {
+  documentId: string;
+  organizationId: string;
+  pageIndex: number;
+  pageSize: number;
+}) {
+  const { activities } = await apiClient<{ activities: AsDto<DocumentActivity>[] }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/activity`,
+    query: {
+      pageIndex,
+      pageSize,
+    },
+  });
+
+  return {
+    activities: activities.map(coerceDates),
   };
 }

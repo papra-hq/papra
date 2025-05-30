@@ -1,14 +1,17 @@
 import type { Component, JSX } from 'solid-js';
+import type { DocumentActivity } from '../documents.types';
 import { formatBytes, safely } from '@corentinth/chisels';
-import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries } from '@tanstack/solid-query';
-import { createSignal, For, Show, Suspense } from 'solid-js';
+import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
+import { createQueries, useInfiniteQuery } from '@tanstack/solid-query';
+import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
 import { queryClient } from '@/modules/shared/query/query-client';
+import { cn } from '@/modules/shared/style/cn';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
+import { TagLink } from '@/modules/tags/components/tag.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { addTagToDocument, removeTagFromDocument } from '@/modules/tags/tags.services';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
@@ -20,9 +23,9 @@ import { TextArea } from '@/modules/ui/components/textarea';
 import { TextFieldRoot } from '@/modules/ui/components/textfield';
 import { DocumentPreview } from '../components/document-preview.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
-import { getDaysBeforePermanentDeletion } from '../document.models';
+import { getDaysBeforePermanentDeletion, getDocumentActivityIcon } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentFile, updateDocument } from '../documents.services';
+import { fetchDocument, fetchDocumentActivities, fetchDocumentFile, updateDocument } from '../documents.services';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
@@ -51,14 +54,78 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
   );
 };
 
+const ActivityItem: Component<{ activity: DocumentActivity }> = (props) => {
+  const { t, te } = useI18n();
+  const params = useParams();
+
+  return (
+    <div class="border-b py-3 flex items-center gap-2">
+      <div>
+        <div class={cn(getDocumentActivityIcon({ event: props.activity.event }), 'size-6 text-muted-foreground')} />
+      </div>
+      <div>
+        <Switch fallback={<span class="text-sm">{t(`activity.document.${props.activity.event}`)}</span>}>
+          <Match when={['tagged', 'untagged'].includes(props.activity.event)}>
+            <span class="text-sm flex items-baseline gap-1">
+              {te(`activity.document.${props.activity.event}`, { tag: props.activity.tag ? <TagLink {...props.activity.tag} organizationId={params.organizationId} class="text-xs" /> : undefined })}
+            </span>
+          </Match>
+
+          <Match when={props.activity.event === 'updated' && (props.activity.eventData.updatedFields as string[]).length === 1}>
+            <span class="text-sm flex items-baseline gap-1">
+              {te(`activity.document.updated.single`, {
+                field: <span class="font-bold">{(props.activity.eventData.updatedFields as string[])[0]}</span>,
+              })}
+            </span>
+          </Match>
+
+          <Match when={props.activity.event === 'updated' && (props.activity.eventData.updatedFields as string[]).length > 1}>
+            <span class="text-sm flex items-baseline gap-1">
+              {te(`activity.document.updated.multiple`, { fields: (props.activity.eventData.updatedFields as string[]).join(', ') })}
+            </span>
+          </Match>
+
+        </Switch>
+
+        <div class="flex items-center gap-1 text-xs text-muted-foreground">
+          <span title={props.activity.createdAt.toLocaleString()}>{timeAgo({ date: props.activity.createdAt })}</span>
+          <Show when={props.activity.user}>
+            {getUser => (
+              <span>{te('activity.document.user.name', { name: <A href={`/organizations/${params.organizationId}/members`} class="underline hover:text-primary transition">{getUser().name}</A> })}</span>
+            )}
+          </Show>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const tabs = ['info', 'content', 'activity'] as const;
+type Tab = typeof tabs[number];
+
 export const DocumentPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { deleteDocument } = useDeleteDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
   const { openRenameDialog } = useRenameDocumentDialog();
+
+  const getInitialTab = (): Tab => {
+    const tab = searchParams.tab;
+    if (tab && typeof tab === 'string' && tabs.includes(tab as Tab)) {
+      return tab as Tab;
+    }
+    return 'info';
+  };
+
+  const [getTab, setTab] = createSignal<Tab>(getInitialTab());
+
+  createEffect(() => {
+    setSearchParams({ tab: getTab() }, { replace: true });
+  });
 
   const queries = createQueries(() => ({
     queries: [
@@ -71,6 +138,30 @@ export const DocumentPage: Component = () => {
         queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
       },
     ],
+  }));
+
+  const activityPageSize = 20;
+  const activityQuery = useInfiniteQuery(() => ({
+    enabled: getTab() === 'activity',
+    queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'activity'],
+    queryFn: async ({ pageParam }) => {
+      const { activities } = await fetchDocumentActivities({
+        documentId: params.documentId,
+        organizationId: params.organizationId,
+        pageIndex: pageParam,
+        pageSize: activityPageSize,
+      });
+
+      return activities;
+    },
+    getNextPageParam: (lastPage, _pages, lastPageParam) => {
+      if (lastPage.length < activityPageSize) {
+        return undefined;
+      }
+
+      return lastPageParam + 1;
+    },
+    initialPageParam: 0,
   }));
 
   const deleteDoc = async () => {
@@ -243,10 +334,11 @@ export const DocumentPage: Component = () => {
 
                   <Separator class="my-3" />
 
-                  <Tabs defaultValue="info" class="w-full">
+                  <Tabs value={getTab()} onChange={setTab} class="w-full">
                     <TabsList class="w-full h-8">
                       <TabsTrigger value="info">{t('documents.tabs.info')}</TabsTrigger>
                       <TabsTrigger value="content">{t('documents.tabs.content')}</TabsTrigger>
+                      <TabsTrigger value="activity">{t('documents.tabs.activity')}</TabsTrigger>
                       <TabsIndicator />
                     </TabsList>
 
@@ -340,6 +432,40 @@ export const DocumentPage: Component = () => {
                             </Button>
                           </div>
                         </div>
+                      </Show>
+                    </TabsContent>
+                    <TabsContent value="activity">
+                      <Show when={activityQuery.data?.pages}>
+                        {getActivitiesPages => (
+                          <div class="flex flex-col">
+                            <For each={getActivitiesPages() ?? []}>
+                              {activities => (
+                                <For each={activities}>
+                                  {activity => (
+                                    <ActivityItem activity={activity} />
+                                  )}
+                                </For>
+                              )}
+                            </For>
+
+                            <Show
+                              when={activityQuery.hasNextPage}
+                              fallback={(
+                                <div class="text-sm text-muted-foreground text-center py-4">
+                                  {t('activity.no-more-activities')}
+                                </div>
+                              )}
+                            >
+                              <Button
+                                variant="outline"
+                                onClick={() => activityQuery.fetchNextPage()}
+                                isLoading={activityQuery.isFetchingNextPage}
+                              >
+                                {t('activity.load-more')}
+                              </Button>
+                            </Show>
+                          </div>
+                        )}
                       </Show>
                     </TabsContent>
                   </Tabs>

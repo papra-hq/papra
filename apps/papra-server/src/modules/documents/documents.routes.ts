@@ -6,19 +6,17 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
-import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
-import { createTagsRepository } from '../tags/tags.repository';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { triggerWebhooks } from '../webhooks/webhook.usecases';
+import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
+import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
-import { createDocument, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
@@ -89,26 +87,16 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
         });
       }
 
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
-      const plansRepository = createPlansRepository({ config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        trackingServices,
+      });
 
       const { document } = await createDocument({
         file,
         userId,
         organizationId,
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
       });
 
       return context.json({
@@ -245,6 +233,8 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
       const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
@@ -255,6 +245,13 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
         organizationId,
         event: 'document:deleted',
         payload: { documentId, organizationId },
+      });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'deleted',
+        userId,
+        documentActivityRepository,
       });
 
       return context.json({
@@ -279,6 +276,7 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -289,6 +287,13 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
       }
 
       await documentsRepository.restoreDocument({ documentId, organizationId });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'restored',
+        userId,
+        documentActivityRepository,
+      });
 
       return context.body(null, 204);
     },
@@ -469,6 +474,7 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
@@ -477,6 +483,16 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
         documentId,
         organizationId,
         ...updateData,
+      });
+
+      deferRegisterDocumentActivityLog({
+        documentId,
+        event: 'updated',
+        userId,
+        documentActivityRepository,
+        eventData: {
+          updatedFields: Object.entries(updateData).filter(([_, value]) => value !== undefined).map(([key]) => key),
+        },
       });
 
       return context.json({ document });

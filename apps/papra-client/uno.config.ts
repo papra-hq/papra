@@ -9,7 +9,7 @@ import {
 } from 'unocss';
 import { presetAnimations } from 'unocss-preset-animations';
 import { ssoProviders } from './src/modules/auth/auth.constants';
-import { iconByFileType } from './src/modules/documents/document.models';
+import { documentActivityIcon, iconByFileType } from './src/modules/documents/document.models';
 
 export default defineConfig({
   presets: [
@@ -113,7 +113,10 @@ export default defineConfig({
     },
   },
   safelist: [
-    ...uniq(values(iconByFileType)),
-    ...(ssoProviders.map(p => p.icon)),
+    ...uniq([
+      ...values(iconByFileType),
+      ...values(documentActivityIcon),
+      ...(ssoProviders.map(p => p.icon)),
+    ]),
   ],
 });

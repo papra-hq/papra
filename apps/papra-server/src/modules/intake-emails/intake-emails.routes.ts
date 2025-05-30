@@ -4,8 +4,7 @@ import { z } from 'zod';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { createDocumentsRepository } from '../documents/documents.repository';
-import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
+import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
@@ -15,9 +14,6 @@ import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
-import { createTagsRepository } from '../tags/tags.repository';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
@@ -191,27 +187,19 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
       }
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
-      const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
-      const plansRepository = createPlansRepository({ config });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const taggingRulesRepository = createTaggingRulesRepository({ db });
-      const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config,
+        trackingServices,
+      });
 
       await processIntakeEmailIngestion({
         fromAddress: email.from.address,
         recipientsAddresses: email.to.map(({ address }) => address),
         attachments,
         intakeEmailsRepository,
-        documentsRepository,
-        documentsStorageService,
-        plansRepository,
-        subscriptionsRepository,
-        trackingServices,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
+        createDocument,
       });
 
       return context.body(null, 202);
