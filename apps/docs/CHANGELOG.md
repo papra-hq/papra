@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.4.1
+
+### Patch Changes
+
+- [#320](https://github.com/papra-hq/papra/pull/320) [`8ccdb74`](https://github.com/papra-hq/papra/commit/8ccdb748349a3cacf38f032fd4d3beebce202487) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added base url configuration in docker compose generator
+
 ## 0.4.0
 
 ### Minor Changes
