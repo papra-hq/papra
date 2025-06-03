@@ -192,10 +192,18 @@ export const MembersPage: Component = () => {
             </Tooltip>
           )}
         >
-          <Button as={A} href={`/organizations/${params.organizationId}/invite`}>
-            <div class="i-tabler-plus size-4 mr-2" />
-            {t('organizations.members.invite-member')}
-          </Button>
+          <div class="flex items-center gap-2">
+            <Button as={A} href={`/organizations/${params.organizationId}/invitations`} variant="outline">
+              <div class="i-tabler-mail size-4 mr-2" />
+              {t('organizations.invitations.title')}
+            </Button>
+
+            <Button as={A} href={`/organizations/${params.organizationId}/invite`}>
+              <div class="i-tabler-plus size-4 mr-2" />
+              {t('organizations.members.invite-member')}
+            </Button>
+
+          </div>
         </Show>
       </div>
 

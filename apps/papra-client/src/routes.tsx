@@ -18,6 +18,7 @@ import { InvitationsPage } from './modules/invitations/pages/invitations.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
+import { InvitationsListPage } from './modules/organizations/pages/invitations-list.page';
 import { InviteMemberPage } from './modules/organizations/pages/invite-member.page';
 import { MembersPage } from './modules/organizations/pages/members.page';
 import { OrganizationPage } from './modules/organizations/pages/organization.page';
@@ -138,6 +139,10 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/invite',
                 component: InviteMemberPage,
+              },
+              {
+                path: '/invitations',
+                component: InvitationsListPage,
               },
 
             ],

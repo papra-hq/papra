@@ -42,8 +42,6 @@ function createTaskScheduler({
       },
     );
 
-    logger.info({ taskName: taskDefinition.taskName, cronSchedule }, 'Task registered');
-
     return { job: task, taskName: taskDefinition.taskName };
   }).filter(Boolean);
 
@@ -53,14 +51,14 @@ function createTaskScheduler({
       start() {
         scheduledTasks.forEach(({ taskName, job }) => {
           job.start();
-          logger.info({ taskName }, 'Task scheduled');
+          logger.debug({ taskName }, 'Task scheduled');
         });
       },
 
       stop() {
         scheduledTasks.forEach(({ taskName, job }) => {
           job.stop();
-          logger.info({ taskName }, 'Task unscheduled');
+          logger.debug({ taskName }, 'Task unscheduled');
         });
       },
     },

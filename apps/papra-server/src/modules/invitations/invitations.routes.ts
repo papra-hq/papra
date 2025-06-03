@@ -4,6 +4,7 @@ import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
+import { resendOrganizationInvitation } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { createUsersRepository } from '../users/users.repository';
@@ -16,6 +17,7 @@ export function registerInvitationsRoutes(context: RouteDefinitionContext) {
   setupRejectInvitationRoute(context);
   setupCancelInvitationRoute(context);
   setupGetPendingInvitationsCountRoute(context);
+  setupResendInvitationRoute(context);
 }
 
 function setupGetInvitationsRoute({ app, db }: RouteDefinitionContext) {
@@ -167,6 +169,29 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
       }
 
       await organizationsRepository.updateOrganizationInvitation({ invitationId, status: ORGANIZATION_INVITATION_STATUS.CANCELLED });
+
+      return context.body(null, 204);
+    },
+  );
+}
+
+function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDefinitionContext) {
+  app.post(
+    '/api/invitations/:invitationId/resend',
+    requireAuthentication(),
+    async (context) => {
+      const { invitationId } = context.req.param();
+      const { userId } = getUser({ context });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await resendOrganizationInvitation({
+        invitationId,
+        userId,
+        organizationsRepository,
+        emailsServices,
+        config,
+      });
 
       return context.body(null, 204);
     },

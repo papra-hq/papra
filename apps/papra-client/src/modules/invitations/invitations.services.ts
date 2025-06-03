@@ -25,13 +25,6 @@ export async function fetchPendingInvitationsCount() {
   return { pendingInvitationsCount };
 }
 
-export async function cancelInvitation({ invitationId }: { invitationId: string }) {
-  await apiClient({
-    path: `/api/invitations/${invitationId}`,
-    method: 'DELETE',
-  });
-}
-
 export async function acceptInvitation({ invitationId }: { invitationId: string }) {
   await apiClient({
     path: `/api/invitations/${invitationId}/accept`,
@@ -42,6 +35,20 @@ export async function acceptInvitation({ invitationId }: { invitationId: string 
 export async function rejectInvitation({ invitationId }: { invitationId: string }) {
   await apiClient({
     path: `/api/invitations/${invitationId}/reject`,
+    method: 'POST',
+  });
+}
+
+export async function resendInvitation({ invitationId }: { invitationId: string }) {
+  await apiClient({
+    path: `/api/invitations/${invitationId}/resend`,
+    method: 'POST',
+  });
+}
+
+export async function cancelInvitation({ invitationId }: { invitationId: string }) {
+  await apiClient({
+    path: `/api/invitations/${invitationId}/cancel`,
     method: 'POST',
   });
 }

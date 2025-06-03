@@ -156,6 +156,7 @@ organizations.members.update-role.success: Rôle du membre mis à jour
 organizations.members.table.headers.name: Nom
 organizations.members.table.headers.email: Email
 organizations.members.table.headers.role: Rôle
+# organizations.members.table.headers.created: Created
 organizations.members.table.headers.actions: Actions
 
 organizations.invite-member.title: Inviter un membre
@@ -169,11 +170,32 @@ organizations.invite-member.success.message: Membre invité
 organizations.invite-member.success.description: L'email a été invité à l'organisation.
 organizations.invite-member.error.message: Échec de l'invitation du membre
 
+organizations.invitations.title: Invitations
+organizations.invitations.description: Gérez les invitations de votre organisation.
+organizations.invitations.list.cta: Inviter un membre
+organizations.invitations.list.empty.title: Aucune invitation en attente
+organizations.invitations.list.empty.description: Vous n'avez pas été invité à aucune organisation.
+organizations.invitations.status.pending: En attente
+organizations.invitations.status.accepted: Accepté
+organizations.invitations.status.rejected: Refusé
+organizations.invitations.status.expired: Expiré
+organizations.invitations.status.cancelled: Annulé
+organizations.invitations.resend: Renvoyer l'invitation
+organizations.invitations.cancel.title: Annuler l'invitation
+organizations.invitations.cancel.description: Êtes-vous sûr de vouloir annuler cette invitation ?
+organizations.invitations.cancel.confirm: Annuler l'invitation
+organizations.invitations.cancel.cancel: Annuler
+organizations.invitations.resend.title: Renvoyer l'invitation
+organizations.invitations.resend.description: Êtes-vous sûr de vouloir renvoyer cette invitation ? Cela enverra un nouvel email à l'invité.
+organizations.invitations.resend.confirm: Renvoyer l'invitation
+organizations.invitations.resend.cancel: Annuler
+
 invitations.list.title: Invitations
 invitations.list.description: Gérez les invitations de votre organisation.
 invitations.list.empty.title: Aucune invitation en attente
 invitations.list.empty.description: Vous n'avez pas été invité à aucune organisation.
 invitations.list.headers.organization: Organisation
+# invitations.list.headers.status: Status
 invitations.list.headers.created: Créé
 invitations.list.headers.actions: Actions
 invitations.list.actions.accept: Accepter

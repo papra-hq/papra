@@ -21,6 +21,7 @@ export async function registerOrganizationsRoutes(context: RouteDefinitionContex
   setupUpdateOrganizationMemberRoute(context);
   setupInviteOrganizationMemberRoute(context);
   setupGetMembershipRoute(context);
+  setupGetOrganizationInvitationsRoute(context);
 }
 
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
@@ -267,6 +268,32 @@ function setupInviteOrganizationMemberRoute({ app, db, config, emailsServices }:
       });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupGetOrganizationInvitationsRoute({ app, db }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/:organizationId/members/invitations',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { member } = await organizationsRepository.getOrganizationMemberByUserId({ organizationId, userId });
+
+      if (!member || ![ORGANIZATION_ROLES.ADMIN, ORGANIZATION_ROLES.OWNER].includes(member.role)) {
+        throw createForbiddenError();
+      }
+
+      const { invitations } = await organizationsRepository.getOrganizationInvitations({ organizationId });
+
+      return context.json({ invitations });
     },
   );
 }

@@ -36,7 +36,7 @@ function defineTask({
     const startedAt = getNow();
 
     try {
-      logger.info({ taskName, startedAt }, 'Task started');
+      logger.debug({ taskName, startedAt }, 'Task started');
 
       await handler({ ...handlerArgs, logger, now: getNow() });
 

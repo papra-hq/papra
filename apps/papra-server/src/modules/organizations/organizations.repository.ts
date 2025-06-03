@@ -2,11 +2,12 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { addDays, startOfDay } from 'date-fns';
-import { and, count, eq, getTableColumns, gte } from 'drizzle-orm';
+import { and, count, eq, getTableColumns, gte, lte } from 'drizzle-orm';
 import { omit } from 'lodash-es';
 import { omitUndefined } from '../shared/utils';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
+import { ensureInvitationStatus } from './organizations.repository.models';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 
 export type OrganizationsRepository = ReturnType<typeof createOrganizationsRepository>;
@@ -38,6 +39,8 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getPendingInvitationsCount,
       getInvitationForEmailAndOrganization,
       getOrganizationMemberByEmail,
+      getOrganizationInvitations,
+      updateExpiredPendingInvitationsStatus,
     },
     { db },
   );
@@ -282,16 +285,17 @@ async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { u
   };
 }
 
-async function getPendingOrganizationInvitationsForEmail({ email, db }: { email: string; db: Database }) {
+async function getPendingOrganizationInvitationsForEmail({ email, db, now = new Date() }: { email: string; db: Database; now?: Date }) {
   const rawInvitations = await db
     .select()
     .from(organizationInvitationsTable)
     .leftJoin(organizationsTable, eq(organizationInvitationsTable.organizationId, organizationsTable.id))
     .where(
       and(
-
         eq(organizationInvitationsTable.email, email),
         eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+        // To ensure we don't count just expired invitations that haven't been marked as expired yet
+        gte(organizationInvitationsTable.expiresAt, now),
       ),
     );
 
@@ -305,7 +309,7 @@ async function getPendingOrganizationInvitationsForEmail({ email, db }: { email:
   };
 }
 
-async function getOrganizationInvitationById({ invitationId, db }: { invitationId: string; db: Database }) {
+async function getOrganizationInvitationById({ invitationId, db, now = new Date() }: { invitationId: string; db: Database; now?: Date }) {
   const [invitation] = await db
     .select()
     .from(organizationInvitationsTable)
@@ -314,15 +318,23 @@ async function getOrganizationInvitationById({ invitationId, db }: { invitationI
     );
 
   return {
-    invitation,
+    invitation: ensureInvitationStatus({ invitation, now }),
   };
 }
 
-async function updateOrganizationInvitation({ invitationId, status, db }: { invitationId: string; status: OrganizationInvitationStatus; db: Database }) {
-  await db.update(organizationInvitationsTable).set({ status }).where(eq(organizationInvitationsTable.id, invitationId));
+async function updateOrganizationInvitation({ invitationId, status, expiresAt, db }: { invitationId: string; status: OrganizationInvitationStatus; expiresAt?: Date; db: Database }) {
+  await db
+    .update(organizationInvitationsTable)
+    .set(omitUndefined({
+      status,
+      expiresAt,
+    }))
+    .where(
+      eq(organizationInvitationsTable.id, invitationId),
+    );
 }
 
-async function getPendingInvitationsCount({ email, db }: { email: string; db: Database }) {
+async function getPendingInvitationsCount({ email, db, now = new Date() }: { email: string; db: Database; now?: Date }) {
   const [{ pendingInvitationsCount }] = await db
     .select({
       pendingInvitationsCount: count(organizationInvitationsTable.id),
@@ -332,6 +344,8 @@ async function getPendingInvitationsCount({ email, db }: { email: string; db: Da
       and(
         eq(organizationInvitationsTable.email, email),
         eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+        // To ensure we don't count just expired invitations that haven't been marked as expired yet
+        gte(organizationInvitationsTable.expiresAt, now),
       ),
     );
 
@@ -340,7 +354,7 @@ async function getPendingInvitationsCount({ email, db }: { email: string; db: Da
   };
 }
 
-async function getInvitationForEmailAndOrganization({ email, organizationId, db }: { email: string; organizationId: string; db: Database }) {
+async function getInvitationForEmailAndOrganization({ email, organizationId, db, now = new Date() }: { email: string; organizationId: string; db: Database; now?: Date }) {
   const [invitation] = await db
     .select()
     .from(organizationInvitationsTable)
@@ -352,7 +366,7 @@ async function getInvitationForEmailAndOrganization({ email, organizationId, db 
     );
 
   return {
-    invitation,
+    invitation: ensureInvitationStatus({ invitation, now }),
   };
 }
 
@@ -371,4 +385,25 @@ async function getOrganizationMemberByEmail({ email, organizationId, db }: { ema
   return {
     member: rawMember ? rawMember.organization_members : null,
   };
+}
+
+async function getOrganizationInvitations({ organizationId, db, now = new Date() }: { organizationId: string; db: Database; now?: Date }) {
+  const invitations = await db
+    .select()
+    .from(organizationInvitationsTable)
+    .where(eq(organizationInvitationsTable.organizationId, organizationId));
+
+  return { invitations: invitations.map(invitation => ensureInvitationStatus({ invitation, now })) };
+}
+
+async function updateExpiredPendingInvitationsStatus({ db, now = new Date() }: { db: Database; now?: Date }) {
+  await db
+    .update(organizationInvitationsTable)
+    .set({ status: ORGANIZATION_INVITATION_STATUS.EXPIRED })
+    .where(
+      and(
+        lte(organizationInvitationsTable.expiresAt, now),
+        eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+      ),
+    );
 }

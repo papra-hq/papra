@@ -1,5 +1,5 @@
 import type { AsDto } from '../shared/http/http-client.types';
-import type { Organization, OrganizationMember, OrganizationMemberRole } from './organizations.types';
+import type { Organization, OrganizationInvitation, OrganizationMember, OrganizationMemberRole } from './organizations.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
 
@@ -72,6 +72,17 @@ export async function fetchOrganizationMembers({ organizationId }: { organizatio
 
   return {
     members: members.map(({ user, ...rest }) => coerceDates({ user: coerceDates(user), ...rest })),
+  };
+}
+
+export async function fetchOrganizationInvitations({ organizationId }: { organizationId: string }) {
+  const { invitations } = await apiClient<{ invitations: AsDto<OrganizationInvitation>[] }>({
+    path: `/api/organizations/${organizationId}/members/invitations`,
+    method: 'GET',
+  });
+
+  return {
+    invitations: invitations.map(coerceDates),
   };
 }
 

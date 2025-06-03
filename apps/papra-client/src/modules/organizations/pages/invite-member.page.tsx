@@ -57,7 +57,9 @@ export const InviteMemberPage: Component = () => {
       createToast({
         message: t('organizations.invite-member.success.message'),
         description: t('organizations.invite-member.success.description'),
+        type: 'success',
       });
+      navigate(`/organizations/${params.organizationId}/members`);
     },
     onError: (error) => {
       createToast({
@@ -153,7 +155,7 @@ export const InviteMemberPage: Component = () => {
             )}
           </Field>
 
-          <Button type="submit" class="w-full mt-6">
+          <Button type="submit" class="w-full mt-6" isLoading={inviteMemberMutation.isPending}>
             {t('organizations.invite-member.form.submit')}
             <div class="i-tabler-send size-4 ml-1" />
           </Button>

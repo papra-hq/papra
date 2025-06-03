@@ -9,12 +9,22 @@ import type { UsersRepository } from '../users/users.repository';
 import type { OrganizationsRepository } from './organizations.repository';
 import type { OrganizationRole } from './organizations.types';
 import { buildUrl } from '@corentinth/chisels';
+import { addDays } from 'date-fns';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { sanitize } from '../shared/html/html';
 import { createLogger } from '../shared/logger/logger';
-import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationDocumentStorageLimitReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
+import {
+  createOrganizationDocumentStorageLimitReachedError,
+  createOrganizationInvitationAlreadyExistsError,
+  createOrganizationNotFoundError,
+  createUserAlreadyInOrganizationError,
+  createUserMaxOrganizationCountReachedError,
+  createUserNotInOrganizationError,
+  createUserNotOrganizationOwnerError,
+  createUserOrganizationInvitationLimitReachedError,
+} from './organizations.errors';
 import { canUserRemoveMemberFromOrganization } from './organizations.models';
 
 export async function createOrganization({ name, userId, organizationsRepository }: { name: string; userId: string; organizationsRepository: OrganizationsRepository }) {
@@ -351,4 +361,65 @@ export async function updateOrganizationMemberRole({
   const { member: updatedMember } = await organizationsRepository.updateOrganizationMemberRole({ memberId, role });
 
   return { member: updatedMember };
+}
+
+export async function resendOrganizationInvitation({
+  invitationId,
+  userId,
+  organizationsRepository,
+  emailsServices,
+  config,
+  logger = createLogger({ namespace: 'organizations.resend-invitation' }),
+  now = new Date(),
+}: {
+  invitationId: string;
+  userId: string;
+  organizationsRepository: OrganizationsRepository;
+  emailsServices: EmailsServices;
+  config: Config;
+  logger?: Logger;
+  now?: Date;
+}) {
+  const { invitation } = await organizationsRepository.getOrganizationInvitationById({ invitationId });
+
+  if (!invitation) {
+    logger.error({ invitationId }, 'Invitation not found');
+    throw createForbiddenError();
+  }
+
+  if (![ORGANIZATION_INVITATION_STATUS.EXPIRED, ORGANIZATION_INVITATION_STATUS.CANCELLED, ORGANIZATION_INVITATION_STATUS.REJECTED].includes(invitation.status)) {
+    logger.error({ invitationId, invitationStatus: invitation.status }, 'Cannot resend invitation that is neither expired, cancelled nor rejected');
+    throw createForbiddenError();
+  }
+
+  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId: invitation.organizationId });
+
+  if (!inviterMember) {
+    logger.error({ invitationId, userId }, 'Inviter not found in organization');
+    throw createForbiddenError();
+  }
+
+  if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
+    logger.error({
+      invitationId,
+      userId,
+      memberId: inviterMember.id,
+      memberRole: inviterMember.role,
+    }, 'Inviter does not have permission to resend invitation');
+    throw createForbiddenError();
+  }
+
+  await organizationsRepository.updateOrganizationInvitation({
+    invitationId,
+    status: ORGANIZATION_INVITATION_STATUS.PENDING,
+    expiresAt: addDays(now, config.organizations.invitationExpirationDelayDays),
+  });
+
+  await sendOrganizationInvitationEmail({
+    email: invitation.email,
+    organizationId: invitation.organizationId,
+    organizationsRepository,
+    emailsServices,
+    config,
+  });
 }

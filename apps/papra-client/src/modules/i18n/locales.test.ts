@@ -42,6 +42,7 @@ describe('locales', () => {
       /^api-keys\.permissions\.[a-z0-9:]+\.[a-z0-9:]+$/, // api-keys.permissions.documents.documents:delete
       /^organizations\.members\.roles\.[a-z0-9]+$/, // organizations.members.roles.admin
       /^activity\.document\.[a-z0-9:]+$/, // activity.document.created
+      /^organizations\.invitations\.status\.[a-z0-9:]+$/, // organizations.invitations.status.pending
     ];
 
     const keys = new Set(
