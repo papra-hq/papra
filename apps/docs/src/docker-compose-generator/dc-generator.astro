@@ -16,6 +16,8 @@ services:
       - 1221:1221
     environment:
       - AUTH_SECRET=change-me
+      - CLIENT_BASE_URL=http://localhost:1221
+      - SERVER_BASE_URL=http://localhost:1221
     volumes:
       - ./app-data:/app/app-data
     user: 1000:1000
@@ -31,6 +33,11 @@ const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', 
 <div class="flex items-center gap-2 mt-1">
   <label for="port" class="min-w-32">External port</label>
   <input id="port" class="input-field" value="1221" type="number" min="1024" max="65535" placeholder="eg: 1221" />
+</div>
+
+<div class="flex items-center gap-2 mt-1">
+  <label for="app-base-url" class="min-w-32">App base URL</label>
+  <input id="app-base-url" class="input-field" type="text" placeholder="eg: https://papra.example.com" value="http://localhost:1221" />
 </div>
 
 <div class="flex items-center gap-2 mt-1">
@@ -153,6 +160,7 @@ const portInput = document.getElementById('port') as HTMLInputElement;
 const sourceSelect = document.getElementById('source') as HTMLSelectElement;
 const serviceNameInput = document.getElementById('service-name') as HTMLInputElement;
 const authSecretInput = document.getElementById('auth-secret') as HTMLInputElement;
+const appBaseUrlInput = document.getElementById('app-base-url') as HTMLInputElement;
 const refreshSecretButton = document.getElementById('refresh-secret');
 const copyButton = document.getElementById('copy-button');
 const dockerComposeOutput = document.getElementById('docker-compose-output');
@@ -193,12 +201,19 @@ function getDockerComposeYml() {
   const intakeEmailEnabled = intakeEmailEnabledSelect.value === 'true';
   const intakeDriver = intakeDriverSelect.value;
   const webhookSecret = webhookSecretInput.value;
+  const appBaseUrl = appBaseUrlInput.value.trim();
 
   const version = isRootless ? 'latest' : 'latest-root';
   const fullImage = `${image}:${version}`;
 
+  // Determine base URLs
+  const clientBaseUrl = appBaseUrl || `http://localhost:${port}`;
+  const serverBaseUrl = appBaseUrl || `http://localhost:${port}`;
+
   const environment = [
     `AUTH_SECRET=${authSecret}`,
+    `CLIENT_BASE_URL=${clientBaseUrl}`,
+    `SERVER_BASE_URL=${serverBaseUrl}`,
     isIngestionEnabled && 'INGESTION_FOLDER_IS_ENABLED=true',
     intakeEmailEnabled && 'INTAKE_EMAILS_IS_ENABLED=true',
     intakeEmailEnabled && `INTAKE_EMAILS_DRIVER=${intakeDriver}`,
@@ -336,6 +351,7 @@ portInput.addEventListener('input', updateDockerCompose);
 sourceSelect.addEventListener('change', updateDockerCompose);
 serviceNameInput.addEventListener('input', updateDockerCompose);
 authSecretInput.addEventListener('input', updateDockerCompose);
+appBaseUrlInput.addEventListener('input', updateDockerCompose);
 refreshSecretButton?.addEventListener('click', handleRefreshSecret);
 copyButton?.addEventListener('click', handleCopy);
 downloadButton?.addEventListener('click', handleDownload);

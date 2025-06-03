@@ -33,11 +33,14 @@ const rows = configDetails
 
     const rawDocumentation = formatDoc(doc);
 
+    // The client baseUrl default value is overridden in the Dockerfiles
+    const defaultOverride = path.join('.') === 'client.baseUrl' ? 'http://localhost:1221' : undefined;
+
     return {
       path,
       env,
       documentation: rawDocumentation,
-      defaultValue: isEmptyDefaultValue ? undefined : defaultValue,
+      defaultValue: defaultOverride ?? (isEmptyDefaultValue ? undefined : defaultValue),
     };
   });
 

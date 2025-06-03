@@ -29,21 +29,15 @@ export const configDefinition = {
   },
   client: {
     baseUrl: {
-      doc: 'The URL of the client',
+      doc: 'The URL of the client, when using docker, it should be the same as the server baseUrl',
       schema: z.string().url(),
       default: 'http://localhost:3000',
       env: 'CLIENT_BASE_URL',
     },
-    oauthRedirectUrl: {
-      doc: 'The URL to redirect to after OAuth',
-      schema: z.string().url(),
-      default: 'http://localhost:3000/confirm',
-      env: 'CLIENT_OAUTH_REDIRECT_URL',
-    },
   },
   server: {
     baseUrl: {
-      doc: 'The base URL of the server',
+      doc: 'The base URL of the server, when using docker, it should be the same as the client baseUrl',
       schema: z.string().url(),
       default: 'http://localhost:1221',
       env: 'SERVER_BASE_URL',

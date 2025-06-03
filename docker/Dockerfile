@@ -41,6 +41,7 @@ ENV DATABASE_URL=file:./app-data/db/db.sqlite
 ENV DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents
 ENV PAPRA_CONFIG_DIR=./app-data
 ENV EMAILS_DRY_RUN=true
+ENV CLIENT_BASE_URL=http://localhost:1221
 
 RUN mkdir -p ./app-data/db ./app-data/documents ./ingestion
 
