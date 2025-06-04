@@ -329,7 +329,7 @@ function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) 
         200,
         {
           'Content-Type': document.mimeType,
-          'Content-Disposition': `inline; filename="${document.name}"`,
+          'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name)}`,
           'Content-Length': String(document.originalSize),
         },
       );
