@@ -1,5 +1,11 @@
 # @papra/app-server
 
+## 0.6.1
+
+### Patch Changes
+
+- [#326](https://github.com/papra-hq/papra/pull/326) [`17ca8f8`](https://github.com/papra-hq/papra/commit/17ca8f8f8110c3ffb550f67bfba817872370171c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix content disposition header to support non-ascii filenames
+
 ## 0.6.0
 
 ### Minor Changes

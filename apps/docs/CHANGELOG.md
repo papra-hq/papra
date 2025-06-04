@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.4.2
+
+### Patch Changes
+
+- [#322](https://github.com/papra-hq/papra/pull/322) [`f54b8e1`](https://github.com/papra-hq/papra/commit/f54b8e162acd6cfe92241aaa649847fc03ca5852) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Auto computes urls from the provided port
+
 ## 0.4.1
 
 ### Patch Changes
