@@ -26,7 +26,6 @@ services:
 const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
 ---
 
-<p>This tool will help you generate a custom docker-compose.yml file for Papra, tailored to your needs. You can personalize the service name, the port, the auth secret, and the source image.</p>
 
 <h2 class="mt-8 mb-2">General settings</h2>
 
@@ -125,7 +124,7 @@ const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', 
   </div>
   <div class="flex items-center gap-2 mt-1">
     <label for="intake-email-owlrelay-webhook-url" class="min-w-32">Webhook URL</label>
-    <input id="intake-email-owlrelay-webhook-url" class="input-field" type="text" placeholder="https://your-instance.com/api/intake-emails/ingest" />
+    <input id="intake-email-owlrelay-webhook-url" class="input-field" type="text" placeholder="https://your-instance.com/api/intake-emails/ingest" value="https://localhost:1221/api/intake-emails/ingest" />
   </div>
 </div>
 
@@ -180,6 +179,11 @@ const cfEmailDomainInput = document.getElementById('intake-email-cf-email-domain
 const webhookSecretInput = document.getElementById('intake-email-webhook-secret') as HTMLInputElement;
 const refreshWebhookSecretButton = document.getElementById('refresh-webhook-secret');
 
+// Track whether the app base URL has been customized by the user
+let isAppBaseUrlCustomized = false;
+// Track whether the webhook URL has been customized by the user
+let isWebhookUrlCustomized = false;
+
 function getRandomString() {
   const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   return Array.from({ length: 48 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
@@ -187,6 +191,76 @@ function getRandomString() {
 
 function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
+}
+
+function isDefaultAppBaseUrl(url: string, port: string): boolean {
+  return url === `http://localhost:${port}`;
+}
+
+function generateDefaultWebhookUrl(baseUrl: string): string {
+  // Remove trailing slash if present
+  const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+  return `${cleanBaseUrl}/api/intake-emails/ingest`;
+}
+
+function isDefaultWebhookUrl(webhookUrl: string, baseUrl: string): boolean {
+  return webhookUrl === generateDefaultWebhookUrl(baseUrl);
+}
+
+function refreshIsWebhookUrlCustomized() {
+  const currentBaseUrl = appBaseUrlInput.value.trim();
+  const currentWebhookUrl = owlrelayWebhookUrlInput.value.trim();
+
+  if (isDefaultWebhookUrl(currentWebhookUrl, currentBaseUrl)) {
+    isWebhookUrlCustomized = false;
+  } else {
+    isWebhookUrlCustomized = true;
+  }
+}
+
+function refreshIsAppBaseUrlCustomized() {
+  const currentPort = portInput.value;
+  const currentUrl = appBaseUrlInput.value.trim();
+
+  if (isDefaultAppBaseUrl(currentUrl, currentPort)) {
+    isAppBaseUrlCustomized = false;
+  } else {
+    isAppBaseUrlCustomized = true;
+  }
+}
+
+function updateWebhookUrlFromBaseUrl() {
+  if (!isWebhookUrlCustomized) {
+    const baseUrl = appBaseUrlInput.value.trim();
+    if (baseUrl) {
+      owlrelayWebhookUrlInput.value = generateDefaultWebhookUrl(baseUrl);
+    }
+  }
+}
+
+function updateAppBaseUrlFromPort() {
+  if (!isAppBaseUrlCustomized) {
+    const port = portInput.value;
+    appBaseUrlInput.value = `http://localhost:${port}`;
+    // Also update webhook URL when app base URL changes
+    updateWebhookUrlFromBaseUrl();
+  }
+}
+
+function handlePortChange() {
+  updateAppBaseUrlFromPort();
+  updateDockerCompose();
+}
+
+function handleAppBaseUrlChange() {
+  refreshIsAppBaseUrlCustomized();
+  updateWebhookUrlFromBaseUrl();
+  updateDockerCompose();
+}
+
+function handleWebhookUrlChange() {
+  refreshIsWebhookUrlCustomized();
+  updateDockerCompose();
 }
 
 function getDockerComposeYml() {
@@ -347,11 +421,11 @@ function handleRefreshWebhookSecret() {
 }
 
 // Add event listeners
-portInput.addEventListener('input', updateDockerCompose);
+portInput.addEventListener('input', handlePortChange);
 sourceSelect.addEventListener('change', updateDockerCompose);
 serviceNameInput.addEventListener('input', updateDockerCompose);
 authSecretInput.addEventListener('input', updateDockerCompose);
-appBaseUrlInput.addEventListener('input', updateDockerCompose);
+appBaseUrlInput.addEventListener('input', handleAppBaseUrlChange);
 refreshSecretButton?.addEventListener('click', handleRefreshSecret);
 copyButton?.addEventListener('click', handleCopy);
 downloadButton?.addEventListener('click', handleDownload);
@@ -362,7 +436,7 @@ ingestionPathInput.addEventListener('input', updateDockerCompose);
 intakeEmailEnabledSelect.addEventListener('change', handleIntakeEmailEnabledChange);
 intakeDriverSelect.addEventListener('change', handleIntakeDriverChange);
 owlrelayApiKeyInput.addEventListener('input', updateDockerCompose);
-owlrelayWebhookUrlInput.addEventListener('input', updateDockerCompose);
+owlrelayWebhookUrlInput.addEventListener('input', handleWebhookUrlChange);
 cfEmailDomainInput.addEventListener('input', updateDockerCompose);
 webhookSecretInput.addEventListener('input', updateDockerCompose);
 refreshWebhookSecretButton?.addEventListener('click', handleRefreshWebhookSecret);
