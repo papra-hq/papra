@@ -39,12 +39,9 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 
 ## Project Status
 
-Papra is currently in **beta**. The core functionality is stable and usable, but you may encounter occasional bugs or limitations. The project is actively developed, with new features being added regularly.
+Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly. 
 
-- ✅ Core document management features are stable
-- ✅ Self-hosting is fully supported
-- 🚧 Some advanced features are still in development
-- 📝 Feedback and bug reports are highly appreciated
+Feedback and bug reports are highly appreciated to help us improve the platform.
 
 ## Features
 
@@ -68,6 +65,10 @@ Papra is currently in **beta**. The core functionality is stable and usable, but
 - *Coming soon:* **Document requests**: Generate upload links for people to add documents.
 - *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
 - *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
+
+## Sponsors
+
+Papra is a free and open-source project, but it is not free to run and develop. If you want to support the project, you can become a sponsor on [GitHub Sponsors](https://github.com/sponsors/corentinth) or [Buy me a coffee](https://buymeacoffee.com/cthmsst). If you are a company, you can also contact me to discuss a sponsorship.
 
 ## Self-hosting
 
