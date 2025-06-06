@@ -60,11 +60,13 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - **Folder ingestion**: Automatically import documents from a folder.
 - **CLI**: Manage your documents from the command line.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
-- *In progress:* **i18n**: Support for multiple languages.
+- **i18n**: Support for multiple languages.
 - *Coming soon:* **Document sharing**: Share documents with others.
 - *Coming soon:* **Document requests**: Generate upload links for people to add documents.
 - *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
 - *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
+- *Coming maybe one day:* **Browser extension**: Upload documents from your browser.
+- *Coming maybe one day:* **AI**: Use AI to help you manage or tag your documents.
 
 ## Sponsors
 
