@@ -31,6 +31,6 @@ export async function ensureLocalDatabaseDirectoryExists({ config }: { config: C
       logger.info({ dbUrl: url, dbDir, dbPath }, 'Database directory missing, created it');
     }
   } catch (error) {
-    logger.error({ error, dbDir, dbPath }, 'Failed to ensure that the database directory exists, error while creating the directory');
+    logger.error({ error, dbDir, dbPath }, 'Failed to ensure that the database directory exists, error while creating the directory. Please see https://docs.papra.app/resources/troubleshooting/#failed-to-ensure-that-the-database-directory-exists for more information.');
   }
 }

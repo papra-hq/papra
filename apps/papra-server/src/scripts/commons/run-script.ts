@@ -3,6 +3,7 @@ import type { Config } from '../../modules/config/config.types';
 import type { Logger } from '../../modules/shared/logger/logger';
 import process from 'node:process';
 import { setupDatabase } from '../../modules/app/database/database';
+import { ensureLocalDatabaseDirectoryExists } from '../../modules/app/database/database.services';
 import { parseConfig } from '../../modules/config/config';
 import { createLogger, wrapWithLoggerContext } from '../../modules/shared/logger/logger';
 
@@ -23,6 +24,7 @@ async function runScript(
       const logger = createLogger({ namespace: 'scripts' });
 
       const { config } = await parseConfig({ env: process.env });
+      await ensureLocalDatabaseDirectoryExists({ config });
       const { db, client } = setupDatabase({ ...config.database });
 
       try {

@@ -24,6 +24,7 @@ services:
 `.trim();
 
 const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
+const defaultCommand = `mkdir -p ./app-data/{db,documents} && docker compose up -d`;
 ---
 
 
@@ -145,9 +146,12 @@ const dcHtml = await codeToHtml(defaultDockerCompose, { theme: 'vitesse-black', 
 
 <div id="docker-compose-output" class="mt-12" set:html={dcHtml} />
 
+<pre id="command-output" class="bg-card p-4 rounded-md text-muted-foreground text-sm font-mono overflow-x-auto">{defaultCommand}</pre>
+
 <div class="flex items-center gap-2 mt-4">
   <button class="btn bg-muted mt-0" id="download-button">Download docker-compose.yml</button>
-  <button class="btn bg-muted mt-0" id="copy-button">Copy to clipboard</button>
+  <button class="btn bg-muted mt-0" id="copy-button">Copy docker compose to clipboard</button>
+  <button class="btn bg-muted mt-0" id="copy-command-button">Copy command</button>
 </div>
 
 
@@ -178,6 +182,8 @@ const owlrelayWebhookUrlInput = document.getElementById('intake-email-owlrelay-w
 const cfEmailDomainInput = document.getElementById('intake-email-cf-email-domain') as HTMLInputElement;
 const webhookSecretInput = document.getElementById('intake-email-webhook-secret') as HTMLInputElement;
 const refreshWebhookSecretButton = document.getElementById('refresh-webhook-secret');
+const commandOutput = document.getElementById('command-output');
+const copyCommandButton = document.getElementById('copy-command-button');
 
 // Track whether the app base URL has been customized by the user
 let isAppBaseUrlCustomized = false;
@@ -321,13 +327,30 @@ function getDockerComposeYml() {
   return stringify(dc);
 }
 
+function getStartCommand() {
+  const volumePath = volumePathInput.value;
+  const volumePathNormalized = volumePath.replace(/\/$/, '');
+  const volumeWithSubdirs = `${volumePathNormalized}/{db,documents}`;
+
+  const mkdirCommand = `mkdir -p ${volumeWithSubdirs}`;
+
+  const dockerCommand = 'docker compose up -d';
+
+  return `${mkdirCommand} && ${dockerCommand}`;
+}
+
 async function updateDockerCompose() {
   const dockerCompose = getDockerComposeYml();
+  const command = getStartCommand();
 
   const html = await codeToHtml(dockerCompose, { theme: 'vitesse-black', lang: 'yaml' });
 
   if (dockerComposeOutput) {
     dockerComposeOutput.innerHTML = html;
+  }
+
+  if (commandOutput) {
+    commandOutput.textContent = command;
   }
 }
 
@@ -420,6 +443,22 @@ function handleRefreshWebhookSecret() {
   updateDockerCompose();
 }
 
+function handleCopyCommand() {
+  const command = getStartCommand();
+
+  copyToClipboard(command);
+
+  if (copyCommandButton) {
+    copyCommandButton.textContent = 'Copied!';
+  }
+
+  setTimeout(() => {
+    if (copyCommandButton) {
+      copyCommandButton.textContent = 'Copy command';
+    }
+  }, 1000);
+}
+
 // Add event listeners
 portInput.addEventListener('input', handlePortChange);
 sourceSelect.addEventListener('change', updateDockerCompose);
@@ -440,6 +479,7 @@ owlrelayWebhookUrlInput.addEventListener('input', handleWebhookUrlChange);
 cfEmailDomainInput.addEventListener('input', updateDockerCompose);
 webhookSecretInput.addEventListener('input', updateDockerCompose);
 refreshWebhookSecretButton?.addEventListener('click', handleRefreshWebhookSecret);
+copyCommandButton?.addEventListener('click', handleCopyCommand);
 
 authSecretInput.value = getRandomString();
 

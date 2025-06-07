@@ -1,0 +1,28 @@
+---
+title: Troubleshooting
+description: Troubleshooting guide for Papra
+slug: resources/troubleshooting
+---
+
+You can find here some common issues and how to fix them. If you encounter an issue that is not listed here, please [open an issue](https://github.com/papra-hq/papra/issues/new/choose) or [join our Discord](https://papra.app/discord).
+
+## Failed to ensure that the database directory exists
+
+Upon starting the server or a script, you may encounter this error
+
+```
+Failed to ensure that the database directory exists, error while creating the directory
+Error: EACCES: permission denied, mkdir './app-data/db'
+
+```
+
+Before accessing the DB sqlite file, the server will try to ensure that the database directory exists, and if it doesn't, it try will create it. But in case of insufficient permissions, it will fail.
+
+To fix this, you can either:
+
+- Create the directory manually `mkdir -p <your-app-data-dir>/db`
+- Ensure that the directory is owned by the user running the container
+- Run the server as root (not recommended)
+
+
+

@@ -41,6 +41,10 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
     label: 'Resources',
     items: [
       {
+        label: 'Troubleshooting',
+        slug: 'resources/troubleshooting',
+      },
+      {
         label: 'CLI Documentation',
         slug: 'resources/cli',
       },
