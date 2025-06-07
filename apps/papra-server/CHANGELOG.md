@@ -1,5 +1,11 @@
 # @papra/app-server
 
+## 0.6.2
+
+### Patch Changes
+
+- [#337](https://github.com/papra-hq/papra/pull/337) [`1c574b8`](https://github.com/papra-hq/papra/commit/1c574b8305eb7bde4f1b75ac38a610ca0120a613) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Ensure database directory exists when running scripts (like migrations)
+
 ## 0.6.1
 
 ### Patch Changes

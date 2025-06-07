@@ -1,5 +1,11 @@
 # @papra/app-client
 
+## 0.6.2
+
+### Patch Changes
+
+- [#333](https://github.com/papra-hq/papra/pull/333) [`ff830c2`](https://github.com/papra-hq/papra/commit/ff830c234a02ddb4cbc480cf77ef49b8de35fbae) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed version release link
+
 ## 0.6.1
 
 ## 0.6.0
