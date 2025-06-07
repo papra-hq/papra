@@ -36,6 +36,12 @@ const MenuItemButton: Component<MenuItem> = (props) => {
   );
 };
 
+function getReleaseUrl({ version, packageName = '@papra/app-server' }: { version: string; packageName?: string }) {
+  const encodedVersion = encodeURIComponent(`${packageName}@${version}`);
+
+  return `https://github.com/papra-hq/papra/releases/tag/${encodedVersion}`;
+}
+
 export const SideNav: Component<{
   mainMenu?: MenuItem[];
   footerMenu?: MenuItem[];
@@ -95,7 +101,7 @@ export const SideNav: Component<{
           ))}
         </div>
 
-        <a class="text-xs text-muted-foreground text-center mt-auto transition-colors hover:(text-primary underline)" href={`https://github.com/papra-hq/papra/releases/tag/${version}`} target="_blank" rel="noopener noreferrer">
+        <a class="text-xs text-muted-foreground text-center mt-auto transition-colors hover:(text-primary underline)" href={getReleaseUrl({ version: config.papraVersion })} target="_blank" rel="noopener noreferrer">
           {version}
         </a>
 

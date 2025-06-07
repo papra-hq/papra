@@ -5,7 +5,7 @@ const asString = <T extends string | undefined>(value: string | undefined, defau
 const asNumber = <T extends number | undefined>(value: string | undefined, defaultValue?: T): T extends undefined ? number | undefined : number => (value === undefined ? defaultValue : Number(value)) as T extends undefined ? number | undefined : number;
 
 export const buildTimeConfig = {
-  papraVersion: asString(import.meta.env.VITE_PAPRA_VERSION),
+  papraVersion: asString(import.meta.env.VITE_PAPRA_VERSION, '0.0.0'),
   baseUrl: asString(import.meta.env.VITE_BASE_URL, window.location.origin),
   baseApiUrl: asString(import.meta.env.VITE_BASE_API_URL, window.location.origin),
   vitrineBaseUrl: asString(import.meta.env.VITE_VITRINE_BASE_URL, 'http://localhost:3000/'),
