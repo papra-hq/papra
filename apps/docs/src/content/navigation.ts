@@ -1,6 +1,6 @@
 import type { StarlightUserConfig } from '@astrojs/starlight/types';
 
-export const sidebar: StarlightUserConfig['sidebar'] = [
+export const sidebar = [
   {
     label: 'Getting Started',
     items: [
@@ -55,6 +55,7 @@ export const sidebar: StarlightUserConfig['sidebar'] = [
           target: '_blank',
         },
       },
+
     ],
   },
-];
+] satisfies StarlightUserConfig['sidebar'];
