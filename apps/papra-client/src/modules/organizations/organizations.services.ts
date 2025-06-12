@@ -71,7 +71,7 @@ export async function fetchOrganizationMembers({ organizationId }: { organizatio
   });
 
   return {
-    members: members.map(({ user, ...rest }) => coerceDates({ user: coerceDates(user), ...rest })),
+    members: members.map(({ user, ...rest }) => coerceDates({ user: coerceDates(user!), ...rest })),
   };
 }
 

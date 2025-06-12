@@ -20,3 +20,4 @@ onlyBuiltDependencies:
   - canvas
   - core-js
   - sharp
+  - unrs-resolver
