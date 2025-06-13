@@ -8,13 +8,19 @@ export const GET: APIRoute = async ({ site }) => {
   const sections = sidebar.map((section) => {
     return {
       label: section.label,
-      items: section.items.map((item) => {
-        return {
-          ...item,
-          url: new URL(item.slug ?? '', site).toString(),
-          description: docs.find(doc => (doc.id === item.slug || (item.slug === '' && doc.id === 'index')))?.data.description,
-        };
-      }),
+      items: section
+        .items
+        .filter(item => item.slug !== undefined || (item.link && !item.link.startsWith('http')))
+        .map((item) => {
+          const slug = item.slug ?? item.link?.replace(/^\//, '');
+
+          return {
+            label: item.label,
+            slug,
+            url: new URL(slug, site).toString(),
+            description: docs.find(doc => (doc.id === slug || (slug === '' && doc.id === 'index')))?.data.description,
+          };
+        }),
     };
   });
 
