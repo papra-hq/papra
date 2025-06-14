@@ -55,31 +55,30 @@ export const EmailLoginForm: Component = () => {
     <Form>
       <Field name="email">
         {(field, inputProps) => (
-          <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="email">{t('auth.login.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+          <TextFieldRoot class="flex flex-col gap-2 mb-5">
+            <TextFieldLabel for="email" class="font-medium">{t('auth.login.form.email.label')}</TextFieldLabel>
+            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} class="h-11" />
+            {field.error && <div class="text-red-500 text-sm mt-1">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
       <Field name="password">
         {(field, inputProps) => (
-          <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="password">{t('auth.login.form.password.label')}</TextFieldLabel>
-
-            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+          <TextFieldRoot class="flex flex-col gap-2 mb-5">
+            <TextFieldLabel for="password" class="font-medium">{t('auth.login.form.password.label')}</TextFieldLabel>
+            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} class="h-11" />
+            {field.error && <div class="text-red-500 text-sm mt-1">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-6">
         <Field name="rememberMe" type="boolean">
           {(field, inputProps) => (
             <Checkbox class="flex items-center gap-2" defaultChecked={field.value}>
               <CheckboxControl inputProps={inputProps} />
-              <CheckboxLabel class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <CheckboxLabel class="text-sm font-medium leading-none">
                 {t('auth.login.form.remember-me.label')}
               </CheckboxLabel>
             </Checkbox>
@@ -87,16 +86,21 @@ export const EmailLoginForm: Component = () => {
         </Field>
 
         <Show when={config.auth.isPasswordResetEnabled}>
-          <Button variant="link" as={A} class="inline p-0! h-auto" href="/request-password-reset">
+          <Button variant="link" as={A} class="inline p-0! h-auto text-sm" href="/request-password-reset">
             {t('auth.login.form.forgot-password.label')}
           </Button>
         </Show>
       </div>
 
-      <Button type="submit" class="w-full">{t('auth.login.form.submit')}</Button>
+      <Button type="submit" class="w-full h-11 font-medium" isLoading={form.submitting}>
+        {t('auth.login.form.submit')}
+      </Button>
 
-      <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
+      <Show when={form.response.message}>
+        <div class="text-red-500 text-sm mt-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+          {form.response.message}
+        </div>
+      </Show>
     </Form>
   );
 };
@@ -115,46 +119,75 @@ export const LoginPage: Component = () => {
 
   return (
     <AuthLayout>
-      <div class="flex items-center justify-center h-full p-6 sm:pb-32">
-        <div class="max-w-sm w-full">
-          <h1 class="text-xl font-bold">{t('auth.login.title')}</h1>
-          <p class="text-muted-foreground mt-1 mb-4">{t('auth.login.description')}</p>
-
-          {getShowEmailLogin() || !getHasSsoProviders()
-            ? <EmailLoginForm />
-            : (
-                <Button onClick={() => setShowEmailLogin(true)} class="w-full">
-                  <div class="i-tabler-mail mr-2 size-4.5" />
-                  {t('auth.login.login-with-provider', { provider: 'Email' })}
-                </Button>
-              )}
-
-          <Show when={getHasSsoProviders()}>
-            <Separator class="my-4" />
-
-            <div class="flex flex-col gap-2">
-              <For each={getEnabledSsoProviderConfigs({ config })}>
-                {provider => (
-                  <SsoProviderButton
-                    name={provider.name}
-                    icon={provider.icon}
-                    onClick={() => loginWithProvider(provider)}
-                    label={t('auth.login.login-with-provider', { provider: provider.name })}
-                  />
-                )}
-              </For>
+      <div class="flex items-center justify-center min-h-full p-6 sm:pb-32">
+        {/* Background decoration */}
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+        <div class="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-30 pointer-events-none" />
+        
+        <div class="relative w-full max-w-md">
+          {/* Main card */}
+          <div class="bg-card border shadow-xl rounded-2xl p-8 backdrop-blur-sm">
+            {/* Icon and header */}
+            <div class="text-center mb-8">
+              <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
+                <div class="i-tabler-shield-lock size-8 text-primary" />
+              </div>
+              <h1 class="text-2xl font-bold tracking-tight">{t('auth.login.title')}</h1>
+              <p class="text-muted-foreground mt-2 text-base">{t('auth.login.description')}</p>
             </div>
-          </Show>
 
-          <p class="text-muted-foreground mt-4">
-            {t('auth.login.no-account')}
-            {' '}
-            <Button variant="link" as={A} class="inline px-0" href="/register">
-              {t('auth.login.register')}
-            </Button>
-          </p>
+            {/* Form content */}
+            <div class="space-y-6">
+              {getShowEmailLogin() || !getHasSsoProviders()
+                ? <EmailLoginForm />
+                : (
+                    <Button onClick={() => setShowEmailLogin(true)} class="w-full h-11" variant="outline">
+                      <div class="i-tabler-mail mr-2 size-5" />
+                      {t('auth.login.login-with-provider', { provider: 'Email' })}
+                    </Button>
+                  )}
 
-          <AuthLegalLinks />
+              <Show when={getHasSsoProviders()}>
+                <div class="relative">
+                  <div class="absolute inset-0 flex items-center">
+                    <Separator class="w-full" />
+                  </div>
+                  <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-card text-muted-foreground">or continue with</span>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <For each={getEnabledSsoProviderConfigs({ config })}>
+                    {provider => (
+                      <SsoProviderButton
+                        name={provider.name}
+                        icon={provider.icon}
+                        onClick={() => loginWithProvider(provider)}
+                        label={t('auth.login.login-with-provider', { provider: provider.name })}
+                      />
+                    )}
+                  </For>
+                </div>
+              </Show>
+
+              {/* Footer links */}
+              <div class="pt-4 border-t">
+                <p class="text-center text-sm text-muted-foreground">
+                  {t('auth.login.no-account')}
+                  {' '}
+                  <Button variant="link" as={A} class="inline px-0 text-sm font-medium" href="/register">
+                    {t('auth.login.register')}
+                  </Button>
+                </p>
+
+                <div class="mt-4">
+                  <AuthLegalLinks />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </AuthLayout>
