@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.5.1
+
+### Patch Changes
+
+- [#357](https://github.com/papra-hq/papra/pull/357) [`585c53c`](https://github.com/papra-hq/papra/commit/585c53cd9d0d7dbd517dbb1adddfd9e7b70f9fe5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a /llms.txt on main website
+
 ## 0.5.0
 
 ### Minor Changes
