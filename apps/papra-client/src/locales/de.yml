@@ -21,7 +21,7 @@ auth.reset-password.form.new-password.min-length: Das Passwort muss mindestens {
 auth.reset-password.form.new-password.max-length: Das Passwort muss weniger als {{ maxLength }} Zeichen lang sein
 auth.reset-password.form.submit: Passwort zurücksetzen
 
-auth.email-provider.open: {{ provider }} öffnen
+auth.email-provider.open: '{{ provider }} öffnen'
 
 auth.login.title: Bei Papra anmelden
 auth.login.description: Geben Sie Ihre E-Mail-Adresse ein oder verwenden Sie die soziale Anmeldung, um auf Ihr Papra-Konto zuzugreifen.
