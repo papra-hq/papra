@@ -9,9 +9,9 @@ import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
 import { authWithProvider, signUp } from '../auth.services';
+import { AuthCard } from '../components/auth-card.component';
 import { AuthLegalLinks } from '../components/legal-links.component';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
@@ -111,43 +111,23 @@ export const RegisterPage: Component = () => {
 
   if (!config.auth.isRegistrationEnabled) {
     return (
-      <AuthLayout>
-        <div class="flex items-center justify-center min-h-full p-6 sm:pb-32">
-          {/* Background decoration */}
-          <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
-          <div class="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl opacity-20 pointer-events-none" />
-          <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-30 pointer-events-none" />
-          
-          <div class="relative w-full max-w-md">
-            {/* Main card */}
-            <div class="bg-card border shadow-xl rounded-2xl p-8 backdrop-blur-sm">
-              {/* Icon and header */}
-              <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-destructive/10 rounded-2xl mb-4">
-                  <div class="i-tabler-shield-x size-8 text-destructive" />
-                </div>
-                <h1 class="text-2xl font-bold tracking-tight">
-                  {t('auth.register.registration-disabled.title')}
-                </h1>
-                <p class="text-muted-foreground mt-2 text-base">
-                  {t('auth.register.registration-disabled.description')}
-                </p>
-              </div>
-
-              {/* Footer links */}
-              <div class="pt-4 border-t">
-                <p class="text-center text-sm text-muted-foreground">
-                  {t('auth.register.have-account')}
-                  {' '}
-                  <Button variant="link" as={A} class="inline px-0 text-sm font-medium" href="/login">
-                    {t('auth.register.login')}
-                  </Button>
-                </p>
-              </div>
-            </div>
-          </div>
+      <AuthCard
+        icon="i-tabler-shield-x"
+        title={t('auth.register.registration-disabled.title')}
+        description={t('auth.register.registration-disabled.description')}
+        iconVariant="destructive"
+      >
+        {/* Footer links */}
+        <div class="pt-4 border-t">
+          <p class="text-center text-sm text-muted-foreground">
+            {t('auth.register.have-account')}
+            {' '}
+            <Button variant="link" as={A} class="inline px-0 text-sm font-medium" href="/login">
+              {t('auth.register.login')}
+            </Button>
+          </p>
         </div>
-      </AuthLayout>
+      </AuthCard>
     );
   }
 
@@ -160,82 +140,61 @@ export const RegisterPage: Component = () => {
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
 
   return (
-    <AuthLayout>
-      <div class="flex items-center justify-center min-h-full p-6 sm:pb-32">
-        {/* Background decoration */}
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
-        <div class="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl opacity-20 pointer-events-none" />
-        <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-30 pointer-events-none" />
-        
-        <div class="relative w-full max-w-md">
-          {/* Main card */}
-          <div class="bg-card border shadow-xl rounded-2xl p-8 backdrop-blur-sm">
-            {/* Icon and header */}
-            <div class="text-center mb-8">
-              <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
-                <div class="i-tabler-user-plus size-8 text-primary" />
-              </div>
-              <h1 class="text-2xl font-bold tracking-tight">
-                {t('auth.register.title')}
-              </h1>
-              <p class="text-muted-foreground mt-2 text-base">
-                {t('auth.register.description')}
-              </p>
+    <AuthCard
+      icon="i-tabler-user-plus"
+      title={t('auth.register.title')}
+      description={t('auth.register.description')}
+    >
+      {/* Form content */}
+      <div class="space-y-6">
+        {getShowEmailRegister() || !getHasSsoProviders()
+          ? <EmailRegisterForm />
+          : (
+              <Button onClick={() => setShowEmailRegister(true)} class="w-full h-11" variant="outline">
+                <div class="i-tabler-mail mr-2 size-5" />
+                {t('auth.register.register-with-email')}
+              </Button>
+            )}
+
+        <Show when={getHasSsoProviders()}>
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <Separator class="w-full" />
             </div>
-
-            {/* Form content */}
-            <div class="space-y-6">
-              {getShowEmailRegister() || !getHasSsoProviders()
-                ? <EmailRegisterForm />
-                : (
-                    <Button onClick={() => setShowEmailRegister(true)} class="w-full h-11" variant="outline">
-                      <div class="i-tabler-mail mr-2 size-5" />
-                      {t('auth.register.register-with-email')}
-                    </Button>
-                  )}
-
-              <Show when={getHasSsoProviders()}>
-                <div class="relative">
-                  <div class="absolute inset-0 flex items-center">
-                    <Separator class="w-full" />
-                  </div>
-                  <div class="relative flex justify-center text-sm">
-                    <span class="px-4 bg-card text-muted-foreground">or continue with</span>
-                  </div>
-                </div>
-
-                <div class="space-y-3">
-                  <For each={getEnabledSsoProviderConfigs({ config })}>
-                    {provider => (
-                      <SsoProviderButton
-                        name={provider.name}
-                        icon={provider.icon}
-                        onClick={() => registerWithProvider(provider)}
-                        label={t('auth.register.register-with-provider', { provider: provider.name })}
-                      />
-                    )}
-                  </For>
-                </div>
-              </Show>
-
-              {/* Footer links */}
-              <div class="pt-4 border-t">
-                <p class="text-center text-sm text-muted-foreground">
-                  {t('auth.register.have-account')}
-                  {' '}
-                  <Button variant="link" as={A} class="inline px-0 text-sm font-medium" href="/login">
-                    {t('auth.register.login')}
-                  </Button>
-                </p>
-
-                <div class="mt-4">
-                  <AuthLegalLinks />
-                </div>
-              </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-card text-muted-foreground">or continue with</span>
             </div>
+          </div>
+
+          <div class="space-y-3">
+            <For each={getEnabledSsoProviderConfigs({ config })}>
+              {provider => (
+                <SsoProviderButton
+                  name={provider.name}
+                  icon={provider.icon}
+                  onClick={() => registerWithProvider(provider)}
+                  label={t('auth.register.register-with-provider', { provider: provider.name })}
+                />
+              )}
+            </For>
+          </div>
+        </Show>
+
+        {/* Footer links */}
+        <div class="pt-4 border-t">
+          <p class="text-center text-sm text-muted-foreground">
+            {t('auth.register.have-account')}
+            {' '}
+            <Button variant="link" as={A} class="inline px-0 text-sm font-medium" href="/login">
+              {t('auth.register.login')}
+            </Button>
+          </p>
+
+          <div class="mt-4">
+            <AuthLegalLinks />
           </div>
         </div>
       </div>
-    </AuthLayout>
+    </AuthCard>
   );
 };
