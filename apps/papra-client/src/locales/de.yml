@@ -91,8 +91,6 @@ user.settings.logout.title: Abmelden
 user.settings.logout.description: Melden Sie sich von Ihrem Konto ab. Sie können sich später wieder anmelden.
 user.settings.logout.button: Abmelden
 
----
-
 # Organizations
 
 organizations.list.title: Ihre Organisationen
