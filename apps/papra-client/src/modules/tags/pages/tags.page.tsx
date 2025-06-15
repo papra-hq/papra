@@ -119,7 +119,7 @@ export const CreateTagModal: Component<{
   const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
     const [,error] = await safely(createTag({
       name,
-      color,
+      color: color.toLowerCase(),
       description,
       organizationId: props.organizationId,
     }));
@@ -170,7 +170,7 @@ const UpdateTagModal: Component<{
   const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
     await updateTag({
       name,
-      color,
+      color: color.toLowerCase(),
       description,
       organizationId: props.organizationId,
       tagId: props.tag.id,
