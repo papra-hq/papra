@@ -193,7 +193,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const {
         pageIndex = 0,
         pageSize = 5,
-        searchQuery = '',
+        searchQuery: rawSearchQuery = '',
       } = query ?? {};
 
       const organization = organizationStorage.getItem(organizationId);
@@ -201,7 +201,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const documents = await findMany(documentStorage, document => document?.organizationId === organizationId);
 
-      const filteredDocuments = documents.filter(document => document?.name.includes(searchQuery) && !document?.deletedAt);
+      const searchQuery = rawSearchQuery.trim().toLowerCase();
+
+      const filteredDocuments = documents.filter(document => document?.name.toLowerCase().includes(searchQuery) && !document?.deletedAt);
 
       return {
         documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
