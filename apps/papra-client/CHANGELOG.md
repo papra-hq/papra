@@ -1,5 +1,13 @@
 # @papra/app-client
 
+## 0.6.3
+
+### Patch Changes
+
+- [#357](https://github.com/papra-hq/papra/pull/357) [`585c53c`](https://github.com/papra-hq/papra/commit/585c53cd9d0d7dbd517dbb1adddfd9e7b70f9fe5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a /llms.txt on main website
+
+- [#359](https://github.com/papra-hq/papra/pull/359) [`0c2cf69`](https://github.com/papra-hq/papra/commit/0c2cf698d1a9e9a3cea023920b10cfcd5d83be14) Thanks [@Mavv3006](https://github.com/Mavv3006)! - Add German translation
+
 ## 0.6.2
 
 ### Patch Changes
