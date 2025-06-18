@@ -71,9 +71,9 @@ export function isAuthenticationValid({
       return false;
     }
 
-    const atLeastOnePermissionMatches = apiKey.permissions.some(permission => requiredApiKeyPermissions.includes(permission));
+    const allPermissionsMatch = requiredApiKeyPermissions.every(permission => apiKey.permissions.includes(permission));
 
-    return atLeastOnePermissionMatches;
+    return allPermissionsMatch;
   }
 
   if (authType === 'session' && session) {

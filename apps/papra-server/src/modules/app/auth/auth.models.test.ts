@@ -105,7 +105,7 @@ describe('auth models', () => {
       });
     });
 
-    test('when the auth type is api-key, at least one permission must match', () => {
+    test('when the auth type is api-key, all permissions must match', () => {
       expect(isAuthenticationValid({
         authType: 'api-key',
         apiKey: {
@@ -134,6 +134,22 @@ describe('auth models', () => {
         authType: 'api-key',
         apiKey: {
           permissions: ['documents:create'],
+        } as ApiKey,
+        requiredApiKeyPermissions: ['documents:create', 'documents:read'],
+      })).to.eql(false);
+
+      expect(isAuthenticationValid({
+        authType: 'api-key',
+        apiKey: {
+          permissions: ['documents:create', 'documents:read'],
+        } as ApiKey,
+        requiredApiKeyPermissions: ['documents:create', 'documents:read'],
+      })).to.eql(true);
+
+      expect(isAuthenticationValid({
+        authType: 'api-key',
+        apiKey: {
+          permissions: ['documents:create', 'documents:read', 'documents:update'],
         } as ApiKey,
         requiredApiKeyPermissions: ['documents:create', 'documents:read'],
       })).to.eql(true);
