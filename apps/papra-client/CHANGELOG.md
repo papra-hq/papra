@@ -1,5 +1,11 @@
 # @papra/app-client
 
+## 0.6.4
+
+### Patch Changes
+
+- [#346](https://github.com/papra-hq/papra/pull/346) [`c54a71d`](https://github.com/papra-hq/papra/commit/c54a71d2c5998abde8ec78741b8c2e561203a045) Thanks [@blstmo](https://github.com/blstmo)! - Fixes 400 error when submitting tags with uppercase hex colour codes.
+
 ## 0.6.3
 
 ### Patch Changes
