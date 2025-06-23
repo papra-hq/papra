@@ -256,6 +256,9 @@ documents.deleted.deleted-at: Supprimé
 documents.deleted.restoring: Restauration...
 documents.deleted.deleting: Suppression...
 
+documents.preview.unknown-file-type: Aucun aperçu disponible pour ce type de fichier
+documents.preview.binary-file: Cela semble être un fichier binaire et ne peut pas être affiché en texte
+
 trash.delete-all.button: Supprimer tous les documents
 trash.delete-all.confirm.title: Supprimer définitivement tous les documents ?
 trash.delete-all.confirm.description: Êtes-vous sûr de vouloir supprimer définitivement tous les documents de la corbeille ? Cette action est irréversible.

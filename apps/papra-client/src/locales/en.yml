@@ -256,6 +256,9 @@ documents.deleted.deleted-at: Deleted
 documents.deleted.restoring: Restoring...
 documents.deleted.deleting: Deleting...
 
+documents.preview.unknown-file-type: No preview available for this file type
+documents.preview.binary-file: This appears to be a binary file and cannot be displayed as text
+
 trash.delete-all.button: Delete all
 trash.delete-all.confirm.title: Permanently delete all documents?
 trash.delete-all.confirm.description: Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.

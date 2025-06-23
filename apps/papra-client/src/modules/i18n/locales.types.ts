@@ -229,6 +229,8 @@ export type LocaleKeys =
   | 'documents.deleted.deleted-at'
   | 'documents.deleted.restoring'
   | 'documents.deleted.deleting'
+  | 'documents.preview.unknown-file-type'
+  | 'documents.preview.binary-file'
   | 'trash.delete-all.button'
   | 'trash.delete-all.confirm.title'
   | 'trash.delete-all.confirm.description'

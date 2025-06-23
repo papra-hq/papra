@@ -256,6 +256,9 @@ documents.deleted.deleted-at: Gelöscht
 documents.deleted.restoring: Wiederherstellen...
 documents.deleted.deleting: Löschen...
 
+documents.preview.unknown-file-type: Kein Vorschau verfügbar für diesen Dateityp
+documents.preview.binary-file: Dies scheint eine Binärdatei zu sein und kann nicht als Text angezeigt werden
+
 trash.delete-all.button: Alles löschen
 trash.delete-all.confirm.title: Alle Dokumente dauerhaft löschen?
 trash.delete-all.confirm.description: Sind Sie sicher, dass Sie alle Dokumente aus dem Papierkorb dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.
