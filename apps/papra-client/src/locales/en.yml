@@ -309,7 +309,6 @@ tags.form.name.placeholder: Eg. Contracts
 tags.form.name.required: Please enter a tag name
 tags.form.name.max-length: Tag name must be less than 64 characters
 tags.form.color.label: Color
-tags.form.color.placeholder: 'Eg. #FF0000'
 tags.form.color.required: Please enter a color
 tags.form.color.invalid: The hex color is badly formatted.
 tags.form.description.label: Description
@@ -553,3 +552,11 @@ demo.popup.discord: Join the {{ discordLink }} to get support, propose features 
 demo.popup.discord-link-label: Discord server
 demo.popup.reset: Reset demo data
 demo.popup.hide: Hide
+
+# Color picker
+
+color-picker.hue: Hue
+color-picker.saturation: Saturation
+color-picker.lightness: Lightness
+color-picker.select-color: Select color
+color-picker.select-a-color: Select a color

@@ -309,7 +309,6 @@ tags.form.name.placeholder: Z.B. Verträge
 tags.form.name.required: Bitte geben Sie einen Tag-Namen ein
 tags.form.name.max-length: Tag-Name muss weniger als 64 Zeichen lang sein
 tags.form.color.label: Farbe
-tags.form.color.placeholder: 'Z.B. #FF0000'
 tags.form.color.required: Bitte geben Sie eine Farbe ein
 tags.form.color.invalid: Die Hex-Farbe ist falsch formatiert.
 tags.form.description.label: Beschreibung
@@ -553,3 +552,11 @@ demo.popup.discord: Treten Sie dem {{ discordLink }} bei, um Support zu erhalten
 demo.popup.discord-link-label: Discord-Server
 demo.popup.reset: Demo-Daten zurücksetzen
 demo.popup.hide: Ausblenden
+
+# Color picker
+
+color-picker.hue: Farbton
+color-picker.saturation: Sättigung
+color-picker.lightness: Helligkeit
+color-picker.select-color: Farbe auswählen
+color-picker.select-a-color: Eine Farbe auswählen

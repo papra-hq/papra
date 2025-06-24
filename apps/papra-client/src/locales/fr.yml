@@ -309,7 +309,6 @@ tags.form.name.placeholder: 'Exemple: Contrats'
 tags.form.name.required: Veuillez entrer un nom pour le tag
 tags.form.name.max-length: Le nom du tag doit contenir moins de 64 caractères
 tags.form.color.label: Couleur
-tags.form.color.placeholder: 'Exemple: #FF0000'
 tags.form.color.required: Veuillez entrer une couleur
 tags.form.color.invalid: La couleur hexadécimale est mal formatée.
 tags.form.description.label: Description
@@ -553,3 +552,11 @@ demo.popup.discord: Rejoignez le {{ discordLink }} pour obtenir de l'aide, propo
 demo.popup.discord-link-label: Serveur Discord
 demo.popup.reset: Réinitialiser la démo
 demo.popup.hide: Masquer
+
+# Color picker
+
+color-picker.hue: Teinte
+color-picker.saturation: Saturation
+color-picker.lightness: Luminosité
+color-picker.select-color: Sélectionner la couleur
+color-picker.select-a-color: Sélectionner une couleur

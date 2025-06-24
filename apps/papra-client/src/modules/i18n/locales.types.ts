@@ -274,7 +274,6 @@ export type LocaleKeys =
   | 'tags.form.name.required'
   | 'tags.form.name.max-length'
   | 'tags.form.color.label'
-  | 'tags.form.color.placeholder'
   | 'tags.form.color.required'
   | 'tags.form.color.invalid'
   | 'tags.form.description.label'
@@ -486,4 +485,9 @@ export type LocaleKeys =
   | 'demo.popup.discord'
   | 'demo.popup.discord-link-label'
   | 'demo.popup.reset'
-  | 'demo.popup.hide';
+  | 'demo.popup.hide'
+  | 'color-picker.hue'
+  | 'color-picker.saturation'
+  | 'color-picker.lightness'
+  | 'color-picker.select-color'
+  | 'color-picker.select-a-color';
