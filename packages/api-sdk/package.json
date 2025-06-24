@@ -2,7 +2,7 @@
   "name": "@papra/api-sdk",
   "type": "module",
   "version": "1.0.1",
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.12.3",
   "description": "Api SDK for Papra, the document archiving platform.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",

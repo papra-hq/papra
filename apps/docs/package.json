@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.5.1",
   "private": true,
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.12.3",
   "description": "Papra documentation website",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",
