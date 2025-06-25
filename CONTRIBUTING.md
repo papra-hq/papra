@@ -84,7 +84,15 @@ We recommend running the app locally for development. Follow these steps:
    pnpm install
    ```
 
-3. Start the development server for the backend:
+3. Build the monorepo packages:
+   
+   As the apps rely on internal packages, you need to build them first.
+
+   ```bash
+   pnpm build:packages
+   ```
+
+4. Start the development server for the backend:
 
    ```bash
    cd apps/papra-server
@@ -94,7 +102,7 @@ We recommend running the app locally for development. Follow these steps:
    pnpm dev
    ```
 
-4. Start the frontend:
+5. Start the frontend:
 
    ```bash
    cd apps/papra-client
@@ -102,7 +110,7 @@ We recommend running the app locally for development. Follow these steps:
    pnpm dev
    ```
 
-5. Open your browser and navigate to `http://localhost:3000`.
+6. Open your browser and navigate to `http://localhost:3000`.
 
 ### Testing
 

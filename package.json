@@ -10,7 +10,8 @@
     "docker:build:root": "docker build -t papra -f docker/Dockerfile .",
     "docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless .",
     "version": "changeset version && pnpm install --no-frozen-lockfile",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "build:packages": "pnpm --filter './packages/*' --stream build"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
