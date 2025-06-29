@@ -41,7 +41,7 @@
     "@libsql/client": "^0.14.0",
     "@owlrelay/api-sdk": "^0.0.2",
     "@owlrelay/webhook": "^0.0.3",
-    "@papra/lecture": "^0.0.4",
+    "@papra/lecture": "^0.0.7",
     "@papra/webhooks": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
     "backblaze-b2": "^1.7.1",

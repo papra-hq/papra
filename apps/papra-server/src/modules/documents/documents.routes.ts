@@ -15,7 +15,7 @@ import { deferRegisterDocumentActivityLog } from './document-activity/document-a
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema } from './documents.schemas';
+import { documentIdSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -61,6 +61,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
 
     validateFormData(z.object({
       file: z.instanceof(File),
+      ocrLanguages: stringCoercedOcrLanguagesSchema.optional(),
     })),
     validateParams(z.object({
       organizationId: organizationIdSchema,
@@ -68,7 +69,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
     async (context) => {
       const { userId } = getUser({ context });
 
-      const { file } = context.req.valid('form');
+      const { file, ocrLanguages } = context.req.valid('form');
       const { organizationId } = context.req.valid('param');
 
       if (!file) {
@@ -91,6 +92,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
         db,
         config,
         trackingServices,
+        ocrLanguages,
       });
 
       const { document } = await createDocument({

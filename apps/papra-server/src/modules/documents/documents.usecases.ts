@@ -34,8 +34,8 @@ import { createDocumentStorageService } from './storage/documents.storage.servic
 
 const logger = createLogger({ namespace: 'documents:usecases' });
 
-export async function extractDocumentText({ file }: { file: File }) {
-  const { textContent, error, extractorName } = await extractTextFromFile({ file });
+export async function extractDocumentText({ file, ocrLanguages }: { file: File; ocrLanguages?: string[] }) {
+  const { textContent, error, extractorName } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } } });
 
   if (error) {
     logger.error({ error, extractorName }, 'Error while extracting text from document');
@@ -50,6 +50,7 @@ export async function createDocument({
   file,
   userId,
   organizationId,
+  ocrLanguages = [],
   documentsRepository,
   documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
@@ -65,6 +66,7 @@ export async function createDocument({
   file: File;
   userId?: string;
   organizationId: string;
+  ocrLanguages?: string[];
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
   generateDocumentId?: () => string;
@@ -117,6 +119,7 @@ export async function createDocument({
       documentsStorageService,
       generateDocumentId,
       trackingServices,
+      ocrLanguages,
       logger,
     });
 
@@ -167,6 +170,7 @@ export async function createDocumentCreationUsecase({
     webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
+    ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
     generateDocumentId: initialDeps.generateDocumentId,
     logger: initialDeps.logger,
   };
@@ -217,6 +221,7 @@ async function createNewDocument({
   documentsStorageService,
   generateDocumentId,
   trackingServices,
+  ocrLanguages,
   logger,
 }: {
   file: File;
@@ -230,6 +235,7 @@ async function createNewDocument({
   documentsStorageService: DocumentStorageService;
   generateDocumentId: () => string;
   trackingServices: TrackingServices;
+  ocrLanguages?: string[];
   logger: Logger;
 }) {
   const documentId = generateDocumentId();
@@ -245,7 +251,7 @@ async function createNewDocument({
     storageKey: originalDocumentStorageKey,
   });
 
-  const { text } = await extractDocumentText({ file });
+  const { text } = await extractDocumentText({ file, ocrLanguages });
 
   const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
     id: documentId,
