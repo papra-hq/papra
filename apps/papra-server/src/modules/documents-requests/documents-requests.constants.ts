@@ -1,0 +1,4 @@
+export const DOCUMENTS_REQUESTS_ID_PREFIX = 'dr';
+export const DOCUMENTS_REQUESTS_FILES_ID_PREFIX = 'dr_files';
+export const DOCUMENTS_REQUESTS_FILE_TAGS_ID_PREFIX = 'dr_file_tags';
+export const DOCUMENTS_REQUESTS_TOKEN_LENGTH = 32;
