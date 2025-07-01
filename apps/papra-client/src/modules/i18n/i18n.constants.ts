@@ -3,4 +3,5 @@ export const locales = [
   { key: 'fr', name: 'Français' },
   { key: 'de', name: 'Deutsch' },
   { key: 'pt-BR', name: 'Português Brasileiro' },
+  { key: 'pt', name: 'Português Europeu' },
 ] as const;
