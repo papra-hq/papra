@@ -41,7 +41,7 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
         <For each={props.data}>
           {item => (
             <tr>
-              <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2">
+              <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
                 {item.icon && <div class={item.icon}></div>}
                 {item.label}
               </td>
@@ -232,18 +232,18 @@ export const DocumentPage: Component = () => {
                 <div class="flex-1">
                   <Button
                     variant="ghost"
-                    class="flex items-center gap-2 group bg-transparent! px-0"
+                    class="flex items-center gap-2 group bg-transparent! px-0 text-left h-auto"
                     onClick={() => openRenameDialog({
                       documentId: getDocument().id,
                       organizationId: params.organizationId,
                       documentName: getDocument().name,
                     })}
                   >
-                    <h1 class="text-xl font-semibold">
+                    <h1 class="text-xl font-semibold lh-tight" title={getDocument().name}>
                       {getDocument().name}
                     </h1>
 
-                    <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors"></div>
+                    <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0"></div>
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
@@ -354,7 +354,7 @@ export const DocumentPage: Component = () => {
                           value: (
                             <Button
                               variant="ghost"
-                              class="flex items-center gap-2 group bg-transparent! p-0 h-auto"
+                              class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
                               onClick={() => openRenameDialog({
                                 documentId: getDocument().id,
                                 organizationId: params.organizationId,
@@ -363,7 +363,7 @@ export const DocumentPage: Component = () => {
                             >
                               {getDocument().name}
 
-                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors"></div>
+                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0"></div>
                             </Button>
                           ),
                           icon: 'i-tabler-file-text',
