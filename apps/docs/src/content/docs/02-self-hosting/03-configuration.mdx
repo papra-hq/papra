@@ -4,8 +4,7 @@ slug: self-hosting/configuration
 description: Configure your self-hosted Papra instance.
 ---
 
-import { mdSections, fullDotEnv } from '../../../config.data.ts';
-import { marked } from 'marked';
+import { sectionsHtml, fullDotEnv } from '../../../config.data.ts';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 import { Code } from '@astrojs/starlight/components';
@@ -84,5 +83,5 @@ Here is the full configuration file that you can use to configure Papra. The var
 
 Here is the complete list of configuration variables that you can use to configure Papra. You can set these variables in the `.env` file or pass them as environment variables when running the Docker container.
 
-<Fragment set:html={marked.parse(mdSections)} />
+<Fragment set:html={sectionsHtml} />
 

@@ -55,7 +55,10 @@ export const sidebar = [
           target: '_blank',
         },
       },
-
+      {
+        label: 'API Endpoints',
+        slug: 'resources/api-endpoints',
+      },
     ],
   },
 ] satisfies StarlightUserConfig['sidebar'];
