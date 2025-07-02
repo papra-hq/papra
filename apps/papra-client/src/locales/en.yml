@@ -71,6 +71,9 @@ auth.legal-links.description: By continuing, you acknowledge that you understand
 auth.legal-links.terms: Terms of Service
 auth.legal-links.privacy: Privacy Policy
 
+auth.no-auth-provider.title: No authentication provider
+auth.no-auth-provider.description: There are no authentication providers enabled on this instance of Papra. Please contact the administrator of this instance to enable them.
+
 # User settings
 
 user.settings.title: User settings

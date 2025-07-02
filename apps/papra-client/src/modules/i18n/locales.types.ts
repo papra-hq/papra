@@ -68,6 +68,8 @@ export type LocaleKeys =
   | 'auth.legal-links.description'
   | 'auth.legal-links.terms'
   | 'auth.legal-links.privacy'
+  | 'auth.no-auth-provider.title'
+  | 'auth.no-auth-provider.description'
   | 'user.settings.title'
   | 'user.settings.description'
   | 'user.settings.email.title'

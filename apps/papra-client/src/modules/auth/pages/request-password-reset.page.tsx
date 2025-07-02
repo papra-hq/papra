@@ -58,7 +58,7 @@ export const RequestPasswordResetPage: Component = () => {
   const navigate = useNavigate();
 
   onMount(() => {
-    if (!config.auth.isPasswordResetEnabled) {
+    if (!config.auth.isPasswordResetEnabled || !config.auth.providers.email.isEnabled) {
       navigate('/login');
     }
   });

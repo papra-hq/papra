@@ -56,6 +56,14 @@ export const authConfig = {
     env: 'AUTH_SHOW_LEGAL_LINKS',
   },
   providers: {
+    email: {
+      isEnabled: {
+        doc: 'Whether email/password authentication is enabled',
+        schema: booleanishSchema,
+        default: true,
+        env: 'AUTH_PROVIDERS_EMAIL_IS_ENABLED',
+      },
+    },
     github: {
       isEnabled: {
         doc: 'Whether Github OAuth is enabled',

@@ -71,6 +71,9 @@ auth.legal-links.description: Ao continuar, você reconhece que leu e concorda c
 auth.legal-links.terms: Termos de Serviço
 auth.legal-links.privacy: Política de Privacidade
 
+auth.no-auth-provider.title: Nenhum provedor de autenticação
+auth.no-auth-provider.description: Não há provedores de autenticação habilitados nesta instância do Papra. Por favor, entre em contato com o administrador desta instância para habilitá-los.
+
 # User settings
 
 user.settings.title: Configurações do usuário

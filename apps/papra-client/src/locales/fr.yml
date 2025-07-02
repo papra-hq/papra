@@ -71,6 +71,9 @@ auth.legal-links.description: En continuant, vous reconnaissez que vous comprene
 auth.legal-links.terms: Conditions d'utilisation
 auth.legal-links.privacy: Politique de confidentialité
 
+auth.no-auth-provider.title: Aucun fournisseur d'authentification
+auth.no-auth-provider.description: Il n'y a pas de fournisseurs d'authentification activés sur cette instance de Papra. Veuillez contacter l'administrateur de cette instance pour les activer.
+
 # User settings
 
 user.settings.title: Paramètres de l'utilisateur

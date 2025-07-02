@@ -14,6 +14,7 @@ import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs, isEmailVerificationRequiredError } from '../auth.models';
 import { authWithProvider, signIn } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
+import { NoAuthProviderWarning } from '../components/no-auth-provider';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
 export const EmailLoginForm: Component = () => {
@@ -105,13 +106,17 @@ export const LoginPage: Component = () => {
   const { config } = useConfig();
   const { t } = useI18n();
 
-  const [getShowEmailLogin, setShowEmailLogin] = createSignal(false);
+  const [getShowEmailLoginForm, setShowEmailLoginForm] = createSignal(false);
 
   const loginWithProvider = async (provider: SsoProviderConfig) => {
     await authWithProvider({ provider, config });
   };
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
+
+  if (!config.auth.providers.email.isEnabled && !getHasSsoProviders()) {
+    return <AuthLayout><NoAuthProviderWarning /></AuthLayout>;
+  }
 
   return (
     <AuthLayout>
@@ -120,17 +125,22 @@ export const LoginPage: Component = () => {
           <h1 class="text-xl font-bold">{t('auth.login.title')}</h1>
           <p class="text-muted-foreground mt-1 mb-4">{t('auth.login.description')}</p>
 
-          {getShowEmailLogin() || !getHasSsoProviders()
-            ? <EmailLoginForm />
-            : (
-                <Button onClick={() => setShowEmailLogin(true)} class="w-full">
-                  <div class="i-tabler-mail mr-2 size-4.5" />
-                  {t('auth.login.login-with-provider', { provider: 'Email' })}
-                </Button>
-              )}
+          <Show when={config.auth.providers.email.isEnabled}>
+            {getShowEmailLoginForm() || !getHasSsoProviders()
+              ? <EmailLoginForm />
+              : (
+                  <Button onClick={() => setShowEmailLoginForm(true)} class="w-full">
+                    <div class="i-tabler-mail mr-2 size-4.5" />
+                    {t('auth.login.login-with-provider', { provider: 'Email' })}
+                  </Button>
+                )}
+          </Show>
+
+          <Show when={config.auth.providers.email.isEnabled && getHasSsoProviders()}>
+            <Separator class="my-4" />
+          </Show>
 
           <Show when={getHasSsoProviders()}>
-            <Separator class="my-4" />
 
             <div class="flex flex-col gap-2">
               <For each={getEnabledSsoProviderConfigs({ config })}>

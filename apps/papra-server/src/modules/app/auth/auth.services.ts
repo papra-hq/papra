@@ -42,7 +42,7 @@ export function getAuth({
       },
     },
     emailAndPassword: {
-      enabled: true,
+      enabled: config.auth.providers.email.isEnabled,
       requireEmailVerification: config.auth.isEmailVerificationRequired,
       sendResetPassword: config.auth.isPasswordResetEnabled
         ? authEmailsServices.sendPasswordResetEmail

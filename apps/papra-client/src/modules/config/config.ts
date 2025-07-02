@@ -16,6 +16,7 @@ export const buildTimeConfig = {
     isEmailVerificationRequired: asBoolean(import.meta.env.VITE_AUTH_IS_EMAIL_VERIFICATION_REQUIRED, true),
     showLegalLinksOnAuthPage: asBoolean(import.meta.env.VITE_AUTH_SHOW_LEGAL_LINKS_ON_AUTH_PAGE, false),
     providers: {
+      email: { isEnabled: asBoolean(import.meta.env.VITE_AUTH_PROVIDERS_EMAIL_IS_ENABLED, true) },
       github: { isEnabled: asBoolean(import.meta.env.VITE_AUTH_PROVIDERS_GITHUB_IS_ENABLED, false) },
       google: { isEnabled: asBoolean(import.meta.env.VITE_AUTH_PROVIDERS_GOOGLE_IS_ENABLED, false) },
       customs: [] as {
@@ -35,7 +36,6 @@ export const buildTimeConfig = {
   },
   intakeEmails: {
     isEnabled: asBoolean(import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED, false),
-    emailGenerationDomain: asString(import.meta.env.VITE_INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN),
   },
   isSubscriptionsEnabled: asBoolean(import.meta.env.VITE_IS_SUBSCRIPTIONS_ENABLED, false),
 } as const;

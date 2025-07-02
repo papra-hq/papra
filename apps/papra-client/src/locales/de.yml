@@ -71,6 +71,9 @@ auth.legal-links.description: Indem Sie fortfahren, bestätigen Sie, dass Sie di
 auth.legal-links.terms: Nutzungsbedingungen
 auth.legal-links.privacy: Datenschutzrichtlinie
 
+auth.no-auth-provider.title: Kein Authentifizierungsanbieter
+auth.no-auth-provider.description: Es gibt keine Authentifizierungsanbieter auf dieser Papra-Instanz. Bitte kontaktieren Sie den Administrator dieser Instanz, um sie zu aktivieren.
+
 # User settings
 
 user.settings.title: Benutzereinstellungen

@@ -13,6 +13,7 @@ import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
 import { authWithProvider, signUp } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
+import { NoAuthProviderWarning } from '../components/no-auth-provider';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 
 export const EmailRegisterForm: Component = () => {
@@ -139,6 +140,10 @@ export const RegisterPage: Component = () => {
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
 
+  if (!config.auth.providers.email.isEnabled && !getHasSsoProviders()) {
+    return <AuthLayout><NoAuthProviderWarning /></AuthLayout>;
+  }
+
   return (
     <AuthLayout>
       <div class="flex items-center justify-center h-full p-6 sm:pb-32">
@@ -150,17 +155,22 @@ export const RegisterPage: Component = () => {
             {t('auth.register.description')}
           </p>
 
-          {getShowEmailRegister() || !getHasSsoProviders()
-            ? <EmailRegisterForm />
-            : (
-                <Button onClick={() => setShowEmailRegister(true)} class="w-full">
-                  <div class="i-tabler-mail mr-2 size-4.5" />
-                  {t('auth.register.register-with-email')}
-                </Button>
-              )}
+          <Show when={config.auth.providers.email.isEnabled}>
+            {getShowEmailRegister() || !getHasSsoProviders()
+              ? <EmailRegisterForm />
+              : (
+                  <Button onClick={() => setShowEmailRegister(true)} class="w-full">
+                    <div class="i-tabler-mail mr-2 size-4.5" />
+                    {t('auth.register.register-with-email')}
+                  </Button>
+                )}
+          </Show>
+
+          <Show when={config.auth.providers.email.isEnabled && getHasSsoProviders()}>
+            <Separator class="my-4" />
+          </Show>
 
           <Show when={getHasSsoProviders()}>
-            <Separator class="my-4" />
 
             <div class="flex flex-col gap-2">
               <For each={getEnabledSsoProviderConfigs({ config })}>

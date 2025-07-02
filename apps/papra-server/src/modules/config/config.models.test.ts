@@ -1,6 +1,8 @@
+import type { DeepPartial } from '@corentinth/chisels';
 import type { Config } from './config.types';
 import { describe, expect, test } from 'vitest';
 import { getPublicConfig } from './config.models';
+import { overrideConfig } from './config.test-utils';
 
 describe('config models', () => {
   describe('getPublicConfig', () => {
@@ -12,10 +14,10 @@ describe('config models', () => {
         - auth.providers.*.isEnabled Wether a oauth provider is enabled
         - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
         - intakeEmails.isEnabled Whether intake emails are enabled
-        - intakeEmails.emailGenerationDomain The domain to use when generating email addresses for intake emails
+        - auth.providers.email.isEnabled Whether email/password authentication is enabled
         
         Any other config should not be exposed.`, () => {
-      const config = {
+      const config = overrideConfig({
         foo: 'bar',
         auth: {
           bar: 'baz',
@@ -38,9 +40,8 @@ describe('config models', () => {
         },
         intakeEmails: {
           isEnabled: true,
-          emailGenerationDomain: 'papra.email',
         },
-      } as unknown as Config;
+      } as DeepPartial<Config>);
 
       expect(getPublicConfig({ config })).to.eql({
         publicConfig: {
@@ -57,7 +58,9 @@ describe('config models', () => {
                 isEnabled: false,
               },
               customs: [],
-
+              email: {
+                isEnabled: true,
+              },
             },
           },
           documents: {
@@ -65,7 +68,6 @@ describe('config models', () => {
           },
           intakeEmails: {
             isEnabled: true,
-            emailGenerationDomain: 'papra.email',
           },
         },
       });
