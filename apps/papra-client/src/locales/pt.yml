@@ -117,7 +117,7 @@ organizations.create.success: Organização criada com sucesso
 organizations.create-first.title: Criar a sua organização
 organizations.create-first.description: Os seus documentos serão agrupados por organização. Pode criar várias organizações para separar os seus documentos, por exemplo, para documentos pessoais e de trabalho.
 organizations.create-first.default-name: A minha organização
-organizations.create-first.user-name: "Organização de {{ name }}"
+organizations.create-first.user-name: 'Organização de {{ name }}'
 
 organization.settings.title: Definições da Organização
 organization.settings.page.title: Definições da organização
