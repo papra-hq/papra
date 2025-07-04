@@ -16,9 +16,9 @@ class CustomError extends Error {
   cause?: Error | null;
   statusCode: ContentfulStatusCode;
   isCustomError = true;
-  isInternal?: boolean;
+  isInternal: boolean = false;
 
-  constructor({ message, code, cause, statusCode, isInternal }: ErrorOptions) {
+  constructor({ message, code, cause, statusCode, isInternal = false }: ErrorOptions) {
     super(message);
 
     this.code = code;

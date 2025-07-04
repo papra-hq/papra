@@ -1,12 +1,13 @@
 import type { Context, RouteDefinitionContext } from '../server.types';
 import type { Session } from './auth.types';
 import { get } from 'lodash-es';
+import { isDefined } from '../../shared/utils';
 
 export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext) {
   app.on(
     ['POST', 'GET'],
     '/api/auth/*',
-    context => auth.handler(context.req.raw),
+    async context => auth.handler(context.req.raw),
   );
 
   app.use('*', async (context: Context, next) => {
@@ -23,9 +24,9 @@ export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext
 
   if (config.env === 'test') {
     app.use('*', async (context: Context, next) => {
-      const overrideUserId = get(context.env, 'loggedInUserId') as string | undefined;
+      const overrideUserId: unknown = get(context.env, 'loggedInUserId');
 
-      if (overrideUserId) {
+      if (isDefined(overrideUserId) && typeof overrideUserId === 'string') {
         context.set('userId', overrideUserId);
         context.set('session', {} as Session);
         context.set('authType', 'session');

@@ -4,11 +4,12 @@ import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationMembersTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
+import { API_KEY_ID_PREFIX } from './api-keys.constants';
 
 export const apiKeysTable = sqliteTable(
   'api_keys',
   {
-    ...createPrimaryKeyField({ prefix: 'ak' }),
+    ...createPrimaryKeyField({ prefix: API_KEY_ID_PREFIX }),
     ...createTimestampColumns(),
 
     name: text('name').notNull(),

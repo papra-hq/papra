@@ -1,7 +1,7 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { getPublicConfig } from './config.models';
 
-export async function registerConfigRoutes(context: RouteDefinitionContext) {
+export function registerConfigRoutes(context: RouteDefinitionContext) {
   setupGetPublicConfigRoute(context);
 }
 

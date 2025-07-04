@@ -99,8 +99,8 @@ export async function triggerWebhooks({
   const limit = pLimit(10);
 
   await Promise.all(
-    webhooks.map(webhook =>
-      limit(() =>
+    webhooks.map(async webhook =>
+      limit(async () =>
         triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, triggerWebhookService }),
       ),
     ),

@@ -60,8 +60,8 @@ export function NumberFieldErrorMessage<T extends ValidComponent = 'div'>(props:
   );
 }
 
-type numberFieldProps<T extends ValidComponent = 'div'> =
-  NumberFieldRootProps<T> & {
+type numberFieldProps<T extends ValidComponent = 'div'>
+  = NumberFieldRootProps<T> & {
     class?: string;
   };
 
@@ -87,8 +87,8 @@ export function NumberFieldGroup(props: ComponentProps<'div'>) {
   );
 }
 
-type numberFieldInputProps<T extends ValidComponent = 'input'> =
-  NumberFieldInputProps<T> & {
+type numberFieldInputProps<T extends ValidComponent = 'input'>
+  = NumberFieldInputProps<T> & {
     class?: string;
   };
 

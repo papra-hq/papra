@@ -74,7 +74,7 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files;
+        const [file] = files as [File];
 
         expect(file.name).to.equal('hello.md');
         expect(file.size).to.equal(11);
@@ -175,7 +175,7 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files;
+        const [file] = files as [File];
 
         expect(file.name).to.equal('hello.md');
         expect(file.size).to.equal(11);
@@ -232,6 +232,7 @@ describe('ingestion-folders usecases', () => {
           ingestionFolder: {
             folderRootPath: '/apps/papra/ingestion',
             postProcessing: {
+              // eslint-disable-next-line ts/no-unsafe-assignment
               strategy: 'unknown' as any,
             },
           },
@@ -278,7 +279,7 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files;
+        const [file] = files as [File];
 
         expect(file.name).to.equal('hello.md');
         expect(file.size).to.equal(11);
@@ -303,6 +304,7 @@ describe('ingestion-folders usecases', () => {
           ingestionFolder: {
             folderRootPath: '/apps/papra/ingestion',
             postProcessing: {
+              // eslint-disable-next-line ts/no-unsafe-assignment
               strategy: 'unknown' as any,
             },
           },
@@ -477,7 +479,7 @@ describe('ingestion-folders usecases', () => {
         const documents = await db.select().from(documentsTable);
 
         expect(documents).to.have.length(1);
-        expect(documents[0].id).to.equal('doc_1');
+        expect(documents[0]?.id).to.equal('doc_1');
 
         // Check fs
         expect(vol.toJSON()).to.deep.equal({
@@ -553,7 +555,7 @@ describe('ingestion-folders usecases', () => {
         const documents = await db.select().from(documentsTable);
 
         expect(documents).to.have.length(1);
-        expect(documents[0].id).to.equal('doc_1');
+        expect(documents[0]?.id).to.equal('doc_1');
 
         // Check fs
         expect(vol.toJSON()).to.deep.equal({

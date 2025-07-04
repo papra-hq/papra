@@ -2,7 +2,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { cwd as getCwd } from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
+
+const filename = fileURLToPath(import.meta.url);
 
 export async function generateI18nTypes({ cwd = getCwd() }: { cwd?: string } = {}) {
   try {
@@ -17,7 +20,7 @@ export async function generateI18nTypes({ cwd = getCwd() }: { cwd?: string } = {
 // Do not manually edit this file.
 // This file is dynamically generated when the dev server runs (or using the \`pnpm script:generate-i18n-types\` command).
 // Keys are extracted from the en.yml file.
-// Source code : ${path.relative(cwd, __filename)}
+// Source code : ${path.relative(cwd, filename)}
 
 export type LocaleKeys =\n${localKeys.map(key => `  | '${key}'`).join('\n')};
 `.trimStart();

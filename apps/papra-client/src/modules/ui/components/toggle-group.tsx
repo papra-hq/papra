@@ -25,8 +25,8 @@ function useToggleGroup() {
 }
 
 type toggleGroupProps<T extends ValidComponent = 'div'> = ParentProps<
-  ToggleGroupRootProps<T> &
-  VariantProps<typeof toggleVariants> & {
+  ToggleGroupRootProps<T>
+  & VariantProps<typeof toggleVariants> & {
     class?: string;
   }
 >;
@@ -56,8 +56,8 @@ export function ToggleGroup<T extends ValidComponent = 'div'>(props: Polymorphic
   );
 }
 
-type toggleGroupItemProps<T extends ValidComponent = 'button'> =
-  ToggleGroupItemProps<T> & {
+type toggleGroupItemProps<T extends ValidComponent = 'button'>
+  = ToggleGroupItemProps<T> & {
     class?: string;
   };
 

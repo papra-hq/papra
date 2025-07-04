@@ -46,8 +46,8 @@ export function TabsList<T extends ValidComponent = 'div'>(props: PolymorphicPro
   );
 }
 
-type tabsContentProps<T extends ValidComponent = 'div'> =
-  TabsContentProps<T> & {
+type tabsContentProps<T extends ValidComponent = 'div'>
+  = TabsContentProps<T> & {
     class?: string;
   };
 
@@ -65,8 +65,8 @@ export function TabsContent<T extends ValidComponent = 'div'>(props: Polymorphic
   );
 }
 
-type tabsTriggerProps<T extends ValidComponent = 'button'> =
-  TabsTriggerProps<T> & {
+type tabsTriggerProps<T extends ValidComponent = 'button'>
+  = TabsTriggerProps<T> & {
     class?: string;
   };
 
@@ -100,8 +100,8 @@ const tabsIndicatorVariants = cva(
 );
 
 type tabsIndicatorProps<T extends ValidComponent = 'div'> = VoidProps<
-  TabsIndicatorProps<T> &
-  VariantProps<typeof tabsIndicatorVariants> & {
+  TabsIndicatorProps<T>
+  & VariantProps<typeof tabsIndicatorVariants> & {
     class?: string;
   }
 >;

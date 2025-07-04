@@ -37,7 +37,7 @@ export async function createIntakeEmail({
   return { intakeEmail };
 }
 
-export function processIntakeEmailIngestion({
+export async function processIntakeEmailIngestion({
   fromAddress,
   recipientsAddresses,
   attachments,
@@ -51,7 +51,7 @@ export function processIntakeEmailIngestion({
   createDocument: CreateDocumentUsecase;
 }) {
   return Promise.all(
-    recipientsAddresses.map(recipientAddress => safely(
+    recipientsAddresses.map(async recipientAddress => safely(
       ingestEmailForRecipient({
         fromAddress,
         recipientAddress,

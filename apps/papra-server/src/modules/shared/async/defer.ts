@@ -13,5 +13,5 @@ export function safelyDefer(fn: () => Promise<void>, { logger = createLogger({ n
 }
 
 export function createDeferable<Args extends unknown[]>(fn: (...args: Args) => Promise<void>) {
-  return (...args: Args) => safelyDefer(() => fn(...args));
+  return (...args: Args) => safelyDefer(async () => fn(...args));
 }

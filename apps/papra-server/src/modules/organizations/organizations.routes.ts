@@ -10,7 +10,7 @@ import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
 import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization, updateOrganizationMemberRole } from './organizations.usecases';
 
-export async function registerOrganizationsRoutes(context: RouteDefinitionContext) {
+export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
   setupCreateOrganizationRoute(context);
   setupGetOrganizationRoute(context);

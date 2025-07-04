@@ -1,1 +1,1 @@
-export const nextTick = () => new Promise(resolve => setImmediate(resolve));
+export const nextTick = async () => new Promise(resolve => setImmediate(resolve));

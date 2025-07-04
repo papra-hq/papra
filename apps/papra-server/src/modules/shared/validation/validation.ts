@@ -17,11 +17,13 @@ function buildValidator<Target extends keyof ValidationTargets>({ target, error 
   return <Schema extends z.ZodTypeAny>(schema: Schema, { allowAdditionalFields = false }: { allowAdditionalFields?: boolean } = {}) => {
     return validator(target, (value, context) => {
       // @ts-expect-error try to enforce strict mode
-      const refinedSchema = allowAdditionalFields ? schema : (schema.strict?.() ?? schema);
+      // eslint-disable-next-line ts/no-unsafe-assignment, ts/no-unsafe-call
+      const refinedSchema: Schema = allowAdditionalFields ? schema : (schema.strict?.() ?? schema);
 
       const result = refinedSchema.safeParse(value);
 
       if (result.success) {
+        // eslint-disable-next-line ts/no-unsafe-return
         return result.data as z.infer<Schema>;
       }
 

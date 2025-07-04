@@ -3,6 +3,7 @@ import type { Context } from '../app/server.types';
 import { createMiddleware } from 'hono/factory';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getAuthorizationHeader } from '../shared/headers/headers.models';
+import { isNil } from '../shared/utils';
 import { createApiKeysRepository } from './api-keys.repository';
 import { getApiKey } from './api-keys.usecases';
 
@@ -14,7 +15,7 @@ export function createApiKeyMiddleware({ db }: { db: Database }) {
   return createMiddleware(async (context: Context, next) => {
     const { authorizationHeader } = getAuthorizationHeader({ context });
 
-    if (!authorizationHeader) {
+    if (isNil(authorizationHeader)) {
       return next();
     }
 
@@ -27,6 +28,11 @@ export function createApiKeyMiddleware({ db }: { db: Database }) {
     const [maybeBearer, token] = parts;
 
     if (maybeBearer !== 'Bearer') {
+      throw createUnauthorizedError();
+    }
+
+    if (isNil(token)) {
+      // For type safety
       throw createUnauthorizedError();
     }
 

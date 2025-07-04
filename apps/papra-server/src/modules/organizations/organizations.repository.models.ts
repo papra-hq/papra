@@ -11,7 +11,7 @@ export function ensureInvitationStatus({ invitation, now = new Date() }: { invit
     return invitation;
   }
 
-  if (invitation.expiresAt && isAfter(invitation.expiresAt, now)) {
+  if (isAfter(invitation.expiresAt, now)) {
     return invitation;
   }
 

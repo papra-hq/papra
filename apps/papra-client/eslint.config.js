@@ -5,6 +5,11 @@ export default antfu({
     semi: true,
   },
 
+  ignores: [
+    // Generated file
+    'src/modules/i18n/locales.types.ts',
+  ],
+
   rules: {
     // To allow export on top of files
     'ts/no-use-before-define': ['error', { allowNamedExports: true, functions: false }],

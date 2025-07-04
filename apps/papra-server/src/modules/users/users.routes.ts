@@ -7,7 +7,7 @@ import { createRolesRepository } from '../roles/roles.repository';
 import { validateJsonBody } from '../shared/validation/validation';
 import { createUsersRepository } from './users.repository';
 
-export async function registerUsersRoutes(context: RouteDefinitionContext) {
+export function registerUsersRoutes(context: RouteDefinitionContext) {
   setupGetCurrentUserRoute(context);
   setupUpdateUserRoute(context);
 }

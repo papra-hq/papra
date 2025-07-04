@@ -1,3 +1,8 @@
+import { createPrefixedIdRegex } from '../shared/random/ids';
+
+export const API_KEY_ID_PREFIX = 'ak';
+export const API_KEY_ID_REGEX = createPrefixedIdRegex({ prefix: API_KEY_ID_PREFIX });
+
 export const API_KEY_PREFIX = 'ppapi';
 export const API_KEY_TOKEN_LENGTH = 64;
 

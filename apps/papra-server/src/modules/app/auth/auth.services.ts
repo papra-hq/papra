@@ -36,9 +36,7 @@ export function getAuth({
     logger: {
       disabled: false,
       log: (baseLevel, message) => {
-        const level = (baseLevel in logger ? baseLevel : 'info') as keyof typeof logger;
-
-        logger[level](message);
+        logger[baseLevel ?? 'info'](message);
       },
     },
     emailAndPassword: {

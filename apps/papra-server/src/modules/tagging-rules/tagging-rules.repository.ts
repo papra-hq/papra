@@ -69,6 +69,12 @@ async function getOrganizationEnabledTaggingRules({ organizationId, db }: { orga
 async function createTaggingRule({ taggingRule, db }: { taggingRule: DbInsertableTaggingRule; db: Database }) {
   const [createdTaggingRule] = await db.insert(taggingRulesTable).values(taggingRule).returning();
 
+  if (!createdTaggingRule) {
+    // Very unlikely to happen as the query will throw an error if the tagging rule is not created
+    // it's for type safety
+    throw new Error('Failed to create tagging rule');
+  }
+
   return { taggingRule: createdTaggingRule };
 }
 

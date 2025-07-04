@@ -18,6 +18,7 @@ import { isErrorWithCode } from '../shared/errors/errors';
 import { createFsServices } from '../shared/fs/fs.services';
 import { createLogger } from '../shared/logger/logger';
 import { getRootDirPath } from '../shared/path';
+import { isNil } from '../shared/utils';
 import { addTimestampToFilename, getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder, getOrganizationIdFromFilePath, isFileInDoneFolder, isFileInErrorFolder, normalizeFilePathToIngestionFolder } from './ingestion-folder.models';
 import { createInvalidPostProcessingStrategyError } from './ingestion-folders.errors';
 import { getFile } from './ingestion-folders.services';
@@ -58,8 +59,8 @@ export function createIngestionFolderWatcher({
             ignored,
           },
         )
-        .on('add', (fileMaybeCwdRelativePath) => {
-          processingQueue.add(async () => {
+        .on('add', async (fileMaybeCwdRelativePath) => {
+          await processingQueue.add(async () => {
             const filePath = isAbsolute(fileMaybeCwdRelativePath) ? fileMaybeCwdRelativePath : join(cwd, fileMaybeCwdRelativePath);
 
             logger.info({ filePath }, 'Processing file');
@@ -116,7 +117,7 @@ export async function processFile({
 
   const { organizationId } = await getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository });
 
-  if (!organizationId) {
+  if (isNil(organizationId)) {
     logger.warn({ filePath }, 'A file in the ingestion folder is not located in an organization ingestion folder, skipping');
     return;
   }
@@ -149,7 +150,7 @@ export async function processFile({
     logger.info({ filePath }, 'Document not inserted because it already exists');
   }
 
-  if (result) {
+  if (result?.document) {
     const { document } = result;
 
     logger.info({ documentId: document.id }, 'Document imported from ingestion folder');
@@ -195,11 +196,15 @@ async function getFileOrganizationId({ filePath, ingestionFolderPath, organizati
 
   const { organizationId } = getOrganizationIdFromFilePath({ relativeFilePath });
 
-  if (!organizationId) {
+  if (isNil(organizationId)) {
     return { organizationId: undefined };
   }
 
   const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+  if (isNil(organization)) {
+    return { organizationId: undefined };
+  }
 
   return { organizationId: organization.id };
 }

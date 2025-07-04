@@ -43,7 +43,7 @@ describe('memory storage-driver', () => {
       const entries = Array.from(storage.entries());
 
       expect(entries).to.have.length(1);
-      const [key, file] = entries[0];
+      const [key, file] = entries[0] as [string, File];
 
       expect(key).to.eql('org_1/text-file.txt');
       expect(file).to.be.a('File');

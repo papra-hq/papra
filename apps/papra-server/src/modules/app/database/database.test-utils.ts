@@ -53,7 +53,7 @@ async function seedDatabase({ db, ...seedRows }: { db: Database } & SeedTablesRo
   await Promise.all(
     Object
       .entries(seedRows)
-      .map(([table, rows]) => db
+      .map(async ([table, rows]) => db
         .insert(seedTables[table as keyof typeof seedTables])
         .values(rows)
         .execute(),

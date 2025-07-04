@@ -26,7 +26,13 @@ export function createWebhookRepository({ db }: { db: Database }) {
 async function createOrganizationWebhook({ db, ...webhook }: { db: Database } & { name: string; url: string; secret?: string; enabled?: boolean; events?: EventName[]; organizationId: string; createdBy: string }) {
   const [createdWebhook] = await db.insert(webhooksTable).values(webhook).returning();
 
-  if (webhook.events?.length) {
+  if (!createdWebhook) {
+    // Very unlikely to happen as the query will throw an error if the webhook is not created
+    // it's for type safety
+    throw new Error('Failed to create webhook');
+  }
+
+  if (webhook.events && webhook.events.length > 0) {
     await db
       .insert(webhookEventsTable)
       .values(
@@ -86,6 +92,10 @@ async function getOrganizationWebhookById({ db, webhookId, organizationId }: { d
         eq(webhooksTable.organizationId, organizationId),
       ),
     );
+
+  if (!records.length) {
+    return { webhook: undefined };
+  }
 
   const [{ webhook } = {}] = records;
   const events = records.map(record => record.webhookEvents?.eventName);

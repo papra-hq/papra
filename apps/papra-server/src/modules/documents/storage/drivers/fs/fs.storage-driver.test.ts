@@ -94,7 +94,7 @@ describe('storage driver', () => {
 
         const { fileStream } = await fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' });
 
-        const chunks: Uint8Array[] = [];
+        const chunks: unknown[] = [];
         for await (const chunk of fileStream) {
           chunks.push(chunk);
         }

@@ -1,3 +1,4 @@
+import type { ServerInstanceGenerics } from '../server.types';
 import { Hono } from 'hono';
 import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../../config/config.test-utils';
@@ -9,8 +10,8 @@ describe('middlewares', () => {
     test('when a request last longer than the config timeout, a 504 error is raised', async () => {
       const config = overrideConfig({ server: { routeTimeoutMs: 50 } });
 
-      const app = new Hono<{ Variables: { config: any } }>();
-      registerErrorMiddleware({ app: app as any });
+      const app = new Hono<ServerInstanceGenerics>();
+      registerErrorMiddleware({ app });
 
       app.get(
         '/should-timeout',

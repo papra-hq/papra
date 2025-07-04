@@ -1,3 +1,6 @@
+import { createError } from '../shared/errors/errors';
+import { isDefined, isNil } from '../shared/utils';
+
 export function buildEmailAddress({
   username,
   domain,
@@ -7,11 +10,20 @@ export function buildEmailAddress({
   domain: string;
   plusPart?: string;
 }) {
-  return `${username}${plusPart ? `+${plusPart}` : ''}@${domain}`;
+  return `${username}${isDefined(plusPart) ? `+${plusPart}` : ''}@${domain}`;
 }
 
 export function parseEmailAddress({ email }: { email: string }) {
   const [fullUsername, domain] = email.split('@');
+
+  if (isNil(fullUsername) || isNil(domain)) {
+    throw createError({
+      message: 'Invalid email address',
+      code: 'intake_emails.invalid_email_address',
+      statusCode: 400,
+    });
+  }
+
   const [username, ...plusParts] = fullUsername.split('+');
   const plusPart = plusParts.length > 0 ? plusParts.join('+') : undefined;
 
@@ -19,7 +31,7 @@ export function parseEmailAddress({ email }: { email: string }) {
 }
 
 export function getEmailUsername({ email }: { email: string | undefined }) {
-  if (!email) {
+  if (isNil(email)) {
     return { username: undefined };
   }
 

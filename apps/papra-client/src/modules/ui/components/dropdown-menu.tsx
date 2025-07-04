@@ -26,8 +26,8 @@ export function DropdownMenu(props: DropdownMenuRootProps) {
   return <DropdownMenuPrimitive {...merge} />;
 }
 
-type dropdownMenuContentProps<T extends ValidComponent = 'div'> =
-  DropdownMenuContentProps<T> & {
+type dropdownMenuContentProps<T extends ValidComponent = 'div'>
+  = DropdownMenuContentProps<T> & {
     class?: string;
   };
 
@@ -49,8 +49,8 @@ export function DropdownMenuContent<T extends ValidComponent = 'div'>(props: Pol
   );
 }
 
-type dropdownMenuItemProps<T extends ValidComponent = 'div'> =
-  DropdownMenuItemProps<T> & {
+type dropdownMenuItemProps<T extends ValidComponent = 'div'>
+  = DropdownMenuItemProps<T> & {
     class?: string;
     inset?: boolean;
   };
@@ -73,8 +73,8 @@ export function DropdownMenuItem<T extends ValidComponent = 'div'>(props: Polymo
   );
 }
 
-type dropdownMenuGroupLabelProps<T extends ValidComponent = 'span'> =
-  DropdownMenuGroupLabelProps<T> & {
+type dropdownMenuGroupLabelProps<T extends ValidComponent = 'span'>
+  = DropdownMenuGroupLabelProps<T> & {
     class?: string;
   };
 
@@ -92,8 +92,8 @@ export function DropdownMenuGroupLabel<T extends ValidComponent = 'span'>(props:
   );
 }
 
-type dropdownMenuItemLabelProps<T extends ValidComponent = 'div'> =
-  DropdownMenuItemLabelProps<T> & {
+type dropdownMenuItemLabelProps<T extends ValidComponent = 'div'>
+  = DropdownMenuItemLabelProps<T> & {
     class?: string;
   };
 
@@ -111,8 +111,8 @@ export function DropdownMenuItemLabel<T extends ValidComponent = 'div'>(props: P
   );
 }
 
-type dropdownMenuSeparatorProps<T extends ValidComponent = 'hr'> =
-  DropdownMenuSeparatorProps<T> & {
+type dropdownMenuSeparatorProps<T extends ValidComponent = 'hr'>
+  = DropdownMenuSeparatorProps<T> & {
     class?: string;
   };
 
@@ -178,8 +178,8 @@ export function DropdownMenuSubTrigger<T extends ValidComponent = 'div'>(props: 
   );
 }
 
-type dropdownMenuSubContentProps<T extends ValidComponent = 'div'> =
-  DropdownMenuSubTriggerProps<T> & {
+type dropdownMenuSubContentProps<T extends ValidComponent = 'div'>
+  = DropdownMenuSubTriggerProps<T> & {
     class?: string;
   };
 

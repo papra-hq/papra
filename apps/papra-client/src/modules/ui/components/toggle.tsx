@@ -28,11 +28,11 @@ export const toggleVariants = cva(
   },
 );
 
-type toggleButtonProps<T extends ValidComponent = 'button'> =
-  ToggleButtonRootProps<T> &
-  VariantProps<typeof toggleVariants> & {
-    class?: string;
-  };
+type toggleButtonProps<T extends ValidComponent = 'button'>
+  = ToggleButtonRootProps<T>
+    & VariantProps<typeof toggleVariants> & {
+      class?: string;
+    };
 
 export function ToggleButton<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, toggleButtonProps<T>>) {
   const [local, rest] = splitProps(props as toggleButtonProps, [

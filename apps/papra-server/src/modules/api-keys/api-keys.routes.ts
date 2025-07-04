@@ -4,9 +4,10 @@ import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createError } from '../shared/errors/errors';
-import { validateJsonBody } from '../shared/validation/validation';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
 import { createApiKeysRepository } from './api-keys.repository';
+import { apiKeyIdSchema } from './api-keys.schemas';
 import { createApiKey } from './api-keys.usecases';
 
 export function registerApiKeysRoutes(context: RouteDefinitionContext) {
@@ -85,11 +86,14 @@ function setupDeleteApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/api-keys/:apiKeyId',
     requireAuthentication(),
+    validateParams(z.object({
+      apiKeyId: apiKeyIdSchema,
+    })),
     async (context) => {
       const { userId } = getUser({ context });
       const apiKeyRepository = createApiKeysRepository({ db });
 
-      const { apiKeyId } = context.req.param();
+      const { apiKeyId } = context.req.valid('param');
 
       await apiKeyRepository.deleteUserApiKey({ apiKeyId, userId });
 

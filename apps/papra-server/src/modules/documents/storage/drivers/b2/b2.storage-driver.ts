@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 import B2 from 'backblaze-b2';
 
+import { isNil } from '../../../../shared/utils';
 import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
@@ -22,8 +23,10 @@ export const b2StorageDriverFactory = defineStorageDriver(async ({ config }) => 
         bucketId,
       });
       const upload = await b2Client.uploadFile({
-        uploadUrl: getUploadUrl.data.uploadUrl,
-        uploadAuthToken: getUploadUrl.data.authorizationToken,
+        // eslint-disable-next-line ts/no-unsafe-member-access
+        uploadUrl: getUploadUrl.data?.uploadUrl as string,
+        // eslint-disable-next-line ts/no-unsafe-member-access
+        uploadAuthToken: getUploadUrl.data?.authorizationToken as string,
         fileName: storageKey,
         data: Buffer.from(await file.arrayBuffer()),
       });
@@ -34,15 +37,18 @@ export const b2StorageDriverFactory = defineStorageDriver(async ({ config }) => 
     },
     getFileStream: async ({ storageKey }) => {
       await b2Client.authorize();
+
       const response = await b2Client.downloadFileByName({
         bucketName,
         fileName: storageKey,
         responseType: 'stream',
       });
-      if (!response.data) {
+
+      if (isNil(response.data)) {
         throw createFileNotFoundError();
       }
-      return { fileStream: response.data };
+
+      return { fileStream: response.data as ReadableStream };
     },
     deleteFile: async ({ storageKey }) => {
       await b2Client.hideFile({

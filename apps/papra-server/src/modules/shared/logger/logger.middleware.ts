@@ -1,3 +1,4 @@
+import type { Context } from '../../app/server.types';
 import { createMiddleware } from 'hono/factory';
 import { getHeader } from '../headers/headers.models';
 import { generateId } from '../random/ids';
@@ -6,7 +7,7 @@ import { createLogger, wrapWithLoggerContext } from './logger';
 const logger = createLogger({ namespace: 'app' });
 
 export function createLoggerMiddleware() {
-  return createMiddleware(async (context, next) => {
+  return createMiddleware(async (context: Context, next) => {
     const requestId = getHeader({ context, name: 'x-request-id' });
 
     await wrapWithLoggerContext(

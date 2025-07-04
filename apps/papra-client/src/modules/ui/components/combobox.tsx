@@ -88,8 +88,8 @@ export function ComboboxTrigger<T extends ValidComponent = 'button'>(props: Poly
   );
 }
 
-type comboboxContentProps<T extends ValidComponent = 'div'> =
-  ComboboxContentProps<T> & {
+type comboboxContentProps<T extends ValidComponent = 'div'>
+  = ComboboxContentProps<T> & {
     class?: string;
   };
 

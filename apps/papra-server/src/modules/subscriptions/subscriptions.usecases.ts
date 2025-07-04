@@ -3,6 +3,7 @@ import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsRepository } from './subscriptions.repository';
 import { get } from 'lodash-es';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
+import { isNil } from '../shared/utils';
 import { coerceStripeTimestampToDate } from './subscriptions.models';
 
 export async function handleStripeWebhookEvent({
@@ -23,7 +24,7 @@ export async function handleStripeWebhookEvent({
     const cancelAtPeriodEnd = get(event, 'data.object.cancel_at_period_end');
     const status = get(event, 'data.object.status');
 
-    if (!organizationId) {
+    if (isNil(organizationId)) {
       throw createOrganizationNotFoundError();
     }
 
@@ -52,7 +53,7 @@ export async function handleStripeWebhookEvent({
     const cancelAtPeriodEnd = get(event, 'data.object.cancel_at_period_end');
     const status = get(event, 'data.object.status');
 
-    if (!organizationId) {
+    if (isNil(organizationId)) {
       throw createOrganizationNotFoundError();
     }
 

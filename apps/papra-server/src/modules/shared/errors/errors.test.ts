@@ -19,6 +19,7 @@ describe('errors', () => {
       expect(error.message).to.eql('foo');
       expect(error.code).to.eql('bar');
       expect(error.statusCode).to.eql(500);
+      expect(error.isInternal).to.eql(false);
     });
 
     test('accepts an optional cause property to attach the original error that caused the custom error', () => {

@@ -1,3 +1,4 @@
+import type { ServerInstanceGenerics } from '../server.types';
 import { Hono } from 'hono';
 import { describe, expect, test } from 'vitest';
 import { createError } from '../../shared/errors/errors';
@@ -6,8 +7,8 @@ import { registerErrorMiddleware } from './errors.middleware';
 describe('errors middleware', () => {
   describe('registerErrorMiddleware', () => {
     test('when a non-internal custom error is thrown with a status code, the error is returned', async () => {
-      const app = new Hono();
-      registerErrorMiddleware({ app: app as any });
+      const app = new Hono<ServerInstanceGenerics>();
+      registerErrorMiddleware({ app });
 
       app.get('/error', async () => {
         throw createError({
@@ -29,8 +30,8 @@ describe('errors middleware', () => {
     });
 
     test('when an unknown error is thrown, a 500 error is returned with a generic message', async () => {
-      const app = new Hono();
-      registerErrorMiddleware({ app: app as any });
+      const app = new Hono<ServerInstanceGenerics>();
+      registerErrorMiddleware({ app });
 
       app.get('/error', async () => {
         throw new Error('Unknown error');
@@ -48,8 +49,8 @@ describe('errors middleware', () => {
     });
 
     test('when a custom error is marked as internal, a 500 error is returned with a generic message', async () => {
-      const app = new Hono();
-      registerErrorMiddleware({ app: app as any });
+      const app = new Hono<ServerInstanceGenerics>();
+      registerErrorMiddleware({ app });
 
       app.get('/error', async () => {
         throw createError({
@@ -72,8 +73,8 @@ describe('errors middleware', () => {
     });
 
     test('when querying an unknown route, a 404 error is returned', async () => {
-      const app = new Hono();
-      registerErrorMiddleware({ app: app as any });
+      const app = new Hono<ServerInstanceGenerics>();
+      registerErrorMiddleware({ app });
 
       const response = await app.request('/unknown-route', { method: 'GET' });
 

@@ -13,8 +13,10 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
+import { isNil } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';
+import { isSignatureHeaderFormatValid } from './subscriptions.models';
 import { createSubscriptionsRepository } from './subscriptions.repository';
 import { handleStripeWebhookEvent } from './subscriptions.usecases';
 
@@ -31,7 +33,7 @@ function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: Rou
   app.post('/api/stripe/webhook', async (context) => {
     const signature = getHeader({ context, name: 'stripe-signature' });
 
-    if (!signature) {
+    if (!isSignatureHeaderFormatValid(signature)) {
       throw createInvalidWebhookPayloadError();
     }
 
@@ -59,7 +61,7 @@ function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: Rou
   });
 }
 
-async function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsServices }: RouteDefinitionContext) {
+function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/checkout-session',
     requireAuthentication(),
@@ -99,7 +101,7 @@ async function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsS
 
       const { organizationPlan: organizationPlanToSubscribeTo } = await plansRepository.getOrganizationPlanById({ planId });
 
-      if (!organizationPlanToSubscribeTo.priceId) {
+      if (isNil(organizationPlanToSubscribeTo.priceId)) {
         // Very unlikely to happen, as only the free plan does not have a price ID, and we check for the plans in the route validation
         // but for type safety, we assert that the price ID is set
         throw createError({

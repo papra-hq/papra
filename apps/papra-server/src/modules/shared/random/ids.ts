@@ -6,7 +6,7 @@ const createId = init({ length: ID_RANDOM_PART_LENGTH });
 export function generateId({ prefix, getRandomPart = createId }: { prefix?: string; getRandomPart?: () => string } = {}) {
   const id = getRandomPart();
 
-  return prefix ? `${prefix}_${id}` : id;
+  return prefix !== undefined ? `${prefix}_${id}` : id;
 }
 
 export function createPrefixedIdRegex({ prefix }: { prefix: string }) {

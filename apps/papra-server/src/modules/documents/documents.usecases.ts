@@ -17,6 +17,7 @@ import pLimit from 'p-limit';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
+import { isDefined } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
@@ -100,28 +101,28 @@ export async function createDocument({
 
   const { document } = existingDocument
     ? await handleExistingDocument({
-      existingDocument,
-      fileName,
-      organizationId,
-      documentsRepository,
-      tagsRepository,
-      logger,
-    })
+        existingDocument,
+        fileName,
+        organizationId,
+        documentsRepository,
+        tagsRepository,
+        logger,
+      })
     : await createNewDocument({
-      file,
-      fileName,
-      size,
-      mimeType,
-      hash,
-      userId,
-      organizationId,
-      documentsRepository,
-      documentsStorageService,
-      generateDocumentId,
-      trackingServices,
-      ocrLanguages,
-      logger,
-    });
+        file,
+        fileName,
+        size,
+        mimeType,
+        hash,
+        userId,
+        organizationId,
+        documentsRepository,
+        documentsStorageService,
+        generateDocumentId,
+        trackingServices,
+        ocrLanguages,
+        logger,
+      });
 
   deferRegisterDocumentActivityLog({
     documentId: document.id,
@@ -195,7 +196,7 @@ async function handleExistingDocument({
   tagsRepository: TagsRepository;
   logger: Logger;
 }) {
-  if (existingDocument && !existingDocument.isDeleted) {
+  if (!existingDocument.isDeleted) {
     throw createDocumentAlreadyExistsError();
   }
 
@@ -277,7 +278,7 @@ async function createNewDocument({
     throw error;
   }
 
-  if (userId) {
+  if (isDefined(userId)) {
     trackingServices.captureUserEvent({ userId, event: 'Document created' });
   }
 
@@ -354,7 +355,7 @@ export async function deleteExpiredDocuments({
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(document => limit(async () => {
+    documents.map(async document => limit(async () => {
       const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService }));
 
       if (error) {
@@ -408,6 +409,6 @@ export async function deleteAllTrashDocuments({
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(document => limit(() => hardDeleteDocument({ document, documentsRepository, documentsStorageService }))),
+    documents.map(async document => limit(async () => hardDeleteDocument({ document, documentsRepository, documentsStorageService }))),
   );
 }

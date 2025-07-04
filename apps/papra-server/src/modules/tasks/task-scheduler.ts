@@ -29,12 +29,12 @@ function createTaskScheduler({
 
     const task = cron.schedule(
       cronSchedule,
-      () => wrapWithLoggerContext(
+      async () => wrapWithLoggerContext(
         {
           taskId: generateId({ prefix: 'task' }),
           taskName: taskDefinition.taskName,
         },
-        () => taskDefinition.run({ ...tasksArgs, config }),
+        async () => taskDefinition.run({ ...tasksArgs, config }),
       ),
       {
         scheduled: false,

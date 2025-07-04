@@ -14,7 +14,7 @@ export type TrackingServices = {
 export function createDummyTrackingServices(): TrackingServices {
   return {
     captureUserEvent: () => {},
-    shutdown: () => Promise.resolve(),
+    shutdown: async () => Promise.resolve(),
   };
 }
 
@@ -37,6 +37,6 @@ export function createTrackingServices({ config }: { config: Config }): Tracking
     captureUserEvent: ({ userId, event, properties }) => {
       trackingClient.capture({ distinctId: userId, event, properties });
     },
-    shutdown: () => trackingClient.shutdown(),
+    shutdown: async () => trackingClient.shutdown(),
   };
 }

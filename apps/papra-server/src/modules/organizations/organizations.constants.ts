@@ -6,6 +6,9 @@ export const ORGANIZATION_ID_REGEX = createPrefixedIdRegex({ prefix: ORGANIZATIO
 export const ORGANIZATION_MEMBER_ID_PREFIX = 'org_mem';
 export const ORGANIZATION_MEMBER_ID_REGEX = createPrefixedIdRegex({ prefix: ORGANIZATION_MEMBER_ID_PREFIX });
 
+export const ORGANIZATION_INVITATION_ID_PREFIX = 'org_inv';
+export const ORGANIZATION_INVITATION_ID_REGEX = createPrefixedIdRegex({ prefix: ORGANIZATION_INVITATION_ID_PREFIX });
+
 export const ORGANIZATION_ROLES = {
   MEMBER: 'member',
   OWNER: 'owner',

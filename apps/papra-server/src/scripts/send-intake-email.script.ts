@@ -3,7 +3,7 @@ import { triggerWebhook } from '@owlrelay/webhook';
 import { INTAKE_EMAILS_INGEST_ROUTE } from '../modules/intake-emails/intake-emails.constants';
 import { runScript } from './commons/run-script';
 
-runScript(
+await runScript(
   { scriptName: 'simulate-intake-email' },
   async ({ config }) => {
     const { baseUrl } = config.server;

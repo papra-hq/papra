@@ -1,6 +1,14 @@
 import antfu from '@antfu/eslint-config';
 
 export default antfu({
+  typescript: {
+    tsconfigPath: './tsconfig.json',
+    overridesTypeAware: {
+      'ts/no-misused-promises': ['error', { checksVoidReturn: false }],
+      'ts/strict-boolean-expressions': ['error', { allowNullableObject: true }],
+    },
+
+  },
   stylistic: {
     semi: true,
   },

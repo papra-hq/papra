@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
+import { isNil } from '../shared/utils';
 import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 
@@ -16,6 +17,11 @@ describe('tags repository', () => {
       const { tag: tag1 } = await tagsRepository.createTag({
         tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' },
       });
+
+      if (isNil(tag1)) {
+        // type safety
+        throw new Error('Tag 1 not found');
+      }
 
       expect(tag1).to.include({
         organizationId: 'organization-1',

@@ -85,7 +85,7 @@ export async function applyTaggingRules({
   const tagIdsToApply: string[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tagId)));
 
   const appliedTagIds = await Promise.all(tagIdsToApply.map(async (tagId) => {
-    const [, error] = await safely(() => tagsRepository.addTagToDocument({ tagId, documentId: document.id }));
+    const [, error] = await safely(async () => tagsRepository.addTagToDocument({ tagId, documentId: document.id }));
 
     if (error) {
       logger.error({ error, tagId, documentId: document.id }, 'Failed to add tag to document');

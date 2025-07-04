@@ -1,3 +1,4 @@
+import type { Buffer } from 'node:buffer';
 import type { Config } from '../config/config.types';
 import { buildUrl, injectArguments } from '@corentinth/chisels';
 import Stripe from 'stripe';
@@ -69,7 +70,7 @@ export async function createCheckoutUrl({
   return { checkoutUrl: session.url };
 }
 
-async function parseWebhookEvent({ stripeClient, payload, signature, config }: { stripeClient: Stripe; payload: any; signature: string; config: Config }) {
+async function parseWebhookEvent({ stripeClient, payload, signature, config }: { stripeClient: Stripe; payload: string | Buffer; signature: string; config: Config }) {
   const event = await stripeClient.webhooks.constructEventAsync(payload, signature, config.subscriptions.stripeWebhookSecret);
 
   return { event };

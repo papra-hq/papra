@@ -7,6 +7,7 @@ import { omit } from 'lodash-es';
 import { omitUndefined } from '../shared/utils';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
+import { createOrganizationNotFoundError } from './organizations.errors';
 import { ensureInvitationStatus } from './organizations.repository.models';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 
@@ -48,6 +49,12 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
 
 async function saveOrganization({ organization: organizationToInsert, db }: { organization: DbInsertableOrganization; db: Database }) {
   const [organization] = await db.insert(organizationsTable).values(organizationToInsert).returning();
+
+  if (!organization) {
+    // This should never happen, as the database should always return the inserted organization
+    // guard for type safety
+    throw new Error('Failed to save organization');
+  }
 
   return { organization };
 }
@@ -110,7 +117,7 @@ async function getOrganizationById({ organizationId, db }: { organizationId: str
 }
 
 async function getUserOwnedOrganizationCount({ userId, db }: { userId: string; db: Database }) {
-  const [{ organizationCount }] = await db
+  const [record] = await db
     .select({
       organizationCount: count(organizationMembersTable.id),
     })
@@ -122,13 +129,19 @@ async function getUserOwnedOrganizationCount({ userId, db }: { userId: string; d
       ),
     );
 
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { organizationCount } = record;
+
   return {
     organizationCount,
   };
 }
 
 async function getOrganizationOwner({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [{ organizationOwner }] = await db
+  const [record] = await db
     .select({
       organizationOwner: getTableColumns(usersTable),
     })
@@ -141,11 +154,17 @@ async function getOrganizationOwner({ organizationId, db }: { organizationId: st
       ),
     );
 
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { organizationOwner } = record;
+
   return { organizationOwner };
 }
 
 async function getOrganizationMembersCount({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [{ membersCount }] = await db
+  const [record] = await db
     .select({
       membersCount: count(organizationMembersTable.id),
     })
@@ -153,6 +172,12 @@ async function getOrganizationMembersCount({ organizationId, db }: { organizatio
     .where(
       eq(organizationMembersTable.organizationId, organizationId),
     );
+
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { membersCount } = record;
 
   return {
     membersCount,
@@ -268,7 +293,7 @@ async function saveOrganizationInvitation({
 }
 
 async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { userId: string; db: Database; now?: Date }) {
-  const [{ userInvitationCount }] = await db
+  const [record] = await db
     .select({
       userInvitationCount: count(organizationInvitationsTable.id),
     })
@@ -279,6 +304,12 @@ async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { u
         gte(organizationInvitationsTable.createdAt, startOfDay(now)),
       ),
     );
+
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { userInvitationCount } = record;
 
   return {
     userInvitationCount,
@@ -335,7 +366,7 @@ async function updateOrganizationInvitation({ invitationId, status, expiresAt, d
 }
 
 async function getPendingInvitationsCount({ email, db, now = new Date() }: { email: string; db: Database; now?: Date }) {
-  const [{ pendingInvitationsCount }] = await db
+  const [record] = await db
     .select({
       pendingInvitationsCount: count(organizationInvitationsTable.id),
     })
@@ -348,6 +379,12 @@ async function getPendingInvitationsCount({ email, db, now = new Date() }: { ema
         gte(organizationInvitationsTable.expiresAt, now),
       ),
     );
+
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { pendingInvitationsCount } = record;
 
   return {
     pendingInvitationsCount,

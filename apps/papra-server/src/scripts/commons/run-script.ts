@@ -15,7 +15,7 @@ async function runScript(
 ) {
   const isDryRun = process.argv.includes('--dry-run');
 
-  wrapWithLoggerContext(
+  await wrapWithLoggerContext(
     {
       scriptName,
       isDryRun,

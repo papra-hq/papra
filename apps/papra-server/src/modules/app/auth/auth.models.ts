@@ -4,11 +4,12 @@ import type { Context } from '../server.types';
 import type { Session } from './auth.types';
 import { uniq } from 'lodash-es';
 import { createError } from '../../shared/errors/errors';
+import { isNil } from '../../shared/utils';
 
 export function getUser({ context }: { context: Context }) {
   const userId = context.get('userId');
 
-  if (!userId) {
+  if (isNil(userId)) {
     // This should never happen as getUser is called in authenticated routes
     // just for proper type safety
     throw createError({

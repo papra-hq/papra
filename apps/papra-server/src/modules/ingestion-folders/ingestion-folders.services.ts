@@ -15,8 +15,10 @@ export async function getFile({
   fs?: Pick<FsServices, 'readFile'>;
 }) {
   const buffer = await fs.readFile({ filePath });
-  // OR pipes since lookup returns false if the mime type is not found
-  const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+  // lookup returns false if the mime type is not found
+  const lookedUpMimeType = mime.lookup(filePath);
+  const mimeType = lookedUpMimeType === false ? 'application/octet-stream' : lookedUpMimeType;
+
   const { base: fileName } = parse(filePath);
 
   const file = new File([buffer], fileName, { type: mimeType });

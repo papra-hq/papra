@@ -29,7 +29,7 @@ describe('plans repository', () => {
 
       const { organizationPlans } = getOrganizationPlansRecords({ config });
 
-      expect(organizationPlans[FREE_PLAN_ID].limits).to.deep.equal({
+      expect(organizationPlans[FREE_PLAN_ID]!.limits).to.deep.equal({
         maxDocumentStorageBytes: Number.POSITIVE_INFINITY,
         maxIntakeEmailsCount: Number.POSITIVE_INFINITY,
         maxOrganizationsMembersCount: Number.POSITIVE_INFINITY,

@@ -12,8 +12,8 @@ import { cva } from 'class-variance-authority';
 import { splitProps } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 
-type textFieldProps<T extends ValidComponent = 'div'> =
-  TextFieldRootProps<T> & {
+type textFieldProps<T extends ValidComponent = 'div'>
+  = TextFieldRootProps<T> & {
     class?: string;
   };
 
@@ -43,8 +43,8 @@ export const textfieldLabel = cva(
   },
 );
 
-type textFieldLabelProps<T extends ValidComponent = 'label'> =
-  TextFieldLabelProps<T> & {
+type textFieldLabelProps<T extends ValidComponent = 'label'>
+  = TextFieldLabelProps<T> & {
     class?: string;
   };
 
@@ -59,8 +59,8 @@ export function TextFieldLabel<T extends ValidComponent = 'label'>(props: Polymo
   );
 }
 
-type textFieldErrorMessageProps<T extends ValidComponent = 'div'> =
-  TextFieldErrorMessageProps<T> & {
+type textFieldErrorMessageProps<T extends ValidComponent = 'div'>
+  = TextFieldErrorMessageProps<T> & {
     class?: string;
   };
 
@@ -77,8 +77,8 @@ export function TextFieldErrorMessage<T extends ValidComponent = 'div'>(props: P
   );
 }
 
-type textFieldDescriptionProps<T extends ValidComponent = 'div'> =
-  TextFieldDescriptionProps<T> & {
+type textFieldDescriptionProps<T extends ValidComponent = 'div'>
+  = TextFieldDescriptionProps<T> & {
     class?: string;
   };
 

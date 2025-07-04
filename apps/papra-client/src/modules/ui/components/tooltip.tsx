@@ -22,8 +22,8 @@ export function Tooltip(props: TooltipRootProps) {
   return <TooltipPrimitive {...merge} />;
 }
 
-type tooltipContentProps<T extends ValidComponent = 'div'> =
-  TooltipContentProps<T> & {
+type tooltipContentProps<T extends ValidComponent = 'div'>
+  = TooltipContentProps<T> & {
     class?: string;
   };
 

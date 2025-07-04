@@ -51,7 +51,7 @@ export async function moveFile({ sourceFilePath, destinationFilePath, fs = fsNat
 }
 
 export async function readFile({ filePath, fs = fsNative }: { filePath: string; fs?: FsNative }) {
-  return await fs.readFile(filePath);
+  return fs.readFile(filePath);
 }
 
 export async function areFilesContentIdentical({ file1, file2, fs = fsNative }: { file1: string; file2: string; fs?: FsNative }): Promise<boolean> {

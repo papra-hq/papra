@@ -77,8 +77,8 @@ export function DialogTitle<T extends ValidComponent = 'h2'>(props: PolymorphicP
   );
 }
 
-type dialogDescriptionProps<T extends ValidComponent = 'p'> =
-  DialogDescriptionProps<T> & {
+type dialogDescriptionProps<T extends ValidComponent = 'p'>
+  = DialogDescriptionProps<T> & {
     class?: string;
   };
 

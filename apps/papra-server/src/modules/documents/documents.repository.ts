@@ -4,11 +4,13 @@ import { injectArguments, safely } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
 import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
-import { omitUndefined } from '../shared/utils';
+import { createError } from '../shared/errors/errors';
+import { isDefined, isNil, omitUndefined } from '../shared/utils';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
-import { createDocumentAlreadyExistsError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
@@ -57,13 +59,27 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
     throw createDocumentAlreadyExistsError();
   }
 
+  if (error) {
+    throw error;
+  }
+
   const [document] = documents ?? [];
+
+  if (isNil(document)) {
+    // Very unlikely to happen as the insertion throws an issue, it's for type safety
+    throw createError({
+      message: 'Error while saving document',
+      code: 'documents.save_error',
+      statusCode: 500,
+      isInternal: true,
+    });
+  }
 
   return { document };
 }
 
 async function getOrganizationDocumentsCount({ organizationId, filters, db }: { organizationId: string; filters?: { tags?: string[] }; db: Database }) {
-  const [{ documentsCount }] = await db
+  const [record] = await db
     .select({
       documentsCount: count(documentsTable.id),
     })
@@ -77,11 +93,17 @@ async function getOrganizationDocumentsCount({ organizationId, filters, db }: { 
       ),
     );
 
+  if (isNil(record)) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { documentsCount } = record;
+
   return { documentsCount };
 }
 
 async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [{ documentsCount }] = await db
+  const [record] = await db
     .select({
       documentsCount: count(documentsTable.id),
     })
@@ -92,6 +114,12 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
         eq(documentsTable.isDeleted, true),
       ),
     );
+
+  if (isNil(record)) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { documentsCount } = record;
 
   return { documentsCount };
 }
@@ -145,7 +173,7 @@ async function getOrganizationDocuments({
     }
 
     if (tag) {
-      acc[document.id].tags.push(tag);
+      acc[document.id]!.tags.push(tag);
     }
 
     return acc;
@@ -235,8 +263,8 @@ async function restoreDocument({ documentId, organizationId, name, userId, db }:
       isDeleted: false,
       deletedBy: null,
       deletedAt: null,
-      ...(name ? { name, originalName: name } : {}),
-      ...(userId ? { createdBy: userId } : {}),
+      ...(isDefined(name) ? { name, originalName: name } : {}),
+      ...(isDefined(userId) ? { createdBy: userId } : {}),
     })
     .where(
       and(
@@ -245,6 +273,10 @@ async function restoreDocument({ documentId, organizationId, name, userId, db }:
       ),
     )
     .returning();
+
+  if (isNil(document)) {
+    throw createDocumentNotFoundError();
+  }
 
   return { document };
 }
@@ -294,7 +326,7 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
 }
 
 async function getOrganizationStats({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [{ documentsCount, documentsSize }] = await db
+  const [record] = await db
     .select({
       documentsCount: count(documentsTable.id),
       documentsSize: sum(documentsTable.originalSize),
@@ -306,6 +338,12 @@ async function getOrganizationStats({ organizationId, db }: { organizationId: st
         eq(documentsTable.isDeleted, false),
       ),
     );
+
+  if (isNil(record)) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { documentsCount, documentsSize } = record;
 
   return {
     documentsCount,

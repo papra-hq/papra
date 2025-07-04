@@ -1,5 +1,6 @@
 import type { Config } from '../../config/config.types';
 import { createError } from '../../shared/errors/errors';
+import { isNil } from '../../shared/utils';
 import { AZ_BLOB_STORAGE_DRIVER_NAME, azBlobStorageDriverFactory } from './drivers/az-blob/az-blob.storage-driver';
 import { B2_STORAGE_DRIVER_NAME, b2StorageDriverFactory } from './drivers/b2/b2.storage-driver';
 import { FS_STORAGE_DRIVER_NAME, fsStorageDriverFactory } from './drivers/fs/fs.storage-driver';
@@ -21,7 +22,7 @@ export async function createDocumentStorageService({ config }: { config: Config 
 
   const storageDriverFactory = storageDriverFactories[storageDriverName];
 
-  if (!storageDriverFactory) {
+  if (isNil(storageDriverFactory)) {
     throw createError({
       message: `Unknown storage driver: ${storageDriverName}`,
       code: 'storage_driver.unknown_driver',

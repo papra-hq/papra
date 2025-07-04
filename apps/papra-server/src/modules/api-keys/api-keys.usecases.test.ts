@@ -48,7 +48,7 @@ describe('api-keys usecases', () => {
 
       const { apiKey } = await getApiKey({ token: 'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0', apiKeyRepository });
 
-      expect(apiKey.id).to.eql('api_key_1');
+      expect(apiKey?.id).to.eql('api_key_1');
     });
   });
 });

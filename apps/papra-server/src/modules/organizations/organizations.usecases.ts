@@ -14,6 +14,7 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { sanitize } from '../shared/html/html';
 import { createLogger } from '../shared/logger/logger';
+import { isDefined } from '../shared/utils';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import {
   createOrganizationDocumentStorageLimitReachedError,
@@ -113,7 +114,7 @@ export async function getOrCreateOrganizationCustomerId({
     throw createOrganizationNotFoundError();
   }
 
-  if (organization.customerId) {
+  if (isDefined(organization.customerId)) {
     return { customerId: organization.customerId };
   }
 

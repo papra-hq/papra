@@ -55,8 +55,8 @@ export function SelectTrigger<T extends ValidComponent = 'button'>(props: Polymo
   );
 }
 
-type selectContentProps<T extends ValidComponent = 'div'> =
-  SelectContentProps<T> & {
+type selectContentProps<T extends ValidComponent = 'div'>
+  = SelectContentProps<T> & {
     class?: string;
   };
 

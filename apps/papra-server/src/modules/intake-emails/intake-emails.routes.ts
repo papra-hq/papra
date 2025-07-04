@@ -12,6 +12,7 @@ import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
+import { isNil } from '../shared/utils';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
@@ -166,7 +167,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices }: Rout
       const bodyBuffer = await context.req.arrayBuffer();
       const signature = getHeader({ context, name: 'X-Signature' });
 
-      if (!signature) {
+      if (isNil(signature)) {
         throw createError({
           message: 'Signature header is required',
           code: 'intake_emails.signature_header_required',

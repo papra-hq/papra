@@ -1,3 +1,3 @@
 export async function collectReadableStreamToString({ stream }: { stream: ReadableStream }) {
-  return await new Response(stream).text();
+  return new Response(stream).text();
 }

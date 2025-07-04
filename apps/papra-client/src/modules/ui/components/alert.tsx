@@ -24,8 +24,8 @@ export const alertVariants = cva(
   },
 );
 
-type alertProps<T extends ValidComponent = 'div'> = AlertRootProps<T> &
-  VariantProps<typeof alertVariants> & {
+type alertProps<T extends ValidComponent = 'div'> = AlertRootProps<T>
+  & VariantProps<typeof alertVariants> & {
     class?: string;
   };
 

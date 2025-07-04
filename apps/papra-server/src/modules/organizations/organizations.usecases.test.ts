@@ -379,7 +379,7 @@ describe('organizations usecases', () => {
       const remainingMembers = await db.select().from(organizationMembersTable);
 
       expect(remainingMembers.length).to.equal(1);
-      expect(remainingMembers[0].id).to.equal('member-1');
+      expect(remainingMembers[0]?.id).to.equal('member-1');
     });
 
     test('a member (not admin nor owner) cannot remove anyone from the organization', async () => {

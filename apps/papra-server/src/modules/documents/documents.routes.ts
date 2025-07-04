@@ -7,6 +7,7 @@ import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
+import { isNil } from '../shared/utils';
 import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { triggerWebhooks } from '../webhooks/webhook.usecases';
@@ -38,7 +39,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    (context, next) => {
+    async (context, next) => {
       const { maxUploadSize } = config.documentsStorage;
 
       if (!isDocumentSizeLimitEnabled({ maxUploadSize })) {
@@ -56,6 +57,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
         },
       });
 
+      // eslint-disable-next-line ts/no-unsafe-argument
       return middleware(context, next);
     },
 
@@ -72,7 +74,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
       const { file, ocrLanguages } = context.req.valid('form');
       const { organizationId } = context.req.valid('param');
 
-      if (!file) {
+      if (isNil(file)) {
         throw createError({
           message: 'No file provided, please upload a file using the "file" key.',
           code: 'document.no_file',

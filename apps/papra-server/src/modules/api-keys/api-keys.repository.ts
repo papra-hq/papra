@@ -5,6 +5,7 @@ import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, inArray } from 'drizzle-orm';
 import { omit, pick } from 'lodash-es';
 import { organizationMembersTable, organizationsTable } from '../organizations/organizations.table';
+import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { apiKeyOrganizationsTable, apiKeysTable } from './api-keys.tables';
 
@@ -57,6 +58,16 @@ async function saveApiKey({
       expiresAt,
     })
     .returning();
+
+  if (!apiKey) {
+    // Very unlikely to happen as the insertion should throw an issue, it's for type safety
+    throw createError({
+      message: 'Error while creating api key',
+      code: 'api-keys.create_error',
+      statusCode: 500,
+      isInternal: true,
+    });
+  }
 
   if (organizationIds && organizationIds.length > 0) {
     const apiKeyId = apiKey.id;

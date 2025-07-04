@@ -3,7 +3,7 @@ import type { OrganizationInvitationStatus, OrganizationRole } from './organizat
 import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
-import { ORGANIZATION_ID_PREFIX, ORGANIZATION_INVITATION_STATUS, ORGANIZATION_INVITATION_STATUS_LIST, ORGANIZATION_MEMBER_ID_PREFIX, ORGANIZATION_ROLES_LIST } from './organizations.constants';
+import { ORGANIZATION_ID_PREFIX, ORGANIZATION_INVITATION_ID_PREFIX, ORGANIZATION_INVITATION_STATUS, ORGANIZATION_INVITATION_STATUS_LIST, ORGANIZATION_MEMBER_ID_PREFIX, ORGANIZATION_ROLES_LIST } from './organizations.constants';
 
 export const organizationsTable = sqliteTable('organizations', {
   ...createPrimaryKeyField({ prefix: ORGANIZATION_ID_PREFIX }),
@@ -31,7 +31,7 @@ export const organizationMembersTable = sqliteTable('organization_members', {
 ]);
 
 export const organizationInvitationsTable = sqliteTable('organization_invitations', {
-  ...createPrimaryKeyField({ prefix: 'org_inv' }),
+  ...createPrimaryKeyField({ prefix: ORGANIZATION_INVITATION_ID_PREFIX }),
   ...createTimestampColumns(),
 
   organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),

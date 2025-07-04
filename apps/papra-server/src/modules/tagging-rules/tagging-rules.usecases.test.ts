@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
+import { isNil } from '../shared/utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
@@ -24,6 +25,11 @@ describe('tagging-rules usecases', () => {
       });
 
       const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        // type safety
+        throw new Error('Document not found');
+      }
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
@@ -60,6 +66,11 @@ describe('tagging-rules usecases', () => {
 
       const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
 
+      if (isNil(document)) {
+        // type safety
+        throw new Error('Document not found');
+      }
+
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 
@@ -77,6 +88,11 @@ describe('tagging-rules usecases', () => {
       });
 
       const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        // type safety
+        throw new Error('Document not found');
+      }
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });

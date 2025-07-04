@@ -32,8 +32,8 @@ export const sheetVariants = cva(
 );
 
 type sheetContentProps<T extends ValidComponent = 'div'> = ParentProps<
-  DialogContentProps<T> &
-  VariantProps<typeof sheetVariants> & {
+  DialogContentProps<T>
+  & VariantProps<typeof sheetVariants> & {
     class?: string;
   }
 >;
@@ -96,8 +96,8 @@ export function SheetTitle<T extends ValidComponent = 'h2'>(props: PolymorphicPr
   );
 }
 
-type sheetDescriptionProps<T extends ValidComponent = 'p'> =
-  DialogDescriptionProps<T> & {
+type sheetDescriptionProps<T extends ValidComponent = 'p'>
+  = DialogDescriptionProps<T> & {
     class?: string;
   };
 

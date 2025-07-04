@@ -17,7 +17,7 @@ function setValidParams(path: string) {
     .replaceAll(':invitationId', 'inv_101010101010101010101010');
 
   // throw if there are any remaining params
-  if (newPath.match(/:(\w+)/g)) {
+  if (newPath.match(/:\w+/g)) {
     throw new Error(`Add a dummy value for the params in ${path}`);
   }
 
