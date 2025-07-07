@@ -1,0 +1,565 @@
+# Authentication
+
+auth.request-password-reset.title: Zresetuj swoje hasło
+auth.request-password-reset.description: Wprowadź swój adres e-mail, aby zresetować hasło.
+auth.request-password-reset.requested: Jeśli istnieje konto powiązane z tym adresem e-mail, otrzymasz wiadomość umożliwiającą zresetowanie hasła.
+auth.request-password-reset.back-to-login: Wróć do logowania
+auth.request-password-reset.form.email.label: E-mail
+auth.request-password-reset.form.email.placeholder: 'Przykład: ada@papra.app'
+auth.request-password-reset.form.email.required: Wprowadź swój adres e-mail
+auth.request-password-reset.form.email.invalid: Ten adres e-mail jest nieprawidłowy
+auth.request-password-reset.form.submit: Poproś o zresetowanie hasła
+
+auth.reset-password.title: Zresetuj swoje hasło
+auth.reset-password.description: Wprowadź nowe hasło, aby zresetować dotychczasowe.
+auth.reset-password.reset: Twoje hasło zostało zresetowane.
+auth.reset-password.back-to-login: Wróć do logowania
+auth.reset-password.form.new-password.label: Nowe hasło
+auth.reset-password.form.new-password.placeholder: 'Przykład: **********'
+auth.reset-password.form.new-password.required: Wprowadź nowe hasło
+auth.reset-password.form.new-password.min-length: Hasło musi mieć co najmniej {{ minLength }} znaków
+auth.reset-password.form.new-password.max-length: Hasło musi mieć mniej niż {{ maxLength }} znaków
+auth.reset-password.form.submit: Zresetuj hasło
+
+auth.email-provider.open: Otwórz {{ provider }}
+
+auth.login.title: Zaloguj się do Papra
+auth.login.description: Wprowadź swój adres e-mail lub skorzystaj z logowania federacyjnego, aby uzyskać dostęp do swojego konta Papra.
+auth.login.login-with-provider: Zaloguj się za pomocą {{ provider }}
+auth.login.no-account: Nie masz konta?
+auth.login.register: Zarejestruj się
+auth.login.form.email.label: E-mail
+auth.login.form.email.placeholder: 'Przykład: ada@papra.app'
+auth.login.form.email.required: Wprowadź swój adres e-mail
+auth.login.form.email.invalid: Ten adres e-mail jest nieprawidłowy
+auth.login.form.password.label: Hasło
+auth.login.form.password.placeholder: Ustaw hasło
+auth.login.form.password.required: Wprowadź swoje hasło
+auth.login.form.remember-me.label: Zapamiętaj mnie
+auth.login.form.forgot-password.label: Zapomniałeś hasła?
+auth.login.form.submit: Zaloguj się
+
+auth.register.title: Zarejestruj się w Papra
+auth.register.description: Utwórz konto, aby zacząć korzystać z Papra.
+auth.register.register-with-email: Zarejestruj się przez e-mail
+auth.register.register-with-provider: Zarejestruj się przez {{ provider }}
+auth.register.providers.google: Google
+auth.register.providers.github: GitHub
+auth.register.have-account: Masz już konto?
+auth.register.login: Zaloguj się
+auth.register.registration-disabled.title: Rejestracja jest wyłączona
+auth.register.registration-disabled.description: Tworzenie nowych kont na tej instancji Papra jest obecnie wyłączone. Tylko użytkownicy z istniejącymi kontami mogą się zalogować. Jeśli uważasz, że to błąd, skontaktuj się z administratorem tej instancji.
+auth.register.form.email.label: E-mail
+auth.register.form.email.placeholder: 'Przykład: ada@papra.app'
+auth.register.form.email.required: Wprowadź swój adres e-mail
+auth.register.form.email.invalid: Ten adres e-mail jest nieprawidłowy
+auth.register.form.password.label: Hasło
+auth.register.form.password.placeholder: Ustaw hasło
+auth.register.form.password.required: Wprowadź swoje hasło
+auth.register.form.password.min-length: Hasło musi mieć co najmniej {{ minLength }} znaków
+auth.register.form.password.max-length: Hasło musi mieć mniej niż {{ maxLength }} znaków
+auth.register.form.name.label: Imię i nazwisko
+auth.register.form.name.placeholder: 'Przykład: Ada Lovelace'
+auth.register.form.name.required: Wprowadź swoje imię i nazwisko
+auth.register.form.name.max-length: Imię i nazwisko musi mieć mniej niż {{ maxLength }} znaków
+auth.register.form.submit: Zarejestruj się
+
+auth.email-validation-required.title: Zweryfikuj swój adres e-mail
+auth.email-validation-required.description: Wiadomość weryfikacyjna została wysłana na Twój adres e-mail. Zweryfikuj swój adres e-mail, klikając link w wiadomości.
+
+auth.legal-links.description: Kontynuując, potwierdzasz, że rozumiesz i zgadzasz się na {{ terms }} oraz {{ privacy }}.
+auth.legal-links.terms: Warunki korzystania z usługi
+auth.legal-links.privacy: Polityka prywatności
+
+auth.no-auth-provider.title: Brak dostawcy uwierzytelniania
+auth.no-auth-provider.description: Na tej instancji Papra nie ma włączonych dostawców uwierzytelniania. Skontaktuj się z administratorem tej instancji, aby je włączyć.
+
+# User settings
+
+user.settings.title: Ustawienia użytkownika
+user.settings.description: Zarządzaj ustawieniami swojego konta.
+
+user.settings.email.title: Adres e-mail
+user.settings.email.description: Twój adres e-mail nie może być zmieniony.
+user.settings.email.label: Adres e-mail
+
+user.settings.name.title: Imię i nazwisko
+user.settings.name.description: Twoje imię i nazwisko jest wyświetlane innym członkom organizacji.
+user.settings.name.label: Imię i nazwisko
+user.settings.name.placeholder: 'Przykład: Jan Kowalski'
+user.settings.name.update: Zaktualizuj imię i nazwisko
+user.settings.name.updated: Twoje imię i nazwisko zostało zaktualizowane
+
+user.settings.logout.title: Wyloguj się
+user.settings.logout.description: Wyloguj się ze swojego konta. Możesz zalogować się ponownie później.
+user.settings.logout.button: Wyloguj się
+
+# Organizations
+
+organizations.list.title: Twoje organizacje
+organizations.list.description: Organizacje to sposób grupowania dokumentów i zarządzania dostępem do nich. Możesz tworzyć wiele organizacji i zapraszać członków zespołu do współpracy.
+organizations.list.create-new: Utwórz nową organizację
+
+organizations.details.no-documents.title: Brak dokumentów
+organizations.details.no-documents.description: W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.
+organizations.details.upload-documents: Prześlij dokumenty
+organizations.details.documents-count: dokumentów w sumie
+organizations.details.total-size: całkowity rozmiar
+organizations.details.latest-documents: Najnowsze zaimportowane dokumenty
+
+organizations.create.title: Utwórz nową organizację
+organizations.create.description: Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.
+organizations.create.back: Wstecz
+organizations.create.error.max-count-reached: Osiągnąłeś maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.
+organizations.create.form.name.label: Nazwa organizacji
+organizations.create.form.name.placeholder: 'Przykład: Acme Inc.'
+organizations.create.form.name.required: Wprowadź nazwę organizacji
+organizations.create.form.submit: Utwórz organizację
+organizations.create.success: Organizacja została pomyślnie utworzona
+
+organizations.create-first.title: Utwórz swoją organizację
+organizations.create-first.description: Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.
+organizations.create-first.default-name: Moja organizacja
+organizations.create-first.user-name: 'Organizacja użytkownika {{ name }}'
+
+organization.settings.title: Ustawienia organizacji
+organization.settings.page.title: Ustawienia organizacji
+organization.settings.page.description: Zarządzaj ustawieniami swojej organizacji.
+organization.settings.name.title: Nazwa organizacji
+organization.settings.name.update: Zaktualizuj nazwę
+organization.settings.name.placeholder: 'Przykład: Acme Inc.'
+organization.settings.name.updated: Nazwa organizacji została zaktualizowana
+organization.settings.subscription.title: Subskrypcja
+organization.settings.subscription.description: Zarządzaj swoim rozliczeniem, fakturami i metodami płatności.
+organization.settings.subscription.manage: Zarządzaj subskrypcją
+organization.settings.subscription.error: Nie udało się uzyskać adresu URL portalu klienta
+organization.settings.delete.title: Usuń organizację
+organization.settings.delete.description: Usunięcie tej organizacji spowoduje trwałe usunięcie wszystkich danych z nią związanych.
+organization.settings.delete.confirm.title: Usuń organizację
+organization.settings.delete.confirm.message: Czy na pewno chcesz usunąć tę organizację? Ta operacja jest nieodwracalna, a wszystkie dane związane z tą organizacją zostaną trwale usunięte.
+organization.settings.delete.confirm.confirm-button: Usuń organizację
+organization.settings.delete.confirm.cancel-button: Anuluj
+organization.settings.delete.success: Organizacja została usunięta
+
+organizations.members.title: Członkowie
+organizations.members.description: Zarządzaj członkami swojej organizacji
+organizations.members.invite-member: Zaproś członka
+organizations.members.invite-member-disabled-tooltip: Tylko administratorzy lub właściciele mogą zapraszać członków do organizacji
+organizations.members.remove-from-organization: Usuń z organizacji
+organizations.members.role: Rola
+organizations.members.roles.owner: Właściciel
+organizations.members.roles.admin: Administrator
+organizations.members.roles.member: Członek
+organizations.members.delete.confirm.title: Usuń członka
+organizations.members.delete.confirm.message: Czy na pewno chcesz usunąć tego członka z organizacji?
+organizations.members.delete.confirm.confirm-button: Usuń
+organizations.members.delete.confirm.cancel-button: Anuluj
+organizations.members.delete.success: Członek został usunięty z organizacji
+organizations.members.update-role.success: Rola członka została zaktualizowana
+organizations.members.table.headers.name: Imię i nazwisko
+organizations.members.table.headers.email: E-mail
+organizations.members.table.headers.role: Rola
+organizations.members.table.headers.created: Utworzono
+organizations.members.table.headers.actions: Akcje
+
+organizations.invite-member.title: Zaproś członka
+organizations.invite-member.description: Zaproś członka do swojej organizacji
+organizations.invite-member.form.email.label: E-mail
+organizations.invite-member.form.email.placeholder: 'Przykład: ada@papra.app'
+organizations.invite-member.form.email.required: Wprowadź poprawny adres e-mail
+organizations.invite-member.form.role.label: Rola
+organizations.invite-member.form.submit: Zaproś do organizacji
+organizations.invite-member.success.message: Członek zaproszony
+organizations.invite-member.success.description: E-mail został zaproszony do organizacji.
+organizations.invite-member.error.message: Nie udało się zaprosić członka
+
+organizations.invitations.title: Zaproszenia
+organizations.invitations.description: Zarządzaj zaproszeniami do swojej organizacji
+organizations.invitations.list.cta: Zaproś członka
+organizations.invitations.list.empty.title: Brak oczekujących zaproszeń
+organizations.invitations.list.empty.description: Nie zostałeś zaproszony do żadnej organizacji.
+organizations.invitations.status.pending: Oczekujące
+organizations.invitations.status.accepted: Zaakceptowane
+organizations.invitations.status.rejected: Odrzucone
+organizations.invitations.status.expired: Wygasłe
+organizations.invitations.status.cancelled: Anulowane
+organizations.invitations.resend: Wyślij zaproszenie ponownie
+organizations.invitations.cancel.title: Anuluj zaproszenie
+organizations.invitations.cancel.description: Czy na pewno chcesz anulować to zaproszenie?
+organizations.invitations.cancel.confirm: Anuluj zaproszenie
+organizations.invitations.cancel.cancel: Anuluj
+organizations.invitations.resend.title: Wyślij zaproszenie ponownie
+organizations.invitations.resend.description: Czy na pewno chcesz wysłać ponownie to zaproszenie? To spowoduje wysłanie nowego e-maila do odbiorcy.
+organizations.invitations.resend.confirm: Wyślij zaproszenie ponownie
+organizations.invitations.resend.cancel: Anuluj
+
+invitations.list.title: Zaproszenia
+invitations.list.description: Zarządzaj zaproszeniami do swojej organizacji
+invitations.list.empty.title: Brak oczekujących zaproszeń
+invitations.list.empty.description: Nie zostałeś zaproszony do żadnej organizacji.
+invitations.list.headers.organization: Organizacja
+invitations.list.headers.status: Status
+invitations.list.headers.created: Utworzono
+invitations.list.headers.actions: Akcje
+invitations.list.actions.accept: Zaakceptuj
+invitations.list.actions.reject: Odrzuć
+invitations.list.actions.accept.success.message: Zaproszenie zaakceptowane
+invitations.list.actions.accept.success.description: Zaproszenie zostało zaakceptowane.
+invitations.list.actions.reject.success.message: Zaproszenie odrzucone
+invitations.list.actions.reject.success.description: Zaproszenie zostało odrzucone.
+
+# Documents
+
+documents.list.title: Dokumenty
+documents.list.no-documents.title: Brak dokumentów
+documents.list.no-documents.description: W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.
+documents.list.no-results: Nie znaleziono dokumentów
+
+documents.tabs.info: Informacje
+documents.tabs.content: Treść
+documents.tabs.activity: Aktywność
+documents.deleted.message: Ten dokument został usunięty i zostanie trwale usunięty za {{ days }} dni.
+documents.actions.download: Pobierz
+documents.actions.open-in-new-tab: Otwórz w nowej karcie
+documents.actions.restore: Przywróć
+documents.actions.delete: Usuń
+documents.actions.edit: Edytuj
+documents.actions.cancel: Anuluj
+documents.actions.save: Zapisz
+documents.actions.saving: Zapisywanie...
+documents.content.alert: Zawartość dokumentu jest automatycznie wyodrębniana z dokumentu podczas przesyłania. Jest używana tylko do wyszukiwania i indeksowania.
+documents.info.id: ID
+documents.info.name: Nazwa
+documents.info.type: Typ
+documents.info.size: Rozmiar
+documents.info.created-at: Utworzono
+documents.info.updated-at: Zaktualizowano
+documents.info.never: Nigdy
+
+documents.rename.title: Zmień nazwę dokumentu
+documents.rename.form.name.label: Nazwa
+documents.rename.form.name.placeholder: 'Przykład: Faktura 2024'
+documents.rename.form.name.required: Proszę wprowadzić nazwę dokumentu
+documents.rename.form.name.max-length: Nazwa musi mieć mniej niż 255 znaków
+documents.rename.form.submit: Zmień nazwę dokumentu
+documents.rename.success: Nazwa dokumentu została pomyślnie zmieniona
+documents.rename.cancel: Anuluj
+
+import-documents.title.error: '{{ count }} dokumentów nie powiodły się'
+import-documents.title.success: '{{ count }} dokumentów zaimportowane'
+import-documents.title.pending: '{{ count }} / {{ total }} dokumentów zaimportowanych'
+import-documents.title.none: Importuj dokumenty
+import-documents.no-import-in-progress: Brak importu dokumentów w toku
+
+documents.deleted.title: Usunięte dokumenty
+documents.deleted.empty.title: Brak usuniętych dokumentów
+documents.deleted.empty.description: Nie masz żadnych usuniętych dokumentów. Dokumenty, które są usuwane, zostaną przeniesione do kosza na {{ days }} dni.
+documents.deleted.retention-notice: Wszystkie usunięte dokumenty są przechowywane w koszu przez {{ days }} dni. Po upływie tego terminu dokumenty zostaną trwale usunięte, a Ty nie będziesz mógł ich przywrócić.
+documents.deleted.deleted-at: Usunięto
+documents.deleted.restoring: Przywracanie...
+documents.deleted.deleting: Usuwanie...
+
+documents.preview.unknown-file-type: Brak podglądu dla tego typu pliku
+documents.preview.binary-file: To wydaje się być plikiem binarnym i nie może być wyświetlane jako tekst
+
+trash.delete-all.button: Usuń wszystkie
+trash.delete-all.confirm.title: Trwale usunąć wszystkie dokumenty?
+trash.delete-all.confirm.description: Czy na pewno chcesz trwale usunąć wszystkie dokumenty z kosza? Ta akcja nie może być cofnięta.
+trash.delete-all.confirm.label: Usuń
+trash.delete-all.confirm.cancel: Anuluj
+trash.delete.button: Usuń
+trash.delete.confirm.title: Trwale usunąć dokument?
+trash.delete.confirm.description: Czy na pewno chcesz trwale usunąć ten dokument z kosza? Ta akcja nie może być cofnięta.
+trash.delete.confirm.label: Usuń
+trash.delete.confirm.cancel: Anuluj
+trash.deleted.success.title: Dokument usunięty
+trash.deleted.success.description: Dokument został trwale usunięty.
+
+activity.document.created: Dokument został utworzony
+activity.document.updated.single: Pole {{ field }} zostało zaktualizowane
+activity.document.updated.multiple: Pola {{ fields }} zostały zaktualizowane
+activity.document.updated: Dokument został zaktualizowany
+activity.document.deleted: Dokument został usunięty
+activity.document.restored: Dokument został przywrócony
+activity.document.tagged: Tag {{ tag }} został dodany
+activity.document.untagged: Tag {{ tag }} został usunięty
+
+activity.document.user.name: od {{ name }}
+
+activity.load-more: Załaduj więcej
+activity.no-more-activities: Brak dalszych działań dla tego dokumentu
+
+# Tags
+
+tags.no-tags.title: Brak tagów
+tags.no-tags.description: Ta organizacja nie ma jeszcze tagów. Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.
+tags.no-tags.create-tag: Utwórz tag
+
+tags.title: Tagi dokumentów
+tags.description: Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.
+tags.create: Utwórz tag
+tags.update: Zaktualizuj tag
+tags.delete: Usuń tag
+tags.delete.confirm.title: Usuń tag
+tags.delete.confirm.message: Czy na pewno chcesz usunąć ten tag? Usunięcie tagu spowoduje jego usunięcie ze wszystkich dokumentów.
+tags.delete.confirm.confirm-button: Usuń
+tags.delete.confirm.cancel-button: Anuluj
+tags.delete.success: Tag został pomyślnie usunięty
+tags.create.success: Tag "{{ name }}" został pomyślnie utworzony.
+tags.update.success: Tag "{{ name }}" został pomyślnie zaktualizowany.
+tags.form.name.label: Nazwa
+tags.form.name.placeholder: 'Przykład: Umowy'
+tags.form.name.required: Proszę wprowadzić nazwę tagu
+tags.form.name.max-length: Nazwa tagu musi mieć mniej niż 64 znaki
+tags.form.color.label: Kolor
+tags.form.color.required: Proszę wprowadzić kolor
+tags.form.color.invalid: Kolor hex jest źle sformatowany.
+tags.form.description.label: Opis
+tags.form.description.optional: (opcjonalnie)
+tags.form.description.placeholder: 'Przykład: Wszystkie umowy podpisane przez firmę'
+tags.form.description.max-length: Opis musi mieć mniej niż 256 znaków
+tags.form.no-description: Brak opisu
+tags.table.headers.tag: Tag
+tags.table.headers.description: Opis
+tags.table.headers.documents: Dokumenty
+tags.table.headers.created: Utworzono
+tags.table.headers.actions: Akcje
+
+# Tagging rules
+
+tagging-rules.field.name: nazwa dokumentu
+tagging-rules.field.content: treść dokumentu
+tagging-rules.operator.equals: równa się
+tagging-rules.operator.not-equals: nie równa się
+tagging-rules.operator.contains: zawiera
+tagging-rules.operator.not-contains: nie zawiera
+tagging-rules.operator.starts-with: zaczyna się od
+tagging-rules.operator.ends-with: kończy się na
+tagging-rules.list.title: Reguły tagowania
+tagging-rules.list.description: Zarządzaj regułami tagowania w swojej organizacji, aby automatycznie tagować dokumenty na podstawie zdefiniowanych przez siebie warunków.
+tagging-rules.list.demo-warning: 'Uwaga: Ponieważ jest to środowisko demonstracyjne (bez serwera), reguły tagowania nie będą stosowane do nowo dodanych dokumentów.'
+tagging-rules.list.no-tagging-rules.title: Brak reguł tagowania
+tagging-rules.list.no-tagging-rules.description: Utwórz regułę tagowania, aby automatycznie tagować dodane dokumenty na podstawie zdefiniowanych przez siebie warunków.
+tagging-rules.list.no-tagging-rules.create-tagging-rule: Utwórz regułę tagowania
+tagging-rules.list.card.no-conditions: Brak warunków
+tagging-rules.list.card.one-condition: 1 warunek
+tagging-rules.list.card.conditions: '{{ count }} warunków'
+tagging-rules.list.card.delete: Usuń regułę
+tagging-rules.list.card.edit: Edytuj regułę
+tagging-rules.create.title: Utwórz regułę tagowania
+tagging-rules.create.success: Reguła tagowania została pomyślnie utworzona
+tagging-rules.create.error: Nie udało się utworzyć reguły tagowania
+tagging-rules.create.submit: Utwórz regułę
+tagging-rules.form.name.label: Nazwa
+tagging-rules.form.name.placeholder: 'Przykład: Taguj faktury'
+tagging-rules.form.name.min-length: Proszę wprowadzić nazwę reguły
+tagging-rules.form.name.max-length: Nazwa musi mieć mniej niż 64 znaki
+tagging-rules.form.description.label: Opis
+tagging-rules.form.description.placeholder: "Przykład: Oznacz dokumenty ze słowem 'faktura' w nazwie"
+tagging-rules.form.description.max-length: Opis musi mieć mniej niż 256 znaków
+tagging-rules.form.conditions.label: Warunki
+tagging-rules.form.conditions.description: Zdefiniuj warunki, które muszą być spełnione, aby reguła mogła zostać zastosowana. Wszystkie warunki muszą być spełnione, aby reguła mogła zostać zastosowana.
+tagging-rules.form.conditions.add-condition: Dodaj warunek
+tagging-rules.form.conditions.no-conditions.title: Brak warunków
+tagging-rules.form.conditions.no-conditions.description: Nie dodałeś żadnych warunków do tej reguły. Ta reguła zastosuje swoje tagi do wszystkich dokumentów.
+tagging-rules.form.conditions.no-conditions.confirm: Zastosuj regułę bez warunków
+tagging-rules.form.conditions.no-conditions.cancel: Anuluj
+tagging-rules.form.conditions.value.placeholder: 'Przykład: faktura'
+tagging-rules.form.conditions.value.min-length: Proszę wprowadzić wartość dla warunku
+tagging-rules.form.tags.label: Tagi
+tagging-rules.form.tags.description: Wybierz tagi do zastosowania do dodanych dokumentów, które spełniają warunki
+tagging-rules.form.tags.min-length: Co najmniej jeden tag do zastosowania jest wymagany
+tagging-rules.form.tags.add-tag: Utwórz tag
+tagging-rules.form.submit: Utwórz regułę
+tagging-rules.update.title: Zaktualizuj regułę tagowania
+tagging-rules.update.error: Nie udało się zaktualizować reguły tagowania
+tagging-rules.update.submit: Zaktualizuj regułę
+tagging-rules.update.cancel: Anuluj
+
+# Intake emails
+
+intake-emails.title: Adresy przyjęć
+intake-emails.description: Adresy przyjęć służą do automatycznego przyjmowania wiadomości e-mail do Papra. Wystarczy przekazać wiadomości e-mail na adres e-mail do przyjmowania, a ich załączniki zostaną dodane do dokumentów Twojej organizacji.
+intake-emails.disabled.title: Adresy przyjęć są wyłączone
+intake-emails.disabled.description: Adresy przyjęć są wyłączone na tej instancji. Skontaktuj się z administratorem, aby je włączyć. Zobacz {{ documentation }} w celu uzyskania dodatkowych informacji.
+intake-emails.disabled.documentation: dokumentację
+intake-emails.info: Tylko włączone adresy przyjęć z dozwolonych źródeł będą przetwarzane. Możesz w dowolnym momencie włączyć lub wyłączyć adres e-mail do przyjęć.
+intake-emails.empty.title: Brak adresów przyjęć
+intake-emails.empty.description: Wygeneruj adres przyjęć, aby łatwo przyjmować załączniki e-mail.
+intake-emails.empty.generate: Wygeneruj adres e-mail do przyjęć
+intake-emails.count: '{{ count }} adres/ów e-mail do przyjęć dla tej organizacji'
+intake-emails.new: Nowy adres e-mail do przyjęć
+intake-emails.disabled-label: (Wyłączone)
+intake-emails.no-origins: Brak dozwolonych źródeł e-mail
+intake-emails.allowed-origins: Dozwolone z {{ count }} adresu/ów
+intake-emails.actions.enable: Włącz
+intake-emails.actions.disable: Wyłącz
+intake-emails.actions.manage-origins: Zarządzaj dozwolonymi źródłami
+intake-emails.actions.delete: Usuń
+intake-emails.delete.confirm.title: Usuąć adres e-mail do przyjęć?
+intake-emails.delete.confirm.message: Czy na pewno chcesz usunąć ten adres e-mail do przyjęć? Ta akcja jest nieodwracalna.
+intake-emails.delete.confirm.confirm-button: Usuń adres przyjęć
+intake-emails.delete.confirm.cancel-button: Anuluj
+intake-emails.delete.success: Adres przyjęć usunięty
+intake-emails.create.success: Adres przyjęć utworzony
+intake-emails.update.success.enabled: Adres przyjęć włączony
+intake-emails.update.success.disabled: Adres przyjęć wyłączony
+intake-emails.allowed-origins.title: Dozwolone źródła
+intake-emails.allowed-origins.description: Tylko e-maile wysłane na {{ email }} z tych źródeł będą przetwarzane. Jeśli nie określono źródeł, wszystkie e-maile zostaną odrzucone.
+intake-emails.allowed-origins.add.label: Dodaj dozwolony adres e-mail
+intake-emails.allowed-origins.add.placeholder: 'Przykład: ada@papra.app'
+intake-emails.allowed-origins.add.button: Dodaj
+intake-emails.allowed-origins.add.error.exists: Ten adres e-mail jest już w dozwolonych źródłach dla tego adresu e-mail do przyjęć.
+
+# API keys
+
+api-keys.permissions.documents.title: Dokumenty
+api-keys.permissions.documents.documents:create: Tworzenie dokumentów
+api-keys.permissions.documents.documents:read: Odczyt dokumentów
+api-keys.permissions.documents.documents:update: Aktualizacja dokumentów
+api-keys.permissions.documents.documents:delete: Usuwanie dokumentów
+api-keys.permissions.tags.title: Tag
+api-keys.permissions.tags.tags:create: Tworzenie tagów
+api-keys.permissions.tags.tags:read: Odczyt tagów
+api-keys.permissions.tags.tags:update: Aktualizacja tagów
+api-keys.permissions.tags.tags:delete: Usuwanie tagów
+api-keys.create.title: Tworzenie klucza API
+api-keys.create.description: Utwórz nowy klucz API, aby uzyskać dostęp do API Papra.
+api-keys.create.success: Klucz API został utworzony pomyślnie.
+api-keys.create.back: Wróć do kluczy API
+api-keys.create.form.name.label: Nazwa
+api-keys.create.form.name.placeholder: 'Przykład: Mój klucz API'
+api-keys.create.form.name.required: Proszę wprowadzić nazwę dla klucza API
+api-keys.create.form.permissions.label: Uprawnienia
+api-keys.create.form.permissions.required: Proszę wybrać co najmniej jedno uprawnienie
+api-keys.create.form.submit: Utwórz klucz API
+api-keys.create.created.title: Klucz API utworzony
+api-keys.create.created.description: Klucz API został utworzony pomyślnie. Zapisz go w bezpiecznym miejscu, ponieważ nie będzie wyświetlony ponownie.
+api-keys.list.title: Klucze API
+api-keys.list.description: Zarządzaj swoimi kluczami API tutaj.
+api-keys.list.create: Utwórz klucz API
+api-keys.list.empty.title: Brak kluczy API
+api-keys.list.empty.description: Utwórz klucz API, aby uzyskać dostęp do API Papra.
+api-keys.list.card.last-used: Ostatnie użycie
+api-keys.list.card.never: Nigdy
+api-keys.list.card.created: Utworzono
+api-keys.delete.success: Klucz API został usunięty pomyślnie
+api-keys.delete.confirm.title: Usuń klucz API
+api-keys.delete.confirm.message: Czy na pewno chcesz usunąć ten klucz API? Ta akcja jest nieodwracalna.
+api-keys.delete.confirm.confirm-button: Usuń
+api-keys.delete.confirm.cancel-button: Anuluj
+
+# Webhooks
+
+webhooks.list.title: Webhooki
+webhooks.list.description: Zarządzaj webhookami swojej organizacji
+webhooks.list.empty.title: Brak webhooków
+webhooks.list.empty.description: Utwórz pierwszy webhook, aby rozpocząć odbieranie zdarzeń
+webhooks.list.create: Utwórz webhook
+webhooks.list.card.last-triggered: Ostatnie wywołanie
+webhooks.list.card.never: Nigdy
+webhooks.list.card.created: Utworzono
+webhooks.create.title: Utwórz webhook
+webhooks.create.description: Utwórz nowy webhook, aby odbierać zdarzenia
+webhooks.create.success: Webhook został utworzony pomyślnie
+webhooks.create.back: Wróć
+webhooks.create.form.submit: Utwórz webhook
+webhooks.create.form.name.label: Nazwa webhooka
+webhooks.create.form.name.placeholder: Wprowadź nazwę webhooka
+webhooks.create.form.name.required: Nazwa jest wymagana
+webhooks.create.form.url.label: URL webhooka
+webhooks.create.form.url.placeholder: Wprowadź URL webhooka
+webhooks.create.form.url.required: URL jest wymagany
+webhooks.create.form.url.invalid: URL jest nieprawidłowy
+webhooks.create.form.secret.label: Sekret
+webhooks.create.form.secret.placeholder: Wprowadź sekret webhooka
+webhooks.create.form.events.label: Zdarzenia
+webhooks.create.form.events.required: Co najmniej jedno zdarzenie jest wymagane
+webhooks.update.title: Edytuj webhook
+webhooks.update.description: Zaktualizuj szczegóły webhooka
+webhooks.update.success: Webhook został zaktualizowany pomyślnie
+webhooks.update.submit: Zaktualizuj webhook
+webhooks.update.cancel: Anuluj
+webhooks.update.form.secret.placeholder: Wprowadź nowy sekret
+webhooks.update.form.secret.placeholder-redacted: '[Zredagowany sekret]'
+webhooks.update.form.rotate-secret.button: Wygeneruj nowy sekret
+webhooks.delete.success: Webhook został usunięty pomyślnie
+webhooks.delete.confirm.title: Usuń webhook
+webhooks.delete.confirm.message: Czy na pewno chcesz usunąć ten webhook?
+webhooks.delete.confirm.confirm-button: Usuń
+webhooks.delete.confirm.cancel-button: Anuluj
+
+webhooks.events.documents.document:created.description: Utworzono dokument
+webhooks.events.documents.document:deleted.description: Usunięto dokument
+
+# Navigation
+
+layout.menu.home: Strona główna
+layout.menu.documents: Dokumenty
+layout.menu.tags: Tagi
+layout.menu.tagging-rules: Zasady tagowania
+layout.menu.deleted-documents: Usunięte dokumenty
+layout.menu.organization-settings: Ustawienia
+layout.menu.api-keys: Klucze API
+layout.menu.settings: Ustawienia
+layout.menu.account: Konto
+layout.menu.general-settings: Ustawienia ogólne
+layout.menu.intake-emails: Adresy przyjęć
+layout.menu.webhooks: Webhooki
+layout.menu.members: Członkowie
+layout.menu.invitations: Zaproszenia
+
+layout.theme.light: Tryb jasny
+layout.theme.dark: Tryb ciemny
+layout.theme.system: Tryb systemowy
+
+layout.search.placeholder: Szukaj...
+layout.menu.import-document: Importuj dokument
+
+user-menu.account-settings: Ustawienia konta
+user-menu.api-keys: Klucze API
+user-menu.invitations: Zaproszenia
+user-menu.language: Język
+user-menu.logout: Wyloguj
+
+# Command palette
+
+command-palette.search.placeholder: Szukaj poleceń lub dokumentów
+command-palette.no-results: Nie znaleziono wyników
+command-palette.sections.documents: Dokumenty
+command-palette.sections.theme: Motyw
+
+# API errors
+
+api-errors.document.already_exists: Dokument już istnieje
+api-errors.document.file_too_big: Plik dokumentu jest zbyt duży
+api-errors.intake_email.limit_reached: Osiągnięto maksymalną liczbę adresów e-mail do przyjęć dla tej organizacji. Aby utworzyć więcej adresów e-mail do przyjęć, zaktualizuj swój plan.
+api-errors.user.max_organization_count_reached: Osiągnięto maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.
+api-errors.default: Wystąpił błąd podczas przetwarzania żądania.
+api-errors.organization.invitation_already_exists: Zaproszenie dla tego adresu e-mail już istnieje w tej organizacji.
+api-errors.user.already_in_organization: Ten użytkownik należy już do tej organizacji.
+api-errors.user.organization_invitation_limit_reached: Osiągnięto maksymalną liczbę zaproszeń na dzisiaj. Spróbuj ponownie jutro.
+api-errors.demo.not_available: Ta funkcja nie jest dostępna w wersji demo
+api-errors.tags.already_exists: Tag o tej nazwie już istnieje w tej organizacji
+
+# Not found
+
+not-found.title: 404 - Nie znaleziono
+not-found.description: Przepraszamy, strona, której szukasz wydaje się nie istnieć. Sprawdź URL i spróbuj ponownie.
+not-found.back-to-home: Wróć do strony głównej
+
+# Demo
+
+demo.popup.description: To jest środowisko demonstracyjne, wszystkie dane są zapisywane w lokalnej pamięci przeglądarki.
+demo.popup.discord: Dołącz do {{ discordLink }}, aby uzyskać wsparcie, zaproponować funkcje lub po prostu porozmawiać.
+demo.popup.discord-link-label: Serwer Discord
+demo.popup.reset: Zresetuj dane demonstracyjne
+demo.popup.hide: Ukryj
+
+# Color picker
+
+color-picker.hue: Odcień
+color-picker.saturation: Nasycenie
+color-picker.lightness: Jasność
+color-picker.select-color: Wybierz kolor
+color-picker.select-a-color: Wybierz kolor
