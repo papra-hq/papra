@@ -120,7 +120,7 @@ organizations.create.success: Organizatia a fost creata cu success
 organizations.create-first.title: Creeaza organizatia
 organizations.create-first.description: Documentele dvs. sunt grupate pe organizatie. Puteti crea mai multe organizatii pentru documente diferite, de exemplu, pentru uz personal si profesional.
 organizations.create-first.default-name: Organizatia mea
-organizations.create-first.user-name: "Organizatia {{ name }}"
+organizations.create-first.user-name: 'Organizatia {{ name }}'
 
 organization.settings.title: Setarile organizatiei
 organization.settings.page.title: Setarile organizatiei
