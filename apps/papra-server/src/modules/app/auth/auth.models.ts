@@ -3,6 +3,7 @@ import type { Config } from '../../config/config.types';
 import type { Context } from '../server.types';
 import type { Session } from './auth.types';
 import { uniq } from 'lodash-es';
+import { getClientBaseUrl } from '../../config/config.models';
 import { createError } from '../../shared/errors/errors';
 import { isNil } from '../../shared/utils';
 
@@ -32,11 +33,11 @@ export function getSession({ context }: { context: Context }) {
 }
 
 export function getTrustedOrigins({ config }: { config: Config }) {
-  const { baseUrl } = config.client;
+  const { clientBaseUrl } = getClientBaseUrl({ config });
   const { trustedOrigins } = config.server;
 
   return {
-    trustedOrigins: uniq([baseUrl, ...trustedOrigins]),
+    trustedOrigins: uniq([clientBaseUrl, ...trustedOrigins]),
   };
 }
 
