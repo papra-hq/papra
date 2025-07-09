@@ -6,4 +6,5 @@ export const locales = [
   { key: 'pt', name: 'Português Europeu' },
   { key: 'pl', name: 'Polski' },
   { key: 'ro', name: 'Română' },
+  { key: 'es', name: 'Español' },
 ] as const;
