@@ -120,7 +120,7 @@ organizations.create.success: Organización creada exitosamente
 organizations.create-first.title: Crea tu organización
 organizations.create-first.description: Tus documentos se agruparán por organización. Puedes crear varias organizaciones para separar tus documentos, por ejemplo, para documentos personales y de trabajo.
 organizations.create-first.default-name: Mi organización
-organizations.create-first.user-name: "Organización de {{ name }}"
+organizations.create-first.user-name: Organización de {{ name }}
 
 organization.settings.title: Configuración de la organización
 organization.settings.page.title: Configuración de la organización
@@ -411,7 +411,7 @@ intake-emails.allowed-origins.add.placeholder: Ej. ada@papra.app
 intake-emails.allowed-origins.add.button: Añadir
 intake-emails.allowed-origins.add.error.exists: Este correo ya está en los orígenes permitidos para este correo de ingreso
 
-# API keys 
+# API keys
 
 api-keys.permissions.documents.title: Documentos
 api-keys.permissions.documents.documents:create: Crear documentos
