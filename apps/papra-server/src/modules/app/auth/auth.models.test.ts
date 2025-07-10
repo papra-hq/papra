@@ -46,6 +46,32 @@ describe('auth models', () => {
         'http://localhost:3002',
       ]);
     });
+
+    test('if the app baseUrl is set, it should be used instead of the client baseUrl', () => {
+      const config = {
+        appBaseUrl: 'https://papra.app',
+        client: {
+          baseUrl: 'http://localhost:3000',
+        },
+        server: {
+          trustedOrigins: [
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3001',
+            'http://localhost:3002',
+          ],
+        },
+      } as Config;
+
+      const { trustedOrigins } = getTrustedOrigins({ config });
+
+      expect(trustedOrigins).to.deep.equal([
+        'https://papra.app',
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+      ]);
+    });
   });
 
   describe('checkAuthentication', () => {

@@ -1,5 +1,6 @@
 import { inspectRoutes } from 'hono/dev';
 import { describe, expect, test } from 'vitest';
+import { overrideConfig } from '../config/config.test-utils';
 import { createInMemoryDatabase } from './database/database.test-utils';
 import { createServer } from './server';
 
@@ -27,7 +28,7 @@ function setValidParams(path: string) {
 describe('server routes', () => {
   test('all routes should respond with a 401 when non-authenticated, except for public and auth-related routes', async () => {
     const { db } = await createInMemoryDatabase();
-    const { app } = await createServer({ db });
+    const { app } = await createServer({ db, config: overrideConfig() });
 
     const publicRoutes = [
       'GET /api/ping',

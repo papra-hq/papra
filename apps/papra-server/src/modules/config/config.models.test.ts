@@ -1,7 +1,7 @@
 import type { DeepPartial } from '@corentinth/chisels';
 import type { Config } from './config.types';
 import { describe, expect, test } from 'vitest';
-import { getPublicConfig } from './config.models';
+import { getClientBaseUrl, getPublicConfig, getServerBaseUrl } from './config.models';
 import { overrideConfig } from './config.test-utils';
 
 describe('config models', () => {
@@ -71,6 +71,22 @@ describe('config models', () => {
           },
         },
       });
+    });
+  });
+
+  describe('getServerBaseUrl', () => {
+    test('use the generic baseUrl if set, otherwise use the server baseUrl', () => {
+      expect(getServerBaseUrl({ config: { appBaseUrl: 'https://papra.app' } as Config })).to.eql({ serverBaseUrl: 'https://papra.app' });
+      expect(getServerBaseUrl({ config: { server: { baseUrl: 'http://localhost:1221' } } as Config })).to.eql({ serverBaseUrl: 'http://localhost:1221' });
+      expect(getServerBaseUrl({ config: { appBaseUrl: 'https://papra.app', server: { baseUrl: 'http://localhost:1221' } } as Config })).to.eql({ serverBaseUrl: 'https://papra.app' });
+    });
+  });
+
+  describe('getClientBaseUrl', () => {
+    test('use the generic baseUrl if set, otherwise use the client baseUrl', () => {
+      expect(getClientBaseUrl({ config: { appBaseUrl: 'https://papra.app' } as Config })).to.eql({ clientBaseUrl: 'https://papra.app' });
+      expect(getClientBaseUrl({ config: { client: { baseUrl: 'http://localhost:3000' } } as Config })).to.eql({ clientBaseUrl: 'http://localhost:3000' });
+      expect(getClientBaseUrl({ config: { appBaseUrl: 'https://papra.app', client: { baseUrl: 'http://localhost:3000' } } as Config })).to.eql({ clientBaseUrl: 'https://papra.app' });
     });
   });
 });

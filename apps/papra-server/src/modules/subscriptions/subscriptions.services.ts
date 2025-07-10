@@ -2,6 +2,7 @@ import type { Buffer } from 'node:buffer';
 import type { Config } from '../config/config.types';
 import { buildUrl, injectArguments } from '@corentinth/chisels';
 import Stripe from 'stripe';
+import { getClientBaseUrl } from '../config/config.models';
 
 export type SubscriptionsServices = ReturnType<typeof createSubscriptionsServices>;
 
@@ -47,10 +48,10 @@ export async function createCheckoutUrl({
   seatsCount: number;
   config: Config;
 }) {
-  const { baseUrl } = config.client;
+  const { clientBaseUrl } = getClientBaseUrl({ config });
 
-  const successUrl = buildUrl({ baseUrl, path: '/checkout-success?sessionId={CHECKOUT_SESSION_ID}' });
-  const cancelUrl = buildUrl({ baseUrl, path: '/checkout-cancel' });
+  const successUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-success?sessionId={CHECKOUT_SESSION_ID}' });
+  const cancelUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-cancel' });
 
   const session = await stripeClient.checkout.sessions.create({
     customer: customerId,
@@ -80,16 +81,18 @@ async function getCustomerPortalUrl({
   stripeClient,
   customerId,
   config,
-  returnUrl = config.client.baseUrl,
+  returnUrl,
 }: {
   stripeClient: Stripe;
   customerId: string;
   returnUrl?: string;
   config: Config;
 }) {
+  const { clientBaseUrl } = getClientBaseUrl({ config });
+
   const session = await stripeClient.billingPortal.sessions.create({
     customer: customerId,
-    return_url: returnUrl,
+    return_url: returnUrl ?? clientBaseUrl,
   });
 
   return { customerPortalUrl: session.url };

@@ -16,8 +16,7 @@ services:
       - 1221:1221
     environment:
       - AUTH_SECRET=change-me
-      - CLIENT_BASE_URL=http://localhost:1221
-      - SERVER_BASE_URL=http://localhost:1221
+      - APP_BASE_URL=http://localhost:1221
     volumes:
       - ./app-data:/app/app-data
     user: 1000:1000
@@ -281,19 +280,14 @@ function getDockerComposeYml() {
   const intakeEmailEnabled = intakeEmailEnabledSelect.value === 'true';
   const intakeDriver = intakeDriverSelect.value;
   const webhookSecret = webhookSecretInput.value;
-  const appBaseUrl = appBaseUrlInput.value.trim();
+  const appBaseUrl = appBaseUrlInput.value.trim() || `http://localhost:${port}`;
 
   const version = isRootless ? 'latest' : 'latest-root';
   const fullImage = `${image}:${version}`;
 
-  // Determine base URLs
-  const clientBaseUrl = appBaseUrl || `http://localhost:${port}`;
-  const serverBaseUrl = appBaseUrl || `http://localhost:${port}`;
-
   const environment = [
     `AUTH_SECRET=${authSecret}`,
-    `CLIENT_BASE_URL=${clientBaseUrl}`,
-    `SERVER_BASE_URL=${serverBaseUrl}`,
+    `APP_BASE_URL=${appBaseUrl}`,
     isIngestionEnabled && 'INGESTION_FOLDER_IS_ENABLED=true',
     intakeEmailEnabled && 'INTAKE_EMAILS_IS_ENABLED=true',
     intakeEmailEnabled && `INTAKE_EMAILS_DRIVER=${intakeDriver}`,

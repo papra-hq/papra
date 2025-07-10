@@ -32,3 +32,15 @@ export function getPublicConfig({ config }: { config: Config }) {
     publicConfig,
   };
 }
+
+export function getServerBaseUrl({ config }: { config: Config }) {
+  return {
+    serverBaseUrl: config.appBaseUrl ?? config.server.baseUrl,
+  };
+}
+
+export function getClientBaseUrl({ config }: { config: Config }) {
+  return {
+    clientBaseUrl: config.appBaseUrl ?? config.client.baseUrl,
+  };
+}
