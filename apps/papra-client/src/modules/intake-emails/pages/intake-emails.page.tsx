@@ -21,12 +21,20 @@ import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEmail } from '../intake-emails.services';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 
-const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) => JSX.Element; intakeEmails: IntakeEmail }> = (props) => {
-  const [getAllowedOrigins, setAllowedOrigins] = createSignal([...props.intakeEmails.allowedOrigins]);
+const AllowedOriginsDialog: Component<{
+  children: (props: DialogTriggerProps) => JSX.Element;
+  intakeEmails: IntakeEmail;
+  open?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+}> = (props) => {
+  const [getAllowedOrigins, setAllowedOrigins] = createSignal(props.intakeEmails?.allowedOrigins || []);
   const { t } = useI18n();
 
   const update = async () => {
+    if (!props.intakeEmails) return;
+
     await updateIntakeEmail({
       organizationId: props.intakeEmails.organizationId,
       intakeEmailId: props.intakeEmails.id,
@@ -58,13 +66,27 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
   });
 
   async function invalidateQuery() {
+    if (!props.intakeEmails) return;
+
     await queryClient.invalidateQueries({
       queryKey: ['organizations', props.intakeEmails.organizationId, 'intake-emails'],
     });
   }
 
+  if (!props.intakeEmails) {
+    return null;
+  }
+
   return (
-    <Dialog onOpenChange={isOpen => !isOpen && invalidateQuery()}>
+    <Dialog
+      open={props.open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          invalidateQuery();
+        }
+        props.onOpenChange?.(isOpen);
+      }}
+    >
       <DialogTrigger as={props.children} />
 
       <DialogContent>
@@ -129,6 +151,8 @@ const AllowedOriginsDialog: Component<{ children: (props: DialogTriggerProps) =>
 export const IntakeEmailsPage: Component = () => {
   const { config } = useConfig();
   const { t, te } = useI18n();
+  const [selectedIntakeEmail, setSelectedIntakeEmail] = createSignal<IntakeEmail | null>(null);
+  const [openDropdownId, setOpenDropdownId] = createSignal<string | null>(null);
 
   if (!config.intakeEmails.isEnabled) {
     return (
@@ -225,6 +249,11 @@ export const IntakeEmailsPage: Component = () => {
     });
   };
 
+  const openAllowedOriginsDialog = (intakeEmail: IntakeEmail) => {
+    setOpenDropdownId(null);
+    setSelectedIntakeEmail(intakeEmail);
+  };
+
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-10">
       <h1 class="text-xl font-semibold">{t('intake-emails.title')}</h1>
@@ -313,39 +342,47 @@ export const IntakeEmailsPage: Component = () => {
                           </Show>
                         </div>
                       </div>
-
                       <div class="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled })}
+                        <DropdownMenu
+                          open={openDropdownId() === intakeEmail.id}
+                          onOpenChange={(isOpen) => {
+                            console.log('intake email', intakeEmail.id, 'isOpen', isOpen);
+                            setOpenDropdownId(isOpen ? intakeEmail.id : null);
+                          }}
                         >
-                          <div class="i-tabler-power size-4 mr-2" />
-                          {intakeEmail.isEnabled ? t('intake-emails.actions.disable') : t('intake-emails.actions.enable')}
-                        </Button>
-
-                        <AllowedOriginsDialog intakeEmails={intakeEmail}>
-                          {(props: DialogTriggerProps) => (
-                            <Button
-                              variant="outline"
-                              aria-label="Edit intake email"
-                              {...props}
-                              class="flex items-center gap-2 leading-none"
+                          <DropdownMenuTrigger as={Button} variant="outline" aria-label="More actions">
+                            <div class="i-tabler-dots-vertical size-4" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenDropdownId(null);
+                                updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled });
+                              }}
                             >
-                              <div class="i-tabler-edit size-4" />
-                              {t('intake-emails.actions.manage-origins')}
-                            </Button>
-                          )}
-                        </AllowedOriginsDialog>
+                              <div class="i-tabler-power size-4 mr-2" />
+                              {intakeEmail.isEnabled ? t('intake-emails.actions.disable') : t('intake-emails.actions.enable')}
+                            </DropdownMenuItem>
 
-                        <Button
-                          variant="outline"
-                          onClick={() => deleteEmail({ intakeEmailId: intakeEmail.id })}
-                          aria-label="Delete intake email"
-                          class="text-red"
-                        >
-                          <div class="i-tabler-trash size-4 mr-2" />
-                          {t('intake-emails.actions.delete')}
-                        </Button>
+                            <DropdownMenuItem
+                              onClick={() => openAllowedOriginsDialog(intakeEmail)}
+                            >
+                              <div class="i-tabler-edit size-4 mr-2" />
+                              {t('intake-emails.actions.manage-origins')}
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setOpenDropdownId(null);
+                                deleteEmail({ intakeEmailId: intakeEmail.id });
+                              }}
+                              class="text-red"
+                            >
+                              <div class="i-tabler-trash size-4 mr-2" />
+                              {t('intake-emails.actions.delete')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   )}
@@ -355,6 +392,22 @@ export const IntakeEmailsPage: Component = () => {
           )}
         </Show>
       </Suspense>
+
+      <Show when={selectedIntakeEmail()}>
+        {intakeEmail => (
+          <AllowedOriginsDialog
+            intakeEmails={intakeEmail()}
+            open={true}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setSelectedIntakeEmail(null);
+              }
+            }}
+          >
+            {() => <div />}
+          </AllowedOriginsDialog>
+        )}
+      </Show>
     </div>
   );
 };
