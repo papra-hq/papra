@@ -17,11 +17,11 @@ import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { Card } from '@/modules/ui/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { createIntakeEmail, deleteIntakeEmail, fetchIntakeEmails, updateIntakeEmail } from '../intake-emails.services';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 
 const AllowedOriginsDialog: Component<{
   children: (props: DialogTriggerProps) => JSX.Element;
@@ -33,7 +33,9 @@ const AllowedOriginsDialog: Component<{
   const { t } = useI18n();
 
   const update = async () => {
-    if (!props.intakeEmails) return;
+    if (!props.intakeEmails) {
+      return;
+    }
 
     await updateIntakeEmail({
       organizationId: props.intakeEmails.organizationId,
@@ -66,7 +68,9 @@ const AllowedOriginsDialog: Component<{
   });
 
   async function invalidateQuery() {
-    if (!props.intakeEmails) return;
+    if (!props.intakeEmails) {
+      return;
+    }
 
     await queryClient.invalidateQueries({
       queryKey: ['organizations', props.intakeEmails.organizationId, 'intake-emails'],
@@ -346,7 +350,6 @@ export const IntakeEmailsPage: Component = () => {
                         <DropdownMenu
                           open={openDropdownId() === intakeEmail.id}
                           onOpenChange={(isOpen) => {
-                            console.log('intake email', intakeEmail.id, 'isOpen', isOpen);
                             setOpenDropdownId(isOpen ? intakeEmail.id : null);
                           }}
                         >
