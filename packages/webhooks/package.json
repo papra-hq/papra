@@ -49,7 +49,7 @@
     "@antfu/eslint-config": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.5.0",
+    "unbuild": "catalog:",
     "vitest": "catalog:"
   }
 }

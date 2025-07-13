@@ -2,7 +2,7 @@
   "name": "@papra/lecture",
   "type": "module",
   "version": "0.0.7",
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@10.12.3",
   "description": "A simple library to extract text from files",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
@@ -40,7 +40,6 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "generate-fixtures": "vitest --update",
-    "prepare": "pnpm run build",
     "build": "unbuild",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run build"
@@ -58,7 +57,7 @@
     "mime": "^4.0.6",
     "tinyglobby": "^0.2.10",
     "typescript": "catalog:",
-    "unbuild": "^3.3.1",
+    "unbuild": "catalog:",
     "vitest": "catalog:"
   }
 }
