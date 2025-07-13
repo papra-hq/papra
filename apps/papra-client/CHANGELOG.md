@@ -1,5 +1,35 @@
 # @papra/app-client
 
+## 0.6.4
+
+### Patch Changes
+
+- [#377](https://github.com/papra-hq/papra/pull/377) [`205c6cf`](https://github.com/papra-hq/papra/commit/205c6cfd461fa0020a93753571f886726ddfdb57) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improve file preview for text-like files (.env, yaml, extension-less text files,...)
+
+- [#393](https://github.com/papra-hq/papra/pull/393) [`aad36f3`](https://github.com/papra-hq/papra/commit/aad36f325296548019148bc4e32782fe562fd95b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix weird centering in document page for long filenames
+
+- [#394](https://github.com/papra-hq/papra/pull/394) [`f28d824`](https://github.com/papra-hq/papra/commit/f28d8245bf385d7be3b3b8ee449c3fdc88fa375c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to disable login via email, to support sso-only auth
+
+- [#405](https://github.com/papra-hq/papra/pull/405) [`3401cfb`](https://github.com/papra-hq/papra/commit/3401cfbfdc7e280d2f0f3166ceddcbf55486f574) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Introduce APP_BASE_URL to mutualize server and client base url
+
+- [#346](https://github.com/papra-hq/papra/pull/346) [`c54a71d`](https://github.com/papra-hq/papra/commit/c54a71d2c5998abde8ec78741b8c2e561203a045) Thanks [@blstmo](https://github.com/blstmo)! - Fixes 400 error when submitting tags with uppercase hex colour codes.
+
+- [#408](https://github.com/papra-hq/papra/pull/408) [`09e3bc5`](https://github.com/papra-hq/papra/commit/09e3bc5e151594bdbcb1f9df1b869a78e583af3f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Romanian (ro) translation
+
+- [#383](https://github.com/papra-hq/papra/pull/383) [`0b276ee`](https://github.com/papra-hq/papra/commit/0b276ee0d5e936fffc1f8284c654a8ada0efbafb) Thanks [@LMArantes](https://github.com/LMArantes)! - Added Brazilian Portuguese (pt-BR) language support
+
+- [#399](https://github.com/papra-hq/papra/pull/399) [`47b69b1`](https://github.com/papra-hq/papra/commit/47b69b15f4f711e47421fc21a3ac447824d67642) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix back to organization link in organization settings
+
+- [#403](https://github.com/papra-hq/papra/pull/403) [`1711ef8`](https://github.com/papra-hq/papra/commit/1711ef866d0071a804484b3e163a5e2ccbcec8fd) Thanks [@Icikowski](https://github.com/Icikowski)! - Added Polish (pl) language support
+
+- [#379](https://github.com/papra-hq/papra/pull/379) [`6cedc30`](https://github.com/papra-hq/papra/commit/6cedc30716e320946f79a0a9fd8d3b26e834f4db) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated dependencies
+
+- [#411](https://github.com/papra-hq/papra/pull/411) [`2601566`](https://github.com/papra-hq/papra/commit/26015666de197827a65a5bebf376921bbfcc3ab8) Thanks [@4DRIAN0RTIZ](https://github.com/4DRIAN0RTIZ)! - Added Spanish (es) translation
+
+- [#391](https://github.com/papra-hq/papra/pull/391) [`40a1f91`](https://github.com/papra-hq/papra/commit/40a1f91b67d92e135d13dfcd41e5fd3532c30ca5) Thanks [@itsjuoum](https://github.com/itsjuoum)! - Added European Portuguese (pt) translation
+
+- [#378](https://github.com/papra-hq/papra/pull/378) [`f1e1b40`](https://github.com/papra-hq/papra/commit/f1e1b4037b31ff5de1fd228b8390dd4d97a8bda8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added tag color swatches and picker
+
 ## 0.6.3
 
 ### Patch Changes
