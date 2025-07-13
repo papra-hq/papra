@@ -1,5 +1,11 @@
 # @papra/app-client
 
+## 0.7.0
+
+### Minor Changes
+
+- [#417](https://github.com/papra-hq/papra/pull/417) [`a82ff3a`](https://github.com/papra-hq/papra/commit/a82ff3a755fa1164b4d8ff09b591ed6482af0ccc) Thanks [@CorentinTh](https://github.com/CorentinTh)! - v0.7 release
+
 ## 0.6.4
 
 ### Patch Changes
