@@ -5,6 +5,7 @@ import type { AuthEmailsServices } from './auth.emails.services';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { genericOAuth } from 'better-auth/plugins';
+import { getServerBaseUrl } from '../../config/config.models';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
 import { getTrustedOrigins } from './auth.models';
@@ -28,10 +29,11 @@ export function getAuth({
   const { secret } = config.auth;
 
   const { trustedOrigins } = getTrustedOrigins({ config });
+  const { serverBaseUrl } = getServerBaseUrl({ config });
 
   const auth = betterAuth({
     secret,
-    baseURL: config.server.baseUrl,
+    baseURL: serverBaseUrl,
     trustedOrigins,
     logger: {
       disabled: false,

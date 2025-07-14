@@ -27,9 +27,15 @@ export const configDefinition = {
     default: 'development',
     env: 'NODE_ENV',
   },
+  appBaseUrl: {
+    doc: 'The base URL of the application. Will override the client baseUrl and server baseUrl when set. Use this one over the client and server baseUrl when the server is serving the client assets (like in docker).',
+    schema: z.string().url().optional(),
+    env: 'APP_BASE_URL',
+    default: undefined,
+  },
   client: {
     baseUrl: {
-      doc: 'The URL of the client, when using docker, it should be the same as the server baseUrl',
+      doc: 'The URL of the client, when using docker, prefer using the `APP_BASE_URL` environment variable instead.',
       schema: z.string().url(),
       default: 'http://localhost:3000',
       env: 'CLIENT_BASE_URL',
@@ -37,7 +43,7 @@ export const configDefinition = {
   },
   server: {
     baseUrl: {
-      doc: 'The base URL of the server, when using docker, it should be the same as the client baseUrl',
+      doc: 'The base URL of the server, when using docker, prefer using the `APP_BASE_URL` environment variable instead.',
       schema: z.string().url(),
       default: 'http://localhost:1221',
       env: 'SERVER_BASE_URL',

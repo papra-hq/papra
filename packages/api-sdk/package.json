@@ -1,7 +1,7 @@
 {
   "name": "@papra/api-sdk",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packageManager": "pnpm@10.12.3",
   "description": "Api SDK for Papra, the document archiving platform.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
@@ -49,7 +49,7 @@
     "@antfu/eslint-config": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "^3.5.0",
+    "unbuild": "catalog:",
     "vitest": "catalog:"
   }
 }

@@ -11,6 +11,7 @@ import type { OrganizationRole } from './organizations.types';
 import { buildUrl } from '@corentinth/chisels';
 import { addDays } from 'date-fns';
 import { createForbiddenError } from '../app/auth/auth.errors';
+import { getClientBaseUrl } from '../config/config.models';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { sanitize } from '../shared/html/html';
 import { createLogger } from '../shared/logger/logger';
@@ -302,13 +303,14 @@ export async function sendOrganizationInvitationEmail({
   config: Config;
 }) {
   const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+  const { clientBaseUrl } = getClientBaseUrl({ config });
 
   if (!organization) {
     throw createOrganizationNotFoundError();
   }
 
   const invitationLink = buildUrl({
-    baseUrl: config.client.baseUrl,
+    baseUrl: clientBaseUrl,
     path: '/invitations',
   });
 

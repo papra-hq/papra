@@ -1,5 +1,17 @@
 # @papra/docs
 
+## 0.5.2
+
+### Patch Changes
+
+- [#405](https://github.com/papra-hq/papra/pull/405) [`3401cfb`](https://github.com/papra-hq/papra/commit/3401cfbfdc7e280d2f0f3166ceddcbf55486f574) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Introduce APP_BASE_URL to mutualize server and client base url
+
+- [#379](https://github.com/papra-hq/papra/pull/379) [`6cedc30`](https://github.com/papra-hq/papra/commit/6cedc30716e320946f79a0a9fd8d3b26e834f4db) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated dependencies
+
+- [#390](https://github.com/papra-hq/papra/pull/390) [`42bc3c6`](https://github.com/papra-hq/papra/commit/42bc3c669840eb778d251dcfb0dd96b45bf6e277) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added API endpoints documentation
+
+- [#402](https://github.com/papra-hq/papra/pull/402) [`1d23f40`](https://github.com/papra-hq/papra/commit/1d23f4089479387d5b87dbcf6d3819f5ee14d580) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix invalid domain in json schema urls
+
 ## 0.5.1
 
 ### Patch Changes

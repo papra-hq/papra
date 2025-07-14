@@ -16,6 +16,7 @@ COPY pnpm-workspace.yaml ./
 COPY apps/papra-client/package.json apps/papra-client/package.json
 COPY apps/papra-server/package.json apps/papra-server/package.json
 COPY packages/webhooks/package.json packages/webhooks/package.json
+COPY packages/lecture/package.json packages/lecture/package.json
 
 RUN pnpm install --frozen-lockfile --ignore-scripts
 

@@ -1,15 +1,16 @@
 import { buildUrl } from '@corentinth/chisels';
 import { triggerWebhook } from '@owlrelay/webhook';
+import { getServerBaseUrl } from '../modules/config/config.models';
 import { INTAKE_EMAILS_INGEST_ROUTE } from '../modules/intake-emails/intake-emails.constants';
 import { runScript } from './commons/run-script';
 
 await runScript(
   { scriptName: 'simulate-intake-email' },
   async ({ config }) => {
-    const { baseUrl } = config.server;
+    const { serverBaseUrl } = getServerBaseUrl({ config });
     const { webhookSecret } = config.intakeEmails;
 
-    const webhookUrl = buildUrl({ baseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
+    const webhookUrl = buildUrl({ baseUrl: serverBaseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
 
     await triggerWebhook({
       webhookUrl,
