@@ -353,7 +353,7 @@ export const IntakeEmailsPage: Component = () => {
                             setOpenDropdownId(isOpen ? intakeEmail.id : null);
                           }}
                         >
-                          <DropdownMenuTrigger as={Button} variant="outline" aria-label="More actions">
+                          <DropdownMenuTrigger as={Button} variant="outline" aria-label="More actions" size="icon">
                             <div class="i-tabler-dots-vertical size-4" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
