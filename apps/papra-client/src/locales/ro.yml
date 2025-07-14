@@ -1,469 +1,469 @@
 # Authentication
 
-auth.request-password-reset.title: Reseteaza parola
-auth.request-password-reset.description: Introduceti adresa de email pentru a reseta parola.
-auth.request-password-reset.requested: Daca exista un cont pentru acest email, am trimis un email cu linkul de resetare.
-auth.request-password-reset.back-to-login: Inapoi la login
-auth.request-password-reset.form.email.label: Email
+auth.request-password-reset.title: Resetează parola
+auth.request-password-reset.description: Introdu adresa de e-mail pentru a reseta parola.
+auth.request-password-reset.requested: Dacă există un cont pentru acest e-mail, am trimis un e-mail pentru resetarea parolei.
+auth.request-password-reset.back-to-login: Înapoi la autentificare
+auth.request-password-reset.form.email.label: E-mail
 auth.request-password-reset.form.email.placeholder: 'Exemplu: popescu@papra.app'
-auth.request-password-reset.form.email.required: Introduceti adresa de email
-auth.request-password-reset.form.email.invalid: Adresa email este invalida
+auth.request-password-reset.form.email.required: Introdu adresa de e-mail
+auth.request-password-reset.form.email.invalid: Adresa de e-mail este invalidă
 auth.request-password-reset.form.submit: Trimite cererea de resetare a parolei
 
-auth.reset-password.title: Reseteaza parola
-auth.reset-password.description: Introdu o parola noua pentru a o reseta pe cea veche.
-auth.reset-password.reset: Parola ta a fost resetata cu success.
-auth.reset-password.back-to-login: Inapoi la login
-auth.reset-password.form.new-password.label: Parola noua
+auth.reset-password.title: Resetează parola
+auth.reset-password.description: Introdu o parolă noua pentră a o reseta pe cea veche.
+auth.reset-password.reset: Parola a fost resetată cu success.
+auth.reset-password.back-to-login: Înapoi la autentificare
+auth.reset-password.form.new-password.label: Parolă nouă
 auth.reset-password.form.new-password.placeholder: 'Exemplu: **********'
-auth.reset-password.form.new-password.required: Introdu noua parola
-auth.reset-password.form.new-password.min-length: Parola trebuie sa fie de minim {{ minLength }} de caractere
-auth.reset-password.form.new-password.max-length: Parola trebuie sa fie de maxim {{ maxLength }} de caractere
-auth.reset-password.form.submit: Reseteaza parola
+auth.reset-password.form.new-password.required: Introdu parola nouă
+auth.reset-password.form.new-password.min-length: Parola trebuie să fie de minim {{ minLength }} caractere
+auth.reset-password.form.new-password.max-length: Parola trebuie să fie de maxim {{ maxLength }} de caractere
+auth.reset-password.form.submit: Resetează parola
 
 auth.email-provider.open: Deschide {{ provider }}
 
-auth.login.title: Inregistreaza-te pe Papra
-auth.login.description: Introdu email ul pentru a accesa papra.
-auth.login.login-with-provider: Inregistreaza-te cu {{ provider }}
-auth.login.no-account: Nu ai un cont?
-auth.login.register: Logheaza-te
-auth.login.form.email.label: email
+auth.login.title: Autentificare la Papra
+auth.login.description: Introdu e-mailul sau folosește autentificarea cu cont social pentru a accesa contul Papra.
+auth.login.login-with-provider: Autentificare cu {{ provider }}
+auth.login.no-account: Nu ai cont?
+auth.login.register: Înregistrare
+auth.login.form.email.label: E-mail
 auth.login.form.email.placeholder: 'Exemplu: popescu@papra.app'
-auth.login.form.email.required: Introduceti adresa de email
-auth.login.form.email.invalid: Adresa email este invalida
+auth.login.form.email.required: Introdu adresa de e-mail
+auth.login.form.email.invalid: Adresa e-mail este invalidă
 auth.login.form.password.label: Parola
-auth.login.form.password.placeholder: Seteaza o parola noua
-auth.login.form.password.required: Introduceti parola noua
-auth.login.form.remember-me.label: Nu ma uita
+auth.login.form.password.placeholder: Setează o parola noua
+auth.login.form.password.required: Introdu parola noua
+auth.login.form.remember-me.label: Ține-mă minte
 auth.login.form.forgot-password.label: Ai uitat parola?
-auth.login.form.submit: Logheaza-te
+auth.login.form.submit: Autentificare
 
-auth.register.title: Inregistreaza-te pe Papra
-auth.register.description: Introdu email ul pentru a accesa papra.
-auth.register.register-with-email: Inregistreaza-te cu email
+auth.register.title: Înregistrare la Papra
+auth.register.description: Introdu e-mailul pentru a accesa Papra.
+auth.register.register-with-email: înregistrează-te cu e-mail
 auth.register.register-with-provider: Inregistreaza-te cu {{ provider }}
 auth.register.providers.google: Google
 auth.register.providers.github: GitHub
 auth.register.have-account: Ai deja un cont?
-auth.register.login: Logheaza-te
-auth.register.registration-disabled.title: Inregistrarea este dezactivata
-auth.register.registration-disabled.description: Crearea de conturi noi este momentan dezactivata pe aceasta instanta de Papra. Doar utilizatorii cu conturi existente pot logheaza. Daca crezi ca e o greseala, contacteaza administratorul acestei instante.
-auth.register.form.email.label: Email
+auth.register.login: Autentificare
+auth.register.registration-disabled.title: Înregistrarea este dezactivată
+auth.register.registration-disabled.description: Crearea de conturi noi este momentan dezactivată pe această instanță de Papra. Doar utilizatorii cu conturi existente se pot autentifica. Dacă aceasta pare a fi o greșeală, contactează administratorul acestei instanțe.
+auth.register.form.email.label: E-mail
 auth.register.form.email.placeholder: 'Exemplu: popescu@papra.app'
-auth.register.form.email.required: Introduceti adresa de email
-auth.register.form.email.invalid: Adresa email este invalida
+auth.register.form.email.required: Introdu adresa de e-mail
+auth.register.form.email.invalid: Adresa e-mail este invalida
 auth.register.form.password.label: Parola
-auth.register.form.password.placeholder: Seteaza parola
-auth.register.form.password.required: Te rugam sa introduci parola
-auth.register.form.password.min-length: Parola trebuie sa fie de minim {{ minLength }} de caractere
-auth.register.form.password.max-length: Parola trebuie sa fie de minim {{ maxLength }} de caractere
+auth.register.form.password.placeholder: Setează parola
+auth.register.form.password.required: Te rugăm să introduci parola
+auth.register.form.password.min-length: Parola trebuie să fie de minim {{ minLength }} caractere
+auth.register.form.password.max-length: Parola trebuie să fie de maxim {{ maxLength }} de caractere
 auth.register.form.name.label: Nume
 auth.register.form.name.placeholder: 'Exemplu: Andrei Popescu'
-auth.register.form.name.required: Introduce-ti numele
-auth.register.form.name.max-length: Numele trebuie sa fie de minim {{ maxLength }} de caractere
-auth.register.form.submit: Inregistreaza-te
+auth.register.form.name.required: Introdu numele
+auth.register.form.name.max-length: Numele trebuie să fie de minim {{ maxLength }} caractere
+auth.register.form.submit: Înregistrare
 
-auth.email-validation-required.title: Verifica-ti email-ul
-auth.email-validation-required.description: A fost trimis un email de verificare la adresa de email introdusa. Verificati email-ul dumneavoastra si click pe link-ul din email.
+auth.email-validation-required.title: Verifică-ți email-ul
+auth.email-validation-required.description: A fost trimis un e-mail de verificare la adresa ta de e-mail. Te rugăm să îți verifici adresa de e-mail dând click pe linkul din e-mail.
 
-auth.legal-links.description: Continuand, confirmati ca intelegeti si sunteti de acord cu {{ terms }} si {{ privacy }}.
-auth.legal-links.terms: Termenii si conditiile
+auth.legal-links.description: Continuând, confirmați că întelegeți și sunteti de acord cu {{ terms }} și {{ privacy }}.
+auth.legal-links.terms: Termenii și condițiile
 auth.legal-links.privacy: Politica de confidențialitate
 
-auth.no-auth-provider.title: Niciun provider de autentificare nu este adaugat
-auth.no-auth-provider.description: Nu exista nicio metoda de autentificare configurata. Contactati administratorul acestei instante pentru a adauga o metoda de autentificare.
+auth.no-auth-provider.title: Niciun furnizor de autentificare
+auth.no-auth-provider.description: Nu este niciun furnizor de autentificare activat pe această instanță de Papra. Te rugăm să contactezi administratorul aceste instanțe pentru a le activa.
 
 # User settings
 
-user.settings.title: Setarile tale
-user.settings.description: Configureaza-ti setarile tale.
+user.settings.title: Setările utilizatorului
+user.settings.description: Configurează setările contului aici.
 
-user.settings.email.title: Adresa email
-user.settings.email.description: Adresa ta de email nu poate fi schimbata.
-user.settings.email.label: Adresa email
+user.settings.email.title: Adresa de e-mail
+user.settings.email.description: Adresa de e-mail nu poate fi schimbată.
+user.settings.email.label: Adresa de e-mail
 
-user.settings.name.title: Numele dvs.
-user.settings.name.description: Numele dvs. va fi distribuit cu persoanele din organizatia dvs.
-user.settings.name.label: Numele dvs.
+user.settings.name.title: Numele complet
+user.settings.name.description: Numele complet este afișat altor membri din organizație.
+user.settings.name.label: Numele complet
 user.settings.name.placeholder: Ex. Andrei Popescu
-user.settings.name.update: Schimba-ti numele
-user.settings.name.updated: Numele tau s-a schimbat
+user.settings.name.update: Schimbă numele
+user.settings.name.updated: Numele a fost schimbat
 
-user.settings.logout.title: Iesi din cont
-user.settings.logout.description: Iesi din cont
-user.settings.logout.button: Iesi din cont
+user.settings.logout.title: Deconectare
+user.settings.logout.description: Vei fi deconectat din cont. Te poți conecta înapoi ulterior.
+user.settings.logout.button: Deconectare
 
 # Organizations
 
-organizations.list.title: Organizatiile dvs.
-organizations.list.description: Organizatiile sunt o modalitate de a grupa documentele si de a le gestiona accesul la acestea. Poti crea multiple organizatii si invita membrii echipei tale sa colabora.
-organizations.list.create-new: Creeaza o noua organizatie
+organizations.list.title: Organizațiile tale
+organizations.list.description: Organizațiile sunt o modalitate de a grupa documentele și de a gestiona accesul la acestea. Poți crea multiple organizații și invita membrii echipei tale să colaboreze.
+organizations.list.create-new: Creează o organizație nouă
 
 organizations.details.no-documents.title: Niciun document
-organizations.details.no-documents.description: Nu sunt documente in aceasta organizatie. Incepe prin uploadarea unei documente.
-organizations.details.upload-documents: Incarca documente
+organizations.details.no-documents.description: Încă nu există documente în această organizație. Încarcă niște documente pentru a începe.
+organizations.details.upload-documents: Încarcă documente
 organizations.details.documents-count: documente in total
-organizations.details.total-size: marime totala
-organizations.details.latest-documents: Ultimele documente incarcate
+organizations.details.total-size: mărime totala
+organizations.details.latest-documents: Ultimele documente încarcate
 
-organizations.create.title: Creeaza o noua organizatie
-organizations.create.description: Documentele dvs. sunt grupate pe organizatie. Puteti crea mai multe organizatii pentru documente diferite, de exemplu, pentru uz personal si profesional.
-organizations.create.back: Inapoi
-organizations.create.error.max-count-reached: Ai ajuns la numarul maxim de organizatii pe care le poti crea, daca ai nevoie de mai multe, contacteaza support ul.
-organizations.create.form.name.label: Numle organizatiei
+organizations.create.title: Creează o organizație nouă
+organizations.create.description: Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.
+organizations.create.back: Înapoi
+organizations.create.error.max-count-reached: Ai ajuns la numărul maxim de organizații pe care le poți crea. Dacă ai nevoie de mai multe, contactează asistența.
+organizations.create.form.name.label: Numle organizației
 organizations.create.form.name.placeholder: Ex. Acme SRL.
-organizations.create.form.name.required: Introdu numele organizatiei
-organizations.create.form.submit: Creeaza organizatia
-organizations.create.success: Organizatia a fost creata cu success
+organizations.create.form.name.required: Introdu numele organizației
+organizations.create.form.submit: Creează organizația
+organizations.create.success: Organizația a fost creată cu succes
 
-organizations.create-first.title: Creeaza organizatia
-organizations.create-first.description: Documentele dvs. sunt grupate pe organizatie. Puteti crea mai multe organizatii pentru documente diferite, de exemplu, pentru uz personal si profesional.
-organizations.create-first.default-name: Organizatia mea
-organizations.create-first.user-name: 'Organizatia {{ name }}'
+organizations.create-first.title: Creează organizația
+organizations.create-first.description: Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.
+organizations.create-first.default-name: Organizația mea
+organizations.create-first.user-name: 'Organizația lui {{ name }}'
 
-organization.settings.title: Setarile organizatiei
-organization.settings.page.title: Setarile organizatiei
-organization.settings.page.description: Gestioneaza setarile organizatiei tale aici.
-organization.settings.name.title: Numele organizatiei
-organization.settings.name.update: Actualizeaza numele
+organization.settings.title: Setările organizației
+organization.settings.page.title: Setările organizației
+organization.settings.page.description: Gestionează setarile organizației aici.
+organization.settings.name.title: Numele organizației
+organization.settings.name.update: Actualizează numele
 organization.settings.name.placeholder: Ex. Acme SRL.
-organization.settings.name.updated: Numele organizatiei a fost actualizat
-organization.settings.subscription.title: Subscriptie
-organization.settings.subscription.description: Gestioneaza facturile, facturi si metodele de plata.
-organization.settings.subscription.manage: Gestioneaza-ti subscriptia
-organization.settings.subscription.error: Eroare la obtinerea URL-ului portalului client
-organization.settings.delete.title: Sterge organizatie
-organization.settings.delete.description: Stergerea acestei organizatii va elimina permanent toate datele asociate cu aceasta.
-organization.settings.delete.confirm.title: Sterge organizatie
-organization.settings.delete.confirm.message: Esti sigur ca vrei sa stergi aceasta organizatie? Aceasta operatie nu poate fi anulata si toate datele asociate cu aceasta vor fi eliminate permanent.
-organization.settings.delete.confirm.confirm-button: Sterge organizatie
-organization.settings.delete.confirm.cancel-button: Anuleaza
-organization.settings.delete.success: Organizatie stearsa cu success
+organization.settings.name.updated: Numele organizației a fost actualizat
+organization.settings.subscription.title: Abonament
+organization.settings.subscription.description: Gestionează facturile și metodele de plată.
+organization.settings.subscription.manage: Gestionează-ți abonamentul
+organization.settings.subscription.error: Eroare la obținerea URL-ului portalului de client
+organization.settings.delete.title: Șterge organizația
+organization.settings.delete.description: Ștergerea acestei organizații va elimina definitiv toate datele asociate cu aceasta.
+organization.settings.delete.confirm.title: Șterge organizatia
+organization.settings.delete.confirm.message: Ești sigur că vrei să ștergi această organizație? Aceasta operatie nu poate fi anulată si toate datele asociate cu aceasta vor fi eliminate definitiv.
+organization.settings.delete.confirm.confirm-button: Șterge organizație
+organization.settings.delete.confirm.cancel-button: Anulează
+organization.settings.delete.success: Organizație ștearsă cu succes
 
 organizations.members.title: Membri
-organizations.members.description: Gestioneaza membrii organizatiei tale
-organizations.members.invite-member: Invita membru
-organizations.members.invite-member-disabled-tooltip: Doar adminii sau proprietarii pot invita membrii la organizatie
-organizations.members.remove-from-organization: Elimina din organizatie
+organizations.members.description: Gestionează membrii organizației tale
+organizations.members.invite-member: Invită membru
+organizations.members.invite-member-disabled-tooltip: Doar administratorii sau proprietarii pot invita membrii la organizație
+organizations.members.remove-from-organization: Elimina din organizație
 organizations.members.role: Rol
 organizations.members.roles.owner: Proprietar
 organizations.members.roles.admin: Admin
-organizations.members.roles.member: membru
-organizations.members.delete.confirm.title: Eliminati membrul
-organizations.members.delete.confirm.message: Esti sigur ca vrei sa stergi acest membru din organizatie?
-organizations.members.delete.confirm.confirm-button: Elimina
-organizations.members.delete.confirm.cancel-button: Anuleaza
-organizations.members.delete.success: membru sters cu succes
+organizations.members.roles.member: Membru
+organizations.members.delete.confirm.title: Elimină membrul
+organizations.members.delete.confirm.message: Ești sigur că vrei să elimini acest membru din organizație?
+organizations.members.delete.confirm.confirm-button: Elimină
+organizations.members.delete.confirm.cancel-button: Anulează
+organizations.members.delete.success: Membru eliminat cu succes
 organizations.members.update-role.success: Rolul membrului a fost actualizat
 organizations.members.table.headers.name: Nume
-organizations.members.table.headers.email: Email
+organizations.members.table.headers.email: E-mail
 organizations.members.table.headers.role: Rol
 organizations.members.table.headers.created: Creat
-organizations.members.table.headers.actions: Actiuni
+organizations.members.table.headers.actions: Acțiuni
 
-organizations.invite-member.title: Invita membru
-organizations.invite-member.description: Invita un membru la organizatie
-organizations.invite-member.form.email.label: Email
+organizations.invite-member.title: Invită membru
+organizations.invite-member.description: Invită un membru la organizație
+organizations.invite-member.form.email.label: E-mail
 organizations.invite-member.form.email.placeholder: 'Exemplu: ada@papra.app'
-organizations.invite-member.form.email.required: Introduceti o adresa de email valida
+organizations.invite-member.form.email.required: Introdu o adresă de e-mail validă
 organizations.invite-member.form.role.label: Rol
-organizations.invite-member.form.submit: Invita membru
-organizations.invite-member.success.message: membru invitat
-organizations.invite-member.success.description: Adresa de email a fost invitata la organizatie.
-organizations.invite-member.error.message: Eroare la invitatia membrului
+organizations.invite-member.form.submit: Invită membru
+organizations.invite-member.success.message: Membru invitat
+organizations.invite-member.success.description: Adresă de e-mail a fost invitată la organizație.
+organizations.invite-member.error.message: Eroare la invitarea membrului
 
-organizations.invitations.title: Invitatii
-organizations.invitations.description: Gestioneaza invitatii la organizatie
-organizations.invitations.list.cta: Invita membru
-organizations.invitations.list.empty.title: Niciun invitat
-organizations.invitations.list.empty.description: Nu ai fost invitat la nicio organizatie inca.
-organizations.invitations.status.pending: In asteptare
-organizations.invitations.status.accepted: Acceptat
-organizations.invitations.status.rejected: Refuzat
-organizations.invitations.status.expired: Expirat
-organizations.invitations.status.cancelled: Anulat
-organizations.invitations.resend: Retrimite invitatia
-organizations.invitations.cancel.title: Anuleaza invitatia
-organizations.invitations.cancel.description: Esti sigur ca vrei sa anulezi aceasta invitatie?
-organizations.invitations.cancel.confirm: Anuleaza invitatia
-organizations.invitations.cancel.cancel: Anuleaza
-organizations.invitations.resend.title: Retrimite invitatia
-organizations.invitations.resend.description: Esti sigur ca vrei sa retrimiteti aceasta invitatie? Acest lucru va trimite un nou email destinatarului.
-organizations.invitations.resend.confirm: Retrimite invitatia
-organizations.invitations.resend.cancel: Anuleaza
+organizations.invitations.title: Invitații
+organizations.invitations.description: Gestionează invitațiile la organizație
+organizations.invitations.list.cta: Invită membru
+organizations.invitations.list.empty.title: Nicio invitație în așteptare
+organizations.invitations.list.empty.description: Încă nu ai fost invitat la nicio organizație.
+organizations.invitations.status.pending: În așteptare
+organizations.invitations.status.accepted: Acceptată
+organizations.invitations.status.rejected: Respinsă
+organizations.invitations.status.expired: Expirată
+organizations.invitations.status.cancelled: Anulată
+organizations.invitations.resend: Retrimite invitația
+organizations.invitations.cancel.title: Anulează invitația
+organizations.invitations.cancel.description: Ești sigur că vrei să anulezi această invitație?
+organizations.invitations.cancel.confirm: Anulează invitația
+organizations.invitations.cancel.cancel: Anulează
+organizations.invitations.resend.title: Retrimite invitația
+organizations.invitations.resend.description: Ești sigur că vrei să retrimiți această invitație? Se va trimite un nou e-mail destinatarului.
+organizations.invitations.resend.confirm: Retrimite invitația
+organizations.invitations.resend.cancel: Anulează
 
-invitations.list.title: Invitatii
-invitations.list.description: Gestioneaza invitatii la organizatie
-invitations.list.empty.title: Niciun invitat
-invitations.list.empty.description: Nu ai fost invitat la nicio organizatie inca.
-invitations.list.headers.organization: Organizatie
+invitations.list.title: Invitații
+invitations.list.description: Gestionează invitații la organizație
+invitations.list.empty.title: Nicio invitație în așteptare
+invitations.list.empty.description: Încă nu ai fost invitat la nicio organizație.
+invitations.list.headers.organization: Organizație
 invitations.list.headers.status: Status
 invitations.list.headers.created: Creat la
-invitations.list.headers.actions: Actiuni
-invitations.list.actions.accept: Accepta
-invitations.list.actions.reject: Refuza
-invitations.list.actions.accept.success.message: Invitatie acceptata
-invitations.list.actions.accept.success.description: Invitatie a fost acceptata.
-invitations.list.actions.reject.success.message: Invitatie refuzata
-invitations.list.actions.reject.success.description: Invitatie a fost refuzata.
+invitations.list.headers.actions: Acțiuni
+invitations.list.actions.accept: Acceptă
+invitations.list.actions.reject: Refuză
+invitations.list.actions.accept.success.message: Invitație acceptată
+invitations.list.actions.accept.success.description: Invitația a fost acceptată.
+invitations.list.actions.reject.success.message: Invitație refuzată
+invitations.list.actions.reject.success.description: Invitația a fost refuzată.
 
 # Documents
 
 documents.list.title: Documente
 documents.list.no-documents.title: Niciun document
-documents.list.no-documents.description: Nu exista documente in aceasta organizatie inca. Incepe prin a incarca cateva documente.
-documents.list.no-results: Niciun document gasit
+documents.list.no-documents.description: Încă nu există documente în aceasta organizație. Începe prin a încarca câteva documente.
+documents.list.no-results: Nu au fost găsite documente
 
 documents.tabs.info: Info
-documents.tabs.content: Continut
+documents.tabs.content: Conținut
 documents.tabs.activity: Activitate
-documents.deleted.message: Acest document a fost sters si va fi eliminat permanent in {{ days }} zile.
-documents.actions.download: Descarca
-documents.actions.open-in-new-tab: Deschide in fila noua
-documents.actions.restore: Restaureaza
-documents.actions.delete: Sterge
-documents.actions.edit: Editeaza
-documents.actions.cancel: Anuleaza
-documents.actions.save: Salveaza
-documents.actions.saving: Se salveaza...
-documents.content.alert: Continutul documentului este extras automat din document la incarcare. Este folosit doar pentru cautare si indexare.
+documents.deleted.message: Acest document a fost șters și va fi eliminat definitiv după {{ days }} zile.
+documents.actions.download: Descarcă
+documents.actions.open-in-new-tab: Deschide în filă nouă
+documents.actions.restore: Restaurează
+documents.actions.delete: Șterge
+documents.actions.edit: Editează
+documents.actions.cancel: Anulează
+documents.actions.save: Salvează
+documents.actions.saving: Se salvează...
+documents.content.alert: Conținutul documentului este extras automat din document la încarcare. Este folosit doar pentru căutare și indexare.
 documents.info.id: ID
 documents.info.name: Nume
 documents.info.type: Tip
 documents.info.size: Dimensiune
 documents.info.created-at: Creat la
 documents.info.updated-at: Actualizat la
-documents.info.never: Niciodata
+documents.info.never: Niciodată
 
-documents.rename.title: Redenumeste documentul
+documents.rename.title: Redenumește documentul
 documents.rename.form.name.label: Nume
 documents.rename.form.name.placeholder: 'Exemplu: Factura 2024'
-documents.rename.form.name.required: Va rugam sa introduceti un nume pentru document
-documents.rename.form.name.max-length: Numele trebuie sa aiba mai putin de 255 de caractere
-documents.rename.form.submit: Redenumeste documentul
+documents.rename.form.name.required: Te rugăm să introduci un nume pentru document
+documents.rename.form.name.max-length: Numele trebuie să aibă mai puțin de 255 de caractere
+documents.rename.form.submit: Redenumește documentul
 documents.rename.success: Document redenumit cu succes
-documents.rename.cancel: Anuleaza
+documents.rename.cancel: Anulează
 
-import-documents.title.error: '{{ count }} documente au esuat'
+import-documents.title.error: '{{ count }} documente au eșuat'
 import-documents.title.success: '{{ count }} documente importate'
 import-documents.title.pending: '{{ count }} / {{ total }} documente importate'
-import-documents.title.none: Importa documente
-import-documents.no-import-in-progress: Niciun import de documente in curs
+import-documents.title.none: Importă documente
+import-documents.no-import-in-progress: Niciun import de documente în curs
 
-documents.deleted.title: Documente sterse
-documents.deleted.empty.title: Niciun document sters
-documents.deleted.empty.description: Nu aveti documente sterse. Documentele care sunt sterse vor fi mutate in cosul de gunoi pentru {{ days }} zile.
-documents.deleted.retention-notice: Toate documentele sterse sunt stocate in cosul de gunoi pentru {{ days }} zile. Dupa acest interval, documentele vor fi sterse permanent si nu le veti putea restaura.
-documents.deleted.deleted-at: Sterse la
-documents.deleted.restoring: Se restaureaza...
-documents.deleted.deleting: Se sterge...
+documents.deleted.title: Documente șterse
+documents.deleted.empty.title: Niciun document șters
+documents.deleted.empty.description: Nu ai niciun document șters. Documentele care sunt șterse vor fi mutate în coșul de gunoi timp de {{ days }} zile.
+documents.deleted.retention-notice: Toate documentele șterse sunt stocate în coșul de gunoi timp de {{ days }} zile. După acest interval, documentele vor fi șterse definitiv și nu le vei mai putea restaura.
+documents.deleted.deleted-at: Șterse la
+documents.deleted.restoring: Se restaurează...
+documents.deleted.deleting: Se șterge...
 
-documents.preview.unknown-file-type: Nicio previzualizare disponibila pentru acest tip de fisier
-documents.preview.binary-file: Acesta pare a fi un fisier binar si nu poate fi afisat ca text
+documents.preview.unknown-file-type: Nicio previzualizare disponibilă pentru acest tip de fișier
+documents.preview.binary-file: Acesta pare a fi un fișier binar și nu poate fi afișat ca text
 
-trash.delete-all.button: Sterge tot
-trash.delete-all.confirm.title: Stergeti permanent toate documentele?
-trash.delete-all.confirm.description: Sunteti sigur ca doriti sa stergeti permanent toate documentele din cosul de gunoi? Aceasta actiune nu poate fi anulata.
-trash.delete-all.confirm.label: Sterge
-trash.delete-all.confirm.cancel: Anuleaza
-trash.delete.button: Sterge
-trash.delete.confirm.title: Stergeti permanent documentul?
-trash.delete.confirm.description: Sunteti sigur ca doriti sa stergeti permanent acest document din cosul de gunoi? Aceasta actiune nu poate fi anulata.
-trash.delete.confirm.label: Sterge
-trash.delete.confirm.cancel: Anuleaza
-trash.deleted.success.title: Document sters
-trash.deleted.success.description: Documentul a fost sters permanent.
+trash.delete-all.button: Șterge tot
+trash.delete-all.confirm.title: Ștergi definitiv toate documentele?
+trash.delete-all.confirm.description: Ești sigur că dorești să ștergi definitiv toate documentele din coșul de gunoi? Această acțiune nu poate fi anulată.
+trash.delete-all.confirm.label: Șterge
+trash.delete-all.confirm.cancel: Anulează
+trash.delete.button: Șterge
+trash.delete.confirm.title: Ștergi definitiv documentul?
+trash.delete.confirm.description: Sunteti sigur ca doriti să stergeti definitiv acest document din cosul de gunoi? Această actiune nu poate fi anulată.
+trash.delete.confirm.label: Șterge
+trash.delete.confirm.cancel: Anulează
+trash.deleted.success.title: Document șters
+trash.deleted.success.description: Documentul a fost șters definitiv.
 
 activity.document.created: Documentul a fost creat
-activity.document.updated.single: Campul {{ field }} a fost actualizat
-activity.document.updated.multiple: Campurile {{ fields }} au fost actualizate
+activity.document.updated.single: Câmpul {{ field }} a fost actualizat
+activity.document.updated.multiple: Câmpurile {{ fields }} au fost actualizate
 activity.document.updated: Documentul a fost actualizat
-activity.document.deleted: Documentul a fost sters
+activity.document.deleted: Documentul a fost șters
 activity.document.restored: Documentul a fost restaurat
-activity.document.tagged: Eticheta {{ tag }} a fost adaugata
-activity.document.untagged: Eticheta {{ tag }} a fost eliminata
+activity.document.tagged: Eticheta {{ tag }} a fost adaugată
+activity.document.untagged: Eticheta {{ tag }} a fost eliminată
 
 activity.document.user.name: de {{ name }}
 
-activity.load-more: Incarca mai mult
-activity.no-more-activities: Nu mai sunt activitati pentru acest document
+activity.load-more: Încarcă mai multe
+activity.no-more-activities: Nu mai sunt activități pentru acest document
 
 # Tags
 
-tags.no-tags.title: Inca nu exista etichete
-tags.no-tags.description: Aceasta organizatie nu are inca etichete. Etichetele sunt folosite pentru a clasifica documentele. Puteti adauga etichete la documentele dvs. pentru a le gasi si organiza mai usor.
-tags.no-tags.create-tag: Creeaza eticheta
+tags.no-tags.title: Încă nu există etichete
+tags.no-tags.description: Această organizație nu are încă etichete. Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.
+tags.no-tags.create-tag: Creează eticheta
 
 tags.title: Etichete documente
-tags.description: Etichetele sunt folosite pentru a clasifica documentele. Puteti adauga etichete la documentele dvs. pentru a le gasi si organiza mai usor.
-tags.create: Creeaza eticheta
-tags.update: Actualizeaza eticheta
-tags.delete: Sterge eticheta
-tags.delete.confirm.title: Sterge eticheta
-tags.delete.confirm.message: Esti sigur ca vrei sa stergi aceasta eticheta? Stergerea unei etichete o va elimina din toate documentele.
-tags.delete.confirm.confirm-button: Sterge
-tags.delete.confirm.cancel-button: Anuleaza
-tags.delete.success: Eticheta a fost stearsa cu succes
-tags.create.success: Eticheta "{{ name }}" a fost creata cu succes.
-tags.update.success: Eticheta "{{ name }}" a fost actualizata cu succes.
+tags.description: Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.
+tags.create: Creează eticheta
+tags.update: Actualizează eticheta
+tags.delete: Șterge eticheta
+tags.delete.confirm.title: Șterge eticheta
+tags.delete.confirm.message: Ești sigur că vrei să ștergi aceasta eticheta? Stergerea unei etichete o va elimina din toate documentele.
+tags.delete.confirm.confirm-button: Șterge
+tags.delete.confirm.cancel-button: Anulează
+tags.delete.success: Eticheta a fost ștearsă cu succes
+tags.create.success: Eticheta "{{ name }}" a fost creată cu succes.
+tags.update.success: Eticheta "{{ name }}" a fost actualizată cu succes.
 tags.form.name.label: Nume
 tags.form.name.placeholder: Ex. Contracte
-tags.form.name.required: Va rugam sa introduceti un nume de eticheta
-tags.form.name.max-length: Numele etichetei trebuie sa aiba mai putin de 64 de caractere
+tags.form.name.required: Te rugăm să introduci un nume pentru etichetă
+tags.form.name.max-length: Numele etichetei trebuie să aibă mai puțin de 64 de caractere
 tags.form.color.label: Culoare
-tags.form.color.required: Va rugam sa introduceti o culoare
-tags.form.color.invalid: Culoarea hex este formatata gresit.
+tags.form.color.required: Te rugăm să introduci o culoare
+tags.form.color.invalid: Culoarea hex este formatată greșit.
 tags.form.description.label: Descriere
 tags.form.description.optional: (optional)
 tags.form.description.placeholder: Ex. Toate contractele semnate de companie
-tags.form.description.max-length: Descrierea trebuie sa aiba mai putin de 256 de caractere
+tags.form.description.max-length: Descrierea trebuie să aibă mai puțin de 256 de caractere
 tags.form.no-description: Nicio descriere
-tags.table.headers.tag: Eticheta
+tags.table.headers.tag: Etichetă
 tags.table.headers.description: Descriere
 tags.table.headers.documents: Documente
 tags.table.headers.created: Creat la
-tags.table.headers.actions: Actiuni
+tags.table.headers.actions: Acțiuni
 
 # Tagging rules
 
 tagging-rules.field.name: nume document
-tagging-rules.field.content: continut document
-tagging-rules.operator.equals: este egal cu
+tagging-rules.field.content: conținut document
+tagging-rules.operator.equals: egal cu
 tagging-rules.operator.not-equals: nu este egal cu
-tagging-rules.operator.contains: contine
-tagging-rules.operator.not-contains: nu contine
-tagging-rules.operator.starts-with: incepe cu
-tagging-rules.operator.ends-with: se termina cu
+tagging-rules.operator.contains: conține
+tagging-rules.operator.not-contains: nu conține
+tagging-rules.operator.starts-with: începe cu
+tagging-rules.operator.ends-with: se termină cu
 tagging-rules.list.title: Reguli de etichetare
-tagging-rules.list.description: Gestioneaza regulile de etichetare ale organizatiei tale, pentru a eticheta automat documentele pe baza conditiilor pe care le definesti.
-tagging-rules.list.demo-warning: 'Nota: Deoarece acesta este un mediu demonstrativ (fara server), regulile de etichetare nu vor fi aplicate documentelor nou adaugate.'
-tagging-rules.list.no-tagging-rules.title: Nicio regula de etichetare
-tagging-rules.list.no-tagging-rules.description: Creati o regula de etichetare pentru a eticheta automat documentele adaugate pe baza conditiilor pe care le definiti.
-tagging-rules.list.no-tagging-rules.create-tagging-rule: Creeaza regula de etichetare
-tagging-rules.list.card.no-conditions: Nicio conditie
-tagging-rules.list.card.one-condition: 1 conditie
-tagging-rules.list.card.conditions: '{{ count }} conditii'
-tagging-rules.list.card.delete: Sterge regula
-tagging-rules.list.card.edit: Editeaza regula
-tagging-rules.create.title: Creeaza regula de etichetare
-tagging-rules.create.success: Regula de etichetare a fost creata cu succes
+tagging-rules.list.description: Gestionează regulile de etichetare ale organizației pentru a eticheta automat documentele pe baza unor condiții definite.
+tagging-rules.list.demo-warning: 'Notă: Deoarece acesta este un mediu demonstrativ (fără server), regulile de etichetare nu vor fi aplicate documentelor nou adăugate.'
+tagging-rules.list.no-tagging-rules.title: Nicio regulă de etichetare
+tagging-rules.list.no-tagging-rules.description: Creează o regulă de etichetare pentru a eticheta automat documentele adăugate pe baza unor condiții definite.
+tagging-rules.list.no-tagging-rules.create-tagging-rule: Creează regula de etichetare
+tagging-rules.list.card.no-conditions: Nicio condiție
+tagging-rules.list.card.one-condition: O condiție
+tagging-rules.list.card.conditions: '{{ count }} condiții'
+tagging-rules.list.card.delete: Șterge regula
+tagging-rules.list.card.edit: Editează regula
+tagging-rules.create.title: Creează regula de etichetare
+tagging-rules.create.success: Regula de etichetare a fost creată cu succes
 tagging-rules.create.error: Nu s-a putut crea regula de etichetare
-tagging-rules.create.submit: Creeaza regula
+tagging-rules.create.submit: Creează regula
 tagging-rules.form.name.label: Nume
-tagging-rules.form.name.placeholder: 'Exemplu: Eticheteaza facturile'
-tagging-rules.form.name.min-length: Va rugam sa introduceti un nume pentru regula
-tagging-rules.form.name.max-length: Numele trebuie sa aiba mai putin de 64 de caractere
+tagging-rules.form.name.placeholder: 'Exemplu: Etichetează facturile'
+tagging-rules.form.name.min-length: Te rugăm să introduci numele regulii
+tagging-rules.form.name.max-length: Numele trebuie să aibă mai puțin de 64 de caractere
 tagging-rules.form.description.label: Descriere
-tagging-rules.form.description.placeholder: "Exemplu: Eticheteaza documentele cu 'factura' in nume"
-tagging-rules.form.description.max-length: Descrierea trebuie sa aiba mai putin de 256 de caractere
-tagging-rules.form.conditions.label: Conditii
-tagging-rules.form.conditions.description: Definiti conditiile care trebuie indeplinite pentru ca regula sa se aplice. Toate conditiile trebuie indeplinite pentru ca regula sa se aplice.
-tagging-rules.form.conditions.add-condition: Adauga conditie
-tagging-rules.form.conditions.no-conditions.title: Nicio conditie
-tagging-rules.form.conditions.no-conditions.description: Nu ati adaugat nicio conditie acestei reguli. Aceasta regula va aplica etichetele sale tuturor documentelor.
-tagging-rules.form.conditions.no-conditions.confirm: Aplica regula fara conditii
-tagging-rules.form.conditions.no-conditions.cancel: Anuleaza
-tagging-rules.form.conditions.value.placeholder: 'Exemplu: factura'
-tagging-rules.form.conditions.value.min-length: Va rugam sa introduceti o valoare pentru conditie
+tagging-rules.form.description.placeholder: "Exemplu: Etichetează documentele cu 'factură' în nume"
+tagging-rules.form.description.max-length: Descrierea trebuie să aibă mai puțin de 256 de caractere
+tagging-rules.form.conditions.label: Condiții
+tagging-rules.form.conditions.description: Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Toate condițiile trebuie îndeplinite pentru ca regula să se aplice.
+tagging-rules.form.conditions.add-condition: Adaugă condiție
+tagging-rules.form.conditions.no-conditions.title: Nicio condiție
+tagging-rules.form.conditions.no-conditions.description: Nu ai adăugat nicio condiție acestei reguli. Această regula va aplica etichetele sale tuturor documentelor.
+tagging-rules.form.conditions.no-conditions.confirm: Aplică regula fara condiții
+tagging-rules.form.conditions.no-conditions.cancel: Anulează
+tagging-rules.form.conditions.value.placeholder: 'Exemplu: factură'
+tagging-rules.form.conditions.value.min-length: Te rugăm să introduci o valoare pentru condiție
 tagging-rules.form.tags.label: Etichete
-tagging-rules.form.tags.description: Selecteaza etichetele de aplicat documentelor adaugate care corespund conditiilor
-tagging-rules.form.tags.min-length: Este necesara cel putin o eticheta de aplicat
-tagging-rules.form.tags.add-tag: Creeaza eticheta
-tagging-rules.form.submit: Creeaza regula
-tagging-rules.update.title: Actualizeaza regula de etichetare
+tagging-rules.form.tags.description: Selectează etichetele de aplicat documentelor adăugate care corespund condițiilor
+tagging-rules.form.tags.min-length: Este necesară cel puțin o etichetă de aplicat
+tagging-rules.form.tags.add-tag: Creează eticheta
+tagging-rules.form.submit: Creează regula
+tagging-rules.update.title: Actualizează regula de etichetare
 tagging-rules.update.error: Nu s-a putut actualiza regula de etichetare
-tagging-rules.update.submit: Actualizeaza regula
-tagging-rules.update.cancel: Anuleaza
+tagging-rules.update.submit: Actualizează regula
+tagging-rules.update.cancel: Anulează
 
 # Intake emails
 
-intake-emails.title: Email-uri de preluare
-intake-emails.description: Adresele de email de preluare sunt folosite pentru a introduce automat email-uri in Papra. Doar trimiteti email-uri catre adresa de email de preluare, iar atasamentele lor vor fi adaugate la documentele organizatiei dvs.
-intake-emails.disabled.title: Email-urile de preluare sunt dezactivate
-intake-emails.disabled.description: Email-urile de preluare sunt dezactivate pe aceasta instanta. Va rugam sa contactati administratorul pentru a le activa. Consultati {{ documentation }} pentru mai multe informatii.
-intake-emails.disabled.documentation: documentatie
-intake-emails.info: Doar email-urile de preluare activate de la origini permise vor fi procesate. Puteti activa sau dezactiva un email de preluare oricand.
-intake-emails.empty.title: Niciun email de preluare
-intake-emails.empty.description: Generati o adresa de preluare pentru a ingera cu usurinta atasamentele de email.
-intake-emails.empty.generate: Genereaza email de preluare
-intake-emails.count: '{{ count }} email{{ plural }} de preluare pentru aceasta organizatie'
-intake-emails.new: Email nou de preluare
+intake-emails.title: E-mailuri de primire
+intake-emails.description: Adresele de e-mail de primire sunt folosite pentru a introduce automat email-uri în Papra. Doar redirecționează e-mailuri către adresa de primire, iar fișierele atașate vor fi adăugate automat în documentele organizației tale.
+intake-emails.disabled.title: Email-urile de primire sunt dezactivate
+intake-emails.disabled.description: Email-urile de primire sunt dezactivate pe aceasta instanță. Te rugăm să contactezi administratorul pentru a le activa. Consultă {{ documentation }} pentru mai multe informații.
+intake-emails.disabled.documentation: documentația
+intake-emails.info: Vor fi procesate numai e-mailurile de primire activate de la originile permise. Poți activa sau dezactiva un e-mail de primire în orice moment.
+intake-emails.empty.title: Niciun e-mail de primire
+intake-emails.empty.description: Generează o adresă de primire pentru a primi cu ușurință fișiere atașate din e-mail.
+intake-emails.empty.generate: Generează e-mail de primire
+intake-emails.count: '{{ count }} email{{ plural }} de primire pentru această organizație'
+intake-emails.new: E-mail nou de primire
 intake-emails.disabled-label: (Dezactivat)
-intake-emails.no-origins: Nicio origine de email permisa
+intake-emails.no-origins: Nicio origine de e-mail permisă
 intake-emails.allowed-origins: Permis de la {{ count }} adrese{{ plural }}
-intake-emails.actions.enable: Activeaza
-intake-emails.actions.disable: Dezactiveaza
-intake-emails.actions.manage-origins: Gestioneaza adresele de origine
-intake-emails.actions.delete: Sterge
-intake-emails.delete.confirm.title: Sterge email-ul de preluare?
-intake-emails.delete.confirm.message: Esti sigur ca vrei sa stergi acest email de preluare? Aceasta actiune nu poate fi anulata.
-intake-emails.delete.confirm.confirm-button: Sterge email-ul de preluare
-intake-emails.delete.confirm.cancel-button: Anuleaza
-intake-emails.delete.success: Email de preluare sters
-intake-emails.create.success: Email de preluare creat
-intake-emails.update.success.enabled: Email de preluare activat
-intake-emails.update.success.disabled: Email de preluare dezactivat
+intake-emails.actions.enable: Activează
+intake-emails.actions.disable: Dezactivează
+intake-emails.actions.manage-origins: Gestionează adresele de origine
+intake-emails.actions.delete: Șterge
+intake-emails.delete.confirm.title: Ștergi email-ul de primire?
+intake-emails.delete.confirm.message: Ești sigur că vrei să ștergi acest e-mail de primire? Această acțiune nu poate fi anulată.
+intake-emails.delete.confirm.confirm-button: Șterge email-ul de primire
+intake-emails.delete.confirm.cancel-button: Anulează
+intake-emails.delete.success: E-mail de primire șters
+intake-emails.create.success: E-mail de primire creat
+intake-emails.update.success.enabled: E-mail de primire activat
+intake-emails.update.success.disabled: E-mail de primire dezactivat
 intake-emails.allowed-origins.title: Origini permise
-intake-emails.allowed-origins.description: Doar email-urile trimise la {{ email }} de la aceste origini vor fi procesate. Daca nu sunt specificate origini, toate email-urile vor fi ignorate.
-intake-emails.allowed-origins.add.label: Adauga adresa de email de origine permisa
+intake-emails.allowed-origins.description: Doar email-urile trimise la {{ e-mail }} de la aceste origini vor fi procesate. Dacă nu sunt specificate origini, toate email-urile vor fi ignorate.
+intake-emails.allowed-origins.add.label: Adaugă adresa de e-mail de origine permisă
 intake-emails.allowed-origins.add.placeholder: Ex. ada@papra.app
-intake-emails.allowed-origins.add.button: Adauga
-intake-emails.allowed-origins.add.error.exists: Acest email este deja in originile permise pentru acest email de preluare
+intake-emails.allowed-origins.add.button: Adaugă
+intake-emails.allowed-origins.add.error.exists: Acest e-mail este deja în originile permise pentru acest e-mail de primire
 
 # API keys
 
 api-keys.permissions.documents.title: Documente
-api-keys.permissions.documents.documents:create: Creaza documente
-api-keys.permissions.documents.documents:read: Citeste documente
-api-keys.permissions.documents.documents:update: Actualizeaza documente
-api-keys.permissions.documents.documents:delete: Sterge documente
+api-keys.permissions.documents.documents:create: Creează documente
+api-keys.permissions.documents.documents:read: Citește documente
+api-keys.permissions.documents.documents:update: Actualizează documente
+api-keys.permissions.documents.documents:delete: Șterge documente
 api-keys.permissions.tags.title: Etichete
-api-keys.permissions.tags.tags:create: Creaza etichete
-api-keys.permissions.tags.tags:read: Citeste etichete
-api-keys.permissions.tags.tags:update: Actualizeaza etichete
-api-keys.permissions.tags.tags:delete: Sterge etichete
-api-keys.create.title: Creeaza cheie API
-api-keys.create.description: Creeaza o noua cheie API pentru a accesa API-ul Papra.
-api-keys.create.success: Cheia API a fost creata cu succes.
-api-keys.create.back: Inapoi la cheile API
+api-keys.permissions.tags.tags:create: Creează etichete
+api-keys.permissions.tags.tags:read: Citește etichete
+api-keys.permissions.tags.tags:update: Actualizează etichete
+api-keys.permissions.tags.tags:delete: Șterge etichete
+api-keys.create.title: Creează cheie API
+api-keys.create.description: Creează o nouă cheie API pentru a accesa API-ul Papra.
+api-keys.create.success: Cheia API a fost creată cu succes.
+api-keys.create.back: Înapoi la cheile API
 api-keys.create.form.name.label: Nume
 api-keys.create.form.name.placeholder: 'Exemplu: Cheia mea API'
-api-keys.create.form.name.required: Va rugam sa introduceti un nume pentru cheia API
+api-keys.create.form.name.required: Te rugăm să introduci un nume pentru cheia API
 api-keys.create.form.permissions.label: Permisiuni
-api-keys.create.form.permissions.required: Va rugam sa selectati cel putin o permisiune
-api-keys.create.form.submit: Creeaza cheie API
-api-keys.create.created.title: Cheie API creata
-api-keys.create.created.description: Cheia API a fost creata cu succes. Salvati-o intr-o locatie sigura, deoarece nu va mai fi afisata.
+api-keys.create.form.permissions.required: Te rugăm să selectezi cel puțin o permisiune
+api-keys.create.form.submit: Creează cheie API
+api-keys.create.created.title: Cheie API creată
+api-keys.create.created.description: Cheia API a fost creată cu succes. Salveaz-o într-un loc sigur, deoarece nu va fi afișată din nou.
 api-keys.list.title: Chei API
-api-keys.list.description: Gestioneaza-ti cheile API aici.
-api-keys.list.create: Creeaza cheie API
+api-keys.list.description: Gestionează-ți cheile API aici.
+api-keys.list.create: Creează cheie API
 api-keys.list.empty.title: Nicio cheie API
-api-keys.list.empty.description: Creeaza o cheie API pentru a accesa API-ul Papra.
+api-keys.list.empty.description: Creează o cheie API pentru a accesa API-ul Papra.
 api-keys.list.card.last-used: Ultima utilizare
-api-keys.list.card.never: Niciodata
+api-keys.list.card.never: Niciodată
 api-keys.list.card.created: Creat la
-api-keys.delete.success: Cheia API a fost stearsa cu succes
-api-keys.delete.confirm.title: Sterge cheia API
-api-keys.delete.confirm.message: Esti sigur ca vrei sa stergi aceasta cheie API? Aceasta actiune nu poate fi anulata.
-api-keys.delete.confirm.confirm-button: Sterge
-api-keys.delete.confirm.cancel-button: Anuleaza
+api-keys.delete.success: Cheia API a fost ștearsă cu succes
+api-keys.delete.confirm.title: Șterge cheia API
+api-keys.delete.confirm.message: Ești sigur ca vrei să ștergi aceasta cheie API? Această acțiune nu poate fi anulată.
+api-keys.delete.confirm.confirm-button: Șterge
+api-keys.delete.confirm.cancel-button: Anulează
 
 # Webhooks
 
 webhooks.list.title: Webhook-uri
-webhooks.list.description: Gestioneaza webhook-urile organizatiei tale
+webhooks.list.description: Gestionează webhook-urile organizației tale
 webhooks.list.empty.title: Niciun webhook
-webhooks.list.empty.description: Creeaza primul tau webhook pentru a incepe sa primesti evenimente
-webhooks.list.create: Creeaza webhook
-webhooks.list.card.last-triggered: Ultima declansare
-webhooks.list.card.never: Niciodata
+webhooks.list.empty.description: Creează primul webhook pentru a începe să primesti evenimente
+webhooks.list.create: Creează webhook
+webhooks.list.card.last-triggered: Ultima declanșare
+webhooks.list.card.never: Niciodată
 webhooks.list.card.created: Creat la
-webhooks.create.title: Creeaza webhook
-webhooks.create.description: Creeaza un nou webhook pentru a primi evenimente
+webhooks.create.title: Creează webhook
+webhooks.create.description: Creează un nou webhook pentru a primi evenimente
 webhooks.create.success: Webhook creat cu succes
-webhooks.create.back: Inapoi
-webhooks.create.form.submit: Creeaza webhook
+webhooks.create.back: Înapoi
+webhooks.create.form.submit: Creează webhook
 webhooks.create.form.name.label: Nume webhook
 webhooks.create.form.name.placeholder: Introdu numele webhook-ului
 webhooks.create.form.name.required: Numele este obligatoriu
@@ -474,92 +474,92 @@ webhooks.create.form.url.invalid: URL-ul este invalid
 webhooks.create.form.secret.label: Secret
 webhooks.create.form.secret.placeholder: Introdu secretul webhook-ului
 webhooks.create.form.events.label: Evenimente
-webhooks.create.form.events.required: Este necesar cel putin un eveniment
-webhooks.update.title: Editeaza webhook
-webhooks.update.description: Actualizeaza detaliile webhook-ului tau
+webhooks.create.form.events.required: Este necesar cel puțin un eveniment
+webhooks.update.title: Editează webhook
+webhooks.update.description: Actualizează detaliile webhook-ului
 webhooks.update.success: Webhook actualizat cu succes
-webhooks.update.submit: Actualizeaza webhook
-webhooks.update.cancel: Anuleaza
-webhooks.update.form.secret.placeholder: Introdu un nou secret
-webhooks.update.form.secret.placeholder-redacted: '[Secret redactat]'
-webhooks.update.form.rotate-secret.button: Roteste secretul
-webhooks.delete.success: Webhook sters cu succes
-webhooks.delete.confirm.title: Sterge webhook
-webhooks.delete.confirm.message: Esti sigur ca vrei sa stergi acest webhook?
-webhooks.delete.confirm.confirm-button: Sterge
-webhooks.delete.confirm.cancel-button: Anuleaza
+webhooks.update.submit: Actualizează webhook
+webhooks.update.cancel: Anulează
+webhooks.update.form.secret.placeholder: Introdu un secret nou
+webhooks.update.form.secret.placeholder-redacted: '[Secret protejat]'
+webhooks.update.form.rotate-secret.button: Rotește secretul
+webhooks.delete.success: Webhook șters cu succes
+webhooks.delete.confirm.title: Șterge webhook
+webhooks.delete.confirm.message: Ești sigur ca vrei să ștergi acest webhook?
+webhooks.delete.confirm.confirm-button: Șterge
+webhooks.delete.confirm.cancel-button: Anulează
 
 webhooks.events.documents.document:created.description: Document creat
-webhooks.events.documents.document:deleted.description: Document sters
+webhooks.events.documents.document:deleted.description: Document șters
 
 # Navigation
 
-layout.menu.home: Acasa
+layout.menu.home: Acasă
 layout.menu.documents: Documente
 layout.menu.tags: Etichete
 layout.menu.tagging-rules: Reguli de etichetare
-layout.menu.deleted-documents: Documente sterse
-layout.menu.organization-settings: Setari organizatie
+layout.menu.deleted-documents: Documente șterse
+layout.menu.organization-settings: Setări organizație
 layout.menu.api-keys: Chei API
-layout.menu.settings: Setari
+layout.menu.settings: Setări
 layout.menu.account: Cont
-layout.menu.general-settings: Setari generale
-layout.menu.intake-emails: Email-uri de preluare
+layout.menu.general-settings: Setări generale
+layout.menu.intake-emails: Email-uri de primire
 layout.menu.webhooks: Webhook-uri
 layout.menu.members: Membri
-layout.menu.invitations: Invitatii
+layout.menu.invitations: Invitații
 
 layout.theme.light: Mod luminos
 layout.theme.dark: Mod intunecat
-layout.theme.system: Mod sistem
+layout.theme.system: Modul sistemului
 
-layout.search.placeholder: Cauta...
-layout.menu.import-document: Importa un document
+layout.search.placeholder: Căutare...
+layout.menu.import-document: Importă un document
 
-user-menu.account-settings: Setari cont
+user-menu.account-settings: Setări cont
 user-menu.api-keys: Chei API
-user-menu.invitations: Invitatii
-user-menu.language: Limba
+user-menu.invitations: Invitații
+user-menu.language: Limbă
 user-menu.logout: Deconectare
 
 # Command palette
 
-command-palette.search.placeholder: Cauta comenzi sau documente
+command-palette.search.placeholder: Caută comenzi sau documente
 command-palette.no-results: Niciun rezultat gasit
 command-palette.sections.documents: Documente
-command-palette.sections.theme: Tema
+command-palette.sections.theme: Temă
 
 # API errors
 
-api-errors.document.already_exists: Documentul exista deja
-api-errors.document.file_too_big: Fisierul documentului este prea mare
-api-errors.intake_email.limit_reached: Numarul maxim de email-uri de preluare pentru aceasta organizatie a fost atins. Va rugam sa va imbunatatiti planul pentru a crea mai multe email-uri de preluare.
-api-errors.user.max_organization_count_reached: Ai atins numarul maxim de organizatii pe care le poti crea, daca ai nevoie sa creezi mai multe, te rugam sa contactezi suportul.
-api-errors.default: A aparut o eroare la procesarea cererii tale.
-api-errors.organization.invitation_already_exists: O invitatie pentru acest email exista deja in aceasta organizatie.
-api-errors.user.already_in_organization: Acest utilizator este deja in aceasta organizatie.
-api-errors.user.organization_invitation_limit_reached: Numarul maxim de invitatii a fost atins pentru astazi. Va rugam sa incercati din nou maine.
-api-errors.demo.not_available: Aceasta functie nu este disponibila in demo
-api-errors.tags.already_exists: O eticheta cu acest nume exista deja pentru aceasta organizatie
+api-errors.document.already_exists: Documentul există deja
+api-errors.document.file_too_big: Fișierul documentului este prea mare
+api-errors.intake_email.limit_reached: Numărul maxim de email-uri de primire pentru această organizație a fost atins. Te rugăm să-ți îmbunătățești planul pentru a crea mai multe email-uri de primire.
+api-errors.user.max_organization_count_reached: Ai atins numărul maxim de organizații pe care le poți crea. Dacă ai nevoie să creezi mai multe, te rugăm să contactezi asistența.
+api-errors.default: A apărut o eroare la procesarea cererii.
+api-errors.organization.invitation_already_exists: O invitatie pentru acest e-mail există deja în această organizație.
+api-errors.user.already_in_organization: Acest utilizator este deja în această organizație.
+api-errors.user.organization_invitation_limit_reached: Numărul maxim de invitații a fost atins pentru astazi. Te rugăm să încerci din nou mâine.
+api-errors.demo.not_available: Această functie nu este disponibila în demo
+api-errors.tags.already_exists: O etichetă cu acest nume există deja pentru aceasta organizație
 
 # Not found
 
 not-found.title: 404 - Nu a fost gasit
-not-found.description: Ne pare rau, pagina pe care o cautati nu pare sa existe. Va rugam sa verificati URL-ul si sa incercati din nou.
-not-found.back-to-home: Inapoi la pagina principala
+not-found.description: Ne pare rău, pagina pe care o cauți nu pare să existe. Te rugăm să verifici URL-ul și să încerci din nou.
+not-found.back-to-home: Înapoi la pagina principală
 
 # Demo
 
-demo.popup.description: Acesta este un mediu demonstrativ, toate datele sunt salvate in stocarea locala a browserului dumneavoastra.
-demo.popup.discord: Alaturati-va {{ discordLink }} pentru a obtine suport, a propune functionalitati sau doar pentru a discuta.
-demo.popup.discord-link-label: server Discord
-demo.popup.reset: Reseteaza datele demo
+demo.popup.description: Acesta este un mediu demonstrativ, toate datele sunt salvate in stocarea locală a browserului.
+demo.popup.discord: Alătură-te {{ discordLink }} pentru a obtine asistență, a propune funcționalități sau doar pentru a discuta.
+demo.popup.discord-link-label: serverului de Discord
+demo.popup.reset: Resetează datele demo
 demo.popup.hide: Ascunde
 
 # Color picker
 
-color-picker.hue: Nuanta
-color-picker.saturation: Saturatie
+color-picker.hue: Nuanță
+color-picker.saturation: Saturație
 color-picker.lightness: Luminozitate
-color-picker.select-color: Selecteaza culoarea
-color-picker.select-a-color: Selecteaza o culoare
+color-picker.select-color: Selectează culoarea
+color-picker.select-a-color: Selectează o culoare
