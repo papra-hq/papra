@@ -2,6 +2,17 @@ import { Buffer } from 'node:buffer';
 import { createWorker } from 'tesseract.js';
 import { defineTextExtractor } from '../extractors.models';
 
+export async function extractTextFromImage(maybeArrayBuffer: ArrayBuffer | Buffer, { languages }: { languages: string[] }) {
+  const buffer = maybeArrayBuffer instanceof ArrayBuffer ? Buffer.from(maybeArrayBuffer) : maybeArrayBuffer;
+
+  const worker = await createWorker(languages);
+
+  const { data: { text } } = await worker.recognize(buffer);
+  await worker.terminate();
+
+  return text;
+}
+
 export const imageExtractorDefinition = defineTextExtractor({
   name: 'image',
   mimeTypes: [
@@ -13,13 +24,8 @@ export const imageExtractorDefinition = defineTextExtractor({
   extract: async ({ arrayBuffer, config }) => {
     const { languages } = config.tesseract;
 
-    const buffer = Buffer.from(arrayBuffer);
+    const content = await extractTextFromImage(arrayBuffer, { languages });
 
-    const worker = await createWorker(languages);
-
-    const { data: { text } } = await worker.recognize(buffer);
-    await worker.terminate();
-
-    return { content: text };
+    return { content };
   },
 });
