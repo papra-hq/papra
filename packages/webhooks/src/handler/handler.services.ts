@@ -1,36 +1,45 @@
-import type { BuildWebhookEventPayload, WebhookEvents, WebhookPayloads } from '../webhooks.types';
+import type { StandardWebhookEventPayload, WebhookEvents } from '../webhooks.types';
 import { EventEmitter } from 'tsee';
 import { verifySignature } from '../signature';
 import { parseBody } from '../webhooks.models';
 import { createInvalidSignatureError } from './handler.errors';
 
+function handleError({ error }: { error: unknown }) {
+  if (error) {
+    throw error;
+  }
+
+  throw createInvalidSignatureError();
+}
+
 export function createWebhooksHandler({
   secret,
-  onInvalidSignature = () => {
-    createInvalidSignatureError();
-  },
+  onError = handleError,
 }: {
   secret: string;
-  onInvalidSignature?: ({ bodyBuffer, signature }: { bodyBuffer: ArrayBuffer; signature: string }) => void | Promise<void>;
+  onError?: (args: { body: string; signature: string; webhookId: string; timestamp: string; error: unknown }) => void | Promise<void>;
 }) {
-  const eventEmitter = new EventEmitter<WebhookEvents & { '*': (payload: BuildWebhookEventPayload<WebhookPayloads>) => void }>();
+  const eventEmitter = new EventEmitter<WebhookEvents & { '*': (payload: StandardWebhookEventPayload) => void }>();
 
   return {
     on: eventEmitter.on,
     ee: eventEmitter,
-    handle: async ({ bodyBuffer, signature }: { bodyBuffer: ArrayBuffer; signature: string }) => {
-      const isValid = await verifySignature({ bodyBuffer, signature, secret });
+    handle: async ({ body, signature, webhookId, timestamp }: { body: string; signature: string; webhookId: string; timestamp: string }) => {
+      try {
+        const isValid = await verifySignature({ serializedPayload: body, signature, secret, webhookId, timestamp });
 
-      if (!isValid) {
-        await onInvalidSignature({ bodyBuffer, signature });
-        return;
+        if (!isValid) {
+          throw createInvalidSignatureError();
+        }
+
+        const parsedBody = parseBody(body);
+        const { type } = parsedBody;
+
+        eventEmitter.emit(type, parsedBody as any);
+        eventEmitter.emit('*', parsedBody);
+      } catch (error) {
+        await onError({ body, signature, webhookId, timestamp, error });
       }
-
-      const payload = parseBody(bodyBuffer.toString());
-      const { event } = payload;
-
-      eventEmitter.emit(event, payload as any);
-      eventEmitter.emit('*', payload);
     },
   };
 }

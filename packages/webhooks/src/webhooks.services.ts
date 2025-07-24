@@ -1,4 +1,5 @@
 import type { WebhookPayloads } from './webhooks.types';
+import { createId } from '@paralleldrive/cuid2';
 import { ofetch } from 'ofetch';
 import { signBody } from './signature';
 import { serializeBody } from './webhooks.models';
@@ -9,7 +10,7 @@ export async function webhookHttpClient({
 }: {
   url: string;
   method: string;
-  body: ArrayBuffer;
+  body: string;
   headers: Record<string, string>;
 }) {
   const response = await ofetch.raw<unknown>(url, {
@@ -23,39 +24,43 @@ export async function webhookHttpClient({
   };
 }
 
-export async function triggerWebhook({
+export async function triggerWebhook<T extends WebhookPayloads>({
   webhookUrl,
   webhookSecret,
   httpClient = webhookHttpClient,
   now = new Date(),
-  ...payload
-
+  payload,
+  event,
+  webhookId = `msg_${createId()}`,
 }: {
   webhookUrl: string;
   webhookSecret?: string | null;
   httpClient?: typeof webhookHttpClient;
+  payload: T['payload'];
   now?: Date;
-} & WebhookPayloads) {
-  const { event } = payload;
+  event: T['event'];
+  webhookId?: string;
+}) {
+  const timestamp = Math.floor(now.getTime() / 1000).toString();
 
   const headers: Record<string, string> = {
-    'User-Agent': 'papra-webhook-client',
-    'Content-Type': 'application/json',
-    'X-Event': event,
+    'user-agent': 'papra-webhook-client',
+    'content-type': 'application/json',
+    'webhook-id': webhookId,
+    'webhook-timestamp': timestamp,
   };
 
-  const body = serializeBody({ ...payload, now });
-  const bodyBuffer = new TextEncoder().encode(body).buffer as ArrayBuffer;
+  const body = serializeBody({ event, payload, now });
 
   if (webhookSecret) {
-    const { signature } = await signBody({ bodyBuffer, secret: webhookSecret });
-    headers['X-Signature'] = signature;
+    const { signature } = await signBody({ serializedPayload: body, webhookId, timestamp, secret: webhookSecret });
+    headers['webhook-signature'] = signature;
   }
 
   const { responseData, responseStatus } = await httpClient({
     url: webhookUrl,
     method: 'POST',
-    body: bodyBuffer,
+    body,
     headers,
   });
 
