@@ -489,8 +489,12 @@ webhooks.delete.confirm.message: ¿Estás seguro de que deseas eliminar este web
 webhooks.delete.confirm.confirm-button: Eliminar
 webhooks.delete.confirm.cancel-button: Cancelar
 
+webhooks.events.documents.title: Eventos de documentos
 webhooks.events.documents.document:created.description: Documento creado
 webhooks.events.documents.document:deleted.description: Documento eliminado
+webhooks.events.documents.document:updated.description: Documento actualizado
+webhooks.events.documents.document:tag:added.description: Una etiqueta se ha añadido a un documento
+webhooks.events.documents.document:tag:removed.description: Una etiqueta se ha eliminado de un documento
 
 # Navigation
 

@@ -15,6 +15,7 @@ export function createTagsRepository({ db }: { db: Database }) {
   return injectArguments(
     {
       getOrganizationTags,
+      getTagById,
       createTag,
       deleteTag,
       updateTag,
@@ -48,6 +49,20 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
     .groupBy(tagsTable.id);
 
   return { tags };
+}
+
+async function getTagById({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {
+  const [tag] = await db
+    .select()
+    .from(tagsTable)
+    .where(
+      and(
+        eq(tagsTable.id, tagId),
+        eq(tagsTable.organizationId, organizationId),
+      ),
+    );
+
+  return { tag };
 }
 
 async function createTag({ tag, db }: { tag: DbInsertableTag; db: Database }) {

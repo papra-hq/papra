@@ -489,8 +489,12 @@ webhooks.delete.confirm.message: Ești sigur ca vrei să ștergi acest webhook?
 webhooks.delete.confirm.confirm-button: Șterge
 webhooks.delete.confirm.cancel-button: Anulează
 
+webhooks.events.documents.title: Evenimente documente
 webhooks.events.documents.document:created.description: Document creat
 webhooks.events.documents.document:deleted.description: Document șters
+webhooks.events.documents.document:updated.description: Document actualizat
+webhooks.events.documents.document:tag:added.description: O etichetă a fost adăugată la un document
+webhooks.events.documents.document:tag:removed.description: O etichetă a fost eliminată dintr-un document
 
 # Navigation
 

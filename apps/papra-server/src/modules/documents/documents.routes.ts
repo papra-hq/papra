@@ -10,7 +10,7 @@ import { createError } from '../shared/errors/errors';
 import { isNil } from '../shared/utils';
 import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
-import { triggerWebhooks } from '../webhooks/webhook.usecases';
+import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
@@ -244,7 +244,7 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
 
-      await triggerWebhooks({
+      deferTriggerWebhooks({
         webhookRepository,
         organizationId,
         event: 'document:deleted',
@@ -479,6 +479,7 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
@@ -487,6 +488,13 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
         documentId,
         organizationId,
         ...updateData,
+      });
+
+      deferTriggerWebhooks({
+        webhookRepository,
+        organizationId,
+        event: 'document:updated',
+        payload: { documentId, organizationId, ...updateData },
       });
 
       deferRegisterDocumentActivityLog({

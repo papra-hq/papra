@@ -5,12 +5,17 @@ import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
+import { createDocumentNotFoundError } from '../documents/documents.errors';
+import { createDocumentsRepository } from '../documents/documents.repository';
 import { documentIdSchema } from '../documents/documents.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { TagColorRegex } from './tags.constants';
+import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagIdSchema } from './tags.schemas';
 
@@ -161,11 +166,33 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
+      const [{ document }, { tag }] = await Promise.all([
+        documentsRepository.getDocumentById({ organizationId, documentId }),
+        tagsRepository.getTagById({ tagId, organizationId }),
+      ]);
+
+      if (!document) {
+        throw createDocumentNotFoundError();
+      }
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
+
       await tagsRepository.addTagToDocument({ tagId, documentId });
+
+      deferTriggerWebhooks({
+        webhookRepository,
+        organizationId,
+        event: 'document:tag:added',
+        payload: { documentId, organizationId, tagId, tagName: tag.name },
+      });
 
       deferRegisterDocumentActivityLog({
         documentId,
@@ -197,11 +224,33 @@ function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
+      const [{ document }, { tag }] = await Promise.all([
+        documentsRepository.getDocumentById({ organizationId, documentId }),
+        tagsRepository.getTagById({ tagId, organizationId }),
+      ]);
+
+      if (!document) {
+        throw createDocumentNotFoundError();
+      }
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
+
       await tagsRepository.removeTagFromDocument({ tagId, documentId });
+
+      deferTriggerWebhooks({
+        webhookRepository,
+        organizationId,
+        event: 'document:tag:removed',
+        payload: { documentId, organizationId, tagId, tagName: tag.name },
+      });
 
       deferRegisterDocumentActivityLog({
         documentId,

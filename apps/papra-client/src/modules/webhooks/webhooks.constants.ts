@@ -4,6 +4,9 @@ export const WEBHOOK_EVENTS = [
     events: [
       'document:created',
       'document:deleted',
+      'document:updated',
+      'document:tag:added',
+      'document:tag:removed',
     ],
   },
 
