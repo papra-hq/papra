@@ -24,11 +24,11 @@ export type DocumentDeletedPayload = WebhookPayload<
 export type WebhookPayloads = DocumentCreatedPayload | DocumentDeletedPayload;
 
 type ExtractEventName<T> = T extends WebhookPayload<infer E, any> ? E : never;
-export type BuildWebhookEventPayload<T> = T & { timestampMs: number };
+export type BuildStandardWebhookEventPayload<T extends WebhookPayloads> = { type: T['event']; timestamp: string; data: T['payload'] };
 export type BuildWebhookEvents<T extends WebhookPayloads> = {
-  [K in ExtractEventName<T>]: (args: BuildWebhookEventPayload<Extract<T, WebhookPayload<K, any>>>) => void;
+  [K in ExtractEventName<T>]: (args: BuildStandardWebhookEventPayload<Extract<T, WebhookPayload<K, any>>>) => void;
 };
 
 export type WebhookEvents = BuildWebhookEvents<WebhookPayloads>;
 
-export type WebhookEventPayload = BuildWebhookEventPayload<WebhookPayloads>;
+export type StandardWebhookEventPayload = BuildStandardWebhookEventPayload<WebhookPayloads>;
