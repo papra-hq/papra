@@ -4,6 +4,7 @@ import type { WebhookRepository } from './webhook.repository';
 import type { Webhook } from './webhooks.types';
 import { triggerWebhook as triggerWebhookServiceImpl } from '@papra/webhooks';
 import pLimit from 'p-limit';
+import { createDeferable } from '../shared/async/defer';
 import { createLogger } from '../shared/logger/logger';
 import { createWebhookNotFoundError } from './webhook.errors';
 
@@ -106,6 +107,8 @@ export async function triggerWebhooks({
     ),
   );
 }
+
+export const deferTriggerWebhooks = createDeferable(triggerWebhooks);
 
 export async function triggerWebhook({
   webhook,

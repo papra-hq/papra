@@ -46,7 +46,8 @@ export const WebhookEventsPicker: Component<{ events: WebhookEvent[]; onChange: 
   };
 
   return (
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      {/* <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> */}
       <For each={getEventsSections()}>
         {section => (
           <div>

@@ -24,7 +24,7 @@ import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createTrackingServices } from '../tracking/tracking.services';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
-import { triggerWebhooks } from '../webhooks/webhook.usecases';
+import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
@@ -133,7 +133,7 @@ export async function createDocument({
 
   await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
 
-  await triggerWebhooks({
+  deferTriggerWebhooks({
     webhookRepository,
     organizationId,
     event: 'document:created',

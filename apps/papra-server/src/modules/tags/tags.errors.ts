@@ -11,3 +11,9 @@ export const createTagAlreadyExistsError = createErrorFactory({
   code: 'tags.already_exists',
   statusCode: 400,
 });
+
+export const createTagNotFoundError = createErrorFactory({
+  message: 'Tag not found',
+  code: 'tags.not_found',
+  statusCode: 404,
+});

@@ -21,8 +21,37 @@ export type DocumentDeletedPayload = WebhookPayload<
   }
 >;
 
-export type WebhookPayloads = DocumentCreatedPayload | DocumentDeletedPayload;
+export type DocumentUpdatedPayload = WebhookPayload<
+  'document:updated',
+  {
+    documentId: string;
+    organizationId: string;
+    name?: string;
+    content?: string;
+  }
+>;
 
+export type DocumentTagAddedPayload = WebhookPayload<
+  'document:tag:added',
+  {
+    documentId: string;
+    organizationId: string;
+    tagId: string;
+    tagName: string;
+  }
+>;
+
+export type DocumentTagRemovedPayload = WebhookPayload<
+  'document:tag:removed',
+  {
+    documentId: string;
+    organizationId: string;
+    tagId: string;
+    tagName: string;
+  }
+>;
+
+export type WebhookPayloads = DocumentCreatedPayload | DocumentDeletedPayload | DocumentUpdatedPayload | DocumentTagAddedPayload | DocumentTagRemovedPayload;
 type ExtractEventName<T> = T extends WebhookPayload<infer E, any> ? E : never;
 export type BuildStandardWebhookEventPayload<T extends WebhookPayloads> = { type: T['event']; timestamp: string; data: T['payload'] };
 export type BuildWebhookEvents<T extends WebhookPayloads> = {
