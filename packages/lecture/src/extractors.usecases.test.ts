@@ -38,7 +38,7 @@ describe('extractors usecases', () => {
 
       for (const fixture of fixturesDir) {
         // use test.concurrent to run the tests in parallel -> need to use the provided expect
-        test.concurrent(`fixture ${fixture}`, async ({ expect }) => {
+        test(`fixture ${fixture}`, { timeout: 10_000, concurrent: true }, async ({ expect }) => {
           const fixtureFilesPaths = await glob([`${fixture}/*`]);
           const inputFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.input\.\w+$/));
           const configFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.config\.ts$/));
