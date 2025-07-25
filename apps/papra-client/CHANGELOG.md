@@ -1,5 +1,19 @@
 # @papra/app-client
 
+## 0.8.0
+
+### Minor Changes
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added new webhook events: document:updated, document:tag:added, document:tag:removed
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks invocation is now defered
+
+### Patch Changes
+
+- [#419](https://github.com/papra-hq/papra/pull/419) [`7768840`](https://github.com/papra-hq/papra/commit/7768840aa4425a03cb96dc1c17605bfa8e6a0de4) Thanks [@Edward205](https://github.com/Edward205)! - Added diacritics and improved wording for Romanian translation
+
+- [#412](https://github.com/papra-hq/papra/pull/412) [`ffdae8d`](https://github.com/papra-hq/papra/commit/ffdae8db56c6ecfe63eb263ee606e9469eef8874) Thanks [@OsafAliSayed](https://github.com/OsafAliSayed)! - Simplified the organization intake email list
+
 ## 0.7.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @papra/app-server
 
+## 0.8.0
+
+### Minor Changes
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added new webhook events: document:updated, document:tag:added, document:tag:removed
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks invocation is now defered
+
+### Patch Changes
+
+- Updated dependencies [[`a8cff8c`](https://github.com/papra-hq/papra/commit/a8cff8cedc062be3ed1d454e9de6e456553a4d8c), [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77), [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77), [`67b3b14`](https://github.com/papra-hq/papra/commit/67b3b14cdfa994874c695b9d854a93160ba6a911)]:
+  - @papra/webhooks@0.2.0
+  - @papra/lecture@0.1.0
+
 ## 0.7.0
 
 ### Minor Changes
