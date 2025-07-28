@@ -70,7 +70,7 @@ importers:
         version: 2.6.0
       unocss-preset-animations:
         specifier: ^1.2.1
-        version: 1.2.1(unocss@0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3)))
+        version: 1.2.1(unocss@0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3)))
       yaml:
         specifier: ^2.8.0
         version: 2.8.0
@@ -110,7 +110,7 @@ importers:
         version: 5.8.3
       unocss:
         specifier: 0.65.0-beta.2
-        version: 0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
+        version: 0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
 
   apps/papra-client:
     dependencies:
@@ -250,6 +250,12 @@ importers:
       '@azure/storage-blob':
         specifier: ^12.27.0
         version: 12.27.0
+      '@cadence-mq/core':
+        specifier: ^0.1.0
+        version: 0.1.0
+      '@cadence-mq/driver-memory':
+        specifier: ^0.1.0
+        version: 0.1.0(@cadence-mq/core@0.1.0)
       '@corentinth/chisels':
         specifier: ^1.3.1
         version: 1.3.1
@@ -1043,6 +1049,14 @@ packages:
 
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
+
+  '@cadence-mq/core@0.1.0':
+    resolution: {integrity: sha512-bJjYI3brZLQqV3kxz4/cQs2C1dhBL1j6PEt51nYNobSxsanyRNF7/u/Zdlcj0uMC2Pe0uepryrM78/N0r3s4ZQ==}
+
+  '@cadence-mq/driver-memory@0.1.0':
+    resolution: {integrity: sha512-wqG+4+bFrXNo0bCsdMtc0U6oxM8dWFG3nGRmKobwdTcnQ42z93Xcm7v1m3kxQibJAi5fjSrS0z6oTIkatorvAg==}
+    peerDependencies:
+      '@cadence-mq/core': ^0.1.0
 
   '@capsizecss/unpack@2.4.0':
     resolution: {integrity: sha512-GrSU71meACqcmIUxPYOJvGKF0yryjN/L1aCuE9DViCTJI7bfkjgYDPD1zbNDcINJwSSP6UaBZY9GAbYDO7re0Q==}
@@ -3265,6 +3279,9 @@ packages:
   '@stablelib/base64@1.0.1':
     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
 
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
   '@stylistic/eslint-plugin@2.13.0':
     resolution: {integrity: sha512-RnO1SaiCFHn666wNz2QfZEFxvmiNRqhzaMXHXxXXKt+MEP7aajlPxUSMIQpKAaJfverpovEYqjBOXDq6dDcaOQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -4280,6 +4297,10 @@ packages:
 
   core-js@3.41.0:
     resolution: {integrity: sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==}
+
+  cron-parser@5.3.0:
+    resolution: {integrity: sha512-IS4mnFu6n3CFgEmXjr+B2zzGHsjJmHEdN+BViKvYSiEn3KWss9ICRDETDX/VZldiW82B94OyAZm4LIT4vcKK0g==}
+    engines: {node: '>=18'}
 
   cross-fetch@3.2.0:
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
@@ -5926,6 +5947,10 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  luxon@3.7.1:
+    resolution: {integrity: sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==}
+    engines: {node: '>=12'}
+
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
@@ -6275,11 +6300,6 @@ packages:
 
   nan@2.22.0:
     resolution: {integrity: sha512-nbajikzWTMwsW+eSsNm3QwlOs7het9gGJU5dDZzRTQGk03vyBOauxgI4VakDzE0PtsGTmXPsXTbbjVhRwR5mpw==}
-
-  nanoid@3.3.10:
-    resolution: {integrity: sha512-vSJJTG+t/dIKAUhUDw/dLdZ9s//5OxcHqLaDWWrW4Cdq7o6tdLIczUkMXt2MBNmk6sJRZBZRXVixs7URY1CmIg==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
 
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
@@ -9375,6 +9395,17 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
+  '@cadence-mq/core@0.1.0':
+    dependencies:
+      '@corentinth/chisels': 1.3.1
+      '@paralleldrive/cuid2': 2.2.2
+      '@standard-schema/spec': 1.0.0
+      cron-parser: 5.3.0
+
+  '@cadence-mq/driver-memory@0.1.0(@cadence-mq/core@0.1.0)':
+    dependencies:
+      '@cadence-mq/core': 0.1.0
+
   '@capsizecss/unpack@2.4.0':
     dependencies:
       blob-to-buffer: 1.2.9
@@ -10250,8 +10281,8 @@ snapshots:
       hast-util-to-html: 9.0.5
       hast-util-to-text: 4.0.2
       hastscript: 9.0.1
-      postcss: 8.5.3
-      postcss-nested: 6.2.0(postcss@8.5.3)
+      postcss: 8.5.6
+      postcss-nested: 6.2.0(postcss@8.5.6)
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.1
 
@@ -11427,6 +11458,8 @@ snapshots:
 
   '@stablelib/base64@1.0.1': {}
 
+  '@standard-schema/spec@1.0.0': {}
+
   '@stylistic/eslint-plugin@2.13.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
       '@typescript-eslint/utils': 8.21.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
@@ -11920,17 +11953,6 @@ snapshots:
       vue-flow-layout: 0.1.1(vue@3.5.13(typescript@5.8.3))
     transitivePeerDependencies:
       - vue
-
-  '@unocss/postcss@0.65.0-beta.2(postcss@8.5.3)':
-    dependencies:
-      '@unocss/config': 0.65.0-beta.2
-      '@unocss/core': 0.65.0-beta.2
-      '@unocss/rule-utils': 0.65.0-beta.2
-      css-tree: 3.1.0
-      postcss: 8.5.3
-      tinyglobby: 0.2.14
-    transitivePeerDependencies:
-      - supports-color
 
   '@unocss/postcss@0.65.0-beta.2(postcss@8.5.6)':
     dependencies:
@@ -12869,6 +12891,10 @@ snapshots:
 
   core-js@3.41.0: {}
 
+  cron-parser@5.3.0:
+    dependencies:
+      luxon: 3.7.1
+
   cross-fetch@3.2.0:
     dependencies:
       node-fetch: 2.7.0
@@ -13196,7 +13222,7 @@ snapshots:
   esast-util-from-js@2.0.1:
     dependencies:
       '@types/estree-jsx': 1.0.5
-      acorn: 8.14.1
+      acorn: 8.15.0
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.2
 
@@ -13949,7 +13975,7 @@ snapshots:
 
   estree-util-attach-comments@3.0.0:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
 
   estree-util-build-jsx@3.0.1:
     dependencies:
@@ -14437,7 +14463,7 @@ snapshots:
 
   hast-util-to-estree@3.1.3:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
       comma-separated-tokens: 2.0.3
@@ -14957,6 +14983,8 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  luxon@3.7.1: {}
+
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -15334,7 +15362,7 @@ snapshots:
 
   micromark-extension-mdx-expression@3.0.1:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       devlop: 1.1.0
       micromark-factory-mdx-expression: 2.0.3
       micromark-factory-space: 2.0.1
@@ -15345,7 +15373,7 @@ snapshots:
 
   micromark-extension-mdx-jsx@3.0.2:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       devlop: 1.1.0
       estree-util-is-identifier-name: 3.0.0
       micromark-factory-mdx-expression: 2.0.3
@@ -15362,7 +15390,7 @@ snapshots:
 
   micromark-extension-mdxjs-esm@3.0.0:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
       micromark-util-character: 2.1.1
@@ -15374,8 +15402,8 @@ snapshots:
 
   micromark-extension-mdxjs@3.0.0:
     dependencies:
-      acorn: 8.14.1
-      acorn-jsx: 5.3.2(acorn@8.14.1)
+      acorn: 8.15.0
+      acorn-jsx: 5.3.2(acorn@8.15.0)
       micromark-extension-mdx-expression: 3.0.1
       micromark-extension-mdx-jsx: 3.0.2
       micromark-extension-mdx-md: 2.0.0
@@ -15398,7 +15426,7 @@ snapshots:
 
   micromark-factory-mdx-expression@2.0.3:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       devlop: 1.1.0
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
@@ -15462,7 +15490,7 @@ snapshots:
 
   micromark-util-events-to-acorn@2.0.3:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       '@types/unist': 3.0.3
       devlop: 1.1.0
       estree-util-visit: 2.0.0
@@ -15615,10 +15643,10 @@ snapshots:
 
   mlly@1.7.4:
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
       pathe: 2.0.3
       pkg-types: 1.3.1
-      ufo: 1.5.4
+      ufo: 1.6.1
 
   mri@1.2.0: {}
 
@@ -15628,8 +15656,6 @@ snapshots:
 
   nan@2.22.0:
     optional: true
-
-  nanoid@3.3.10: {}
 
   nanoid@3.3.11: {}
 
@@ -16007,9 +16033,9 @@ snapshots:
       postcss: 8.5.6
       postcss-selector-parser: 6.1.2
 
-  postcss-nested@6.2.0(postcss@8.5.3):
+  postcss-nested@6.2.0(postcss@8.5.6):
     dependencies:
-      postcss: 8.5.3
+      postcss: 8.5.6
       postcss-selector-parser: 6.1.2
 
   postcss-nested@7.0.2(postcss@8.5.6):
@@ -16109,7 +16135,7 @@ snapshots:
 
   postcss@8.5.3:
     dependencies:
-      nanoid: 3.3.10
+      nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -16270,7 +16296,7 @@ snapshots:
 
   recma-parse@1.0.0:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       esast-util-from-js: 2.0.1
       unified: 11.0.5
       vfile: 6.0.3
@@ -17244,40 +17270,13 @@ snapshots:
 
   universalify@0.1.2: {}
 
-  unocss-preset-animations@1.2.1(unocss@0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))):
-    dependencies:
-      unocss: 0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
-
   unocss-preset-animations@1.2.1(unocss@0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@5.4.19(@types/node@22.16.0))(vue@3.5.13(typescript@5.8.3))):
     dependencies:
       unocss: 0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@5.4.19(@types/node@22.16.0))(vue@3.5.13(typescript@5.8.3))
 
-  unocss@0.65.0-beta.2(postcss@8.5.3)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3)):
+  unocss-preset-animations@1.2.1(unocss@0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))):
     dependencies:
-      '@unocss/astro': 0.65.0-beta.2(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
-      '@unocss/cli': 0.65.0-beta.2(rollup@4.39.0)
-      '@unocss/core': 0.65.0-beta.2
-      '@unocss/postcss': 0.65.0-beta.2(postcss@8.5.3)
-      '@unocss/preset-attributify': 0.65.0-beta.2
-      '@unocss/preset-icons': 0.65.0-beta.2
-      '@unocss/preset-mini': 0.65.0-beta.2
-      '@unocss/preset-tagify': 0.65.0-beta.2
-      '@unocss/preset-typography': 0.65.0-beta.2
-      '@unocss/preset-uno': 0.65.0-beta.2
-      '@unocss/preset-web-fonts': 0.65.0-beta.2
-      '@unocss/preset-wind': 0.65.0-beta.2
-      '@unocss/transformer-attributify-jsx': 0.65.0-beta.2
-      '@unocss/transformer-compile-class': 0.65.0-beta.2
-      '@unocss/transformer-directives': 0.65.0-beta.2
-      '@unocss/transformer-variant-group': 0.65.0-beta.2
-      '@unocss/vite': 0.65.0-beta.2(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
-    optionalDependencies:
-      vite: 6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
-    transitivePeerDependencies:
-      - postcss
-      - rollup
-      - supports-color
-      - vue
+      unocss: 0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
 
   unocss@0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@5.4.19(@types/node@22.16.0))(vue@3.5.13(typescript@5.8.3)):
     dependencies:
@@ -17300,6 +17299,33 @@ snapshots:
       '@unocss/vite': 0.65.0-beta.2(rollup@4.39.0)(vite@5.4.19(@types/node@22.16.0))(vue@3.5.13(typescript@5.8.3))
     optionalDependencies:
       vite: 5.4.19(@types/node@22.16.0)
+    transitivePeerDependencies:
+      - postcss
+      - rollup
+      - supports-color
+      - vue
+
+  unocss@0.65.0-beta.2(postcss@8.5.6)(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3)):
+    dependencies:
+      '@unocss/astro': 0.65.0-beta.2(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
+      '@unocss/cli': 0.65.0-beta.2(rollup@4.39.0)
+      '@unocss/core': 0.65.0-beta.2
+      '@unocss/postcss': 0.65.0-beta.2(postcss@8.5.6)
+      '@unocss/preset-attributify': 0.65.0-beta.2
+      '@unocss/preset-icons': 0.65.0-beta.2
+      '@unocss/preset-mini': 0.65.0-beta.2
+      '@unocss/preset-tagify': 0.65.0-beta.2
+      '@unocss/preset-typography': 0.65.0-beta.2
+      '@unocss/preset-uno': 0.65.0-beta.2
+      '@unocss/preset-web-fonts': 0.65.0-beta.2
+      '@unocss/preset-wind': 0.65.0-beta.2
+      '@unocss/transformer-attributify-jsx': 0.65.0-beta.2
+      '@unocss/transformer-compile-class': 0.65.0-beta.2
+      '@unocss/transformer-directives': 0.65.0-beta.2
+      '@unocss/transformer-variant-group': 0.65.0-beta.2
+      '@unocss/vite': 0.65.0-beta.2(rollup@4.39.0)(vite@6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))(vue@3.5.13(typescript@5.8.3))
+    optionalDependencies:
+      vite: 6.3.4(@types/node@24.0.10)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - postcss
       - rollup
