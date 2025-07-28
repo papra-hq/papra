@@ -102,21 +102,21 @@ const AllowedOriginsDialog: Component<{
         </DialogHeader>
 
         <Form>
-          <Field name="email">
-            {(field, inputProps) => (
+          <Field path={['email']}>
+            {field => (
               <TextFieldRoot class="flex flex-col gap-1 mb-4 mt-4">
                 <TextFieldLabel for="email">{t('intake-emails.allowed-origins.add.label')}</TextFieldLabel>
 
                 <div class="flex items-center gap-2">
-                  <TextField type="email" id="email" placeholder={t('intake-emails.allowed-origins.add.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-                  <Button type="submit">
+                  <TextField type="email" id="email" placeholder={t('intake-emails.allowed-origins.add.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+                  <Button type="submit" isLoading={form.isSubmitting}>
                     <div class="i-tabler-plus size-4 mr-2" />
                     {t('intake-emails.allowed-origins.add.button')}
                   </Button>
                 </div>
 
-                <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-                {field.error && <div class="text-red-500 text-sm">{field.error }</div>}
+                <div class="text-red-500 text-sm mt-4">{form.errors?.[0]}</div>
+                {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
               </TextFieldRoot>
             )}
           </Field>

@@ -2,7 +2,7 @@ import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX } from 'solid-js';
 import type { Tag as TagType } from '../tags.types';
 import { safely } from '@corentinth/chisels';
-import { getValues, setValue } from '@modular-forms/solid';
+import { getInput, setInput } from '@formisch/solid';
 import { A, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
@@ -45,7 +45,7 @@ const TagColorPicker: Component<{
 };
 
 const TagForm: Component<{
-  onSubmit: (values: { name: string; color: string; description: string }) => Promise<void>;
+  onSubmit: (values: { name: string; color: string; description?: string }) => Promise<void>;
   initialValues?: { name?: string; color?: string; description?: string | null };
   submitLabel?: string;
 }> = (props) => {
@@ -54,21 +54,23 @@ const TagForm: Component<{
     onSubmit: props.onSubmit,
     schema: v.object({
       name: v.pipe(
-        v.string(),
+        v.string(t('tags.form.name.required')),
         v.trim(),
         v.nonEmpty(t('tags.form.name.required')),
         v.maxLength(64, t('tags.form.name.max-length')),
       ),
       color: v.pipe(
-        v.string(),
+        v.string(t('tags.form.color.required')),
         v.trim(),
-        v.nonEmpty(t('tags.form.color.required')),
         v.hexColor(t('tags.form.color.invalid')),
       ),
-      description: v.pipe(
-        v.string(),
-        v.trim(),
-        v.maxLength(256, t('tags.form.description.max-length')),
+      description: v.optional(
+        v.pipe(
+          v.string(),
+          v.trim(),
+          v.maxLength(256, t('tags.form.description.max-length')),
+        ),
+        '',
       ),
     }),
     initialValues: {
@@ -77,39 +79,39 @@ const TagForm: Component<{
     },
   });
 
-  const getFormValues = () => getValues(form);
+  const getFormValues = () => getInput(form);
 
   return (
     <Form>
-      <Field name="name">
-        {(field, inputProps) => (
+      <Field path={['name']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="name">{t('tags.form.name.label')}</TextFieldLabel>
-            <TextField type="text" id="name" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.name.placeholder')} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="text" id="name" {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} placeholder={t('tags.form.name.placeholder')} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Field name="color">
+      <Field path={['color']}>
         {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="color">{t('tags.form.color.label')}</TextFieldLabel>
-            <TagColorPicker color={field.value ?? ''} onChange={color => setValue(form, 'color', color)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TagColorPicker color={(field.input as string) ?? ''} onChange={color => setInput(form, { path: ['color'], input: color })} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Field name="description">
-        {(field, inputProps) => (
+      <Field path={['description']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="description">
               {t('tags.form.description.label')}
               <span class="font-normal ml-1 text-muted-foreground">{t('tags.form.description.optional')}</span>
             </TextFieldLabel>
-            <TextArea id="description" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.description.placeholder')} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextArea id="description" {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} placeholder={t('tags.form.description.placeholder')} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
@@ -137,7 +139,7 @@ export const CreateTagModal: Component<{
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
 
-  const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
+  const onSubmit = async ({ name, color, description }: { name: string; color: string; description?: string }) => {
     const [,error] = await safely(createTag({
       name,
       color: color.toLowerCase(),
@@ -188,7 +190,7 @@ const UpdateTagModal: Component<{
   const [getIsModalOpen, setIsModalOpen] = createSignal(false);
   const { t } = useI18n();
 
-  const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
+  const onSubmit = async ({ name, color, description }: { name: string; color: string; description?: string }) => {
     await updateTag({
       name,
       color: color.toLowerCase(),

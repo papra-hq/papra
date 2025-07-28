@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
-import { setValue } from '@modular-forms/solid';
+import type { WebhookEvent } from '../webhooks.types';
+import { setInput } from '@formisch/solid';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -39,11 +40,11 @@ export const CreateWebhookPage: Component = () => {
     },
     schema: v.object({
       name: v.pipe(
-        v.string(),
+        v.string(t('webhooks.create.form.name.required')),
         v.nonEmpty(t('webhooks.create.form.name.required')),
       ),
       url: v.pipe(
-        v.string(),
+        v.string(t('webhooks.create.form.url.required')),
         v.nonEmpty(t('webhooks.create.form.url.required')),
         v.url(t('webhooks.create.form.url.invalid')),
       ),
@@ -71,68 +72,68 @@ export const CreateWebhookPage: Component = () => {
       </div>
 
       <Form>
-        <Field name="name">
-          {(field, inputProps) => (
+        <Field path={['name']}>
+          {field => (
             <TextFieldRoot class="flex flex-col mb-6">
               <TextFieldLabel for="name">{t('webhooks.create.form.name.label')}</TextFieldLabel>
               <TextField
                 type="text"
                 id="name"
                 placeholder={t('webhooks.create.form.name.placeholder')}
-                {...inputProps}
+                {...field.props}
                 autoFocus
-                value={field.value}
-                aria-invalid={Boolean(field.error)}
+                value={field.input}
+                aria-invalid={Boolean(field.errors)}
               />
-              {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+              {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
             </TextFieldRoot>
           )}
         </Field>
 
-        <Field name="url">
-          {(field, inputProps) => (
+        <Field path={['url']}>
+          {field => (
             <TextFieldRoot class="flex flex-col mb-6">
               <TextFieldLabel for="url">{t('webhooks.create.form.url.label')}</TextFieldLabel>
               <TextField
                 type="url"
                 id="url"
                 placeholder={t('webhooks.create.form.url.placeholder')}
-                {...inputProps}
-                value={field.value}
-                aria-invalid={Boolean(field.error)}
+                {...field.props}
+                value={field.input}
+                aria-invalid={Boolean(field.errors)}
               />
-              {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+              {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
             </TextFieldRoot>
           )}
         </Field>
 
-        <Field name="secret">
-          {(field, inputProps) => (
+        <Field path={['secret']}>
+          {field => (
             <TextFieldRoot class="flex flex-col mb-6">
               <TextFieldLabel for="secret">{t('webhooks.create.form.secret.label')}</TextFieldLabel>
               <TextField
                 type="password"
                 id="secret"
                 placeholder={t('webhooks.create.form.secret.placeholder')}
-                {...inputProps}
-                value={field.value}
-                aria-invalid={Boolean(field.error)}
+                {...field.props}
+                value={field.input}
+                aria-invalid={Boolean(field.errors)}
               />
-              {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+              {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
             </TextFieldRoot>
           )}
         </Field>
 
-        <Field name="events" type="string[]">
+        <Field path={['events']}>
           {field => (
             <div>
               <p class="text-sm font-bold">{t('webhooks.create.form.events.label')}</p>
 
               <div class="p-6 pb-8 border rounded-md mt-2">
-                <WebhookEventsPicker events={field.value ?? []} onChange={events => setValue(form, 'events', events)} />
+                <WebhookEventsPicker events={(field.input as WebhookEvent[]) ?? []} onChange={events => setInput(form, { path: ['events'], input: events })} />
               </div>
 
-              {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+              {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
             </div>
           )}
         </Field>
@@ -141,10 +142,12 @@ export const CreateWebhookPage: Component = () => {
           <Button type="button" variant="secondary" as={A} href={`/organizations/${params.organizationId}/settings/webhooks`}>
             {t('webhooks.create.back')}
           </Button>
-          <Button type="submit" class="ml-2" isLoading={form.submitting}>
+          <Button type="submit" class="ml-2" isLoading={form.isSubmitting}>
             {t('webhooks.create.form.submit')}
           </Button>
         </div>
+
+        <div class="text-red-500 text-sm">{form.errors?.[0]}</div>
       </Form>
     </div>
   );

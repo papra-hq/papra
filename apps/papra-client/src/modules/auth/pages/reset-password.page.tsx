@@ -27,21 +27,21 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: stri
 
   return (
     <Form>
-      <Field name="newPassword">
-        {(field, inputProps) => (
+      <Field path={['newPassword']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="newPassword">{t('auth.reset-password.form.new-password.label')}</TextFieldLabel>
-            <TextField type="password" id="newPassword" placeholder={t('auth.reset-password.form.new-password.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="password" id="newPassword" placeholder={t('auth.reset-password.form.new-password.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Button type="submit" class="w-full">
+      <Button type="submit" class="w-full" isLoading={form.isSubmitting}>
         {t('auth.reset-password.form.submit')}
       </Button>
 
-      <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
+      <div class="text-red-500 text-sm mt-2">{form.errors?.[0]}</div>
 
     </Form>
   );

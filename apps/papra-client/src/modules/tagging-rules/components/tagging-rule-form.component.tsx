@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import type { TaggingRule, TaggingRuleForCreation } from '../tagging-rules.types';
-import { insert, remove, setValue } from '@modular-forms/solid';
+import { insert, remove, setInput } from '@formisch/solid';
 import { A } from '@solidjs/router';
 import { For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -45,24 +45,26 @@ export const TaggingRuleForm: Component<{
         }
       }
 
-      props.onSubmit({ taggingRule: { name, conditions, tagIds, description } });
+      props.onSubmit({ taggingRule: { name, conditions, tagIds, description: description ?? '' } });
     },
     schema: v.object({
       name: v.pipe(
-        v.string(),
+        v.string(t('tagging-rules.form.name.min-length')),
         v.minLength(1, t('tagging-rules.form.name.min-length')),
         v.maxLength(64, t('tagging-rules.form.name.max-length')),
       ),
-      description: v.pipe(
-        v.string(),
-        v.maxLength(256, t('tagging-rules.form.description.max-length')),
+      description: v.optional(
+        v.pipe(
+          v.string(),
+          v.maxLength(256, t('tagging-rules.form.description.max-length')),
+        ),
       ),
       conditions: v.optional(
         v.array(v.object({
           field: v.picklist(Object.values(TAGGING_RULE_FIELDS)),
           operator: v.picklist(Object.values(TAGGING_RULE_OPERATORS)),
           value: v.pipe(
-            v.string(),
+            v.string(t('tagging-rules.form.conditions.value.min-length')),
             v.minLength(1, t('tagging-rules.form.conditions.value.min-length')),
           ),
         })),
@@ -90,33 +92,33 @@ export const TaggingRuleForm: Component<{
 
   return (
     <Form>
-      <Field name="name">
-        {(field, inputProps) => (
+      <Field path={['name']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1">
             <TextFieldLabel for="name">{t('tagging-rules.form.name.label')}</TextFieldLabel>
             <TextField
               type="text"
               id="name"
               placeholder={t('tagging-rules.form.name.placeholder')}
-              {...inputProps}
-              value={field.value}
-              aria-invalid={Boolean(field.error)}
+              {...field.props}
+              value={field.input}
+              aria-invalid={Boolean(field.errors)}
             />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
-      <Field name="description">
-        {(field, inputProps) => (
+      <Field path={['description']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mt-6">
             <TextFieldLabel for="description">{t('tagging-rules.form.description.label')}</TextFieldLabel>
             <TextArea
               id="description"
               placeholder={t('tagging-rules.form.description.placeholder')}
-              {...inputProps}
-              value={field.value}
+              {...field.props}
+              value={field.input}
             />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
@@ -126,7 +128,7 @@ export const TaggingRuleForm: Component<{
       <p class="mb-1 font-medium">{t('tagging-rules.form.conditions.label')}</p>
       <p class="mb-2 text-sm text-muted-foreground">{t('tagging-rules.form.conditions.description')}</p>
 
-      <FieldArray name="conditions">
+      <FieldArray path={['conditions']}>
         {fieldArray => (
           <div>
             <For each={fieldArray.items}>
@@ -134,12 +136,12 @@ export const TaggingRuleForm: Component<{
                 <div class="px-4 py-4 mb-1 flex gap-2 items-center bg-card border rounded-md">
                   <div>When</div>
 
-                  <Field name={`conditions.${index()}.field`}>
+                  <Field path={['conditions', index(), 'field']}>
                     {field => (
                       <Select
                         id="field"
-                        defaultValue={field.value}
-                        onChange={value => value && setValue(form, `conditions.${index()}.field`, value)}
+                        defaultValue={field.input as string}
+                        onChange={value => value && setInput(form, { path: ['conditions', index(), 'field'], input: value })}
                         options={Object.values(TAGGING_RULE_FIELDS)}
                         itemComponent={props => (
                           <SelectItem item={props.item}>{getFieldLabel(props.item.rawValue)}</SelectItem>
@@ -153,12 +155,12 @@ export const TaggingRuleForm: Component<{
                     )}
                   </Field>
 
-                  <Field name={`conditions.${index()}.operator`}>
+                  <Field path={['conditions', index(), 'operator']}>
                     {field => (
                       <Select
                         id="operator"
-                        defaultValue={field.value}
-                        onChange={value => value && setValue(form, `conditions.${index()}.operator`, value)}
+                        defaultValue={field.input as string}
+                        onChange={value => value && setInput(form, { path: ['conditions', index(), 'operator'], input: value })}
                         options={Object.values(TAGGING_RULE_OPERATORS)}
                         itemComponent={props => (
                           <SelectItem item={props.item}>{getOperatorLabel(props.item.rawValue)}</SelectItem>
@@ -172,36 +174,36 @@ export const TaggingRuleForm: Component<{
                     )}
                   </Field>
 
-                  <Field name={`conditions.${index()}.value`}>
-                    {(field, inputProps) => (
+                  <Field path={['conditions', index(), 'value']}>
+                    {field => (
                       <TextFieldRoot class="flex flex-col gap-1 flex-1">
                         <TextField
                           id="value"
-                          {...inputProps}
-                          value={field.value}
+                          {...field.props}
+                          value={field.input}
                           placeholder={t('tagging-rules.form.conditions.value.placeholder')}
 
                         />
-                        {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                        {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
 
                       </TextFieldRoot>
                     )}
                   </Field>
 
-                  <Button variant="outline" size="icon" onClick={() => remove(form, 'conditions', { at: index() })}>
+                  <Button variant="outline" size="icon" onClick={() => remove(form, { path: ['conditions'], at: index() })}>
                     <div class="i-tabler-x size-4"></div>
                   </Button>
                 </div>
               )}
             </For>
-            {fieldArray.error && <div class="text-red-500 text-sm">{fieldArray.error}</div>}
+            {fieldArray.errors && <div class="text-red-500 text-sm">{fieldArray.errors[0]}</div>}
           </div>
         )}
       </FieldArray>
 
       <Button
         variant="outline"
-        onClick={() => insert(form, 'conditions', { value: { field: 'name', operator: 'contains', value: '' } })}
+        onClick={() => insert(form, { path: ['conditions'], input: { field: 'name', operator: 'contains', value: '' } })}
         class="gap-2 mt-2"
       >
         <div class="i-tabler-plus size-4"></div>
@@ -213,7 +215,7 @@ export const TaggingRuleForm: Component<{
       <p class="mb-1 font-medium">{t('tagging-rules.form.tags.label')}</p>
       <p class="mb-2 text-sm text-muted-foreground">{t('tagging-rules.form.tags.description')}</p>
 
-      <Field name="tagIds" type="string[]">
+      <Field path={['tagIds']}>
         {field => (
           <>
             <div class="flex gap-2 sm:items-center sm:flex-row flex-col">
@@ -221,8 +223,8 @@ export const TaggingRuleForm: Component<{
 
                 <DocumentTagPicker
                   organizationId={props.organizationId}
-                  tagIds={field.value ?? []}
-                  onTagsChange={({ tags }) => setValue(form, 'tagIds', tags.map(tag => tag.id))}
+                  tagIds={(field.input as string[]) ?? []}
+                  onTagsChange={({ tags }) => setInput(form, { path: ['tagIds'], input: tags.map(tag => tag.id) })}
                 />
               </div>
 
@@ -235,7 +237,7 @@ export const TaggingRuleForm: Component<{
                 )}
               </CreateTagModal>
             </div>
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </>
         )}
       </Field>

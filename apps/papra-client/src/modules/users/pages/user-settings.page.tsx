@@ -90,8 +90,8 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
 
       <Form>
         <CardContent class="pt-6">
-          <Field name="name">
-            {(field, inputProps) => (
+          <Field path={['name']}>
+            {field => (
               <TextFieldRoot class="flex flex-col gap-1">
                 <TextFieldLabel for="name" class="sr-only">
                   {t('user.settings.name.label')}
@@ -101,25 +101,25 @@ const UpdateFullNameCard: Component<{ name: string }> = (props) => {
                     type="text"
                     id="name"
                     placeholder={t('user.settings.name.placeholder')}
-                    {...inputProps}
-                    value={field.value}
-                    aria-invalid={Boolean(field.error)}
+                    {...field.props}
+                    value={field.input}
+                    aria-invalid={Boolean(field.errors)}
                   />
                   <Button
                     type="submit"
-                    isLoading={form.submitting}
+                    isLoading={form.isSubmitting}
                     class="flex-shrink-0"
-                    disabled={field.value?.trim() === props.name}
+                    disabled={(field.input as string)?.trim() === props.name}
                   >
                     {t('user.settings.name.update')}
                   </Button>
                 </div>
-                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
               </TextFieldRoot>
             )}
           </Field>
 
-          <div class="text-red-500 text-sm">{form.response.message}</div>
+          <div class="text-red-500 text-sm">{form.errors?.[0]}</div>
         </CardContent>
       </Form>
     </Card>

@@ -1,7 +1,10 @@
-import type { FormErrors, FormProps, PartialValues } from '@modular-forms/solid';
+import type { FieldArrayProps, FieldProps, FormProps } from '@formisch/solid';
 import type * as v from 'valibot';
-import { createForm as createModularForm, FormError, valiForm } from '@modular-forms/solid';
+import { createForm as createFormishForm, Field, FieldArray, Form } from '@formisch/solid';
 import { createHook } from '../hooks/hooks';
+
+// Extracted from the library to avoid type errors
+type FormishDeepPartial<TValue> = TValue extends readonly unknown[] ? number extends TValue['length'] ? TValue : { [Key in keyof TValue]?: FormishDeepPartial<TValue[Key]> | undefined } : TValue extends Record<PropertyKey, unknown> ? { [Key in keyof TValue]?: FormishDeepPartial<TValue[Key]> | undefined } : TValue | undefined;
 
 export function createForm<Schema extends v.ObjectSchema<any, any>>({
   schema,
@@ -9,7 +12,7 @@ export function createForm<Schema extends v.ObjectSchema<any, any>>({
   onSubmit,
 }: {
   schema: Schema;
-  initialValues?: PartialValues<v.InferInput<Schema>>;
+  initialValues?: FormishDeepPartial<v.InferInput<Schema>>;
   onSubmit?: (values: v.InferInput<Schema>) => Promise<void>;
 }) {
   const submitHook = createHook<v.InferInput<Schema>>();
@@ -18,18 +21,18 @@ export function createForm<Schema extends v.ObjectSchema<any, any>>({
     submitHook.on(onSubmit);
   }
 
-  const [form, { Form, Field, FieldArray }] = createModularForm<v.InferInput<Schema>>({
-    validate: valiForm(schema),
-    initialValues,
+  const form = createFormishForm({
+    schema,
+    initialInput: initialValues,
   });
 
   return {
     form,
-    Form: (props: Omit<FormProps<v.InferInput<Schema>, undefined>, 'of'>) => Form({ ...props, onSubmit: submitHook.trigger }),
-    Field,
-    FieldArray,
-    onSubmit: submitHook.on,
+    Form: (props: Omit<FormProps<Schema>, 'of' | 'onSubmit'>) => Form({ of: form, ...props, onSubmit: async (args) => {
+      await submitHook.trigger(args);
+    } }),
+    Field: (props: Omit<FieldProps<Schema>, 'of'>) => Field({ of: form, ...props }),
+    FieldArray: (props: Omit<FieldArrayProps<Schema>, 'of'>) => FieldArray({ of: form, ...props }),
     submit: submitHook.trigger,
-    createFormError: ({ message, fields }: { message: string; fields?: FormErrors<v.InferInput<Schema>> }) => new FormError<v.InferInput<Schema>>(message, fields),
   };
 }

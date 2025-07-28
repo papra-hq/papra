@@ -1,5 +1,5 @@
 import type { Component, ParentComponent } from 'solid-js';
-import { setValue } from '@modular-forms/solid';
+import { setInput } from '@formisch/solid';
 import { useMutation } from '@tanstack/solid-query';
 import { createContext, createEffect, createSignal, useContext } from 'solid-js';
 import * as v from 'valibot';
@@ -58,7 +58,7 @@ export const RenameDocumentDialog: Component<{
   });
 
   createEffect(() => {
-    setValue(form, 'name', getDocumentNameWithoutExtension({ name: props.documentName }));
+    setInput(form, { path: ['name'], input: getDocumentNameWithoutExtension({ name: props.documentName }) });
   });
 
   return (
@@ -69,21 +69,21 @@ export const RenameDocumentDialog: Component<{
         </DialogHeader>
 
         <Form>
-          <Field name="name">
-            {(field, inputProps) => (
+          <Field path={['name']}>
+            {field => (
               <TextFieldRoot>
                 <TextFieldLabel class="sr-only" for="name">{t('documents.rename.form.name.label')}</TextFieldLabel>
-                <TextField {...inputProps} value={field.value} id="name" placeholder={t('documents.rename.form.name.placeholder')} />
-                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                <TextField {...field.props} value={field.input} id="name" placeholder={t('documents.rename.form.name.placeholder')} />
+                {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
               </TextFieldRoot>
             )}
           </Field>
 
           <div class="flex justify-end mt-4 gap-2">
-            <Button type="button" variant="secondary" onClick={() => props.setIsOpen(false)}>
+            <Button type="button" variant="secondary" onClick={() => props.setIsOpen(false)} disabled={form.isSubmitting}>
               {t('documents.rename.cancel')}
             </Button>
-            <Button type="submit">{t('documents.rename.form.submit')}</Button>
+            <Button type="submit" isLoading={form.isSubmitting}>{t('documents.rename.form.submit')}</Button>
           </div>
         </Form>
       </DialogContent>
