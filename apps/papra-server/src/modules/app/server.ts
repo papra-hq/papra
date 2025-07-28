@@ -6,6 +6,7 @@ import { parseConfig } from '../config/config';
 import { createEmailsServices } from '../emails/emails.services';
 import { createLoggerMiddleware } from '../shared/logger/logger.middleware';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
+import { createTaskServices } from '../tasks/tasks.services';
 import { createTrackingServices } from '../tracking/tracking.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
@@ -23,6 +24,7 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   const trackingServices = createTrackingServices({ config });
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
   const subscriptionsServices = createSubscriptionsServices({ config });
+  const taskServices = partialDeps.taskServices ?? createTaskServices({ config });
 
   return {
     config,
@@ -31,6 +33,7 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
     emailsServices,
     subscriptionsServices,
     trackingServices,
+    taskServices,
   };
 }
 

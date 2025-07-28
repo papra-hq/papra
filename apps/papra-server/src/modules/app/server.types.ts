@@ -3,6 +3,7 @@ import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Config } from '../config/config.types';
 import type { EmailsServices } from '../emails/emails.services';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
+import type { TaskServices } from '../tasks/tasks.services';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { Auth } from './auth/auth.services';
 import type { Session } from './auth/auth.types';
@@ -28,6 +29,7 @@ export type GlobalDependencies = {
   emailsServices: EmailsServices;
   subscriptionsServices: SubscriptionsServices;
   trackingServices: TrackingServices;
+  taskServices: TaskServices;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

@@ -3,6 +3,21 @@ import { z } from 'zod';
 import { booleanishSchema } from '../config/config.schemas';
 
 export const tasksConfig = {
+  persistence: {
+    driver: {
+      doc: 'The driver to use for the tasks persistence',
+      schema: z.enum(['memory']),
+      default: 'memory',
+      env: 'TASKS_PERSISTENCE_DRIVER',
+    },
+  },
+  worker: {
+    id: {
+      doc: 'The id of the task worker, used to identify the worker in the Cadence cluster in case of multiple workers',
+      schema: z.string().optional(),
+      env: 'TASKS_WORKER_ID',
+    },
+  },
   hardDeleteExpiredDocuments: {
     enabled: {
       doc: 'Whether the task to hard delete expired "soft deleted" documents is enabled',

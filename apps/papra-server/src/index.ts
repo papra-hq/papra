@@ -7,8 +7,8 @@ import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
 import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
 import { createLogger } from './modules/shared/logger/logger';
-import { createTaskScheduler } from './modules/tasks/task-scheduler';
-import { taskDefinitions } from './modules/tasks/tasks.defiitions';
+import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
+import { createTaskServices } from './modules/tasks/tasks.services';
 
 const logger = createLogger({ namespace: 'app-server' });
 
@@ -17,8 +17,8 @@ const { config } = await parseConfig({ env });
 await ensureLocalDatabaseDirectoryExists({ config });
 const { db, client } = setupDatabase(config.database);
 
-const { app } = await createServer({ config, db });
-const { taskScheduler } = createTaskScheduler({ config, taskDefinitions, tasksArgs: { db } });
+const taskServices = createTaskServices({ config });
+const { app } = await createServer({ config, db, taskServices });
 
 const server = serve(
   {
@@ -37,11 +37,12 @@ if (config.ingestionFolder.isEnabled) {
   await startWatchingIngestionFolders();
 }
 
-taskScheduler.start();
+await registerTaskDefinitions({ taskServices, db, config });
+
+taskServices.start();
 
 process.on('SIGINT', async () => {
   server.close();
-  taskScheduler.stop();
   client.close();
 
   process.exit(0);
