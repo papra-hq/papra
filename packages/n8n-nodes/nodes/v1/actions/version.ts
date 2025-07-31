@@ -11,7 +11,7 @@ export const description: INodeTypeDescription = {
 	name: 'papra',
 	icon: 'file:papra.svg',
 	group: ['input'],
-	version: 2,
+	version: 1,
 	subtitle: '={{ $parameter.operation + ": " + $parameter.resource }}',
 	description: 'Consume documents and metadata from Papra API',
 	defaults: { name: 'Papra' },

@@ -74,11 +74,14 @@ export async function apiRequestPaginated(
 		delete options.body;
 	}
 
-	// TODO: fix
 	const paginationOptions: PaginationOptions = {
-		continue: '={{ ($response?.body?.next ?? null) !== null }}',
+		// TODO: make continue condition generic
+		continue: '={{ $response.body.documents && $response.body.documents.length > 0 }}',
 		request: {
-			url: '={{ $response.body.next }}',
+			qs: {
+				pageSize: '={{ $request.qs.pageSize || 50 }}',
+				pageIndex: '={{ ($request.qs.pageIndex || 0) + 1 }}',
+			},
 		},
 		requestInterval: 100,
 	};

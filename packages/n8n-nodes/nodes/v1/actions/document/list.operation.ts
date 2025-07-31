@@ -31,6 +31,6 @@ export async function execute(
 	}
     
 	return {
-		json: { results: responses.map((response) => response.body.results).flat() },
+		json: { results: responses.flatMap((response) => response.body.documents) },
 	};
 }
