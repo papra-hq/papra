@@ -24,7 +24,7 @@ export async function execute(
 			`The documents you are requesting could not be found`,
 			{
 				description: JSON.stringify(
-					responses.map((response) => response?.body?.details ?? response?.statusMessage),
+					responses.map((response) => response?.body?.error?.message ?? response?.error?.code),
 				),
 			},
 		);

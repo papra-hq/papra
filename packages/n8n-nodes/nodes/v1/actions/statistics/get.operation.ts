@@ -12,9 +12,9 @@ export async function execute(
 	itemIndex: number,
 ): Promise<INodeExecutionData> {
 	const endpoint = `/documents/statistics`;
-	const response = (await apiRequest.call(this, itemIndex, 'GET', endpoint)) as any[];
+	const response = (await apiRequest.call(this, itemIndex, 'GET', endpoint)) as any;
 
 	return {
-		json: { results: [response] },
+		json: response,
 	};
 }

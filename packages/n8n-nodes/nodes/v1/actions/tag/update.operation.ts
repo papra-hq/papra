@@ -5,7 +5,6 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 import { apiRequest } from '../../transport';
-import FormData from 'form-data';
 
 export const description: INodeProperties[] = [
 	{
@@ -72,7 +71,7 @@ export const description: INodeProperties[] = [
 				displayName: 'Color',
 				name: 'color',
 				default: '#000000',
-				type: 'string',
+				type: 'color',
 			},
 			{
 				displayName: 'Description',
@@ -93,21 +92,20 @@ export async function execute(
 ): Promise<INodeExecutionData> {
 	const id = (this.getNodeParameter('id', itemIndex) as INodeParameterResourceLocator).value;
 	const endpoint = `/tags/${id}`;
-    const formData = new FormData();
 
 	const updateFields = this.getNodeParameter('update_fields', itemIndex, {}) as {
 		[key: string]: any;
 	};
 
+	const body: { [key: string]: any } = {};
+
 	for (const key of Object.keys(updateFields)) {
 		if (updateFields[key] !== null && updateFields[key] !== undefined) {
-			formData.append(key, updateFields[key]);
+			body[key] = key === 'color' ? updateFields[key].toString().toLowerCase() : updateFields[key];
 		}
 	}
 
-	console.log(formData, updateFields);
-
-	const response = (await apiRequest.call(this, itemIndex, 'PATCH', endpoint, undefined, undefined, { headers: formData.getHeaders(), formData })) as any;
+	const response = (await apiRequest.call(this, itemIndex, 'PUT', endpoint, body)) as any;
 
 	return { json: { results: [response] } };
 }

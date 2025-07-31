@@ -1,6 +1,5 @@
 import { IExecuteFunctions, INodeExecutionData, INodeProperties } from 'n8n-workflow';
 import { apiRequest } from '../../transport';
-import FormData from 'form-data';
 
 export const description: INodeProperties[] = [
 	{
@@ -18,7 +17,6 @@ export const description: INodeProperties[] = [
 		default: '',
 	},
 	{
-        // TODO: add regex
 		displayName: 'Color',
 		name: 'color',
 		default: '#000000',
@@ -28,7 +26,7 @@ export const description: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		type: 'string',
+		type: 'color',
 	},
 	{
 		displayName: 'Description',
@@ -50,13 +48,13 @@ export async function execute(
 	itemIndex: number,
 ): Promise<INodeExecutionData> {
 	const endpoint = `/tags`;
-	const formData = new FormData();
+	const body = {
+		name: this.getNodeParameter('name', itemIndex),
+		color: this.getNodeParameter('color', itemIndex)?.toString().toLowerCase(),
+		description: this.getNodeParameter('description', itemIndex, ''),
+	};
 
-	formData.append('name', this.getNodeParameter('name', itemIndex));
-	formData.append('color', this.getNodeParameter('color', itemIndex));
-	formData.append('description', this.getNodeParameter('description', itemIndex, ''));
-
-	const response = (await apiRequest.call(this, itemIndex, 'POST', endpoint, undefined, undefined, { headers: formData.getHeaders(), formData })) as any;
+	const response = (await apiRequest.call(this, itemIndex, 'POST', endpoint, body)) as any;
 
 	return { json: { results: [response] } };
 }

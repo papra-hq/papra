@@ -51,7 +51,7 @@ export const description: INodeTypeDescription = {
 				{
 					name: 'Trash',
 					value: 'trash',
-					description: 'Trash for documents',
+					description: 'All deleted documents',
 				},
 			],
 			type: 'options',
