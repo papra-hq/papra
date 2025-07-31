@@ -80,7 +80,7 @@ export async function apiRequestPaginated(
 		request: {
 			qs: {
 				pageSize: '={{ $request.qs.pageSize || 50 }}',
-				pageIndex: '={{ ($request.qs.pageIndex || 0) + 1 }}',
+				pageIndex: '={{ $pageCount }}',
 			},
 		},
 		requestInterval: 100,
