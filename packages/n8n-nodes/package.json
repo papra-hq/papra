@@ -31,7 +31,7 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/papraApi.credentials.js"
+      "dist/credentials/PapraApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Papra.node.js"

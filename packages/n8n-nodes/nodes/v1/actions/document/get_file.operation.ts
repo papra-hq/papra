@@ -15,7 +15,7 @@ export const description: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['document'],
-				operation: ['get_preview'],
+				operation: ['get_file'],
 			},
 		},
 		hint: 'The ID of the document for which to retrieve a preview',
