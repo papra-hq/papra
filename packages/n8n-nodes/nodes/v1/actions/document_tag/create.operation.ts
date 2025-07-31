@@ -1,20 +1,17 @@
 import { IExecuteFunctions, INodeExecutionData, INodeParameterResourceLocator, INodeProperties } from 'n8n-workflow';
 import { apiRequest } from '../../transport';
-import FormData from 'form-data';
 
 export const description: INodeProperties[] = [
     {
         displayName: 'ID',
         name: 'id',
         default: { mode: 'list', value: '' },
-        description: 'ID of the document',
         displayOptions: {
             show: {
-                resource: ['document'],
-                operation: ['update'],
+                resource: ['document_tag'],
+                operation: ['create'],
             },
         },
-        hint: 'The ID of the document',
         modes: [
 			{
 				displayName: 'From List',
@@ -74,7 +71,7 @@ export const description: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['document_tag'],
-                operation: ['remove'],
+                operation: ['create'],
             },
         },
         modes: [
@@ -117,13 +114,13 @@ export async function execute(
 ): Promise<INodeExecutionData> {
     const document_id = (this.getNodeParameter('id', itemIndex) as INodeParameterResourceLocator).value;
     const tag_id = (this.getNodeParameter('tag_id', itemIndex) as INodeParameterResourceLocator).value;
-    const formData = new FormData();
-
     const endpoint = `/documents/${document_id}/tags`;
 
-    formData.append('tag', tag_id);
+    const body = {
+        tagId: tag_id,
+    };
 
-    const response = (await apiRequest.call(this, itemIndex, 'POST', endpoint, undefined, undefined, { headers: formData.getHeaders(), formData })) as any;
+    const response = (await apiRequest.call(this, itemIndex, 'POST', endpoint, body)) as any;
 
     return { json: { results: [response] } };
 }

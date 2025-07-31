@@ -5,7 +5,6 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 import { apiRequest } from '../../transport';
-import FormData from 'form-data';
 
 export const description: INodeProperties[] = [
 	{
@@ -73,20 +72,17 @@ export const description: INodeProperties[] = [
 		type: 'resourceLocator',
 	},
 	{
-		displayName: 'Update Fields',
+		displayName: 'Update fields',
 		name: 'update_fields',
-		type: 'collection',
 		default: {},
-		hint: 'All additional fields are automatically added to the document by Papra if they are not set',
 		displayOptions: {
 			show: {
 				resource: ['document'],
 				operation: ['update'],
 			},
 		},
-		placeholder: 'Add Field',
 		options: [
-            {
+			{
 				displayName: 'Name',
 				name: 'name',
 				default: '',
@@ -101,6 +97,8 @@ export const description: INodeProperties[] = [
 				type: 'string',
 			}
 		],
+		placeholder: 'Add Field',
+		type: 'collection',
 	},
 ];
 
@@ -109,22 +107,24 @@ export async function execute(
 	itemIndex: number,
 ): Promise<INodeExecutionData> {
 	const id = (this.getNodeParameter('id', itemIndex) as INodeParameterResourceLocator).value;
-	const endpoint = `/documents/${id}/`;
-    const formData = new FormData();
-
+	const endpoint = `/documents/${id}`;
+    
 	const updateFields = this.getNodeParameter('update_fields', itemIndex, {}) as any;
 
-	formData.append('name', updateFields.name);
-	formData.append('content', updateFields.content);
+	const body: { [key: string]: any } = {};
+
+	for (const key of Object.keys(updateFields)) {
+		if (updateFields[key] !== null && updateFields[key] !== undefined) {
+			body[key] = updateFields[key];
+		}
+	}
 
 	const response = (await apiRequest.call(
 		this,
 		itemIndex,
 		'PATCH',
 		endpoint,
-		undefined,
-		undefined,
-		{ headers: formData.getHeaders(), formData },
+		body,
 	)) as any;
 
 	return { json: { results: [response] } };

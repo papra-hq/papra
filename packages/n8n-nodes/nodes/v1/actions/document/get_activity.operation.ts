@@ -12,14 +12,12 @@ export const description: INodeProperties[] = [
 		displayName: 'ID',
 		name: 'id',
 		default: { mode: 'list', value: '' },
-		description: 'ID of the document to get activity log for',
 		displayOptions: {
 			show: {
 				resource: ['document'],
 				operation: ['get_activity'],
 			},
 		},
-		hint: 'The ID of the document to get activity log for',
 		modes: [
 			{
 				displayName: 'From List',

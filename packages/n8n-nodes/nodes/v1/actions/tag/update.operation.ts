@@ -50,7 +50,7 @@ export const description: INodeProperties[] = [
 		type: 'resourceLocator',
 	},
 	{
-		displayName: 'Update Fields',
+		displayName: 'Update fields',
 		name: 'update_fields',
 		default: {},
 		displayOptions: {

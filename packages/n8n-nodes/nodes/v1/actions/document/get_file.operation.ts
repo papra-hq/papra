@@ -11,14 +11,12 @@ export const description: INodeProperties[] = [
 		displayName: 'ID',
 		name: 'id',
 		default: { mode: 'list', value: '' },
-		description: 'The ID of the document for which to retrieve a preview',
 		displayOptions: {
 			show: {
 				resource: ['document'],
 				operation: ['get_file'],
 			},
 		},
-		hint: 'The ID of the document for which to retrieve a preview',
 		modes: [
 			{
 				displayName: 'From List',
