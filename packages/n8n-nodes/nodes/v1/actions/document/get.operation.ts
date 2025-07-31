@@ -78,7 +78,7 @@ export async function execute(
 	itemIndex: number,
 ): Promise<INodeExecutionData> {
 	const id = (this.getNodeParameter('id', itemIndex) as INodeParameterResourceLocator).value;
-	const endpoint = `/documents/${id}/`;
+	const endpoint = `/documents/${id}`;
 	const response = (await apiRequest.call(this, itemIndex, 'GET', endpoint)) as any;
 
 	return { json: { results: [response] } };
