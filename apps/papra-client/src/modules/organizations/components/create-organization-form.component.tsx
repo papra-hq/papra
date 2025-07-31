@@ -37,23 +37,23 @@ export const CreateOrganizationForm: Component<{
   return (
     <div>
       <Form>
-        <Field name="organizationName">
-          {(field, inputProps) => (
+        <Field path={['organizationName']}>
+          {field => (
             <TextFieldRoot class="flex flex-col gap-1 mb-6">
               <TextFieldLabel for="organizationName">{t('organizations.create.form.name.label')}</TextFieldLabel>
-              <TextField type="text" id="organizationName" placeholder={t('organizations.create.form.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-              {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+              <TextField type="text" id="organizationName" placeholder={t('organizations.create.form.name.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+              {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
             </TextFieldRoot>
           )}
         </Field>
 
         <div class="flex justify-end">
-          <Button type="submit" isLoading={form.submitting} class="w-full">
+          <Button type="submit" isLoading={form.isSubmitting} class="w-full">
             {t('organizations.create.form.submit')}
           </Button>
         </div>
 
-        <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
+        <div class="text-red-500 text-sm mt-4">{form.errors?.[0]}</div>
       </Form>
     </div>
   );

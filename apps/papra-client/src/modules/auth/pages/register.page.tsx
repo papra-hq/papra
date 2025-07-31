@@ -30,7 +30,7 @@ export const EmailRegisterForm: Component = () => {
       });
 
       if (error) {
-        throw error;
+        throw new Error(error.message);
       }
 
       if (config.auth.isEmailVerificationRequired) {
@@ -63,41 +63,42 @@ export const EmailRegisterForm: Component = () => {
 
   return (
     <Form>
-      <Field name="email">
-        {(field, inputProps) => (
+      <Field path={['email']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="email">{t('auth.register.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.register.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="email" id="email" placeholder={t('auth.register.form.email.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Field name="name">
-        {(field, inputProps) => (
+      <Field path={['name']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="name">{t('auth.register.form.name.label')}</TextFieldLabel>
-            <TextField type="text" id="name" placeholder={t('auth.register.form.name.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="text" id="name" placeholder={t('auth.register.form.name.placeholder')} {...field.props} value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Field name="password">
-        {(field, inputProps) => (
+      <Field path={['password']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="password">{t('auth.register.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder={t('auth.register.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="password" id="password" placeholder={t('auth.register.form.password.placeholder')} {...field.props} value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Button type="submit" class="w-full">{t('auth.register.form.submit')}</Button>
+      <Button type="submit" class="w-full" isLoading={form.isSubmitting}>
+        {t('auth.register.form.submit')}
+      </Button>
 
-      <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
+      <div class="text-red-500 text-sm mt-4">{form.errors?.[0]}</div>
     </Form>
   );
 };

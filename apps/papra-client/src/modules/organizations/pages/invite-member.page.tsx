@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { setValue } from '@modular-forms/solid';
+import { setInput } from '@formisch/solid';
 import { useNavigate, useParams } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
 import { onMount, Show } from 'solid-js';
@@ -101,8 +101,8 @@ export const InviteMemberPage: Component = () => {
 
       <div class="mt-10 max-w-xs mx-auto">
         <Form>
-          <Field name="email">
-            {(field, inputProps) => (
+          <Field path={['email']}>
+            {field => (
               <TextFieldRoot class="flex flex-col mb-6">
                 <TextFieldLabel for="email">
                   {t('organizations.invite-member.form.email.label')}
@@ -113,16 +113,16 @@ export const InviteMemberPage: Component = () => {
                   placeholder={t(
                     'organizations.invite-member.form.email.placeholder',
                   )}
-                  {...inputProps}
+                  {...field.props}
                 />
-                {field.error && (
-                  <div class="text-red-500 text-sm">{field.error}</div>
+                {field.errors && (
+                  <div class="text-red-500 text-sm">{field.errors[0]}</div>
                 )}
               </TextFieldRoot>
             )}
           </Field>
 
-          <Field name="role">
+          <Field path={['role']}>
             {field => (
               <div>
                 <label for="role" class="text-sm font-medium mb-1 block">
@@ -139,9 +139,9 @@ export const InviteMemberPage: Component = () => {
                       {tRole(props.item.rawValue)}
                     </SelectItem>
                   )}
-                  value={field.value}
+                  value={field.input as InvitableRole}
                   onChange={value =>
-                    setValue(form, 'role', value as InvitableRole)}
+                    setInput(form, { path: ['role'], input: value as InvitableRole })}
                 >
                   <SelectTrigger>
                     <SelectValue<string>>

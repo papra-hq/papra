@@ -14,7 +14,7 @@ export async function fetchTags({ organizationId }: { organizationId: string }) 
   };
 }
 
-export async function createTag({ organizationId, name, color, description }: { organizationId: string; name: string; color: string; description: string }) {
+export async function createTag({ organizationId, name, color, description = '' }: { organizationId: string; name: string; color: string; description?: string }) {
   const { tag } = await apiClient<{ tag: AsDto<Tag> }>({
     path: `/api/organizations/${organizationId}/tags`,
     method: 'POST',
@@ -26,7 +26,7 @@ export async function createTag({ organizationId, name, color, description }: { 
   };
 }
 
-export async function updateTag({ organizationId, tagId, name, color, description }: { organizationId: string; tagId: string; name: string; color: string; description: string }) {
+export async function updateTag({ organizationId, tagId, name, color, description = '' }: { organizationId: string; tagId: string; name: string; color: string; description?: string }) {
   const { tag } = await apiClient<{ tag: AsDto<Tag> }>({
     path: `/api/organizations/${organizationId}/tags/${tagId}`,
     method: 'PUT',

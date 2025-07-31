@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { setValue } from '@modular-forms/solid';
+import { setInput } from '@formisch/solid';
 import { A } from '@solidjs/router';
 import { createSignal, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -79,35 +79,35 @@ export const CreateApiKeyPage: Component = () => {
 
       <Show when={!getToken()}>
         <Form>
-          <Field name="name">
-            {(field, inputProps) => (
+          <Field path={['name']}>
+            {field => (
 
               <TextFieldRoot class="flex flex-col mb-6">
                 <TextFieldLabel for="name">{t('api-keys.create.form.name.label')}</TextFieldLabel>
-                <TextField type="text" id="name" placeholder={t('api-keys.create.form.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                <TextField type="text" id="name" placeholder={t('api-keys.create.form.name.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+                {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
               </TextFieldRoot>
 
             )}
           </Field>
 
-          <Field name="permissions" type="string[]">
+          <Field path={['permissions']}>
             {field => (
               <div>
                 <p class="text-sm font-bold">{t('api-keys.create.form.permissions.label')}</p>
 
                 <div class="p-6 pb-8 border rounded-md mt-2">
-                  <ApiKeyPermissionsPicker permissions={field.value ?? []} onChange={permissions => setValue(form, 'permissions', permissions)} />
+                  <ApiKeyPermissionsPicker permissions={(field.input as string[]) ?? []} onChange={permissions => setInput(form, { path: ['permissions'], input: permissions })} />
                 </div>
 
-                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
               </div>
 
             )}
           </Field>
 
           <div class="flex justify-end mt-6">
-            <Button type="submit" isLoading={form.submitting}>
+            <Button type="submit" isLoading={form.isSubmitting}>
               {t('api-keys.create.form.submit')}
             </Button>
           </div>

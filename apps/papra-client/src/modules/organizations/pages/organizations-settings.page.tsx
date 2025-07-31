@@ -138,25 +138,25 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
 
         <Form>
           <CardContent class="pt-6 ">
-            <Field name="organizationName">
-              {(field, inputProps) => (
+            <Field path={['organizationName']}>
+              {field => (
                 <TextFieldRoot class="flex flex-col gap-1">
                   <TextFieldLabel for="organizationName" class="sr-only">
                     {t('organization.settings.name.title')}
                   </TextFieldLabel>
                   <div class="flex gap-2 flex-col sm:flex-row">
-                    <TextField type="text" id="organizationName" placeholder={t('organization.settings.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+                    <TextField type="text" id="organizationName" placeholder={t('organization.settings.name.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
 
-                    <Button type="submit" isLoading={form.submitting} class="flex-shrink-0" disabled={field.value?.trim() === props.organization.name}>
+                    <Button type="submit" isLoading={form.isSubmitting} class="flex-shrink-0" disabled={(field.input as string)?.trim() === props.organization.name}>
                       {t('organization.settings.name.update')}
                     </Button>
                   </div>
-                  {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+                  {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
                 </TextFieldRoot>
               )}
             </Field>
 
-            <div class="text-red-500 text-sm">{form.response.message}</div>
+            <div class="text-red-500 text-sm">{form.errors?.[0]}</div>
           </CardContent>
         </Form>
       </Card>

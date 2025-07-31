@@ -29,21 +29,21 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) 
 
   return (
     <Form>
-      <Field name="email">
-        {(field, inputProps) => (
+      <Field path={['email']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="email">{t('auth.request-password-reset.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.request-password-reset.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="email" id="email" placeholder={t('auth.request-password-reset.form.email.placeholder')} {...field.props} autoFocus value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Button type="submit" class="w-full">
+      <Button type="submit" class="w-full" isLoading={form.isSubmitting}>
         {t('auth.request-password-reset.form.submit')}
       </Button>
 
-      <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
+      <div class="text-red-500 text-sm mt-2">{form.errors?.[0]}</div>
 
     </Form>
   );

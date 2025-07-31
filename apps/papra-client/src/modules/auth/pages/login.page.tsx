@@ -31,7 +31,7 @@ export const EmailLoginForm: Component = () => {
       }
 
       if (error) {
-        throw error;
+        throw new Error(error.message);
       }
     },
     schema: v.object({
@@ -54,32 +54,32 @@ export const EmailLoginForm: Component = () => {
 
   return (
     <Form>
-      <Field name="email">
-        {(field, inputProps) => (
+      <Field path={['email']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="email">{t('auth.login.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...field.props} value={field.input} autoFocus aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Field name="password">
-        {(field, inputProps) => (
+      <Field path={['password']}>
+        {field => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="password">{t('auth.login.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
-            {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
+            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...field.props} value={field.input} aria-invalid={Boolean(field.errors)} />
+            {field.errors && <div class="text-red-500 text-sm">{field.errors[0]}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
       <div class="flex justify-between items-center mb-4">
-        <Field name="rememberMe" type="boolean">
-          {(field, inputProps) => (
-            <Checkbox class="flex items-center gap-2" defaultChecked={field.value}>
-              <CheckboxControl inputProps={inputProps} />
+        <Field path={['rememberMe']}>
+          {field => (
+            <Checkbox class="flex items-center gap-2" defaultChecked={field.input as boolean}>
+              <CheckboxControl inputProps={field.props} />
               <CheckboxLabel class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('auth.login.form.remember-me.label')}
               </CheckboxLabel>
@@ -94,9 +94,9 @@ export const EmailLoginForm: Component = () => {
         </Show>
       </div>
 
-      <Button type="submit" class="w-full">{t('auth.login.form.submit')}</Button>
+      <Button type="submit" class="w-full" isLoading={form.isSubmitting}>{t('auth.login.form.submit')}</Button>
 
-      <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
+      <div class="text-red-500 text-sm mt-4">{form.errors?.[0]}</div>
 
     </Form>
   );
