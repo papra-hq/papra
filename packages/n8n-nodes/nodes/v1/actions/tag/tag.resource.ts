@@ -18,22 +18,22 @@ export const description: INodeProperties[] = [
 		noDataExpression: true,
 		options: [
 			{
-				name: 'Create a Tag',
+				name: 'Create a tag',
 				value: 'create',
 				action: 'Create a new tag',
 			},
 			{
-				name: 'Delete a Tag',
+				name: 'Delete a tag',
 				value: 'remove',
 				action: 'Delete a tag',
 			},
 			{
-				name: 'List Tags',
+				name: 'List tags',
 				value: 'list',
 				action: 'List all tags',
 			},
 			{
-				name: 'Update a Tag',
+				name: 'Update a tag',
 				value: 'update',
 				action: 'Update a tag',
 			},

@@ -105,6 +105,8 @@ export async function execute(
 		}
 	}
 
+	console.log(formData, updateFields);
+
 	const response = (await apiRequest.call(this, itemIndex, 'PATCH', endpoint, undefined, undefined, { headers: formData.getHeaders(), formData })) as any;
 
 	return { json: { results: [response] } };

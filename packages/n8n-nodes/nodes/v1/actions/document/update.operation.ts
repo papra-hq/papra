@@ -56,15 +56,15 @@ export const description: INodeProperties[] = [
 					{
 						type: 'regex',
 						properties: {
-							regex: '^(?:http|https)://(?:.+?)/documents/([a-zA-Z0-9]+)/details$',
+							regex: '^(?:http|https)://(?:.+?)/documents/([a-zA-Z0-9_]+)/?(?:\\?.*)?$',
 							errorMessage:
-								'The URL must be a valid Papra document URL (e.g. https://papra.example.com/documents/123/details)',
+								'The URL must be a valid Papra document URL (e.g. https://papra.example.com/organizations/org_xxx/documents/doc_xxx?tab=info)',
 						},
 					},
 				],
 				extractValue: {
 					type: 'regex',
-					regex: '^(?:http|https)://(?:.+?)/documents/([a-zA-Z0-9]+)/details$',
+					regex: '^(?:http|https)://(?:.+?)/documents/([a-zA-Z0-9_]+)/?(?:\\?.*)?$',
 				},
 			},
 		],

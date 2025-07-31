@@ -15,7 +15,7 @@ export const description: INodeProperties[] = [
 		noDataExpression: true,
 		options: [
 			{
-				name: 'List Trash',
+				name: 'List trash',
 				value: 'list',
 				action: 'List all trash',
 			},

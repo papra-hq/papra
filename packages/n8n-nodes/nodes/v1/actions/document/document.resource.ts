@@ -29,37 +29,37 @@ export const description: INodeProperties[] = [
 		noDataExpression: true,
 		options: [
 			{
-				name: 'Create a Document',
+				name: 'Create a document',
 				value: 'create',
 				action: 'Create a new document',
 			},
             {
-				name: 'List Documents',
+				name: 'List documents',
 				value: 'list',
 				action: 'List all documents',
 			},
             {
-				name: 'Update a Document',
+				name: 'Update a document',
 				value: 'update',
 				action: 'Update a document',
 			},
 			{
-				name: 'Get a Document',
+				name: 'Get a document',
 				value: 'get',
 				action: 'Get a document',
 			},
 			{
-				name: 'Get the Document File',
+				name: 'Get the document file',
 				value: 'get_file',
 				action: 'Get the file of the document',
 			},
 			{
-				name: 'Delete a Document',
+				name: 'Delete a document',
 				value: 'remove',
 				action: 'Delete a document',
 			},
 			{
-				name: 'Get the Document Activity Log',
+				name: 'Get the document activity log',
 				value: 'get_activity',
 				action: 'Get the activity log of a document',
 			},
