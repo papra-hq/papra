@@ -84,20 +84,24 @@ export async function execute(
 		`${endpoint}/file`,
 		undefined,
 		undefined,
-		{ resolveWithFullResponse: true },
+		{
+			json: false,
+			encoding: null,
+			resolveWithFullResponse: true,
+		}
 	)) as any;
     
+	// TODO: fix
 	const filename =
 		preview.headers['content-disposition']
 			?.match(/filename="(?:b['"])?([^"]+)(?:['"])?"/)?.[1]
 			?.replace(/^['"]|['"]$/g, '') ?? `${id}.pdf`;
 
-    const mimeType = preview.headers['content-type'];
+	const mimeType = preview.headers['content-type'];
 
-	return {
+    return {
 		json: {},
 		binary: {
-			// TODO: fix output file is blank
 			data: await this.helpers.prepareBinaryData(
 				Buffer.from(preview.body),
 				filename,
