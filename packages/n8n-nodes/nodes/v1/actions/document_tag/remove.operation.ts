@@ -119,8 +119,8 @@ export async function execute(
 ): Promise<INodeExecutionData> {
 	const document_id = (this.getNodeParameter('id', itemIndex) as INodeParameterResourceLocator).value;
 	const tag_id = (this.getNodeParameter('tag_id', itemIndex) as INodeParameterResourceLocator).value;
+	const endpoint = `/documents/${document_id}/tags/${tag_id}`;
 
-	const endpoint = `/documents/${document_id}/tags/${tag_id}/`;
 	await apiRequest.call(this, itemIndex, 'DELETE', endpoint);
 
 	return { json: { results: [true] } };

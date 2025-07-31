@@ -120,7 +120,9 @@ export async function execute(
         tagId: tag_id,
     };
 
-    const response = (await apiRequest.call(this, itemIndex, 'POST', endpoint, body)) as any;
+    await apiRequest.call(this, itemIndex, 'POST', endpoint, body);
 
-    return { json: { results: [response] } };
+    return {
+        json: { results: [true] }
+    };
 }
