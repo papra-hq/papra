@@ -1,4 +1,4 @@
-# Autenticazione
+# Authentication
 
 auth.request-password-reset.title: Reimposta la tua password
 auth.request-password-reset.description: Inserisci la tua email per reimpostare la password.
@@ -74,7 +74,7 @@ auth.legal-links.privacy: Informativa sulla privacy
 auth.no-auth-provider.title: Nessun provider di autenticazione
 auth.no-auth-provider.description: Nessun provider di autenticazione è abilitato su questa istanza di Papra. Contatta l'amministratore di questa istanza per abilitarli.
 
-# Impostazioni utente
+# User settings
 
 user.settings.title: Impostazioni utente
 user.settings.description: Gestisci qui le impostazioni del tuo account.
@@ -94,7 +94,7 @@ user.settings.logout.title: Logout
 user.settings.logout.description: Esci dal tuo account. Potrai accedere nuovamente in seguito.
 user.settings.logout.button: Esci
 
-# Organizzazioni
+# Organizations
 
 organizations.list.title: Le tue organizzazioni
 organizations.list.description: Le organizzazioni sono un modo per raggruppare i tuoi documenti e gestire l'accesso. Puoi creare più organizzazioni e invitare i tuoi collaboratori.
@@ -120,7 +120,7 @@ organizations.create.success: Organizzazione creata con successo
 organizations.create-first.title: Crea la tua organizzazione
 organizations.create-first.description: I tuoi documenti saranno raggruppati per organizzazione. Puoi creare più organizzazioni per separare i documenti, ad esempio per uso personale e lavorativo.
 organizations.create-first.default-name: La mia organizzazione
-organizations.create-first.user-name: "Organizzazione di {{ name }}"
+organizations.create-first.user-name: 'Organizzazione di {{ name }}'
 
 organization.settings.title: Impostazioni organizzazione
 organization.settings.page.title: Impostazioni organizzazione
@@ -208,7 +208,7 @@ invitations.list.actions.accept.success.description: L'invito è stato accettato
 invitations.list.actions.reject.success.message: Invito rifiutato
 invitations.list.actions.reject.success.description: L'invito è stato rifiutato.
 
-# Documenti
+# Documents
 
 documents.list.title: Documenti
 documents.list.no-documents.title: Nessun documento
@@ -289,7 +289,7 @@ activity.document.user.name: da {{ name }}
 activity.load-more: Carica altri
 activity.no-more-activities: Nessuna altra attività per questo documento
 
-# Tag
+# Tags
 
 tags.no-tags.title: Nessun tag
 tags.no-tags.description: Questa organizzazione non ha ancora tag. I tag vengono usati per categorizzare i documenti. Puoi aggiungere tag ai tuoi documenti per trovarli e organizzarli più facilmente.
@@ -325,7 +325,7 @@ tags.table.headers.documents: Documenti
 tags.table.headers.created: Creato
 tags.table.headers.actions: Azioni
 
-# Regole di tagging
+# Tagging rules
 
 tagging-rules.field.name: nome documento
 tagging-rules.field.content: contenuto documento
@@ -376,7 +376,7 @@ tagging-rules.update.error: Errore nell'aggiornamento della regola di tagging
 tagging-rules.update.submit: Aggiorna regola
 tagging-rules.update.cancel: Annulla
 
-# Email di acquisizione
+# Intake emails
 
 intake-emails.title: Email di acquisizione
 intake-emails.description: Gli indirizzi email di acquisizione vengono usati per importare automaticamente email in Papra. Basta inoltrare le email all'indirizzo di acquisizione e gli allegati saranno aggiunti ai documenti dell'organizzazione.
@@ -411,7 +411,7 @@ intake-emails.allowed-origins.add.placeholder: Es. ada@papra.app
 intake-emails.allowed-origins.add.button: Aggiungi
 intake-emails.allowed-origins.add.error.exists: Questa email è già tra le origini consentite per questa email di acquisizione
 
-# Chiavi API
+# API keys
 
 api-keys.permissions.documents.title: Documenti
 api-keys.permissions.documents.documents:create: Crea documenti
@@ -449,7 +449,7 @@ api-keys.delete.confirm.message: Sei sicuro di voler eliminare questa chiave API
 api-keys.delete.confirm.confirm-button: Elimina
 api-keys.delete.confirm.cancel-button: Annulla
 
-# Webhook
+# Webhooks
 
 webhooks.list.title: Webhook
 webhooks.list.description: Gestisci i webhook della tua organizzazione
@@ -496,7 +496,7 @@ webhooks.events.documents.document:updated.description: Documento aggiornato
 webhooks.events.documents.document:tag:added.description: Un tag è stato aggiunto a un documento
 webhooks.events.documents.document:tag:removed.description: Un tag è stato rimosso da un documento
 
-# Navigazione
+# Navigation
 
 layout.menu.home: Home
 layout.menu.documents: Documenti
@@ -533,7 +533,7 @@ command-palette.no-results: Nessun risultato trovato
 command-palette.sections.documents: Documenti
 command-palette.sections.theme: Tema
 
-# Errori API
+# API errors
 
 api-errors.document.already_exists: Il documento esiste già
 api-errors.document.file_too_big: Il file del documento è troppo grande
@@ -546,7 +546,7 @@ api-errors.user.organization_invitation_limit_reached: È stato raggiunto il num
 api-errors.demo.not_available: Questa funzionalità non è disponibile nella demo
 api-errors.tags.already_exists: Esiste già un tag con questo nome per questa organizzazione
 
-# Non trovato
+# Not found
 
 not-found.title: 404 - Non trovato
 not-found.description: Spiacenti, la pagina che stai cercando non sembra esistere. Controlla l'URL e riprova.
@@ -560,7 +560,7 @@ demo.popup.discord-link-label: Server Discord
 demo.popup.reset: Reimposta dati demo
 demo.popup.hide: Nascondi
 
-# Selettore colore
+# Color picker
 
 color-picker.hue: Tonalità
 color-picker.saturation: Saturazione
