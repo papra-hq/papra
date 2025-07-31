@@ -39,8 +39,8 @@ export const description: INodeProperties[] = [
                     {
                         type: 'regex',
                         properties: {
-                            regex: '^[a-zA-Z0-9]+$',
-                            errorMessage: 'The ID must be an alphanumeric string',
+                            regex: '^[a-zA-Z0-9_]+$',
+                            errorMessage: 'The ID must be valid',
                         },
                     },
                 ],
