@@ -545,6 +545,7 @@ api-errors.user.already_in_organization: Acest utilizator este deja în această
 api-errors.user.organization_invitation_limit_reached: Numărul maxim de invitații a fost atins pentru astazi. Te rugăm să încerci din nou mâine.
 api-errors.demo.not_available: Această functie nu este disponibila în demo
 api-errors.tags.already_exists: O etichetă cu acest nume există deja pentru aceasta organizație
+api-errors.internal.error: A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.
 
 # Not found
 

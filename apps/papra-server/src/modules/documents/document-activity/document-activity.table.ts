@@ -15,6 +15,6 @@ export const documentActivityLogTable = sqliteTable('document_activity_log', {
   event: text('event', { enum: DOCUMENT_ACTIVITY_EVENT_LIST as NonEmptyArray<DocumentActivityEvent> }).notNull(),
   eventData: text('event_data', { mode: 'json' }).$type<Record<string, unknown>>(),
 
-  userId: text('user_id').references(() => usersTable.id, { onDelete: 'no action', onUpdate: 'cascade' }),
-  tagId: text('tag_id').references(() => tagsTable.id, { onDelete: 'no action', onUpdate: 'cascade' }),
+  userId: text('user_id').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+  tagId: text('tag_id').references(() => tagsTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
 });

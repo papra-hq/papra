@@ -545,6 +545,7 @@ api-errors.user.already_in_organization: Ten użytkownik należy już do tej org
 api-errors.user.organization_invitation_limit_reached: Osiągnięto maksymalną liczbę zaproszeń na dzisiaj. Spróbuj ponownie jutro.
 api-errors.demo.not_available: Ta funkcja nie jest dostępna w wersji demo
 api-errors.tags.already_exists: Tag o tej nazwie już istnieje w tej organizacji
+api-errors.internal.error: Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.
 
 # Not found
 

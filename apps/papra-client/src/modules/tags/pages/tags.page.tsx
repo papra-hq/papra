@@ -228,6 +228,7 @@ export const TagsPage: Component = () => {
   const params = useParams();
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
+  const { getErrorMessage } = useI18nApiErrors({ t });
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
@@ -252,10 +253,19 @@ export const TagsPage: Component = () => {
       return;
     }
 
-    await deleteTag({
+    const [, error] = await safely(deleteTag({
       organizationId: params.organizationId,
       tagId: tag.id,
-    });
+    }));
+
+    if (error) {
+      createToast({
+        message: getErrorMessage({ error }),
+        type: 'error',
+      });
+
+      return;
+    }
 
     await queryClient.invalidateQueries({
       queryKey: ['organizations', params.organizationId],

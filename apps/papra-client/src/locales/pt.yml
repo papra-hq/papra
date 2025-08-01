@@ -545,6 +545,7 @@ api-errors.user.already_in_organization: Este utilizadpr já faz parte desta org
 api-errors.user.organization_invitation_limit_reached: O número máximo de convites por hoje foi atingido. Por favor, tente novamente amanhã.
 api-errors.demo.not_available: Este recurso não está disponível em ambiente de demonstração
 api-errors.tags.already_exists: Já existe uma etiqueta com este nome nesta organização
+api-errors.internal.error: Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.
 
 # Not found
 

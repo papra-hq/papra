@@ -484,6 +484,7 @@ export type LocaleKeys =
   | 'api-errors.user.organization_invitation_limit_reached'
   | 'api-errors.demo.not_available'
   | 'api-errors.tags.already_exists'
+  | 'api-errors.internal.error'
   | 'not-found.title'
   | 'not-found.description'
   | 'not-found.back-to-home'

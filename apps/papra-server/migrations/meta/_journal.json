@@ -50,6 +50,13 @@
       "when": 1748554484124,
       "tag": "0006_document-activity-log",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1754086182584,
+      "tag": "0007_document-activity-log-on-delete-set-null",
+      "breakpoints": true
     }
   ]
 }
