@@ -30,6 +30,7 @@ const server = serve(
 
 if (config.ingestionFolder.isEnabled) {
   const { startWatchingIngestionFolders } = createIngestionFolderWatcher({
+    taskServices,
     config,
     db,
   });

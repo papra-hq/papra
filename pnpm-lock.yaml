@@ -251,11 +251,11 @@ importers:
         specifier: ^12.27.0
         version: 12.27.0
       '@cadence-mq/core':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.1
+        version: 0.2.1
       '@cadence-mq/driver-memory':
-        specifier: ^0.1.0
-        version: 0.1.0(@cadence-mq/core@0.1.0)
+        specifier: ^0.2.0
+        version: 0.2.0(@cadence-mq/core@0.2.1)
       '@corentinth/chisels':
         specifier: ^1.3.1
         version: 1.3.1
@@ -1050,13 +1050,13 @@ packages:
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
 
-  '@cadence-mq/core@0.1.0':
-    resolution: {integrity: sha512-bJjYI3brZLQqV3kxz4/cQs2C1dhBL1j6PEt51nYNobSxsanyRNF7/u/Zdlcj0uMC2Pe0uepryrM78/N0r3s4ZQ==}
+  '@cadence-mq/core@0.2.1':
+    resolution: {integrity: sha512-Cu/jqR7mNhMZ1U4Boiudy2nePyf4PtqBUFGhUcsCQPJfymKcrDm4xjp8A/2tKZr5JSgkN/7L0/+mHZ27GVSryQ==}
 
-  '@cadence-mq/driver-memory@0.1.0':
-    resolution: {integrity: sha512-wqG+4+bFrXNo0bCsdMtc0U6oxM8dWFG3nGRmKobwdTcnQ42z93Xcm7v1m3kxQibJAi5fjSrS0z6oTIkatorvAg==}
+  '@cadence-mq/driver-memory@0.2.0':
+    resolution: {integrity: sha512-U/L5nkCu+BYO814oQAYbFYSNASha+6Om3Px3+Jm47YzFmSrQhrnX6fTyICVQFz+MflWndhke6Bh1mwik6nbrcw==}
     peerDependencies:
-      '@cadence-mq/core': ^0.1.0
+      '@cadence-mq/core': ^0.2.0
 
   '@capsizecss/unpack@2.4.0':
     resolution: {integrity: sha512-GrSU71meACqcmIUxPYOJvGKF0yryjN/L1aCuE9DViCTJI7bfkjgYDPD1zbNDcINJwSSP6UaBZY9GAbYDO7re0Q==}
@@ -9395,16 +9395,16 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
-  '@cadence-mq/core@0.1.0':
+  '@cadence-mq/core@0.2.1':
     dependencies:
       '@corentinth/chisels': 1.3.1
       '@paralleldrive/cuid2': 2.2.2
       '@standard-schema/spec': 1.0.0
       cron-parser: 5.3.0
 
-  '@cadence-mq/driver-memory@0.1.0(@cadence-mq/core@0.1.0)':
+  '@cadence-mq/driver-memory@0.2.0(@cadence-mq/core@0.2.1)':
     dependencies:
-      '@cadence-mq/core': 0.1.0
+      '@cadence-mq/core': 0.2.1
 
   '@capsizecss/unpack@2.4.0':
     dependencies:

@@ -5,16 +5,18 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
 import { documentsTagsTable } from '../tags/tags.table';
+import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocumentCreationUsecase } from './documents.usecases';
+import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
 describe('documents usecases', () => {
   describe('createDocument', () => {
     test('creating a document save the file to the storage and registers a record in the db', async () => {
+      const taskServices = createInMemoryTaskServices();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -32,6 +34,7 @@ describe('documents usecases', () => {
         config,
         generateDocumentId: () => 'doc_1',
         documentsStorageService,
+        taskServices,
       });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -70,6 +73,7 @@ describe('documents usecases', () => {
     });
 
     test('in the same organization, we should not be able to have two documents with the same content, an error is raised if the document already exists', async () => {
+      const taskServices = createInMemoryTaskServices();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -89,6 +93,7 @@ describe('documents usecases', () => {
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
         documentsStorageService,
+        taskServices,
       });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -178,6 +183,8 @@ describe('documents usecases', () => {
         ],
       });
 
+      const taskServices = createInMemoryTaskServices();
+
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
         documentsStorage: { driver: 'in-memory' },
@@ -186,6 +193,7 @@ describe('documents usecases', () => {
       const createDocument = await createDocumentCreationUsecase({
         db,
         config,
+        taskServices,
       });
 
       // 3. Re-create the document
@@ -219,6 +227,7 @@ describe('documents usecases', () => {
     });
 
     test('when there is an issue when inserting the document in the db, the file should not be saved in the storage', async () => {
+      const taskServices = createInMemoryTaskServices();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -243,6 +252,7 @@ describe('documents usecases', () => {
             throw new Error('Macron, explosion!');
           },
         },
+        taskServices,
       });
 
       const file = new File(['content'], 'file.txt', { type: 'text/plain' });
@@ -267,6 +277,7 @@ describe('documents usecases', () => {
     });
 
     test('when a document is created by a user, a document activity log is registered with the user id', async () => {
+      const taskServices = createInMemoryTaskServices();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -283,6 +294,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
+        taskServices,
       });
 
       await createDocument({
@@ -314,6 +326,55 @@ describe('documents usecases', () => {
         eventData: null,
         userId: null,
         documentId: 'doc_2',
+      });
+    });
+  });
+
+  describe('extractAndSaveDocumentFileContent', () => {
+    test('given a stored document, its content is extracted and saved in the db', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const documentsStorageService = await createDocumentStorageService({ config });
+
+      await db.insert(documentsTable).values({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        originalStorageKey: 'organization-1/originals/document-1.txt',
+        mimeType: 'text/plain',
+        name: 'file-1.txt',
+        originalName: 'file-1.txt',
+        originalSha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+      });
+
+      await documentsStorageService.saveFile({
+        file: new File(['hello world'], 'file-1.txt', { type: 'text/plain' }),
+        storageKey: 'organization-1/originals/document-1.txt',
+      });
+
+      await extractAndSaveDocumentFileContent({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        documentsRepository,
+        documentsStorageService,
+      });
+
+      const documentRecords = await db.select().from(documentsTable);
+
+      expect(documentRecords.length).to.eql(1);
+      expect(documentRecords[0]).to.deep.include({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        content: 'hello world', // The content is extracted and saved in the db
       });
     });
   });

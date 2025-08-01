@@ -11,6 +11,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { createInMemoryFsServices } from '../shared/fs/fs.in-memory';
 import { createFsServices } from '../shared/fs/fs.services';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
+import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createInvalidPostProcessingStrategyError } from './ingestion-folders.errors';
 import { moveIngestionFile, processFile } from './ingestion-folders.usecases';
 
@@ -18,6 +19,7 @@ describe('ingestion-folders usecases', () => {
   describe('processFile', () => {
     describe('when a file is added to an organization ingestion folder', () => {
       test('if the post processing strategy is set to "move", the file is ingested and moved to the done folder', async () => {
+        const taskServices = createInMemoryTaskServices();
         const { logger, getLogs } = createTestLogger();
 
         const { db } = await createInMemoryDatabase({
@@ -53,7 +55,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs: createFsServices({ fs: vol.promises as unknown as FsNative }),
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId }),
+          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database
@@ -120,6 +122,7 @@ describe('ingestion-folders usecases', () => {
       });
 
       test('if the post processing strategy is set to "delete", the file is ingested and deleted', async () => {
+        const taskServices = createInMemoryTaskServices();
         const { logger, getLogs } = createTestLogger();
 
         const { db } = await createInMemoryDatabase({
@@ -154,7 +157,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs: createFsServices({ fs: vol.promises as unknown as FsNative }),
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId }),
+          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database
@@ -221,6 +224,7 @@ describe('ingestion-folders usecases', () => {
       });
 
       test('if the post processing strategy is not implemented, an error is thrown after the file has been ingested', async () => {
+        const taskServices = createInMemoryTaskServices();
         const { logger } = createTestLogger();
 
         const { db } = await createInMemoryDatabase({
@@ -256,7 +260,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs: createFsServices({ fs: vol.promises as unknown as FsNative }),
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId }),
+          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         }));
 
         expect(error).to.deep.equal(createInvalidPostProcessingStrategyError({ strategy: 'unknown' }));
@@ -293,6 +297,7 @@ describe('ingestion-folders usecases', () => {
       });
 
       test('if for some reason the file cannot be read, a log is emitted and the processing stops', async () => {
+        const taskServices = createInMemoryTaskServices();
         const { logger, getLogs } = createTestLogger();
 
         const { db } = await createInMemoryDatabase({
@@ -333,7 +338,7 @@ describe('ingestion-folders usecases', () => {
               throw new Error('File not found');
             },
           },
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId }),
+          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check logs
@@ -433,6 +438,7 @@ describe('ingestion-folders usecases', () => {
       });
 
       test('when the document already exists in the database, it is not ingested, but the post-processing is still executed', async () => {
+        const taskServices = createInMemoryTaskServices();
         const { logger, getLogs } = createTestLogger();
 
         // This is the sha256 hash of the "lorem ipsum" text
@@ -472,7 +478,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs: createFsServices({ fs: vol.promises as unknown as FsNative }),
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId }),
+          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database

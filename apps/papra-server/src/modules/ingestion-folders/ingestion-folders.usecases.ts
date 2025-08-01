@@ -5,6 +5,7 @@ import type { CreateDocumentUsecase } from '../documents/documents.usecases';
 import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { FsServices } from '../shared/fs/fs.services';
 import type { Logger } from '../shared/logger/logger';
+import type { TaskServices } from '../tasks/tasks.services';
 import { isAbsolute, join, parse } from 'node:path';
 import { safely } from '@corentinth/chisels';
 import chokidar from 'chokidar';
@@ -27,10 +28,12 @@ export function createIngestionFolderWatcher({
   config,
   logger = createLogger({ namespace: 'ingestion-folder-watcher' }),
   db,
+  taskServices,
 }: {
   config: Config;
   logger?: Logger;
   db: Database;
+  taskServices: TaskServices;
 }) {
   const { folderRootPath, watcher: { usePolling, pollingInterval }, processingConcurrency } = config.ingestionFolder;
 
@@ -41,7 +44,7 @@ export function createIngestionFolderWatcher({
   return {
     startWatchingIngestionFolders: async () => {
       const organizationsRepository = createOrganizationsRepository({ db });
-      const createDocument = await createDocumentCreationUsecase({ db, config, logger });
+      const createDocument = await createDocumentCreationUsecase({ db, config, logger, taskServices });
 
       const ignored = await buildPathIgnoreFunction({ config, cwd, organizationsRepository });
 

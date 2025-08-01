@@ -11,7 +11,7 @@ export function createTaskServices({ config }: { config: Config }) {
   const workerId = config.tasks.worker.id ?? 'default';
 
   const driver = createMemoryDriver();
-  const cadence = createCadence({ driver });
+  const cadence = createCadence({ driver, logger });
 
   return {
     ...cadence,

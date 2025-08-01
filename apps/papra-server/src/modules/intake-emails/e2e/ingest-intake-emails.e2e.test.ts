@@ -154,14 +154,13 @@ describe('intake-emails e2e', () => {
       const [document] = documents;
 
       expect(
-        pick(document, ['organizationId', 'createdBy', 'mimeType', 'originalName', 'originalSize', 'content']),
+        pick(document, ['organizationId', 'createdBy', 'mimeType', 'originalName', 'originalSize']),
       ).to.eql({
         organizationId: 'org_1',
         createdBy: null,
         mimeType: 'text/plain',
         originalName: 'test.txt',
         originalSize: 11,
-        content: 'hello world',
       });
     });
   });
