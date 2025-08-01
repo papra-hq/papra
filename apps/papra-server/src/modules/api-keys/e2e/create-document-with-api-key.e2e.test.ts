@@ -66,7 +66,6 @@ describe('api-key e2e', () => {
       originalSha256Hash: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
       name: 'invoice.txt',
       mimeType: 'text/plain',
-      content: 'test',
     });
 
     const fetchDocumentResponse = await app.request(`/api/organizations/org_222222222222222222222222/documents/${document.id}`, {

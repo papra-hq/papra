@@ -5,6 +5,7 @@ import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
+import type { TaskServices } from '../tasks/tasks.services';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { DocumentActivityRepository } from './document-activity/document-activity.repository';
@@ -12,11 +13,11 @@ import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
-import { extractTextFromFile } from '@papra/lecture';
 import pLimit from 'p-limit';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
+import { collectStreamToFile } from '../shared/streams/stream.convertion';
 import { isDefined } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
@@ -30,22 +31,8 @@ import { deferRegisterDocumentActivityLog } from './document-activity/document-a
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { getFileSha256Hash } from './documents.services';
+import { extractDocumentText, getFileSha256Hash } from './documents.services';
 import { createDocumentStorageService } from './storage/documents.storage.services';
-
-const logger = createLogger({ namespace: 'documents:usecases' });
-
-export async function extractDocumentText({ file, ocrLanguages }: { file: File; ocrLanguages?: string[] }) {
-  const { textContent, error, extractorName } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } } });
-
-  if (error) {
-    logger.error({ error, extractorName }, 'Error while extracting text from document');
-  }
-
-  return {
-    text: textContent ?? '',
-  };
-}
 
 export async function createDocument({
   file,
@@ -62,6 +49,7 @@ export async function createDocument({
   tagsRepository,
   webhookRepository,
   documentActivityRepository,
+  taskServices,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
   file: File;
@@ -78,6 +66,7 @@ export async function createDocument({
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
   documentActivityRepository: DocumentActivityRepository;
+  taskServices: TaskServices;
   logger?: Logger;
 }) {
   const {
@@ -120,7 +109,6 @@ export async function createDocument({
         documentsStorageService,
         generateDocumentId,
         trackingServices,
-        ocrLanguages,
         logger,
       });
 
@@ -146,6 +134,11 @@ export async function createDocument({
     },
   });
 
+  await taskServices.scheduleJob({
+    taskName: 'extract-document-file-content',
+    data: { documentId: document.id, organizationId, ocrLanguages },
+  });
+
   return { document };
 }
 
@@ -155,9 +148,11 @@ export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>
 export async function createDocumentCreationUsecase({
   db,
   config,
+  taskServices,
   ...initialDeps
 }: {
   db: Database;
+  taskServices: TaskServices;
   config: Config;
 } & Partial<DocumentUsecaseDependencies>) {
   const deps = {
@@ -176,7 +171,7 @@ export async function createDocumentCreationUsecase({
     logger: initialDeps.logger,
   };
 
-  return async (args: { file: File; userId?: string; organizationId: string }) => createDocument({ ...args, ...deps });
+  return async (args: { file: File; userId?: string; organizationId: string }) => createDocument({ taskServices, ...args, ...deps });
 }
 
 async function handleExistingDocument({
@@ -222,7 +217,6 @@ async function createNewDocument({
   documentsStorageService,
   generateDocumentId,
   trackingServices,
-  ocrLanguages,
   logger,
 }: {
   file: File;
@@ -236,7 +230,6 @@ async function createNewDocument({
   documentsStorageService: DocumentStorageService;
   generateDocumentId: () => string;
   trackingServices: TrackingServices;
-  ocrLanguages?: string[];
   logger: Logger;
 }) {
   const documentId = generateDocumentId();
@@ -252,8 +245,6 @@ async function createNewDocument({
     storageKey: originalDocumentStorageKey,
   });
 
-  const { text } = await extractDocumentText({ file, ocrLanguages });
-
   const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
     id: documentId,
     name: fileName,
@@ -263,7 +254,6 @@ async function createNewDocument({
     originalSize: size,
     originalStorageKey: storageKey,
     mimeType,
-    content: text,
     originalSha256Hash: hash,
   }));
 
@@ -411,4 +401,32 @@ export async function deleteAllTrashDocuments({
   await Promise.all(
     documents.map(async document => limit(async () => hardDeleteDocument({ document, documentsRepository, documentsStorageService }))),
   );
+}
+
+export async function extractAndSaveDocumentFileContent({
+  documentId,
+  organizationId,
+  documentsRepository,
+  documentsStorageService,
+  ocrLanguages,
+}: {
+  documentId: string;
+  ocrLanguages?: string[];
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+}) {
+  const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
+
+  if (!document) {
+    throw createDocumentNotFoundError();
+  }
+
+  const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.originalStorageKey });
+
+  const { file } = await collectStreamToFile({ fileStream, fileName: document.name, mimeType: document.mimeType });
+
+  const { text } = await extractDocumentText({ file, ocrLanguages });
+
+  await documentsRepository.updateDocument({ documentId, organizationId, content: text });
 }

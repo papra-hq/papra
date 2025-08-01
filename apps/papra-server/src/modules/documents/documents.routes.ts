@@ -35,7 +35,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupUpdateDocumentRoute(context);
 }
 
-function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDefinitionContext) {
+function setupCreateDocumentRoute({ app, config, db, trackingServices, taskServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
@@ -93,6 +93,7 @@ function setupCreateDocumentRoute({ app, config, db, trackingServices }: RouteDe
       const createDocument = await createDocumentCreationUsecase({
         db,
         config,
+        taskServices,
         trackingServices,
         ocrLanguages,
       });
