@@ -8,8 +8,6 @@ A community node package that integrates [Papra](https://papra.app) (the documen
 2. Click **Install** and enter: `n8n-nodes-papra`
 3. Install the package and restart your n8n instance
 
-Then restart your n8n instance.
-
 ## Setup
 
 ### 1. Create API Credentials
