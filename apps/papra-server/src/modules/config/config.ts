@@ -12,6 +12,7 @@ import { documentStorageConfig } from '../documents/storage/document-storage.con
 import { emailsConfig } from '../emails/emails.config';
 import { ingestionFolderConfig } from '../ingestion-folders/ingestion-folders.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
+import { mcpConfig } from '../mcp/mcp.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
@@ -95,6 +96,7 @@ export const configDefinition = {
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
   tracking: trackingConfig,
+  mcp: mcpConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

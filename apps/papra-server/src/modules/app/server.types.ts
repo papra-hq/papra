@@ -1,3 +1,4 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context as BaseContext, Hono } from 'hono';
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Config } from '../config/config.types';
@@ -26,6 +27,7 @@ export type GlobalDependencies = {
   config: Config;
   db: Database;
   auth: Auth;
+  mcp: McpServer;
   emailsServices: EmailsServices;
   subscriptionsServices: SubscriptionsServices;
   trackingServices: TrackingServices;

@@ -5,6 +5,7 @@ import { registerDocumentActivityRoutes } from '../documents/document-activity/d
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
+import { registerMcpRoutes } from '../mcp/mcp.routes';
 import { registerOrganizationsRoutes } from '../organizations/organizations.routes';
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
@@ -15,6 +16,7 @@ import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
 export function registerRoutes(context: RouteDefinitionContext) {
+  registerMcpRoutes(context);
   registerAuthRoutes(context);
   registerConfigRoutes(context);
   registerHealthCheckRoutes(context);
