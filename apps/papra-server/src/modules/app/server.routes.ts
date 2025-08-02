@@ -13,8 +13,10 @@ import { registerUsersRoutes } from '../users/users.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhook.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
+import { registerMcpRoutes } from './mcp/mcp.routes';
 
 export function registerRoutes(context: RouteDefinitionContext) {
+  registerMcpRoutes(context);
   registerAuthRoutes(context);
   registerConfigRoutes(context);
   registerHealthCheckRoutes(context);
