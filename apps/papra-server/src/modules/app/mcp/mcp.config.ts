@@ -8,4 +8,5 @@ export const mcpConfig = {
     default: false,
     env: 'MCP_IS_ENABLED',
   },
+  // TODO: what kind of config should we have for MCP?
 } as const satisfies ConfigDefinition;
