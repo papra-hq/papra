@@ -1,9 +1,11 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { createDocumentsRepository } from './documents.repository';
 import { createDocumentCreationUsecase, createDocumentGetterUsecase } from './documents.usecases';
 
 export function registerDocumentMcp(context: RouteDefinitionContext) {
   setupDocumentResource(context);
+  setupDocumentsResource(context);
   setupCreateDocumentTool(context);
 }
 
@@ -30,6 +32,27 @@ export function setupDocumentResource({ mcp, db }: RouteDefinitionContext) {
       });
     },
   );
+}
+
+export function setupDocumentsResource({ mcp, db }: RouteDefinitionContext) {
+  mcp.registerResource('documents', new ResourceTemplate('documents://{organizationId}/{pageIndex}/{pageSize}', { list: undefined }), {
+    title: 'Documents',
+    description: 'List of documents',
+  }, async (_uri, { organizationId, pageIndex, pageSize }) => {
+    const pageIndexNumber = Number(pageIndex);
+    const pageSizeNumber = Number(pageSize);
+
+    const documentsRepository = createDocumentsRepository({ db });
+
+    const { documents } = await documentsRepository.getOrganizationDocuments({ organizationId: organizationId as string, pageIndex: pageIndexNumber, pageSize: pageSizeNumber });
+
+    return ({
+      contents: documents.map(({ id, name, organizationId }) => ({
+        uri: `document://${organizationId}/${id}`,
+        text: name,
+      })),
+    });
+  });
 }
 
 export function setupCreateDocumentTool({ mcp, db, config, taskServices, trackingServices }: RouteDefinitionContext) {
