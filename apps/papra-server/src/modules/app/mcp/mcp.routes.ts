@@ -1,4 +1,4 @@
-import type { RouteDefinitionContext } from '../app/server.types';
+import type { RouteDefinitionContext } from '../server.types';
 import { StreamableHTTPTransport } from '@hono/mcp';
 
 export function registerMcpRoutes(context: RouteDefinitionContext) {

@@ -1,5 +1,5 @@
 import type { ConfigDefinition } from 'figue';
-import { booleanishSchema } from '../config/config.schemas';
+import { booleanishSchema } from '../../config/config.schemas';
 
 export const mcpConfig = {
   isEnabled: {
