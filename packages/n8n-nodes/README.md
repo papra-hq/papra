@@ -5,7 +5,7 @@ A community node package that integrates [Papra](https://papra.app) (the documen
 ## Installation
 
 1. In your n8n instance, go to **Settings** → **Community Nodes**
-2. Click **Install** and enter: `n8n-nodes-papra`
+2. Click **Install** and enter: `@papra/n8n-nodes-papra`
 3. Install the package and restart your n8n instance
 
 ## Setup
@@ -44,6 +44,7 @@ For detailed instructions, visit the [Papra API documentation](https://docs.papr
 - Node.js 20.15 or higher
 - pnpm package manager
 - n8n instance for testing
+  - you can use `pnpx n8n` or `pnpm i -g n8n` command to install n8n globally
 
 ### Testing the Integration
 

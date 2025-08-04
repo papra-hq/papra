@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-papra",
+  "name": "@papra/n8n-nodes-papra",
   "version": "0.1.0",
   "description": "n8n nodes for Papra, the document archiving platform.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
@@ -13,7 +13,12 @@
     "url": "https://github.com/papra-hq/papra/issues"
   },
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "n8n",
+    "papra",
+    "document",
+    "archiving",
+    "self-hosted"
   ],
   "main": "index.js",
   "files": [
