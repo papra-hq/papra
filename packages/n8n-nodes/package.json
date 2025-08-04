@@ -25,8 +25,10 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "prepublishOnly": "pnpm run build && pnpm run lint",
-    "build": "rm -rf dist && tsc && gulp build:icons"
+    "prepublishOnly": "pnpm build",
+    "build": "pnpm build:clean && tsc && gulp build:icons",
+    "build:clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "n8n": {
     "n8nNodesApiVersion": 1,

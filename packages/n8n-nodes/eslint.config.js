@@ -7,7 +7,7 @@ export default antfu({
 
   // TODO: include the n8n rules package when it's eslint-9 ready
   // https://github.com/ivov/eslint-plugin-n8n-nodes-base/issues/196
-  
+
   rules: {
     // To allow export on top of files
     'ts/no-use-before-define': ['error', { allowNamedExports: true, functions: false }],
