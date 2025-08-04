@@ -2,4 +2,4 @@
 "n8n-nodes-papra": major
 ---
 
-feat: n8n integration
+Added n8n nodes package for Papra
