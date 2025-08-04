@@ -1,31 +1,31 @@
 import type {
-	IExecuteFunctions,
-	INodeType,
-	INodeTypeDescription,
-	INodeTypeBaseDescription,
-	INodeExecutionData,
+  IExecuteFunctions,
+  INodeExecutionData,
+  INodeType,
+  INodeTypeBaseDescription,
+  INodeTypeDescription,
 } from 'n8n-workflow';
 
 import { router } from './actions/router';
-import { listSearch } from './methods';
 import * as version from './actions/version';
+import { listSearch } from './methods';
 
 export class PapraV1 implements INodeType {
-	description: INodeTypeDescription;
+  description: INodeTypeDescription;
 
-	constructor(baseDescription: INodeTypeBaseDescription) {
-		this.description = {
-			...baseDescription,
-			...version.description,
-			usableAsTool: true,
-		};
-	}
+  constructor(baseDescription: INodeTypeBaseDescription) {
+    this.description = {
+      ...baseDescription,
+      ...version.description,
+      usableAsTool: true,
+    };
+  }
 
-	methods = {
-		listSearch,
-	};
+  methods = {
+    listSearch,
+  };
 
-	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		return await router.call(this);
-	}
+  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    return await router.call(this);
+  }
 }
