@@ -359,6 +359,7 @@ describe('documents usecases', () => {
       await documentsStorageService.saveFile({
         file: new File(['hello world'], 'file-1.txt', { type: 'text/plain' }),
         storageKey: 'organization-1/originals/document-1.txt',
+        fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
       });
 
       await extractAndSaveDocumentFileContent({

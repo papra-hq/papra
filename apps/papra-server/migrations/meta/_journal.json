@@ -57,6 +57,13 @@
       "when": 1754086182584,
       "tag": "0007_document-activity-log-on-delete-set-null",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1754343665413,
+      "tag": "0008_documents-encryption-key",
+      "breakpoints": true
     }
   ]
 }

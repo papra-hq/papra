@@ -12,6 +12,7 @@ describe('memory storage-driver', () => {
       const { storageKey } = await inMemoryStorageDriver.saveFile({
         file,
         storageKey: 'org_1/text-file.txt',
+        fileEncryptionKey: 'foo',
       });
 
       expect(storageKey).to.eql('org_1/text-file.txt');
@@ -35,6 +36,7 @@ describe('memory storage-driver', () => {
       await inMemoryStorageDriver.saveFile({
         file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
         storageKey: 'org_1/text-file.txt',
+        fileEncryptionKey: 'foo',
       });
 
       const storage = inMemoryStorageDriver._getStorage();

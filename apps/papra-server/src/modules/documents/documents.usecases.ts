@@ -17,6 +17,7 @@ import pLimit from 'p-limit';
 import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
+import { generateEncryptionKey } from '../shared/random/random.services';
 import { collectStreamToFile } from '../shared/streams/stream.convertion';
 import { isDefined } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -233,6 +234,7 @@ async function createNewDocument({
   logger: Logger;
 }) {
   const documentId = generateDocumentId();
+  const fileEncryptionKey = generateEncryptionKey();
 
   const { originalDocumentStorageKey } = buildOriginalDocumentKey({
     documentId,
@@ -243,6 +245,7 @@ async function createNewDocument({
   const { storageKey } = await documentsStorageService.saveFile({
     file,
     storageKey: originalDocumentStorageKey,
+    fileEncryptionKey,
   });
 
   const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
@@ -255,6 +258,7 @@ async function createNewDocument({
     originalStorageKey: storageKey,
     mimeType,
     originalSha256Hash: hash,
+    encryptionKey: fileEncryptionKey,
   }));
 
   if (error) {

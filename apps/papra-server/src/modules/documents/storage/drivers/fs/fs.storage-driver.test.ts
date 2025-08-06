@@ -36,6 +36,7 @@ describe('storage driver', () => {
         const { storageKey } = await fsStorageDriver.saveFile({
           file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
           storageKey: 'org_1/text-file.txt',
+          fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
         });
 
         expect(storageKey).to.eql(`org_1/text-file.txt`);
@@ -62,12 +63,14 @@ describe('storage driver', () => {
         await fsStorageDriver.saveFile({
           file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
           storageKey: 'org_1/text-file.txt',
+          fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
         });
 
         await expect(
           fsStorageDriver.saveFile({
             file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
             storageKey: 'org_1/text-file.txt',
+            fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
           }),
         ).rejects.toThrow(createFileAlreadyExistsError());
       });
@@ -90,6 +93,7 @@ describe('storage driver', () => {
         await fsStorageDriver.saveFile({
           file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
           storageKey: 'org_1/text-file.txt',
+          fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
         });
 
         const { fileStream } = await fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' });
@@ -136,6 +140,7 @@ describe('storage driver', () => {
         await fsStorageDriver.saveFile({
           file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
           storageKey: 'org_1/text-file.txt',
+          fileEncryptionKey: 'foo', // not used, but required by the storage driver interface
         });
 
         const fileInitiallyExists = await fs.promises.access(path.join(tmpDirectory, 'org_1/text-file.txt'), fs.constants.F_OK).then(() => true).catch(() => false);

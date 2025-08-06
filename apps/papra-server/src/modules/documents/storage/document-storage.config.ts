@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../../config/config.schemas';
 import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 import { B2_STORAGE_DRIVER_NAME } from './drivers/b2/b2.storage-driver';
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
@@ -58,6 +59,32 @@ export const documentStorageConfig = {
         schema: z.string().optional(),
         default: undefined,
         env: 'DOCUMENT_STORAGE_S3_ENDPOINT',
+      },
+      ssec: {
+        isEnabled: {
+          doc: 'Whether to enable s3 based server-side encryption',
+          schema: booleanishSchema,
+          default: false,
+          env: 'DOCUMENT_STORAGE_S3_SSEC_ENABLED',
+        },
+        algorithm: {
+          doc: 'The S3 server-side encryption algorithm',
+          schema: z.enum(['AES256']),
+          default: 'AES256',
+          env: 'DOCUMENT_STORAGE_S3_SSEC_ALGORITHM',
+        },
+        encryptionKey: {
+          doc: 'The S3 server-side encryption key, if not provided, no sse will be used',
+          schema: z.string(),
+          default: '',
+          env: 'DOCUMENT_STORAGE_S3_SSEC_ENCRYPTION_KEY',
+        },
+        encryptionKeySalt: {
+          doc: 'The S3 server-side encryption key salt, if not provided, no sse will be used',
+          schema: z.string(),
+          default: '',
+          env: 'DOCUMENT_STORAGE_S3_SSEC_ENCRYPTION_KEY_SALT',
+        },
       },
     },
     b2: {

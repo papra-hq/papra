@@ -1,8 +1,17 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+import { customType, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createSoftDeleteColumns, createTimestampColumns } from '../shared/db/columns.helpers';
+import { generateEncryptionKey } from '../shared/random/random.services';
 import { usersTable } from '../users/users.table';
 import { generateDocumentId } from './documents.models';
+
+
+customType({
+  dataType: () => 'text',
+  fromDriver: (value: unknown) => value as string,
+  toDriver: (value: unknown) => value as string,
+});
 
 export const documentsTable = sqliteTable('documents', {
   ...createPrimaryKeyField({ idGenerator: generateDocumentId }),
@@ -12,6 +21,8 @@ export const documentsTable = sqliteTable('documents', {
   organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   createdBy: text('created_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
   deletedBy: text('deleted_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+
+  ssecId: text('encryption_key').notNull().$defaultFn(generateEncryptionKey),
 
   originalName: text('original_name').notNull(),
   originalSize: integer('original_size').notNull().default(0),

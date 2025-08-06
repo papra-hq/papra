@@ -6,6 +6,7 @@ export type StorageDriver = {
   saveFile: (args: {
     file: File;
     storageKey: string;
+    fileEncryptionKey: string;
   }) => Promise<{ storageKey: string }>;
 
   getFileStream: (args: { storageKey: string }) => Promise<{
