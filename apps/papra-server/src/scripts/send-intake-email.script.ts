@@ -2,9 +2,9 @@ import { buildUrl } from '@corentinth/chisels';
 import { triggerWebhook } from '@owlrelay/webhook';
 import { getServerBaseUrl } from '../modules/config/config.models';
 import { INTAKE_EMAILS_INGEST_ROUTE } from '../modules/intake-emails/intake-emails.constants';
-import { runScript } from './commons/run-script';
+import { runScriptWithDb } from './commons/run-script';
 
-await runScript(
+await runScriptWithDb(
   { scriptName: 'simulate-intake-email' },
   async ({ config }) => {
     const { serverBaseUrl } = getServerBaseUrl({ config });
