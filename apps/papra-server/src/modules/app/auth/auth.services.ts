@@ -107,6 +107,27 @@ export function getAuth({
       deleteUser: { enabled: false },
     },
     plugins: [
+      // Would love to have this but it messes with the error handling in better-auth client
+      // {
+      //   id: 'better-auth-error-adapter',
+      //   onResponse: async (res) => {
+      //     // Transform better auth error to our own error
+      //     if (res.status < 400) {
+      //       return { response: res };
+      //     }
+
+      //     const body = await res.clone().json();
+      //     const code = get(body, 'code', 'unknown');
+
+      //     throw createError({
+      //       message: get(body, 'message', 'Unknown error'),
+      //       code: `auth.${code.toLowerCase()}`,
+      //       statusCode: res.status as ContentfulStatusCode,
+      //       isInternal: res.status >= 500,
+      //     });
+      //   },
+      // },
+
       ...(config.auth.providers.customs.length > 0
         ? [genericOAuth({ config: config.auth.providers.customs })]
         : []),

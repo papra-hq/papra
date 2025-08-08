@@ -6,6 +6,7 @@ import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { Button } from '@/modules/ui/components/button';
 import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/components/checkbox';
 import { Separator } from '@/modules/ui/components/separator';
@@ -21,6 +22,7 @@ export const EmailLoginForm: Component = () => {
   const navigate = useNavigate();
   const { config } = useConfig();
   const { t } = useI18n();
+  const { createI18nApiError } = useI18nApiErrors({ t });
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -31,7 +33,7 @@ export const EmailLoginForm: Component = () => {
       }
 
       if (error) {
-        throw error;
+        throw createI18nApiError({ error });
       }
     },
     schema: v.object({

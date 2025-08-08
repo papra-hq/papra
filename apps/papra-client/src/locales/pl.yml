@@ -546,6 +546,7 @@ api-errors.user.organization_invitation_limit_reached: Osiągnięto maksymalną 
 api-errors.demo.not_available: Ta funkcja nie jest dostępna w wersji demo
 api-errors.tags.already_exists: Tag o tej nazwie już istnieje w tej organizacji
 api-errors.internal.error: Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.
+api-errors.auth.invalid_origin: Nieprawidłowa lokalizacja aplikacji. Jeśli hostujesz Papra, upewnij się, że zmienna środowiskowa APP_BASE_URL odpowiada bieżącemu adresowi URL. Aby uzyskać więcej informacji, zobacz https://docs.papra.app/resources/troubleshooting/#invalid-application-origin
 
 # Not found
 

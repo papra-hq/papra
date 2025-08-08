@@ -24,5 +24,17 @@ To fix this, you can either:
 - Ensure that the directory is owned by the user running the container
 - Run the server as root (not recommended)
 
+## Invalid application origin
+
+Papra ensures [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection by validating the Origin header in requests. This check ensures that requests originate from the application or a trusted source. Any request that does not originate from a trusted origin will be rejected.
+
+If you are self-hosting Papra, you may encounter an error stating that the application origin is invalid while trying to login or register.
+
+To fix this, you can either:
+
+- Update the `APP_BASE_URL` environment variable to match the url of your application (e.g. `https://papra.my-homelab.tld`)
+- Add the current url to the `TRUSTED_ORIGINS` environment variable if you need to allow multiple origins, comma separated. By default the `TRUSTED_ORIGINS` is set to the `APP_BASE_URL`
+- If you are using a reverse proxy, you may need to add the url to the `TRUSTED_ORIGINS` environment variable
+
 
 

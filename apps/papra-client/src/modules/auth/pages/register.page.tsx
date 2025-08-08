@@ -6,6 +6,7 @@ import * as v from 'valibot';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
@@ -20,6 +21,8 @@ export const EmailRegisterForm: Component = () => {
   const { config } = useConfig();
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { createI18nApiError } = useI18nApiErrors({ t });
+
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, name }) => {
       const { error } = await signUp.email({
@@ -30,7 +33,7 @@ export const EmailRegisterForm: Component = () => {
       });
 
       if (error) {
-        throw error;
+        throw createI18nApiError({ error });
       }
 
       if (config.auth.isEmailVerificationRequired) {

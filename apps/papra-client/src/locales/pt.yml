@@ -546,6 +546,7 @@ api-errors.user.organization_invitation_limit_reached: O número máximo de conv
 api-errors.demo.not_available: Este recurso não está disponível em ambiente de demonstração
 api-errors.tags.already_exists: Já existe uma etiqueta com este nome nesta organização
 api-errors.internal.error: Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.
+api-errors.auth.invalid_origin: Origem da aplicação inválida. Se você está hospedando o Papra, certifique-se de que a variável de ambiente APP_BASE_URL corresponde à sua URL atual. Para mais detalhes, consulte https://docs.papra.app/resources/troubleshooting/#invalid-application-origin
 
 # Not found
 
