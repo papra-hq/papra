@@ -1,7 +1,7 @@
 {
   "name": "@papra/lecture",
   "type": "module",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "packageManager": "pnpm@10.12.3",
   "description": "A simple library to extract text from files",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
