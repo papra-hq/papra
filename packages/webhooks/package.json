@@ -1,7 +1,7 @@
 {
   "name": "@papra/webhooks",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "packageManager": "pnpm@10.12.3",
   "description": "Webhooks helper library for Papra, the document archiving platform.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",

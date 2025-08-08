@@ -1,5 +1,25 @@
 # @papra/app-client
 
+## 0.8.0
+
+### Minor Changes
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added new webhook events: document:updated, document:tag:added, document:tag:removed
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks invocation is now defered
+
+### Patch Changes
+
+- [#419](https://github.com/papra-hq/papra/pull/419) [`7768840`](https://github.com/papra-hq/papra/commit/7768840aa4425a03cb96dc1c17605bfa8e6a0de4) Thanks [@Edward205](https://github.com/Edward205)! - Added diacritics and improved wording for Romanian translation
+
+- [#448](https://github.com/papra-hq/papra/pull/448) [`5868800`](https://github.com/papra-hq/papra/commit/5868800bcec6ed69b5441b50e4445fae5cdb5bfb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added feedback when an error occurs while deleting a tag
+
+- [#412](https://github.com/papra-hq/papra/pull/412) [`ffdae8d`](https://github.com/papra-hq/papra/commit/ffdae8db56c6ecfe63eb263ee606e9469eef8874) Thanks [@OsafAliSayed](https://github.com/OsafAliSayed)! - Simplified the organization intake email list
+
+- [#441](https://github.com/papra-hq/papra/pull/441) [`5e46bb9`](https://github.com/papra-hq/papra/commit/5e46bb9e6a39cd16a83636018370607a27db042a) Thanks [@Zavy86](https://github.com/Zavy86)! - Added Italian (it) language support
+
+- [#455](https://github.com/papra-hq/papra/pull/455) [`b33fde3`](https://github.com/papra-hq/papra/commit/b33fde35d3e8622e31b51aadfe56875d8e48a2ef) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved feedback message in case of invalid origin configuration
+
 ## 0.7.0
 
 ### Minor Changes

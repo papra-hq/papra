@@ -1,5 +1,15 @@
 # @papra/webhooks
 
+## 0.2.0
+
+### Minor Changes
+
+- [#430](https://github.com/papra-hq/papra/pull/430) [`a8cff8c`](https://github.com/papra-hq/papra/commit/a8cff8cedc062be3ed1d454e9de6e456553a4d8c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Breaking change: updated webhooks signatures and payload format to match standard-webhook spec
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added new webhook events: document:updated, document:tag:added, document:tag:removed
+
+- [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks invocation is now defered
+
 ## 0.1.1
 
 ### Patch Changes

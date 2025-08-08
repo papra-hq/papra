@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.5.3
+
+### Patch Changes
+
+- [#455](https://github.com/papra-hq/papra/pull/455) [`b33fde3`](https://github.com/papra-hq/papra/commit/b33fde35d3e8622e31b51aadfe56875d8e48a2ef) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved feedback message in case of invalid origin configuration
+
 ## 0.5.2
 
 ### Patch Changes
