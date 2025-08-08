@@ -31,6 +31,7 @@ Launch Papra with default configuration using:
 docker run -d \
   --name papra \
   --restart unless-stopped \
+  --env APP_BASE_URL=http://localhost:1221 \
   -p 1221:1221 \
   ghcr.io/papra-hq/papra:latest
 ```
@@ -69,6 +70,7 @@ For production deployments, mount host directories to preserve application data 
     docker run -d \
       --name papra \
       --restart unless-stopped \
+      --env APP_BASE_URL=http://localhost:1221 \
       -p 1221:1221 \
       -v $(pwd)/papra-data:/app/app-data \
       --user $(id -u):$(id -g) \

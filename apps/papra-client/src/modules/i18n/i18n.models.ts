@@ -36,15 +36,15 @@ export function createTranslator<Dict extends Record<string, string>>({ getDicti
       console.warn(`Translation not found for key: ${String(key)}`);
     }
 
-    let translation: string = translationFromDictionary ?? key;
-
-    if (args) {
-      for (const [key, value] of Object.entries(args)) {
-        translation = translation.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), String(value));
-      }
+    if (args && translationFromDictionary) {
+      return Object.entries(args)
+        .reduce(
+          (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), String(value)),
+          String(translationFromDictionary),
+        );
     }
 
-    return translation;
+    return translationFromDictionary;
   };
 }
 

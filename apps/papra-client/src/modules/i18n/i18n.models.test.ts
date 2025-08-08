@@ -70,13 +70,14 @@ describe('i18n models', () => {
       expect(t('hello')).to.eql('Hello!');
     });
 
-    test('the translator returns the key if the key is not in the dictionary', () => {
+    test('the translator returns undefined if the key is not in the dictionary', () => {
       const dictionary = {
         hello: 'Hello!',
       };
       const t = createTranslator({ getDictionary: () => dictionary });
 
-      expect(t('world' as any)).to.eql('world');
+      expect(t('world' as any)).to.eql(undefined);
+      expect(t('world' as any, { name: 'John' })).to.eql(undefined);
     });
 
     test('the translator replaces the placeholders in the translation', () => {

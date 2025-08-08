@@ -485,6 +485,7 @@ export type LocaleKeys =
   | 'api-errors.demo.not_available'
   | 'api-errors.tags.already_exists'
   | 'api-errors.internal.error'
+  | 'api-errors.auth.invalid_origin'
   | 'not-found.title'
   | 'not-found.description'
   | 'not-found.back-to-home'

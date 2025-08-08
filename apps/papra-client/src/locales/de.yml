@@ -546,6 +546,7 @@ api-errors.user.organization_invitation_limit_reached: Die maximale Anzahl an Ei
 api-errors.demo.not_available: Diese Funktion ist in der Demo nicht verfügbar
 api-errors.tags.already_exists: Ein Tag mit diesem Namen existiert bereits für diese Organisation
 api-errors.internal.error: Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.
+api-errors.auth.invalid_origin: Ungültige Anwendungs-Ursprung. Wenn Sie Papra selbst hosten, stellen Sie sicher, dass Ihre APP_BASE_URL-Umgebungsvariable mit Ihrer aktuellen URL übereinstimmt. Weitere Details finden Sie unter https://docs.papra.app/resources/troubleshooting/#invalid-application-origin
 
 # Not found
 

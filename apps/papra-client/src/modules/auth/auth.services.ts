@@ -49,12 +49,21 @@ export async function authWithProvider({ provider, config }: { provider: SsoProv
   const isCustomProvider = config.auth.providers.customs.some(({ providerId }) => providerId === provider.key);
 
   if (isCustomProvider) {
-    signIn.oauth2({
+    const { error } = await signIn.oauth2({
       providerId: provider.key,
       callbackURL: config.baseUrl,
     });
+
+    if (error) {
+      throw error;
+    }
+
     return;
   }
 
-  await signIn.social({ provider: provider.key as 'github' | 'google', callbackURL: config.baseUrl });
+  const { error } = await signIn.social({ provider: provider.key as 'github' | 'google', callbackURL: config.baseUrl });
+
+  if (error) {
+    throw error;
+  }
 }
