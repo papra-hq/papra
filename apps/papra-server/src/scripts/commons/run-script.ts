@@ -7,9 +7,7 @@ import { ensureLocalDatabaseDirectoryExists } from '../../modules/app/database/d
 import { parseConfig } from '../../modules/config/config';
 import { createLogger, wrapWithLoggerContext } from '../../modules/shared/logger/logger';
 
-export { runScript };
-
-async function runScript(
+export async function runScriptWithDb(
   { scriptName }: { scriptName: string },
   fn: (args: { isDryRun: boolean; logger: Logger; db: Database; config: Config }) => Promise<void> | void,
 ) {
@@ -25,18 +23,32 @@ async function runScript(
 
       const { config } = await parseConfig({ env: process.env });
       await ensureLocalDatabaseDirectoryExists({ config });
-      const { db, client } = setupDatabase({ ...config.database });
+      const { db } = setupDatabase({ ...config.database });
 
-      try {
-        logger.info('Script started');
-        await fn({ isDryRun, logger, db, config });
-        logger.info('Script finished');
-      } catch (error) {
-        logger.error({ error }, 'Script failed');
-        process.exit(1);
-      } finally {
-        client.close();
-      }
+      await executeScript({ logger, fn: async () => fn({ isDryRun, logger, db, config }) });
     },
   );
+}
+
+export async function runScript(
+  { scriptName }: { scriptName: string },
+  fn: (args: { isDryRun: boolean; logger: Logger }) => Promise<void> | void,
+) {
+  const isDryRun = process.argv.includes('--dry-run');
+
+  await wrapWithLoggerContext({ scriptName, isDryRun }, async () => {
+    const logger = createLogger({ namespace: 'scripts' });
+
+    await executeScript({ logger, fn: async () => fn({ isDryRun, logger }) });
+  });
+}
+
+async function executeScript({ logger, fn }: { logger: Logger; fn: () => Promise<unknown> }) {
+  try {
+    await fn();
+    logger.debug('Script finished');
+  } catch (error) {
+    logger.error({ error }, 'Script failed');
+    process.exit(1);
+  }
 }

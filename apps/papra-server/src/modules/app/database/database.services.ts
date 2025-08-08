@@ -1,18 +1,10 @@
 import type { Config } from '../../config/config.types';
-import type { Database } from './database.types';
-import { dirname, join } from 'node:path';
-import { migrate } from 'drizzle-orm/libsql/migrator';
+import { dirname } from 'node:path';
 import { ensureDirectoryExists } from '../../shared/fs/fs.services';
 import { createLogger } from '../../shared/logger/logger';
-import { fileUrlToPath, getRootDirPath } from '../../shared/path';
+import { fileUrlToPath } from '../../shared/path';
 
 const logger = createLogger({ namespace: 'database-services' });
-
-export async function runMigrations({ db }: { db: Database }) {
-  const migrationsFolder = join(getRootDirPath(), 'migrations');
-
-  await migrate(db, { migrationsFolder });
-}
 
 export async function ensureLocalDatabaseDirectoryExists({ config }: { config: Config }) {
   const { url } = config.database;

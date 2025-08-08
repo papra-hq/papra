@@ -18,8 +18,9 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "migrate:up": "tsx --env-file-if-exists=.env src/scripts/migrate-up.script.ts",
+    "migrate:up": "tsx --env-file-if-exists=.env src/scripts/migrate-up.script.ts | crowlog-pretty",
     "migrate:push": "drizzle-kit push",
+    "migrate:create": "sh -c 'drizzle-kit generate --name \"$1\" && tsx --env-file-if-exists=.env src/scripts/create-migration.ts \"$1\" | crowlog-pretty' --",
     "db:studio": "drizzle-kit studio",
     "clean:dist": "rm -rf dist",
     "clean:db": "rm db.sqlite",
@@ -85,6 +86,7 @@
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "^0.24.2",
     "eslint": "catalog:",
+    "magicast": "^0.3.5",
     "memfs": "^4.17.2",
     "typescript": "catalog:",
     "vitest": "catalog:"
