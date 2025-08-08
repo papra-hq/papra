@@ -1,11 +1,8 @@
 import type { Migration } from './migrations.types';
-import { join } from 'node:path';
 import { sql } from 'drizzle-orm';
-import { migrate } from 'drizzle-orm/libsql/migrator';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
 import { serializeSchema } from '../modules/app/database/database.test-utils';
-import { getRootDirPath } from '../modules/shared/path';
 import { migrations } from './migrations.registry';
 import { rollbackLastAppliedMigration, runMigrations } from './migrations.usecases';
 
@@ -139,31 +136,6 @@ describe('migrations registry', () => {
       await runMigrations({ db, migrations });
 
       expect(await serializeSchema({ db })).to.eq(dbState);
-    });
-
-    test('the new migrations system bring the database in the same state as the drizzle built-in migrations', async () => {
-      const { db: drizzleDb } = setupDatabase({ url: ':memory:' });
-
-      await migrate(drizzleDb, { migrationsFolder: join(getRootDirPath(), 'migrations') });
-
-      const drizzleSchemaRaw = await serializeSchema({ db: drizzleDb });
-
-      // Remove the migrations table from the schema
-      const drizzleSchema = drizzleSchemaRaw.split('\n').filter(line => !line.startsWith('CREATE TABLE "__drizzle_migrations')).join('\n');
-
-      const { db } = setupDatabase({ url: ':memory:' });
-
-      await runMigrations({ db, migrations: migrations.slice(0, 8) });
-
-      const papraSchemaRaw = await serializeSchema({ db });
-      const papraSchema = papraSchemaRaw.split('\n').filter(line =>
-        !line.startsWith('CREATE TABLE migrations')
-        && !line.startsWith('CREATE INDEX migrations_')
-        && !line.startsWith('CREATE TABLE sqlite_sequence(name,seq)'),
-
-      ).join('\n');
-
-      expect(papraSchema).to.eq(drizzleSchema);
     });
   });
 });

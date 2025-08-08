@@ -8,7 +8,6 @@ import { organizationsWebhooksMigration } from './list/0005-organizations-webhoo
 import { organizationsInvitationsImprovementMigration } from './list/0006-organizations-invitations-improvement.migration';
 import { documentActivityLogMigration } from './list/0007-document-activity-log.migration';
 import { documentActivityLogOnDeleteSetNullMigration } from './list/0008-document-activity-log-on-delete-set-null.migration';
-
 import { dropLegacyMigrationsMigration } from './list/0009-drop-legacy-migrations.migration';
 
 export const migrations: Migration[] = [
