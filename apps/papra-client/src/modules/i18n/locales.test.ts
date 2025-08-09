@@ -1,4 +1,6 @@
 import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { glob } from 'tinyglobby';
 import { describe, expect, test } from 'vitest';
 
@@ -8,6 +10,8 @@ const locales = Object.fromEntries(
 );
 
 const { en: defaultLocal } = locales;
+
+const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
 describe('locales', () => {
   for (const [locale, translations] of Object.entries(locales)) {
@@ -32,7 +36,7 @@ describe('locales', () => {
   }
 
   test('all keys in en.yml must be used in the app (dynamic keys are manually excluded)', async () => {
-    const srcFileNames = await glob(['src/**/*.{ts,tsx}', '!src/**/*.test.*', '!src/modules/i18n/locales.types.ts'], { cwd: process.cwd() });
+    const srcFileNames = await glob(['src/**/*.{ts,tsx}', '!src/**/*.test.*', '!src/modules/i18n/locales.types.ts'], { cwd: packageRoot });
 
     // Exclude keys that are used in dynamic contexts
     const dynamicKeysMatchers = [
@@ -53,7 +57,7 @@ describe('locales', () => {
     );
 
     for (const srcFileName of srcFileNames) {
-      const fileContent = await readFile(srcFileName, 'utf-8');
+      const fileContent = await readFile(join(packageRoot, srcFileName), 'utf-8');
 
       for (const key of keys) {
         if (fileContent.includes(key)) {

@@ -26,7 +26,7 @@ function indexLinesByKeys(yaml: string) {
 }
 
 function syncLocaleFiles() {
-  const localesDir = path.join(dirname, '../locales');
+  const localesDir = path.join(dirname, '..', 'locales');
   const enFile = path.join(localesDir, 'en.yml');
   const enContent = fs.readFileSync(enFile, 'utf8');
   const enLines = enContent.split('\n');
