@@ -170,6 +170,19 @@ export async function createDocumentCreationUsecase({
   return async (args: { file: File; userId?: string; organizationId: string }) => createDocument({ taskServices, ...args, ...deps });
 }
 
+export async function createDocumentGetterUsecase({
+  db,
+  ...initialDeps
+}: {
+  db: Database;
+} & Partial<DocumentUsecaseDependencies>) {
+  const deps = {
+    documentsRepository: initialDeps.documentsRepository ?? createDocumentsRepository({ db }),
+  };
+
+  return async (args: { documentId: string; organizationId: string }) => getDocumentOrThrow({ ...args, ...deps });
+}
+
 async function handleExistingDocument({
   existingDocument,
   fileName,

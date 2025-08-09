@@ -213,6 +213,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
+      // TODO: use usecase creator
       const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       return context.json({

@@ -11,15 +11,18 @@ import { createTrackingServices } from '../tracking/tracking.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { setupDatabase } from './database/database';
+import { setupMcp } from './mcp/mcp';
 import { createCorsMiddleware } from './middlewares/cors.middleware';
 import { registerErrorMiddleware } from './middlewares/errors.middleware';
 import { createTimeoutMiddleware } from './middlewares/timeout.middleware';
+import { registerMcp } from './server.mcp';
 import { registerRoutes } from './server.routes';
 import { registerStaticAssetsRoutes } from './static-assets/static-assets.routes';
 
 async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>): Promise<GlobalDependencies> {
   const config = partialDeps.config ?? (await parseConfig()).config;
   const db = partialDeps.db ?? setupDatabase(config.database).db;
+  const mcp = setupMcp();
   const emailsServices = createEmailsServices({ config });
   const trackingServices = createTrackingServices({ config });
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
@@ -29,6 +32,7 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   return {
     config,
     db,
+    mcp,
     auth,
     emailsServices,
     subscriptionsServices,
@@ -54,6 +58,7 @@ export async function createServer(initialDeps: Partial<GlobalDependencies> = {}
   app.use(createApiKeyMiddleware({ db }));
 
   registerRoutes({ app, ...dependencies });
+  registerMcp({ app, ...dependencies });
 
   return {
     app,

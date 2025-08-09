@@ -7,6 +7,7 @@ import { memoize } from 'lodash-es';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
 import { databaseConfig } from '../app/database/database.config';
+import { mcpConfig } from '../app/mcp/mcp.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { emailsConfig } from '../emails/emails.config';
@@ -95,6 +96,7 @@ export const configDefinition = {
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
   tracking: trackingConfig,
+  mcp: mcpConfig,
 } as const satisfies ConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });
