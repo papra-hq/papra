@@ -1,5 +1,11 @@
 # @papra/app-server
 
+## 0.8.2
+
+### Patch Changes
+
+- [#461](https://github.com/papra-hq/papra/pull/461) [`c085b9d`](https://github.com/papra-hq/papra/commit/c085b9d6766297943112601d3c634c716c4be440) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix a regression bug that executed tagging rules before the file content was extracted
+
 ## 0.8.1
 
 ### Patch Changes
