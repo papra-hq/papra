@@ -11,6 +11,10 @@ FROM base AS build
 
 WORKDIR /app
 
+# --- add build deps for sharp/node-gyp, needed to be explicitly installed for armv7 ---
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
+ENV npm_config_python=/usr/bin/python3
+
 COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY apps/papra-client/package.json apps/papra-client/package.json
