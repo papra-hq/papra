@@ -1,0 +1,61 @@
+{
+  "name": "@papra/n8n-nodes-papra",
+  "version": "0.1.0",
+  "description": "n8n nodes for Papra, the document archiving platform.",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papra-hq/papra",
+    "directory": "packages/n8n-nodes"
+  },
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "papra",
+    "document",
+    "archiving",
+    "self-hosted"
+  ],
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.15"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepublishOnly": "pnpm build",
+    "build": "pnpm build:clean && tsc && gulp build:icons",
+    "build:clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/PapraApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Papra.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "form-data": "^4.0.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "typescript": "catalog:",
+    "unbuild": "catalog:"
+  }
+}

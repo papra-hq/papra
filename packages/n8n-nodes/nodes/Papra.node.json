@@ -1,0 +1,18 @@
+{
+  "node": "n8n-nodes-base.papra",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Data & Storage"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://docs.papra.app/resources/api-endpoints/#authentication"
+      }
+    ],
+    "primaryDocumentation": [
+      {
+        "url": "https://docs.papra.app/"
+      }
+    ]
+  }
+}
