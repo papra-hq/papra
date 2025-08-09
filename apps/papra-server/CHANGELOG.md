@@ -1,5 +1,11 @@
 # @papra/app-server
 
+## 0.8.1
+
+### Patch Changes
+
+- [#459](https://github.com/papra-hq/papra/pull/459) [`f20559e`](https://github.com/papra-hq/papra/commit/f20559e95d1dc7d7a099dfd9a9df42bf5ce1b0b2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed dev-dependency needed in production build
+
 ## 0.8.0
 
 ### Minor Changes
