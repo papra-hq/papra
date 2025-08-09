@@ -228,6 +228,7 @@ documents.actions.cancel: Cancel
 documents.actions.save: Save
 documents.actions.saving: Saving...
 documents.content.alert: The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.
+documents.content.empty-placeholder: This document has no extracted content, you can set it manually here.
 documents.info.id: ID
 documents.info.name: Name
 documents.info.type: Type

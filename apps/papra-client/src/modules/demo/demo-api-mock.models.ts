@@ -15,7 +15,7 @@ export function defineHandler<Path extends string>({
   handler,
 }: {
   path: Path;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   handler: <R extends ResponseType = 'json'>(params: { params: ExtractRouteParams<Path> } & HttpClientOptions<R>) => any;
 }) {
   return {

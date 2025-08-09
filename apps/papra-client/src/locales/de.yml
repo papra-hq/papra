@@ -228,6 +228,7 @@ documents.actions.cancel: Abbrechen
 documents.actions.save: Speichern
 documents.actions.saving: Speichern...
 documents.content.alert: Der Inhalt des Dokuments wird beim Hochladen automatisch aus dem Dokument extrahiert. Er wird nur für Such- und Indexierungszwecke verwendet.
+documents.content.empty-placeholder: Dieses Dokument hat keinen extrahierten Inhalt, Sie können ihn manuell hier eintragen.
 documents.info.id: ID
 documents.info.name: Name
 documents.info.type: Typ

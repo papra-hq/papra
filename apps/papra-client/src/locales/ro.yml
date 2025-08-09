@@ -228,6 +228,7 @@ documents.actions.cancel: Anulează
 documents.actions.save: Salvează
 documents.actions.saving: Se salvează...
 documents.content.alert: Conținutul documentului este extras automat din document la încarcare. Este folosit doar pentru căutare și indexare.
+documents.content.empty-placeholder: Acest document nu are conținut extra, poți introduce manual aici.
 documents.info.id: ID
 documents.info.name: Nume
 documents.info.type: Tip

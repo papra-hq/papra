@@ -228,6 +228,7 @@ documents.actions.cancel: Anuluj
 documents.actions.save: Zapisz
 documents.actions.saving: Zapisywanie...
 documents.content.alert: Zawartość dokumentu jest automatycznie wyodrębniana z dokumentu podczas przesyłania. Jest używana tylko do wyszukiwania i indeksowania.
+documents.content.empty-placeholder: Ten dokument nie ma wyodrębnionej zawartości, możesz ją ustawić ręcznie tutaj.
 documents.info.id: ID
 documents.info.name: Nazwa
 documents.info.type: Typ

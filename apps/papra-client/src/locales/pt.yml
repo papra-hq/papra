@@ -228,6 +228,7 @@ documents.actions.cancel: Cancelar
 documents.actions.save: Guardar
 documents.actions.saving: A guardar...
 documents.content.alert: O conteúdo do documento é automaticamente extraído do documento no carregamento. É usado apenas para fins de pesquisa e indexação.
+documents.content.empty-placeholder: Este documento não tem conteúdo extraído, pode inserir manualmente aqui.
 documents.info.id: ID
 documents.info.name: Nome
 documents.info.type: Tipo

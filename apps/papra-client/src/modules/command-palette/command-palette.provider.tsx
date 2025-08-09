@@ -1,5 +1,6 @@
 import type { Accessor, ParentComponent } from 'solid-js';
 import type { Document } from '../documents/documents.types';
+import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { debounce } from 'lodash-es';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
@@ -54,7 +55,10 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const { setColorMode } = useThemeStore();
 
   const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
-    const { documents } = await searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 });
+    const [result] = await safely(searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
+
+    const { documents = [] } = result ?? {};
+
     setMatchingDocuments(documents);
     setIsLoading(false);
   }, 300);
