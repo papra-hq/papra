@@ -505,9 +505,6 @@ importers:
       tesseract.js:
         specifier: ^6.0.0
         version: 6.0.0
-      tsdown:
-        specifier: ^0.13.4
-        version: 0.13.4(typescript@5.8.3)
       unpdf:
         specifier: ^1.1.0
         version: 1.1.0(@napi-rs/canvas@0.1.73)
@@ -530,6 +527,9 @@ importers:
       tinyglobby:
         specifier: ^0.2.10
         version: 0.2.14
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.13.4(typescript@5.8.3)
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -16750,7 +16750,7 @@ snapshots:
       '@quansync/fs': 0.1.4
       defu: 6.1.4
       jiti: 2.4.2
-      quansync: 0.2.8
+      quansync: 0.2.10
 
   uncrypto@0.1.3: {}
 
