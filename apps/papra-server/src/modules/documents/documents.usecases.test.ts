@@ -4,6 +4,8 @@ import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString } from '../shared/streams/readable-stream';
+import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { documentActivityLogTable } from './document-activity/document-activity.table';
@@ -345,6 +347,8 @@ describe('documents usecases', () => {
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config });
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await db.insert(documentsTable).values({
         id: 'document-1',
@@ -366,6 +370,8 @@ describe('documents usecases', () => {
         organizationId: 'organization-1',
         documentsRepository,
         documentsStorageService,
+        taggingRulesRepository,
+        tagsRepository,
       });
 
       const documentRecords = await db.select().from(documentsTable);
