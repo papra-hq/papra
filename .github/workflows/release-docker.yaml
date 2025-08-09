@@ -1,10 +1,10 @@
-name: Release new versions
+name: Build and publish Docker images
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release'
+        description: 'Version to release (e.g. 0.8.2)'
         required: true
         type: string
 
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   docker-release:
-    name: Release Docker images
+    name: Build and publish Docker images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

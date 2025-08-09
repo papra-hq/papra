@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm i
+
+      # Build only the packages first to properly run the lint and test first to get faster feedback
+      - name: Build packages
+        run: pnpm -r --parallel -F "./packages/*" build
+
+      - name: Run linters
+        run: pnpm -r --parallel lint
+
+      - name: Type check
+        # Exclude docs as their are some typing issues we are ok with for now
+        run: pnpm -r --parallel -F "!@papra/docs" typecheck
+
+      # Tests are run using vitest projects
+      - name: Run tests
+        run: pnpm test
+
+      # Now build the apps, the longer step, so we do it last as they are more unlikely to fail if the previous steps works
+      - name: Build the apps
+        run: pnpm -r --parallel -F "./apps/*" build
+
+      - name: Ensure no non-excluded files are changed for the whole repo
+        run: git diff --exit-code > /dev/null || (echo "After running the CI, some un-committed changes were detected. Please ensure cleanness before merging." && exit 1)

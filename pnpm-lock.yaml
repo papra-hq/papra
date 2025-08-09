@@ -41,6 +41,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.29.3
         version: 2.29.4
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.10)(jsdom@26.0.0)
 
   apps/docs:
     dependencies:
@@ -17555,7 +17558,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@5.4.19(@types/node@22.16.0))
+      '@vitest/mocker': 3.2.4(vite@5.4.19(@types/node@24.0.10))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
