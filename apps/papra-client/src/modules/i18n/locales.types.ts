@@ -204,6 +204,7 @@ export type LocaleKeys =
   | 'documents.actions.save'
   | 'documents.actions.saving'
   | 'documents.content.alert'
+  | 'documents.content.empty-placeholder'
   | 'documents.info.id'
   | 'documents.info.name'
   | 'documents.info.type'

@@ -1,4 +1,5 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
+import type { Document } from '../documents/documents.types';
 import type { Webhook } from '../webhooks/webhooks.types';
 import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
@@ -203,7 +204,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const searchQuery = rawSearchQuery.trim().toLowerCase();
 
-      const filteredDocuments = documents.filter(document => document?.name.toLowerCase().includes(searchQuery) && !document?.deletedAt);
+      const matchQuery = (document: Document) =>
+        !document?.deletedAt
+        && [document?.name, document?.content].filter(Boolean).some(content => content.toLowerCase().includes(searchQuery));
+
+      const filteredDocuments = documents.filter(matchQuery);
 
       return {
         documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
@@ -731,6 +736,29 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await webhooksStorage.setItem(webhookId, Object.assign(webhook, body, { updatedAt: new Date() }));
 
       return { webhook };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId',
+    method: 'PATCH',
+    handler: async ({ params: { organizationId, documentId }, body }) => {
+      const document = await documentStorage.getItem(`${organizationId}:${documentId}`);
+
+      assert(document, { status: 404 });
+
+      const { name, content } = body as { name?: string; content?: string };
+
+      const newDocument = {
+        ...document,
+        ...(name !== undefined && { name }),
+        ...(content !== undefined && { content }),
+        updatedAt: new Date(),
+      };
+
+      await documentStorage.setItem(`${organizationId}:${documentId}`, newDocument);
+
+      return { document: newDocument };
     },
   }),
 };

@@ -228,6 +228,7 @@ documents.actions.cancel: Annuler
 documents.actions.save: Enregistrer
 documents.actions.saving: Enregistrement...
 documents.content.alert: Le contenu du document est automatiquement extrait du document lors de l'import. Il est uniquement utilisé pour la recherche et l'indexation.
+documents.content.empty-placeholder: Ce document n'a pas de contenu extrait, vous pouvez le définir manuellement ici.
 documents.info.id: ID
 documents.info.name: Nom
 documents.info.type: Type
