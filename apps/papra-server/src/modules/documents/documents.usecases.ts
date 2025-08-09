@@ -95,6 +95,7 @@ export async function createDocument({
         organizationId,
         documentsRepository,
         tagsRepository,
+        taggingRulesRepository,
         logger,
       })
     : await createNewDocument({
@@ -109,6 +110,8 @@ export async function createDocument({
         documentsStorageService,
         generateDocumentId,
         trackingServices,
+        taskServices,
+        ocrLanguages,
         logger,
       });
 
@@ -118,8 +121,6 @@ export async function createDocument({
     userId,
     documentActivityRepository,
   });
-
-  await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
 
   deferTriggerWebhooks({
     webhookRepository,
@@ -132,11 +133,6 @@ export async function createDocument({
       createdAt: document.createdAt,
       updatedAt: document.updatedAt,
     },
-  });
-
-  await taskServices.scheduleJob({
-    taskName: 'extract-document-file-content',
-    data: { documentId: document.id, organizationId, ocrLanguages },
   });
 
   return { document };
@@ -181,6 +177,7 @@ async function handleExistingDocument({
   organizationId,
   documentsRepository,
   tagsRepository,
+  taggingRulesRepository,
   logger,
 }: {
   existingDocument: Document;
@@ -189,6 +186,7 @@ async function handleExistingDocument({
   organizationId: string;
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
+  taggingRulesRepository: TaggingRulesRepository;
   logger: Logger;
 }) {
   if (!existingDocument.isDeleted) {
@@ -201,6 +199,8 @@ async function handleExistingDocument({
     tagsRepository.removeAllTagsFromDocument({ documentId: existingDocument.id }),
     documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
   ]);
+
+  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository });
 
   return { document: restoredDocument };
 }
@@ -217,6 +217,8 @@ async function createNewDocument({
   documentsStorageService,
   generateDocumentId,
   trackingServices,
+  taskServices,
+  ocrLanguages = [],
   logger,
 }: {
   file: File;
@@ -230,6 +232,8 @@ async function createNewDocument({
   documentsStorageService: DocumentStorageService;
   generateDocumentId: () => string;
   trackingServices: TrackingServices;
+  taskServices: TaskServices;
+  ocrLanguages?: string[];
   logger: Logger;
 }) {
   const documentId = generateDocumentId();
@@ -267,6 +271,11 @@ async function createNewDocument({
 
     throw error;
   }
+
+  await taskServices.scheduleJob({
+    taskName: 'extract-document-file-content',
+    data: { documentId, organizationId, ocrLanguages },
+  });
 
   if (isDefined(userId)) {
     trackingServices.captureUserEvent({ userId, event: 'Document created' });
@@ -316,8 +325,6 @@ export async function hardDeleteDocument({
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
 }) {
-  // TODO: use transaction
-
   await Promise.all([
     documentsRepository.hardDeleteDocument({ documentId: document.id }),
     documentsStorageService.deleteFile({ storageKey: document.originalStorageKey }),
@@ -409,12 +416,16 @@ export async function extractAndSaveDocumentFileContent({
   documentsRepository,
   documentsStorageService,
   ocrLanguages,
+  taggingRulesRepository,
+  tagsRepository,
 }: {
   documentId: string;
   ocrLanguages?: string[];
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  taggingRulesRepository: TaggingRulesRepository;
+  tagsRepository: TagsRepository;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -428,5 +439,14 @@ export async function extractAndSaveDocumentFileContent({
 
   const { text } = await extractDocumentText({ file, ocrLanguages });
 
-  await documentsRepository.updateDocument({ documentId, organizationId, content: text });
+  const { document: updatedDocument } = await documentsRepository.updateDocument({ documentId, organizationId, content: text });
+
+  if (!updatedDocument) {
+    // This should never happen, but for type safety
+    throw createDocumentNotFoundError();
+  }
+
+  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository });
+
+  return { document: updatedDocument };
 }
