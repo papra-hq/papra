@@ -22,12 +22,11 @@
     "storage"
   ],
   "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    }
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -38,7 +37,9 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "build": "unbuild"
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "dev": "pnpm build:watch"
   },
   "dependencies": {
     "@corentinth/chisels": "^1.3.0",
@@ -50,8 +51,8 @@
     "@antfu/eslint-config": "catalog:",
     "eslint": "catalog:",
     "standardwebhooks": "^1.0.0",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
     "vitest": "catalog:"
   }
 }
