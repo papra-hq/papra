@@ -21,8 +21,13 @@
     "archiving",
     "storage"
   ],
-  "main": "./dist/cli.cjs",
-  "module": "./dist/cli.mjs",
+  "exports": {
+    ".": "./dist/cli.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/cli.js",
+  "module": "./dist/cli.js",
+  "types": "./dist/cli.d.ts",
   "bin": {
     "papra": "./bin/papra.mjs"
   },
@@ -37,7 +42,8 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "build": "unbuild"
+    "build": "tsdown",
+    "build:watch": "tsdown --watch"
   },
   "dependencies": {
     "@clack/prompts": "^0.10.1",
@@ -54,9 +60,9 @@
     "@types/mime-types": "^2.1.4",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "tsdown": "catalog:",
     "tsx": "^4.19.3",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
     "vitest": "catalog:"
   }
 }
