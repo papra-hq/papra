@@ -27,7 +27,6 @@
     "typecheck": "tsc --noEmit",
     "check-i18n-types-outdated": "pnpm script:generate-i18n-types && git diff --exit-code -- src/modules/i18n/locales.types.ts > /dev/null || (echo \"Locales types are outdated, please run 'pnpm script:generate-i18n-types' and commit the changes.\" && exit 1)",
     "script:get-missing-i18n-keys": "tsx src/scripts/get-missing-i18n-keys.script.ts",
-    "script:generate-i18n-types": "tsx src/scripts/generate-i18n-types.script.ts",
     "script:sync-i18n-key-order": "tsx src/scripts/sync-i18n-key-order.script.ts"
   },
   "dependencies": {
@@ -72,7 +71,6 @@
     "unocss": "0.65.0-beta.2",
     "vite": "^5.4.19",
     "vite-plugin-solid": "^2.11.7",
-    "vitest": "catalog:",
-    "yaml": "^2.8.0"
+    "vitest": "catalog:"
   }
 }

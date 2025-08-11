@@ -1,15 +1,15 @@
-import type { LocaleKeys } from '@/modules/i18n/locales.types';
+import type { TranslationKeys } from '@/modules/i18n/locales.types';
 import { get } from 'lodash-es';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 
-function codeToKey(code: string): LocaleKeys {
+function codeToKey(code: string): TranslationKeys {
   // Better auth may returns different error codes like INVALID_ORIGIN, INVALID_CALLBACKURL when the origin is invalid
   // codes are here https://github.com/better-auth/better-auth/blob/canary/packages/better-auth/src/api/middlewares/origin-check.ts#L71 (in lower case)
   if (code.match(/^INVALID_[A-Z]+URL$/) || code === 'INVALID_ORIGIN') {
     return `api-errors.auth.invalid_origin`;
   }
 
-  return `api-errors.${code}` as LocaleKeys;
+  return `api-errors.${code}` as TranslationKeys;
 }
 
 export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof useI18n>['t'] } = {}) {

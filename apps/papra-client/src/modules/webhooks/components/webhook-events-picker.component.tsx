@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import type { LocaleKeys } from '@/modules/i18n/locales.types';
+import type { TranslationKeys } from '@/modules/i18n/locales.types';
 import { createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/components/checkbox';
@@ -15,7 +15,7 @@ export const WebhookEventsPicker: Component<{ events: WebhookEvent[]; onChange: 
   const getEventsSections = () => {
     return WEBHOOK_EVENTS.map((section: WebhookSection) => ({
       ...section,
-      title: t(`webhooks.events.${section.section}.title` as LocaleKeys),
+      title: t(`webhooks.events.${section.section}.title` as TranslationKeys),
       events: section.events.map((event: WebhookEvent) => {
         const [prefix, suffix] = event.split(':');
 

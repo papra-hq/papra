@@ -1,17 +1,16 @@
 import type { Accessor, ParentComponent, Setter } from 'solid-js';
-import type { LocaleKeys } from './locales.types';
+import type { TranslationsDictionary } from './locales.types';
 import { makePersisted } from '@solid-primitives/storage';
 import { createContext, createEffect, createResource, createSignal, Show, useContext } from 'solid-js';
-import defaultDict from '../../locales/en.yml';
+import { translations as defaultTranslations } from '../../locales/en.dictionary';
 import { locales } from './i18n.constants';
 import { createFragmentTranslator, createTranslator, findMatchingLocale } from './i18n.models';
 
 export type Locale = typeof locales[number]['key'];
-type Dictionary = Record<LocaleKeys, string>;
 
 const I18nContext = createContext<{
-  t: ReturnType<typeof createTranslator<Dictionary>>;
-  te: ReturnType<typeof createFragmentTranslator<Dictionary>>;
+  t: ReturnType<typeof createTranslator<TranslationsDictionary>>;
+  te: ReturnType<typeof createFragmentTranslator<TranslationsDictionary>>;
   getLocale: Accessor<Locale>;
   setLocale: Setter<Locale>;
   locales: typeof locales;
@@ -27,12 +26,12 @@ export function useI18n() {
   return context;
 }
 
-async function fetchDictionary(locale: Locale): Promise<Dictionary> {
-  const { default: dict } = await import(`../../locales/${locale}.yml`);
+async function fetchDictionary(locale: Locale): Promise<TranslationsDictionary> {
+  const { translations } = await import(`../../locales/${locale}.dictionary.ts`);
 
   return {
-    ...defaultDict,
-    ...dict,
+    ...defaultTranslations,
+    ...translations,
   };
 }
 
