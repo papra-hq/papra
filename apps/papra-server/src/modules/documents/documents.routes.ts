@@ -1,22 +1,20 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { createError } from '../shared/errors/errors';
-import { isNil } from '../shared/utils';
-import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
+import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
+import { collectStreamToFile } from '../shared/streams/stream.convertion';
+import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
-import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
+import { documentIdSchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 
@@ -35,81 +33,112 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupUpdateDocumentRoute(context);
 }
 
-function setupCreateDocumentRoute({ app, config, db, trackingServices, taskServices }: RouteDefinitionContext) {
+function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
+  const { config } = deps;
+
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    async (context, next) => {
-      const { maxUploadSize } = config.documentsStorage;
-
-      if (!isDocumentSizeLimitEnabled({ maxUploadSize })) {
-        return next();
-      }
-
-      const middleware = bodyLimit({
-        maxSize: maxUploadSize,
-        onError: () => {
-          throw createError({
-            message: `The file is too big, the maximum size is ${maxUploadSize} bytes.`,
-            code: 'document.file_too_big',
-            statusCode: 413,
-          });
-        },
-      });
-
-      // eslint-disable-next-line ts/no-unsafe-argument
-      return middleware(context, next);
-    },
-
-    validateFormData(z.object({
-      file: z.instanceof(File),
-      ocrLanguages: stringCoercedOcrLanguagesSchema.optional(),
-    })),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
+      const { maxUploadSize } = config.documentsStorage;
       const { userId } = getUser({ context });
-
-      const { file, ocrLanguages } = context.req.valid('form');
       const { organizationId } = context.req.valid('param');
 
-      if (isNil(file)) {
-        throw createError({
-          message: 'No file provided, please upload a file using the "file" key.',
-          code: 'document.no_file',
-          statusCode: 400,
-        });
-      }
-
-      if (!(file instanceof File)) {
-        throw createError({
-          message: 'The file provided is not a file object.',
-          code: 'document.invalid_file',
-          statusCode: 400,
-        });
-      }
-
-      const createDocument = await createDocumentCreationUsecase({
-        db,
-        config,
-        taskServices,
-        trackingServices,
-        ocrLanguages,
+      const { fileStream, fileName, mimeType } = await getFileStreamFromMultipartForm({
+        body: context.req.raw.body,
+        headers: context.req.header(),
+        maxUploadSize,
       });
 
-      const { document } = await createDocument({
-        file,
-        userId,
-        organizationId,
-      });
+      const { file } = await collectStreamToFile({ fileStream, fileName, mimeType });
 
-      return context.json({
-        document,
-      });
+      const createDocument = await createDocumentCreationUsecase({ ...deps });
+
+      const { document } = await createDocument({ file, userId, organizationId });
+
+      return context.json({ document });
     },
   );
 }
+
+// function setupCreateDocumentRoute({ app, config, db, trackingServices, taskServices }: RouteDefinitionContext) {
+//   app.post(
+//     '/api/organizations/:organizationId/documents',
+//     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
+//     async (context, next) => {
+//       const { maxUploadSize } = config.documentsStorage;
+
+//       if (!isDocumentSizeLimitEnabled({ maxUploadSize })) {
+//         return next();
+//       }
+
+//       const middleware = bodyLimit({
+//         maxSize: maxUploadSize,
+//         onError: () => {
+//           throw createError({
+//             message: `The file is too big, the maximum size is ${maxUploadSize} bytes.`,
+//             code: 'document.file_too_big',
+//             statusCode: 413,
+//           });
+//         },
+//       });
+
+//       // eslint-disable-next-line ts/no-unsafe-argument
+//       return middleware(context, next);
+//     },
+
+//     validateFormData(z.object({
+//       file: z.instanceof(File),
+//       ocrLanguages: stringCoercedOcrLanguagesSchema.optional(),
+//     })),
+//     validateParams(z.object({
+//       organizationId: organizationIdSchema,
+//     })),
+//     async (context) => {
+//       const { userId } = getUser({ context });
+
+//       const { file, ocrLanguages } = context.req.valid('form');
+//       const { organizationId } = context.req.valid('param');
+
+//       if (isNil(file)) {
+//         throw createError({
+//           message: 'No file provided, please upload a file using the "file" key.',
+//           code: 'document.no_file',
+//           statusCode: 400,
+//         });
+//       }
+
+//       if (!(file instanceof File)) {
+//         throw createError({
+//           message: 'The file provided is not a file object.',
+//           code: 'document.invalid_file',
+//           statusCode: 400,
+//         });
+//       }
+
+//       const createDocument = await createDocumentCreationUsecase({
+//         db,
+//         config,
+//         taskServices,
+//         trackingServices,
+//         ocrLanguages,
+//       });
+
+//       const { document } = await createDocument({
+//         file,
+//         userId,
+//         organizationId,
+//       });
+
+//       return context.json({
+//         document,
+//       });
+//     },
+//   );
+// }
 
 function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(

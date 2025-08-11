@@ -22,5 +22,5 @@ export function generateDocumentId() {
 }
 
 export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: number }) {
-  return maxUploadSize !== 0;
+  return maxUploadSize > 0;
 }
