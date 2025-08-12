@@ -1,4 +1,4 @@
-import type { LocaleKeys } from '../i18n/locales.types';
+import type { TranslationKeys } from '../i18n/locales.types';
 
 export const TAGGING_RULE_OPERATORS = {
   EQUAL: 'equal',
@@ -14,7 +14,7 @@ export const TAGGING_RULE_FIELDS = {
   DOCUMENT_CONTENT: 'content',
 } as const;
 
-export const TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RULE_OPERATORS)[keyof typeof TAGGING_RULE_OPERATORS], LocaleKeys> = {
+export const TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RULE_OPERATORS)[keyof typeof TAGGING_RULE_OPERATORS], TranslationKeys> = {
   [TAGGING_RULE_OPERATORS.EQUAL]: 'tagging-rules.operator.equals',
   [TAGGING_RULE_OPERATORS.NOT_EQUAL]: 'tagging-rules.operator.not-equals',
   [TAGGING_RULE_OPERATORS.CONTAINS]: 'tagging-rules.operator.contains',
@@ -23,7 +23,7 @@ export const TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RU
   [TAGGING_RULE_OPERATORS.ENDS_WITH]: 'tagging-rules.operator.ends-with',
 } as const;
 
-export const TAGGING_RULE_FIELDS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RULE_FIELDS)[keyof typeof TAGGING_RULE_FIELDS], LocaleKeys> = {
+export const TAGGING_RULE_FIELDS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RULE_FIELDS)[keyof typeof TAGGING_RULE_FIELDS], TranslationKeys> = {
   [TAGGING_RULE_FIELDS.DOCUMENT_NAME]: 'tagging-rules.field.name',
   [TAGGING_RULE_FIELDS.DOCUMENT_CONTENT]: 'tagging-rules.field.content',
 } as const;

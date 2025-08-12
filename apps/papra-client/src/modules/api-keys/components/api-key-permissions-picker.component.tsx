@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import type { LocaleKeys } from '@/modules/i18n/locales.types';
+import type { TranslationKeys } from '@/modules/i18n/locales.types';
 import { createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/components/checkbox';
@@ -20,7 +20,7 @@ export const ApiKeyPermissionsPicker: Component<{ permissions: string[]; onChang
           name: permission,
           prefix,
           suffix,
-          description: t(`api-keys.permissions.${section.section}.${permission}` as LocaleKeys),
+          description: t(`api-keys.permissions.${section.section}.${permission}` as TranslationKeys),
         };
       }),
     }));

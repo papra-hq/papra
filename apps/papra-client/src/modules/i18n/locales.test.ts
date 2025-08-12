@@ -3,10 +3,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { glob } from 'tinyglobby';
 import { describe, expect, test } from 'vitest';
+import { locales as registeredLocales } from './i18n.constants';
 
-const rawLocales = import.meta.glob('../../locales/*.yml', { eager: true });
+const rawLocales = import.meta.glob('../../locales/*.ts', { eager: true, import: 'translations' });
 const locales = Object.fromEntries(
-  Object.entries(rawLocales).map(([key, value]: [string, any]) => [key.replace('../../locales/', '').replace('.yml', ''), value.default]),
+  Object.entries(rawLocales).map(([key, value]: [string, any]) => [key.replace('../../locales/', '').replace('.dictionary.ts', ''), value]),
 );
 
 const { en: defaultLocal } = locales;
@@ -14,6 +15,13 @@ const { en: defaultLocal } = locales;
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
 describe('locales', () => {
+  test('all registered locales must have a translation file', () => {
+    const availableLocales = Object.keys(locales).toSorted();
+    const registeredLocalesKeys = registeredLocales.map(x => x.key).toSorted();
+
+    expect(registeredLocalesKeys).to.eql(availableLocales);
+  });
+
   for (const [locale, translations] of Object.entries(locales)) {
     describe(locale, () => {
       test(`locale ${locale} must not have extra keys compared to default`, () => {
