@@ -56,7 +56,7 @@ export const OrganizationPage: Component = () => {
               <>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-12">
 
-                  <Button onClick={promptImport} class="h-auto items-start flex-col gap-4 py-4 px-6">
+                  <Button onClick={promptImport} class="h-auto items-start flex-col gap-4 py-4 px-6 text-left">
                     <div class="i-tabler-upload size-6"></div>
 
                     {t('organizations.details.upload-documents')}

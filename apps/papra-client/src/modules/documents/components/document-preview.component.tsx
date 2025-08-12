@@ -1,11 +1,12 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createResource, Match, Suspense, Switch } from 'solid-js';
+import { createResource, lazy, Match, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
-import { PdfViewer } from './pdf-viewer.component';
+
+const PdfViewer = lazy(() => import('./pdf-viewer.component').then(m => ({ default: m.PdfViewer })));
 
 const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
