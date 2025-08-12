@@ -22,7 +22,6 @@ import { useRenameDocumentDialog } from '../components/rename-document-button.co
 import { getDaysBeforePermanentDeletion, getDocumentActivityIcon } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
 import { fetchDocument, fetchDocumentActivities, fetchDocumentFile } from '../documents.services';
-import '@pdfslick/solid/dist/pdf_viewer.css';
 
 type KeyValueItem = {
   label: string | JSX.Element;
