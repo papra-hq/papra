@@ -1,5 +1,13 @@
 # @papra/app-server
 
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`14bc2b8`](https://github.com/papra-hq/papra/commit/14bc2b8f8d0d6605062f37188e7c57bbc61b2c1a)]:
+  - @papra/webhooks@0.3.0
+  - @papra/lecture@0.2.0
+
 ## 0.8.2
 
 ### Patch Changes
