@@ -1,24 +1,21 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { bodyLimit } from 'hono/body-limit';
+import { Readable } from 'node:stream';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { createError } from '../shared/errors/errors';
-import { isNil } from '../shared/utils';
-import { validateFormData, validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
+import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
+import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
-import { isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
+import { documentIdSchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
-import { createDocumentStorageService } from './storage/documents.storage.services';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -35,78 +32,27 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupUpdateDocumentRoute(context);
 }
 
-function setupCreateDocumentRoute({ app, config, db, trackingServices, taskServices }: RouteDefinitionContext) {
+function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    async (context, next) => {
-      const { maxUploadSize } = config.documentsStorage;
-
-      if (!isDocumentSizeLimitEnabled({ maxUploadSize })) {
-        return next();
-      }
-
-      const middleware = bodyLimit({
-        maxSize: maxUploadSize,
-        onError: () => {
-          throw createError({
-            message: `The file is too big, the maximum size is ${maxUploadSize} bytes.`,
-            code: 'document.file_too_big',
-            statusCode: 413,
-          });
-        },
-      });
-
-      // eslint-disable-next-line ts/no-unsafe-argument
-      return middleware(context, next);
-    },
-
-    validateFormData(z.object({
-      file: z.instanceof(File),
-      ocrLanguages: stringCoercedOcrLanguagesSchema.optional(),
-    })),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
-
-      const { file, ocrLanguages } = context.req.valid('form');
       const { organizationId } = context.req.valid('param');
 
-      if (isNil(file)) {
-        throw createError({
-          message: 'No file provided, please upload a file using the "file" key.',
-          code: 'document.no_file',
-          statusCode: 400,
-        });
-      }
-
-      if (!(file instanceof File)) {
-        throw createError({
-          message: 'The file provided is not a file object.',
-          code: 'document.invalid_file',
-          statusCode: 400,
-        });
-      }
-
-      const createDocument = await createDocumentCreationUsecase({
-        db,
-        config,
-        taskServices,
-        trackingServices,
-        ocrLanguages,
+      const { fileStream, fileName, mimeType } = await getFileStreamFromMultipartForm({
+        body: context.req.raw.body,
+        headers: context.req.header(),
       });
 
-      const { document } = await createDocument({
-        file,
-        userId,
-        organizationId,
-      });
+      const createDocument = await createDocumentCreationUsecase({ ...deps });
 
-      return context.json({
-        document,
-      });
+      const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
+
+      return context.json({ document });
     },
   );
 }
@@ -305,7 +251,7 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) {
+function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
@@ -325,12 +271,10 @@ function setupGetDocumentFileRoute({ app, config, db }: RouteDefinitionContext) 
 
       const { document } = await getDocumentOrThrow({ documentId, documentsRepository, organizationId });
 
-      const documentsStorageService = await createDocumentStorageService({ config });
-
       const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.originalStorageKey });
 
       return context.body(
-        fileStream,
+        Readable.toWeb(fileStream),
         200,
         {
           'Content-Type': document.mimeType,
@@ -405,7 +349,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   );
 }
 
-function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionContext) {
+function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     requireAuthentication(),
@@ -420,7 +364,6 @@ function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionConte
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -433,7 +376,7 @@ function setupDeleteTrashDocumentRoute({ app, config, db }: RouteDefinitionConte
   );
 }
 
-function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionContext) {
+function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     requireAuthentication(),
@@ -447,7 +390,6 @@ function setupDeleteAllTrashDocumentsRoute({ app, config, db }: RouteDefinitionC
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 

@@ -6,6 +6,7 @@ export type OrganizationPlanRecord = {
   isPerSeat: boolean;
   limits: {
     maxDocumentStorageBytes: number;
+    maxFileSize: number;
     maxIntakeEmailsCount: number;
     maxOrganizationsMembersCount: number;
   };

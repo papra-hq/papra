@@ -1,6 +1,7 @@
 import type { Config } from '../config/config.types';
 import type { OrganizationPlanRecord } from './plans.types';
 import { injectArguments } from '@corentinth/chisels';
+import { isDocumentSizeLimitEnabled } from '../documents/documents.models';
 import { FAMILY_PLAN_ID, FREE_PLAN_ID, PLUS_PLAN_ID } from './plans.constants';
 import { createPlanNotFoundError } from './plans.errors';
 
@@ -22,6 +23,7 @@ export function createPlansRepository({ config }: { config: Config }) {
 
 export function getOrganizationPlansRecords({ config }: { config: Config }) {
   const { isFreePlanUnlimited } = config.organizationPlans;
+  const { maxUploadSize } = config.documentsStorage;
 
   const organizationPlans: Record<string, OrganizationPlanRecord> = {
     [FREE_PLAN_ID]: {
@@ -29,11 +31,11 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       name: 'Free',
       isPerSeat: true,
       limits: {
-        maxDocumentStorageBytes: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1024 * 1024 * 500, // 500 MB
+        maxDocumentStorageBytes: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1024 * 1024 * 500, // 500 MiB
         maxIntakeEmailsCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1,
         maxOrganizationsMembersCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 10,
+        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize }) ? maxUploadSize : Number.POSITIVE_INFINITY,
       },
-
     },
     [PLUS_PLAN_ID]: {
       id: PLUS_PLAN_ID,
@@ -41,9 +43,10 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       priceId: config.organizationPlans.plusPlanPriceId,
       isPerSeat: true,
       limits: {
-        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GB
+        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GiB
         maxIntakeEmailsCount: 10,
         maxOrganizationsMembersCount: 100,
+        maxFileSize: 1024 * 1024 * 100, // 100 MiB
       },
     },
     [FAMILY_PLAN_ID]: {
@@ -53,9 +56,10 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       isPerSeat: false,
       defaultSeatsCount: 6,
       limits: {
-        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GB
+        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GiB
         maxIntakeEmailsCount: 10,
         maxOrganizationsMembersCount: 6,
+        maxFileSize: 1024 * 1024 * 100, // 100 MiB
       },
     },
   };

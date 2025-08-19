@@ -1,6 +1,7 @@
 import type { Context as BaseContext, Hono } from 'hono';
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Config } from '../config/config.types';
+import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import type { TaskServices } from '../tasks/tasks.services';
@@ -30,6 +31,7 @@ export type GlobalDependencies = {
   subscriptionsServices: SubscriptionsServices;
   trackingServices: TrackingServices;
   taskServices: TaskServices;
+  documentsStorageService: DocumentStorageService;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

@@ -1,17 +1,12 @@
 import type { Logger } from '@crowlog/logger';
 import { extractTextFromFile } from '@papra/lecture';
 import { createLogger } from '../shared/logger/logger';
+import { getStreamSha256Hash } from '../shared/streams/stream-hash';
 
-export async function getFileSha256Hash({ file }: { file: File }) {
-  const arrayBuffer = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', arrayBuffer);
-  const hashHex = Array.from(new Uint8Array(hash))
-    .map(byte => byte.toString(16).padStart(2, '0'))
-    .join('');
+export async function getFileHash({ fileStream }: { fileStream: ReadableStream<Uint8Array> }) {
+  const { hash } = await getStreamSha256Hash({ stream: fileStream });
 
-  return {
-    hash: hashHex,
-  };
+  return { hash };
 }
 
 export async function extractDocumentText({

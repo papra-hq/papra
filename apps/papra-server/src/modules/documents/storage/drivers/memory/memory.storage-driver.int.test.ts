@@ -1,16 +1,31 @@
 import { describe, expect, test } from 'vitest';
+import { createReadableStream, fileToReadableStream } from '../../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../../document-storage.errors';
+import { runDriverTestSuites } from '../drivers.test-suite';
 import { inMemoryStorageDriverFactory } from './memory.storage-driver';
 
 describe('memory storage-driver', () => {
   describe('inMemoryStorageDriver', () => {
+    runDriverTestSuites({
+      createDriver: async () => {
+        const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
+
+        return {
+          driver: inMemoryStorageDriver,
+          [Symbol.asyncDispose]: async () => {},
+        };
+      },
+    });
+
     test('saves, retrieves and delete a file', async () => {
       const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
 
       const file = new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' });
 
       const { storageKey } = await inMemoryStorageDriver.saveFile({
-        file,
+        fileStream: fileToReadableStream(file),
+        fileName: 'text-file.txt',
+        mimeType: 'text/plain',
         storageKey: 'org_1/text-file.txt',
       });
 
@@ -33,7 +48,9 @@ describe('memory storage-driver', () => {
       const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
 
       await inMemoryStorageDriver.saveFile({
-        file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+        fileStream: createReadableStream({ content: 'lorem ipsum' }),
+        fileName: 'text-file.txt',
+        mimeType: 'text/plain',
         storageKey: 'org_1/text-file.txt',
       });
 

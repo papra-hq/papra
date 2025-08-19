@@ -1,4 +1,5 @@
 import type { Database } from './database.types';
+import { createInMemoryLoggerTransport, createLogger } from '@crowlog/logger';
 import { sql } from 'drizzle-orm';
 import { runMigrations } from '../../../migrations/migrations.usecases';
 import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.tables';
@@ -17,7 +18,11 @@ export { createInMemoryDatabase, seedDatabase };
 async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDatabase>[0], 'db'> | undefined = {}) {
   const { db } = setupDatabase({ url: ':memory:' });
 
-  await runMigrations({ db });
+  await runMigrations({
+    db,
+    // In memory logger to avoid polluting the console with migrations logs
+    logger: createLogger({ transports: [createInMemoryLoggerTransport()], namespace: 'migrations' }),
+  });
 
   await seedDatabase({ db, ...seedOptions });
 

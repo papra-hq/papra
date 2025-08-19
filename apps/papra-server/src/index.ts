@@ -5,6 +5,7 @@ import { setupDatabase } from './modules/app/database/database';
 import { ensureLocalDatabaseDirectoryExists } from './modules/app/database/database.services';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
+import { createDocumentStorageService } from './modules/documents/storage/documents.storage.services';
 import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
 import { createLogger } from './modules/shared/logger/logger';
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
@@ -17,8 +18,10 @@ const { config } = await parseConfig({ env });
 await ensureLocalDatabaseDirectoryExists({ config });
 const { db, client } = setupDatabase(config.database);
 
+const documentsStorageService = await createDocumentStorageService({ config });
+
 const taskServices = createTaskServices({ config });
-const { app } = await createServer({ config, db, taskServices });
+const { app } = await createServer({ config, db, taskServices, documentsStorageService });
 
 const server = serve(
   {
@@ -33,12 +36,13 @@ if (config.ingestionFolder.isEnabled) {
     taskServices,
     config,
     db,
+    documentsStorageService,
   });
 
   await startWatchingIngestionFolders();
 }
 
-await registerTaskDefinitions({ taskServices, db, config });
+await registerTaskDefinitions({ taskServices, db, config, documentsStorageService });
 
 taskServices.start();
 

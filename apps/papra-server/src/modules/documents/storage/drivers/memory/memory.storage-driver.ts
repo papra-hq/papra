@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+import { collectStreamToFile } from '../../../../shared/streams/stream.convertion';
 import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
@@ -9,7 +11,9 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
   return {
     name: IN_MEMORY_STORAGE_DRIVER_NAME,
 
-    saveFile: async ({ file, storageKey }) => {
+    saveFile: async ({ fileStream, storageKey, mimeType, fileName }) => {
+      const { file } = await collectStreamToFile({ fileStream, fileName, mimeType });
+
       storage.set(storageKey, file);
 
       return { storageKey };
@@ -23,11 +27,15 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
       }
 
       return {
-        fileStream: fileEntry.stream(),
+        fileStream: Readable.from(fileEntry.stream()),
       };
     },
 
     deleteFile: async ({ storageKey }) => {
+      if (!storage.has(storageKey)) {
+        throw createFileNotFoundError();
+      }
+
       storage.delete(storageKey);
     },
 

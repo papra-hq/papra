@@ -1,19 +1,23 @@
+import type { PlansRepository } from '../plans/plans.repository';
+import type { DocumentStorageService } from './storage/documents.storage.services';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
+import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { nextTick } from '../shared/async/defer.test-utils';
-import { collectReadableStreamToString } from '../shared/streams/readable-stream';
+import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { documentActivityLogTable } from './document-activity/document-activity.table';
-import { createDocumentAlreadyExistsError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
+import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
 
 describe('documents usecases', () => {
   describe('createDocument', () => {
@@ -39,12 +43,13 @@ describe('documents usecases', () => {
         taskServices,
       });
 
-      const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
       const organizationId = 'organization-1';
 
       const { document } = await createDocument({
-        file,
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
         userId,
         organizationId,
       });
@@ -55,9 +60,10 @@ describe('documents usecases', () => {
         createdBy: 'user-1',
         name: 'file.txt',
         originalName: 'file.txt',
-        originalSize: 7,
+        originalSize: 13,
         originalStorageKey: 'organization-1/originals/doc_1.txt',
         mimeType: 'text/plain',
+        originalSha256Hash: '315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3',
         deletedBy: null,
         deletedAt: null,
       });
@@ -66,7 +72,7 @@ describe('documents usecases', () => {
       const { fileStream } = await documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' });
       const content = await collectReadableStreamToString({ stream: fileStream });
 
-      expect(content).to.eql('content');
+      expect(content).to.eql('Hello, world!');
 
       // Ensure the document record is saved in the database
       const documentRecords = await db.select().from(documentsTable);
@@ -98,12 +104,13 @@ describe('documents usecases', () => {
         taskServices,
       });
 
-      const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
       const organizationId = 'organization-1';
 
       const { document: document1 } = await createDocument({
-        file,
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
         userId,
         organizationId,
       });
@@ -114,16 +121,19 @@ describe('documents usecases', () => {
         createdBy: 'user-1',
         name: 'file.txt',
         originalName: 'file.txt',
+        originalSha256Hash: '315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3',
       });
 
       const { fileStream: fileStream1 } = await documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' });
       const content1 = await collectReadableStreamToString({ stream: fileStream1 });
 
-      expect(content1).to.eql('content');
+      expect(content1).to.eql('Hello, world!');
 
       await expect(
         createDocument({
-          file,
+          fileStream: createReadableStream({ content: 'Hello, world!' }),
+          fileName: 'file.txt',
+          mimeType: 'text/plain',
           userId,
           organizationId,
         }),
@@ -145,8 +155,8 @@ describe('documents usecases', () => {
           - update the existing record, setting the name to the new file name (same content does not mean same name)
           - pre-existing tags are removed
           - the tagging rules are applied to the restored document`, async () => {
-      // this is the sha256 hash of 'hello world'
-      const hash = 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9';
+      // this is the sha256 hash of 'Hello, world!'
+      const hash = '315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3';
 
       // The document is deleted and has the tag-1
       // A tagging rule that apply tag-2 if the content contains 'hello'
@@ -168,7 +178,7 @@ describe('documents usecases', () => {
           originalStorageKey: 'organization-1/originals/document-1.txt',
           name: 'file-1.txt',
           originalName: 'file-1.txt',
-          content: 'hello world',
+          content: 'Hello, world!',
         }],
         documentsTags: [{
           documentId: 'document-1',
@@ -189,18 +199,20 @@ describe('documents usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
-        documentsStorage: { driver: 'in-memory' },
       });
 
       const createDocument = await createDocumentCreationUsecase({
         db,
         config,
         taskServices,
+        documentsStorageService: await inMemoryStorageDriverFactory(),
       });
 
       // 3. Re-create the document
       const { document: documentRestored } = await createDocument({
-        file: new File(['hello world'], 'file-2.txt', { type: 'text/plain' }),
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file-2.txt',
+        mimeType: 'text/plain',
         organizationId: 'organization-1',
       });
 
@@ -238,13 +250,13 @@ describe('documents usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
-        documentsStorage: { driver: 'in-memory' },
       });
 
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = await createDocumentStorageService({ config });
 
       const createDocument = await createDocumentCreationUsecase({
+        documentsStorageService,
         db,
         config,
         generateDocumentId: () => 'doc_1',
@@ -257,13 +269,14 @@ describe('documents usecases', () => {
         taskServices,
       });
 
-      const file = new File(['content'], 'file.txt', { type: 'text/plain' });
       const userId = 'user-1';
       const organizationId = 'organization-1';
 
       await expect(
         createDocument({
-          file,
+          fileStream: createReadableStream({ content: 'Hello, world!' }),
+          fileName: 'file.txt',
+          mimeType: 'text/plain',
           userId,
           organizationId,
         }),
@@ -288,7 +301,6 @@ describe('documents usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
-        documentsStorage: { driver: 'in-memory' },
       });
 
       let documentIdIndex = 1;
@@ -296,17 +308,22 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
+        documentsStorageService: await inMemoryStorageDriverFactory(),
         taskServices,
       });
 
       await createDocument({
-        file: new File(['content-1'], 'file.txt', { type: 'text/plain' }),
+        fileStream: createReadableStream({ content: 'content-1' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
         userId: 'user-1',
         organizationId: 'organization-1',
       });
 
       await createDocument({
-        file: new File(['content-2'], 'file.txt', { type: 'text/plain' }),
+        fileStream: createReadableStream({ content: 'content-2' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
         organizationId: 'organization-1',
       });
 
@@ -329,6 +346,175 @@ describe('documents usecases', () => {
         userId: null,
         documentId: 'doc_2',
       });
+    });
+
+    test('if the document size exceeds the organization storage limit, an error is thrown and nothing is saved in the db', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+
+      const plansRepository = {
+        getOrganizationPlanById: async _args => ({
+          organizationPlan: {
+            limits: {
+              maxDocumentStorageBytes: 100, // 100 bytes
+            },
+          },
+        }),
+      } as PlansRepository;
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config: overrideConfig(),
+        taskServices,
+        plansRepository,
+        documentsStorageService: inMemoryDocumentsStorageService,
+      });
+
+      await expect(
+        createDocument({
+          fileStream: createReadableStream({ content: 'Lorem ipsum'.repeat(100) }), // Greater than 100 bytes
+          fileName: 'file.txt',
+          mimeType: 'text/plain',
+          userId: 'user-1',
+          organizationId: 'organization-1',
+        }),
+      ).rejects.toThrow(createOrganizationDocumentStorageLimitReachedError());
+
+      // Ensure no document is saved in the db
+      const documentRecords = await db.select().from(documentsTable);
+      expect(documentRecords.length).to.eql(0);
+
+      // Ensure no file is saved in the storage
+      expect(inMemoryDocumentsStorageService._getStorage().size).to.eql(0);
+    });
+
+    test('when on the verge of reaching the organization storage limit, if multiple documents, with the sum of the size exceeding the limit, are uploaded at the same time, the quota is not exceeded and only the first to be inserted is saved', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      // Quota is 100 bytes
+      // Upload file-1.txt (60 bytes) ------####################---->
+      // Upload file-2.txt (60 bytes) ------------###########------->
+
+      const { promise, resolve } = Promise.withResolvers();
+
+      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+      const documentsStorageService = {
+        ...inMemoryDocumentsStorageService,
+        saveFile: async (args) => {
+          const { fileName } = args;
+
+          // To ensure parallelism in tests, we pause the ingestion of the first file to wait for the second file to be ingested
+          if (fileName === 'file-1.txt') {
+            await promise;
+          }
+
+          return inMemoryDocumentsStorageService.saveFile(args);
+        },
+      } as DocumentStorageService;
+
+      const plansRepository = {
+        getOrganizationPlanById: async _args => ({
+          organizationPlan: {
+            limits: {
+              maxDocumentStorageBytes: 100, // 100 bytes
+            },
+          },
+        }),
+      } as PlansRepository;
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config: overrideConfig(),
+        taskServices,
+        plansRepository,
+        documentsStorageService,
+      });
+
+      const [result1, result2] = await Promise.allSettled([
+        createDocument({
+          fileStream: createReadableStream({ content: 'A'.repeat(60) }),
+          fileName: 'file-1.txt',
+          mimeType: 'text/plain',
+          userId: 'user-1',
+          organizationId: 'organization-1',
+        }),
+
+        createDocument({
+          fileStream: createReadableStream({ content: 'B'.repeat(60) }),
+          fileName: 'file-2.txt',
+          mimeType: 'text/plain',
+          organizationId: 'organization-1',
+        }).then(resolve),
+      ]);
+
+      const documentRecords = await db.select().from(documentsTable);
+
+      expect(documentRecords.length).to.eql(1);
+      expect(documentRecords[0]).to.deep.include({
+        organizationId: 'organization-1',
+        name: 'file-2.txt',
+      });
+
+      expect(result1).to.deep.include({ status: 'rejected', reason: createOrganizationDocumentStorageLimitReachedError() });
+      expect(result2).to.deep.include({ status: 'fulfilled' });
+    });
+
+    test('when a document is created that exceeds the file size limit, an error is thrown and nothing is saved in the db', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+
+      const plansRepository = {
+        getOrganizationPlanById: async _args => ({
+          organizationPlan: {
+            limits: {
+              maxDocumentStorageBytes: 1_000, // 1kiB
+              maxFileSize: 100, // 100 bytes
+            },
+          },
+        }),
+      } as PlansRepository;
+
+      const createDocument = await createDocumentCreationUsecase({
+        db,
+        config: overrideConfig(),
+        taskServices,
+        plansRepository,
+        documentsStorageService: inMemoryDocumentsStorageService,
+      });
+
+      await expect(
+        createDocument({
+          fileStream: createReadableStream({ content: 'A'.repeat(101) }),
+          fileName: 'file-1.txt',
+          mimeType: 'text/plain',
+          userId: 'user-1',
+          organizationId: 'organization-1',
+        }),
+      ).rejects.toThrow(createDocumentSizeTooLargeError());
+
+      // Ensure no document is saved in the db
+      const documentRecords = await db.select().from(documentsTable);
+      expect(documentRecords.length).to.eql(0);
+
+      // Ensure no file is saved in the storage
+      expect(inMemoryDocumentsStorageService._getStorage().size).to.eql(0);
     });
   });
 
@@ -361,7 +547,9 @@ describe('documents usecases', () => {
       });
 
       await documentsStorageService.saveFile({
-        file: new File(['hello world'], 'file-1.txt', { type: 'text/plain' }),
+        fileStream: createReadableStream({ content: 'hello world' }),
+        fileName: 'file-1.txt',
+        mimeType: 'text/plain',
         storageKey: 'organization-1/originals/document-1.txt',
       });
 

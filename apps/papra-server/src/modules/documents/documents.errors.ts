@@ -24,3 +24,9 @@ export const createDocumentNotDeletedError = createErrorFactory({
   code: 'document.not_deleted',
   statusCode: 400,
 });
+
+export const createDocumentSizeTooLargeError = createErrorFactory({
+  message: 'Document size too large.',
+  code: 'document.size_too_large',
+  statusCode: 413,
+});

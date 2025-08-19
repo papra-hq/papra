@@ -25,6 +25,9 @@ describe('plans repository', () => {
         organizationPlans: {
           isFreePlanUnlimited: true,
         },
+        documentsStorage: {
+          maxUploadSize: 0,
+        },
       });
 
       const { organizationPlans } = getOrganizationPlansRecords({ config });
@@ -33,6 +36,7 @@ describe('plans repository', () => {
         maxDocumentStorageBytes: Number.POSITIVE_INFINITY,
         maxIntakeEmailsCount: Number.POSITIVE_INFINITY,
         maxOrganizationsMembersCount: Number.POSITIVE_INFINITY,
+        maxFileSize: Number.POSITIVE_INFINITY,
       });
     });
   });

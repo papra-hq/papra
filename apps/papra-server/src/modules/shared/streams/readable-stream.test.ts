@@ -1,5 +1,6 @@
+import { Readable } from 'node:stream';
 import { describe, expect, test } from 'vitest';
-import { collectReadableStreamToString } from './readable-stream';
+import { collectReadableStreamToString, fileToReadableStream } from './readable-stream';
 
 describe('readable-stream', () => {
   describe('collectReadableStreamToString', () => {
@@ -20,6 +21,29 @@ describe('readable-stream', () => {
     test('useful to read a File object stream', async () => {
       const file = new File(['Hello, world!'], 'hello.txt', { type: 'text/plain' });
       const stream = file.stream();
+
+      const result = await collectReadableStreamToString({ stream });
+
+      expect(result).toEqual('Hello, world!');
+    });
+
+    test('it also collects native streams', async () => {
+      const stream = new Readable();
+      stream.push('Hello, world!');
+      stream.push(null);
+
+      const result = await collectReadableStreamToString({ stream });
+
+      expect(result).toEqual('Hello, world!');
+    });
+  });
+
+  describe('fileToReadableStream', () => {
+    test('converts a File object to a native Readable stream', async () => {
+      const file = new File(['Hello, world!'], 'hello.txt', { type: 'text/plain' });
+      const stream = fileToReadableStream(file);
+
+      expect(stream).toBeInstanceOf(Readable);
 
       const result = await collectReadableStreamToString({ stream });
 
