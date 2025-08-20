@@ -8,10 +8,8 @@ import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
 export const FS_STORAGE_DRIVER_NAME = 'filesystem' as const;
 
-export const fsStorageDriverFactory = defineStorageDriver(async ({ config }) => {
+export const fsStorageDriverFactory = defineStorageDriver(({ config }) => {
   const { root } = config.documentsStorage.drivers.filesystem;
-
-  await ensureDirectoryExists({ path: root });
 
   const getStoragePath = ({ storageKey }: { storageKey: string }) => ({ storagePath: join(root, storageKey) });
 

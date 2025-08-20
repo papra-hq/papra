@@ -17,7 +17,7 @@ export type StorageDriver = {
   deleteFile: (args: { storageKey: string }) => Promise<void>;
 };
 
-export type StorageDriverFactory = (args: { config: Config }) => Promise<StorageDriver>;
+export type StorageDriverFactory = (args: { config: Config }) => StorageDriver;
 
 export function defineStorageDriver<T extends StorageDriverFactory>(factory: T) {
   return factory;

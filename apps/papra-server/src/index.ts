@@ -18,7 +18,7 @@ const { config } = await parseConfig({ env });
 await ensureLocalDatabaseDirectoryExists({ config });
 const { db, client } = setupDatabase(config.database);
 
-const documentsStorageService = await createDocumentStorageService({ config });
+const documentsStorageService = createDocumentStorageService({ config });
 
 const taskServices = createTaskServices({ config });
 const { app } = await createServer({ config, db, taskServices, documentsStorageService });

@@ -40,3 +40,5 @@ local-documents
 ingestion
 .cursorrules
 *.traineddata
+
+.eslintcache

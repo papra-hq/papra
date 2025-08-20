@@ -15,7 +15,7 @@ const storageDriverFactories = {
 
 export type DocumentStorageService = Awaited<ReturnType<typeof createDocumentStorageService>>;
 
-export async function createDocumentStorageService({ config }: { config: Config }) {
+export function createDocumentStorageService({ config }: { config: Config }) {
   const storageDriverName = config.documentsStorage.driver;
 
   const storageDriverFactory = storageDriverFactories[storageDriverName];
@@ -29,7 +29,7 @@ export async function createDocumentStorageService({ config }: { config: Config 
     });
   }
 
-  const storageDriver = await storageDriverFactory({ config });
+  const storageDriver = storageDriverFactory({ config });
 
   return storageDriver;
 }

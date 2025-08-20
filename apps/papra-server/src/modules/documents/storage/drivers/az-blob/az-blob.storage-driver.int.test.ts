@@ -17,7 +17,7 @@ describe('az-blob storage-driver', () => {
           documentsStorage: { drivers: { azureBlob: { connectionString, containerName: 'test-container' } } },
         });
 
-        const driver = await azBlobStorageDriverFactory({ config });
+        const driver = azBlobStorageDriverFactory({ config });
         const client = driver.getClient();
         await client.createContainer('test-container');
 
