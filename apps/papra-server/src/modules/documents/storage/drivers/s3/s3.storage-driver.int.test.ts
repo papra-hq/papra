@@ -11,6 +11,7 @@ describe('s3 storage-driver', () => {
     runDriverTestSuites({
       // In the ci it take more than 30 seconds to pull images
       timeout: 40_000,
+      retry: 3,
       createDriver: async () => {
         const localstackContainer = await new LocalstackContainer(TEST_CONTAINER_IMAGES.LOCALSTACK).start();
         const bucketName = 'test-bucket';

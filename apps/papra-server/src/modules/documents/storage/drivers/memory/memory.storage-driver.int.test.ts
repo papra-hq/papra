@@ -1,3 +1,4 @@
+import type { Buffer } from 'node:buffer';
 import { describe, expect, test } from 'vitest';
 import { createReadableStream, fileToReadableStream } from '../../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../../document-storage.errors';
@@ -60,11 +61,11 @@ describe('memory storage-driver', () => {
       const entries = Array.from(storage.entries());
 
       expect(entries).to.have.length(1);
-      const [key, file] = entries[0] as [string, File];
+      const [key, file] = entries[0] as [string, { content: Buffer; mimeType: string; fileName: string }];
 
       expect(key).to.eql('org_1/text-file.txt');
-      expect(file).to.be.a('File');
-      expect(await file.text()).to.eql('lorem ipsum');
+      expect(file).to.be.a('object');
+      expect(file.content.toString('utf-8')).to.eql('lorem ipsum');
     });
   });
 });

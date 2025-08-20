@@ -1,20 +1,20 @@
-import { Readable } from 'node:stream';
-import { collectStreamToFile } from '../../../../shared/streams/stream.convertion';
+import type { Buffer } from 'node:buffer';
+import { collectReadableStreamToBuffer, createReadableStream } from '../../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
 
 export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
-  const storage: Map<string, File> = new Map();
+  const storage: Map<string, { content: Buffer; mimeType: string; fileName: string }> = new Map();
 
   return {
     name: IN_MEMORY_STORAGE_DRIVER_NAME,
 
     saveFile: async ({ fileStream, storageKey, mimeType, fileName }) => {
-      const { file } = await collectStreamToFile({ fileStream, fileName, mimeType });
+      const content = await collectReadableStreamToBuffer({ stream: fileStream });
 
-      storage.set(storageKey, file);
+      storage.set(storageKey, { content, mimeType, fileName });
 
       return { storageKey };
     },
@@ -27,7 +27,7 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
       }
 
       return {
-        fileStream: Readable.from(fileEntry.stream()),
+        fileStream: createReadableStream({ content: fileEntry.content }),
       };
     },
 

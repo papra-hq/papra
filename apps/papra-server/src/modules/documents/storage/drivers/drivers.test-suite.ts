@@ -1,12 +1,11 @@
 import type { StorageDriver } from './drivers.models';
-import { Readable } from 'node:stream';
 import { describe, expect, test } from 'vitest';
-import { collectReadableStreamToString } from '../../../shared/streams/readable-stream';
+import { collectReadableStreamToString, createReadableStream } from '../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../document-storage.errors';
 
-export function runDriverTestSuites({ createDriver, timeout }: { createDriver: () => Promise<{ driver: StorageDriver; [Symbol.asyncDispose]: () => Promise<void> }>; timeout?: number }) {
+export function runDriverTestSuites({ createDriver, timeout, retry }: { createDriver: () => Promise<{ driver: StorageDriver; [Symbol.asyncDispose]: () => Promise<void> }>; timeout?: number; retry?: number }) {
   describe('upload, download, delete', () => {
-    test('the driver should support uploading, retrieving and deleting files', { timeout }, async () => {
+    test('the driver should support uploading, retrieving and deleting files', { timeout, retry }, async () => {
       await using resource = await createDriver();
 
       const { driver } = resource;
@@ -16,7 +15,7 @@ export function runDriverTestSuites({ createDriver, timeout }: { createDriver: (
         fileName: 'test.txt',
         mimeType: 'text/plain',
         storageKey: 'files/test.txt',
-        fileStream: Readable.from('Hello, world!'),
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
       });
 
       // 2. Retrieve the file
