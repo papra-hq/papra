@@ -5,7 +5,7 @@ import { defineStorageDriver } from '../drivers.models';
 
 export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
 
-export const inMemoryStorageDriverFactory = defineStorageDriver(async () => {
+export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
   const storage: Map<string, { content: Buffer; mimeType: string; fileName: string }> = new Map();
 
   return {

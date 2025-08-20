@@ -32,7 +32,7 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: await inMemoryStorageDriverFactory(),
+          documentsStorageService: inMemoryStorageDriverFactory(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -74,7 +74,7 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: await inMemoryStorageDriverFactory(),
+          documentsStorageService: inMemoryStorageDriverFactory(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -107,7 +107,7 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: await inMemoryStorageDriverFactory(),
+          documentsStorageService: inMemoryStorageDriverFactory(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -145,7 +145,7 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: await inMemoryStorageDriverFactory(),
+          documentsStorageService: inMemoryStorageDriverFactory(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -194,7 +194,7 @@ describe('intake-emails usecases', () => {
       const createDocument = await createDocumentCreationUsecase({
         db,
         taskServices,
-        documentsStorageService: await inMemoryStorageDriverFactory(),
+        documentsStorageService: inMemoryStorageDriverFactory(),
         config: overrideConfig({
           organizationPlans: { isFreePlanUnlimited: true },
         }),

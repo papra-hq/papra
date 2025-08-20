@@ -83,7 +83,7 @@ describe('documents e2e', () => {
         organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const documentsStorageService = await inMemoryStorageDriverFactory();
+      const documentsStorageService = inMemoryStorageDriverFactory();
 
       const { app } = await createServer({
         db,

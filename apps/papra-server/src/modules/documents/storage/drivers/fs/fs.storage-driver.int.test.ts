@@ -39,7 +39,7 @@ describe('storage driver', () => {
         } as Config;
 
         return {
-          driver: await fsStorageDriverFactory({ config }),
+          driver: fsStorageDriverFactory({ config }),
           [Symbol.asyncDispose]: async () => {
             await deleteTmpDirectory(tmpDirectory);
           },
@@ -59,7 +59,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         const { storageKey } = await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -87,7 +87,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -119,7 +119,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -149,7 +149,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         await expect(fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });
@@ -167,7 +167,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -199,7 +199,7 @@ describe('storage driver', () => {
           },
         } as Config;
 
-        const fsStorageDriver = await fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ config });
 
         await expect(fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });

@@ -11,7 +11,7 @@ function isAzureBlobNotFoundError(error: Error): boolean {
   return ('statusCode' in error && error.statusCode === 404) || ('code' in error && error.code === 'BlobNotFound');
 }
 
-export const azBlobStorageDriverFactory = defineStorageDriver(async ({ config }) => {
+export const azBlobStorageDriverFactory = defineStorageDriver(({ config }) => {
   const { accountName, accountKey, containerName, connectionString } = config.documentsStorage.drivers.azureBlob;
 
   const blobServiceClient = connectionString !== undefined

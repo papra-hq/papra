@@ -31,7 +31,7 @@ describe('s3 storage-driver', () => {
           },
         });
 
-        const driver = await s3StorageDriverFactory({ config });
+        const driver = s3StorageDriverFactory({ config });
 
         const s3Client = driver.getClient();
 

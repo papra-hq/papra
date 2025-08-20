@@ -33,7 +33,7 @@ describe('documents usecases', () => {
         organizationPlans: { isFreePlanUnlimited: true },
         documentsStorage: { driver: 'in-memory' },
       });
-      const documentsStorageService = await createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ config });
 
       const createDocument = await createDocumentCreationUsecase({
         db,
@@ -93,7 +93,7 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
 
-      const documentsStorageService = await createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ config });
 
       let documentIdIndex = 1;
       const createDocument = await createDocumentCreationUsecase({
@@ -205,7 +205,7 @@ describe('documents usecases', () => {
         db,
         config,
         taskServices,
-        documentsStorageService: await inMemoryStorageDriverFactory(),
+        documentsStorageService: inMemoryStorageDriverFactory(),
       });
 
       // 3. Re-create the document
@@ -253,7 +253,7 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ config });
 
       const createDocument = await createDocumentCreationUsecase({
         documentsStorageService,
@@ -308,7 +308,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: await inMemoryStorageDriverFactory(),
+        documentsStorageService: inMemoryStorageDriverFactory(),
         taskServices,
       });
 
@@ -356,7 +356,7 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
 
       const plansRepository = {
         getOrganizationPlanById: async _args => ({
@@ -408,7 +408,7 @@ describe('documents usecases', () => {
 
       const { promise, resolve } = Promise.withResolvers();
 
-      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
       const documentsStorageService = {
         ...inMemoryDocumentsStorageService,
         saveFile: async (args) => {
@@ -478,7 +478,7 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const inMemoryDocumentsStorageService = await inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
 
       const plansRepository = {
         getOrganizationPlanById: async _args => ({
@@ -532,7 +532,7 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = await createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ config });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 

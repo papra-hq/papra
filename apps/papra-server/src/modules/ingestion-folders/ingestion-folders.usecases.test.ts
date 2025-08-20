@@ -40,7 +40,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = await inMemoryStorageDriverFactory();
+        const documentsStorageService = inMemoryStorageDriverFactory();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -142,7 +142,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = await inMemoryStorageDriverFactory();
+        const documentsStorageService = inMemoryStorageDriverFactory();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -245,7 +245,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = await inMemoryStorageDriverFactory();
+        const documentsStorageService = inMemoryStorageDriverFactory();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -318,7 +318,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = await inMemoryStorageDriverFactory();
+        const documentsStorageService = inMemoryStorageDriverFactory();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -450,7 +450,7 @@ describe('ingestion-folders usecases', () => {
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
-        const documentsStorageService = await inMemoryStorageDriverFactory();
+        const documentsStorageService = inMemoryStorageDriverFactory();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 

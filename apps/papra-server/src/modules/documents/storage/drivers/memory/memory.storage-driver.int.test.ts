@@ -9,7 +9,7 @@ describe('memory storage-driver', () => {
   describe('inMemoryStorageDriver', () => {
     runDriverTestSuites({
       createDriver: async () => {
-        const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
+        const inMemoryStorageDriver = inMemoryStorageDriverFactory();
 
         return {
           driver: inMemoryStorageDriver,
@@ -19,7 +19,7 @@ describe('memory storage-driver', () => {
     });
 
     test('saves, retrieves and delete a file', async () => {
-      const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
+      const inMemoryStorageDriver = inMemoryStorageDriverFactory();
 
       const file = new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' });
 
@@ -46,7 +46,7 @@ describe('memory storage-driver', () => {
     });
 
     test('mainly for testing purposes, a _getStorage() method is available to access the internal storage map', async () => {
-      const inMemoryStorageDriver = await inMemoryStorageDriverFactory();
+      const inMemoryStorageDriver = inMemoryStorageDriverFactory();
 
       await inMemoryStorageDriver.saveFile({
         fileStream: createReadableStream({ content: 'lorem ipsum' }),
