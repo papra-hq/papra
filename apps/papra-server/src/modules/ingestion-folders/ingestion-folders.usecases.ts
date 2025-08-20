@@ -2,6 +2,7 @@ import type { Stats } from 'node:fs';
 import type { Database } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
+import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { FsServices } from '../shared/fs/fs.services';
 import type { Logger } from '../shared/logger/logger';
@@ -19,6 +20,7 @@ import { isErrorWithCode } from '../shared/errors/errors';
 import { createFsServices } from '../shared/fs/fs.services';
 import { createLogger } from '../shared/logger/logger';
 import { getRootDirPath } from '../shared/path';
+import { fileToReadableStream } from '../shared/streams/readable-stream';
 import { isNil } from '../shared/utils';
 import { addTimestampToFilename, getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder, getOrganizationIdFromFilePath, isFileInDoneFolder, isFileInErrorFolder, normalizeFilePathToIngestionFolder } from './ingestion-folder.models';
 import { createInvalidPostProcessingStrategyError } from './ingestion-folders.errors';
@@ -29,11 +31,13 @@ export function createIngestionFolderWatcher({
   logger = createLogger({ namespace: 'ingestion-folder-watcher' }),
   db,
   taskServices,
+  documentsStorageService,
 }: {
   config: Config;
   logger?: Logger;
   db: Database;
   taskServices: TaskServices;
+  documentsStorageService: DocumentStorageService;
 }) {
   const { folderRootPath, watcher: { usePolling, pollingInterval }, processingConcurrency } = config.ingestionFolder;
 
@@ -44,7 +48,7 @@ export function createIngestionFolderWatcher({
   return {
     startWatchingIngestionFolders: async () => {
       const organizationsRepository = createOrganizationsRepository({ db });
-      const createDocument = await createDocumentCreationUsecase({ db, config, logger, taskServices });
+      const createDocument = await createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService });
 
       const ignored = await buildPathIgnoreFunction({ config, cwd, organizationsRepository });
 
@@ -137,7 +141,13 @@ export async function processFile({
     return;
   }
 
-  const [result, error] = await safely(createDocument({ file, organizationId }));
+  // TODO: switch to native stream
+  const [result, error] = await safely(createDocument({
+    fileStream: fileToReadableStream(file),
+    fileName: file.name,
+    mimeType: file.type,
+    organizationId,
+  }));
 
   const isNotInsertedBecauseAlreadyExists = isErrorWithCode({ error, code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE });
 

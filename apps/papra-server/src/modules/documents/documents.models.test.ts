@@ -48,8 +48,9 @@ describe('documents models', () => {
   });
 
   describe('isDocumentSizeLimitEnabled', () => {
-    test('the user can disable the document size limit by setting the maxUploadSize to 0', () => {
+    test('the user can disable the document size limit by setting the maxUploadSize to 0 or less', () => {
       expect(isDocumentSizeLimitEnabled({ maxUploadSize: 0 })).to.eql(false);
+      expect(isDocumentSizeLimitEnabled({ maxUploadSize: -1 })).to.eql(false);
 
       expect(isDocumentSizeLimitEnabled({ maxUploadSize: 100 })).to.eql(true);
       expect(isDocumentSizeLimitEnabled({ maxUploadSize: 42 })).to.eql(true);

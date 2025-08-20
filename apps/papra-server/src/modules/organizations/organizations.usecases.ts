@@ -426,3 +426,31 @@ export async function resendOrganizationInvitation({
     config,
   });
 }
+
+export async function getOrganizationStorageLimits({
+  organizationId,
+  plansRepository,
+  subscriptionsRepository,
+  documentsRepository,
+}: {
+  organizationId: string;
+  plansRepository: PlansRepository;
+  subscriptionsRepository: SubscriptionsRepository;
+  documentsRepository: DocumentsRepository;
+}) {
+  const [
+    { organizationPlan },
+    { documentsSize },
+  ] = await Promise.all([
+    getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
+    documentsRepository.getOrganizationStats({ organizationId }),
+  ]);
+
+  const { maxDocumentStorageBytes, maxFileSize } = organizationPlan.limits;
+
+  return {
+    availableDocumentStorageBytes: maxDocumentStorageBytes - documentsSize,
+    maxDocumentStorageBytes,
+    maxFileSize,
+  };
+}

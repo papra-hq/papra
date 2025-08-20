@@ -1,3 +1,4 @@
+import type { Readable } from 'node:stream';
 import type { Database } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
@@ -14,9 +15,12 @@ import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { safely } from '@corentinth/chisels';
 import pLimit from 'p-limit';
-import { checkIfOrganizationCanCreateNewDocument } from '../organizations/organizations.usecases';
+import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
+import { getOrganizationStorageLimits } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createLogger } from '../shared/logger/logger';
+import { createByteCounter } from '../shared/streams/byte-counter';
+import { createSha256HashTransformer } from '../shared/streams/stream-hash';
 import { collectStreamToFile } from '../shared/streams/stream.convertion';
 import { isDefined } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -28,14 +32,15 @@ import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
-import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { extractDocumentText, getFileSha256Hash } from './documents.services';
-import { createDocumentStorageService } from './storage/documents.storage.services';
+import { extractDocumentText } from './documents.services';
 
 export async function createDocument({
-  file,
+  fileStream,
+  fileName,
+  mimeType,
   userId,
   organizationId,
   ocrLanguages = [],
@@ -52,7 +57,9 @@ export async function createDocument({
   taskServices,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
-  file: File;
+  fileStream: Readable;
+  fileName: string;
+  mimeType: string;
   userId?: string;
   organizationId: string;
   ocrLanguages?: string[];
@@ -69,21 +76,40 @@ export async function createDocument({
   taskServices: TaskServices;
   logger?: Logger;
 }) {
-  const {
-    name: fileName,
-    size,
-    type: mimeType,
-  } = file;
+  const { availableDocumentStorageBytes, maxFileSize } = await getOrganizationStorageLimits({ organizationId, plansRepository, subscriptionsRepository, documentsRepository });
 
-  await checkIfOrganizationCanCreateNewDocument({
-    organizationId,
-    newDocumentSize: size,
-    documentsRepository,
-    plansRepository,
-    subscriptionsRepository,
+  const documentId = generateDocumentId();
+  const { originalDocumentStorageKey } = buildOriginalDocumentKey({ documentId, organizationId, fileName });
+
+  const { tap: hashStream, getHash } = createSha256HashTransformer();
+
+  // Stream that will count the bytes of the file and throw an error if the file size exceeds the organization storage limit
+  const { tap: byteCountStream, getByteCount } = createByteCounter({
+    onByteCountChange: async ({ byteCount, destroy }) => {
+      if (byteCount > availableDocumentStorageBytes) {
+        destroy({ error: createOrganizationDocumentStorageLimitReachedError() });
+      }
+
+      if (byteCount > maxFileSize) {
+        destroy({ error: createDocumentSizeTooLargeError() });
+      }
+    },
   });
 
-  const { hash } = await getFileSha256Hash({ file });
+  const outputStream = fileStream
+    .pipe(hashStream)
+    .pipe(byteCountStream);
+
+  // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
+  await documentsStorageService.saveFile({
+    fileStream: outputStream,
+    storageKey: originalDocumentStorageKey,
+    mimeType,
+    fileName,
+  });
+
+  const hash = getHash();
+  const size = getByteCount();
 
   // Early check to avoid saving the file and then realizing it already exists with the db constraint
   const { document: existingDocument } = await documentsRepository.getOrganizationDocumentBySha256Hash({ sha256Hash: hash, organizationId });
@@ -94,12 +120,14 @@ export async function createDocument({
         fileName,
         organizationId,
         documentsRepository,
+        newDocumentStorageKey: originalDocumentStorageKey,
         tagsRepository,
         taggingRulesRepository,
+        documentsStorageService,
         logger,
       })
     : await createNewDocument({
-        file,
+        newDocumentStorageKey: originalDocumentStorageKey,
         fileName,
         size,
         mimeType,
@@ -108,7 +136,9 @@ export async function createDocument({
         organizationId,
         documentsRepository,
         documentsStorageService,
-        generateDocumentId,
+        plansRepository,
+        subscriptionsRepository,
+        documentId,
         trackingServices,
         taskServices,
         ocrLanguages,
@@ -139,21 +169,22 @@ export async function createDocument({
 }
 
 export type CreateDocumentUsecase = Awaited<ReturnType<typeof createDocumentCreationUsecase>>;
-export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>[0], 'file' | 'userId' | 'organizationId'>;
+export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>[0], 'fileStream' | 'fileName' | 'mimeType' | 'userId' | 'organizationId'>;
 
 export async function createDocumentCreationUsecase({
   db,
   config,
   taskServices,
+  documentsStorageService,
   ...initialDeps
 }: {
   db: Database;
   taskServices: TaskServices;
+  documentsStorageService: DocumentStorageService;
   config: Config;
 } & Partial<DocumentUsecaseDependencies>) {
   const deps = {
     documentsRepository: initialDeps.documentsRepository ?? createDocumentsRepository({ db }),
-    documentsStorageService: initialDeps.documentsStorageService ?? await createDocumentStorageService({ config }),
     plansRepository: initialDeps.plansRepository ?? createPlansRepository({ config }),
     subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
     trackingServices: initialDeps.trackingServices ?? createTrackingServices({ config }),
@@ -167,7 +198,13 @@ export async function createDocumentCreationUsecase({
     logger: initialDeps.logger,
   };
 
-  return async (args: { file: File; userId?: string; organizationId: string }) => createDocument({ taskServices, ...args, ...deps });
+  return async (args: {
+    fileStream: Readable;
+    fileName: string;
+    mimeType: string;
+    userId?: string;
+    organizationId: string;
+  }) => createDocument({ taskServices, documentsStorageService, ...args, ...deps });
 }
 
 async function handleExistingDocument({
@@ -178,6 +215,8 @@ async function handleExistingDocument({
   documentsRepository,
   tagsRepository,
   taggingRulesRepository,
+  documentsStorageService,
+  newDocumentStorageKey,
   logger,
 }: {
   existingDocument: Document;
@@ -187,9 +226,13 @@ async function handleExistingDocument({
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   taggingRulesRepository: TaggingRulesRepository;
+  documentsStorageService: DocumentStorageService;
+  newDocumentStorageKey: string;
   logger: Logger;
 }) {
   if (!existingDocument.isDeleted) {
+    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
+
     throw createDocumentAlreadyExistsError();
   }
 
@@ -206,48 +249,51 @@ async function handleExistingDocument({
 }
 
 async function createNewDocument({
-  file,
   fileName,
   size,
   mimeType,
   hash,
   userId,
   organizationId,
+  plansRepository,
+  subscriptionsRepository,
   documentsRepository,
   documentsStorageService,
-  generateDocumentId,
+  newDocumentStorageKey,
+  documentId,
   trackingServices,
   taskServices,
   ocrLanguages = [],
   logger,
 }: {
-  file: File;
   fileName: string;
   size: number;
   mimeType: string;
   hash: string;
   userId?: string;
   organizationId: string;
+  documentId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
-  generateDocumentId: () => string;
+  plansRepository: PlansRepository;
+  subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
+  newDocumentStorageKey: string;
   taskServices: TaskServices;
   ocrLanguages?: string[];
   logger: Logger;
 }) {
-  const documentId = generateDocumentId();
+  // TODO: wrap in a transaction
 
-  const { originalDocumentStorageKey } = buildOriginalDocumentKey({
-    documentId,
-    organizationId,
-    fileName,
-  });
+  // Recheck for quota after saving the file to the storage
+  const { availableDocumentStorageBytes } = await getOrganizationStorageLimits({ organizationId, plansRepository, subscriptionsRepository, documentsRepository });
 
-  const { storageKey } = await documentsStorageService.saveFile({
-    file,
-    storageKey: originalDocumentStorageKey,
-  });
+  if (size > availableDocumentStorageBytes) {
+    logger.error({ size, availableDocumentStorageBytes }, 'Document size exceeds organization storage limit after being saved');
+    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
+
+    throw createOrganizationDocumentStorageLimitReachedError();
+  }
 
   const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
     id: documentId,
@@ -256,7 +302,7 @@ async function createNewDocument({
     originalName: fileName,
     createdBy: userId,
     originalSize: size,
-    originalStorageKey: storageKey,
+    originalStorageKey: newDocumentStorageKey,
     mimeType,
     originalSha256Hash: hash,
   }));
@@ -265,7 +311,7 @@ async function createNewDocument({
     logger.error({ error }, 'Error while creating document');
 
     // If the document is not saved, delete the file from the storage
-    await documentsStorageService.deleteFile({ storageKey: originalDocumentStorageKey });
+    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
 
     logger.error({ error }, 'Stored document file deleted because of error');
 

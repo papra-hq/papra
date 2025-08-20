@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { createApiKeyMiddleware } from '../api-keys/api-keys.middlewares';
 import { parseConfig } from '../config/config';
+import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
 import { createEmailsServices } from '../emails/emails.services';
 import { createLoggerMiddleware } from '../shared/logger/logger.middleware';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
@@ -25,8 +26,10 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
   const subscriptionsServices = createSubscriptionsServices({ config });
   const taskServices = partialDeps.taskServices ?? createTaskServices({ config });
+  const documentsStorageService = partialDeps.documentsStorageService ?? await createDocumentStorageService({ config });
 
   return {
+    documentsStorageService,
     config,
     db,
     auth,

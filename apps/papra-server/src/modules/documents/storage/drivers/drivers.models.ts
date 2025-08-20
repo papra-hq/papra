@@ -1,15 +1,17 @@
-import type { ReadableStream } from 'node:stream/web';
+import type { Readable } from 'node:stream';
 import type { Config } from '../../../config/config.types';
 
 export type StorageDriver = {
   name: string;
   saveFile: (args: {
-    file: File;
+    fileStream: Readable;
+    fileName: string;
+    mimeType: string;
     storageKey: string;
   }) => Promise<{ storageKey: string }>;
 
   getFileStream: (args: { storageKey: string }) => Promise<{
-    fileStream: ReadableStream;
+    fileStream: Readable;
   }>;
 
   deleteFile: (args: { storageKey: string }) => Promise<void>;

@@ -7,6 +7,7 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
+import { inMemoryStorageDriverFactory } from '../documents/storage/drivers/memory/memory.storage-driver';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createLogger } from '../shared/logger/logger';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -31,8 +32,8 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
+          documentsStorageService: await inMemoryStorageDriverFactory(),
           config: overrideConfig({
-            documentsStorage: { driver: 'in-memory' },
             organizationPlans: { isFreePlanUnlimited: true },
           }),
         });
@@ -73,8 +74,8 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
+          documentsStorageService: await inMemoryStorageDriverFactory(),
           config: overrideConfig({
-            documentsStorage: { driver: 'in-memory' },
             organizationPlans: { isFreePlanUnlimited: true },
           }),
         });
@@ -106,8 +107,8 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
+          documentsStorageService: await inMemoryStorageDriverFactory(),
           config: overrideConfig({
-            documentsStorage: { driver: 'in-memory' },
             organizationPlans: { isFreePlanUnlimited: true },
           }),
         });
@@ -144,8 +145,8 @@ describe('intake-emails usecases', () => {
         const createDocument = await createDocumentCreationUsecase({
           db,
           taskServices,
+          documentsStorageService: await inMemoryStorageDriverFactory(),
           config: overrideConfig({
-            documentsStorage: { driver: 'in-memory' },
             organizationPlans: { isFreePlanUnlimited: true },
           }),
         });
@@ -193,8 +194,8 @@ describe('intake-emails usecases', () => {
       const createDocument = await createDocumentCreationUsecase({
         db,
         taskServices,
+        documentsStorageService: await inMemoryStorageDriverFactory(),
         config: overrideConfig({
-          documentsStorage: { driver: 'in-memory' },
           organizationPlans: { isFreePlanUnlimited: true },
         }),
       });

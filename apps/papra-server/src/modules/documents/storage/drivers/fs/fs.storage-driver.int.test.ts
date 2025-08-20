@@ -3,20 +3,48 @@ import fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { createReadableStream } from '../../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../../document-storage.errors';
+import { runDriverTestSuites } from '../drivers.test-suite';
 import { fsStorageDriverFactory } from './fs.storage-driver';
 import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
+
+const createTmpDirectory = async () => fs.promises.mkdtemp(join(tmpdir(), 'tests-'));
+const deleteTmpDirectory = async (tmpDirectory: string) => fs.promises.rm(tmpDirectory, { recursive: true });
 
 describe('storage driver', () => {
   describe('fsStorageDriver', async () => {
     let tmpDirectory: string;
 
     beforeEach(async () => {
-      tmpDirectory = await fs.promises.mkdtemp(join(tmpdir(), 'tests-'));
+      tmpDirectory = await createTmpDirectory();
     });
 
     afterEach(async () => {
-      await fs.promises.rm(tmpDirectory, { recursive: true });
+      await deleteTmpDirectory(tmpDirectory);
+    });
+
+    runDriverTestSuites({
+      createDriver: async () => {
+        const tmpDirectory = await createTmpDirectory();
+
+        const config = {
+          documentsStorage: {
+            drivers: {
+              filesystem: {
+                root: tmpDirectory,
+              },
+            },
+          },
+        } as Config;
+
+        return {
+          driver: await fsStorageDriverFactory({ config }),
+          [Symbol.asyncDispose]: async () => {
+            await deleteTmpDirectory(tmpDirectory);
+          },
+        };
+      },
     });
 
     describe('saveFile', () => {
@@ -34,7 +62,9 @@ describe('storage driver', () => {
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
         const { storageKey } = await fsStorageDriver.saveFile({
-          file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+          fileStream: createReadableStream({ content: 'lorem ipsum' }),
+          fileName: 'text-file.txt',
+          mimeType: 'text/plain',
           storageKey: 'org_1/text-file.txt',
         });
 
@@ -60,13 +90,17 @@ describe('storage driver', () => {
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
-          file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+          fileStream: createReadableStream({ content: 'lorem ipsum' }),
+          fileName: 'text-file.txt',
+          mimeType: 'text/plain',
           storageKey: 'org_1/text-file.txt',
         });
 
         await expect(
           fsStorageDriver.saveFile({
-            file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+            fileStream: createReadableStream({ content: 'lorem ipsum' }),
+            fileName: 'text-file.txt',
+            mimeType: 'text/plain',
             storageKey: 'org_1/text-file.txt',
           }),
         ).rejects.toThrow(createFileAlreadyExistsError());
@@ -88,7 +122,9 @@ describe('storage driver', () => {
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
-          file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+          fileStream: createReadableStream({ content: 'lorem ipsum' }),
+          fileName: 'text-file.txt',
+          mimeType: 'text/plain',
           storageKey: 'org_1/text-file.txt',
         });
 
@@ -134,7 +170,9 @@ describe('storage driver', () => {
         const fsStorageDriver = await fsStorageDriverFactory({ config });
 
         await fsStorageDriver.saveFile({
-          file: new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' }),
+          fileStream: createReadableStream({ content: 'lorem ipsum' }),
+          fileName: 'text-file.txt',
+          mimeType: 'text/plain',
           storageKey: 'org_1/text-file.txt',
         });
 
