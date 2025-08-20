@@ -76,12 +76,12 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files as [File];
+        const [file] = files;
 
-        expect(file.name).to.equal('hello.md');
-        expect(file.size).to.equal(11);
-        expect(file.type).to.equal('text/markdown');
-        expect(await file.text()).to.equal('lorem ipsum');
+        expect(file!.fileName).to.equal('hello.md');
+        expect(file!.content.length).to.equal(11);
+        expect(file!.mimeType).to.equal('text/markdown');
+        expect(file!.content.toString('utf-8')).to.equal('lorem ipsum');
 
         // Check FS, ensure the file has been moved to the done folder
         expect(vol.toJSON()).to.deep.equal({
@@ -178,12 +178,12 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files as [File];
+        const [file] = files;
 
-        expect(file.name).to.equal('hello.md');
-        expect(file.size).to.equal(11);
-        expect(file.type).to.equal('text/markdown');
-        expect(await file.text()).to.equal('lorem ipsum');
+        expect(file!.fileName).to.equal('hello.md');
+        expect(file!.content.length).to.equal(11);
+        expect(file!.mimeType).to.equal('text/markdown');
+        expect(file!.content.toString('utf-8')).to.equal('lorem ipsum');
 
         // Check FS, ensure the file has been moved to the done folder
         expect(vol.toJSON()).to.deep.equal({
@@ -283,12 +283,12 @@ describe('ingestion-folders usecases', () => {
 
         expect(files).to.have.length(1);
 
-        const [file] = files as [File];
+        const [file] = files;
 
-        expect(file.name).to.equal('hello.md');
-        expect(file.size).to.equal(11);
-        expect(file.type).to.equal('text/markdown');
-        expect(await file.text()).to.equal('lorem ipsum');
+        expect(file!.fileName).to.equal('hello.md');
+        expect(file!.content.length).to.equal(11);
+        expect(file!.mimeType).to.equal('text/markdown');
+        expect(file!.content.toString('utf-8')).to.equal('lorem ipsum');
 
         // Check FS, ensure the file is still in the ingestion folder
         expect(vol.toJSON()).to.deep.equal({
