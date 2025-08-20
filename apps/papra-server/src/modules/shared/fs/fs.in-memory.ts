@@ -6,8 +6,13 @@ import { createFsServices } from './fs.services';
 export function createInMemoryFsServices(volume: NestedDirectoryJSON) {
   const { vol } = memfs(volume);
 
+  const fs = {
+    ...vol.promises,
+    createReadStream: (filePath: string) => vol.createReadStream(filePath),
+  } as FsNative;
+
   return {
     getFsState: () => vol.toJSON(),
-    fs: createFsServices({ fs: vol.promises as unknown as FsNative }),
+    fs: createFsServices({ fs }),
   };
 }

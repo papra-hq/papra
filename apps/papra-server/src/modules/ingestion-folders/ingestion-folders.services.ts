@@ -7,20 +7,19 @@ import {
   createFsServices,
 } from '../shared/fs/fs.services';
 
-export async function getFile({
+export function getFile({
   filePath,
   fs = createFsServices(),
 }: {
   filePath: string;
-  fs?: Pick<FsServices, 'readFile'>;
+  fs?: Pick<FsServices, 'createReadStream'>;
 }) {
-  const buffer = await fs.readFile({ filePath });
+  const fileStream = fs.createReadStream({ filePath });
   // lookup returns false if the mime type is not found
   const lookedUpMimeType = mime.lookup(filePath);
   const mimeType = lookedUpMimeType === false ? 'application/octet-stream' : lookedUpMimeType;
 
   const { base: fileName } = parse(filePath);
 
-  const file = new File([buffer], fileName, { type: mimeType });
-  return { file };
+  return { fileStream, mimeType, fileName };
 }

@@ -8,7 +8,7 @@ import type { FsServices } from '../shared/fs/fs.services';
 import type { Logger } from '../shared/logger/logger';
 import type { TaskServices } from '../tasks/tasks.services';
 import { isAbsolute, join, parse } from 'node:path';
-import { safely } from '@corentinth/chisels';
+import { safely, safelySync } from '@corentinth/chisels';
 import chokidar from 'chokidar';
 import { uniq } from 'lodash-es';
 import PQueue from 'p-queue';
@@ -20,7 +20,6 @@ import { isErrorWithCode } from '../shared/errors/errors';
 import { createFsServices } from '../shared/fs/fs.services';
 import { createLogger } from '../shared/logger/logger';
 import { getRootDirPath } from '../shared/path';
-import { fileToReadableStream } from '../shared/streams/readable-stream';
 import { isNil } from '../shared/utils';
 import { addTimestampToFilename, getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder, getOrganizationIdFromFilePath, isFileInDoneFolder, isFileInErrorFolder, normalizeFilePathToIngestionFolder } from './ingestion-folder.models';
 import { createInvalidPostProcessingStrategyError } from './ingestion-folders.errors';
@@ -113,14 +112,14 @@ export async function processFile({
   const { postProcessing: { moveToFolderPath: doneFolder }, errorFolder } = config.ingestionFolder;
 
   // Get the file from the ingestion folder as a File Instance
-  const [getFileResult, getFileError] = await safely(getFile({ filePath, fs }));
+  const [getFileResult, getFileError] = safelySync(() => getFile({ filePath, fs }));
 
   if (getFileError) {
     logger.error({ filePath, error: getFileError }, 'Error reading file');
     return;
   }
 
-  const { file } = getFileResult;
+  const { fileStream, mimeType, fileName } = getFileResult;
 
   const { organizationId } = await getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository });
 
@@ -143,9 +142,9 @@ export async function processFile({
 
   // TODO: switch to native stream
   const [result, error] = await safely(createDocument({
-    fileStream: fileToReadableStream(file),
-    fileName: file.name,
-    mimeType: file.type,
+    fileStream,
+    fileName,
+    mimeType,
     organizationId,
   }));
 
