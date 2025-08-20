@@ -1,8 +1,26 @@
+import type { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
-import fsNative from 'node:fs/promises';
+import fsSyncNative from 'node:fs';
+import fsPromisesNative from 'node:fs/promises';
 import { injectArguments } from '@corentinth/chisels';
+import { pick } from 'lodash-es';
 
-export type FsNative = Pick<typeof fsNative, 'mkdir' | 'unlink' | 'rename' | 'readFile' | 'stat' | 'access' | 'constants'>;
+// what we use from the native fs module
+export type FsNative = {
+  mkdir: (path: string, options: { recursive: true }) => Promise<void>;
+  unlink: (path: string) => Promise<void>;
+  rename: (oldPath: string, newPath: string) => Promise<void>;
+  stat: (path: string) => Promise<{ size: number }>;
+  readFile: (path: string) => Promise<Buffer>;
+  access: (path: string, mode: number) => Promise<void>;
+  constants: { F_OK: number };
+  createReadStream: (path: string) => Readable;
+};
+
+const fsNative = {
+  ...pick(fsPromisesNative, 'mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat'),
+  createReadStream: fsSyncNative.createReadStream.bind(fsSyncNative) as (filePath: string) => Readable,
+} as FsNative;
 
 export type FsServices = ReturnType<typeof createFsServices>;
 export function createFsServices({ fs = fsNative }: { fs?: FsNative } = {}) {
@@ -13,6 +31,7 @@ export function createFsServices({ fs = fsNative }: { fs?: FsNative } = {}) {
       deleteFile,
       moveFile,
       readFile,
+      createReadStream,
       areFilesContentIdentical,
     },
     {
@@ -52,6 +71,10 @@ export async function moveFile({ sourceFilePath, destinationFilePath, fs = fsNat
 
 export async function readFile({ filePath, fs = fsNative }: { filePath: string; fs?: FsNative }) {
   return fs.readFile(filePath);
+}
+
+export function createReadStream({ filePath, fs = fsNative }: { filePath: string; fs?: FsNative }) {
+  return fs.createReadStream(filePath);
 }
 
 export async function areFilesContentIdentical({ file1, file2, fs = fsNative }: { file1: string; file2: string; fs?: FsNative }): Promise<boolean> {
