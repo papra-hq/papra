@@ -2,4 +2,4 @@
 "@papra/app-server": patch
 ---
 
-Fixed an issue where tags affected to only deleted documents whont show up in the tag list
+Fixed an issue where tags assigned to only deleted documents won't show up in the tag list
