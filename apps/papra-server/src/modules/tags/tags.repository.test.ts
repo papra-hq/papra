@@ -157,7 +157,7 @@ describe('tags repository', () => {
       ]);
     });
 
-    test('when a tag is affected to only deleted documents, it is retreived with 0 documents count', async () => {
+    test('when a tag is assigned to only deleted documents, it is retrieved with 0 documents count', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
