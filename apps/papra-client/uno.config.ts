@@ -46,6 +46,7 @@ export default defineConfig({
       primary: {
         DEFAULT: 'hsl(var(--primary))',
         foreground: 'hsl(var(--primary-foreground))',
+        icons: 'hsl(var(--primary-icons))',
       },
       secondary: {
         DEFAULT: 'hsl(var(--secondary))',
