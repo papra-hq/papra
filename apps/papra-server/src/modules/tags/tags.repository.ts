@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableTag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, eq, getTableColumns, isNull, or } from 'drizzle-orm';
+import { and, eq, getTableColumns, sql } from 'drizzle-orm';
 import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
@@ -32,20 +32,12 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
   const tags = await db
     .select({
       ...getTableColumns(tagsTable),
-      documentsCount: count(documentsTagsTable.documentId),
+      documentsCount: sql<number>`COUNT(${documentsTagsTable.documentId}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
     })
     .from(tagsTable)
     .leftJoin(documentsTagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
     .leftJoin(documentsTable, eq(documentsTagsTable.documentId, documentsTable.id))
-    .where(
-      and(
-        eq(tagsTable.organizationId, organizationId),
-        or(
-          isNull(documentsTable.id),
-          eq(documentsTable.isDeleted, false),
-        ),
-      ),
-    )
+    .where(eq(tagsTable.organizationId, organizationId))
     .groupBy(tagsTable.id);
 
   return { tags };

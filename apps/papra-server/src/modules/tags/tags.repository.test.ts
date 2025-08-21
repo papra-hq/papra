@@ -156,6 +156,25 @@ describe('tags repository', () => {
         },
       ]);
     });
+
+    test('when a tag is assigned to only deleted documents, it is retrieved with 0 documents count', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [
+          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1', isDeleted: true },
+        ],
+        tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' }],
+        documentsTags: [{ documentId: 'document-1', tagId: 'tag-1' }],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      const { tags } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+
+      expect(tags.map(({ documentsCount, id }) => ({ documentsCount, id }))).to.eql([{ documentsCount: 0, id: 'tag-1' }]);
+    });
   });
 
   describe('createTag', () => {
