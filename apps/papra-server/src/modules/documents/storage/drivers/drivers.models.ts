@@ -1,5 +1,6 @@
 import type { Readable } from 'node:stream';
 import type { Config } from '../../../config/config.types';
+import type { ExtendNamedArguments, ExtendReturnPromise } from '../../../shared/types';
 
 export type StorageDriver = {
   name: string;
@@ -15,6 +16,19 @@ export type StorageDriver = {
   }>;
 
   deleteFile: (args: { storageKey: string }) => Promise<void>;
+};
+
+export type EncryptionContext = {
+  fileEncryptionKeyWrapped?: string | null | undefined;
+  fileEncryptionAlgorithm?: string | null | undefined;
+  fileEncryptionKekVersion?: string | null | undefined;
+};
+
+// Same as the driver but with the encryption context added in the args
+export type StorageServices = {
+  saveFile: ExtendReturnPromise<StorageDriver['saveFile'], EncryptionContext>;
+  getFileStream: ExtendNamedArguments<StorageDriver['getFileStream'], EncryptionContext>;
+  deleteFile: StorageDriver['deleteFile'];
 };
 
 export type StorageDriverFactory = (args: { config: Config }) => StorageDriver;

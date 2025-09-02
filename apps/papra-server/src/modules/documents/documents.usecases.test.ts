@@ -250,6 +250,7 @@ describe('documents usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
       });
 
       const documentsRepository = createDocumentsRepository({ db });

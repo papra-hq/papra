@@ -34,7 +34,8 @@
     "clean:all": "pnpm clean:db && pnpm clean:storage",
     "dev:reset": "pnpm clean:all && pnpm migrate:up",
     "script:send-intake-email": "tsx --env-file-if-exists=.env src/scripts/send-intake-email.script.ts | crowlog-pretty",
-    "stripe:webhook": "stripe listen --forward-to localhost:1221/api/stripe/webhook"
+    "stripe:webhook": "stripe listen --forward-to localhost:1221/api/stripe/webhook",
+    "maintenance:encrypt-all-documents": "tsx --env-file-if-exists=.env src/scripts/encrypt-all-documents.script.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.835.0",

@@ -21,6 +21,10 @@ export const documentsTable = sqliteTable('documents', {
   name: text('name').notNull(),
   mimeType: text('mime_type').notNull(),
   content: text('content').notNull().default(''),
+
+  fileEncryptionKeyWrapped: text('file_encryption_key_wrapped'), // The wrapped encryption key
+  fileEncryptionKekVersion: text('file_encryption_kek_version'), // The key encryption key version used to encrypt the file encryption key
+  fileEncryptionAlgorithm: text('file_encryption_algorithm'),
 }, table => [
   // To select paginated documents by organization
   index('documents_organization_id_is_deleted_created_at_index').on(table.organizationId, table.isDeleted, table.createdAt),
@@ -32,4 +36,6 @@ export const documentsTable = sqliteTable('documents', {
   index('documents_original_sha256_hash_index').on(table.originalSha256Hash),
   // To sum the size of documents by organization
   index('documents_organization_id_size_index').on(table.organizationId, table.originalSize),
+  // To list documents by file encryption KEK version
+  index('documents_file_encryption_kek_version_index').on(table.fileEncryptionKekVersion),
 ]);

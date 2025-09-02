@@ -4,6 +4,7 @@ import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-d
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
 import { S3_STORAGE_DRIVER_NAME } from './drivers/s3/s3.storage-driver';
+import { documentEncryptionConfig } from './encryption/document-encryption.config';
 
 export const documentStorageConfig = {
   maxUploadSize: {
@@ -92,4 +93,5 @@ export const documentStorageConfig = {
       },
     },
   },
+  encryption: documentEncryptionConfig,
 } as const satisfies ConfigDefinition;
