@@ -10,6 +10,8 @@ import { documentActivityLogMigration } from './list/0007-document-activity-log.
 import { documentActivityLogOnDeleteSetNullMigration } from './list/0008-document-activity-log-on-delete-set-null.migration';
 import { dropLegacyMigrationsMigration } from './list/0009-drop-legacy-migrations.migration';
 
+import { documentFileEncryptionMigration } from './list/0010-document-file-encryption.migration';
+
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
   documentsFtsMigration,
@@ -20,4 +22,5 @@ export const migrations: Migration[] = [
   documentActivityLogMigration,
   documentActivityLogOnDeleteSetNullMigration,
   dropLegacyMigrationsMigration,
+  documentFileEncryptionMigration,
 ];

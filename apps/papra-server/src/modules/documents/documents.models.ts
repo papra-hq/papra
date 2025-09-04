@@ -1,3 +1,6 @@
+import type { PartialBy } from '@corentinth/chisels';
+import type { DbSelectableDocument } from './documents.types';
+import { omit } from 'lodash-es';
 import { getExtension } from '../shared/files/file-names';
 import { generateId } from '../shared/random/ids';
 import { isDefined } from '../shared/utils';
@@ -23,4 +26,22 @@ export function generateDocumentId() {
 
 export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: number }) {
   return maxUploadSize > 0;
+}
+
+export function formatDocumentForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ document }: { document: T }) {
+  return {
+    ...omit(
+      document,
+      [
+        'fileEncryptionAlgorithm',
+        'fileEncryptionKeyWrapped',
+        'fileEncryptionKekVersion',
+        'originalStorageKey',
+      ],
+    ),
+  };
+}
+
+export function formatDocumentsForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ documents }: { documents: T[] }) {
+  return documents.map(document => formatDocumentForApi({ document }));
 }

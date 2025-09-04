@@ -13,6 +13,7 @@ import type { DocumentActivityRepository } from './document-activity/document-ac
 import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
+import type { EncryptionContext } from './storage/drivers/drivers.models';
 import { safely } from '@corentinth/chisels';
 import pLimit from 'p-limit';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
@@ -22,7 +23,7 @@ import { createLogger } from '../shared/logger/logger';
 import { createByteCounter } from '../shared/streams/byte-counter';
 import { createSha256HashTransformer } from '../shared/streams/stream-hash';
 import { collectStreamToFile } from '../shared/streams/stream.convertion';
-import { isDefined } from '../shared/utils';
+import { isDefined, isNil } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
@@ -36,6 +37,10 @@ import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, create
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
+
+type DocumentStorageContext = {
+  storageKey: string;
+} & EncryptionContext;
 
 export async function createDocument({
   fileStream,
@@ -101,7 +106,7 @@ export async function createDocument({
     .pipe(byteCountStream);
 
   // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
-  await documentsStorageService.saveFile({
+  const newFileStorageContext = await documentsStorageService.saveFile({
     fileStream: outputStream,
     storageKey: originalDocumentStorageKey,
     mimeType,
@@ -120,14 +125,14 @@ export async function createDocument({
         fileName,
         organizationId,
         documentsRepository,
-        newDocumentStorageKey: originalDocumentStorageKey,
+        newDocumentStorageKey: newFileStorageContext.storageKey,
         tagsRepository,
         taggingRulesRepository,
         documentsStorageService,
         logger,
       })
     : await createNewDocument({
-        newDocumentStorageKey: originalDocumentStorageKey,
+        newFileStorageContext,
         fileName,
         size,
         mimeType,
@@ -259,7 +264,7 @@ async function createNewDocument({
   subscriptionsRepository,
   documentsRepository,
   documentsStorageService,
-  newDocumentStorageKey,
+  newFileStorageContext,
   documentId,
   trackingServices,
   taskServices,
@@ -278,7 +283,7 @@ async function createNewDocument({
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
-  newDocumentStorageKey: string;
+  newFileStorageContext: DocumentStorageContext;
   taskServices: TaskServices;
   ocrLanguages?: string[];
   logger: Logger;
@@ -290,7 +295,7 @@ async function createNewDocument({
 
   if (size > availableDocumentStorageBytes) {
     logger.error({ size, availableDocumentStorageBytes }, 'Document size exceeds organization storage limit after being saved');
-    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
+    await documentsStorageService.deleteFile({ storageKey: newFileStorageContext.storageKey });
 
     throw createOrganizationDocumentStorageLimitReachedError();
   }
@@ -302,7 +307,10 @@ async function createNewDocument({
     originalName: fileName,
     createdBy: userId,
     originalSize: size,
-    originalStorageKey: newDocumentStorageKey,
+    originalStorageKey: newFileStorageContext.storageKey,
+    fileEncryptionAlgorithm: newFileStorageContext.fileEncryptionAlgorithm,
+    fileEncryptionKekVersion: newFileStorageContext.fileEncryptionKekVersion,
+    fileEncryptionKeyWrapped: newFileStorageContext.fileEncryptionKeyWrapped,
     mimeType,
     originalSha256Hash: hash,
   }));
@@ -311,7 +319,7 @@ async function createNewDocument({
     logger.error({ error }, 'Error while creating document');
 
     // If the document is not saved, delete the file from the storage
-    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
+    await documentsStorageService.deleteFile({ storageKey: newFileStorageContext.storageKey });
 
     logger.error({ error }, 'Stored document file deleted because of error');
 
@@ -479,7 +487,12 @@ export async function extractAndSaveDocumentFileContent({
     throw createDocumentNotFoundError();
   }
 
-  const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.originalStorageKey });
+  const { fileStream } = await documentsStorageService.getFileStream({
+    storageKey: document.originalStorageKey,
+    fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+    fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+    fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
+  });
 
   const { file } = await collectStreamToFile({ fileStream, fileName: document.name, mimeType: document.mimeType });
 
@@ -487,7 +500,7 @@ export async function extractAndSaveDocumentFileContent({
 
   const { document: updatedDocument } = await documentsRepository.updateDocument({ documentId, organizationId, content: text });
 
-  if (!updatedDocument) {
+  if (isNil(updatedDocument)) {
     // This should never happen, but for type safety
     throw createDocumentNotFoundError();
   }

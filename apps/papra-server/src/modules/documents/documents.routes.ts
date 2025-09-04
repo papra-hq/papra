@@ -13,6 +13,7 @@ import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
+import { formatDocumentForApi, formatDocumentsForApi } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
@@ -52,7 +53,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
 
       const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
 
-      return context.json({ document });
+      return context.json({ document: formatDocumentForApi({ document }) });
     },
   );
 }
@@ -94,7 +95,7 @@ function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
       ]);
 
       return context.json({
-        documents,
+        documents: formatDocumentsForApi({ documents }),
         documentsCount,
       });
     },
@@ -134,7 +135,7 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
       ]);
 
       return context.json({
-        documents,
+        documents: formatDocumentsForApi({ documents }),
         documentsCount,
       });
     },
@@ -162,7 +163,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
       const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       return context.json({
-        document,
+        document: formatDocumentForApi({ document }),
       });
     },
   );
@@ -271,7 +272,12 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
 
       const { document } = await getDocumentOrThrow({ documentId, documentsRepository, organizationId });
 
-      const { fileStream } = await documentsStorageService.getFileStream({ storageKey: document.originalStorageKey });
+      const { fileStream } = await documentsStorageService.getFileStream({
+        storageKey: document.originalStorageKey,
+        fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+        fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+        fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
+      });
 
       return context.body(
         Readable.toWeb(fileStream),
@@ -314,7 +320,7 @@ function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
       const { documents } = await documentsRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
 
       return context.json({
-        documents,
+        documents: formatDocumentsForApi({ documents }),
       });
     },
   );
@@ -450,7 +456,7 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
         },
       });
 
-      return context.json({ document });
+      return context.json({ document: formatDocumentForApi({ document }) });
     },
   );
 }

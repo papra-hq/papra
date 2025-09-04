@@ -15,7 +15,7 @@ export const databaseConfig = {
     env: 'DATABASE_AUTH_TOKEN',
   },
   encryptionKey: {
-    doc: 'The encryption key for the database. If not provided, the database will not be encrypted. Use with caution as if lost, the data will be unrecoverable.',
+    doc: 'The encryption key for the database. If not provided, the database will not be encrypted at rest. Use with caution as if lost, the data will be unrecoverable.',
     schema: z.string().optional(),
     default: undefined,
     env: 'DATABASE_ENCRYPTION_KEY',

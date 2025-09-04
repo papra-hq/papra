@@ -35,6 +35,10 @@ export const sidebar = [
         label: 'Setup Custom OAuth2 Providers',
         slug: 'guides/setup-custom-oauth2-providers',
       },
+      {
+        label: 'Document Encryption',
+        slug: 'guides/document-encryption',
+      },
     ],
   },
   {

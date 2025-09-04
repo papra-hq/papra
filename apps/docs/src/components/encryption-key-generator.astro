@@ -1,0 +1,154 @@
+---
+const iconSize = '20';
+const refreshIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>`;
+const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M7 9.667A2.667 2.667 0 0 1 9.667 7h8.666A2.667 2.667 0 0 1 21 9.667v8.666A2.667 2.667 0 0 1 18.333 21H9.667A2.667 2.667 0 0 1 7 18.333z"/><path d="M4.012 16.737A2 2 0 0 1 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1"/></g></svg>`;
+const copiedIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="currentColor" d="M18.333 6A3.667 3.667 0 0 1 22 9.667v8.666A3.667 3.667 0 0 1 18.333 22H9.667A3.667 3.667 0 0 1 6 18.333V9.667A3.667 3.667 0 0 1 9.667 6zM15 2c1.094 0 1.828.533 2.374 1.514a1 1 0 1 1-1.748.972C15.405 4.088 15.284 4 15 4H5c-.548 0-1 .452-1 1v9.998c0 .32.154.618.407.805l.1.065a1 1 0 1 1-.99 1.738A3 3 0 0 1 2 15V5c0-1.652 1.348-3 3-3zm1.293 9.293L13 14.585l-1.293-1.292a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414"/></svg>`;
+---
+
+<div class="key-generator">
+    <div class="key-row">
+        <input type="text" class="key-input" readonly />
+        <button class="cbtn btn-refresh" title="Generate new key">
+            <span set:html={refreshIcon} aria-label="Refresh" />
+        </button>
+        <button class="cbtn btn-copy" title="Copy to clipboard">
+            <span set:html={copyIcon} aria-label="Copy" class="icon-copy" />
+            <span set:html={copiedIcon} aria-label="Copied" class="icon-copied hidden" />
+        </button>
+    </div>
+    <div class="info-text">
+        Generated locally in your browser - no network or server involved
+    </div>
+</div>
+
+<script>
+    function generateKey({ keyInputElement }: { keyInputElement: HTMLInputElement }) {
+      // Generate a 32-byte (256-bit) encryption key
+      const array = new Uint8Array(32);
+      crypto.getRandomValues(array);
+
+      // Convert to hex format
+      const key = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+      keyInputElement.value = key;
+    }
+
+    function copyToClipboard({ keyInputElement, copyButtonElement, iconCopyElement, iconCopiedElement }: { keyInputElement: HTMLInputElement; copyButtonElement: HTMLButtonElement; iconCopyElement: HTMLSpanElement; iconCopiedElement: HTMLSpanElement }) {
+      keyInputElement.select();
+      keyInputElement.setSelectionRange(0, 64); // For mobile devices
+
+      navigator.clipboard.writeText(keyInputElement.value).then(() => {
+        iconCopyElement.classList.add('hidden');
+        iconCopiedElement.classList.remove('hidden');
+        copyButtonElement.disabled = true;
+
+        setTimeout(() => {
+          iconCopyElement.classList.remove('hidden');
+          iconCopiedElement.classList.add('hidden');
+          copyButtonElement.disabled = false;
+        }, 1_000);
+      }).catch(() => {
+        // Fallback for older browsers
+        document.execCommand('copy');
+      });
+    }
+
+    const keyGenerators = document.querySelectorAll('.key-generator');
+
+    keyGenerators.forEach((keyGenerator) => {
+      const refreshButtonElement = keyGenerator.querySelector('.btn-refresh')!;
+      const copyButtonElement = keyGenerator.querySelector<HTMLButtonElement>('.btn-copy')!;
+      const keyInputElement = keyGenerator.querySelector<HTMLInputElement>('.key-input')!;
+      const iconCopyElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copy')!;
+      const iconCopiedElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copied')!;
+
+      generateKey({ keyInputElement });
+
+      refreshButtonElement.addEventListener('click', () => generateKey({ keyInputElement }));
+      copyButtonElement.addEventListener('click', () => copyToClipboard({ copyButtonElement, keyInputElement, iconCopyElement, iconCopiedElement }));
+    });
+</script>
+
+<style>
+    .key-generator {
+        /* background-color: var(--ec-frm-trmBg);
+        border-radius: var(--ec-brdRad);
+        border: 1px solid var(--ec-brdCol);
+        font-family: monospace;
+        max-width: 100%; */
+    }
+
+    .key-row {
+        display: flex;
+        align-items: center;
+    }
+
+    .key-input {
+        flex: 1;
+        background-color: var(--sl-color-black);
+        border: 1px solid var(--sl-color-gray-5);
+        border-radius: 4px 0 0 4px;
+        padding: 8px 12px;
+        font-family: var(--__sl-font-mono, monospace);
+        font-size: 14px;
+        color: var(--sl-color-gray-2);
+        min-width: 0; /* Allow input to shrink */
+        border-right: none;
+    }
+
+    .key-input:focus {
+        outline: none;
+        border-color: var(--ec-frm-inpBrd, #4a9eff);
+        box-shadow: 0 0 0 2px var(--ec-frm-inpBrd, #4a9eff)33;
+    }
+
+    .cbtn {
+        background-color: var(--ec-frm-btnBg);
+        border: 1px solid var(--ec-brdCol);
+        padding: 10px 12px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0;
+    }
+
+    .cbtn.btn-copy {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-left: none;
+    }
+
+    .cbtn.btn-refresh {
+        border-radius: 0;
+    }
+
+    .cbtn:hover {
+        background-color: var(--sl-color-gray-6)!important;
+    }
+
+    .cbtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-refresh:hover:not(:disabled) {
+        background-color: var(--ec-frm-btnBgHover, #3a3a3a);
+    }
+
+    .btn-copy:hover:not(:disabled) {
+        background-color: var(--ec-frm-btnBgHover, #3a3a3a);
+    }
+
+    .info-text {
+        color: var(--ec-frm-txtSecondary, #888888);
+        font-style: italic;
+        margin-top: 0;
+    }
+
+</style>
