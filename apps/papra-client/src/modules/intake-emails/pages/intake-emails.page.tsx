@@ -54,7 +54,7 @@ const AllowedOriginsDialog: Component<{
       email: v.pipe(
         v.string(),
         v.trim(),
-        v.email('Please enter a valid email address'),
+        v.rfcEmail('Please enter a valid email address'),
       ),
     }),
     onSubmit: async ({ email }) => {

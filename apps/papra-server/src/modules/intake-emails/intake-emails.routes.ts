@@ -17,7 +17,7 @@ import { validateFormData, validateJsonBody, validateParams } from '../shared/va
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
-import { intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
+import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
 import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
 
@@ -121,7 +121,7 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
     })),
     validateJsonBody(z.object({
       isEnabled: z.boolean().optional(),
-      allowedOrigins: z.array(z.string().email().toLowerCase()).optional(),
+      allowedOrigins: allowedOriginsSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
