@@ -235,10 +235,10 @@ async function buildPathIgnoreFunction({
   const { organizationIds } = await organizationsRepository.getAllOrganizationIds();
 
   const doneFolders = strategy === 'move'
-    ? isAbsolute(moveToFolderPath) ? moveToFolderPath : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, moveToFolderPath)))
+    ? isAbsolute(moveToFolderPath) ? [moveToFolderPath] : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, moveToFolderPath)))
     : [];
 
-  const errorFolders = isAbsolute(errorFolder) ? errorFolder : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, errorFolder)));
+  const errorFolders = isAbsolute(errorFolder) ? [errorFolder] : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, errorFolder)));
 
   const ignoredFolders = [...doneFolders, ...errorFolders];
   const matchExcludedPatterns = picomatch(ignoredPatterns);
