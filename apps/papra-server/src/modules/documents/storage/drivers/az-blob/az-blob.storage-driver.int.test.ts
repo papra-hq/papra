@@ -1,3 +1,4 @@
+import type { DocumentStorageConfig } from '../../documents.storage.types';
 import { AzuriteContainer } from '@testcontainers/azurite';
 import { describe } from 'vitest';
 import { TEST_CONTAINER_IMAGES } from '../../../../../../test/containers/images';
@@ -13,11 +14,7 @@ describe('az-blob storage-driver', () => {
         const azuriteContainer = await new AzuriteContainer(TEST_CONTAINER_IMAGES.AZURITE).withInMemoryPersistence().start();
         const connectionString = azuriteContainer.getConnectionString();
 
-        const config = overrideConfig({
-          documentsStorage: { drivers: { azureBlob: { connectionString, containerName: 'test-container' } } },
-        });
-
-        const driver = azBlobStorageDriverFactory({ config });
+        const driver = azBlobStorageDriverFactory({ documentStorageConfig: { drivers: { azureBlob: { connectionString, containerName: 'test-container' } } } as DocumentStorageConfig });
         const client = driver.getClient();
         await client.createContainer('test-container');
 

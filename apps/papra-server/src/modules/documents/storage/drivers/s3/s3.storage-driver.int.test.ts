@@ -1,3 +1,4 @@
+import type { DocumentStorageConfig } from '../../documents.storage.types';
 import { CreateBucketCommand } from '@aws-sdk/client-s3';
 import { LocalstackContainer } from '@testcontainers/localstack';
 import { describe } from 'vitest';
@@ -16,8 +17,8 @@ describe('s3 storage-driver', () => {
         const localstackContainer = await new LocalstackContainer(TEST_CONTAINER_IMAGES.LOCALSTACK).start();
         const bucketName = 'test-bucket';
 
-        const config = overrideConfig({
-          documentsStorage: {
+        const driver = s3StorageDriverFactory({
+          documentStorageConfig: {
             drivers: {
               s3: {
                 accessKeyId: 'test',
@@ -28,10 +29,8 @@ describe('s3 storage-driver', () => {
                 forcePathStyle: true,
               },
             },
-          },
+          } as DocumentStorageConfig,
         });
-
-        const driver = s3StorageDriverFactory({ config });
 
         const s3Client = driver.getClient();
 

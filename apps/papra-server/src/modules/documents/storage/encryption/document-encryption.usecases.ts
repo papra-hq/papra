@@ -1,9 +1,14 @@
 import type { Logger } from '@crowlog/logger';
 import type { Database } from '../../../app/database/database.types';
+import type { Config } from '../../../config/config.types';
 import type { DocumentStorageService } from '../documents.storage.services';
-import { eq, isNull } from 'drizzle-orm';
+import { eq, isNotNull, isNull } from 'drizzle-orm';
 import { createLogger } from '../../../shared/logger/logger';
 import { documentsTable } from '../../documents.table';
+import {
+  createDocumentStorageService,
+
+} from '../documents.storage.services';
 
 export async function encryptAllUnencryptedDocuments({
   db,
@@ -17,7 +22,12 @@ export async function encryptAllUnencryptedDocuments({
   deleteUnencryptedAfterEncryption?: boolean;
 }) {
   const documents = await db
-    .select({ id: documentsTable.id, originalStorageKey: documentsTable.originalStorageKey, fileName: documentsTable.originalName, mimeType: documentsTable.mimeType })
+    .select({
+      id: documentsTable.id,
+      originalStorageKey: documentsTable.originalStorageKey,
+      fileName: documentsTable.originalName,
+      mimeType: documentsTable.mimeType,
+    })
     .from(documentsTable)
     .where(isNull(documentsTable.fileEncryptionKeyWrapped))
     .orderBy(documentsTable.id);
@@ -34,15 +44,26 @@ export async function encryptAllUnencryptedDocuments({
       fileEncryptionKekVersion: null,
     });
     const newStorageKey = `${originalStorageKey}.enc`;
-    const { storageKey, ...encryptionFields } = await documentStorageService.saveFile({ fileStream, fileName, mimeType, storageKey: newStorageKey });
+    const { storageKey, ...encryptionFields }
+      = await documentStorageService.saveFile({
+        fileStream,
+        fileName,
+        mimeType,
+        storageKey: newStorageKey,
+      });
 
-    await db.update(documentsTable).set({
-      ...encryptionFields,
-      originalStorageKey: storageKey,
-    }).where(eq(documentsTable.id, id));
+    await db
+      .update(documentsTable)
+      .set({
+        ...encryptionFields,
+        originalStorageKey: storageKey,
+      })
+      .where(eq(documentsTable.id, id));
 
     if (deleteUnencryptedAfterEncryption) {
-      await documentStorageService.deleteFile({ storageKey: originalStorageKey });
+      await documentStorageService.deleteFile({
+        storageKey: originalStorageKey,
+      });
     }
   }
 }
