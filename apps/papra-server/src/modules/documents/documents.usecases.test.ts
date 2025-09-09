@@ -33,7 +33,7 @@ describe('documents usecases', () => {
         organizationPlans: { isFreePlanUnlimited: true },
         documentsStorage: { driver: 'in-memory' },
       });
-      const documentsStorageService = createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
       const createDocument = await createDocumentCreationUsecase({
         db,
@@ -93,7 +93,7 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
 
-      const documentsStorageService = createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
       let documentIdIndex = 1;
       const createDocument = await createDocumentCreationUsecase({
@@ -254,7 +254,7 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
       const createDocument = await createDocumentCreationUsecase({
         documentsStorageService,
@@ -533,7 +533,7 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({ config });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 

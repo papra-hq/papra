@@ -1,4 +1,4 @@
-import type { Config } from '../../../../config/config.types';
+import type { DocumentStorageConfig } from '../../documents.storage.types';
 import fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
@@ -28,18 +28,10 @@ describe('storage driver', () => {
       createDriver: async () => {
         const tmpDirectory = await createTmpDirectory();
 
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
         return {
-          driver: fsStorageDriverFactory({ config }),
+          driver: fsStorageDriverFactory({
+            documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig,
+          }),
           [Symbol.asyncDispose]: async () => {
             await deleteTmpDirectory(tmpDirectory);
           },
@@ -49,17 +41,7 @@ describe('storage driver', () => {
 
     describe('saveFile', () => {
       test('persists the file to the filesystem', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         const { storageKey } = await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -77,17 +59,7 @@ describe('storage driver', () => {
       });
 
       test('an error is raised if the file already exists', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -109,17 +81,7 @@ describe('storage driver', () => {
 
     describe('getFileStream', () => {
       test('get a readable stream of a stored file', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -139,17 +101,7 @@ describe('storage driver', () => {
       });
 
       test('an error is raised if the file does not exist', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         await expect(fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });
@@ -157,17 +109,7 @@ describe('storage driver', () => {
 
     describe('deleteFile', () => {
       test('deletes a stored file', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -189,17 +131,7 @@ describe('storage driver', () => {
       });
 
       test('when the file does not exist, an error is raised', async () => {
-        const config = {
-          documentsStorage: {
-            drivers: {
-              filesystem: {
-                root: tmpDirectory,
-              },
-            },
-          },
-        } as Config;
-
-        const fsStorageDriver = fsStorageDriverFactory({ config });
+        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
 
         await expect(fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
       });
