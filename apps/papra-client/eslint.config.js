@@ -6,8 +6,7 @@ export default antfu({
   },
 
   ignores: [
-    // Generated file
-    'src/modules/i18n/locales.types.ts',
+    'public/manifest.json',
   ],
 
   rules: {
