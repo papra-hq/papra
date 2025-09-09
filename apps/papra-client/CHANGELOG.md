@@ -1,5 +1,21 @@
 # @papra/app-client
 
+## 0.9.0
+
+### Patch Changes
+
+- [#471](https://github.com/papra-hq/papra/pull/471) [`e77a42f`](https://github.com/papra-hq/papra/commit/e77a42fbf14da011cd396426aa0bbea56c889740) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Lazy load the PDF viewer to reduce the main chunk size
+
+- [#481](https://github.com/papra-hq/papra/pull/481) [`1606310`](https://github.com/papra-hq/papra/commit/1606310745e8edf405b527127078143481419e8c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Allow for more complex intake-email origin adresses
+
+- [#470](https://github.com/papra-hq/papra/pull/470) [`d488efe`](https://github.com/papra-hq/papra/commit/d488efe2cc4aa4f433cec4e9b8cc909b091eccc4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Simplified i18n tooling + improved performances
+
+- [#468](https://github.com/papra-hq/papra/pull/468) [`14c3587`](https://github.com/papra-hq/papra/commit/14c3587de07a605ec586bdc428d9e76956bf1c67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevent infinit loading in search modal when an error occure
+
+- [#468](https://github.com/papra-hq/papra/pull/468) [`14c3587`](https://github.com/papra-hq/papra/commit/14c3587de07a605ec586bdc428d9e76956bf1c67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved the UX of the document content edition panel
+
+- [#468](https://github.com/papra-hq/papra/pull/468) [`14c3587`](https://github.com/papra-hq/papra/commit/14c3587de07a605ec586bdc428d9e76956bf1c67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content edition support in demo mode
+
 ## 0.8.2
 
 ## 0.8.1
