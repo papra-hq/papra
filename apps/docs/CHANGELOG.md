@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.6.0
+
+### Minor Changes
+
+- [#480](https://github.com/papra-hq/papra/pull/480) [`0a03f42`](https://github.com/papra-hq/papra/commit/0a03f42231f691d339c7ab5a5916c52385e31bd2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added documents encryption layer
+
 ## 0.5.3
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@papra/app-client",
   "type": "module",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "private": true,
   "packageManager": "pnpm@10.12.3",
   "description": "Papra frontend client",

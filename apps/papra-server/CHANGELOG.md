@@ -1,5 +1,31 @@
 # @papra/app-server
 
+## 0.9.0
+
+### Minor Changes
+
+- [#472](https://github.com/papra-hq/papra/pull/472) [`b08241f`](https://github.com/papra-hq/papra/commit/b08241f20fc326a65a8de0551a7bfa91d9e4c71d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Dropped support for the dedicated backblaze b2 storage driver as b2 now fully support s3 client
+
+- [#480](https://github.com/papra-hq/papra/pull/480) [`0a03f42`](https://github.com/papra-hq/papra/commit/0a03f42231f691d339c7ab5a5916c52385e31bd2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added documents encryption layer
+
+- [#472](https://github.com/papra-hq/papra/pull/472) [`b08241f`](https://github.com/papra-hq/papra/commit/b08241f20fc326a65a8de0551a7bfa91d9e4c71d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Stream file upload instead of full in-memory loading
+
+### Patch Changes
+
+- [#481](https://github.com/papra-hq/papra/pull/481) [`1606310`](https://github.com/papra-hq/papra/commit/1606310745e8edf405b527127078143481419e8c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Allow for more complex intake-email origin adresses
+
+- [#483](https://github.com/papra-hq/papra/pull/483) [`ec0a437`](https://github.com/papra-hq/papra/commit/ec0a437d86b4c8c0979ba9d0c2ff7b39f054cec0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix a bug where the ingestion folder was not working when the done or error destination folder path (INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH and INGESTION_FOLDER_ERROR_FOLDER_PATH) were absolute.
+
+- [#475](https://github.com/papra-hq/papra/pull/475) [`ea9d90d`](https://github.com/papra-hq/papra/commit/ea9d90d6cff6954297152b3ad16f99170e8cd0dc) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use node file streams in ingestion folder for smaller RAM footprint
+
+- [#477](https://github.com/papra-hq/papra/pull/477) [`a62d376`](https://github.com/papra-hq/papra/commit/a62d3767729ab02ae203a1ac7b7fd6eb6e011d98) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an issue where tags assigned to only deleted documents won't show up in the tag list
+
+- [#472](https://github.com/papra-hq/papra/pull/472) [`b08241f`](https://github.com/papra-hq/papra/commit/b08241f20fc326a65a8de0551a7bfa91d9e4c71d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly handle missing files errors in storage drivers
+
+- Updated dependencies [[`14bc2b8`](https://github.com/papra-hq/papra/commit/14bc2b8f8d0d6605062f37188e7c57bbc61b2c1a)]:
+  - @papra/webhooks@0.3.0
+  - @papra/lecture@0.2.0
+
 ## 0.8.2
 
 ### Patch Changes
