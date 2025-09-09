@@ -26,7 +26,7 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
   const subscriptionsServices = createSubscriptionsServices({ config });
   const taskServices = partialDeps.taskServices ?? createTaskServices({ config });
-  const documentsStorageService = partialDeps.documentsStorageService ?? createDocumentStorageService({ config });
+  const documentsStorageService = partialDeps.documentsStorageService ?? createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
   return {
     documentsStorageService,

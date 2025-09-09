@@ -15,8 +15,8 @@ function isS3NotFoundError(error: Error) {
     || ('Code' in error && typeof error.Code === 'string' && codes.includes(error.Code));
 }
 
-export const s3StorageDriverFactory = defineStorageDriver(({ config }) => {
-  const { accessKeyId, secretAccessKey, bucketName, region, endpoint, forcePathStyle } = config.documentsStorage.drivers.s3;
+export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {
+  const { accessKeyId, secretAccessKey, bucketName, region, endpoint, forcePathStyle } = documentStorageConfig.drivers.s3;
 
   const s3Client = new S3Client({
     region,

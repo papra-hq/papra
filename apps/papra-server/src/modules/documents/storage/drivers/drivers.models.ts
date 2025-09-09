@@ -1,6 +1,6 @@
 import type { Readable } from 'node:stream';
-import type { Config } from '../../../config/config.types';
 import type { ExtendNamedArguments, ExtendReturnPromise } from '../../../shared/types';
+import type { DocumentStorageConfig } from '../documents.storage.types';
 
 export type StorageDriver = {
   name: string;
@@ -31,7 +31,7 @@ export type StorageServices = {
   deleteFile: StorageDriver['deleteFile'];
 };
 
-export type StorageDriverFactory = (args: { config: Config }) => StorageDriver;
+export type StorageDriverFactory = (args: { documentStorageConfig: DocumentStorageConfig }) => StorageDriver;
 
 export function defineStorageDriver<T extends StorageDriverFactory>(factory: T) {
   return factory;

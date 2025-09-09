@@ -1,4 +1,5 @@
 import type { Config } from '../../config/config.types';
+import type { DocumentStorageConfig } from './documents.storage.types';
 import type { StorageDriver, StorageDriverFactory, StorageServices } from './drivers/drivers.models';
 import { createError } from '../../shared/errors/errors';
 import { isNil } from '../../shared/utils';
@@ -17,8 +18,8 @@ const storageDriverFactories = {
 
 export type DocumentStorageService = Awaited<ReturnType<typeof createDocumentStorageService>>;
 
-export function createDocumentStorageService({ config }: { config: Config }): StorageServices {
-  const storageDriverName = config.documentsStorage.driver;
+export function createDocumentStorageService({ documentStorageConfig }: { documentStorageConfig: DocumentStorageConfig }): StorageServices {
+  const storageDriverName = documentStorageConfig.driver;
 
   const storageDriverFactory: StorageDriverFactory | undefined = storageDriverFactories[storageDriverName];
 
@@ -31,11 +32,11 @@ export function createDocumentStorageService({ config }: { config: Config }): St
     });
   }
 
-  const storageDriver = storageDriverFactory({ config });
+  const storageDriver = storageDriverFactory({ documentStorageConfig });
 
   return createDocumentStorageServiceFromDriver({
     storageDriver,
-    encryptionConfig: config.documentsStorage.encryption,
+    encryptionConfig: documentStorageConfig.encryption,
   });
 }
 
