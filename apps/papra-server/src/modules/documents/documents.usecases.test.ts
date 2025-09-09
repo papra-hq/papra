@@ -35,7 +35,7 @@ describe('documents usecases', () => {
       });
       const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config,
         generateDocumentId: () => 'doc_1',
@@ -96,7 +96,7 @@ describe('documents usecases', () => {
       const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
       let documentIdIndex = 1;
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
@@ -201,7 +201,7 @@ describe('documents usecases', () => {
         organizationPlans: { isFreePlanUnlimited: true },
       });
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config,
         taskServices,
@@ -256,7 +256,7 @@ describe('documents usecases', () => {
       const documentsRepository = createDocumentsRepository({ db });
       const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         documentsStorageService,
         db,
         config,
@@ -305,7 +305,7 @@ describe('documents usecases', () => {
       });
 
       let documentIdIndex = 1;
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
@@ -369,7 +369,7 @@ describe('documents usecases', () => {
         }),
       } as PlansRepository;
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config: overrideConfig(),
         taskServices,
@@ -434,7 +434,7 @@ describe('documents usecases', () => {
         }),
       } as PlansRepository;
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config: overrideConfig(),
         taskServices,
@@ -492,7 +492,7 @@ describe('documents usecases', () => {
         }),
       } as PlansRepository;
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         config: overrideConfig(),
         taskServices,

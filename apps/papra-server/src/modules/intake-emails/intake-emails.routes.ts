@@ -189,7 +189,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskSe
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         documentsStorageService,
         db,
         config,

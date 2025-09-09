@@ -47,7 +47,7 @@ export function createIngestionFolderWatcher({
   return {
     startWatchingIngestionFolders: async () => {
       const organizationsRepository = createOrganizationsRepository({ db });
-      const createDocument = await createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService });
+      const createDocument = createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService });
 
       const ignored = await buildPathIgnoreFunction({ config, cwd, organizationsRepository });
 

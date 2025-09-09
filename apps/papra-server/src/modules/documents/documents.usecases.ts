@@ -176,7 +176,7 @@ export async function createDocument({
 export type CreateDocumentUsecase = Awaited<ReturnType<typeof createDocumentCreationUsecase>>;
 export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>[0], 'fileStream' | 'fileName' | 'mimeType' | 'userId' | 'organizationId'>;
 
-export async function createDocumentCreationUsecase({
+export function createDocumentCreationUsecase({
   db,
   config,
   taskServices,

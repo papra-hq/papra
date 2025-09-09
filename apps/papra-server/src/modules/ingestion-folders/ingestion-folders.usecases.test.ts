@@ -52,7 +52,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database
@@ -154,7 +154,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database
@@ -257,7 +257,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         }));
 
         expect(error).to.deep.equal(createInvalidPostProcessingStrategyError({ strategy: 'unknown' }));
@@ -335,7 +335,7 @@ describe('ingestion-folders usecases', () => {
               throw new Error('File not found');
             },
           },
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check logs
@@ -475,7 +475,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: await createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
         });
 
         // Check database

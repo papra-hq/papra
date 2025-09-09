@@ -29,7 +29,7 @@ describe('intake-emails usecases', () => {
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-        const createDocument = await createDocumentCreationUsecase({
+        const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
           documentsStorageService: inMemoryStorageDriverFactory(),
@@ -71,7 +71,7 @@ describe('intake-emails usecases', () => {
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-        const createDocument = await createDocumentCreationUsecase({
+        const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
           documentsStorageService: inMemoryStorageDriverFactory(),
@@ -104,7 +104,7 @@ describe('intake-emails usecases', () => {
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-        const createDocument = await createDocumentCreationUsecase({
+        const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
           documentsStorageService: inMemoryStorageDriverFactory(),
@@ -142,7 +142,7 @@ describe('intake-emails usecases', () => {
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-        const createDocument = await createDocumentCreationUsecase({
+        const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
           documentsStorageService: inMemoryStorageDriverFactory(),
@@ -191,7 +191,7 @@ describe('intake-emails usecases', () => {
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
-      const createDocument = await createDocumentCreationUsecase({
+      const createDocument = createDocumentCreationUsecase({
         db,
         taskServices,
         documentsStorageService: inMemoryStorageDriverFactory(),

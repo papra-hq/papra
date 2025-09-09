@@ -23,7 +23,7 @@ describe('document-encryption usecases', () => {
 
       const storageDriver = inMemoryStorageDriverFactory();
 
-      const createDocumentWithoutEncryption = await createDocumentCreationUsecase({
+      const createDocumentWithoutEncryption = createDocumentCreationUsecase({
         db,
         config: overrideConfig(),
         taskServices: noopTaskServices,
@@ -61,7 +61,7 @@ describe('document-encryption usecases', () => {
         },
       });
 
-      const createDocumentWithEncryption = await createDocumentCreationUsecase({
+      const createDocumentWithEncryption = createDocumentCreationUsecase({
         db,
         documentsStorageService: documentStorageServiceWithEncryption,
         config: overrideConfig(),
