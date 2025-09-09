@@ -49,7 +49,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
         headers: context.req.header(),
       });
 
-      const createDocument = await createDocumentCreationUsecase({ ...deps });
+      const createDocument = createDocumentCreationUsecase({ ...deps });
 
       const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
 
