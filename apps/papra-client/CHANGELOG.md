@@ -1,5 +1,17 @@
 # @papra/app-client
 
+## 0.9.1
+
+### Patch Changes
+
+- [#492](https://github.com/papra-hq/papra/pull/492) [`54514e1`](https://github.com/papra-hq/papra/commit/54514e15db5deaffc59dcba34929b5e2e74282e1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a client side guard for rejecting too-big files
+
+- [#488](https://github.com/papra-hq/papra/pull/488) [`83e943c`](https://github.com/papra-hq/papra/commit/83e943c5b46432e55b6dfbaa587019a95ffab466) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix favicons display issues on firefox
+
+- [#492](https://github.com/papra-hq/papra/pull/492) [`54514e1`](https://github.com/papra-hq/papra/commit/54514e15db5deaffc59dcba34929b5e2e74282e1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix i18n messages when a file-too-big error happens
+
+- [#492](https://github.com/papra-hq/papra/pull/492) [`54514e1`](https://github.com/papra-hq/papra/commit/54514e15db5deaffc59dcba34929b5e2e74282e1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Clean all upload method to happen through the import status modal
+
 ## 0.9.0
 
 ### Patch Changes
