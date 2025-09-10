@@ -540,7 +540,7 @@ export const translations: Partial<TranslationsDictionary> = {
   // API errors
 
   'api-errors.document.already_exists': 'O documento já existe',
-  'api-errors.document.file_too_big': 'O arquivo do documento é muito grande',
+  'api-errors.document.size_too_large': 'O arquivo é muito grande',
   'api-errors.intake_email.limit_reached': 'O número máximo de e-mails de entrada para esta organização foi atingido. Faça um upgrade no seu plano para criar mais e-mails de entrada.',
   'api-errors.user.max_organization_count_reached': 'Atingiu o número máximo de organizações que pode criar. Se precisar de criar mais, entre em contato com o suporte.',
   'api-errors.default': 'Ocorreu um erro ao processar a solicitação.',

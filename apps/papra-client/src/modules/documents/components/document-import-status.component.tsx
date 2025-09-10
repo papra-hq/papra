@@ -5,6 +5,7 @@ import { A } from '@solidjs/router';
 import { throttle } from 'lodash-es';
 import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
@@ -57,6 +58,7 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
   const throttledInvalidateOrganizationDocumentsQuery = throttle(invalidateOrganizationDocumentsQuery, 500);
   const { getErrorMessage } = useI18nApiErrors();
   const { t } = useI18n();
+  const { config } = useConfig();
 
   const [getState, setState] = createSignal<'open' | 'closed' | 'collapsed'>('closed');
   const [getTasks, setTasks] = createSignal<Task[]>([]);
@@ -71,6 +73,11 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
 
     await Promise.all(files.map(async (file) => {
       updateTaskStatus({ file, status: 'uploading' });
+
+      if (file.size > config.documentsStorage.maxUploadSize) {
+        updateTaskStatus({ file, status: 'error', error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }) });
+        return;
+      }
 
       const [result, error] = await safely(uploadDocument({ file, organizationId }));
 

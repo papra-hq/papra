@@ -540,7 +540,7 @@ export const translations: Partial<TranslationsDictionary> = {
   // API errors
 
   'api-errors.document.already_exists': 'Documentul există deja',
-  'api-errors.document.file_too_big': 'Fișierul documentului este prea mare',
+  'api-errors.document.size_too_large': 'Fișierul este prea mare',
   'api-errors.intake_email.limit_reached': 'Numărul maxim de email-uri de primire pentru această organizație a fost atins. Te rugăm să-ți îmbunătățești planul pentru a crea mai multe email-uri de primire.',
   'api-errors.user.max_organization_count_reached': 'Ai atins numărul maxim de organizații pe care le poți crea. Dacă ai nevoie să creezi mai multe, te rugăm să contactezi asistența.',
   'api-errors.default': 'A apărut o eroare la procesarea cererii.',

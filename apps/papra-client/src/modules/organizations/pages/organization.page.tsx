@@ -3,9 +3,9 @@ import { formatBytes } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { createQueries, keepPreviousData } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
+import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
-import { useUploadDocuments } from '@/modules/documents/documents.composables';
 import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
@@ -32,7 +32,7 @@ export const OrganizationPage: Component = () => {
     ],
   }));
 
-  const { promptImport } = useUploadDocuments({ organizationId: params.organizationId });
+  const { promptImport } = useDocumentUpload({ getOrganizationId: () => params.organizationId });
 
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
