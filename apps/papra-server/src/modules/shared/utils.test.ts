@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { isDefined, isNil, omitUndefined } from './utils';
+import { isDefined, isNil, isNonEmptyString, isString, omitUndefined } from './utils';
 
 describe('utils', () => {
   describe('omitUndefined', () => {
@@ -45,6 +45,40 @@ describe('utils', () => {
       expect(isDefined('')).toBe(true);
       expect(isDefined(false)).toBe(true);
       expect(isDefined({})).toBe(true);
+    });
+  });
+
+  describe('isString', () => {
+    test('returns true if the value is a string', () => {
+      expect(isString('')).toBe(true);
+      expect(isString('foo')).toBe(true);
+      expect(isString(String(1))).toBe(true);
+    });
+
+    test('returns false if the value is not a string', () => {
+      expect(isString(undefined)).toBe(false);
+      expect(isString(null)).toBe(false);
+      expect(isString(0)).toBe(false);
+      expect(isString(false)).toBe(false);
+      expect(isString({})).toBe(false);
+      expect(isString([])).toBe(false);
+    });
+  });
+
+  describe('isNonEmptyString', () => {
+    test('returns true if the value is a non-empty string', () => {
+      expect(isNonEmptyString('')).toBe(false);
+      expect(isNonEmptyString('foo')).toBe(true);
+      expect(isNonEmptyString(String(1))).toBe(true);
+    });
+
+    test('returns false if the value is not a non-empty string', () => {
+      expect(isNonEmptyString(undefined)).toBe(false);
+      expect(isNonEmptyString(null)).toBe(false);
+      expect(isNonEmptyString(0)).toBe(false);
+      expect(isNonEmptyString(false)).toBe(false);
+      expect(isNonEmptyString({})).toBe(false);
+      expect(isNonEmptyString([])).toBe(false);
     });
   });
 });

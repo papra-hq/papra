@@ -1,7 +1,7 @@
 import type { Context, RouteDefinitionContext } from '../server.types';
 import type { Session } from './auth.types';
 import { get } from 'lodash-es';
-import { isDefined } from '../../shared/utils';
+import { isDefined, isString } from '../../shared/utils';
 
 export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext) {
   app.on(
@@ -26,7 +26,7 @@ export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext
     app.use('*', async (context: Context, next) => {
       const overrideUserId: unknown = get(context.env, 'loggedInUserId');
 
-      if (isDefined(overrideUserId) && typeof overrideUserId === 'string') {
+      if (isDefined(overrideUserId) && isString(overrideUserId)) {
         context.set('userId', overrideUserId);
         context.set('session', {} as Session);
         context.set('authType', 'session');

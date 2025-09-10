@@ -1,4 +1,4 @@
-import { isNil } from '../shared/utils';
+import { isNil, isNonEmptyString } from '../shared/utils';
 
 export function coerceStripeTimestampToDate(timestamp: number) {
   return new Date(timestamp * 1000);
@@ -9,5 +9,5 @@ export function isSignatureHeaderFormatValid(signature: string | undefined): sig
     return false;
   }
 
-  return typeof signature === 'string' && signature.length > 0;
+  return isNonEmptyString(signature);
 }

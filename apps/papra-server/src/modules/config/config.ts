@@ -15,6 +15,7 @@ import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
+import { isString } from '../shared/utils';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
@@ -71,7 +72,7 @@ export const configDefinition = {
       schema: z.union([
         z.string(),
         z.array(z.string()),
-      ]).transform(value => (typeof value === 'string' ? value.split(',') : value)),
+      ]).transform(value => (isString(value) ? value.split(',') : value)),
       default: ['http://localhost:3000'],
       env: 'SERVER_CORS_ORIGINS',
     },
