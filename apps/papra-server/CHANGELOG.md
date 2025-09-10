@@ -1,5 +1,13 @@
 # @papra/app-server
 
+## 0.9.1
+
+### Patch Changes
+
+- [#492](https://github.com/papra-hq/papra/pull/492) [`54514e1`](https://github.com/papra-hq/papra/commit/54514e15db5deaffc59dcba34929b5e2e74282e1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a client side guard for rejecting too-big files
+
+- [#491](https://github.com/papra-hq/papra/pull/491) [`bb9d555`](https://github.com/papra-hq/papra/commit/bb9d5556d3f16225ae40ca4d39600999e819b2c4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix cleanup state when a too-big-file is uploaded
+
 ## 0.9.0
 
 ### Minor Changes
