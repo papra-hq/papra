@@ -1,11 +1,9 @@
 import type { Component } from 'solid-js';
 import { useParams } from '@solidjs/router';
 import { createSignal } from 'solid-js';
-import { promptUploadFiles } from '@/modules/shared/files/upload';
-import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
-import { uploadDocument } from '../documents.services';
+import { useDocumentUpload } from './document-import-status.component';
 
 export const DocumentUploadArea: Component<{ organizationId?: string }> = (props) => {
   const [isDragging, setIsDragging] = createSignal(false);
@@ -13,21 +11,7 @@ export const DocumentUploadArea: Component<{ organizationId?: string }> = (props
 
   const getOrganizationId = () => props.organizationId ?? params.organizationId;
 
-  const uploadFiles = async ({ files }: { files: File[] }) => {
-    for (const file of files) {
-      await uploadDocument({ file, organizationId: getOrganizationId() });
-    }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['organizations', getOrganizationId(), 'documents'],
-      refetchType: 'all',
-    });
-  };
-
-  const promptImport = async () => {
-    const { files } = await promptUploadFiles();
-    await uploadFiles({ files });
-  };
+  const { promptImport, uploadDocuments } = useDocumentUpload({ getOrganizationId });
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault();
@@ -46,7 +30,7 @@ export const DocumentUploadArea: Component<{ organizationId?: string }> = (props
     }
 
     const files = [...event.dataTransfer.files].filter(file => file.type === 'application/pdf');
-    await uploadFiles({ files });
+    await uploadDocuments({ files });
   };
 
   return (
