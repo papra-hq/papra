@@ -1,12 +1,23 @@
-import type { Config } from '../../config/config.types';
+import { Organization } from "better-auth/plugins";
+import type { Config } from "../../config/config.types";
+import { User } from "../../users/users.types";
 
 export type IntakeEmailsServices = {
   name: string;
-  generateEmailAddress: () => Promise<{ emailAddress: string }>;
-  deleteEmailAddress: ({ emailAddress }: { emailAddress: string }) => Promise<void>;
+  generateEmailAddress: (
+    userHint?: User,
+    organizationHint?: Organization
+  ) => Promise<{ emailAddress: string }>;
+  deleteEmailAddress: ({
+    emailAddress,
+  }: {
+    emailAddress: string;
+  }) => Promise<void>;
 };
 
-export type IntakeEmailDriverFactory = (args: { config: Config }) => IntakeEmailsServices;
+export type IntakeEmailDriverFactory = (args: {
+  config: Config;
+}) => IntakeEmailsServices;
 
 export function defineIntakeEmailDriver(factory: IntakeEmailDriverFactory) {
   return factory;
