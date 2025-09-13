@@ -539,6 +539,7 @@ export const translations = {
 
   'api-errors.document.already_exists': 'The document already exists',
   'api-errors.document.size_too_large': 'The file size is too large',
+  'api-errors.intake-emails.already_exists': 'An intake email with this address already exists.',
   'api-errors.intake_email.limit_reached': 'The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.',
   'api-errors.user.max_organization_count_reached': 'You have reached the maximum number of organizations you can create, if you need to create more, please contact support.',
   'api-errors.default': 'An error occurred while processing your request.',
