@@ -21,6 +21,8 @@ const { db, client } = setupDatabase(config.database);
 const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
 const taskServices = createTaskServices({ config });
+await taskServices.initialize();
+
 const { app } = await createServer({ config, db, taskServices, documentsStorageService });
 
 const server = serve(

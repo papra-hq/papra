@@ -35,6 +35,8 @@ cache
 *.db-shm
 *.db-wal
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 local-documents
 ingestion
