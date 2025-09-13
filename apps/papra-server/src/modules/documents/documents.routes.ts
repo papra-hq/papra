@@ -288,9 +288,13 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
         Readable.toWeb(fileStream),
         200,
         {
-          'Content-Type': document.mimeType,
-          'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name)}`,
+          // Prevent XSS by serving the file as an octet-stream
+          'Content-Type': 'application/octet-stream',
+          // Always use attachment for defense in depth - client uses blob API anyway
+          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
           'Content-Length': String(document.originalSize),
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
         },
       );
     },
