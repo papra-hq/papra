@@ -1,5 +1,11 @@
 # @papra/app-client
 
+## 0.9.2
+
+### Patch Changes
+
+- [#498](https://github.com/papra-hq/papra/pull/498) [`3da13f7`](https://github.com/papra-hq/papra/commit/3da13f759155df5d7c532160a7ea582385db63b6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed the "open in new tab" button for security improvement (xss prevention)
+
 ## 0.9.1
 
 ### Patch Changes
