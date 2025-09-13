@@ -83,12 +83,27 @@ export async function createIntakeEmail({
     currentOrganization
   );
 
+  await checkIntakeEmailExists(emailAddress, intakeEmailsRepository);
+
   const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({
     organizationId,
     emailAddress,
   });
 
   return { intakeEmail };
+}
+
+export async function checkIntakeEmailExists(
+  emailAddress: string,
+  intakeEmailsRepository: IntakeEmailsRepository
+) {
+  if (await intakeEmailsRepository.intakeEmailExists({ emailAddress })) {
+    throw createError({
+      statusCode: 409,
+      message: "Intake email already exists",
+      code: "intake-emails.already_exists",
+    });
+  }
 }
 
 export async function processIntakeEmailIngestion({

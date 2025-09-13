@@ -9,7 +9,7 @@ export const schemaUsernameIntakeEmailDriverConfig = {
     env: "INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN",
   },
   uniqueIdentifierSchema: {
-    doc: "The schema for the username generator, placeholders like {{username}}, {{random-digits}}, {{organization-id}} and {{organization-name}}",
+    doc: "The schema for the username generator, placeholders like {{username}}, {{random-digits}} (3 digits), {{organization-id}} and {{organization-name}}",
     schema: z.string(),
     default: "{{username}}-{{organization-name}}-{{random-digits}}",
     env: "INTAKE_EMAILS_USERNAME_GENERATION_SCHEMA",

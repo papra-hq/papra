@@ -205,6 +205,15 @@ export const IntakeEmailsPage: Component = () => {
       return;
     }
 
+    if (isHttpErrorWithCode({ error, code: 'intake-emails.already_exists' })) {
+      createToast({
+        message: t('api-errors.intake-emails.already_exists'),
+        type: 'error',
+      });
+
+      return;
+    }
+
     if (error) {
       throw error;
     }
