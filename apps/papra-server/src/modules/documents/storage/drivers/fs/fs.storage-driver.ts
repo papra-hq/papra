@@ -37,6 +37,14 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
         writeStream.on('error', (error) => {
           reject(error);
         });
+
+        // Listen for errors on the input stream as well
+        fileStream.on('error', (error) => {
+          // Clean up the write stream and file
+          writeStream.destroy();
+          fs.unlink(storagePath, () => {}); // Ignore errors when cleaning up
+          reject(error);
+        });
       });
     },
     getFileStream: async ({ storageKey }) => {

@@ -13,6 +13,7 @@ export function getPublicConfig({ config }: { config: Config }) {
       'auth.providers.github.isEnabled',
       'auth.providers.google.isEnabled',
       'documents.deletedDocumentsRetentionDays',
+      'documentsStorage.maxUploadSize',
       'intakeEmails.isEnabled',
     ]),
     {

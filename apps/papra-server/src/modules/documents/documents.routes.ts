@@ -13,7 +13,7 @@ import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
-import { formatDocumentForApi, formatDocumentsForApi } from './documents.models';
+import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
@@ -34,6 +34,8 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
 }
 
 function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
+  const { config } = deps;
+
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
@@ -44,9 +46,12 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
 
+      const { maxUploadSize } = config.documentsStorage;
+
       const { fileStream, fileName, mimeType } = await getFileStreamFromMultipartForm({
         body: context.req.raw.body,
         headers: context.req.header(),
+        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize }) ? maxUploadSize : undefined,
       });
 
       const createDocument = createDocumentCreationUsecase({ ...deps });

@@ -2,8 +2,9 @@ import type { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
 import fsSyncNative from 'node:fs';
 import fsPromisesNative from 'node:fs/promises';
-import { injectArguments } from '@corentinth/chisels';
+import { injectArguments, safely } from '@corentinth/chisels';
 import { pick } from 'lodash-es';
+import { isCrossDeviceError } from './fs.models';
 
 // what we use from the native fs module
 export type FsNative = {
@@ -13,12 +14,13 @@ export type FsNative = {
   stat: (path: string) => Promise<{ size: number }>;
   readFile: (path: string) => Promise<Buffer>;
   access: (path: string, mode: number) => Promise<void>;
+  copyFile: (sourcePath: string, destinationPath: string) => Promise<void>;
   constants: { F_OK: number };
   createReadStream: (path: string) => Readable;
 };
 
 const fsNative = {
-  ...pick(fsPromisesNative, 'mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat'),
+  ...pick(fsPromisesNative, 'mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat', 'copyFile'),
   createReadStream: fsSyncNative.createReadStream.bind(fsSyncNative) as (filePath: string) => Readable,
 } as FsNative;
 
@@ -66,7 +68,19 @@ export async function deleteFile({ filePath, fs = fsNative }: { filePath: string
 }
 
 export async function moveFile({ sourceFilePath, destinationFilePath, fs = fsNative }: { sourceFilePath: string; destinationFilePath: string; fs?: FsNative }) {
-  await fs.rename(sourceFilePath, destinationFilePath);
+  const [, error] = await safely(fs.rename(sourceFilePath, destinationFilePath));
+
+  // With different docker volumes, the rename operation fails with an EXDEV error,
+  // so we fallback to copy and delete the source file
+  if (error && isCrossDeviceError({ error })) {
+    await fs.copyFile(sourceFilePath, destinationFilePath);
+    await fs.unlink(sourceFilePath);
+    return;
+  }
+
+  if (error) {
+    throw error;
+  }
 }
 
 export async function readFile({ filePath, fs = fsNative }: { filePath: string; fs?: FsNative }) {

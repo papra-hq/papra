@@ -15,3 +15,11 @@ export function isNil(value: unknown): value is undefined | null {
 export function isDefined<T>(value: T): value is Exclude<T, undefined | null> {
   return !isNil(value);
 }
+
+export function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+export function isNonEmptyString(value: unknown): value is string {
+  return isString(value) && value.length > 0;
+}
