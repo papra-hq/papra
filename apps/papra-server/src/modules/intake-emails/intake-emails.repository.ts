@@ -65,7 +65,7 @@ async function intakeEmailExists({
     .from(intakeEmailsTable)
     .where(eq(intakeEmailsTable.emailAddress, emailAddress));
 
-  return { exists: !!intakeEmail };
+  return !!intakeEmail;
 }
 
 async function updateIntakeEmail({
