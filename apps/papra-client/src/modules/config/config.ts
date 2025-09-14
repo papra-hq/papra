@@ -38,6 +38,9 @@ export const buildTimeConfig = {
     isEnabled: asBoolean(import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED, false),
   },
   isSubscriptionsEnabled: asBoolean(import.meta.env.VITE_IS_SUBSCRIPTIONS_ENABLED, false),
+  documentsStorage: {
+    maxUploadSize: asNumber(import.meta.env.VITE_DOCUMENTS_STORAGE_MAX_UPLOAD_SIZE, 10 * 1024 * 1024),
+  },
 } as const;
 
 export type Config = typeof buildTimeConfig;

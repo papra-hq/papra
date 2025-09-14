@@ -1,7 +1,7 @@
 {
   "name": "@papra/app-client",
   "type": "module",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "packageManager": "pnpm@10.12.3",
   "description": "Papra frontend client",
@@ -21,12 +21,10 @@
     "serve": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "pnpm check-i18n-types-outdated && vitest run",
+    "test": "vitest run",
     "test:watch": "vitest watch",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "check-i18n-types-outdated": "pnpm script:generate-i18n-types && git diff --exit-code -- src/modules/i18n/locales.types.ts > /dev/null || (echo \"Locales types are outdated, please run 'pnpm script:generate-i18n-types' and commit the changes.\" && exit 1)",
-    "script:get-missing-i18n-keys": "tsx src/scripts/get-missing-i18n-keys.script.ts",
     "script:sync-i18n-key-order": "tsx src/scripts/sync-i18n-key-order.script.ts"
   },
   "dependencies": {

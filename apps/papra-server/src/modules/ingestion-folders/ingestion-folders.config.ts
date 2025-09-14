@@ -1,6 +1,7 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
 import { booleanishSchema } from '../config/config.schemas';
+import { isString } from '../shared/utils';
 import { defaultIgnoredPatterns } from './ingestion-folders.constants';
 
 export const ingestionFolderConfig = {
@@ -61,7 +62,7 @@ export const ingestionFolderConfig = {
     schema: z.union([
       z.string(),
       z.array(z.string()),
-    ]).transform(value => (typeof value === 'string' ? value.split(',') : value)),
+    ]).transform(value => (isString(value) ? value.split(',') : value)),
     default: defaultIgnoredPatterns,
     env: 'INGESTION_FOLDER_IGNORED_PATTERNS',
   },

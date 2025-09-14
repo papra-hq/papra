@@ -3,6 +3,7 @@ import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, S3Client } fr
 
 import { Upload } from '@aws-sdk/lib-storage';
 import { safely } from '@corentinth/chisels';
+import { isString } from '../../../../shared/utils';
 import { createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
@@ -12,7 +13,7 @@ function isS3NotFoundError(error: Error) {
   const codes = ['NoSuchKey', 'NotFound'];
 
   return codes.includes(error.name)
-    || ('Code' in error && typeof error.Code === 'string' && codes.includes(error.Code));
+    || ('Code' in error && isString(error.Code) && codes.includes(error.Code));
 }
 
 export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {

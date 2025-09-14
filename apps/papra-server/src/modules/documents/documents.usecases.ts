@@ -14,6 +14,8 @@ import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import type { EncryptionContext } from './storage/drivers/drivers.models';
+import { PassThrough } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { safely } from '@corentinth/chisels';
 import pLimit from 'p-limit';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
@@ -101,17 +103,27 @@ export async function createDocument({
     },
   });
 
-  const outputStream = fileStream
-    .pipe(hashStream)
-    .pipe(byteCountStream);
+  // Create a PassThrough stream that will be used for saving the file
+  // This allows us to use pipeline for better error handling
+  const outputStream = new PassThrough();
+
+  const streamProcessingPromise = pipeline(
+    fileStream,
+    hashStream,
+    byteCountStream,
+    outputStream,
+  );
 
   // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
-  const newFileStorageContext = await documentsStorageService.saveFile({
-    fileStream: outputStream,
-    storageKey: originalDocumentStorageKey,
-    mimeType,
-    fileName,
-  });
+  const [newFileStorageContext] = await Promise.all([
+    documentsStorageService.saveFile({
+      fileStream: outputStream,
+      storageKey: originalDocumentStorageKey,
+      mimeType,
+      fileName,
+    }),
+    streamProcessingPromise,
+  ]);
 
   const hash = getHash();
   const size = getByteCount();

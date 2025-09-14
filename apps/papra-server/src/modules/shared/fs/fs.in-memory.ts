@@ -3,7 +3,7 @@ import type { FsNative } from './fs.services';
 import { memfs } from 'memfs';
 import { createFsServices } from './fs.services';
 
-export function createInMemoryFsServices(volume: NestedDirectoryJSON) {
+export function buildInMemoryFs(volume: NestedDirectoryJSON) {
   const { vol } = memfs(volume);
 
   const fs = {
@@ -12,7 +12,16 @@ export function createInMemoryFsServices(volume: NestedDirectoryJSON) {
   } as FsNative;
 
   return {
+    fs,
     getFsState: () => vol.toJSON(),
+  };
+}
+
+export function createInMemoryFsServices(volume: NestedDirectoryJSON) {
+  const { fs, getFsState } = buildInMemoryFs(volume);
+
+  return {
+    getFsState,
     fs: createFsServices({ fs }),
   };
 }
