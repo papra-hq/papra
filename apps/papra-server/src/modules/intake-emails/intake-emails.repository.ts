@@ -1,10 +1,10 @@
-import type { Database } from "../app/database/database.types";
-import { injectArguments } from "@corentinth/chisels";
-import { and, count, eq } from "drizzle-orm";
-import { createError } from "../shared/errors/errors";
-import { omitUndefined } from "../shared/utils";
-import { createIntakeEmailNotFoundError } from "./intake-emails.errors";
-import { intakeEmailsTable } from "./intake-emails.tables";
+import type { Database } from '../app/database/database.types';
+import { injectArguments } from '@corentinth/chisels';
+import { and, count, eq } from 'drizzle-orm';
+import { createError } from '../shared/errors/errors';
+import { omitUndefined } from '../shared/utils';
+import { createIntakeEmailNotFoundError } from './intake-emails.errors';
+import { intakeEmailsTable } from './intake-emails.tables';
 
 export type IntakeEmailsRepository = ReturnType<
   typeof createIntakeEmailsRepository
@@ -22,7 +22,7 @@ export function createIntakeEmailsRepository({ db }: { db: Database }) {
       getOrganizationIntakeEmailsCount,
       intakeEmailExists,
     },
-    { db }
+    { db },
   );
 }
 
@@ -43,8 +43,8 @@ async function createIntakeEmail({
   if (!intakeEmail) {
     // Very unlikely to happen as the insertion should throw an issue, it's for type safety
     throw createError({
-      message: "Error while creating intake email",
-      code: "intake-emails.create_error",
+      message: 'Error while creating intake email',
+      code: 'intake-emails.create_error',
       statusCode: 500,
       isInternal: true,
     });
@@ -87,13 +87,13 @@ async function updateIntakeEmail({
       omitUndefined({
         isEnabled,
         allowedOrigins,
-      })
+      }),
     )
     .where(
       and(
         eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId)
-      )
+        eq(intakeEmailsTable.organizationId, organizationId),
+      ),
     )
     .returning();
 
@@ -119,8 +119,8 @@ async function getIntakeEmail({
     .where(
       and(
         eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId)
-      )
+        eq(intakeEmailsTable.organizationId, organizationId),
+      ),
     );
 
   return { intakeEmail };
@@ -170,8 +170,8 @@ async function deleteIntakeEmail({
     .where(
       and(
         eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId)
-      )
+        eq(intakeEmailsTable.organizationId, organizationId),
+      ),
     );
 }
 

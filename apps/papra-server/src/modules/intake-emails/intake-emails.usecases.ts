@@ -1,24 +1,23 @@
-import type { CreateDocumentUsecase } from "../documents/documents.usecases";
-import type { PlansRepository } from "../plans/plans.repository";
-import type { Logger } from "../shared/logger/logger";
-import type { SubscriptionsRepository } from "../subscriptions/subscriptions.repository";
-import type { IntakeEmailsServices } from "./drivers/intake-emails.drivers.models";
-import type { IntakeEmailsRepository } from "./intake-emails.repository";
-import { safely } from "@corentinth/chisels";
-import { getOrganizationPlan } from "../plans/plans.usecases";
-import { addLogContext, createLogger } from "../shared/logger/logger";
-import { fileToReadableStream } from "../shared/streams/readable-stream";
+import type { CreateDocumentUsecase } from '../documents/documents.usecases';
+import type { OrganizationsRepository } from '../organizations/organizations.repository';
+import type { PlansRepository } from '../plans/plans.repository';
+import type { Logger } from '../shared/logger/logger';
+import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import type { UsersRepository } from '../users/users.repository';
+import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
+import type { IntakeEmailsRepository } from './intake-emails.repository';
+import { safely } from '@corentinth/chisels';
+import { getOrganizationPlan } from '../plans/plans.usecases';
+import { createError } from '../shared/errors/errors';
+import { addLogContext, createLogger } from '../shared/logger/logger';
+import { fileToReadableStream } from '../shared/streams/readable-stream';
+import { isNil } from '../shared/utils';
+import { SCHEMA_USERNAME_INTAKE_EMAIL_DRIVER_NAME } from './drivers/schema-username/schema-username.intake-email-driver';
 import {
   createIntakeEmailLimitReachedError,
   createIntakeEmailNotFoundError,
-} from "./intake-emails.errors";
-import { getIsFromAllowedOrigin } from "./intake-emails.models";
-import { createError } from "../shared/errors/errors";
-import { UsersRepository } from "../users/users.repository";
-import { isNil } from "../shared/utils";
-import { OrganizationsRepository } from "../organizations/organizations.repository";
-import { or } from "drizzle-orm";
-import { SCHEMA_USERNAME_INTAKE_EMAIL_DRIVER_NAME } from "./drivers/schema-username/schema-username.intake-email-driver";
+} from './intake-emails.errors';
+import { getIsFromAllowedOrigin } from './intake-emails.models';
 
 export async function createIntakeEmail({
   organizationId,
@@ -47,17 +46,17 @@ export async function createIntakeEmail({
   });
 
   let currentUser, currentOrganization;
-  //Check if the lookup for the user and organization hints are needed?
+  // Check if the lookup for the user and organization hints are needed?
   if (intakeEmailsServices.name === SCHEMA_USERNAME_INTAKE_EMAIL_DRIVER_NAME) {
-    //userId cannot be null or undefined because of the check "ensureUserIsInOrganization"
+    // userId cannot be null or undefined because of the check "ensureUserIsInOrganization"
     const { user } = await usersRepository.getUserById({ userId });
 
     if (isNil(user)) {
-      //Should not happen, for type-safety
+      // Should not happen, for type-safety
       throw createError({
         statusCode: 404,
-        message: "User not found",
-        code: "user.not_found",
+        message: 'User not found',
+        code: 'user.not_found',
       });
     }
 
@@ -70,8 +69,8 @@ export async function createIntakeEmail({
     if (isNil(organization)) {
       throw createError({
         statusCode: 404,
-        message: "Organization not found",
-        code: "organization.not_found",
+        message: 'Organization not found',
+        code: 'organization.not_found',
       });
     }
 
@@ -80,7 +79,7 @@ export async function createIntakeEmail({
 
   const { emailAddress } = await intakeEmailsServices.generateEmailAddress(
     currentUser,
-    currentOrganization
+    currentOrganization,
   );
 
   await checkIntakeEmailExists(emailAddress, intakeEmailsRepository);
@@ -95,13 +94,13 @@ export async function createIntakeEmail({
 
 export async function checkIntakeEmailExists(
   emailAddress: string,
-  intakeEmailsRepository: IntakeEmailsRepository
+  intakeEmailsRepository: IntakeEmailsRepository,
 ) {
   if (await intakeEmailsRepository.intakeEmailExists({ emailAddress })) {
     throw createError({
       statusCode: 409,
-      message: "Intake email already exists",
-      code: "intake-emails.already_exists",
+      message: 'Intake email already exists',
+      code: 'intake-emails.already_exists',
     });
   }
 }
@@ -120,7 +119,7 @@ export async function processIntakeEmailIngestion({
   createDocument: CreateDocumentUsecase;
 }) {
   return Promise.all(
-    recipientsAddresses.map(async (recipientAddress) =>
+    recipientsAddresses.map(async recipientAddress =>
       safely(
         ingestEmailForRecipient({
           fromAddress,
@@ -128,9 +127,9 @@ export async function processIntakeEmailIngestion({
           attachments,
           intakeEmailsRepository,
           createDocument,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 }
 
@@ -139,7 +138,7 @@ export async function ingestEmailForRecipient({
   recipientAddress,
   attachments,
   intakeEmailsRepository,
-  logger = createLogger({ namespace: "intake-emails.ingest" }),
+  logger = createLogger({ namespace: 'intake-emails.ingest' }),
   createDocument,
 }: {
   fromAddress: string;
@@ -149,13 +148,13 @@ export async function ingestEmailForRecipient({
   logger?: Logger;
   createDocument: CreateDocumentUsecase;
 }) {
-  const { intakeEmail } =
-    await intakeEmailsRepository.getIntakeEmailByEmailAddress({
+  const { intakeEmail }
+    = await intakeEmailsRepository.getIntakeEmailByEmailAddress({
       emailAddress: recipientAddress,
     });
 
   if (!intakeEmail) {
-    logger.info("Intake email not found");
+    logger.info('Intake email not found');
 
     return;
   }
@@ -163,7 +162,7 @@ export async function ingestEmailForRecipient({
   addLogContext({ intakeEmailId: intakeEmail.id });
 
   if (!intakeEmail.isEnabled) {
-    logger.info("Intake email is disabled");
+    logger.info('Intake email is disabled');
 
     return;
   }
@@ -174,7 +173,7 @@ export async function ingestEmailForRecipient({
   });
 
   if (!isFromAllowedOrigin) {
-    logger.warn({ fromAddress }, "Origin not allowed");
+    logger.warn({ fromAddress }, 'Origin not allowed');
 
     return;
   }
@@ -187,21 +186,21 @@ export async function ingestEmailForRecipient({
           fileName: file.name,
           mimeType: file.type,
           organizationId: intakeEmail.organizationId,
-        })
+        }),
       );
 
       if (error) {
         logger.error(
           { error },
-          "Failed to create document for intake email ingestion"
+          'Failed to create document for intake email ingestion',
         );
       } else {
         logger.info(
           { documentId: result.document.id },
-          "Document created for intake email ingestion"
+          'Document created for intake email ingestion',
         );
       }
-    })
+    }),
   );
 }
 
@@ -216,8 +215,8 @@ export async function checkIfOrganizationCanCreateNewIntakeEmail({
   subscriptionsRepository: SubscriptionsRepository;
   intakeEmailsRepository: IntakeEmailsRepository;
 }) {
-  const { intakeEmailCount } =
-    await intakeEmailsRepository.getOrganizationIntakeEmailsCount({
+  const { intakeEmailCount }
+    = await intakeEmailsRepository.getOrganizationIntakeEmailsCount({
       organizationId,
     });
   const { organizationPlan } = await getOrganizationPlan({

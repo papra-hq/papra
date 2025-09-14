@@ -1,6 +1,6 @@
-import { Organization } from "better-auth/plugins";
-import type { Config } from "../../config/config.types";
-import { User } from "../../users/users.types";
+import type { Organization } from 'better-auth/plugins';
+import type { Config } from '../../config/config.types';
+import type { User } from '../../users/users.types';
 
 export type IntakeEmailsServices = {
   name: string;
