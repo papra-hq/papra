@@ -1,14 +1,38 @@
 import type { ConfigDefinition } from 'figue';
+import type { TasksDriverName } from './drivers/tasks-driver.constants';
 import { z } from 'zod';
 import { booleanishSchema } from '../config/config.schemas';
+import { tasksDriverNames } from './drivers/tasks-driver.constants';
 
 export const tasksConfig = {
   persistence: {
-    driver: {
-      doc: 'The driver to use for the tasks persistence',
-      schema: z.enum(['memory']),
+    driverName: {
+      doc: `The driver to use for the tasks persistence, values can be one of: ${tasksDriverNames.map(x => `\`${x}\``).join(', ')}. Using the memory driver is enough when running a single instance of the server.`,
+      schema: z.enum(tasksDriverNames as [TasksDriverName, ...TasksDriverName[]]),
       default: 'memory',
       env: 'TASKS_PERSISTENCE_DRIVER',
+    },
+    drivers: {
+      libSql: {
+        url: {
+          doc: 'The URL of the LibSQL database, can be either a file-protocol url with a local path or a remote LibSQL database URL',
+          schema: z.string().url(),
+          default: 'file:./tasks-db.sqlite',
+          env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_URL',
+        },
+        authToken: {
+          doc: 'The auth token for the LibSQL database',
+          schema: z.string().optional(),
+          default: undefined,
+          env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_AUTH_TOKEN',
+        },
+        pollIntervalMs: {
+          doc: 'The interval at which the task persistence driver polls for new tasks',
+          schema: z.coerce.number().int().positive(),
+          default: 1_000,
+          env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_POLL_INTERVAL_MS',
+        },
+      },
     },
   },
   worker: {

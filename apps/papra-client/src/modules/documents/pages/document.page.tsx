@@ -214,15 +214,6 @@ export const DocumentPage: Component = () => {
                       {t('documents.actions.download')}
                     </Button>
 
-                    <Button
-                      variant="outline"
-                      onClick={() => window.open(getDataUrl()!, '_blank')}
-                      size="sm"
-                    >
-                      <div class="i-tabler-eye size-4 mr-2"></div>
-                      {t('documents.actions.open-in-new-tab')}
-                    </Button>
-
                     {getDocument().isDeleted
                       ? (
                           <Button

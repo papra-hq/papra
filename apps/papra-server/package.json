@@ -42,6 +42,7 @@
     "@aws-sdk/lib-storage": "^3.835.0",
     "@azure/storage-blob": "^12.27.0",
     "@cadence-mq/core": "^0.2.1",
+    "@cadence-mq/driver-libsql": "^0.2.1",
     "@cadence-mq/driver-memory": "^0.2.0",
     "@corentinth/chisels": "^1.3.1",
     "@corentinth/friendly-ids": "^0.0.1",
