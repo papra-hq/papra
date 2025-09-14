@@ -1,5 +1,15 @@
 # @papra/app-server
 
+## 0.9.2
+
+### Patch Changes
+
+- [#493](https://github.com/papra-hq/papra/pull/493) [`ed4d7e4`](https://github.com/papra-hq/papra/commit/ed4d7e4a00b2ca2c7fe808201c322f957d6ed990) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix to allow cross docker volume file moving when consumption is done
+
+- [#500](https://github.com/papra-hq/papra/pull/500) [`208a561`](https://github.com/papra-hq/papra/commit/208a561668ed2d1019430a9f4f5c5d3fd4cde603) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to define a Libsql/Sqlite driver for the tasks service
+
+- [#499](https://github.com/papra-hq/papra/pull/499) [`40cb1d7`](https://github.com/papra-hq/papra/commit/40cb1d71d5e52c40aab7ea2c6bc222cea6d55b70) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Enhanced security by serving files as attachement and with an octet-stream content type
+
 ## 0.9.1
 
 ### Patch Changes
