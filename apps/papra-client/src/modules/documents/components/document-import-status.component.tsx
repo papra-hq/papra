@@ -72,9 +72,10 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
     setState('open');
 
     await Promise.all(files.map(async (file) => {
+      const { maxUploadSize } = config.documentsStorage;
       updateTaskStatus({ file, status: 'uploading' });
 
-      if (file.size > config.documentsStorage.maxUploadSize) {
+      if (maxUploadSize > 0 && file.size > maxUploadSize) {
         updateTaskStatus({ file, status: 'error', error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }) });
         return;
       }
