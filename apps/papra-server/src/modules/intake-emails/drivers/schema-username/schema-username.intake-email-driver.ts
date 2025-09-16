@@ -32,7 +32,7 @@ export const schemaUsernameIntakeEmailDriverFactory = defineIntakeEmailDriver(
         const { username } = getEmailUsername({ email: userHint.email });
         emailIdentifier = emailIdentifier.replace(
           '{{username}}',
-          username || '',
+          username!,
         );
         emailIdentifier = emailIdentifier.replace(
           '{{random-digits}}',
