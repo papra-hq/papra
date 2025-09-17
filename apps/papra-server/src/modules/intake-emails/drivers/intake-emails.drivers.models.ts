@@ -2,8 +2,8 @@ import type { Config } from '../../config/config.types';
 
 export type IntakeEmailsServices = {
   name: string;
-  generateEmailAddress: () => Promise<{ emailAddress: string }>;
-  deleteEmailAddress: ({ emailAddress }: { emailAddress: string }) => Promise<void>;
+  createEmailAddress: (args: { username: string }) => Promise<{ emailAddress: string }>;
+  deleteEmailAddress: (args: { emailAddress: string }) => Promise<void>;
 };
 
 export type IntakeEmailDriverFactory = (args: { config: Config }) => IntakeEmailsServices;

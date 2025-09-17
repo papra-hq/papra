@@ -4,6 +4,7 @@ import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
+import type { IntakeEmailAddressesServices } from './username-drivers/intake-email-username.services';
 import { safely } from '@corentinth/chisels';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
@@ -17,12 +18,14 @@ export async function createIntakeEmail({
   intakeEmailsServices,
   plansRepository,
   subscriptionsRepository,
+  intakeEmailAddressesServices,
 }: {
   organizationId: string;
   intakeEmailsRepository: IntakeEmailsRepository;
   intakeEmailsServices: IntakeEmailsServices;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  intakeEmailAddressesServices: IntakeEmailAddressesServices;
 }) {
   await checkIfOrganizationCanCreateNewIntakeEmail({
     organizationId,
@@ -31,7 +34,9 @@ export async function createIntakeEmail({
     intakeEmailsRepository,
   });
 
-  const { emailAddress } = await intakeEmailsServices.generateEmailAddress();
+  const { username } = await intakeEmailAddressesServices.generateIntakeEmailUsername();
+
+  const { emailAddress } = await intakeEmailsServices.createEmailAddress({ username });
 
   const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({ organizationId, emailAddress });
 

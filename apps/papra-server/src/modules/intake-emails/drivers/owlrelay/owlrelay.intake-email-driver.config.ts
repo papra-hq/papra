@@ -15,4 +15,10 @@ export const owlrelayIntakeEmailDriverConfig = {
     default: undefined,
     env: 'OWLRELAY_WEBHOOK_URL',
   },
+  domain: {
+    doc: 'The domain to use when generating email addresses for intake emails with OwlRelay, if not provided, the OwlRelay will use their default domain',
+    schema: z.string().optional(), // TODO: check valid hostname
+    default: undefined,
+    env: 'OWLRELAY_DOMAIN',
+  },
 } as const satisfies ConfigDefinition;
