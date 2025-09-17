@@ -20,6 +20,7 @@ import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
 import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
+import { createIntakeEmailAddressesServices } from './username-drivers/intake-email-username.services';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
@@ -70,6 +71,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const intakeEmailsServices = createIntakeEmailsServices({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const intakeEmailAddressesServices = createIntakeEmailAddressesServices({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -79,6 +81,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
         intakeEmailsServices,
         plansRepository,
         subscriptionsRepository,
+        intakeEmailAddressesServices,
       });
 
       return context.json({ intakeEmail });

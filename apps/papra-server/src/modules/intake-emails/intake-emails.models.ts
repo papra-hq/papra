@@ -27,6 +27,14 @@ export function parseEmailAddress({ email }: { email: string }) {
   const [username, ...plusParts] = fullUsername.split('+');
   const plusPart = plusParts.length > 0 ? plusParts.join('+') : undefined;
 
+  if (isNil(username)) {
+    throw createError({
+      message: 'Badly formatted email address',
+      code: 'intake_emails.badly_formatted_email_address',
+      statusCode: 400,
+    });
+  }
+
   return { username, domain, plusPart };
 }
 
