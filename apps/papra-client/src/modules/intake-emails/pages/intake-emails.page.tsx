@@ -10,7 +10,7 @@ import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
-import { isHttpErrorWithCode } from '@/modules/shared/http/http-errors';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
@@ -187,6 +187,7 @@ export const IntakeEmailsPage: Component = () => {
 
   const params = useParams();
   const { confirm } = useConfirmModal();
+  const { getErrorMessage } = useI18nApiErrors({ t });
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'intake-emails'],
@@ -196,16 +197,12 @@ export const IntakeEmailsPage: Component = () => {
   const createEmail = async () => {
     const [,error] = await safely(createIntakeEmail({ organizationId: params.organizationId }));
 
-    if (isHttpErrorWithCode({ error, code: 'intake_email.limit_reached' })) {
+    if (error) {
       createToast({
-        message: t('api-errors.intake_email.limit_reached'),
+        message: getErrorMessage({ error }),
         type: 'error',
       });
 
-      return;
-    }
-
-    if (error) {
       throw error;
     }
 

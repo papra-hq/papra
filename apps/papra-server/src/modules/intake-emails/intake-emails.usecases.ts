@@ -4,7 +4,7 @@ import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import type { IntakeEmailsRepository } from './intake-emails.repository';
-import type { IntakeEmailAddressesServices } from './username-drivers/intake-email-username.services';
+import type { IntakeEmailUsernameServices } from './username-drivers/intake-email-username.services';
 import { safely } from '@corentinth/chisels';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
@@ -13,19 +13,21 @@ import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } fr
 import { getIsFromAllowedOrigin } from './intake-emails.models';
 
 export async function createIntakeEmail({
+  userId,
   organizationId,
   intakeEmailsRepository,
   intakeEmailsServices,
   plansRepository,
   subscriptionsRepository,
-  intakeEmailAddressesServices,
+  intakeEmailUsernameServices,
 }: {
+  userId: string;
   organizationId: string;
   intakeEmailsRepository: IntakeEmailsRepository;
   intakeEmailsServices: IntakeEmailsServices;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
-  intakeEmailAddressesServices: IntakeEmailAddressesServices;
+  intakeEmailUsernameServices: IntakeEmailUsernameServices;
 }) {
   await checkIfOrganizationCanCreateNewIntakeEmail({
     organizationId,
@@ -34,7 +36,7 @@ export async function createIntakeEmail({
     intakeEmailsRepository,
   });
 
-  const { username } = await intakeEmailAddressesServices.generateIntakeEmailUsername();
+  const { username } = await intakeEmailUsernameServices.generateIntakeEmailUsername({ userId, organizationId });
 
   const { emailAddress } = await intakeEmailsServices.createEmailAddress({ username });
 
