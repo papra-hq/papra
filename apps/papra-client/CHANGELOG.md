@@ -1,5 +1,11 @@
 # @papra/app-client
 
+## 0.9.3
+
+### Patch Changes
+
+- [#506](https://github.com/papra-hq/papra/pull/506) [`6bcb2a7`](https://github.com/papra-hq/papra/commit/6bcb2a71e990d534dd12d84e64a38f2b2baea25a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to define patterns for email intake username generation
+
 ## 0.9.2
 
 ### Patch Changes

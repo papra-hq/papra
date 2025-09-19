@@ -1,5 +1,26 @@
 # @papra/app-server
 
+## 0.9.3
+
+### Patch Changes
+
+- [#506](https://github.com/papra-hq/papra/pull/506) [`6bcb2a7`](https://github.com/papra-hq/papra/commit/6bcb2a71e990d534dd12d84e64a38f2b2baea25a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to define patterns for email intake username generation
+
+- [#504](https://github.com/papra-hq/papra/pull/504) [`936bc2b`](https://github.com/papra-hq/papra/commit/936bc2bd0a788e4fb0bceb6d14810f9f8734097b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Split the intake-email username generation from the email address creation, some changes regarding the configuration when using the `random` driver.
+
+  ```env
+  # Old configuration
+  INTAKE_EMAILS_DRIVER=random-username
+  INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=mydomain.com
+
+  # New configuration
+  INTAKE_EMAILS_DRIVER=catch-all
+  INTAKE_EMAILS_CATCH_ALL_DOMAIN=mydomain.com
+  INTAKE_EMAILS_USERNAME_DRIVER=random
+  ```
+
+- [#504](https://github.com/papra-hq/papra/pull/504) [`936bc2b`](https://github.com/papra-hq/papra/commit/936bc2bd0a788e4fb0bceb6d14810f9f8734097b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to configure OwlRelay domain
+
 ## 0.9.2
 
 ### Patch Changes
