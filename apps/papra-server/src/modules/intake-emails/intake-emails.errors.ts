@@ -11,3 +11,9 @@ export const createIntakeEmailNotFoundError = createErrorFactory({
   code: 'intake_email.not_found',
   statusCode: 404,
 });
+
+export const createIntakeEmailAlreadyExistsError = createErrorFactory({
+  message: 'Intake email already exists',
+  code: 'intake_email.already_exists',
+  statusCode: 400,
+});

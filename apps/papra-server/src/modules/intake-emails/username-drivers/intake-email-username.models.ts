@@ -1,13 +1,20 @@
 import type { Logger } from '@crowlog/logger';
 import type { Config } from '../../config/config.types';
+import type { OrganizationsRepository } from '../../organizations/organizations.repository';
+import type { UsersRepository } from '../../users/users.repository';
 
-export type IntakeEmailAddressesDriver = {
+export type IntakeEmailUsernameDriver = {
   name: string;
-  generateIntakeEmailUsername: () => Promise<{ username: string }>;
+  generateIntakeEmailUsername: (args: { userId: string; organizationId: string }) => Promise<{ username: string }>;
 };
 
-export type IntakeEmailAddressesDriverFactory = (args: { config: Config; logger?: Logger }) => IntakeEmailAddressesDriver;
+export type IntakeEmailUsernameDriverFactory = (args: {
+  config: Config;
+  logger?: Logger;
+  usersRepository: UsersRepository;
+  organizationsRepository: OrganizationsRepository;
+}) => IntakeEmailUsernameDriver;
 
-export function defineIntakeEmailAddressesDriverFactory(factory: IntakeEmailAddressesDriverFactory) {
+export function defineIntakeEmailUsernameDriverFactory(factory: IntakeEmailUsernameDriverFactory) {
   return factory;
 }

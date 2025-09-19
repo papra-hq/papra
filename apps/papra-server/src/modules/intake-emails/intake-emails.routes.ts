@@ -15,12 +15,13 @@ import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
 import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
-import { createIntakeEmailAddressesServices } from './username-drivers/intake-email-username.services';
+import { createIntakeEmailUsernameServices } from './username-drivers/intake-email-username.services';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
 
@@ -66,22 +67,24 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
 
+      const usersRepository = createUsersRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
       const intakeEmailsServices = createIntakeEmailsServices({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const intakeEmailAddressesServices = createIntakeEmailAddressesServices({ config });
+      const intakeEmailUsernameServices = createIntakeEmailUsernameServices({ config, usersRepository, organizationsRepository });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { intakeEmail } = await createIntakeEmail({
+        userId,
         organizationId,
         intakeEmailsRepository,
         intakeEmailsServices,
         plansRepository,
         subscriptionsRepository,
-        intakeEmailAddressesServices,
+        intakeEmailUsernameServices,
       });
 
       return context.json({ intakeEmail });

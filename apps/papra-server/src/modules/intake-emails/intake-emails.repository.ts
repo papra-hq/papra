@@ -1,9 +1,10 @@
 import type { Database } from '../app/database/database.types';
-import { injectArguments } from '@corentinth/chisels';
+import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, eq } from 'drizzle-orm';
+import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/utils';
-import { createIntakeEmailNotFoundError } from './intake-emails.errors';
+import { createIntakeEmailAlreadyExistsError, createIntakeEmailNotFoundError } from './intake-emails.errors';
 import { intakeEmailsTable } from './intake-emails.tables';
 
 export type IntakeEmailsRepository = ReturnType<typeof createIntakeEmailsRepository>;
@@ -24,7 +25,17 @@ export function createIntakeEmailsRepository({ db }: { db: Database }) {
 }
 
 async function createIntakeEmail({ organizationId, emailAddress, db }: { organizationId: string; emailAddress: string; db: Database }) {
-  const [intakeEmail] = await db.insert(intakeEmailsTable).values({ organizationId, emailAddress }).returning();
+  const [result, error] = await safely(db.insert(intakeEmailsTable).values({ organizationId, emailAddress }).returning());
+
+  if (isUniqueConstraintError({ error })) {
+    throw createIntakeEmailAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  const [intakeEmail] = result;
 
   if (!intakeEmail) {
     // Very unlikely to happen as the insertion should throw an issue, it's for type safety

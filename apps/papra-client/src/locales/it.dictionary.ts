@@ -541,6 +541,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'api-errors.document.already_exists': 'Il documento esiste già',
   'api-errors.document.size_too_large': 'Il file è troppo grande',
+  'api-errors.intake-emails.already_exists': 'Un\'email di acquisizione con questo indirizzo esiste già.',
   'api-errors.intake_email.limit_reached': 'È stato raggiunto il numero massimo di email di acquisizione per questa organizzazione. Aggiorna il tuo piano per crearne altre.',
   'api-errors.user.max_organization_count_reached': 'Hai raggiunto il numero massimo di organizzazioni che puoi creare, se hai bisogno di crearne altre contatta il supporto.',
   'api-errors.default': 'Si è verificato un errore durante l\'elaborazione della richiesta.',

@@ -1,17 +1,26 @@
 import type { Config } from '../../config/config.types';
-import type { IntakeEmailAddressesDriverName } from './intake-email-username.drivers';
-import type { IntakeEmailAddressesDriver, IntakeEmailAddressesDriverFactory } from './intake-email-username.models';
+import type { OrganizationsRepository } from '../../organizations/organizations.repository';
+import type { UsersRepository } from '../../users/users.repository';
+import type { IntakeEmailUsernameDriverName } from './intake-email-username.drivers';
+import type { IntakeEmailUsernameDriver, IntakeEmailUsernameDriverFactory } from './intake-email-username.models';
 import { createError } from '../../shared/errors/errors';
 import { isNil } from '../../shared/utils';
-import { intakeEmailAddressesDrivers } from './intake-email-username.drivers';
+import { intakeEmailUsernameDrivers } from './intake-email-username.drivers';
 
-export type IntakeEmailAddressesServices = IntakeEmailAddressesDriver;
+export type IntakeEmailUsernameServices = IntakeEmailUsernameDriver;
 
-export function createIntakeEmailAddressesServices({ config }: { config: Config }) {
+export function createIntakeEmailUsernameServices({
+  config,
+  ...dependencies
+}: {
+  config: Config;
+  usersRepository: UsersRepository;
+  organizationsRepository: OrganizationsRepository;
+}) {
   const { driver } = config.intakeEmails.username;
-  const intakeEmailAddressesDriver: IntakeEmailAddressesDriverFactory | undefined = intakeEmailAddressesDrivers[driver as IntakeEmailAddressesDriverName];
+  const intakeEmailUsernameDriver: IntakeEmailUsernameDriverFactory | undefined = intakeEmailUsernameDrivers[driver as IntakeEmailUsernameDriverName];
 
-  if (isNil(intakeEmailAddressesDriver)) {
+  if (isNil(intakeEmailUsernameDriver)) {
     throw createError({
       message: `Invalid intake email addresses driver ${driver}`,
       code: 'intake-emails.addresses.invalid_driver',
@@ -20,7 +29,7 @@ export function createIntakeEmailAddressesServices({ config }: { config: Config 
     });
   }
 
-  const intakeEmailAddressesServices = intakeEmailAddressesDriver({ config });
+  const intakeEmailUsernameServices = intakeEmailUsernameDriver({ config, ...dependencies });
 
-  return intakeEmailAddressesServices;
+  return intakeEmailUsernameServices;
 }

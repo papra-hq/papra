@@ -55,6 +55,7 @@
     "@papra/lecture": "workspace:*",
     "@papra/webhooks": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
+    "@sindresorhus/slugify": "^3.0.0",
     "better-auth": "catalog:",
     "busboy": "^1.6.0",
     "c12": "^3.0.4",

@@ -1,5 +1,6 @@
 import type { TranslationKeys } from '@/modules/i18n/locales.types';
 import { get } from 'lodash-es';
+import { FetchError } from 'ofetch';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 
 function codeToKey(code: string): TranslationKeys {
@@ -28,6 +29,11 @@ export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof us
 
       if (translation) {
         return translation;
+      }
+
+      // Fetch error message is not helpful
+      if (error instanceof FetchError) {
+        return getDefaultErrorMessage();
       }
 
       if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
