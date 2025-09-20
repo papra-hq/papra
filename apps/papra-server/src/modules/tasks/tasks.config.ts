@@ -26,6 +26,12 @@ export const tasksConfig = {
           default: undefined,
           env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_AUTH_TOKEN',
         },
+        migrateWithPragma: {
+          doc: 'Whether to include the PRAGMA statements when setting up the LibSQL database schema.',
+          schema: booleanishSchema,
+          default: true,
+          env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_MIGRATE_WITH_PRAGMA',
+        },
         pollIntervalMs: {
           doc: 'The interval at which the task persistence driver polls for new tasks',
           schema: z.coerce.number().int().positive(),
