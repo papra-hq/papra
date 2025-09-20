@@ -254,8 +254,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       '@cadence-mq/driver-libsql':
-        specifier: ^0.2.1
-        version: 0.2.1(@cadence-mq/core@0.2.1)(@libsql/client@0.14.0)
+        specifier: ^0.2.4
+        version: 0.2.4(@cadence-mq/core@0.2.1)(@libsql/client@0.14.0)
       '@cadence-mq/driver-memory':
         specifier: ^0.2.0
         version: 0.2.0(@cadence-mq/core@0.2.1)
@@ -1076,10 +1076,10 @@ packages:
   '@cadence-mq/core@0.2.1':
     resolution: {integrity: sha512-Cu/jqR7mNhMZ1U4Boiudy2nePyf4PtqBUFGhUcsCQPJfymKcrDm4xjp8A/2tKZr5JSgkN/7L0/+mHZ27GVSryQ==}
 
-  '@cadence-mq/driver-libsql@0.2.1':
-    resolution: {integrity: sha512-tQPmMNLLVEhvT2HdY/rHk+Cl0Yj4JFMQnoYnBYIw30kTIpKGCQWnBTf5oSmIlmc6wdIHYan+f+waVhWmkObD1w==}
+  '@cadence-mq/driver-libsql@0.2.4':
+    resolution: {integrity: sha512-JXsajpPXJRQolYiPzYI5rpQyTjH1g7AZMh3KYnHHs8nieLekYhU885iRPCu80RXQsYN2CJa08Vj5hgQhGP9rjw==}
     peerDependencies:
-      '@cadence-mq/core': ^0.2.0
+      '@cadence-mq/core': ^0.2.3
       '@libsql/client': ^0.15.9
 
   '@cadence-mq/driver-memory@0.2.0':
@@ -4654,8 +4654,8 @@ packages:
     resolution: {integrity: sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw==}
     engines: {node: '>=8'}
 
-  detect-libc@2.0.4:
-    resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
+  detect-libc@2.1.0:
+    resolution: {integrity: sha512-vEtk+OcP7VBRtQZ1EJ3bdgzSfBjgnEalLTp5zjJrS+2Z1w2KZly4SBdac/WDU3hhsNAZ9E8SC96ME4Ey8MZ7cg==}
     engines: {node: '>=8'}
 
   deterministic-object-hash@2.0.2:
@@ -9515,7 +9515,7 @@ snapshots:
       '@standard-schema/spec': 1.0.0
       cron-parser: 5.3.0
 
-  '@cadence-mq/driver-libsql@0.2.1(@cadence-mq/core@0.2.1)(@libsql/client@0.14.0)':
+  '@cadence-mq/driver-libsql@0.2.4(@cadence-mq/core@0.2.1)(@libsql/client@0.14.0)':
     dependencies:
       '@cadence-mq/core': 0.2.1
       '@libsql/client': 0.14.0
@@ -10752,7 +10752,7 @@ snapshots:
 
   '@mapbox/node-pre-gyp@1.0.11':
     dependencies:
-      detect-libc: 2.0.4
+      detect-libc: 2.1.0
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
       node-fetch: 2.7.0
@@ -13308,7 +13308,7 @@ snapshots:
 
   detect-libc@2.0.3: {}
 
-  detect-libc@2.0.4:
+  detect-libc@2.1.0:
     optional: true
 
   deterministic-object-hash@2.0.2:
