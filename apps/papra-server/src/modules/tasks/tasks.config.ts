@@ -45,7 +45,7 @@ export const tasksConfig = {
     id: {
       doc: 'The id of the task worker, used to identify the worker in the Cadence cluster in case of multiple workers',
       schema: z.string().optional(),
-      env: 'TASKS_WORKER_ID',
+      env: ['TASKS_WORKER_ID', 'DYNO', 'RENDER_SERVICE_ID'],
     },
   },
   hardDeleteExpiredDocuments: {

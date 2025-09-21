@@ -63,7 +63,7 @@
     "date-fns": "^4.1.0",
     "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.38.4",
-    "figue": "^2.2.3",
+    "figue": "^3.1.1",
     "hono": "^4.8.2",
     "lodash-es": "^4.17.21",
     "mime-types": "^3.0.1",

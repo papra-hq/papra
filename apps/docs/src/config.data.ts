@@ -1,5 +1,5 @@
 import type { ConfigDefinition, ConfigDefinitionElement } from 'figue';
-import { isArray, isEmpty, isNil } from 'lodash-es';
+import { castArray, isArray, isEmpty, isNil } from 'lodash-es';
 import { marked } from 'marked';
 
 import { configDefinition } from '../../papra-server/src/modules/config/config';
@@ -46,16 +46,21 @@ const rows = configDetails
     };
   });
 
-const mdSections = rows.map(({ documentation, env, path, defaultValue }) => `
-### ${env}
+const mdSections = rows.map(({ documentation, env, path, defaultValue }) => {
+  const envs = castArray(env);
+  const [firstEnv, ...restEnvs] = envs;
+
+  return `
+### ${firstEnv}
 ${documentation}
 
 - Path: \`${path.join('.')}\`
-- Environment variable: \`${env}\`
+- Environment variable: \`${firstEnv}\` ${restEnvs.length ? `, with fallback to: ${restEnvs.map(e => `\`${e}\``).join(', ')}` : ''}
 - Default value: \`${defaultValue}\`
 
 
-`.trim()).join('\n\n---\n\n');
+`.trim();
+}).join('\n\n---\n\n');
 
 function wrapText(text: string, maxLength = 75) {
   const words = text.split(' ');
@@ -80,10 +85,12 @@ function wrapText(text: string, maxLength = 75) {
 
 const fullDotEnv = rows.map(({ env, defaultValue, documentation }) => {
   const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
+  const envs = castArray(env);
+  const [firstEnv] = envs;
 
   return [
     ...wrapText(documentation),
-    `# ${env}=${isEmptyDefaultValue ? '' : defaultValue}`,
+    `# ${firstEnv}=${isEmptyDefaultValue ? '' : defaultValue}`,
   ].join('\n');
 }).join('\n\n');
 
