@@ -48,6 +48,9 @@ ENV PAPRA_CONFIG_DIR=./app-data
 ENV EMAILS_DRY_RUN=true
 ENV CLIENT_BASE_URL=http://localhost:1221
 
+# Disable Better Auth telemetry
+ENV BETTER_AUTH_TELEMETRY=0
+
 RUN mkdir -p ./app-data/db ./app-data/documents ./ingestion
 
 CMD ["pnpm", "start:with-migrations"]

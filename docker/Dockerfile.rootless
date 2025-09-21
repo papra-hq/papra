@@ -61,4 +61,7 @@ ENV INGESTION_FOLDER_ROOT=./ingestion
 ENV EMAILS_DRY_RUN=true
 ENV CLIENT_BASE_URL=http://localhost:1221
 
+# Disable Better Auth telemetry
+ENV BETTER_AUTH_TELEMETRY=0
+
 CMD ["pnpm", "start:with-migrations"]
