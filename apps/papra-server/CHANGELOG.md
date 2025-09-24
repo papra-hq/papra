@@ -1,5 +1,15 @@
 # @papra/app-server
 
+## 0.9.4
+
+### Patch Changes
+
+- [#508](https://github.com/papra-hq/papra/pull/508) [`782f70f`](https://github.com/papra-hq/papra/commit/782f70ff663634bf9ff7218edabb9885a7c6f965) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to disable PRAGMA statements from sqlite task service migrations
+
+- [#510](https://github.com/papra-hq/papra/pull/510) [`ab6fd6a`](https://github.com/papra-hq/papra/commit/ab6fd6ad10387f1dcd626936efc195d9d58d40ec) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added fallbacks env variables for the task worker id
+
+- [#512](https://github.com/papra-hq/papra/pull/512) [`cb3ce6b`](https://github.com/papra-hq/papra/commit/cb3ce6b1d8d5dba09cbf0d2964f14b1c93220571) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added organizations permissions for api keys
+
 ## 0.9.3
 
 ### Patch Changes
