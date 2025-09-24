@@ -4,6 +4,7 @@ import { createMiddleware } from 'hono/factory';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getAuthorizationHeader } from '../shared/headers/headers.models';
 import { isNil } from '../shared/utils';
+import { looksLikeAnApiKey } from './api-keys.models';
 import { createApiKeysRepository } from './api-keys.repository';
 import { getApiKey } from './api-keys.usecases';
 
@@ -31,8 +32,7 @@ export function createApiKeyMiddleware({ db }: { db: Database }) {
       throw createUnauthorizedError();
     }
 
-    if (isNil(token)) {
-      // For type safety
+    if (!looksLikeAnApiKey(token)) {
       throw createUnauthorizedError();
     }
 
