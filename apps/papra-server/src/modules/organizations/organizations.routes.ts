@@ -27,7 +27,7 @@ export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['organizations:read'] }),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -45,7 +45,7 @@ function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
 function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['organizations:create'] }),
     validateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
@@ -70,7 +70,7 @@ function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContex
 function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['organizations:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
@@ -92,7 +92,7 @@ function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['organizations:update'] }),
     validateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
@@ -120,7 +120,7 @@ function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
 function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: ['organizations:delete'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),

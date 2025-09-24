@@ -6,6 +6,15 @@
 
 export const API_KEY_PERMISSIONS = [
   {
+    section: 'organizations',
+    permissions: [
+      'organizations:create',
+      'organizations:read',
+      'organizations:update',
+      'organizations:delete',
+    ],
+  },
+  {
     section: 'documents',
     permissions: [
       'documents:create',
