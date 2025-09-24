@@ -1,7 +1,7 @@
 ---
-"@papra/app-client": minor
-"@papra/app-server": minor
-"@papra/docs": minor
+"@papra/app-client": patch
+"@papra/app-server": patch
+"@papra/docs": patch
 ---
 
 Added organizations permissions for api keys
