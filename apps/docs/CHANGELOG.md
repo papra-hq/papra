@@ -1,5 +1,11 @@
 # @papra/docs
 
+## 0.6.1
+
+### Patch Changes
+
+- [#512](https://github.com/papra-hq/papra/pull/512) [`cb3ce6b`](https://github.com/papra-hq/papra/commit/cb3ce6b1d8d5dba09cbf0d2964f14b1c93220571) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added organizations permissions for api keys
+
 ## 0.6.0
 
 ### Minor Changes
