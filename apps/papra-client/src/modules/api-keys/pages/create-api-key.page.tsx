@@ -96,9 +96,7 @@ export const CreateApiKeyPage: Component = () => {
               <div>
                 <p class="text-sm font-bold">{t('api-keys.create.form.permissions.label')}</p>
 
-                <div class="p-6 pb-8 border rounded-md mt-2">
-                  <ApiKeyPermissionsPicker permissions={field.value ?? []} onChange={permissions => setValue(form, 'permissions', permissions)} />
-                </div>
+                <ApiKeyPermissionsPicker permissions={field.value ?? []} onChange={permissions => setValue(form, 'permissions', permissions)} />
 
                 {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
               </div>

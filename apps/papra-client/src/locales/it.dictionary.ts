@@ -417,6 +417,13 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API keys
 
+  'api-keys.permissions.select-all': 'Seleziona tutto',
+  'api-keys.permissions.deselect-all': 'Deseleziona tutto',
+  'api-keys.permissions.organizations.title': 'Organizzazioni',
+  'api-keys.permissions.organizations.organizations:create': 'Crea organizzazioni',
+  'api-keys.permissions.organizations.organizations:read': 'Leggi organizzazioni',
+  'api-keys.permissions.organizations.organizations:update': 'Aggiorna organizzazioni',
+  'api-keys.permissions.organizations.organizations:delete': 'Elimina organizzazioni',
   'api-keys.permissions.documents.title': 'Documenti',
   'api-keys.permissions.documents.documents:create': 'Crea documenti',
   'api-keys.permissions.documents.documents:read': 'Leggi documenti',

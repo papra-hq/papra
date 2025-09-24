@@ -7,6 +7,12 @@ export const API_KEY_PREFIX = 'ppapi';
 export const API_KEY_TOKEN_LENGTH = 64;
 
 export const API_KEY_PERMISSIONS = {
+  ORGANIZATIONS: {
+    CREATE: 'organizations:create',
+    READ: 'organizations:read',
+    UPDATE: 'organizations:update',
+    DELETE: 'organizations:delete',
+  },
   DOCUMENTS: {
     CREATE: 'documents:create',
     READ: 'documents:read',

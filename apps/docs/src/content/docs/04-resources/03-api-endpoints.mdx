@@ -17,8 +17,82 @@ The public API uses a bearer token for authentication. You can get a token by lo
 
 </details>
 
+### API Key Permissions
+
+When creating an API key, you can select from the following permissions:
+
+**Organizations:**
+- `organizations:create` - Create new organizations
+- `organizations:read` - Read organization information and list organizations of the user
+- `organizations:update` - Update organization details
+- `organizations:delete` - Delete organizations
+
+**Documents:**
+- `documents:create` - Upload and create new documents
+- `documents:read` - Read and download documents
+- `documents:update` - Update document metadata and content
+- `documents:delete` - Delete documents
+
+**Tags:**
+- `tags:create` - Create new tags
+- `tags:read` - Read tag information and list tags
+- `tags:update` - Update tag details
+- `tags:delete` - Delete tags
 
 ## Endpoints
+
+### List organizations
+
+**GET** `/api/organizations`
+
+List all organizations accessible to the authenticated user.
+
+- Required API key permissions: `organizations:read`
+- Response (JSON)
+  - `organizations`: The list of organizations.
+
+### Create an organization
+
+**POST** `/api/organizations`
+
+Create a new organization.
+
+- Required API key permissions: `organizations:create`
+- Body (JSON)
+  - `name`: The organization name (3-50 characters).
+- Response (JSON)
+  - `organization`: The created organization.
+
+### Get an organization
+
+**GET** `/api/organizations/:organizationId`
+
+Get an organization by its ID.
+
+- Required API key permissions: `organizations:read`
+- Response (JSON)
+  - `organization`: The organization.
+
+### Update an organization
+
+**PUT** `/api/organizations/:organizationId`
+
+Update an organization's name.
+
+- Required API key permissions: `organizations:update`
+- Body (JSON)
+  - `name`: The new organization name (3-50 characters).
+- Response (JSON)
+  - `organization`: The updated organization.
+
+### Delete an organization
+
+**DELETE** `/api/organizations/:organizationId`
+
+Delete an organization by its ID.
+
+- Required API key permissions: `organizations:delete`
+- Response: empty (204 status code)
 
 ### Create a document
 

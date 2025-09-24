@@ -415,6 +415,13 @@ export const translations = {
 
   // API keys
 
+  'api-keys.permissions.select-all': 'Select all',
+  'api-keys.permissions.deselect-all': 'Deselect all',
+  'api-keys.permissions.organizations.title': 'Organizations',
+  'api-keys.permissions.organizations.organizations:create': 'Create organizations',
+  'api-keys.permissions.organizations.organizations:read': 'Read organizations',
+  'api-keys.permissions.organizations.organizations:update': 'Update organizations',
+  'api-keys.permissions.organizations.organizations:delete': 'Delete organizations',
   'api-keys.permissions.documents.title': 'Documents',
   'api-keys.permissions.documents.documents:create': 'Create documents',
   'api-keys.permissions.documents.documents:read': 'Read documents',
