@@ -143,6 +143,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.confirm-button': 'Șterge organizație',
   'organization.settings.delete.confirm.cancel-button': 'Anulează',
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
+  'organization.settings.delete.only-owner': 'Doar proprietarul organizației poate șterge această organizație.',
 
   'organizations.members.title': 'Membri',
   'organizations.members.description': 'Gestionează membrii organizației tale',

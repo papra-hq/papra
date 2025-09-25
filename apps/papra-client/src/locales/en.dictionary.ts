@@ -141,6 +141,7 @@ export const translations = {
   'organization.settings.delete.confirm.confirm-button': 'Delete organization',
   'organization.settings.delete.confirm.cancel-button': 'Cancel',
   'organization.settings.delete.success': 'Organization deleted',
+  'organization.settings.delete.only-owner': 'Only the organization owner can delete this organization.',
 
   'organizations.members.title': 'Members',
   'organizations.members.description': 'Manage your organization members',

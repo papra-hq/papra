@@ -8,7 +8,7 @@ import { createUsersRepository } from '../users/users.repository';
 import { memberIdSchema, organizationIdSchema } from './organization.schemas';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
-import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization, updateOrganizationMemberRole } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, inviteMemberToOrganization, removeMemberFromOrganization, updateOrganizationMemberRole } from './organizations.usecases';
 
 export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
@@ -130,7 +130,9 @@ function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
 
       const organizationsRepository = createOrganizationsRepository({ db });
 
+      // No Promise.all as we want to ensure consistency in error handling
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await ensureUserIsOwnerOfOrganization({ userId, organizationId, organizationsRepository });
 
       await organizationsRepository.deleteOrganization({ organizationId });
 
