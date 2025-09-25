@@ -15,7 +15,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { useDeleteOrganization, useUpdateOrganization } from '../organizations.composables';
+import { useCurrentUserRole, useDeleteOrganization, useUpdateOrganization } from '../organizations.composables';
 import { organizationNameSchema } from '../organizations.schemas';
 import { fetchOrganization } from '../organizations.services';
 
@@ -23,6 +23,8 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
   const { deleteOrganization } = useDeleteOrganization();
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
+
+  const { getIsOwner, query } = useCurrentUserRole({ organizationId: props.organization.id });
 
   const handleDelete = async () => {
     const confirmed = await confirm({
@@ -54,10 +56,16 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
           </CardDescription>
         </CardHeader>
 
-        <CardFooter class="pt-6">
-          <Button onClick={handleDelete} variant="destructive">
+        <CardFooter class="pt-6 gap-4">
+          <Button onClick={handleDelete} variant="destructive" disabled={!getIsOwner()}>
             {t('organization.settings.delete.confirm.confirm-button')}
           </Button>
+
+          <Show when={query.isSuccess && !getIsOwner()}>
+            <span class="text-sm text-muted-foreground">
+              {t('organization.settings.delete.only-owner')}
+            </span>
+          </Show>
         </CardFooter>
       </Card>
     </div>

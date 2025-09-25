@@ -143,6 +143,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.confirm-button': 'Supprimer l\'organisation',
   'organization.settings.delete.confirm.cancel-button': 'Annuler',
   'organization.settings.delete.success': 'Organisation supprimée',
+  'organization.settings.delete.only-owner': 'Seul le propriétaire de l\'organisation peut supprimer cette organisation.',
 
   'organizations.members.title': 'Membres',
   'organizations.members.description': 'Gérez les membres de votre organisation.',
