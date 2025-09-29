@@ -1,5 +1,13 @@
 # @papra/app-server
 
+## 0.9.5
+
+### Patch Changes
+
+- [#521](https://github.com/papra-hq/papra/pull/521) [`b287723`](https://github.com/papra-hq/papra/commit/b28772317c3662555e598755b85597d6cd5aeea1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly handle file names encoding (utf8 instead of latin1) to support non-ASCII characters.
+
+- [#517](https://github.com/papra-hq/papra/pull/517) [`a3f9f05`](https://github.com/papra-hq/papra/commit/a3f9f05c664b4995b62db59f2e9eda8a3bfef0de) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevented organization deletion by non-organization owner
+
 ## 0.9.4
 
 ### Patch Changes
