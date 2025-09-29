@@ -61,6 +61,7 @@ export async function getFileStreamFromMultipartForm({
       files: 1, // Only allow one file
       fileSize: maxFileSize,
     },
+    defParamCharset: 'utf8',
   })
     .on('file', (formFieldname, fileStream, info) => {
       if (formFieldname !== fieldName) {
