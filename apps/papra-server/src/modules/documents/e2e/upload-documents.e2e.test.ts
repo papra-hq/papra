@@ -127,5 +127,71 @@ describe('documents e2e', () => {
       // Ensure no file is saved in the storage
       expect(documentsStorageService._getStorage().size).to.eql(0);
     });
+
+    // https://github.com/papra-hq/papra/issues/519
+    test('uploading documents with various UTF-8 characters in filenames', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
+        organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
+        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const { app } = await createServer({
+        db,
+        config: overrideConfig({
+          env: 'test',
+          documentsStorage: {
+            driver: 'in-memory',
+          },
+        }),
+      });
+
+      // Various UTF-8 characters that cause encoding issues
+      const testCases = [
+        { filename: 'ΒΕΒΑΙΩΣΗ ΧΑΡΕΣ.txt', content: 'Filename with Greek characters' },
+        { filename: 'résumé français.txt', content: 'French document' },
+        { filename: 'documento español.txt', content: 'Spanish document' },
+        { filename: '日本語ファイル.txt', content: 'Japanese document' },
+        { filename: 'файл на русском.txt', content: 'Russian document' },
+        { filename: 'émojis 🎉📄.txt', content: 'Document with emojis' },
+      ];
+
+      for (const testCase of testCases) {
+        const formData = new FormData();
+        formData.append('file', new File([testCase.content], testCase.filename, { type: 'text/plain' }));
+        const body = new Response(formData);
+
+        const createDocumentResponse = await app.request(
+          '/api/organizations/org_222222222222222222222222/documents',
+          {
+            method: 'POST',
+            headers: {
+              ...Object.fromEntries(body.headers.entries()),
+            },
+            body: await body.arrayBuffer(),
+          },
+          { loggedInUserId: 'usr_111111111111111111111111' },
+        );
+
+        expect(createDocumentResponse.status).to.eql(200);
+        const { document } = (await createDocumentResponse.json()) as { document: Document };
+
+        // Each filename should be preserved correctly
+        expect(document.name).to.eql(testCase.filename);
+        expect(document.originalName).to.eql(testCase.filename);
+
+        // Retrieve the document
+        const getDocumentResponse = await app.request(
+          `/api/organizations/org_222222222222222222222222/documents/${document.id}`,
+          { method: 'GET' },
+          { loggedInUserId: 'usr_111111111111111111111111' },
+        );
+
+        expect(getDocumentResponse.status).to.eql(200);
+        const { document: retrievedDocument } = (await getDocumentResponse.json()) as { document: Document };
+
+        expect(retrievedDocument).to.eql({ ...document, tags: [] });
+      }
+    });
   });
 });
