@@ -5,10 +5,14 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createQueries, useQuery } from '@tanstack/solid-query';
 import { get } from 'lodash-es';
-import { createEffect, on } from 'solid-js';
+import { createEffect, on, Show } from 'solid-js';
+import { useConfig } from '@/modules/config/config.provider';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
+import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
+import { Button } from '../components/button';
 import {
   Select,
   SelectContent,
@@ -17,6 +21,48 @@ import {
   SelectValue,
 } from '../components/select';
 import { SideNav, SidenavLayout } from './sidenav.layout';
+
+const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
+  const { t } = useI18n();
+  const { config } = useConfig();
+
+  const query = useQuery(() => ({
+    queryKey: ['organizations', 'subscription'],
+    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
+  }));
+
+  const shouldShowUpgradeCTA = () => {
+    if (!config.isSubscriptionsEnabled) {
+      return false;
+    }
+
+    return query.data && query.data.plan.id === 'free';
+  };
+
+  return (
+    <Show when={shouldShowUpgradeCTA()}>
+
+      <div class="p-4 mx-4 mt-4 bg-background bg-gradient-to-br from-primary/15 to-transparent rounded-lg">
+        <div class="flex items-center gap-2 text-sm font-medium">
+          <div class="i-tabler-sparkles size-4 text-primary"></div>
+          {t('layout.upgrade-cta.title')}
+        </div>
+        <div class="text-xs mt-1 mb-3 text-muted-foreground">
+          {t('layout.upgrade-cta.description')}
+        </div>
+        <UpgradeDialog organizationId={props.organizationId}>
+          {dialogProps => (
+            <Button size="sm" class="w-full font-semibold" {...dialogProps}>
+              {t('layout.upgrade-cta.button')}
+              <div class="i-tabler-arrow-right size-4 ml-1"></div>
+            </Button>
+          )}
+        </UpgradeDialog>
+      </div>
+    </Show>
+
+  );
+};
 
 const OrganizationLayoutSideNav: Component = () => {
   const navigate = useNavigate();
@@ -98,6 +144,7 @@ const OrganizationLayoutSideNav: Component = () => {
     <SideNav
       mainMenu={getMainMenuItems()}
       footerMenu={getFooterMenuItems()}
+      footer={() => <UpgradeCTAFooter organizationId={params.organizationId} />}
       header={() =>
         (
           <div class="px-6 pt-4 max-w-285px min-w-0">

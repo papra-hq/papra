@@ -25,6 +25,8 @@ import { OrganizationPage } from './modules/organizations/pages/organization.pag
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
+import { CheckoutCancelPage } from './modules/subscriptions/pages/checkout-cancel.page';
+import { CheckoutSuccessPage } from './modules/subscriptions/pages/checkout-success.page';
 import { CreateTaggingRulePage } from './modules/tagging-rules/pages/create-tagging-rule.page';
 import { TaggingRulesPage } from './modules/tagging-rules/pages/tagging-rules.page';
 import { UpdateTaggingRulePage } from './modules/tagging-rules/pages/update-tagging-rule.page';
@@ -226,6 +228,14 @@ export const routes: RouteDefinition[] = [
   {
     path: '/email-validation-required',
     component: createProtectedPage({ authType: 'public-only', component: EmailValidationRequiredPage }),
+  },
+  {
+    path: '/checkout-success',
+    component: CheckoutSuccessPage,
+  },
+  {
+    path: '/checkout-cancel',
+    component: CheckoutCancelPage,
   },
   {
     path: '*404',

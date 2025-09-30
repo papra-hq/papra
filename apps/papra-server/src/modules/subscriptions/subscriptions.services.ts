@@ -39,13 +39,13 @@ export async function createCheckoutUrl({
   stripeClient,
   customerId,
   priceId,
-  seatsCount,
+  organizationId,
   config,
 }: {
   stripeClient: Stripe;
   customerId: string;
   priceId: string;
-  seatsCount: number;
+  organizationId: string;
   config: Config;
 }) {
   const { clientBaseUrl } = getClientBaseUrl({ config });
@@ -59,13 +59,21 @@ export async function createCheckoutUrl({
     line_items: [
       {
         price: priceId,
-        quantity: seatsCount,
+        quantity: 1,
+        adjustable_quantity: {
+          enabled: false,
+        },
       },
     ],
     mode: 'subscription',
     allow_promotion_codes: true,
     success_url: successUrl,
     cancel_url: cancelUrl,
+    subscription_data: {
+      metadata: {
+        organizationId,
+      },
+    },
   });
 
   return { checkoutUrl: session.url };

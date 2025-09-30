@@ -19,7 +19,7 @@ describe('plans usecases', () => {
           organizationId: 'organization-1',
           planId: PLUS_PLAN_ID,
           customerId: 'cus_123',
-          seatsCount: 1,
+          seatsCount: 10,
           status: 'active',
           currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
           currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),

@@ -230,7 +230,7 @@ describe('intake-emails usecases', () => {
           id: 'os-1',
           organizationId: 'org-1',
           status: 'active',
-          seatsCount: 1,
+          seatsCount: 10,
           currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
           currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
           customerId: 'sc_123',

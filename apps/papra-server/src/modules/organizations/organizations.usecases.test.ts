@@ -166,7 +166,7 @@ describe('organizations usecases', () => {
           id: 'org_sub_1',
           organizationId: 'organization-1',
           planId: PLUS_PLAN_ID,
-          seatsCount: 1,
+          seatsCount: 10,
           customerId: 'cus_123',
           status: 'active',
           currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
