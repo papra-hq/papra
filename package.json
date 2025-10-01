@@ -1,5 +1,6 @@
 {
   "name": "@papra/root",
+  "type": "module",
   "version": "0.3.0",
   "packageManager": "pnpm@10.12.3",
   "description": "Papra document management monorepo root",
