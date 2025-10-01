@@ -14,10 +14,9 @@ import { ensureUserIsInOrganization } from '../organizations/organizations.useca
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
-import { TagColorRegex } from './tags.constants';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { tagIdSchema } from './tags.schemas';
+import { tagColorSchema, tagIdSchema } from './tags.schemas';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
@@ -38,7 +37,7 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
 
     validateJsonBody(z.object({
       name: z.string().min(1).max(50),
-      color: z.string().regex(TagColorRegex, 'Invalid Color format, must be a hex color code like #000000'),
+      color: tagColorSchema,
       description: z.string().max(256).optional(),
     })),
 
@@ -95,7 +94,7 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 
     validateJsonBody(z.object({
       name: z.string().min(1).max(64).optional(),
-      color: z.string().regex(TagColorRegex, 'Invalid Color format, must be a hex color code like #000000').optional(),
+      color: tagColorSchema.optional(),
       description: z.string().max(256).optional(),
     })),
 
