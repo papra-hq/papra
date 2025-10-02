@@ -37,8 +37,8 @@ export function getAuth({
     trustedOrigins,
     logger: {
       disabled: false,
-      log: (baseLevel, message) => {
-        logger[baseLevel ?? 'info'](message);
+      log: (baseLevel, message, ...args: unknown[]) => {
+        logger[baseLevel ?? 'info']({ ...args }, message);
       },
     },
     emailAndPassword: {
