@@ -46,7 +46,7 @@ export async function createServer(initialDeps: Partial<GlobalDependencies> = {}
 
   const app = new Hono<ServerInstanceGenerics>({ strict: true });
 
-  app.use(createLoggerMiddleware());
+  app.use(createLoggerMiddleware({ config }));
   app.use(createCorsMiddleware({ config }));
   app.use(createTimeoutMiddleware({ config }));
   app.use(secureHeaders());

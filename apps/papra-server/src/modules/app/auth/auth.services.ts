@@ -85,6 +85,9 @@ export function getAuth({
     advanced: {
       // Drizzle tables handle the id generation
       database: { generateId: false },
+      ipAddress: {
+        ipAddressHeaders: config.auth.ipAddressHeaders,
+      },
     },
     socialProviders: {
       github: {
