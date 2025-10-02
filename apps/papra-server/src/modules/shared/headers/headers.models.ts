@@ -26,3 +26,15 @@ export function getContentLengthHeader({ headers }: { headers: Record<string, st
 
   return Number(contentLengthHeaderValue);
 }
+
+export function getIpFromHeaders({ context, headerNames }: { context: Context; headerNames: string[] }): string | undefined {
+  for (const headerName of headerNames) {
+    const headerValue = getHeader({ context, name: headerName });
+
+    if (!isNil(headerValue)) {
+      return headerValue;
+    }
+  }
+
+  return undefined;
+}

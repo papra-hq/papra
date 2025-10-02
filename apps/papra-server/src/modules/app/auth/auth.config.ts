@@ -55,6 +55,17 @@ export const authConfig = {
     default: false,
     env: 'AUTH_SHOW_LEGAL_LINKS',
   },
+  ipAddressHeaders: {
+    doc: `The header, or comma separated list of headers, to use to get the real IP address of the user, use for rate limiting. Make sur to use a non-spoofable header, one set by your proxy.
+- If behind a standard proxy, you might want to set this to "x-forwarded-for". 
+- If behind Cloudflare, you might want to set this to "cf-connecting-ip".`,
+    schema: z.union([
+      z.string(),
+      z.array(z.string()),
+    ]).transform(value => (typeof value === 'string' ? value.split(',').map(v => v.trim()) : value)),
+    default: ['x-forwarded-for'],
+    env: 'AUTH_IP_ADDRESS_HEADERS',
+  },
   providers: {
     email: {
       isEnabled: {
