@@ -1,5 +1,7 @@
 # @papra/app-client
 
+## 0.9.6
+
 ## 0.9.5
 
 ### Patch Changes
