@@ -44,7 +44,7 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             corentinth/papra:latest-root
@@ -57,7 +57,7 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.rootless
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             corentinth/papra:latest
