@@ -1,5 +1,13 @@
 # @papra/app-server
 
+## 0.9.6
+
+### Patch Changes
+
+- [#531](https://github.com/papra-hq/papra/pull/531) [`2e2bb6f`](https://github.com/papra-hq/papra/commit/2e2bb6fbbdd02f6b8352ef2653bef0447948c1f0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added env variable to configure ip header for rate limit
+
+- [#524](https://github.com/papra-hq/papra/pull/524) [`c84a921`](https://github.com/papra-hq/papra/commit/c84a9219886ecb2a77c67d904cf8c8d15b50747b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed the api validation of tag colors to make it case incensitive
+
 ## 0.9.5
 
 ### Patch Changes
