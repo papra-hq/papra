@@ -4,6 +4,7 @@ import { safely } from '@corentinth/chisels';
 import { createSignal } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { PLUS_PLAN_ID } from '@/modules/plans/plans.constants';
+import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
 import { getCheckoutUrl } from '../subscriptions.services';
@@ -19,7 +20,7 @@ type PlanCardProps = {
   };
   isRecommended?: boolean;
   isCurrent?: boolean;
-  monthlyPrice: number;
+  price: number;
   onUpgrade?: () => Promise<void>;
 };
 
@@ -75,7 +76,7 @@ const PlanCard: Component<PlanCardProps> = (props) => {
         </div>
         <div class="text-xl font-semibold flex items-center gap-2">
           $
-          {props.monthlyPrice}
+          {props.price}
           <span class="text-sm font-normal text-muted-foreground">{t('subscriptions.upgrade-dialog.per-month')}</span>
         </div>
 
@@ -101,7 +102,7 @@ const PlanCard: Component<PlanCardProps> = (props) => {
           <>
             <hr class="my-4" />
 
-            <Button onClick={upgrade} class="w-full" auto-focus isLoading={getIsUpgradeLoading()}>
+            <Button onClick={upgrade} class="w-full" autofocus isLoading={getIsUpgradeLoading()}>
               {t('subscriptions.upgrade-dialog.upgrade-now')}
               <div class="i-tabler-arrow-right size-5 ml-2"></div>
             </Button>
@@ -120,9 +121,11 @@ type UpgradeDialogProps = {
 export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   const { t } = useI18n();
   const [getIsOpen, setIsOpen] = createSignal(false);
+  const defaultBillingInterval: 'monthly' | 'annual' = 'annual';
+  const [getBillingInterval, setBillingInterval] = createSignal<'monthly' | 'annual'>(defaultBillingInterval);
 
   const onUpgrade = async () => {
-    const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId: PLUS_PLAN_ID });
+    const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId: PLUS_PLAN_ID, billingInterval: getBillingInterval() });
     window.location.href = checkoutUrl;
   };
 
@@ -130,6 +133,7 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   const currentPlan = {
     name: t('subscriptions.plan.free.name'),
     monthlyPrice: 0,
+    annualPrice: 0,
     features: {
       storageSize: 0.5, // 500MB = 0.5GB
       members: 3,
@@ -142,7 +146,8 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
 
   const plusPlan = {
     name: t('subscriptions.plan.plus.name'),
-    monthlyPrice: 12,
+    monthlyPrice: 9,
+    annualPrice: 90,
     features: {
       storageSize: 5,
       members: 10,
@@ -151,6 +156,10 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
       support: t('subscriptions.features.support-email'),
     },
     isRecommended: true,
+  };
+
+  const getPlanPrice = (plan: { monthlyPrice: number; annualPrice: number }) => {
+    return getBillingInterval() === 'monthly' ? plan.monthlyPrice : Math.round(100 * plan.annualPrice / 12) / 100;
   };
 
   return (
@@ -171,9 +180,31 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
           </div>
         </DialogHeader>
 
-        <div class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-2 ">
+        <div class="mt-2 flex flex-col items-center">
+          <div class="inline-flex items-center justify-center border rounded-lg bg-muted p-1 gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'monthly' })}
+              onClick={() => setBillingInterval('monthly')}
+            >
+              {t('subscriptions.billing-interval.monthly')}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              class={cn('text-sm pr-1.5', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
+              onClick={() => setBillingInterval('annual')}
+            >
+              {t('subscriptions.billing-interval.annual')}
+              <span class="ml-2 text-xs text-muted-foreground rounded bg-primary/10 text-primary px-1 py-0.5">-20%</span>
+            </Button>
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 ">
           <div>
-            <PlanCard {...currentPlan} />
+            <PlanCard {...currentPlan} price={getPlanPrice(currentPlan)} />
 
             <p class="text-muted-foreground text-xs p-4 ml-1">
               <a href="https://papra.app/contact" class="underline" target="_blank" rel="noreferrer">{t('subscriptions.upgrade-dialog.contact-us')}</a>
@@ -181,7 +212,7 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
               {t('subscriptions.upgrade-dialog.enterprise-plans')}
             </p>
           </div>
-          <PlanCard {...plusPlan} onUpgrade={onUpgrade} />
+          <PlanCard {...plusPlan} onUpgrade={onUpgrade} price={getPlanPrice(plusPlan)} />
         </div>
       </DialogContent>
     </Dialog>

@@ -29,7 +29,8 @@ describe('plans usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: {
-          plusPlanPriceId: 'price_123',
+          plusPlanAnnualPriceId: 'price_123',
+          plusPlanMonthlyPriceId: 'price_456',
         },
       });
 
@@ -50,7 +51,8 @@ describe('plans usecases', () => {
 
       const config = overrideConfig({
         organizationPlans: {
-          plusPlanPriceId: 'price_123',
+          plusPlanAnnualPriceId: 'price_123',
+          plusPlanMonthlyPriceId: 'price_456',
         },
       });
 

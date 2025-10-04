@@ -9,16 +9,16 @@ export const organizationPlansConfig = {
     default: true,
     env: 'IS_FREE_PLAN_UNLIMITED',
   },
-  plusPlanPriceId: {
-    doc: 'The price id of the plus plan (useless for self-hosting)',
+  plusPlanMonthlyPriceId: {
+    doc: 'The monthly price id of the plus plan (useless for self-hosting)',
     schema: z.string(),
     default: 'change-me',
-    env: 'PLANS_PLUS_PLAN_PRICE_ID',
+    env: 'PLANS_PLUS_PLAN_MONTHLY_PRICE_ID',
   },
-  familyPlanPriceId: {
-    doc: 'The price id of the family plan (useless for self-hosting)',
+  plusPlanAnnualPriceId: {
+    doc: 'The annual price id of the plus plan (useless for self-hosting)',
     schema: z.string(),
     default: 'change-me',
-    env: 'PLANS_FAMILY_PLAN_PRICE_ID',
+    env: 'PLANS_PLUS_PLAN_ANNUAL_PRICE_ID',
   },
 } as const satisfies ConfigDefinition;

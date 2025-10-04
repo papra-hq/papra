@@ -39,7 +39,8 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
     [PLUS_PLAN_ID]: {
       id: PLUS_PLAN_ID,
       name: 'Plus',
-      priceId: config.organizationPlans.plusPlanPriceId,
+      monthlyPriceId: config.organizationPlans.plusPlanMonthlyPriceId,
+      annualPriceId: config.organizationPlans.plusPlanAnnualPriceId,
       limits: {
         maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GiB
         maxIntakeEmailsCount: 10,
@@ -63,7 +64,7 @@ async function getOrganizationPlanById({ planId, organizationPlans }: { planId: 
 }
 
 async function getOrganizationPlanByPriceId({ priceId, organizationPlans }: { priceId: string; organizationPlans: Record<string, OrganizationPlanRecord> }) {
-  const organizationPlan = Object.values(organizationPlans).find(plan => plan.priceId === priceId);
+  const organizationPlan = Object.values(organizationPlans).find(plan => plan.monthlyPriceId === priceId || plan.annualPriceId === priceId);
 
   if (!organizationPlan) {
     throw createPlanNotFoundError();

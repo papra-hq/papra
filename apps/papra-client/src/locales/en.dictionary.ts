@@ -623,4 +623,6 @@ export const translations = {
   'subscriptions.features.support-community': 'Community support',
   'subscriptions.features.support-email': 'Email support',
 
+  'subscriptions.billing-interval.monthly': 'Monthly',
+  'subscriptions.billing-interval.annual': 'Annual',
 } as const;

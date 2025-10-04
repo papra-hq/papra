@@ -1,12 +1,13 @@
 import type { OrganizationSubscription } from './subscriptions.types';
 import { apiClient } from '../shared/http/api-client';
 
-export async function getCheckoutUrl({ organizationId, planId }: { organizationId: string; planId: string }) {
+export async function getCheckoutUrl({ organizationId, planId, billingInterval }: { organizationId: string; planId: string; billingInterval: 'monthly' | 'annual' }) {
   const { checkoutUrl } = await apiClient<{ checkoutUrl: string }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/checkout-session`,
     body: {
       planId,
+      billingInterval,
     },
   });
 
