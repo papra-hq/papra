@@ -113,12 +113,11 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
       }
 
       const { customerId } = await getOrCreateOrganizationCustomerId({ organizationId, subscriptionsServices, organizationsRepository });
-      const { membersCount } = organizationPlanToSubscribeTo.isPerSeat ? await organizationsRepository.getOrganizationMembersCount({ organizationId }) : ({ membersCount: 1 });
 
       const { checkoutUrl } = await subscriptionsServices.createCheckoutUrl({
         customerId,
         priceId: organizationPlanToSubscribeTo.priceId,
-        seatsCount: membersCount,
+        organizationId,
       });
 
       return context.json({ checkoutUrl });
@@ -154,7 +153,7 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
   );
 }
 
-function getOrganizationSubscriptionRoute({ app, db }: RouteDefinitionContext) {
+function getOrganizationSubscriptionRoute({ app, db, config }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/subscription',
     requireAuthentication(),
@@ -167,6 +166,7 @@ function getOrganizationSubscriptionRoute({ app, db }: RouteDefinitionContext) {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const plansRepository = createPlansRepository({ config });
 
       await ensureUserIsInOrganization({
         userId,
@@ -178,6 +178,8 @@ function getOrganizationSubscriptionRoute({ app, db }: RouteDefinitionContext) {
         organizationId,
       });
 
+      const { organizationPlan } = await plansRepository.getOrganizationPlanById({ planId: subscription?.planId ?? FREE_PLAN_ID });
+
       return context.json({
         subscription: pick(subscription, [
           'status',
@@ -187,6 +189,7 @@ function getOrganizationSubscriptionRoute({ app, db }: RouteDefinitionContext) {
           'planId',
           'seatsCount',
         ]),
+        plan: organizationPlan,
       });
     },
   );

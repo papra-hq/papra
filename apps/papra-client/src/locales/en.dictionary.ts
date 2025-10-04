@@ -523,6 +523,10 @@ export const translations = {
   'layout.menu.members': 'Members',
   'layout.menu.invitations': 'Invitations',
 
+  'layout.upgrade-cta.title': 'Need more space?',
+  'layout.upgrade-cta.description': 'Get 10x more storage + team collaboration',
+  'layout.upgrade-cta.button': 'Upgrade to Plus',
+
   'layout.theme.light': 'Light mode',
   'layout.theme.dark': 'Dark mode',
   'layout.theme.system': 'System mode',
@@ -580,5 +584,43 @@ export const translations = {
   'color-picker.lightness': 'Lightness',
   'color-picker.select-color': 'Select color',
   'color-picker.select-a-color': 'Select a color',
+
+  // Subscriptions
+
+  'subscriptions.checkout-success.title': 'Payment Successful!',
+  'subscriptions.checkout-success.description': 'Your subscription has been activated successfully.',
+  'subscriptions.checkout-success.thank-you': 'Thank you for upgrading to Papra Plus. You now have access to all premium features.',
+  'subscriptions.checkout-success.go-to-organizations': 'Go to Organizations',
+  'subscriptions.checkout-success.redirecting': 'Redirecting in {{ count }} second{{ plural }}...',
+
+  'subscriptions.checkout-cancel.title': 'Payment Canceled',
+  'subscriptions.checkout-cancel.description': 'Your subscription upgrade was canceled.',
+  'subscriptions.checkout-cancel.no-charges': 'No charges have been made to your account. You can try again anytime you\'re ready.',
+  'subscriptions.checkout-cancel.back-to-organizations': 'Back to Organizations',
+  'subscriptions.checkout-cancel.need-help': 'Need help?',
+  'subscriptions.checkout-cancel.contact-support': 'Contact support',
+
+  'subscriptions.upgrade-dialog.title': 'Upgrade to Plus',
+  'subscriptions.upgrade-dialog.description': 'Unlock powerful features for your organization',
+  'subscriptions.upgrade-dialog.contact-us': 'Contact us',
+  'subscriptions.upgrade-dialog.enterprise-plans': 'if you need custom enterprise plans.',
+  'subscriptions.upgrade-dialog.current-plan': 'Current Plan',
+  'subscriptions.upgrade-dialog.recommended': 'Recommended',
+  'subscriptions.upgrade-dialog.per-month': '/month',
+  'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade now',
+
+  'subscriptions.plan.free.name': 'Free plan',
+  'subscriptions.plan.plus.name': 'Plus',
+
+  'subscriptions.features.storage-size': 'Document storage size',
+  'subscriptions.features.members': 'Organization Members',
+  'subscriptions.features.members-count': '{{ count }} members',
+  'subscriptions.features.email-intakes': 'Email Intakes',
+  'subscriptions.features.email-intakes-count-singular': '{{ count }} address',
+  'subscriptions.features.email-intakes-count-plural': '{{ count }} addresses',
+  'subscriptions.features.max-upload-size': 'Max upload file size',
+  'subscriptions.features.support': 'Support',
+  'subscriptions.features.support-community': 'Community support',
+  'subscriptions.features.support-email': 'Email support',
 
 } as const;

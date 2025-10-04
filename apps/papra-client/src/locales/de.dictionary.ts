@@ -525,6 +525,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.members': 'Mitglieder',
   'layout.menu.invitations': 'Einladungen',
 
+  'layout.upgrade-cta.title': 'Brauchen Sie mehr Platz?',
+  'layout.upgrade-cta.description': '10x mehr Speicher + Team-Zusammenarbeit',
+  'layout.upgrade-cta.button': 'Auf Plus upgraden',
+
   'layout.theme.light': 'Heller Modus',
   'layout.theme.dark': 'Dunkler Modus',
   'layout.theme.system': 'Systemmodus',
@@ -582,5 +586,43 @@ export const translations: Partial<TranslationsDictionary> = {
   'color-picker.lightness': 'Helligkeit',
   'color-picker.select-color': 'Farbe auswählen',
   'color-picker.select-a-color': 'Eine Farbe auswählen',
+
+  // Subscriptions
+
+  'subscriptions.checkout-success.title': 'Zahlung erfolgreich!',
+  'subscriptions.checkout-success.description': 'Ihr Abonnement wurde erfolgreich aktiviert.',
+  'subscriptions.checkout-success.thank-you': 'Vielen Dank für Ihr Upgrade auf Papra Plus. Sie haben jetzt Zugriff auf alle Premium-Funktionen.',
+  'subscriptions.checkout-success.go-to-organizations': 'Zu Organisationen',
+  'subscriptions.checkout-success.redirecting': 'Weiterleitung in {{ count }} Sekunde{{ plural }}...',
+
+  'subscriptions.checkout-cancel.title': 'Zahlung abgebrochen',
+  'subscriptions.checkout-cancel.description': 'Ihr Abonnement-Upgrade wurde abgebrochen.',
+  'subscriptions.checkout-cancel.no-charges': 'Es wurden keine Gebühren von Ihrem Konto abgebucht. Sie können es jederzeit erneut versuchen.',
+  'subscriptions.checkout-cancel.back-to-organizations': 'Zurück zu Organisationen',
+  'subscriptions.checkout-cancel.need-help': 'Benötigen Sie Hilfe?',
+  'subscriptions.checkout-cancel.contact-support': 'Support kontaktieren',
+
+  'subscriptions.upgrade-dialog.title': 'Auf Plus upgraden',
+  'subscriptions.upgrade-dialog.description': 'Schalten Sie leistungsstarke Funktionen für Ihre Organisation frei',
+  'subscriptions.upgrade-dialog.contact-us': 'Kontaktieren Sie uns',
+  'subscriptions.upgrade-dialog.enterprise-plans': 'wenn Sie benutzerdefinierte Enterprise-Pläne benötigen.',
+  'subscriptions.upgrade-dialog.current-plan': 'Aktueller Plan',
+  'subscriptions.upgrade-dialog.recommended': 'Empfohlen',
+  'subscriptions.upgrade-dialog.per-month': '/Monat',
+  'subscriptions.upgrade-dialog.upgrade-now': 'Jetzt upgraden',
+
+  'subscriptions.plan.free.name': 'Kostenloser Plan',
+  'subscriptions.plan.plus.name': 'Plus',
+
+  'subscriptions.features.storage-size': 'Dokumentenspeichergröße',
+  'subscriptions.features.members': 'Organisationsmitglieder',
+  'subscriptions.features.members-count': '{{ count }} Mitglieder',
+  'subscriptions.features.email-intakes': 'E-Mail-Eingänge',
+  'subscriptions.features.email-intakes-count-singular': '{{ count }} Adresse',
+  'subscriptions.features.email-intakes-count-plural': '{{ count }} Adressen',
+  'subscriptions.features.max-upload-size': 'Maximale Upload-Dateigröße',
+  'subscriptions.features.support': 'Support',
+  'subscriptions.features.support-community': 'Community-Support',
+  'subscriptions.features.support-email': 'E-Mail-Support',
 
 };

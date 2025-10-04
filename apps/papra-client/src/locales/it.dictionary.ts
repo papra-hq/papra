@@ -525,6 +525,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.members': 'Membri',
   'layout.menu.invitations': 'Inviti',
 
+  'layout.upgrade-cta.title': 'Serve più spazio?',
+  'layout.upgrade-cta.description': 'Ottieni 10x più storage + collaborazione del team',
+  'layout.upgrade-cta.button': 'Aggiorna a Plus',
+
   'layout.theme.light': 'Modalità chiara',
   'layout.theme.dark': 'Modalità scura',
   'layout.theme.system': 'Modalità sistema',
@@ -582,5 +586,43 @@ export const translations: Partial<TranslationsDictionary> = {
   'color-picker.lightness': 'Luminosità',
   'color-picker.select-color': 'Seleziona colore',
   'color-picker.select-a-color': 'Seleziona un colore',
+
+  // Subscriptions
+
+  'subscriptions.checkout-success.title': 'Pagamento riuscito!',
+  'subscriptions.checkout-success.description': 'Il tuo abbonamento è stato attivato con successo.',
+  'subscriptions.checkout-success.thank-you': 'Grazie per l\'upgrade a Papra Plus. Ora hai accesso a tutte le funzionalità premium.',
+  'subscriptions.checkout-success.go-to-organizations': 'Vai alle Organizzazioni',
+  'subscriptions.checkout-success.redirecting': 'Reindirizzamento tra {{ count }} secondo{{ plural }}...',
+
+  'subscriptions.checkout-cancel.title': 'Pagamento annullato',
+  'subscriptions.checkout-cancel.description': 'L\'upgrade del tuo abbonamento è stato annullato.',
+  'subscriptions.checkout-cancel.no-charges': 'Non sono stati effettuati addebiti sul tuo account. Puoi riprovare quando sei pronto.',
+  'subscriptions.checkout-cancel.back-to-organizations': 'Torna alle Organizzazioni',
+  'subscriptions.checkout-cancel.need-help': 'Hai bisogno di aiuto?',
+  'subscriptions.checkout-cancel.contact-support': 'Contatta il supporto',
+
+  'subscriptions.upgrade-dialog.title': 'Passa a Plus',
+  'subscriptions.upgrade-dialog.description': 'Sblocca funzionalità potenti per la tua organizzazione',
+  'subscriptions.upgrade-dialog.contact-us': 'Contattaci',
+  'subscriptions.upgrade-dialog.enterprise-plans': 'se hai bisogno di piani aziendali personalizzati.',
+  'subscriptions.upgrade-dialog.current-plan': 'Piano attuale',
+  'subscriptions.upgrade-dialog.recommended': 'Consigliato',
+  'subscriptions.upgrade-dialog.per-month': '/mese',
+  'subscriptions.upgrade-dialog.upgrade-now': 'Aggiorna ora',
+
+  'subscriptions.plan.free.name': 'Piano gratuito',
+  'subscriptions.plan.plus.name': 'Plus',
+
+  'subscriptions.features.storage-size': 'Dimensione archiviazione documenti',
+  'subscriptions.features.members': 'Membri dell\'organizzazione',
+  'subscriptions.features.members-count': '{{ count }} membri',
+  'subscriptions.features.email-intakes': 'Email di acquisizione',
+  'subscriptions.features.email-intakes-count-singular': '{{ count }} indirizzo',
+  'subscriptions.features.email-intakes-count-plural': '{{ count }} indirizzi',
+  'subscriptions.features.max-upload-size': 'Dimensione massima file caricamento',
+  'subscriptions.features.support': 'Supporto',
+  'subscriptions.features.support-community': 'Supporto della comunità',
+  'subscriptions.features.support-email': 'Supporto via email',
 
 };

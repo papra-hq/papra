@@ -47,6 +47,7 @@ export const SideNav: Component<{
   footerMenu?: MenuItem[];
   header?: Component;
   footer?: Component;
+  preFooter?: Component;
 }> = (props) => {
   const { config } = useConfig();
 
@@ -106,7 +107,7 @@ export const SideNav: Component<{
         </a>
 
       </div>
-      {(props.header || props.mainMenu || props.footerMenu || props.footer) && (
+      {(props.header || props.mainMenu || props.footerMenu || props.footer || props.preFooter) && (
         <div class="h-full flex flex-col pb-6 flex-1">
           {props.header && <props.header />}
 
@@ -117,6 +118,8 @@ export const SideNav: Component<{
           )}
 
           <div class="flex-1"></div>
+
+          {props.preFooter && <props.preFooter />}
 
           {props.footerMenu && (
             <nav class="flex flex-col gap-0.5 px-4">

@@ -525,6 +525,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.members': 'Membri',
   'layout.menu.invitations': 'Invitații',
 
+  'layout.upgrade-cta.title': 'Ai nevoie de mai mult spațiu?',
+  'layout.upgrade-cta.description': 'Obține de 10x mai mult spațiu de stocare + colaborare în echipă',
+  'layout.upgrade-cta.button': 'Actualizează la Plus',
+
   'layout.theme.light': 'Mod luminos',
   'layout.theme.dark': 'Mod intunecat',
   'layout.theme.system': 'Modul sistemului',
@@ -582,5 +586,43 @@ export const translations: Partial<TranslationsDictionary> = {
   'color-picker.lightness': 'Luminozitate',
   'color-picker.select-color': 'Selectează culoarea',
   'color-picker.select-a-color': 'Selectează o culoare',
+
+  // Subscriptions
+
+  'subscriptions.checkout-success.title': 'Plată reușită!',
+  'subscriptions.checkout-success.description': 'Abonamentul tău a fost activat cu succes.',
+  'subscriptions.checkout-success.thank-you': 'Mulțumim pentru că ai făcut upgrade la Papra Plus. Acum ai acces la toate funcționalitățile premium.',
+  'subscriptions.checkout-success.go-to-organizations': 'Mergi la Organizații',
+  'subscriptions.checkout-success.redirecting': 'Redirecționare în {{ count }} secundă{{ plural }}...',
+
+  'subscriptions.checkout-cancel.title': 'Plată anulată',
+  'subscriptions.checkout-cancel.description': 'Upgrade-ul abonamentului tău a fost anulat.',
+  'subscriptions.checkout-cancel.no-charges': 'Nu au fost efectuate taxe pe contul tău. Poți încerca din nou oricând ești gata.',
+  'subscriptions.checkout-cancel.back-to-organizations': 'Înapoi la Organizații',
+  'subscriptions.checkout-cancel.need-help': 'Ai nevoie de ajutor?',
+  'subscriptions.checkout-cancel.contact-support': 'Contactează asistența',
+
+  'subscriptions.upgrade-dialog.title': 'Upgrade la Plus',
+  'subscriptions.upgrade-dialog.description': 'Deblochează funcționalități puternice pentru organizația ta',
+  'subscriptions.upgrade-dialog.contact-us': 'Contactează-ne',
+  'subscriptions.upgrade-dialog.enterprise-plans': 'dacă ai nevoie de planuri enterprise personalizate.',
+  'subscriptions.upgrade-dialog.current-plan': 'Plan curent',
+  'subscriptions.upgrade-dialog.recommended': 'Recomandat',
+  'subscriptions.upgrade-dialog.per-month': '/lună',
+  'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade acum',
+
+  'subscriptions.plan.free.name': 'Plan gratuit',
+  'subscriptions.plan.plus.name': 'Plus',
+
+  'subscriptions.features.storage-size': 'Dimensiune stocare documente',
+  'subscriptions.features.members': 'Membri ai organizației',
+  'subscriptions.features.members-count': '{{ count }} membri',
+  'subscriptions.features.email-intakes': 'Email-uri de primire',
+  'subscriptions.features.email-intakes-count-singular': '{{ count }} adresă',
+  'subscriptions.features.email-intakes-count-plural': '{{ count }} adrese',
+  'subscriptions.features.max-upload-size': 'Dimensiune maximă fișier upload',
+  'subscriptions.features.support': 'Asistență',
+  'subscriptions.features.support-community': 'Asistență comunitate',
+  'subscriptions.features.support-email': 'Asistență email',
 
 };

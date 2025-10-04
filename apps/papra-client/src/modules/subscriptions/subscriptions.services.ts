@@ -22,11 +22,11 @@ export async function getCustomerPortalUrl({ organizationId }: { organizationId:
   return { customerPortalUrl };
 }
 
-export async function getOrganizationSubscription({ organizationId }: { organizationId: string }) {
-  const { subscription } = await apiClient<{ subscription: OrganizationSubscription }>({
+export async function fetchOrganizationSubscription({ organizationId }: { organizationId: string }) {
+  const { subscription, plan } = await apiClient<{ subscription: OrganizationSubscription; plan: { id: string; name: string } }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/subscription`,
   });
 
-  return { subscription };
+  return { subscription, plan };
 }
