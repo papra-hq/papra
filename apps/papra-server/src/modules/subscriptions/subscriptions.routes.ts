@@ -8,12 +8,11 @@ import { createOrganizationNotFoundError } from '../organizations/organizations.
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';
 import { FREE_PLAN_ID, PLUS_PLAN_ID } from '../plans/plans.constants';
+import { getPriceIdForBillingInterval } from '../plans/plans.models';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
-import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
-import { isNil } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';
 import { isSignatureHeaderFormatValid } from './subscriptions.models';
@@ -67,6 +66,7 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
     requireAuthentication(),
     validateJsonBody(z.object({
       planId: z.enum([PLUS_PLAN_ID]),
+      billingInterval: z.enum(['monthly', 'annual']).default('monthly'),
     })),
     validateParams(z.object({
       organizationId: organizationIdSchema,
@@ -78,7 +78,7 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
       const plansRepository = createPlansRepository ({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
-      const { planId } = context.req.valid('json');
+      const { planId, billingInterval } = context.req.valid('json');
       const { organizationId } = context.req.valid('param');
 
       await ensureUserIsOwnerOfOrganization({
@@ -101,22 +101,16 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
 
       const { organizationPlan: organizationPlanToSubscribeTo } = await plansRepository.getOrganizationPlanById({ planId });
 
-      if (isNil(organizationPlanToSubscribeTo.priceId)) {
-        // Very unlikely to happen, as only the free plan does not have a price ID, and we check for the plans in the route validation
-        // but for type safety, we assert that the price ID is set
-        throw createError({
-          message: 'Organization plan price ID is not set',
-          code: 'plans.organization_plan_price_id_not_set',
-          statusCode: 500,
-          isInternal: true,
-        });
-      }
+      const { priceId } = getPriceIdForBillingInterval({
+        plan: organizationPlanToSubscribeTo,
+        billingInterval,
+      });
 
       const { customerId } = await getOrCreateOrganizationCustomerId({ organizationId, subscriptionsServices, organizationsRepository });
 
       const { checkoutUrl } = await subscriptionsServices.createCheckoutUrl({
         customerId,
-        priceId: organizationPlanToSubscribeTo.priceId,
+        priceId,
         organizationId,
       });
 

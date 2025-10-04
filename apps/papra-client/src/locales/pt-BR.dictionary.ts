@@ -625,4 +625,6 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.features.support-community': 'Suporte da comunidade',
   'subscriptions.features.support-email': 'Suporte por e-mail',
 
+  'subscriptions.billing-interval.monthly': 'Mensal',
+  'subscriptions.billing-interval.annual': 'Anual',
 };

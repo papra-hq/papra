@@ -1,7 +1,8 @@
 export type OrganizationPlanRecord = {
   id: string;
   name: string;
-  priceId?: string;
+  monthlyPriceId?: string;
+  annualPriceId?: string;
   limits: {
     maxDocumentStorageBytes: number;
     maxFileSize: number;
