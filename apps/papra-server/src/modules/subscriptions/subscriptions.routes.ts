@@ -3,6 +3,8 @@ import { get, pick } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createDocumentsRepository } from '../documents/documents.repository';
+import { createIntakeEmailsRepository } from '../intake-emails/intake-emails.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
@@ -13,6 +15,7 @@ import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
+import { nullifyPositiveInfinity } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';
 import { isSignatureHeaderFormatValid } from './subscriptions.models';
@@ -25,7 +28,8 @@ export function registerSubscriptionsRoutes(context: RouteDefinitionContext) {
   setupStripeWebhookRoute(context);
   setupCreateCheckoutSessionRoute(context);
   setupGetCustomerPortalRoute(context);
-  getOrganizationSubscriptionRoute(context);
+  setupGetOrganizationSubscriptionRoute(context);
+  setupGetOrganizationSubscriptionUsageRoute(context);
 }
 
 function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: RouteDefinitionContext) {
@@ -147,7 +151,7 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
   );
 }
 
-function getOrganizationSubscriptionRoute({ app, db, config }: RouteDefinitionContext) {
+function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/subscription',
     requireAuthentication(),
@@ -184,6 +188,67 @@ function getOrganizationSubscriptionRoute({ app, db, config }: RouteDefinitionCo
           'seatsCount',
         ]),
         plan: organizationPlan,
+      });
+    },
+  );
+}
+
+function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/:organizationId/usage',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
+      const plansRepository = createPlansRepository({ config });
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+
+      await ensureUserIsInOrganization({
+        userId,
+        organizationId,
+        organizationsRepository,
+      });
+
+      const [
+        { organizationPlan },
+        { documentsSize },
+        { intakeEmailCount },
+        { membersCount },
+      ] = await Promise.all([
+        getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
+        documentsRepository.getOrganizationStats({ organizationId }),
+        intakeEmailsRepository.getOrganizationIntakeEmailsCount({ organizationId }),
+        organizationsRepository.getOrganizationMembersCount({ organizationId }),
+      ]);
+
+      const nullifiedLimits = {
+        maxDocumentsSize: nullifyPositiveInfinity(organizationPlan.limits.maxDocumentStorageBytes),
+        maxIntakeEmailsCount: nullifyPositiveInfinity(organizationPlan.limits.maxIntakeEmailsCount),
+        maxOrganizationsMembersCount: nullifyPositiveInfinity(organizationPlan.limits.maxOrganizationsMembersCount),
+      };
+
+      return context.json({
+        usage: {
+          documentsStorage: {
+            used: documentsSize,
+            limit: nullifiedLimits.maxDocumentsSize,
+          },
+          intakeEmailsCount: {
+            used: intakeEmailCount,
+            limit: nullifiedLimits.maxIntakeEmailsCount,
+          },
+          membersCount: {
+            used: membersCount,
+            limit: nullifiedLimits.maxOrganizationsMembersCount,
+          },
+        },
+        limits: nullifiedLimits,
       });
     },
   );
