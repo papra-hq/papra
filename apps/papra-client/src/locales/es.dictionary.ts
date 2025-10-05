@@ -145,6 +145,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.success': 'Organización eliminada',
   'organization.settings.delete.only-owner': 'Solo el propietario de la organización puede eliminar esta organización.',
 
+  'organization.usage.page.title': 'Uso',
+  'organization.usage.page.description': 'Ver el uso y los límites actuales de su organización.',
+  'organization.usage.storage.title': 'Almacenamiento de documentos',
+  'organization.usage.storage.description': 'Almacenamiento total usado por sus documentos',
+  'organization.usage.intake-emails.title': 'Correos de ingesta',
+  'organization.usage.intake-emails.description': 'Número de direcciones de correo de ingesta',
+  'organization.usage.members.title': 'Miembros',
+  'organization.usage.members.description': 'Número de miembros en la organización',
+  'organization.usage.unlimited': 'Ilimitado',
+
   'organizations.members.title': 'Miembros',
   'organizations.members.description': 'Administra los miembros de tu organización',
   'organizations.members.invite-member': 'Invitar miembro',
@@ -520,6 +530,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.settings': 'Ajustes',
   'layout.menu.account': 'Cuenta',
   'layout.menu.general-settings': 'Ajustes generales',
+  'layout.menu.usage': 'Uso',
   'layout.menu.intake-emails': 'Correos de ingreso',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Miembros',
@@ -627,4 +638,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.billing-interval.monthly': 'Mensual',
   'subscriptions.billing-interval.annual': 'Anual',
+
+  'subscriptions.usage-warning.message': 'Ha utilizado el {{ percent }}% de su almacenamiento de documentos. Considere actualizar su plan para obtener más espacio.',
+  'subscriptions.usage-warning.upgrade-button': 'Actualizar plan',
 };

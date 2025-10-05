@@ -12,6 +12,7 @@ import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { usePendingInvitationsCount } from '@/modules/invitations/composables/usePendingInvitationsCount';
 import { cn } from '@/modules/shared/style/cn';
+import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
@@ -202,7 +203,10 @@ export const SidenavLayout: ParentComponent<{
         <props.sideNav />
 
       </div>
+
       <div class="flex-1 min-h-0 flex flex-col">
+        <UsageWarningCard organizationId={params.organizationId} />
+
         <div class="flex justify-between px-6 pt-4">
 
           <div class="flex items-center">
@@ -304,6 +308,7 @@ export const SidenavLayout: ParentComponent<{
         <div class="flex-1 overflow-auto max-w-screen">
           <Suspense>
             {props.children}
+
           </Suspense>
         </div>
       </div>

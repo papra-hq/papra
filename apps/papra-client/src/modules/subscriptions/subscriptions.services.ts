@@ -31,3 +31,19 @@ export async function fetchOrganizationSubscription({ organizationId }: { organi
 
   return { subscription, plan };
 }
+
+export async function fetchOrganizationUsage({ organizationId }: { organizationId: string }) {
+  const { usage, limits } = await apiClient<{
+    usage: {
+      documentsStorage: { used: number; limit: number | null };
+      intakeEmailsCount: { used: number; limit: number | null };
+      membersCount: { used: number; limit: number | null };
+    };
+    limits: { maxDocumentsSize: number | null; maxIntakeEmailsCount: number | null; maxOrganizationsMembersCount: number | null };
+  }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/usage`,
+  });
+
+  return { usage, limits };
+}

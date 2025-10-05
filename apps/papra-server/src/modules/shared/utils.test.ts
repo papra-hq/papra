@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { isDefined, isNil, isNonEmptyString, isString, omitUndefined } from './utils';
+import { isDefined, isNil, isNonEmptyString, isString, nullifyPositiveInfinity, omitUndefined } from './utils';
 
 describe('utils', () => {
   describe('omitUndefined', () => {
@@ -79,6 +79,16 @@ describe('utils', () => {
       expect(isNonEmptyString(false)).toBe(false);
       expect(isNonEmptyString({})).toBe(false);
       expect(isNonEmptyString([])).toBe(false);
+    });
+  });
+
+  describe('nullifyPositiveInfinity', () => {
+    test('returns null if the value is positive infinity', () => {
+      expect(nullifyPositiveInfinity(Number.POSITIVE_INFINITY)).to.eql(null);
+      expect(nullifyPositiveInfinity(42)).to.eql(42);
+      expect(nullifyPositiveInfinity(0)).to.eql(0);
+      expect(nullifyPositiveInfinity(-42)).to.eql(-42);
+      expect(nullifyPositiveInfinity(Number.NEGATIVE_INFINITY)).to.eql(Number.NEGATIVE_INFINITY);
     });
   });
 });

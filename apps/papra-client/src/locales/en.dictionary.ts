@@ -143,6 +143,16 @@ export const translations = {
   'organization.settings.delete.success': 'Organization deleted',
   'organization.settings.delete.only-owner': 'Only the organization owner can delete this organization.',
 
+  'organization.usage.page.title': 'Usage',
+  'organization.usage.page.description': 'View your organization\'s current usage and limits.',
+  'organization.usage.storage.title': 'Document storage',
+  'organization.usage.storage.description': 'Total storage used by your documents',
+  'organization.usage.intake-emails.title': 'Intake emails',
+  'organization.usage.intake-emails.description': 'Number of intake email addresses',
+  'organization.usage.members.title': 'Members',
+  'organization.usage.members.description': 'Number of members in the organization',
+  'organization.usage.unlimited': 'Unlimited',
+
   'organizations.members.title': 'Members',
   'organizations.members.description': 'Manage your organization members',
   'organizations.members.invite-member': 'Invite member',
@@ -518,6 +528,7 @@ export const translations = {
   'layout.menu.settings': 'Settings',
   'layout.menu.account': 'Account',
   'layout.menu.general-settings': 'General settings',
+  'layout.menu.usage': 'Usage',
   'layout.menu.intake-emails': 'Intake emails',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Members',
@@ -625,4 +636,7 @@ export const translations = {
 
   'subscriptions.billing-interval.monthly': 'Monthly',
   'subscriptions.billing-interval.annual': 'Annual',
+
+  'subscriptions.usage-warning.message': 'You have used {{ percent }}% of your document storage. Consider upgrading your plan to get more space.',
+  'subscriptions.usage-warning.upgrade-button': 'Upgrade Plan',
 } as const;

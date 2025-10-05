@@ -15,6 +15,11 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
       icon: 'i-tabler-settings',
     },
     {
+      label: t('layout.menu.usage'),
+      href: `/organizations/${params.organizationId}/settings/usage`,
+      icon: 'i-tabler-chart-bar',
+    },
+    {
       label: t('layout.menu.intake-emails'),
       href: `/organizations/${params.organizationId}/settings/intake-emails`,
       icon: 'i-tabler-mail',

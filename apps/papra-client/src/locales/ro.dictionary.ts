@@ -145,6 +145,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
   'organization.settings.delete.only-owner': 'Doar proprietarul organizației poate șterge această organizație.',
 
+  'organization.usage.page.title': 'Utilizare',
+  'organization.usage.page.description': 'Vizualizează utilizarea curentă și limitele organizației tale.',
+  'organization.usage.storage.title': 'Stocare documente',
+  'organization.usage.storage.description': 'Spațiul total folosit de documentele tale',
+  'organization.usage.intake-emails.title': 'E-mailuri de intrare',
+  'organization.usage.intake-emails.description': 'Număr de adrese de e-mail de intrare',
+  'organization.usage.members.title': 'Membri',
+  'organization.usage.members.description': 'Număr de membri în organizație',
+  'organization.usage.unlimited': 'Nelimitat',
+
   'organizations.members.title': 'Membri',
   'organizations.members.description': 'Gestionează membrii organizației tale',
   'organizations.members.invite-member': 'Invită membru',
@@ -520,6 +530,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.settings': 'Setări',
   'layout.menu.account': 'Cont',
   'layout.menu.general-settings': 'Setări generale',
+  'layout.menu.usage': 'Utilizare',
   'layout.menu.intake-emails': 'Email-uri de primire',
   'layout.menu.webhooks': 'Webhook-uri',
   'layout.menu.members': 'Membri',
@@ -627,4 +638,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.billing-interval.monthly': 'Lunar',
   'subscriptions.billing-interval.annual': 'Anual',
+
+  'subscriptions.usage-warning.message': 'Ai folosit {{ percent }}% din spațiul de stocare pentru documente. Ia în considerare actualizarea planului pentru a obține mai mult spațiu.',
+  'subscriptions.usage-warning.upgrade-button': 'Actualizează planul',
 };

@@ -21,6 +21,7 @@ import { CreateOrganizationPage } from './modules/organizations/pages/create-org
 import { InvitationsListPage } from './modules/organizations/pages/invitations-list.page';
 import { InviteMemberPage } from './modules/organizations/pages/invite-member.page';
 import { MembersPage } from './modules/organizations/pages/members.page';
+import { OrganizationUsagePage } from './modules/organizations/pages/organization-usage.page';
 import { OrganizationPage } from './modules/organizations/pages/organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
@@ -156,6 +157,10 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/',
                 component: OrganizationsSettingsPage,
+              },
+              {
+                path: '/usage',
+                component: OrganizationUsagePage,
               },
               {
                 path: '/webhooks/create',

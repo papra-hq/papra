@@ -27,6 +27,7 @@ export const ConfigProvider: ParentComponent = (props) => {
   const query = useQuery(() => ({
     queryKey: ['config'],
     queryFn: fetchPublicConfig,
+    refetchOnWindowFocus: false,
   }));
 
   const mergeConfigs = (runtimeConfig: RuntimePublicConfig): Config => {
