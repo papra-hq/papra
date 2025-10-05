@@ -575,6 +575,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.tags.already_exists': 'Já existe uma tag com este nome nesta organização',
   'api-errors.internal.error': 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.',
   'api-errors.auth.invalid_origin': 'Origem da aplicação inválida. Se você está hospedando o Papra, certifique-se de que a variável de ambiente APP_BASE_URL corresponde à sua URL atual. Para mais detalhes, consulte https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached': 'O número máximo de membros e convites pendentes para esta organização foi atingido. Atualize seu plano para adicionar mais membros.',
 
   // Not found
 

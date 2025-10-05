@@ -575,6 +575,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.tags.already_exists': 'O etichetă cu acest nume există deja pentru aceasta organizație',
   'api-errors.internal.error': 'A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.',
   'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
 
   // Not found
 

@@ -575,6 +575,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.tags.already_exists': 'Tag o tej nazwie już istnieje w tej organizacji',
   'api-errors.internal.error': 'Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.',
   'api-errors.auth.invalid_origin': 'Nieprawidłowa lokalizacja aplikacji. Jeśli hostujesz Papra, upewnij się, że zmienna środowiskowa APP_BASE_URL odpowiada bieżącemu adresowi URL. Aby uzyskać więcej informacji, zobacz https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached': 'Osiągnięto maksymalną liczbę członków i oczekujących zaproszeń dla tej organizacji. Zaktualizuj swój plan, aby dodać więcej członków.',
 
   // Not found
 

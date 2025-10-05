@@ -18,6 +18,7 @@ import { createLogger } from '../shared/logger/logger';
 import { isDefined } from '../shared/utils';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import {
+  createMaxOrganizationMembersCountReachedError,
   createOrganizationDocumentStorageLimitReachedError,
   createOrganizationInvitationAlreadyExistsError,
   createOrganizationNotFoundError,
@@ -212,6 +213,8 @@ export async function inviteMemberToOrganization({
   role,
   organizationId,
   organizationsRepository,
+  subscriptionsRepository,
+  plansRepository,
   inviterId,
   expirationDelayDays,
   maxInvitationsPerDay,
@@ -224,6 +227,8 @@ export async function inviteMemberToOrganization({
   role: OrganizationRole;
   organizationId: string;
   organizationsRepository: OrganizationsRepository;
+  subscriptionsRepository: SubscriptionsRepository;
+  plansRepository: PlansRepository;
   inviterId: string;
   expirationDelayDays: number;
   maxInvitationsPerDay: number;
@@ -261,6 +266,15 @@ export async function inviteMemberToOrganization({
   if (invitation) {
     logger.error({ inviterId, organizationId, email, invitationId: invitation.id }, 'Invitation already exists');
     throw createOrganizationInvitationAlreadyExistsError();
+  }
+
+  const { membersCount } = await organizationsRepository.getOrganizationMembersCount({ organizationId });
+  const { pendingInvitationsCount } = await organizationsRepository.getOrganizationPendingInvitationsCount({ organizationId });
+  const { organizationPlan } = await getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository });
+
+  if ((membersCount + pendingInvitationsCount) >= organizationPlan.limits.maxOrganizationsMembersCount) {
+    logger.error({ inviterId, organizationId, membersCount, maxMembers: organizationPlan.limits.maxOrganizationsMembersCount }, 'Organization has reached its maximum number of members');
+    throw createMaxOrganizationMembersCountReachedError();
   }
 
   await checkIfUserHasReachedOrganizationInvitationLimit({

@@ -573,6 +573,7 @@ export const translations = {
   'api-errors.tags.already_exists': 'A tag with this name already exists for this organization',
   'api-errors.internal.error': 'An error occurred while processing your request. Please try again later.',
   'api-errors.auth.invalid_origin': 'Invalid application origin. If you are self-hosting Papra, ensure your APP_BASE_URL environment variable matches your current url. For more details see https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
 
   // Not found
 

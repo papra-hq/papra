@@ -575,6 +575,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.tags.already_exists': 'Ein Tag mit diesem Namen existiert bereits für diese Organisation',
   'api-errors.internal.error': 'Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
   'api-errors.auth.invalid_origin': 'Ungültige Anwendungs-Ursprung. Wenn Sie Papra selbst hosten, stellen Sie sicher, dass Ihre APP_BASE_URL-Umgebungsvariable mit Ihrer aktuellen URL übereinstimmt. Weitere Details finden Sie unter https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached': 'Die maximale Anzahl an Mitgliedern und ausstehenden Einladungen für diese Organisation wurde erreicht. Bitte aktualisieren Sie Ihren Plan, um weitere Mitglieder hinzuzufügen.',
 
   // Not found
 
