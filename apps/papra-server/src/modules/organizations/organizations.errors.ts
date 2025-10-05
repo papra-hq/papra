@@ -47,3 +47,9 @@ export const createUserAlreadyInOrganizationError = createErrorFactory({
   code: 'user.already_in_organization',
   statusCode: 400,
 });
+
+export const createMaxOrganizationMembersCountReachedError = createErrorFactory({
+  message: 'You have reached the maximum number of members in this organization.',
+  code: 'organization.max_members_count_reached',
+  statusCode: 403,
+});

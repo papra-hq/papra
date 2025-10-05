@@ -1,3 +1,4 @@
+import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { describe, expect, test } from 'vitest';
@@ -10,10 +11,10 @@ import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createOrganizationDocumentStorageLimitReachedError, createOrganizationNotFoundError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError } from './organizations.errors';
+import { createMaxOrganizationMembersCountReachedError, createOrganizationDocumentStorageLimitReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
-import { organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, removeMemberFromOrganization } from './organizations.usecases';
+import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
+import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, removeMemberFromOrganization } from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -457,6 +458,567 @@ describe('organizations usecases', () => {
           data: {
             memberId: 'member-2',
             userId: 'user-2',
+            organizationId: 'organization-1',
+          },
+        },
+      ]);
+    });
+  });
+
+  describe('inviteMemberToOrganization', () => {
+    test('only organization owners and admins can invite members, regular members cannot send invitations', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'owner@example.com' },
+          { id: 'user-2', email: 'admin@example.com' },
+          { id: 'user-3', email: 'member@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          { organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.ADMIN },
+          { organizationId: 'organization-1', userId: 'user-3', role: ORGANIZATION_ROLES.MEMBER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const sentEmails: unknown[] = [];
+      const emailsServices = {
+        sendEmail: async (args: unknown) => sentEmails.push(args),
+      } as unknown as EmailsServices;
+
+      // Owner can invite
+      const { organizationInvitation: ownerInvitation } = await inviteMemberToOrganization({
+        email: 'new-member-1@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        organizationsRepository,
+        subscriptionsRepository,
+        plansRepository,
+        inviterId: 'user-1',
+        expirationDelayDays: 7,
+        maxInvitationsPerDay: 10,
+        emailsServices,
+        config,
+      });
+
+      expect(ownerInvitation?.email).toBe('new-member-1@example.com');
+
+      // Admin can invite
+      const { organizationInvitation: adminInvitation } = await inviteMemberToOrganization({
+        email: 'new-member-2@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        organizationsRepository,
+        subscriptionsRepository,
+        plansRepository,
+        inviterId: 'user-2',
+        expirationDelayDays: 7,
+        maxInvitationsPerDay: 10,
+        emailsServices,
+        config,
+      });
+
+      expect(adminInvitation?.email).toBe('new-member-2@example.com');
+
+      // Member cannot invite
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member-3@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-3',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createForbiddenError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'Inviter does not have permission to invite members to organization',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-3',
+            organizationId: 'organization-1',
+          },
+        },
+      ]);
+    });
+
+    test('it is not possible to create an invitation for the owner role to prevent multiple owners in an organization', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-owner@example.com',
+          role: ORGANIZATION_ROLES.OWNER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-1',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createForbiddenError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'Cannot create another owner in organization',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-1',
+            organizationId: 'organization-1',
+          },
+        },
+      ]);
+    });
+
+    test('cannot invite a user who is already a member of the organization to prevent duplicate memberships', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'owner@example.com' },
+          { id: 'user-2', email: 'existing-member@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.MEMBER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'existing-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-1',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createUserAlreadyInOrganizationError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'User already in organization',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-1',
+            organizationId: 'organization-1',
+            email: 'existing-member@example.com',
+            memberId: 'member-2',
+            memberUserId: 'user-2',
+          },
+        },
+      ]);
+    });
+
+    test('cannot create multiple invitations for the same email address to the same organization to prevent spam and confusion', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            id: 'invitation-1',
+            organizationId: 'organization-1',
+            email: 'invited@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-12-31'),
+          },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'invited@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-1',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'Invitation already exists',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-1',
+            organizationId: 'organization-1',
+            email: 'invited@example.com',
+            invitationId: 'invitation-1',
+          },
+        },
+      ]);
+    });
+
+    test('cannot invite new members when the organization has reached its maximum member count (including pending invitations) defined by the plan to enforce subscription limits', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'owner@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            organizationId: 'organization-1',
+            email: 'pending-1@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-12-31'),
+          },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 2,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-1',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createMaxOrganizationMembersCountReachedError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'Organization has reached its maximum number of members',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-1',
+            organizationId: 'organization-1',
+            membersCount: 1,
+            maxMembers: 2,
+          },
+        },
+      ]);
+    });
+
+    test('users have a daily invitation limit to prevent spam and abuse of the invitation system', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            organizationId: 'organization-1',
+            email: 'invited-1@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-12-31'),
+            createdAt: new Date('2025-10-05T10:00:00Z'),
+          },
+          {
+            organizationId: 'organization-1',
+            email: 'invited-2@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-12-31'),
+            createdAt: new Date('2025-10-05T14:00:00Z'),
+          },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 2 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-1',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 2,
+          now: new Date('2025-10-05T18:00:00Z'),
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+    });
+
+    test('invitations are created with the correct expiration date and an email notification is sent to the invited user', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+        client: { baseUrl: 'https://app.example.com' },
+      });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const sentEmails: unknown[] = [];
+      const emailsServices = {
+        sendEmail: async (args: unknown) => sentEmails.push(args),
+      } as unknown as EmailsServices;
+
+      const now = new Date('2025-10-05T12:00:00Z');
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'new-member@example.com',
+        role: ORGANIZATION_ROLES.ADMIN,
+        organizationId: 'organization-1',
+        organizationsRepository,
+        subscriptionsRepository,
+        plansRepository,
+        inviterId: 'user-1',
+        expirationDelayDays: 7,
+        maxInvitationsPerDay: 10,
+        now,
+        emailsServices,
+        config,
+      });
+
+      expect(organizationInvitation).toMatchObject({
+        email: 'new-member@example.com',
+        role: ORGANIZATION_ROLES.ADMIN,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+        status: 'pending',
+        expiresAt: new Date('2025-10-12T12:00:00Z'),
+      });
+
+      // Verify email was sent
+      expect(sentEmails).toHaveLength(1);
+      expect(sentEmails[0]).toMatchObject({
+        to: 'new-member@example.com',
+        subject: 'You are invited to join an organization',
+      });
+
+      // Verify invitation was saved in database
+      const invitations = await db.select().from(organizationInvitationsTable);
+      expect(invitations).toHaveLength(1);
+      expect(invitations[0]).toMatchObject({
+        email: 'new-member@example.com',
+        role: ORGANIZATION_ROLES.ADMIN,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+        status: 'pending',
+      });
+    });
+
+    test('users who are not members of the organization cannot send invitations to prevent unauthorized access', async () => {
+      const { logger, getLogs } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'owner@example.com' },
+          { id: 'user-2', email: 'outsider@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          organizationsRepository,
+          subscriptionsRepository,
+          plansRepository,
+          inviterId: 'user-2',
+          expirationDelayDays: 7,
+          maxInvitationsPerDay: 10,
+          logger,
+          emailsServices,
+          config,
+        }),
+      ).rejects.toThrow(createUserNotInOrganizationError());
+
+      expect(getLogs({ excludeTimestampMs: true })).toEqual([
+        {
+          level: 'error',
+          message: 'Inviter not found in organization',
+          namespace: 'test',
+          data: {
+            inviterId: 'user-2',
             organizationId: 'organization-1',
           },
         },

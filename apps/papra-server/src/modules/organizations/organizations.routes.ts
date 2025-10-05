@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createPlansRepository } from '../plans/plans.repository';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { memberIdSchema, organizationIdSchema } from './organization.schemas';
 import { ORGANIZATION_ROLES } from './organizations.constants';
@@ -254,6 +256,8 @@ function setupInviteOrganizationMemberRoute({ app, db, config, emailsServices }:
       const { email, role } = context.req.valid('json');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const plansRepository = createPlansRepository({ config });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -262,6 +266,8 @@ function setupInviteOrganizationMemberRoute({ app, db, config, emailsServices }:
         role,
         organizationId,
         organizationsRepository,
+        subscriptionsRepository,
+        plansRepository,
         inviterId: userId,
         expirationDelayDays: config.organizations.invitationExpirationDelayDays,
         maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,

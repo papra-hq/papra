@@ -42,6 +42,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getOrganizationMemberByEmail,
       getOrganizationInvitations,
       updateExpiredPendingInvitationsStatus,
+      getOrganizationPendingInvitationsCount,
     },
     { db },
   );
@@ -443,4 +444,28 @@ async function updateExpiredPendingInvitationsStatus({ db, now = new Date() }: {
         eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
       ),
     );
+}
+
+async function getOrganizationPendingInvitationsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [record] = await db
+    .select({
+      pendingInvitationsCount: count(organizationInvitationsTable.id),
+    })
+    .from(organizationInvitationsTable)
+    .where(
+      and(
+        eq(organizationInvitationsTable.organizationId, organizationId),
+        eq(organizationInvitationsTable.status, ORGANIZATION_INVITATION_STATUS.PENDING),
+      ),
+    );
+
+  if (!record) {
+    throw createOrganizationNotFoundError();
+  }
+
+  const { pendingInvitationsCount } = record;
+
+  return {
+    pendingInvitationsCount,
+  };
 }
