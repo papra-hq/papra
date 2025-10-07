@@ -1,0 +1,36 @@
+{
+  "name": "@papra/changelog",
+  "type": "module",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.12.3",
+  "description": "Changelog management and versioning tooling for Papra",
+  "author": "",
+  "license": "MIT",
+  "keywords": [],
+  "scripts": {
+    "changelog:add": "tsx src/scripts/add.ts",
+    "changelog:release": "tsx src/scripts/release.ts",
+    "changelog:next-version": "tsx src/scripts/next-version.ts",
+    "changelog:validate": "tsx src/scripts/validate.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.1",
+    "@corentinth/friendly-ids": "^0.0.1",
+    "gray-matter": "^4.0.3",
+    "picocolors": "^1.1.1",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

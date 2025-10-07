@@ -1,0 +1,81 @@
+name: Changelog Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  changelog-release:
+    name: Changelog Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0 # Need full history for git log in changelog
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Check for pending changelogs
+        id: check_pending
+        run: |
+          if [ -d ".changelog/pending" ] && [ "$(ls -A .changelog/pending/*.md 2>/dev/null)" ]; then
+            echo "has_pending=true" >> $GITHUB_OUTPUT
+            echo "Found pending changelog entries"
+          else
+            echo "has_pending=false" >> $GITHUB_OUTPUT
+            echo "No pending changelog entries"
+          fi
+
+      - name: Get next version
+        if: steps.check_pending.outputs.has_pending == 'true'
+        id: next_version
+        run: |
+          cd packages/changelog
+          NEXT_VERSION=$(pnpm --silent changelog:next-version)
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "Next version: $NEXT_VERSION"
+
+      - name: Release changelog
+        if: steps.check_pending.outputs.has_pending == 'true'
+        run: |
+          cd packages/changelog
+          pnpm changelog:release -v ${{ steps.next_version.outputs.version }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit changelog and version
+        if: steps.check_pending.outputs.has_pending == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .changelog
+          git commit -m "chore(release): ${{ steps.next_version.outputs.version }}"
+          git push
+
+      - name: Create git tag
+        if: steps.check_pending.outputs.has_pending == 'true'
+        run: |
+          git tag "v${{ steps.next_version.outputs.version }}"
+          git push origin "v${{ steps.next_version.outputs.version }}"
+
+      - name: Trigger Docker build
+        if: steps.check_pending.outputs.has_pending == 'true'
+        run: |
+          gh workflow run release-docker.yaml -f version="${{ steps.next_version.outputs.version }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
