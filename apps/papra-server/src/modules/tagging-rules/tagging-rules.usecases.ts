@@ -1,12 +1,15 @@
+import type { DocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
 import type { Document } from '../documents/documents.types';
 import type { Logger } from '../shared/logger/logger';
 import type { TagsRepository } from '../tags/tags.repository';
+import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import type { TaggingRulesRepository } from './tagging-rules.repository';
 import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { safely, safelySync } from '@corentinth/chisels';
 import { uniq } from 'lodash-es';
 import { createLogger } from '../shared/logger/logger';
+import { addTagToDocument } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import { getDocumentFieldValue } from './tagging-rules.models';
 
@@ -55,6 +58,8 @@ export async function applyTaggingRules({
 
   taggingRulesRepository,
   tagsRepository,
+  webhookRepository,
+  documentActivityRepository,
   taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
   logger = createLogger({ namespace: 'tagging-rules' }),
 }: {
@@ -63,6 +68,8 @@ export async function applyTaggingRules({
   taggingRulesRepository: TaggingRulesRepository;
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;
 }) {
   const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: document.organizationId });
@@ -84,16 +91,26 @@ export async function applyTaggingRules({
 
   const tagIdsToApply: string[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tagId)));
 
-  const appliedTagIds = await Promise.all(tagIdsToApply.map(async (tagId) => {
-    const [, error] = await safely(async () => tagsRepository.addTagToDocument({ tagId, documentId: document.id }));
+  const tagsToApply = await tagsRepository.getTagsByIds({ tagIds: tagIdsToApply, organizationId: document.organizationId });
+
+  const appliedTagIds = await Promise.all(tagsToApply.tags.map(async (tag) => {
+    const [, error] = await safely(async () => addTagToDocument({
+      tagId: tag.id,
+      documentId: document.id,
+      organizationId: document.organizationId,
+      tag,
+      tagsRepository,
+      webhookRepository,
+      documentActivityRepository,
+    }));
 
     if (error) {
-      logger.error({ error, tagId, documentId: document.id }, 'Failed to add tag to document');
+      logger.error({ error, tagId: tag.id, documentId: document.id }, 'Failed to add tag to document');
 
       return;
     }
 
-    return tagId;
+    return tag.id;
   }));
 
   logger.info({

@@ -140,6 +140,8 @@ export async function createDocument({
         newDocumentStorageKey: newFileStorageContext.storageKey,
         tagsRepository,
         taggingRulesRepository,
+        webhookRepository,
+        documentActivityRepository,
         documentsStorageService,
         logger,
       })
@@ -232,6 +234,8 @@ async function handleExistingDocument({
   documentsRepository,
   tagsRepository,
   taggingRulesRepository,
+  webhookRepository,
+  documentActivityRepository,
   documentsStorageService,
   newDocumentStorageKey,
   logger,
@@ -243,6 +247,8 @@ async function handleExistingDocument({
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   taggingRulesRepository: TaggingRulesRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
   documentsStorageService: DocumentStorageService;
   newDocumentStorageKey: string;
   logger: Logger;
@@ -260,7 +266,7 @@ async function handleExistingDocument({
     documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
   ]);
 
-  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository });
+  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
   return { document: restoredDocument };
 }
@@ -484,6 +490,8 @@ export async function extractAndSaveDocumentFileContent({
   ocrLanguages,
   taggingRulesRepository,
   tagsRepository,
+  webhookRepository,
+  documentActivityRepository,
 }: {
   documentId: string;
   ocrLanguages?: string[];
@@ -492,6 +500,8 @@ export async function extractAndSaveDocumentFileContent({
   documentsStorageService: DocumentStorageService;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -517,7 +527,7 @@ export async function extractAndSaveDocumentFileContent({
     throw createDocumentNotFoundError();
   }
 
-  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository });
+  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
   return { document: updatedDocument };
 }
