@@ -17,6 +17,7 @@ import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagColorSchema, tagIdSchema } from './tags.schemas';
+import { addTagToDocument } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
@@ -184,21 +185,15 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
         throw createTagNotFoundError();
       }
 
-      await tagsRepository.addTagToDocument({ tagId, documentId });
-
-      deferTriggerWebhooks({
-        webhookRepository,
-        organizationId,
-        event: 'document:tag:added',
-        payload: { documentId, organizationId, tagId, tagName: tag.name },
-      });
-
-      deferRegisterDocumentActivityLog({
-        documentId,
-        event: 'tagged',
-        userId,
-        documentActivityRepository,
+      await addTagToDocument({
         tagId,
+        documentId,
+        organizationId,
+        userId,
+        tag,
+        tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
       });
 
       return context.body(null, 204);

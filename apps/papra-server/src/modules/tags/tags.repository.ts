@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableTag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
@@ -16,6 +16,7 @@ export function createTagsRepository({ db }: { db: Database }) {
     {
       getOrganizationTags,
       getTagById,
+      getTagsByIds,
       createTag,
       deleteTag,
       updateTag,
@@ -55,6 +56,24 @@ async function getTagById({ tagId, organizationId, db }: { tagId: string; organi
     );
 
   return { tag };
+}
+
+async function getTagsByIds({ tagIds, organizationId, db }: { tagIds: string[]; organizationId: string; db: Database }) {
+  if (tagIds.length === 0) {
+    return { tags: [] };
+  }
+
+  const tags = await db
+    .select()
+    .from(tagsTable)
+    .where(
+      and(
+        inArray(tagsTable.id, tagIds),
+        eq(tagsTable.organizationId, organizationId),
+      ),
+    );
+
+  return { tags };
 }
 
 async function createTag({ tag, db }: { tag: DbInsertableTag; db: Database }) {

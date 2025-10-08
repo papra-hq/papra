@@ -11,6 +11,8 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
@@ -554,6 +556,9 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
       await extractAndSaveDocumentFileContent({
         documentId: 'document-1',
         organizationId: 'organization-1',
@@ -561,6 +566,8 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
       });
 
       const documentRecords = await db.select().from(documentsTable);

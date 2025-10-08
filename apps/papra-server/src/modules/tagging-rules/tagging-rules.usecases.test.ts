@@ -1,11 +1,13 @@
 import { eq } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createDocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
 import { documentsTable } from '../documents/documents.table';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { isNil } from '../shared/utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
 import { applyTaggingRules } from './tagging-rules.usecases';
 
@@ -33,8 +35,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, logger });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository, logger });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -73,8 +77,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -96,8 +102,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
