@@ -4,6 +4,7 @@ import { injectArguments } from '@corentinth/chisels';
 import { and, eq } from 'drizzle-orm';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/utils';
+import { tagsTable } from '../tags/tags.table';
 import { aggregateTaggingRules } from './tagging-rules.repository.models';
 import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from './tagging-rules.tables';
 
@@ -31,7 +32,8 @@ async function getOrganizationTaggingRules({ organizationId, db }: { organizatio
     .from(taggingRulesTable)
     .where(eq(taggingRulesTable.organizationId, organizationId))
     .leftJoin(taggingRuleConditionsTable, eq(taggingRulesTable.id, taggingRuleConditionsTable.taggingRuleId))
-    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId));
+    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId))
+    .leftJoin(tagsTable, eq(taggingRuleActionsTable.tagId, tagsTable.id));
 
   return aggregateTaggingRules({ rawTaggingRules });
 }
@@ -42,7 +44,8 @@ async function getOrganizationTaggingRule({ organizationId, taggingRuleId, db }:
     .from(taggingRulesTable)
     .where(and(eq(taggingRulesTable.id, taggingRuleId), eq(taggingRulesTable.organizationId, organizationId)))
     .leftJoin(taggingRuleConditionsTable, eq(taggingRulesTable.id, taggingRuleConditionsTable.taggingRuleId))
-    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId));
+    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId))
+    .leftJoin(tagsTable, eq(taggingRuleActionsTable.tagId, tagsTable.id));
 
   const { taggingRules = [] } = aggregateTaggingRules({ rawTaggingRules });
   const [taggingRule] = taggingRules;
@@ -61,7 +64,8 @@ async function getOrganizationEnabledTaggingRules({ organizationId, db }: { orga
       eq(taggingRulesTable.enabled, true),
     ))
     .leftJoin(taggingRuleConditionsTable, eq(taggingRulesTable.id, taggingRuleConditionsTable.taggingRuleId))
-    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId));
+    .leftJoin(taggingRuleActionsTable, eq(taggingRulesTable.id, taggingRuleActionsTable.taggingRuleId))
+    .leftJoin(tagsTable, eq(taggingRuleActionsTable.tagId, tagsTable.id));
 
   return aggregateTaggingRules({ rawTaggingRules });
 }

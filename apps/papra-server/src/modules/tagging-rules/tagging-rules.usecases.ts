@@ -2,6 +2,7 @@ import type { DocumentActivityRepository } from '../documents/document-activity/
 import type { Document } from '../documents/documents.types';
 import type { Logger } from '../shared/logger/logger';
 import type { TagsRepository } from '../tags/tags.repository';
+import type { Tag } from '../tags/tags.types';
 import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import type { TaggingRulesRepository } from './tagging-rules.repository';
@@ -9,6 +10,7 @@ import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.type
 import { safely, safelySync } from '@corentinth/chisels';
 import { uniq } from 'lodash-es';
 import { createLogger } from '../shared/logger/logger';
+import { isNil } from '../shared/utils';
 import { addTagToDocument } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import { getDocumentFieldValue } from './tagging-rules.models';
@@ -89,11 +91,10 @@ export async function applyTaggingRules({
     return isValid;
   }));
 
-  const tagIdsToApply: string[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tagId)));
+  const tagsToApply: Tag[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tag).filter(tag => !isNil(tag))));
+  const tagIdsToApply = tagsToApply.map(tag => tag.id);
 
-  const tagsToApply = await tagsRepository.getTagsByIds({ tagIds: tagIdsToApply, organizationId: document.organizationId });
-
-  const appliedTagIds = await Promise.all(tagsToApply.tags.map(async (tag) => {
+  const appliedTagIds = await Promise.all(tagsToApply.map(async (tag) => {
     const [, error] = await safely(async () => addTagToDocument({
       tagId: tag.id,
       documentId: document.id,
