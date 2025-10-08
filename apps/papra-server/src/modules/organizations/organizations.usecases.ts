@@ -196,12 +196,14 @@ export async function checkIfUserHasReachedOrganizationInvitationLimit({
   userId,
   maxInvitationsPerDay,
   organizationsRepository,
+  now = new Date(),
 }: {
   userId: string;
   maxInvitationsPerDay: number;
   organizationsRepository: OrganizationsRepository;
+  now?: Date;
 }) {
-  const { userInvitationCount } = await organizationsRepository.getTodayUserInvitationCount({ userId });
+  const { userInvitationCount } = await organizationsRepository.getTodayUserInvitationCount({ userId, now });
 
   if (userInvitationCount >= maxInvitationsPerDay) {
     throw createUserOrganizationInvitationLimitReachedError();
@@ -281,6 +283,7 @@ export async function inviteMemberToOrganization({
     userId: inviterId,
     maxInvitationsPerDay,
     organizationsRepository,
+    now,
   });
 
   const { organizationInvitation } = await organizationsRepository.saveOrganizationInvitation({
