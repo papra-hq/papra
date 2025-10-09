@@ -387,9 +387,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.tags.add-tag': 'Tag erstellen',
   'tagging-rules.form.submit': 'Regel erstellen',
   'tagging-rules.update.title': 'Tagging-Regel aktualisieren',
-  'tagging-rules.update.error': 'Tagging-Regel konnte nicht aktualisiert werden',
+  'tagging-rules.update.error': 'Fehler beim Aktualisieren der Tagging-Regel',
   'tagging-rules.update.submit': 'Regel aktualisieren',
   'tagging-rules.update.cancel': 'Abbrechen',
+  'tagging-rules.apply.button': 'Auf vorhandene Dokumente anwenden',
+  'tagging-rules.apply.confirm.title': 'Regel auf vorhandene Dokumente anwenden?',
+  'tagging-rules.apply.confirm.description': 'Dies überprüft alle vorhandenen Dokumente in Ihrer Organisation und wendet Tags an, wo Bedingungen übereinstimmen. Dies kann einen Moment dauern.',
+  'tagging-rules.apply.confirm.button': 'Regel anwenden',
+  'tagging-rules.apply.success': 'Regel auf {{ count }} Dokument(e) angewendet',
+  'tagging-rules.apply.error': 'Fehler beim Anwenden der Regel',
+  'tagging-rules.apply.processing': 'Regel wird angewendet...',
 
   // Intake emails
 

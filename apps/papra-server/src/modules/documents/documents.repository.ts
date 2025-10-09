@@ -32,6 +32,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationStats,
       getOrganizationDocumentBySha256Hash,
       getAllOrganizationTrashDocuments,
+      getAllOrganizationDocumentsForTagging,
       updateDocument,
     },
     { db },
@@ -361,6 +362,22 @@ async function getAllOrganizationTrashDocuments({ organizationId, db }: { organi
       eq(documentsTable.isDeleted, true),
     ),
   );
+
+  return {
+    documents,
+  };
+}
+
+async function getAllOrganizationDocumentsForTagging({ organizationId, db }: { organizationId: string; db: Database }) {
+  const documents = await db
+    .select()
+    .from(documentsTable)
+    .where(
+      and(
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.isDeleted, false),
+      ),
+    );
 
   return {
     documents,
