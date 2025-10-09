@@ -3,15 +3,19 @@ import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.type
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createDocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
+import { createDocumentsRepository } from '../documents/documents.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { tagIdRegex } from '../tags/tags.constants';
+import { createTagsRepository } from '../tags/tags.repository';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
 import { taggingRuleIdSchema } from './tagging-rules.schemas';
-import { createTaggingRule } from './tagging-rules.usecases';
+import { applyTaggingRuleToExistingDocuments, createTaggingRule } from './tagging-rules.usecases';
 
 export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationTaggingRulesRoute(context);
@@ -19,6 +23,7 @@ export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
   setupDeleteTaggingRuleRoute(context);
   setupGetTaggingRuleRoute(context);
   setupUpdateTaggingRuleRoute(context);
+  setupApplyTaggingRuleRoute(context);
 }
 
 function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionContext) {
@@ -172,6 +177,43 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupApplyTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+      taggingRuleId: taggingRuleIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const { organizationId, taggingRuleId } = context.req.valid('param');
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const documentsRepository = createDocumentsRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { processedCount, taggedCount } = await applyTaggingRuleToExistingDocuments({
+        taggingRuleId,
+        organizationId,
+        taggingRulesRepository,
+        documentsRepository,
+        tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
+      });
+
+      return context.json({ processedCount, taggedCount });
     },
   );
 }

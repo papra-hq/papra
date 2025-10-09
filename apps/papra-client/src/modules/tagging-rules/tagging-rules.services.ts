@@ -43,3 +43,18 @@ export async function updateTaggingRule({ organizationId, taggingRuleId, tagging
     body: taggingRule,
   });
 }
+
+export async function applyTaggingRuleToExistingDocuments({
+  organizationId,
+  taggingRuleId,
+}: {
+  organizationId: string;
+  taggingRuleId: string;
+}) {
+  const result = await apiClient<{ processedCount: number; taggedCount: number }>({
+    path: `/api/organizations/${organizationId}/tagging-rules/${taggingRuleId}/apply`,
+    method: 'POST',
+  });
+
+  return result;
+}

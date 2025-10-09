@@ -307,3 +307,15 @@ Remove a tag from a document.
 
 - Required API key permissions: `tags:read` and `documents:update`
 - Response: empty (204 status code)
+
+### Apply tagging rule to existing documents
+
+**POST** `/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply`
+
+Apply a tagging rule to all existing documents in the organization. This will check all documents and apply tags where the rule's conditions match.
+
+- Required API key permissions: `tags:read` and `documents:update`
+- Response (JSON)
+  - `processedCount`: The number of documents that were checked.
+  - `taggedCount`: The number of documents that were processed (had the rule applied).
+  - `errorCount`: (optional) The number of errors that occurred during processing.
