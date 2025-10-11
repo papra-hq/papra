@@ -58,6 +58,17 @@ If you want to update an existing language file, you can do so directly in the c
 > [!TIP]
 > You can use the command `pnpm script:sync-i18n-key-order` to sync the order of the keys in the TypeScript i18n files, it'll also add the missing keys as comments.
 
+### Using Branchlet for Pluralization and Conditionals
+
+Papra uses [`@branchlet/core`](https://github.com/CorentinTh/branchlet) for pluralization and conditional i18n string templates (a variant of ICU message format). Here are some common patterns:
+
+- **Basic interpolation**: `'Hello {{ name }}!'` with `{ name: 'World' }`
+- **Conditionals**: `'{{ count, =0:no items, =1:one item, many items }}'`
+- **Pluralization with variables**: `'{{ count, =0:no items, =1:{count} item, {count} items }}'`
+- **Range conditions**: `'{{ score, [0-50]:bad, [51-75]:good, [76-100]:excellent }}'`
+
+See the [branchlet documentation](https://github.com/CorentinTh/branchlet) for more details on syntax and advanced usage.
+
 ## Development Setup
 
 ### Local Environment Setup

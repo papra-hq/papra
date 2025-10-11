@@ -1,3 +1,4 @@
+import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
@@ -14,7 +15,7 @@ import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createMaxOrganizationMembersCountReachedError, createOrganizationDocumentStorageLimitReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, removeMemberFromOrganization } from './organizations.usecases';
+import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -1023,6 +1024,662 @@ describe('organizations usecases', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('softDeleteOrganization', () => {
+    describe('when an organization owner wants to delete their organization, the organization is soft-deleted to allow for recovery within a grace period', () => {
+      test('owner can soft-delete organization with all metadata set correctly', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Test Org' }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const config = overrideConfig();
+
+        await softDeleteOrganization({
+          organizationId: 'organization-1',
+          deletedBy: 'usr_1',
+          organizationsRepository,
+          config,
+          now: new Date('2025-10-05'),
+        });
+
+        const [organization] = await db.select().from(organizationsTable);
+        expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
+        expect(organization?.deletedBy).to.eql('usr_1');
+        expect(organization?.scheduledPurgeAt).to.eql(new Date('2025-11-04'));
+      });
+
+      test('only owner can delete organization, admins and members cannot', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [
+            { id: 'usr_1', email: 'owner@example.com' },
+            { id: 'admin-user', email: 'admin@example.com' },
+          ],
+          organizations: [{ id: 'organization-1', name: 'Test Org' }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+            { organizationId: 'organization-1', userId: 'admin-user', role: ORGANIZATION_ROLES.ADMIN },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const config = overrideConfig();
+
+        await expect(
+          softDeleteOrganization({
+            organizationId: 'organization-1',
+            deletedBy: 'admin-user',
+            organizationsRepository,
+            config,
+          }),
+        ).rejects.toThrow(createUserNotOrganizationOwnerError());
+      });
+
+      test('soft deletion removes all members and invitations from the organization', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Test Org' }],
+          organizationMembers: [
+            { id: 'member-1', organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+          organizationInvitations: [
+            {
+              organizationId: 'organization-1',
+              email: 'invited@example.com',
+              role: ORGANIZATION_ROLES.MEMBER,
+              inviterId: 'usr_1',
+              status: 'pending',
+              expiresAt: new Date('2025-12-31'),
+            },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const config = overrideConfig();
+
+        await softDeleteOrganization({
+          organizationId: 'organization-1',
+          deletedBy: 'usr_1',
+          organizationsRepository,
+          config,
+        });
+
+        const remainingMembers = await db.select().from(organizationMembersTable);
+        const remainingInvitations = await db.select().from(organizationInvitationsTable);
+
+        expect(remainingMembers).toHaveLength(0);
+        expect(remainingInvitations).toHaveLength(0);
+      });
+
+      test('attempting to delete a non-existent organization throws an error', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const config = overrideConfig();
+
+        await expect(
+          softDeleteOrganization({
+            organizationId: 'non-existent-org',
+            deletedBy: 'usr_1',
+            organizationsRepository,
+            config,
+          }),
+        ).rejects.toThrow(createOrganizationNotFoundError());
+      });
+
+      test('soft deletion only affects the target organization, not other organizations', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [
+            { id: 'organization-1', name: 'Org to Delete' },
+            { id: 'organization-2', name: 'Other Org' },
+          ],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+            { organizationId: 'organization-2', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const config = overrideConfig();
+
+        await softDeleteOrganization({
+          organizationId: 'organization-1',
+          deletedBy: 'usr_1',
+          organizationsRepository,
+          config,
+          now: new Date('2025-10-05'),
+        });
+
+        const members = await db.select().from(organizationMembersTable);
+        const [org1, org2] = await db.select().from(organizationsTable).orderBy(organizationsTable.id);
+
+        // Only organization-2 member remains
+        expect(members).toHaveLength(1);
+        expect(members[0]?.organizationId).toBe('organization-2');
+
+        expect(org1?.deletedAt).to.eql(new Date('2025-10-05'));
+        expect(org2?.deletedAt).to.eql(null);
+      });
+    });
+  });
+
+  describe('purgeExpiredSoftDeletedOrganization', () => {
+    describe('when a deleted organization reaches its scheduled purge date, it should be permanently deleted along with all its documents from storage', () => {
+      test('successfully purges organization and deletes all documents from storage', async () => {
+        const { logger, getLogs } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{
+            id: 'organization-1',
+            name: 'Expired Org',
+            deletedAt: new Date('2025-10-05'),
+            deletedBy: 'usr_1',
+            scheduledPurgeAt: new Date('2025-11-04'),
+          }],
+          documents: [
+            {
+              id: 'doc-1',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/doc-1.pdf',
+              originalName: 'doc-1.pdf',
+              name: 'doc-1.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash1',
+            },
+            {
+              id: 'doc-2',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/doc-2.txt',
+              originalName: 'doc-2.txt',
+              name: 'doc-2.txt',
+              mimeType: 'text/plain',
+              originalSize: 512,
+              originalSha256Hash: 'hash2',
+              isDeleted: true,
+              deletedAt: new Date('2025-10-10'),
+              deletedBy: 'usr_1',
+            },
+          ],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        await purgeExpiredSoftDeletedOrganization({
+          organizationId: 'organization-1',
+          documentsRepository,
+          organizationsRepository,
+          documentsStorageService,
+          logger,
+        });
+
+        // Verify files were deleted from storage (order may vary due to async processing)
+        expect(deletedFiles.toSorted()).to.eql(['org-1/doc-1.pdf', 'org-1/doc-2.txt'].toSorted());
+
+        // Verify organization was deleted from database
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs).to.eql([]);
+
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            level: 'info',
+            message: 'Starting purge of organization',
+            namespace: 'test',
+            data: {
+              organizationId: 'organization-1',
+            },
+          },
+          {
+            level: 'debug',
+            message: 'Deleted document file from storage',
+            namespace: 'test',
+            data: {
+              documentId: 'doc-2',
+              organizationId: 'organization-1',
+              storageKey: 'org-1/doc-2.txt',
+            },
+          },
+          {
+            level: 'debug',
+            message: 'Deleted document file from storage',
+            namespace: 'test',
+            data: {
+              documentId: 'doc-1',
+              organizationId: 'organization-1',
+              storageKey: 'org-1/doc-1.pdf',
+            },
+          },
+          {
+            level: 'info',
+            message: 'Finished deleting document files from storage',
+            namespace: 'test',
+            data: {
+              deletedCount: 2,
+              failedCount: 0,
+              organizationId: 'organization-1',
+            },
+          },
+          {
+            level: 'info',
+            message: 'Successfully purged organization',
+            namespace: 'test',
+            data: {
+              organizationId: 'organization-1',
+            },
+          },
+        ]);
+      });
+
+      test('handles storage deletion errors gracefully and continues purging', async () => {
+        const { logger, getLogs } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{
+            id: 'organization-1',
+            name: 'Expired Org',
+            deletedAt: new Date('2025-10-05'),
+            deletedBy: 'usr_1',
+            scheduledPurgeAt: new Date('2025-11-04'),
+          }],
+          documents: [
+            {
+              id: 'doc-1',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/missing-file.pdf',
+              originalName: 'missing-file.pdf',
+              name: 'missing-file.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash1',
+            },
+            {
+              id: 'doc-2',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/doc-2.txt',
+              originalName: 'doc-2.txt',
+              name: 'doc-2.txt',
+              mimeType: 'text/plain',
+              originalSize: 512,
+              originalSha256Hash: 'hash2',
+            },
+          ],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            if (storageKey === 'org-1/missing-file.pdf') {
+              throw new Error('File not found in storage');
+            }
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        await purgeExpiredSoftDeletedOrganization({
+          organizationId: 'organization-1',
+          documentsRepository,
+          organizationsRepository,
+          documentsStorageService,
+          logger,
+        });
+
+        // Verify only the successful file was deleted
+        expect(deletedFiles).to.eql(['org-1/doc-2.txt']);
+
+        // Verify organization was still deleted despite storage errors
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs).to.eql([]);
+
+        // Verify error was logged
+        const logs = getLogs({ excludeTimestampMs: true });
+        expect(logs).toContainEqual(expect.objectContaining({
+          level: 'error',
+          message: 'Failed to delete document file from storage',
+        }));
+        expect(logs).toContainEqual(expect.objectContaining({
+          level: 'info',
+          message: 'Finished deleting document files from storage',
+          data: { organizationId: 'organization-1', deletedCount: 1, failedCount: 1 },
+        }));
+      });
+
+      test('purges organization even when it has no documents', async () => {
+        const { logger } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{
+            id: 'organization-1',
+            name: 'Empty Org',
+            deletedAt: new Date('2025-10-05'),
+            deletedBy: 'usr_1',
+            scheduledPurgeAt: new Date('2025-11-04'),
+          }],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        await purgeExpiredSoftDeletedOrganization({
+          organizationId: 'organization-1',
+          documentsRepository,
+          organizationsRepository,
+          documentsStorageService,
+          logger,
+        });
+
+        // No files should have been deleted
+        expect(deletedFiles).to.eql([]);
+
+        // Organization should still be deleted
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs).to.eql([]);
+      });
+
+      test('processes documents in batches for large organizations', async () => {
+        const { logger } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{
+            id: 'organization-1',
+            name: 'Large Org',
+            deletedAt: new Date('2025-10-05'),
+            deletedBy: 'usr_1',
+            scheduledPurgeAt: new Date('2025-11-04'),
+          }],
+          documents: Array.from({ length: 250 }, (_, i) => ({
+            id: `doc-${i}`,
+            organizationId: 'organization-1',
+            originalStorageKey: `org-1/doc-${i}.pdf`,
+            originalName: `doc-${i}.pdf`,
+            name: `doc-${i}.pdf`,
+            mimeType: 'application/pdf',
+            originalSize: 1024,
+            originalSha256Hash: `hash${i}`,
+          })),
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        await purgeExpiredSoftDeletedOrganization({
+          organizationId: 'organization-1',
+          documentsRepository,
+          organizationsRepository,
+          documentsStorageService,
+          logger,
+          batchSize: 100,
+        });
+
+        // All 250 files should have been deleted
+        expect(deletedFiles.length).to.eql(250);
+
+        // Organization should be deleted
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs).to.eql([]);
+      });
+    });
+  });
+
+  describe('purgeExpiredSoftDeletedOrganizations', () => {
+    describe('batch purges all expired organizations past their scheduled purge date', () => {
+      test('purges multiple expired organizations', async () => {
+        const { logger, getLogs } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Expired Org 1',
+              deletedAt: new Date('2025-10-01'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-10-31'),
+            },
+            {
+              id: 'organization-2',
+              name: 'Expired Org 2',
+              deletedAt: new Date('2025-09-15'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-10-15'),
+            },
+            {
+              id: 'organization-3',
+              name: 'Not Yet Expired',
+              deletedAt: new Date('2025-11-01'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-12-01'),
+            },
+          ],
+          documents: [
+            {
+              id: 'doc-1',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/doc-1.pdf',
+              originalName: 'doc-1.pdf',
+              name: 'doc-1.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash1',
+            },
+            {
+              id: 'doc-2',
+              organizationId: 'organization-2',
+              originalStorageKey: 'org-2/doc-2.pdf',
+              originalName: 'doc-2.pdf',
+              name: 'doc-2.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash2',
+            },
+            {
+              id: 'doc-3',
+              organizationId: 'organization-3',
+              originalStorageKey: 'org-3/doc-3.pdf',
+              originalName: 'doc-3.pdf',
+              name: 'doc-3.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash3',
+            },
+          ],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
+          organizationsRepository,
+          documentsRepository,
+          documentsStorageService,
+          logger,
+          now: new Date('2025-11-05'),
+        });
+
+        // Only expired organizations should be purged
+        expect(purgedOrganizationCount).to.eql(2);
+
+        // Only files from expired organizations should be deleted
+        expect(deletedFiles.toSorted()).to.eql(['org-1/doc-1.pdf', 'org-2/doc-2.pdf'].toSorted());
+
+        // Only the not-yet-expired organization should remain
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs.length).to.eql(1);
+        expect(orgs[0]?.id).to.eql('organization-3');
+
+        // Verify logs
+        const logs = getLogs({ excludeTimestampMs: true });
+        expect(logs).toContainEqual(expect.objectContaining({
+          level: 'info',
+          message: 'Found expired soft-deleted organizations to purge',
+          data: { organizationCount: 2 },
+        }));
+      });
+
+      test('handles errors during individual organization purge and continues with others', async () => {
+        const { logger, getLogs } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Will Fail',
+              deletedAt: new Date('2025-10-01'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-10-31'),
+            },
+            {
+              id: 'organization-2',
+              name: 'Will Succeed',
+              deletedAt: new Date('2025-10-01'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-10-31'),
+            },
+          ],
+          documents: [
+            {
+              id: 'doc-1',
+              organizationId: 'organization-1',
+              originalStorageKey: 'org-1/doc-1.pdf',
+              originalName: 'doc-1.pdf',
+              name: 'doc-1.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash1',
+            },
+            {
+              id: 'doc-2',
+              organizationId: 'organization-2',
+              originalStorageKey: 'org-2/doc-2.pdf',
+              originalName: 'doc-2.pdf',
+              name: 'doc-2.pdf',
+              mimeType: 'application/pdf',
+              originalSize: 1024,
+              originalSha256Hash: 'hash2',
+            },
+          ],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            if (storageKey.startsWith('org-1/')) {
+              throw new Error('Storage service error');
+            }
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
+          organizationsRepository,
+          documentsRepository,
+          documentsStorageService,
+          logger,
+          now: new Date('2025-11-05'),
+        });
+
+        // Both organizations should be purged even though org-1 had storage deletion errors
+        // The singular purge function catches file deletion errors but continues
+        // and still deletes the organization record from the database
+        expect(purgedOrganizationCount).to.eql(2);
+
+        // Only successful file should be deleted
+        expect(deletedFiles).to.eql(['org-2/doc-2.pdf']);
+
+        // Both organizations should be deleted from database despite storage errors
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs).to.eql([]);
+
+        // Verify file deletion error was logged (but not organization purge failure)
+        const logs = getLogs({ excludeTimestampMs: true });
+        expect(logs).toContainEqual(expect.objectContaining({
+          level: 'error',
+          message: 'Failed to delete document file from storage',
+        }));
+      });
+
+      test('returns zero count when no organizations need purging', async () => {
+        const { logger } = createTestLogger();
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Not Yet Expired',
+              deletedAt: new Date('2025-11-01'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-12-01'),
+            },
+          ],
+        });
+
+        const documentsRepository = createDocumentsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const deletedFiles: string[] = [];
+        const documentsStorageService = {
+          deleteFile: async ({ storageKey }: { storageKey: string }) => {
+            deletedFiles.push(storageKey);
+          },
+        } as DocumentStorageService;
+
+        const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
+          organizationsRepository,
+          documentsRepository,
+          documentsStorageService,
+          logger,
+          now: new Date('2025-11-05'),
+        });
+
+        expect(purgedOrganizationCount).to.eql(0);
+        expect(deletedFiles).to.eql([]);
+
+        // Organization should remain
+        const orgs = await db.select().from(organizationsTable);
+        expect(orgs.length).to.eql(1);
+      });
     });
   });
 });

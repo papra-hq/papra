@@ -1,5 +1,6 @@
 import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
+import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
@@ -19,8 +20,10 @@ import { isDefined } from '../shared/utils';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import {
   createMaxOrganizationMembersCountReachedError,
+  createOnlyPreviousOwnerCanRestoreError,
   createOrganizationDocumentStorageLimitReachedError,
   createOrganizationInvitationAlreadyExistsError,
+  createOrganizationNotDeletedError,
   createOrganizationNotFoundError,
   createUserAlreadyInOrganizationError,
   createUserMaxOrganizationCountReachedError,
@@ -470,4 +473,146 @@ export async function getOrganizationStorageLimits({
     maxDocumentStorageBytes,
     maxFileSize,
   };
+}
+
+export async function softDeleteOrganization({
+  organizationId,
+  deletedBy,
+  organizationsRepository,
+  config,
+  now = new Date(),
+}: {
+  organizationId: string;
+  deletedBy: string;
+  organizationsRepository: OrganizationsRepository;
+  config: Config;
+  now?: Date;
+}) {
+  await ensureUserIsOwnerOfOrganization({ userId: deletedBy, organizationId, organizationsRepository });
+
+  await organizationsRepository.deleteAllMembersFromOrganization({ organizationId });
+  await organizationsRepository.deleteAllOrganizationInvitations({ organizationId });
+  await organizationsRepository.softDeleteOrganization({
+    organizationId,
+    deletedBy,
+    now,
+    purgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay,
+  });
+}
+
+export async function restoreOrganization({
+  organizationId,
+  restoredBy,
+  organizationsRepository,
+  now = new Date(),
+}: {
+  organizationId: string;
+  restoredBy: string;
+  organizationsRepository: OrganizationsRepository;
+  now?: Date;
+}) {
+  const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+  if (!organization) {
+    throw createOrganizationNotFoundError();
+  }
+
+  if (!organization.deletedAt) {
+    throw createOrganizationNotDeletedError();
+  }
+
+  if (organization.scheduledPurgeAt && organization.scheduledPurgeAt < now) {
+    throw createOrganizationNotFoundError();
+  }
+
+  if (organization.deletedBy !== restoredBy) {
+    throw createOnlyPreviousOwnerCanRestoreError();
+  }
+
+  await organizationsRepository.restoreOrganization({ organizationId });
+  await organizationsRepository.addUserToOrganization({
+    userId: restoredBy,
+    organizationId,
+    role: ORGANIZATION_ROLES.OWNER,
+  });
+}
+
+export async function purgeExpiredSoftDeletedOrganization({
+  organizationId,
+  documentsRepository,
+  organizationsRepository,
+  documentsStorageService,
+  logger = createLogger({ namespace: 'organizations.purge' }),
+  batchSize = 100,
+}: {
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  organizationsRepository: OrganizationsRepository;
+  documentsStorageService: DocumentStorageService;
+  logger?: Logger;
+  batchSize?: number;
+}) {
+  logger.info({ organizationId }, 'Starting purge of organization');
+
+  // Process documents in batches using an iterator to avoid loading all into memory
+  const documentsIterator = documentsRepository.getAllOrganizationDocumentsIterator({ organizationId, batchSize });
+
+  let deletedCount = 0;
+  let failedCount = 0;
+
+  for await (const document of documentsIterator) {
+    try {
+      await documentsStorageService.deleteFile({ storageKey: document.originalStorageKey });
+      logger.debug({ organizationId, documentId: document.id, storageKey: document.originalStorageKey }, 'Deleted document file from storage');
+      deletedCount++;
+    } catch (error) {
+      // Log but don't fail the entire purge if a single file deletion fails
+      logger.error({ organizationId, documentId: document.id, storageKey: document.originalStorageKey, error }, 'Failed to delete document file from storage');
+      failedCount++;
+    }
+  }
+
+  logger.info({ organizationId, deletedCount, failedCount }, 'Finished deleting document files from storage');
+
+  // Hard delete the organization (cascade will handle all related records)
+  await organizationsRepository.deleteOrganization({ organizationId });
+
+  logger.info({ organizationId }, 'Successfully purged organization');
+}
+
+export async function purgeExpiredSoftDeletedOrganizations({
+  organizationsRepository,
+  documentsRepository,
+  documentsStorageService,
+  logger = createLogger({ namespace: 'organizations.purge' }),
+  now = new Date(),
+}: {
+  organizationsRepository: OrganizationsRepository;
+  documentsRepository: DocumentsRepository;
+  documentsStorageService: DocumentStorageService;
+  logger?: Logger;
+  now?: Date;
+}) {
+  const { organizationIds } = await organizationsRepository.getExpiredSoftDeletedOrganizations({ now });
+
+  logger.info({ organizationCount: organizationIds.length }, 'Found expired soft-deleted organizations to purge');
+
+  let purgedCount = 0;
+
+  for (const organizationId of organizationIds) {
+    try {
+      await purgeExpiredSoftDeletedOrganization({
+        organizationId,
+        documentsRepository,
+        organizationsRepository,
+        documentsStorageService,
+        logger,
+      });
+      purgedCount++;
+    } catch (error) {
+      logger.error({ organizationId, error }, 'Failed to purge organization');
+    }
+  }
+
+  return { purgedOrganizationCount: purgedCount, totalOrganizationCount: organizationIds.length };
 }

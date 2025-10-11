@@ -29,6 +29,9 @@ export const buildTimeConfig = {
   documents: {
     deletedDocumentsRetentionDays: asNumber(import.meta.env.VITE_DOCUMENTS_DELETED_DOCUMENTS_RETENTION_DAYS, 30),
   },
+  organizations: {
+    deletedOrganizationsPurgeDaysDelay: asNumber(import.meta.env.VITE_ORGANIZATIONS_DELETED_PURGE_DAYS_DELAY, 30),
+  },
   posthog: {
     apiKey: asString(import.meta.env.VITE_POSTHOG_API_KEY),
     host: asString(import.meta.env.VITE_POSTHOG_HOST),
@@ -44,4 +47,4 @@ export const buildTimeConfig = {
 } as const;
 
 export type Config = typeof buildTimeConfig;
-export type RuntimePublicConfig = Pick<Config, 'auth'>;
+export type RuntimePublicConfig = Pick<Config, 'auth' | 'documents' | 'documentsStorage' | 'intakeEmails' | 'organizations'>;

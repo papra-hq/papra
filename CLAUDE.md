@@ -187,6 +187,12 @@ pnpm dev               # localhost:4321
 - Fully type-safe with TypeScript
 - Update `i18n.constants.ts` when adding new languages
 - Use `pnpm script:sync-i18n-key-order` to sync key order
+- **Branchlet/core**: Uses `@branchlet/core` for pluralization and conditional i18n string templates (variant of ICU message format)
+  - Basic interpolation: `'Hello {{ name }}!'` with `{ name: 'World' }`
+  - Conditionals: `'{{ count, =0:no items, =1:one item, many items }}'`
+  - Pluralization with variables: `'{{ count, =0:no items, =1:{count} item, {count} items }}'`
+  - Range conditions: `'{{ score, [0-50]:bad, [51-75]:good, [76-100]:excellent }}'`
+  - See [branchlet documentation](https://github.com/CorentinTh/branchlet) for more details
 
 ## Contributing Flow
 

@@ -4,6 +4,7 @@ import { injectArguments, safely } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
 import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
@@ -32,6 +33,9 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationStats,
       getOrganizationDocumentBySha256Hash,
       getAllOrganizationTrashDocuments,
+      getAllOrganizationDocuments,
+      getOrganizationDocumentsQuery,
+      getAllOrganizationDocumentsIterator,
       updateDocument,
     },
     { db },
@@ -365,6 +369,33 @@ async function getAllOrganizationTrashDocuments({ organizationId, db }: { organi
   return {
     documents,
   };
+}
+
+async function getAllOrganizationDocuments({ organizationId, db }: { organizationId: string; db: Database }) {
+  const documents = await db.select({
+    id: documentsTable.id,
+    originalStorageKey: documentsTable.originalStorageKey,
+  }).from(documentsTable).where(
+    eq(documentsTable.organizationId, organizationId),
+  );
+
+  return {
+    documents,
+  };
+}
+
+function getOrganizationDocumentsQuery({ organizationId, db }: { organizationId: string; db: Database }) {
+  return db.select({
+    id: documentsTable.id,
+    originalStorageKey: documentsTable.originalStorageKey,
+  }).from(documentsTable).where(
+    eq(documentsTable.organizationId, organizationId),
+  );
+}
+
+function getAllOrganizationDocumentsIterator({ organizationId, db, batchSize = 100 }: { organizationId: string; db: Database; batchSize?: number }) {
+  const query = getOrganizationDocumentsQuery({ organizationId, db }).$dynamic();
+  return createIterator({ query, batchSize }) as AsyncGenerator<{ id: string; originalStorageKey: string }>;
 }
 
 async function updateDocument({ documentId, organizationId, name, content, db }: { documentId: string; organizationId: string; name?: string; content?: string; db: Database }) {

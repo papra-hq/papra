@@ -102,6 +102,19 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.list.title': 'As suas organizações',
   'organizations.list.description': 'As organizações são uma forma de agrupar os seus documentos e gerir o acesso aos mesmos. Pode criar várias organizações e convidar os membros da sua equipa para colaborar.',
   'organizations.list.create-new': 'Criar nova organização',
+  'organizations.list.back': 'Voltar às organizações',
+  'organizations.list.deleted.title': 'Organizações eliminadas',
+  'organizations.list.deleted.description': 'As organizações eliminadas são mantidas durante {{ days }} dias antes de serem removidas permanentemente. Pode restaurá-las durante este período.',
+  'organizations.list.deleted.empty': 'Nenhuma organização eliminada',
+  'organizations.list.deleted.empty-description': 'Quando eliminar uma organização, ela aparecerá aqui durante {{ days }} dias antes de ser eliminada permanentemente.',
+  'organizations.list.deleted.restore': 'Restaurar',
+  'organizations.list.deleted.restore-success': 'Organização restaurada com sucesso',
+  'organizations.list.deleted.restore-confirm.title': 'Restaurar organização',
+  'organizations.list.deleted.restore-confirm.message': 'Tem a certeza de que quer restaurar esta organização? Ela será movida de volta para a sua lista de organizações ativas.',
+  'organizations.list.deleted.restore-confirm.confirm-button': 'Restaurar organização',
+  'organizations.list.deleted.deleted-at': 'Eliminada em {{ date }}',
+  'organizations.list.deleted.purge-at': 'Será eliminada permanentemente em {{ date }}',
+  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} dia, {daysUntilPurge} dias }} restante{{ daysUntilPurge, >1:s}})',
 
   'organizations.details.no-documents.title': 'Sem documentos',
   'organizations.details.no-documents.description': 'Não há documentos nesta organização ainda. Comece por carregar alguns documentos.',
@@ -139,7 +152,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.title': 'Eliminar organização',
   'organization.settings.delete.description': 'Eliminar esta organização removerá permanentemente todos os dados associados à mesma.',
   'organization.settings.delete.confirm.title': 'Eliminar organização',
-  'organization.settings.delete.confirm.message': 'Tem a certeza de que quer eliminar esta organização? Esta ação não pode ser desfeita e todos os dados associados a esta organização serão permanentemente removidos.',
+  'organization.settings.delete.confirm.message': 'Tem a certeza de que pretende eliminar esta organização? A organização será marcada para eliminação e permanentemente removida após {{ days }} dias. Durante este período, pode restaurá-la a partir da sua lista de organizações. Todos os documentos e dados serão permanentemente eliminados após este prazo.',
   'organization.settings.delete.confirm.confirm-button': 'Eliminar organização',
   'organization.settings.delete.confirm.cancel-button': 'Cancelar',
   'organization.settings.delete.success': 'Organização eliminada',
@@ -642,4 +655,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.usage-warning.message': 'Usou {{ percent }}% do seu armazenamento de documentos. Considere atualizar o seu plano para obter mais espaço.',
   'subscriptions.usage-warning.upgrade-button': 'Atualizar plano',
+
+  // Common / Shared
+
+  'common.confirm-modal.type-to-confirm': 'Digite "{{ text }}" para confirmar',
 };

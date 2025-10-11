@@ -15,6 +15,7 @@ describe('config models', () => {
         - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
         - intakeEmails.isEnabled Whether intake emails are enabled
         - auth.providers.email.isEnabled Whether email/password authentication is enabled
+        - organizations.deletedOrganizationsPurgeDaysDelay The delay in days before a soft-deleted organization is permanently purged
         
         Any other config should not be exposed.`, () => {
       const config = overrideConfig({
@@ -40,6 +41,9 @@ describe('config models', () => {
         },
         intakeEmails: {
           isEnabled: true,
+        },
+        organizations: {
+          deletedOrganizationsPurgeDaysDelay: 30,
         },
       } as DeepPartial<Config>);
 
@@ -71,6 +75,9 @@ describe('config models', () => {
           },
           documentsStorage: {
             maxUploadSize: 10485760,
+          },
+          organizations: {
+            deletedOrganizationsPurgeDaysDelay: 30,
           },
         },
       });

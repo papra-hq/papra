@@ -53,3 +53,15 @@ export const createMaxOrganizationMembersCountReachedError = createErrorFactory(
   code: 'organization.max_members_count_reached',
   statusCode: 403,
 });
+
+export const createOrganizationNotDeletedError = createErrorFactory({
+  message: 'Organization not deleted.',
+  code: 'organization.not_deleted',
+  statusCode: 403,
+});
+
+export const createOnlyPreviousOwnerCanRestoreError = createErrorFactory({
+  message: 'Only the previous owner can restore this organization.',
+  code: 'organization.only_previous_owner_can_restore',
+  statusCode: 403,
+});

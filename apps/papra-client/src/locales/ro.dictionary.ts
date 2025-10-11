@@ -102,6 +102,19 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.list.title': 'Organizațiile tale',
   'organizations.list.description': 'Organizațiile sunt o modalitate de a grupa documentele și de a gestiona accesul la acestea. Poți crea multiple organizații și invita membrii echipei tale să colaboreze.',
   'organizations.list.create-new': 'Creează o organizație nouă',
+  'organizations.list.back': 'Înapoi la organizații',
+  'organizations.list.deleted.title': 'Organizații șterse',
+  'organizations.list.deleted.description': 'Organizațiile șterse sunt păstrate {{ days }} zile înainte de a fi eliminate definitiv. Le poți restaura în această perioadă.',
+  'organizations.list.deleted.empty': 'Nu există organizații șterse',
+  'organizations.list.deleted.empty-description': 'Când ștergi o organizație, va apărea aici pentru {{ days }} zile înainte de a fi ștearsă definitiv.',
+  'organizations.list.deleted.restore': 'Restaurează',
+  'organizations.list.deleted.restore-success': 'Organizația a fost restaurată cu succes',
+  'organizations.list.deleted.restore-confirm.title': 'Restaurează organizația',
+  'organizations.list.deleted.restore-confirm.message': 'Ești sigur că vrei să restaurezi această organizație? Va fi mutată înapoi în lista organizațiilor active.',
+  'organizations.list.deleted.restore-confirm.confirm-button': 'Restaurează organizația',
+  'organizations.list.deleted.deleted-at': 'Ștearsă {{ date }}',
+  'organizations.list.deleted.purge-at': 'Va fi ștearsă definitiv {{ date }}',
+  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} zi, {daysUntilPurge} zile }} rămas{{ daysUntilPurge, =1:ă, e}})',
 
   'organizations.details.no-documents.title': 'Niciun document',
   'organizations.details.no-documents.description': 'Încă nu există documente în această organizație. Încarcă niște documente pentru a începe.',
@@ -139,7 +152,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.title': 'Șterge organizația',
   'organization.settings.delete.description': 'Ștergerea acestei organizații va elimina definitiv toate datele asociate cu aceasta.',
   'organization.settings.delete.confirm.title': 'Șterge organizatia',
-  'organization.settings.delete.confirm.message': 'Ești sigur că vrei să ștergi această organizație? Aceasta operatie nu poate fi anulată si toate datele asociate cu aceasta vor fi eliminate definitiv.',
+  'organization.settings.delete.confirm.message': 'Sigur doriți să ștergeți această organizație? Organizația va fi marcată pentru ștergere și eliminată definitiv după {{ days }} zile. În această perioadă, o puteți restaura din lista dvs. de organizații. Toate documentele și datele vor fi șterse definitiv după această perioadă.',
   'organization.settings.delete.confirm.confirm-button': 'Șterge organizație',
   'organization.settings.delete.confirm.cancel-button': 'Anulează',
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
@@ -642,4 +655,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.usage-warning.message': 'Ai folosit {{ percent }}% din spațiul de stocare pentru documente. Ia în considerare actualizarea planului pentru a obține mai mult spațiu.',
   'subscriptions.usage-warning.upgrade-button': 'Actualizează planul',
+
+  // Common / Shared
+
+  'common.confirm-modal.type-to-confirm': 'Tastează "{{ text }}" pentru confirmare',
 };

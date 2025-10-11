@@ -10,20 +10,22 @@ import { createUsersRepository } from '../users/users.repository';
 import { memberIdSchema, organizationIdSchema } from './organization.schemas';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
-import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, inviteMemberToOrganization, removeMemberFromOrganization, updateOrganizationMemberRole } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization, restoreOrganization, softDeleteOrganization, updateOrganizationMemberRole } from './organizations.usecases';
 
 export function registerOrganizationsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationsRoute(context);
+  setupGetDeletedOrganizationsRoute(context);
   setupCreateOrganizationRoute(context);
   setupGetOrganizationRoute(context);
   setupUpdateOrganizationRoute(context);
-  setupDeleteOrganizationRoute(context);
+  setupSoftDeleteOrganizationRoute(context);
   setupGetOrganizationMembersRoute(context);
   setupRemoveOrganizationMemberRoute(context);
   setupUpdateOrganizationMemberRoute(context);
   setupInviteOrganizationMemberRoute(context);
   setupGetMembershipRoute(context);
   setupGetOrganizationInvitationsRoute(context);
+  setupRestoreOrganizationRoute(context);
 }
 
 function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
@@ -36,6 +38,24 @@ function setupGetOrganizationsRoute({ app, db }: RouteDefinitionContext) {
       const organizationsRepository = createOrganizationsRepository({ db });
 
       const { organizations } = await organizationsRepository.getUserOrganizations({ userId });
+
+      return context.json({
+        organizations,
+      });
+    },
+  );
+}
+
+function setupGetDeletedOrganizationsRoute({ app, db }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/deleted',
+    requireAuthentication({ apiKeyPermissions: ['organizations:read'] }),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      const { organizations } = await organizationsRepository.getUserDeletedOrganizations({ userId });
 
       return context.json({
         organizations,
@@ -119,7 +139,7 @@ function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
+function setupSoftDeleteOrganizationRoute({ app, db, config }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId',
     requireAuthentication({ apiKeyPermissions: ['organizations:delete'] }),
@@ -132,11 +152,9 @@ function setupDeleteOrganizationRoute({ app, db }: RouteDefinitionContext) {
 
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      // No Promise.all as we want to ensure consistency in error handling
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-      await ensureUserIsOwnerOfOrganization({ userId, organizationId, organizationsRepository });
 
-      await organizationsRepository.deleteOrganization({ organizationId });
+      await softDeleteOrganization({ organizationId, deletedBy: userId, organizationsRepository, config });
 
       return context.body(null, 204);
     },
@@ -302,6 +320,30 @@ function setupGetOrganizationInvitationsRoute({ app, db }: RouteDefinitionContex
       const { invitations } = await organizationsRepository.getOrganizationInvitations({ organizationId });
 
       return context.json({ invitations });
+    },
+  );
+}
+
+function setupRestoreOrganizationRoute({ app, db }: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/restore',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await restoreOrganization({
+        organizationId,
+        restoredBy: userId,
+        organizationsRepository,
+      });
+
+      return context.body(null, 204);
     },
   );
 }

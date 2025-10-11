@@ -19,7 +19,7 @@ const dummyTrackingServices: TrackingServices = {
   capture: ({ event, ...args }) => {
     if (isDev) {
       // eslint-disable-next-line no-console
-      console.log(`[dev] captured event ${event}`, args);
+      console.log(`[dev] captured event ${event}`, ...(Object.keys(args).length ? [args] : []));
     }
   },
   reset: () => {},

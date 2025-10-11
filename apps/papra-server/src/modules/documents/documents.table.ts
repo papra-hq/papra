@@ -1,17 +1,15 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
-import { createPrimaryKeyField, createSoftDeleteColumns, createTimestampColumns } from '../shared/db/columns.helpers';
+import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
 import { generateDocumentId } from './documents.models';
 
 export const documentsTable = sqliteTable('documents', {
   ...createPrimaryKeyField({ idGenerator: generateDocumentId }),
   ...createTimestampColumns(),
-  ...createSoftDeleteColumns(),
 
   organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   createdBy: text('created_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
-  deletedBy: text('deleted_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
 
   originalName: text('original_name').notNull(),
   originalSize: integer('original_size').notNull().default(0),
@@ -25,6 +23,10 @@ export const documentsTable = sqliteTable('documents', {
   fileEncryptionKeyWrapped: text('file_encryption_key_wrapped'), // The wrapped encryption key
   fileEncryptionKekVersion: text('file_encryption_kek_version'), // The key encryption key version used to encrypt the file encryption key
   fileEncryptionAlgorithm: text('file_encryption_algorithm'),
+
+  deletedAt: integer('deleted_at', { mode: 'timestamp_ms' }),
+  deletedBy: text('deleted_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+  isDeleted: integer('is_deleted', { mode: 'boolean' }).notNull().default(false),
 }, table => [
   // To select paginated documents by organization
   index('documents_organization_id_is_deleted_created_at_index').on(table.organizationId, table.isDeleted, table.createdAt),

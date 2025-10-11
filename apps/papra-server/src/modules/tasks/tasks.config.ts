@@ -49,12 +49,6 @@ export const tasksConfig = {
     },
   },
   hardDeleteExpiredDocuments: {
-    enabled: {
-      doc: 'Whether the task to hard delete expired "soft deleted" documents is enabled',
-      schema: booleanishSchema,
-      default: true,
-      env: 'DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_ENABLED',
-    },
     cron: {
       doc: 'The cron schedule for the task to hard delete expired "soft deleted" documents',
       schema: z.string(),
@@ -69,12 +63,6 @@ export const tasksConfig = {
     },
   },
   expireInvitations: {
-    enabled: {
-      doc: 'Whether the task to expire invitations is enabled',
-      schema: booleanishSchema,
-      default: true,
-      env: 'ORGANIZATIONS_EXPIRE_INVITATIONS_ENABLED',
-    },
     cron: {
       doc: 'The cron schedule for the task to expire invitations',
       schema: z.string(),
@@ -86,6 +74,20 @@ export const tasksConfig = {
       schema: booleanishSchema,
       default: true,
       env: 'ORGANIZATIONS_EXPIRE_INVITATIONS_RUN_ON_STARTUP',
+    },
+  },
+  purgeExpiredOrganizations: {
+    cron: {
+      doc: 'The cron schedule for the task to purge expired soft-deleted organizations',
+      schema: z.string(),
+      default: '0 1 * * *',
+      env: 'ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_CRON',
+    },
+    runOnStartup: {
+      doc: 'Whether the task to purge expired soft-deleted organizations should run on startup',
+      schema: booleanishSchema,
+      default: true,
+      env: 'ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP',
     },
   },
 } as const satisfies ConfigDefinition;
