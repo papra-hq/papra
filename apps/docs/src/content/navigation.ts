@@ -56,7 +56,6 @@ export const sidebar = [
         label: 'Organization Deletion',
         slug: 'architecture/organization-deletion-purge',
       },
-
     ],
   },
   {
