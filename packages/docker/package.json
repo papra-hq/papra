@@ -1,0 +1,17 @@
+{
+  "name": "@papra/docker",
+  "version": "25.10.0",
+  "private": true,
+  "description": "Docker image version tracker for Papra, calver-ish versionned.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papra-hq/papra",
+    "directory": "packages/docker"
+  },
+  "scripts": {
+    "build:docker:root": "docker build -t papra-local-root -f ./Dockerfile .",
+    "build:docker:root:amd64": "docker buildx build --platform linux/amd64 -t papra-local-root-amd64 -f ./Dockerfile --load .",
+    "build:docker:root:arm64": "docker buildx build --platform linux/arm64 -t papra-local-root-arm64 -f ./Dockerfile --load .",
+    "build:docker:rootless": "docker build -t papra-local-rootless -f ./Dockerfile.rootless ."
+  }
+}

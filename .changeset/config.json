@@ -5,13 +5,11 @@
     { "repo": "papra-hq/papra"} 
   ],
   "commit": false,
-  "fixed": [
-    ["@papra/app-client", "@papra/app-server"]
-  ],
+  "fixed": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [],
+  "ignore": ["@papra/app-client", "@papra/app-server", "@papra/docs"],
   "privatePackages": {
     "tag": true,
     "version": true

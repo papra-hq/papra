@@ -1,6 +1,5 @@
 ---
-"@papra/app-client": patch
-"@papra/app-server": patch
+"@papra/docker": patch
 ---
 
 Added a page to view organization usage
