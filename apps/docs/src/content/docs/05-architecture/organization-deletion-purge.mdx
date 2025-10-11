@@ -1,0 +1,62 @@
+---
+title: Organization Deletion & Purge
+description: How Papra handles organization deletion with a grace period and eventual purge.
+slug: architecture/organization-deletion-purge
+---
+
+## Overview
+
+Papra implements a two-phase deletion process for organizations: soft deletion followed by hard deletion (purge). This provides a grace period for recovery while ensuring eventual cleanup of resources.
+
+## Deletion Process
+
+### Who Can Delete
+
+Only the **organization owner** can delete an organization. Admins and members do not have this permission.
+
+### What Happens During Deletion
+
+When an organization is deleted:
+
+1. **Members are removed** - All organization members are stripped from the organization, leaving them dangling
+2. **Invitations are removed** - All pending invitations are deleted
+3. **Metadata is recorded**:
+   - `deletedAt`: Timestamp when the deletion occurred
+   - `deletedBy`: ID of the user (owner) who deleted the organization
+   - `scheduledPurgeAt`: Future date when hard deletion will occur (default: 30 days)
+
+The organization itself remains in the database in a soft-deleted state, allowing for potential restoration.
+
+## Purge Process
+
+### When Purge Occurs
+
+Hard deletion (purge) happens when `scheduledPurgeAt` is reached. By default, this is **30 days** after the deletion date.
+
+### What Gets Purged
+
+When an organization is purged:
+
+- **All documents** are deleted from storage
+- **All database records** related to the organization are removed (cascade handles related records, like Tags, Intake Emails, etc.)
+- The organization itself is permanently deleted
+
+The process handles documents in batches using an iterator to avoid memory issues with large organizations.
+
+### Background Task
+
+Purging is handled by a periodic background task that:
+
+1. Queries for organizations with `scheduledPurgeAt` in the past
+2. For each expired organization:
+   - Deletes all document files from storage
+   - Hard deletes the organization (cascade handles related records)
+3. Logs the process for monitoring and debugging
+
+The task continues even if individual file deletions fail, logging errors without blocking the entire purge operation.
+
+## Recovery
+
+Organizations can be restored before the `scheduledPurgeAt` date is reached, but only by the user who deleted them (the previous owner). After this date, recovery is no longer possible, even if the purge has not yet occurred.
+
+> Note: After recovery, the organization owner must re-invite members as they were removed during deletion.
