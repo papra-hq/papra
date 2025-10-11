@@ -1,5 +1,15 @@
 # @papra/app-client
 
+## 0.9.7
+
+### Patch Changes
+
+- [#532](https://github.com/papra-hq/papra/pull/532) [`9a6e822`](https://github.com/papra-hq/papra/commit/9a6e822e7145c41707c86126eb8241df798d2c0b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Drop docker armv7 support
+
+- [#542](https://github.com/papra-hq/papra/pull/542) [`c434d87`](https://github.com/papra-hq/papra/commit/c434d873bc2da79664f8581bc802131beb95e490) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added soft deletion with grace period for organizations
+
+- [#534](https://github.com/papra-hq/papra/pull/534) [`624ad62`](https://github.com/papra-hq/papra/commit/624ad62c53a94a0b5722712957457cb9751a56d9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a page to view organization usage
+
 ## 0.9.6
 
 ## 0.9.5
