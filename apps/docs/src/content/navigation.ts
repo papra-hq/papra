@@ -42,6 +42,24 @@ export const sidebar = [
     ],
   },
   {
+    label: 'Architecture',
+    items: [
+      {
+        label: 'No-Mutation Principle',
+        slug: 'architecture/no-mutation-principle',
+      },
+      {
+        label: 'Document Deduplication',
+        slug: 'architecture/document-deduplication',
+      },
+      {
+        label: 'Organization Deletion',
+        slug: 'architecture/organization-deletion-purge',
+      },
+
+    ],
+  },
+  {
     label: 'Resources',
     items: [
       {
