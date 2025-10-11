@@ -1,0 +1,40 @@
+---
+title: Document Deduplication
+description: How Papra prevents duplicate documents and saves storage space.
+slug: architecture/document-deduplication
+---
+
+## Overview
+
+Papra automatically detects and prevents duplicate documents per organization using content hashing. This ensures that if the same file is uploaded multiple times, only one copy is stored, saving storage space and reducing clutter.
+
+## How It Works
+
+When a document is added to an organization (upload, email ingestion, folder sync, ...), the server computes a **SHA-256 hash** of the file content and checks if a document with the same hash already exists in that organization.
+
+- If there is **no document with the same hash** in the organization, the new document is added as usual
+- If a document **with same content exists**, the upload is rejected
+- If a document **with same content was previously deleted** (in trash), it is restored instead of creating a new copy, the metadata is updated to match the newly added document
+
+
+## Technical Details
+
+### Hash Algorithm
+
+- Papra uses **SHA-256** for content hashing.
+- Computed during streaming upload (no extra I/O)
+- 64-character hexadecimal string stored in the database
+
+### Database Constraint
+
+The database enforces uniqueness with a composite index:
+
+```sql
+UNIQUE (organization_id, original_sha256_hash)
+```
+
+This guarantees no two active documents in the same organization can have identical content.
+
+### File Content Only
+
+Only the **file content** is hashed and used for deduplication, filenames, upload dates, and metadata don't affect deduplication. Two files are considered duplicates if and only if their content is strictly identical.
