@@ -6,6 +6,9 @@ export type Organization = {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
+  deletedBy?: string | null;
+  scheduledPurgeAt?: Date | null;
 };
 
 export type OrganizationMember = {

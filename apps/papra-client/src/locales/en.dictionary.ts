@@ -100,6 +100,19 @@ export const translations = {
   'organizations.list.title': 'Your organizations',
   'organizations.list.description': 'Organizations are a way to group your documents and manage access to them. You can create multiple organizations and invite your team members to collaborate.',
   'organizations.list.create-new': 'Create new organization',
+  'organizations.list.back': 'Back to organizations',
+  'organizations.list.deleted.title': 'Deleted organizations',
+  'organizations.list.deleted.description': 'Deleted organizations are kept for {{ days }} days before being permanently removed. You can restore them during this period.',
+  'organizations.list.deleted.empty': 'No deleted organizations',
+  'organizations.list.deleted.empty-description': 'When you delete an organization, it will appear here for {{ days }} days before being permanently deleted.',
+  'organizations.list.deleted.restore': 'Restore',
+  'organizations.list.deleted.restore-success': 'Organization restored successfully',
+  'organizations.list.deleted.restore-confirm.title': 'Restore organization',
+  'organizations.list.deleted.restore-confirm.message': 'Are you sure you want to restore this organization? It will be moved back to your active organizations list.',
+  'organizations.list.deleted.restore-confirm.confirm-button': 'Restore organization',
+  'organizations.list.deleted.deleted-at': 'Deleted {{ date }}',
+  'organizations.list.deleted.purge-at': 'Will be permanently deleted on {{ date }}',
+  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} day, {daysUntilPurge} days }} remaining)',
 
   'organizations.details.no-documents.title': 'No documents',
   'organizations.details.no-documents.description': 'There are no documents in this organization yet. Start by uploading some documents.',
@@ -137,7 +150,7 @@ export const translations = {
   'organization.settings.delete.title': 'Delete organization',
   'organization.settings.delete.description': 'Deleting this organization will permanently remove all data associated with it.',
   'organization.settings.delete.confirm.title': 'Delete organization',
-  'organization.settings.delete.confirm.message': 'Are you sure you want to delete this organization? This action cannot be undone, and all data associated with this organization will be permanently removed.',
+  'organization.settings.delete.confirm.message': 'Are you sure you want to delete this organization? The organization will be marked for deletion and permanently removed after {{ days }} days. During this period, you can restore it from your organizations list. All documents and data will be permanently deleted after this delay.',
   'organization.settings.delete.confirm.confirm-button': 'Delete organization',
   'organization.settings.delete.confirm.cancel-button': 'Cancel',
   'organization.settings.delete.success': 'Organization deleted',
@@ -640,4 +653,8 @@ export const translations = {
 
   'subscriptions.usage-warning.message': 'You have used {{ percent }}% of your document storage. Consider upgrading your plan to get more space.',
   'subscriptions.usage-warning.upgrade-button': 'Upgrade Plan',
+
+  // Common / Shared
+
+  'common.confirm-modal.type-to-confirm': 'Type "{{ text }}" to confirm',
 } as const;

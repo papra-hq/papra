@@ -29,7 +29,7 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
   const handleDelete = async () => {
     const confirmed = await confirm({
       title: t('organization.settings.delete.confirm.title'),
-      message: t('organization.settings.delete.confirm.message'),
+      message: t('organization.settings.delete.confirm.message', { days: 30 }),
       confirmButton: {
         text: t('organization.settings.delete.confirm.confirm-button'),
         variant: 'destructive',
@@ -37,6 +37,7 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
       cancelButton: {
         text: t('organization.settings.delete.confirm.cancel-button'),
       },
+      shouldType: props.organization.name,
     });
 
     if (confirmed) {

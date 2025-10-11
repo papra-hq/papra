@@ -1,9 +1,7 @@
 import { integer, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../random/ids';
 
-export { createCreatedAtField, createPrimaryKeyField, createSoftDeleteColumns, createTimestampColumns, createUpdatedAtField };
-
-function createPrimaryKeyField({
+export function createPrimaryKeyField({
   prefix,
   idGenerator = () => generateId({ prefix }),
 }: { prefix?: string; idGenerator?: () => string } = {}) {
@@ -14,7 +12,7 @@ function createPrimaryKeyField({
   };
 }
 
-function createCreatedAtField() {
+export function createCreatedAtField() {
   return {
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
       .notNull()
@@ -22,7 +20,7 @@ function createCreatedAtField() {
   };
 }
 
-function createUpdatedAtField() {
+export function createUpdatedAtField() {
   return {
     updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
       .notNull()
@@ -30,16 +28,9 @@ function createUpdatedAtField() {
   };
 }
 
-function createTimestampColumns() {
+export function createTimestampColumns() {
   return {
     ...createCreatedAtField(),
     ...createUpdatedAtField(),
-  };
-}
-
-function createSoftDeleteColumns() {
-  return {
-    isDeleted: integer('is_deleted', { mode: 'boolean' }).default(false).notNull(),
-    deletedAt: integer('deleted_at', { mode: 'timestamp_ms' }),
   };
 }

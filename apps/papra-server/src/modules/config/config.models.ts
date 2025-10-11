@@ -15,6 +15,7 @@ export function getPublicConfig({ config }: { config: Config }) {
       'documents.deletedDocumentsRetentionDays',
       'documentsStorage.maxUploadSize',
       'intakeEmails.isEnabled',
+      'organizations.deletedOrganizationsPurgeDaysDelay',
     ]),
     {
       auth: {

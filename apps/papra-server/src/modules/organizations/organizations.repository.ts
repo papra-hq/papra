@@ -2,7 +2,7 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { addDays, startOfDay } from 'date-fns';
-import { and, count, eq, getTableColumns, gte, lte } from 'drizzle-orm';
+import { and, count, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
 import { omit } from 'lodash-es';
 import { omitUndefined } from '../shared/utils';
 import { usersTable } from '../users/users.table';
@@ -43,6 +43,12 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getOrganizationInvitations,
       updateExpiredPendingInvitationsStatus,
       getOrganizationPendingInvitationsCount,
+      deleteAllMembersFromOrganization,
+      deleteAllOrganizationInvitations,
+      softDeleteOrganization,
+      restoreOrganization,
+      getUserDeletedOrganizations,
+      getExpiredSoftDeletedOrganizations,
     },
     { db },
   );
@@ -67,7 +73,10 @@ async function getUserOrganizations({ userId, db }: { userId: string; db: Databa
     })
     .from(organizationsTable)
     .leftJoin(organizationMembersTable, eq(organizationsTable.id, organizationMembersTable.organizationId))
-    .where(eq(organizationMembersTable.userId, userId));
+    .where(and(
+      eq(organizationMembersTable.userId, userId),
+      isNull(organizationsTable.deletedAt),
+    ));
 
   return {
     organizations: organizations.map(({ organization }) => organization),
@@ -467,5 +476,68 @@ async function getOrganizationPendingInvitationsCount({ organizationId, db }: { 
 
   return {
     pendingInvitationsCount,
+  };
+}
+
+async function deleteAllMembersFromOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+  await db
+    .delete(organizationMembersTable)
+    .where(eq(organizationMembersTable.organizationId, organizationId));
+}
+
+async function deleteAllOrganizationInvitations({ organizationId, db }: { organizationId: string; db: Database }) {
+  await db
+    .delete(organizationInvitationsTable)
+    .where(eq(organizationInvitationsTable.organizationId, organizationId));
+}
+
+async function softDeleteOrganization({ organizationId, deletedBy, db, now = new Date(), purgeDaysDelay = 30 }: { organizationId: string; deletedBy: string; db: Database; now?: Date; purgeDaysDelay?: number }) {
+  await db
+    .update(organizationsTable)
+    .set({
+      deletedAt: now,
+      deletedBy,
+      scheduledPurgeAt: addDays(now, purgeDaysDelay),
+    })
+    .where(eq(organizationsTable.id, organizationId));
+}
+
+async function restoreOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+  await db
+    .update(organizationsTable)
+    .set({
+      deletedAt: null,
+      deletedBy: null,
+      scheduledPurgeAt: null,
+    })
+    .where(eq(organizationsTable.id, organizationId));
+}
+
+async function getUserDeletedOrganizations({ userId, db, now = new Date() }: { userId: string; db: Database; now?: Date }) {
+  const organizations = await db
+    .select()
+    .from(organizationsTable)
+    .where(and(
+      eq(organizationsTable.deletedBy, userId),
+      isNotNull(organizationsTable.deletedAt),
+      gte(organizationsTable.scheduledPurgeAt, now),
+    ));
+
+  return {
+    organizations,
+  };
+}
+
+async function getExpiredSoftDeletedOrganizations({ db, now = new Date() }: { db: Database; now?: Date }) {
+  const organizations = await db
+    .select({ id: organizationsTable.id })
+    .from(organizationsTable)
+    .where(and(
+      isNotNull(organizationsTable.deletedAt),
+      lte(organizationsTable.scheduledPurgeAt, now),
+    ));
+
+  return {
+    organizationIds: organizations.map(org => org.id),
   };
 }

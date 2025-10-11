@@ -44,3 +44,4 @@ ingestion
 *.traineddata
 
 .eslintcache
+.claude

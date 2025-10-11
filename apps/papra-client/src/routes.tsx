@@ -18,6 +18,7 @@ import { InvitationsPage } from './modules/invitations/pages/invitations.page';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
+import { DeletedOrganizationsPage } from './modules/organizations/pages/deleted-organizations.page';
 import { InvitationsListPage } from './modules/organizations/pages/invitations-list.page';
 import { InviteMemberPage } from './modules/organizations/pages/invite-member.page';
 import { MembersPage } from './modules/organizations/pages/members.page';
@@ -66,11 +67,11 @@ export const routes: RouteDefinition[] = [
                         <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
                       </Match>
 
-                      <Match when={query.data && query.data.organizations.length > 0}>
+                      <Match when={getOrgs().length > 0}>
                         <Navigate href="/organizations" />
                       </Match>
 
-                      <Match when={query.data && query.data.organizations.length === 0}>
+                      <Match when={getOrgs().length === 0}>
                         <Navigate href="/organizations/first" />
                       </Match>
                     </Switch>
@@ -88,6 +89,10 @@ export const routes: RouteDefinition[] = [
           {
             path: '/',
             component: OrganizationsPage,
+          },
+          {
+            path: '/deleted',
+            component: DeletedOrganizationsPage,
           },
           {
             path: '/:organizationId',

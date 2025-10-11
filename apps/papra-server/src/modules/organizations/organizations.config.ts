@@ -20,4 +20,10 @@ export const organizationsConfig = {
     default: 30,
     env: 'MAX_USER_ORGANIZATIONS_INVITATIONS_PER_DAY',
   },
+  deletedOrganizationsPurgeDaysDelay: {
+    doc: 'The number of days before a soft-deleted organization is permanently purged',
+    schema: z.coerce.number().int().positive(),
+    default: 30,
+    env: 'ORGANIZATIONS_DELETED_PURGE_DAYS_DELAY',
+  },
 } as const satisfies ConfigDefinition;

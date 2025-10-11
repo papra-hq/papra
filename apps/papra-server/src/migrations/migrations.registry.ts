@@ -12,6 +12,8 @@ import { dropLegacyMigrationsMigration } from './list/0009-drop-legacy-migration
 
 import { documentFileEncryptionMigration } from './list/0010-document-file-encryption.migration';
 
+import { softDeleteOrganizationsMigration } from './list/0011-soft-delete-organizations.migration';
+
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
   documentsFtsMigration,
@@ -23,4 +25,5 @@ export const migrations: Migration[] = [
   documentActivityLogOnDeleteSetNullMigration,
   dropLegacyMigrationsMigration,
   documentFileEncryptionMigration,
+  softDeleteOrganizationsMigration,
 ];

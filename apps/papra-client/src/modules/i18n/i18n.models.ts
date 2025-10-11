@@ -1,5 +1,6 @@
 import type { JSX } from 'solid-js';
 import type { Locale } from './i18n.provider';
+import { createBranchlet } from '@branchlet/core';
 
 // This tries to get the most preferred language compatible with the supported languages
 // It tries to find a supported language by comparing both region and language, if not, then just language
@@ -29,6 +30,8 @@ export function findMatchingLocale({
 }
 
 export function createTranslator<Dict extends Record<string, string>>({ getDictionary }: { getDictionary: () => Dict }) {
+  const { parse } = createBranchlet();
+
   return (key: keyof Dict, args?: Record<string, string | number>) => {
     const translationFromDictionary = getDictionary()[key];
 
@@ -37,11 +40,7 @@ export function createTranslator<Dict extends Record<string, string>>({ getDicti
     }
 
     if (args && translationFromDictionary) {
-      return Object.entries(args)
-        .reduce(
-          (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), String(value)),
-          String(translationFromDictionary),
-        );
+      return parse(translationFromDictionary, args);
     }
 
     return translationFromDictionary;

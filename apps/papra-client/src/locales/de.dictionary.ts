@@ -102,6 +102,19 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.list.title': 'Ihre Organisationen',
   'organizations.list.description': 'Organisationen sind eine Möglichkeit, Ihre Dokumente zu gruppieren und den Zugriff darauf zu verwalten. Sie können mehrere Organisationen erstellen und Ihre Teammitglieder zur Zusammenarbeit einladen.',
   'organizations.list.create-new': 'Neue Organisation erstellen',
+  'organizations.list.back': 'Zurück zu Organisationen',
+  'organizations.list.deleted.title': 'Gelöschte Organisationen',
+  'organizations.list.deleted.description': 'Gelöschte Organisationen werden für {{ days }} Tage aufbewahrt, bevor sie dauerhaft entfernt werden. Sie können sie während dieser Zeit wiederherstellen.',
+  'organizations.list.deleted.empty': 'Keine gelöschten Organisationen',
+  'organizations.list.deleted.empty-description': 'Wenn Sie eine Organisation löschen, wird sie hier für {{ days }} Tage angezeigt, bevor sie dauerhaft gelöscht wird.',
+  'organizations.list.deleted.restore': 'Wiederherstellen',
+  'organizations.list.deleted.restore-success': 'Organisation erfolgreich wiederhergestellt',
+  'organizations.list.deleted.restore-confirm.title': 'Organisation wiederherstellen',
+  'organizations.list.deleted.restore-confirm.message': 'Sind Sie sicher, dass Sie diese Organisation wiederherstellen möchten? Sie wird wieder in Ihre Liste der aktiven Organisationen verschoben.',
+  'organizations.list.deleted.restore-confirm.confirm-button': 'Organisation wiederherstellen',
+  'organizations.list.deleted.deleted-at': 'Gelöscht {{ date }}',
+  'organizations.list.deleted.purge-at': 'Wird dauerhaft gelöscht am {{ date }}',
+  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} Tag, {daysUntilPurge} Tage }} verbleibend)',
 
   'organizations.details.no-documents.title': 'Keine Dokumente',
   'organizations.details.no-documents.description': 'Es sind noch keine Dokumente in dieser Organisation vorhanden. Beginnen Sie mit dem Hochladen von Dokumenten.',
@@ -139,7 +152,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.title': 'Organisation löschen',
   'organization.settings.delete.description': 'Das Löschen dieser Organisation entfernt dauerhaft alle damit verbundenen Daten.',
   'organization.settings.delete.confirm.title': 'Organisation löschen',
-  'organization.settings.delete.confirm.message': 'Sind Sie sicher, dass Sie diese Organisation löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und alle mit dieser Organisation verbundenen Daten werden dauerhaft entfernt.',
+  'organization.settings.delete.confirm.message': 'Sind Sie sicher, dass Sie diese Organisation löschen möchten? Die Organisation wird zum Löschen markiert und nach {{ days }} Tagen endgültig entfernt. Während dieser Zeit können Sie sie aus Ihrer Organisationsliste wiederherstellen. Alle Dokumente und Daten werden nach dieser Frist dauerhaft gelöscht.',
   'organization.settings.delete.confirm.confirm-button': 'Organisation löschen',
   'organization.settings.delete.confirm.cancel-button': 'Abbrechen',
   'organization.settings.delete.success': 'Organisation gelöscht',
@@ -642,4 +655,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.usage-warning.message': 'Sie haben {{ percent }}% Ihres Dokumentenspeichers verwendet. Erwägen Sie ein Upgrade Ihres Plans, um mehr Speicherplatz zu erhalten.',
   'subscriptions.usage-warning.upgrade-button': 'Plan upgraden',
+
+  // Common / Shared
+
+  'common.confirm-modal.type-to-confirm': 'Geben Sie "{{ text }}" ein zur Bestätigung',
 };

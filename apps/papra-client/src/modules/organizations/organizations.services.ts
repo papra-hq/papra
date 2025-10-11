@@ -115,3 +115,21 @@ export async function updateOrganizationMemberRole({ organizationId, memberId, r
     member: coerceDates(member),
   };
 }
+
+export async function fetchDeletedOrganizations() {
+  const { organizations } = await apiClient<{ organizations: AsDto<Organization>[] }>({
+    path: '/api/organizations/deleted',
+    method: 'GET',
+  });
+
+  return {
+    organizations: organizations.map(coerceDates),
+  };
+}
+
+export async function restoreOrganization({ organizationId }: { organizationId: string }) {
+  await apiClient({
+    path: `/api/organizations/${organizationId}/restore`,
+    method: 'POST',
+  });
+}
