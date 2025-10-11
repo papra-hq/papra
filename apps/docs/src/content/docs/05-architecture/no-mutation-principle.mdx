@@ -1,0 +1,38 @@
+---
+title: No-Mutation Principle
+description: Why Papra never modifies your original documents and the architectural decisions behind this choice.
+slug: architecture/no-mutation-principle
+---
+
+## Core Philosophy
+
+Papra follows a fundamental principle: **documents are never mutated after upload**. When you input a document, you can always retrieve it exactly as it was uploaded.
+
+## The Design Choice
+
+An archiving platform should guarantee users they can retrieve their documents in their original form. This means:
+
+- No conversion to different formats
+- No metadata injection into the file itself
+- No overlay of OCR-ed content on scanned PDFs
+- No processing that modifies the original file
+
+The simple mental model is: **"If I input X, I'll retrieve X"**
+
+## Why This Matters
+
+### Trust and Reliability
+
+When archiving important documents, users need absolute confidence that their files remain untouched. Whether it's a legal document, a medical record, or a personal photo, the original should be sacrosanct.
+
+### Simplicity
+
+This approach eliminates the mental overhead of wondering "what happened to my file?" Users don't need to understand concepts like:
+- Original vs. processed versions
+- Format conversions
+- OCR overlays
+- Metadata injection
+
+### Flexibility for the Future
+
+While Papra currently doesn't mutate documents, the architecture leaves room for future enhancements. If needed, a "processed" version concept could be added alongside originals, giving users the choice without forcing a particular model.
