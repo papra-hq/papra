@@ -2,7 +2,7 @@
   "name": "@papra/docker",
   "version": "25.10.0",
   "private": true,
-  "description": "Docker image version tracker for Papra, calver-ish versionned.",
+  "description": "Docker image version tracker for Papra, calver-ish versioned.",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra",
