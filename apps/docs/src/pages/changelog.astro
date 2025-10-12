@@ -1,0 +1,55 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import rawChangelog from '../../../../packages/docker/CHANGELOG.md?raw';
+import { parseChangelog } from '../changelog-parser';
+import { renderMarkdown } from '../markdown';
+
+const changelog = parseChangelog(rawChangelog);
+
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Papra changelog',
+    description: 'View the changelogs of the docker images released by Papra.',
+    tableOfContents: false,
+  }}
+>
+  <p>
+    Here are the changelogs of the docker images released by Papra.<br />
+    For version after v0.9.6, Papra uses Calver as a versioning system with the format YY.MM.N where N is the number of releases in the month starting at 0 (e.g. 25.06.0 is the first release of June 2025).
+  </p>
+
+
+  {
+    changelog.map(({ entries, version }) => (
+      <section>
+
+        <h2 id={version} class="pb-1 mt-14">v{version}</h2>
+        <ul>
+          {entries.map(entry => (
+            <li>
+              <div class="flex flex-col">
+                <div class="text-foreground lh-normal changelog-entry" set:html={renderMarkdown(entry.content)} />
+                <div class="text-xs mt-1 flex gap-1 flex-wrap">
+                  <a href={entry.pr.url} class="text-muted-foreground hover:bg-muted transition border border-muted border-solid rounded-md no-underline px-1 py-0.5">PR #{entry.pr.number}</a>
+                  <a href={entry.commit.url} class="text-muted-foreground hover:bg-muted transition border border-muted border-solid rounded-md no-underline px-1 py-0.5">{entry.commit.hash.slice(0, 7)}</a>
+                  <a href={entry.contributor.url} class="text-muted-foreground hover:bg-muted transition border border-muted border-solid rounded-md no-underline px-1 py-0.5">
+                    By @{entry.contributor.username}
+                  </a>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</StarlightPage>
+
+<style is:global>
+.changelog-entry pre {
+  border-radius: 6px;
+  color: hsl(var(--muted-foreground) / var(--un-text-opacity));
+}
+</style>

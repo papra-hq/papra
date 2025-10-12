@@ -1,5 +1,5 @@
 ---
-"@papra/app-server": patch
+"@papra/docker": patch
 ---
 
 Trigger tag-added webhooks when auto tagging rule is applied

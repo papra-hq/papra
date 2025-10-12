@@ -1,6 +1,5 @@
 ---
-"@papra/app-client": patch
-"@papra/app-server": patch
+"@papra/docker": patch
 ---
 
 Added soft deletion with grace period for organizations
