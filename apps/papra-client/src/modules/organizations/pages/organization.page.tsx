@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import { formatBytes } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
-import { createQueries, keepPreviousData } from '@tanstack/solid-query';
+import { keepPreviousData, useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
@@ -15,21 +15,18 @@ export const OrganizationPage: Component = () => {
   const { t } = useI18n();
   const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
 
-  const query = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
-        queryFn: () => fetchOrganizationDocuments({
-          organizationId: params.organizationId,
-          ...getPagination(),
-        }),
-        placeholderData: keepPreviousData,
-      },
-      {
-        queryKey: ['organizations', params.organizationId, 'documents', 'stats'],
-        queryFn: () => getOrganizationDocumentsStats({ organizationId: params.organizationId }),
-      },
-    ],
+  const documentsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
+    queryFn: () => fetchOrganizationDocuments({
+      organizationId: params.organizationId,
+      ...getPagination(),
+    }),
+    placeholderData: keepPreviousData,
+  }));
+
+  const statsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', 'stats'],
+    queryFn: () => getOrganizationDocumentsStats({ organizationId: params.organizationId }),
   }));
 
   const { promptImport } = useDocumentUpload({ getOrganizationId: () => params.organizationId });
@@ -37,7 +34,7 @@ export const OrganizationPage: Component = () => {
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
       <Suspense>
-        {query[0].data?.documents?.length === 0
+        {documentsQuery.data?.documents?.length === 0
           ? (
               <>
                 <h2 class="text-xl font-bold ">
@@ -62,7 +59,7 @@ export const OrganizationPage: Component = () => {
                     {t('organizations.details.upload-documents')}
                   </Button>
 
-                  <Show when={query[1].data?.organizationStats}>
+                  <Show when={statsQuery.data?.organizationStats}>
                     {organizationStats => (
                       <>
                         <div class="border rounded-lg p-2 flex items-center gap-4 py-4 px-6">
@@ -96,8 +93,8 @@ export const OrganizationPage: Component = () => {
                 </h2>
 
                 <DocumentsPaginatedList
-                  documents={query[0].data?.documents ?? []}
-                  documentsCount={query[0].data?.documentsCount ?? 0}
+                  documents={documentsQuery.data?.documents ?? []}
+                  documentsCount={documentsQuery.data?.documentsCount ?? 0}
                   getPagination={getPagination}
                   setPagination={setPagination}
                   extraColumns={[

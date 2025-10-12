@@ -3,7 +3,7 @@ import type { Component, ParentComponent } from 'solid-js';
 import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries, useQuery } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { get } from 'lodash-es';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
@@ -27,7 +27,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { config } = useConfig();
 
   const query = useQuery(() => ({
-    queryKey: ['organizations', 'subscription'],
+    queryKey: ['organizations', props.organizationId, 'subscription'],
     queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
   }));
 
@@ -111,21 +111,18 @@ const OrganizationLayoutSideNav: Component = () => {
     },
   ];
 
-  const queries = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['organizations'],
-        queryFn: fetchOrganizations,
-      },
-      {
-        queryKey: ['organizations', params.organizationId],
-        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
-      },
-    ],
+  const organizationsQuery = useQuery(() => ({
+    queryKey: ['organizations'],
+    queryFn: fetchOrganizations,
+  }));
+
+  const organizationQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId],
+    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
   createEffect(on(
-    () => queries[1].error,
+    () => organizationQuery.error,
     (error) => {
       if (error) {
         const status = get(error, 'status');
@@ -149,10 +146,10 @@ const OrganizationLayoutSideNav: Component = () => {
         (
           <div class="px-6 pt-4 max-w-285px min-w-0">
             <Select
-              options={[...queries[0].data?.organizations ?? [], { id: 'create' }]}
+              options={[...organizationsQuery.data?.organizations ?? [], { id: 'create' }]}
               optionValue="id"
               optionTextValue="name"
-              value={queries[0].data?.organizations.find(organization => organization.id === params.organizationId)}
+              value={organizationsQuery.data?.organizations.find(organization => organization.id === params.organizationId)}
               onChange={(value) => {
                 if (!value || value.id === params.organizationId) {
                   return;
@@ -177,8 +174,8 @@ const OrganizationLayoutSideNav: Component = () => {
                   )}
             >
               <SelectTrigger>
-                <SelectValue<Organization> class="truncate">
-                  {state => state.selectedOption().name}
+                <SelectValue<Organization | undefined> class="truncate">
+                  {state => state.selectedOption()?.name}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent />
