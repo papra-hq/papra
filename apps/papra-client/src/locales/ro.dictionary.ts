@@ -241,6 +241,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.no-documents.title': 'Niciun document',
   'documents.list.no-documents.description': 'Încă nu există documente în aceasta organizație. Începe prin a încarca câteva documente.',
   'documents.list.no-results': 'Nu au fost găsite documente',
+  'documents.list.table.headers.file-name': 'Nume fișier',
+  'documents.list.table.headers.created': 'Creat la',
+  'documents.list.table.headers.deleted': 'Șters la',
+  'documents.list.table.headers.actions': 'Acțiuni',
+  'documents.list.table.headers.tags': 'Etichete',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Conținut',
