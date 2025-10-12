@@ -6,7 +6,6 @@ import { Show, Suspense } from 'solid-js';
 import { signOut } from '@/modules/auth/auth.services';
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 
-import { useConfig } from '@/modules/config/config.provider';
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -37,12 +36,6 @@ const MenuItemButton: Component<MenuItem> = (props) => {
   );
 };
 
-function getReleaseUrl({ version, packageName = '@papra/app-server' }: { version: string; packageName?: string }) {
-  const encodedVersion = encodeURIComponent(`${packageName}@${version}`);
-
-  return `https://github.com/papra-hq/papra/releases/tag/${encodedVersion}`;
-}
-
 export const SideNav: Component<{
   mainMenu?: MenuItem[];
   footerMenu?: MenuItem[];
@@ -50,8 +43,6 @@ export const SideNav: Component<{
   footer?: Component;
   preFooter?: Component;
 }> = (props) => {
-  const { config } = useConfig();
-
   const getShortSideNavItems = () => [
     {
       label: 'All organizations',
@@ -69,8 +60,6 @@ export const SideNav: Component<{
       icon: 'i-tabler-brand-bluesky',
     },
   ];
-
-  const version = `v${config.papraVersion}`;
 
   return (
     <div class="flex h-full">
@@ -102,11 +91,6 @@ export const SideNav: Component<{
             </Tooltip>
           ))}
         </div>
-
-        <a class="text-xs text-muted-foreground text-center mt-auto transition-colors hover:(text-primary underline)" href={getReleaseUrl({ version: config.papraVersion })} target="_blank" rel="noopener noreferrer">
-          {version}
-        </a>
-
       </div>
       {(props.header || props.mainMenu || props.footerMenu || props.footer || props.preFooter) && (
         <div class="h-full flex flex-col pb-6 flex-1">

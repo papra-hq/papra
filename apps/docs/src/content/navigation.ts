@@ -5,6 +5,7 @@ export const sidebar = [
     label: 'Getting Started',
     items: [
       { label: 'Introduction', slug: '' },
+      { label: 'Changelog', link: '/changelog' },
     ],
   },
   {

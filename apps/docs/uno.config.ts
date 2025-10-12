@@ -1,5 +1,6 @@
 import {
   defineConfig,
+  presetTypography,
   presetUno,
   transformerDirectives,
   transformerVariantGroup,
@@ -16,6 +17,7 @@ export default defineConfig({
       prefix: '',
     }),
     presetAnimations(),
+    presetTypography(),
   ],
   transformers: [transformerVariantGroup(), transformerDirectives()],
   theme: {
