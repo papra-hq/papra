@@ -23,22 +23,30 @@ type Pagination = {
   pageSize: number;
 };
 
-const { t } = useI18n()
 
 export const createdAtColumn: ColumnDef<Document> = {
-  header: t('documents.list.table.headers.created'),
+  header: () => {
+    const { t } = useI18n();
+    return t('documents.list.table.headers.created');
+  },
   accessorKey: 'createdAt',
   cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
 };
 
 export const deletedAtColumn: ColumnDef<Document> = {
-  header: t('documents.list.table.headers.deleted'),
+  header: () => {
+    const { t } = useI18n();
+    return t('documents.list.table.headers.deleted');
+  },
   accessorKey: 'deletedAt',
   cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
 };
 
 export const standardActionsColumn: ColumnDef<Document> = {
-  header: t('documents.list.table.headers.actions'),
+  header: () => {
+    const { t } = useI18n();
+    return t('documents.list.table.headers.actions');
+  },
   id: 'actions',
   cell: data => (
     <div class="flex items-center justify-end">
@@ -48,7 +56,10 @@ export const standardActionsColumn: ColumnDef<Document> = {
 };
 
 export const tagsColumn: ColumnDef<Document> = {
-  header: t('documents.list.table.headers.tags'),
+  header: () => {
+    const { t } = useI18n();
+    return t('documents.list.table.headers.tags');
+  },
   accessorKey: 'tags',
   cell: data => (
     <div class="text-muted-foreground hidden sm:flex flex-wrap gap-1">
@@ -76,7 +87,8 @@ export const DocumentsPaginatedList: Component<{
     },
     columns: [
       {
-        header: t('documents.list.table.headers.file-name'),
+        header: () => t('documents.list.table.headers.file-name'),
+        id: 'fileName',
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
