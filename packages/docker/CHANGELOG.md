@@ -1,5 +1,23 @@
 # @papra/app-server
 
+## 25.10.0
+
+### Minor Changes
+
+- [#544](https://github.com/papra-hq/papra/pull/544) [`9c6f14f`](https://github.com/papra-hq/papra/commit/9c6f14fc1316c972092cb29bb94ae7b53edeef02) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use calendar based versioning for docker images
+
+### Patch Changes
+
+- [#532](https://github.com/papra-hq/papra/pull/532) [`9a6e822`](https://github.com/papra-hq/papra/commit/9a6e822e7145c41707c86126eb8241df798d2c0b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Drop docker armv7 support
+
+- [#542](https://github.com/papra-hq/papra/pull/542) [`c434d87`](https://github.com/papra-hq/papra/commit/c434d873bc2da79664f8581bc802131beb95e490) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added soft deletion with grace period for organizations
+
+- [#534](https://github.com/papra-hq/papra/pull/534) [`624ad62`](https://github.com/papra-hq/papra/commit/624ad62c53a94a0b5722712957457cb9751a56d9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a page to view organization usage
+
+- [#538](https://github.com/papra-hq/papra/pull/538) [`73ab9e8`](https://github.com/papra-hq/papra/commit/73ab9e8ab58a96035182f9630977c17178f32405) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Save document activity log when auto tagging rule is applied
+
+- [#538](https://github.com/papra-hq/papra/pull/538) [`73ab9e8`](https://github.com/papra-hq/papra/commit/73ab9e8ab58a96035182f9630977c17178f32405) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Trigger tag-added webhooks when auto tagging rule is applied
+
 ## 0.9.6
 
 ### Patch Changes
@@ -107,7 +125,6 @@
 
 - [#468](https://github.com/papra-hq/papra/pull/468) [`14c3587`](https://github.com/papra-hq/papra/commit/14c3587de07a605ec586bdc428d9e76956bf1c67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content edition support in demo mode
 
-
 ## 0.8.2
 
 ### Patch Changes
@@ -134,7 +151,6 @@
 
 - [#432](https://github.com/papra-hq/papra/pull/432) [`6723baf`](https://github.com/papra-hq/papra/commit/6723baf98ad46f989fe1e1e19ad0dd25622cca77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks invocation is now defered
 
-
 ### Patch Changes
 
 - [#419](https://github.com/papra-hq/papra/pull/419) [`7768840`](https://github.com/papra-hq/papra/commit/7768840aa4425a03cb96dc1c17605bfa8e6a0de4) Thanks [@Edward205](https://github.com/Edward205)! - Added diacritics and improved wording for Romanian translation
@@ -146,7 +162,6 @@
 - [#441](https://github.com/papra-hq/papra/pull/441) [`5e46bb9`](https://github.com/papra-hq/papra/commit/5e46bb9e6a39cd16a83636018370607a27db042a) Thanks [@Zavy86](https://github.com/Zavy86)! - Added Italian (it) language support
 
 - [#455](https://github.com/papra-hq/papra/pull/455) [`b33fde3`](https://github.com/papra-hq/papra/commit/b33fde35d3e8622e31b51aadfe56875d8e48a2ef) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved feedback message in case of invalid origin configuration
-
 
 ## 0.7.0
 
@@ -187,7 +202,6 @@
 - [#391](https://github.com/papra-hq/papra/pull/391) [`40a1f91`](https://github.com/papra-hq/papra/commit/40a1f91b67d92e135d13dfcd41e5fd3532c30ca5) Thanks [@itsjuoum](https://github.com/itsjuoum)! - Added European Portuguese (pt) translation
 
 - [#378](https://github.com/papra-hq/papra/pull/378) [`f1e1b40`](https://github.com/papra-hq/papra/commit/f1e1b4037b31ff5de1fd228b8390dd4d97a8bda8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added tag color swatches and picker
-
 
 ## 0.6.3
 
