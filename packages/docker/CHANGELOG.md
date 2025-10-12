@@ -34,7 +34,7 @@
 
 - [#504](https://github.com/papra-hq/papra/pull/504) [`936bc2b`](https://github.com/papra-hq/papra/commit/936bc2bd0a788e4fb0bceb6d14810f9f8734097b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Split the intake-email username generation from the email address creation, some changes regarding the configuration when using the `random` driver.
 
-  ```.env
+  ```env
   # Old configuration
   INTAKE_EMAILS_DRIVER=random-username
   INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=mydomain.com
