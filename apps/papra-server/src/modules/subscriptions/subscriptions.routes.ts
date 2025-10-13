@@ -9,7 +9,7 @@ import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';
-import { FREE_PLAN_ID, PLUS_PLAN_ID } from '../plans/plans.constants';
+import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from '../plans/plans.constants';
 import { getPriceIdForBillingInterval } from '../plans/plans.models';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
@@ -69,7 +69,7 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
     '/api/organizations/:organizationId/checkout-session',
     requireAuthentication(),
     validateJsonBody(z.object({
-      planId: z.enum([PLUS_PLAN_ID]),
+      planId: z.enum([PLUS_PLAN_ID, PRO_PLAN_ID]),
       billingInterval: z.enum(['monthly', 'annual']).default('monthly'),
     })),
     validateParams(z.object({

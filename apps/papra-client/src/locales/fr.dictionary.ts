@@ -551,7 +551,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'layout.upgrade-cta.title': 'Besoin de plus d\'espace ?',
   'layout.upgrade-cta.description': 'Obtenez 10x plus de stockage + collaboration d\'équipe',
-  'layout.upgrade-cta.button': 'Passer à Plus',
+  'layout.upgrade-cta.button': 'Mettre à niveau maintenant',
 
   'layout.theme.light': 'Mode clair',
   'layout.theme.dark': 'Mode sombre',
@@ -627,17 +627,19 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.checkout-cancel.need-help': 'Besoin d\'aide ?',
   'subscriptions.checkout-cancel.contact-support': 'Contacter le support',
 
-  'subscriptions.upgrade-dialog.title': 'Passer à Plus',
+  'subscriptions.upgrade-dialog.title': 'Mettre à niveau cette organisation',
   'subscriptions.upgrade-dialog.description': 'Débloquez des fonctionnalités puissantes pour votre organisation',
   'subscriptions.upgrade-dialog.contact-us': 'Contactez-nous',
   'subscriptions.upgrade-dialog.enterprise-plans': 'si vous avez besoin de plans d\'entreprise personnalisés.',
   'subscriptions.upgrade-dialog.current-plan': 'Plan actuel',
   'subscriptions.upgrade-dialog.recommended': 'Recommandé',
   'subscriptions.upgrade-dialog.per-month': '/mois',
+  'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturé annuellement',
   'subscriptions.upgrade-dialog.upgrade-now': 'Mettre à niveau',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',
+  'subscriptions.plan.pro.name': 'Pro',
 
   'subscriptions.features.storage-size': 'Taille de stockage de documents',
   'subscriptions.features.members': 'Membres de l\'organisation',
@@ -649,6 +651,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.features.support': 'Support',
   'subscriptions.features.support-community': 'Support communautaire',
   'subscriptions.features.support-email': 'Support par email',
+  'subscriptions.features.support-priority': 'Support prioritaire',
 
   'subscriptions.billing-interval.monthly': 'Mensuel',
   'subscriptions.billing-interval.annual': 'Annuel',

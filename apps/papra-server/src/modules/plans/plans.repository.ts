@@ -2,7 +2,7 @@ import type { Config } from '../config/config.types';
 import type { OrganizationPlanRecord } from './plans.types';
 import { injectArguments } from '@corentinth/chisels';
 import { isDocumentSizeLimitEnabled } from '../documents/documents.models';
-import { FREE_PLAN_ID, PLUS_PLAN_ID } from './plans.constants';
+import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from './plans.constants';
 import { createPlanNotFoundError } from './plans.errors';
 
 export type PlansRepository = ReturnType<typeof createPlansRepository>;
@@ -46,6 +46,18 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
         maxIntakeEmailsCount: 10,
         maxOrganizationsMembersCount: 10,
         maxFileSize: 1024 * 1024 * 100, // 100 MiB
+      },
+    },
+    [PRO_PLAN_ID]: {
+      id: PRO_PLAN_ID,
+      name: 'Pro',
+      monthlyPriceId: config.organizationPlans.proPlanMonthlyPriceId,
+      annualPriceId: config.organizationPlans.proPlanAnnualPriceId,
+      limits: {
+        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 50, // 50 GiB
+        maxIntakeEmailsCount: 100,
+        maxOrganizationsMembersCount: 50,
+        maxFileSize: 1024 * 1024 * 500, // 500 MiB
       },
     },
   };

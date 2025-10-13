@@ -551,7 +551,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'layout.upgrade-cta.title': 'Potrzebujesz więcej miejsca?',
   'layout.upgrade-cta.description': 'Uzyskaj 10x więcej przestrzeni + współpracę zespołową',
-  'layout.upgrade-cta.button': 'Przejdź na Plus',
+  'layout.upgrade-cta.button': 'Ulepsz teraz',
 
   'layout.theme.light': 'Tryb jasny',
   'layout.theme.dark': 'Tryb ciemny',
@@ -627,17 +627,19 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.checkout-cancel.need-help': 'Potrzebujesz pomocy?',
   'subscriptions.checkout-cancel.contact-support': 'Skontaktuj się z pomocą techniczną',
 
-  'subscriptions.upgrade-dialog.title': 'Przejdź na Plus',
+  'subscriptions.upgrade-dialog.title': 'Ulepsz tę organizację',
   'subscriptions.upgrade-dialog.description': 'Odblokuj zaawansowane funkcje dla swojej organizacji',
   'subscriptions.upgrade-dialog.contact-us': 'Skontaktuj się z nami',
   'subscriptions.upgrade-dialog.enterprise-plans': 'jeśli potrzebujesz niestandardowych planów biznesowych.',
   'subscriptions.upgrade-dialog.current-plan': 'Obecny plan',
   'subscriptions.upgrade-dialog.recommended': 'Polecane',
   'subscriptions.upgrade-dialog.per-month': '/miesiąc',
+  'subscriptions.upgrade-dialog.billed-annually': '${{ price }} rozliczane rocznie',
   'subscriptions.upgrade-dialog.upgrade-now': 'Ulepsz teraz',
 
   'subscriptions.plan.free.name': 'Plan darmowy',
   'subscriptions.plan.plus.name': 'Plus',
+  'subscriptions.plan.pro.name': 'Pro',
 
   'subscriptions.features.storage-size': 'Rozmiar przechowywania dokumentów',
   'subscriptions.features.members': 'Członkowie organizacji',
@@ -649,6 +651,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.features.support': 'Wsparcie',
   'subscriptions.features.support-community': 'Wsparcie społeczności',
   'subscriptions.features.support-email': 'Wsparcie e-mail',
+  'subscriptions.features.support-priority': 'Wsparcie priorytetowe',
 
   'subscriptions.billing-interval.monthly': 'Miesięcznie',
   'subscriptions.billing-interval.annual': 'Rocznie',

@@ -21,4 +21,16 @@ export const organizationPlansConfig = {
     default: 'change-me',
     env: 'PLANS_PLUS_PLAN_ANNUAL_PRICE_ID',
   },
+  proPlanMonthlyPriceId: {
+    doc: 'The monthly price id of the pro plan (useless for self-hosting)',
+    schema: z.string(),
+    default: 'change-me',
+    env: 'PLANS_PRO_PLAN_MONTHLY_PRICE_ID',
+  },
+  proPlanAnnualPriceId: {
+    doc: 'The annual price id of the pro plan (useless for self-hosting)',
+    schema: z.string(),
+    default: 'change-me',
+    env: 'PLANS_PRO_PLAN_ANNUAL_PRICE_ID',
+  },
 } as const satisfies ConfigDefinition;
