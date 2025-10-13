@@ -1,11 +1,1 @@
-node_modules
-.pnp
-.pnp.*
-*.log
-dist
-*.local
-.git
-db.sqlite
-local-documents
-.env
-**/.env
+packages/docker/.dockerignore

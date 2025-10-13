@@ -8,10 +8,6 @@
   "license": "AGPL-3.0-or-later",
   "keywords": [],
   "scripts": {
-    "docker:build:root": "docker build -t papra -f docker/Dockerfile .",
-    "docker:build:root:amd64": "docker buildx build --platform linux/amd64 -t papra -f docker/Dockerfile --load .",
-    "docker:build:root:arm64": "docker buildx build --platform linux/arm64 -t papra -f docker/Dockerfile --load .",
-    "docker:build:rootless": "docker build -t papra-rootless -f docker/Dockerfile.rootless .",
     "version": "changeset version && pnpm install --no-frozen-lockfile",
     "changeset": "changeset",
     "build:packages": "pnpm --filter './packages/*' --stream build",
