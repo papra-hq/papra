@@ -2,12 +2,12 @@ import type { Accessor, ParentComponent } from 'solid-js';
 import type { Document } from '../documents/documents.types';
 import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
-import { debounce } from 'lodash-es';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
 import { getDocumentIcon } from '../documents/document.models';
 import { searchDocuments } from '../documents/documents.services';
 import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
+import { debounce } from '../shared/utils/timing';
 import { useThemeStore } from '../theme/theme.store';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandLoading } from '../ui/components/command';
 

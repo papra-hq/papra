@@ -1,9 +1,9 @@
 import type { Component } from 'solid-js';
 import { useParams, useSearchParams } from '@solidjs/router';
 import { keepPreviousData, useQuery } from '@tanstack/solid-query';
-import { castArray } from 'lodash-es';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { castArray } from '@/modules/shared/utils/array';
 import { Tag } from '@/modules/tags/components/tag.component';
 import { fetchTags } from '@/modules/tags/tags.services';
 import { DocumentUploadArea } from '../components/document-upload-area.component';

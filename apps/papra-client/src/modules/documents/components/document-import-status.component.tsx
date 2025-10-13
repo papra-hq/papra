@@ -2,7 +2,6 @@ import type { ParentComponent } from 'solid-js';
 import type { Document } from '../documents.types';
 import { safely } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
-import { throttle } from 'lodash-es';
 import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { useConfig } from '@/modules/config/config.provider';
@@ -10,6 +9,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { cn } from '@/modules/shared/style/cn';
+import { throttle } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { uploadDocument } from '../documents.services';
@@ -90,7 +90,7 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
         updateTaskStatus({ file, status: 'success', document });
       }
 
-      await throttledInvalidateOrganizationDocumentsQuery({ organizationId });
+      throttledInvalidateOrganizationDocumentsQuery({ organizationId });
     }));
   };
 

@@ -4,12 +4,12 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { get } from 'lodash-es';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '../components/button';
@@ -125,7 +125,7 @@ const OrganizationLayoutSideNav: Component = () => {
     () => organizationQuery.error,
     (error) => {
       if (error) {
-        const status = get(error, 'status');
+        const status = getErrorStatus(error);
 
         if (status && [
           400, // when the id of the organization is not valid
@@ -201,7 +201,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
     () => query.error,
     (error) => {
       if (error) {
-        const status = get(error, 'status');
+        const status = getErrorStatus(error);
 
         if (status && [401, 403].includes(status)) {
           navigate('/');

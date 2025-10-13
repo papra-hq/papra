@@ -1,11 +1,10 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
-import { values } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension, iconByFileType } from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
-    const icons = values(iconByFileType);
+    const icons = Object.values(iconByFileType);
 
     test('they must at least have the default icon', () => {
       expect(iconByFileType['*']).toBeDefined();
