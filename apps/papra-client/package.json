@@ -36,7 +36,7 @@
     "@pdfslick/solid": "^2.3.0",
     "@solid-primitives/storage": "^4.3.2",
     "@solidjs/router": "^0.14.10",
-    "@tanstack/solid-query": "^5.81.2",
+    "@tanstack/solid-query": "^5.90.3",
     "@tanstack/solid-table": "^8.21.3",
     "@unocss/reset": "^0.64.1",
     "better-auth": "catalog:",
@@ -48,7 +48,7 @@
     "ofetch": "^1.4.1",
     "posthog-js": "^1.255.1",
     "radix3": "^1.1.2",
-    "solid-js": "^1.9.7",
+    "solid-js": "^1.9.9",
     "solid-sonner": "^0.2.8",
     "tailwind-merge": "^2.6.0",
     "ts-pattern": "^5.7.1",
@@ -67,9 +67,9 @@
     "tinyglobby": "^0.2.14",
     "tsx": "^4.20.3",
     "typescript": "catalog:",
-    "unocss": "0.65.0-beta.2",
-    "vite": "^5.4.19",
-    "vite-plugin-solid": "^2.11.7",
+    "unocss": "66.5.3",
+    "vite": "^7.1.9",
+    "vite-plugin-solid": "^2.11.9",
     "vitest": "catalog:"
   }
 }

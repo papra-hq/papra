@@ -28,14 +28,13 @@ render(
     const localStorageManager = createLocalStorageManager(colorModeStorageKey);
 
     return (
-      <Router
-        children={routes}
-        root={props => (
-          <QueryClientProvider client={queryClient}>
-            <PageViewTracker />
-            <IdentifyUser />
-
+      <QueryClientProvider client={queryClient}>
+        <Router
+          children={routes}
+          root={props => (
             <Suspense>
+              <PageViewTracker />
+              <IdentifyUser />
               <I18nProvider>
                 <ConfirmModalProvider>
                   <ColorModeScript storageType={localStorageManager.type} storageKey={colorModeStorageKey} initialColorMode={initialColorMode} />
@@ -60,9 +59,9 @@ render(
                 </ConfirmModalProvider>
               </I18nProvider>
             </Suspense>
-          </QueryClientProvider>
-        )}
-      />
+          )}
+        />
+      </QueryClientProvider>
     );
   },
   document.getElementById('root')!,
