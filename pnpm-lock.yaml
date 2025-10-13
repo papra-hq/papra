@@ -12,18 +12,12 @@ catalogs:
     '@types/node':
       specifier: ^22.15.21
       version: 22.16.0
-    '@vitest/coverage-v8':
-      specifier: ^3.0.2
-      version: 3.2.4
     better-auth:
       specifier: 1.3.4
       version: 1.3.4
     eslint:
       specifier: ^9.30.1
       version: 9.30.1
-    tsdown:
-      specifier: ^0.13.4
-      version: 0.13.4
     typescript:
       specifier: ^5.6.2
       version: 5.8.3
@@ -168,9 +162,6 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      lodash-es:
-        specifier: ^4.17.21
-        version: 4.17.21
       ofetch:
         specifier: ^1.4.1
         version: 1.4.1
@@ -211,9 +202,6 @@ importers:
       '@playwright/test':
         specifier: ^1.53.1
         version: 1.53.1
-      '@types/lodash-es':
-        specifier: ^4.17.12
-        version: 4.17.12
       '@types/node':
         specifier: 'catalog:'
         version: 22.16.0
@@ -10700,12 +10688,6 @@ snapshots:
       eslint: 9.27.0(jiti@2.6.1)
       eslint-visitor-keys: 3.4.3
 
-  '@eslint-community/eslint-utils@4.5.1(eslint@9.30.1(jiti@2.6.1))':
-    dependencies:
-      eslint: 9.30.1(jiti@2.6.1)
-      eslint-visitor-keys: 3.4.3
-    optional: true
-
   '@eslint-community/eslint-utils@4.7.0(eslint@9.27.0(jiti@2.6.1))':
     dependencies:
       eslint: 9.27.0(jiti@2.6.1)
@@ -13276,14 +13258,14 @@ snapshots:
       '@typescript-eslint/types': 8.35.1
       '@typescript-eslint/typescript-estree': 8.35.1(typescript@5.8.3)
       astrojs-compiler-sync: 1.0.1(@astrojs/compiler@2.11.0)
-      debug: 4.4.1
+      debug: 4.4.3
       entities: 4.5.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.7.2
+      semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -14430,14 +14412,14 @@ snapshots:
 
   eslint-plugin-astro@1.3.1(eslint@9.30.1(jiti@2.6.1))(typescript@5.8.3):
     dependencies:
-      '@eslint-community/eslint-utils': 4.5.1(eslint@9.30.1(jiti@2.6.1))
-      '@jridgewell/sourcemap-codec': 1.5.0
-      '@typescript-eslint/types': 8.26.1
+      '@eslint-community/eslint-utils': 4.7.0(eslint@9.30.1(jiti@2.6.1))
+      '@jridgewell/sourcemap-codec': 1.5.5
+      '@typescript-eslint/types': 8.35.1
       astro-eslint-parser: 1.1.0(typescript@5.8.3)
       eslint: 9.30.1(jiti@2.6.1)
-      eslint-compat-utils: 0.6.4(eslint@9.30.1(jiti@2.6.1))
+      eslint-compat-utils: 0.6.5(eslint@9.30.1(jiti@2.6.1))
       globals: 15.15.0
-      postcss: 8.5.3
+      postcss: 8.5.6
       postcss-selector-parser: 7.0.0
     transitivePeerDependencies:
       - supports-color
@@ -17092,7 +17074,7 @@ snapshots:
   readable-stream@3.6.2:
     dependencies:
       inherits: 2.0.4
-      string_decoder: 1.1.1
+      string_decoder: 1.3.0
       util-deprecate: 1.0.2
 
   readable-stream@4.7.0:
@@ -17478,8 +17460,7 @@ snapshots:
 
   semver@7.7.2: {}
 
-  semver@7.7.3:
-    optional: true
+  semver@7.7.3: {}
 
   seroval-plugins@1.3.1(seroval@1.3.1):
     dependencies:

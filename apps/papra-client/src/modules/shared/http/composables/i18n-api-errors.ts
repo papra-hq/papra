@@ -1,7 +1,8 @@
 import type { TranslationKeys } from '@/modules/i18n/locales.types';
-import { get } from 'lodash-es';
+import { castError } from '@corentinth/chisels';
 import { FetchError } from 'ofetch';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { get } from '@/modules/shared/utils/get';
 
 function codeToKey(code: string): TranslationKeys {
   // Better auth may returns different error codes like INVALID_ORIGIN, INVALID_CALLBACKURL when the origin is invalid
@@ -23,9 +24,9 @@ export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof us
     }
 
     if ('error' in args) {
-      const { error } = args;
-      const code = get(error, 'data.error.code') ?? get(error, 'code');
-      const translation = code ? t(codeToKey(code)) : undefined;
+      const error = castError(args.error);
+      const code = get(error, ['data', 'error', 'code'], ['code']);
+      const translation = code && typeof code === 'string' ? t(codeToKey(code)) : undefined;
 
       if (translation) {
         return translation;
