@@ -549,7 +549,7 @@ export const translations = {
 
   'layout.upgrade-cta.title': 'Need more space?',
   'layout.upgrade-cta.description': 'Get 10x more storage + team collaboration',
-  'layout.upgrade-cta.button': 'Upgrade to Plus',
+  'layout.upgrade-cta.button': 'Upgrade now',
 
   'layout.theme.light': 'Light mode',
   'layout.theme.dark': 'Dark mode',
@@ -625,17 +625,19 @@ export const translations = {
   'subscriptions.checkout-cancel.need-help': 'Need help?',
   'subscriptions.checkout-cancel.contact-support': 'Contact support',
 
-  'subscriptions.upgrade-dialog.title': 'Upgrade to Plus',
+  'subscriptions.upgrade-dialog.title': 'Upgrade this organization',
   'subscriptions.upgrade-dialog.description': 'Unlock powerful features for your organization',
   'subscriptions.upgrade-dialog.contact-us': 'Contact us',
   'subscriptions.upgrade-dialog.enterprise-plans': 'if you need custom enterprise plans.',
   'subscriptions.upgrade-dialog.current-plan': 'Current Plan',
   'subscriptions.upgrade-dialog.recommended': 'Recommended',
   'subscriptions.upgrade-dialog.per-month': '/month',
+  'subscriptions.upgrade-dialog.billed-annually': '${{ price }} billed annually',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade now',
 
   'subscriptions.plan.free.name': 'Free plan',
   'subscriptions.plan.plus.name': 'Plus',
+  'subscriptions.plan.pro.name': 'Pro',
 
   'subscriptions.features.storage-size': 'Document storage size',
   'subscriptions.features.members': 'Organization Members',
@@ -647,6 +649,7 @@ export const translations = {
   'subscriptions.features.support': 'Support',
   'subscriptions.features.support-community': 'Community support',
   'subscriptions.features.support-email': 'Email support',
+  'subscriptions.features.support-priority': 'Priority support',
 
   'subscriptions.billing-interval.monthly': 'Monthly',
   'subscriptions.billing-interval.annual': 'Annual',
