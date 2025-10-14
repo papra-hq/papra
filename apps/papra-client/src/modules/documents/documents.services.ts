@@ -168,7 +168,16 @@ export async function searchDocuments({
 }
 
 export async function getOrganizationDocumentsStats({ organizationId }: { organizationId: string }) {
-  const { organizationStats } = await apiClient<{ organizationStats: { documentsCount: number; documentsSize: number } }>({
+  const { organizationStats } = await apiClient<{
+    organizationStats: {
+      documentsCount: number;
+      documentsSize: number;
+      deletedDocumentsSize: number;
+      deletedDocumentsCount: number;
+      totalDocumentsCount: number;
+      totalDocumentsSize: number;
+    };
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/statistics`,
   });

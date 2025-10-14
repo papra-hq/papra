@@ -43,7 +43,7 @@ export async function fetchOrganizationSubscription({ organizationId }: { organi
 export async function fetchOrganizationUsage({ organizationId }: { organizationId: string }) {
   const { usage, limits } = await apiClient<{
     usage: {
-      documentsStorage: { used: number; limit: number | null };
+      documentsStorage: { used: number; deleted: number; limit: number | null };
       intakeEmailsCount: { used: number; limit: number | null };
       membersCount: { used: number; limit: number | null };
     };

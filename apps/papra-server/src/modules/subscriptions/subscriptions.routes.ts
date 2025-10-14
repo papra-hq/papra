@@ -217,7 +217,7 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
 
       const [
         { organizationPlan },
-        { documentsSize },
+        { totalDocumentsSize, deletedDocumentsSize },
         { intakeEmailCount },
         { membersCount },
       ] = await Promise.all([
@@ -237,7 +237,8 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
       return context.json({
         usage: {
           documentsStorage: {
-            used: documentsSize,
+            used: totalDocumentsSize,
+            deleted: deletedDocumentsSize,
             limit: nullifiedLimits.maxDocumentStorageBytes,
           },
           intakeEmailsCount: {
