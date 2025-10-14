@@ -179,7 +179,7 @@ export const SidenavLayout: ParentComponent<{
   const { getPendingInvitationsCount } = usePendingInvitationsCount();
   const { t } = useI18n();
 
-  const { promptImport, uploadDocuments } = useDocumentUpload({ getOrganizationId: () => params.organizationId });
+  const { promptImport, uploadDocuments } = useDocumentUpload();
 
   return (
     <div class="flex flex-row h-screen min-h-0">
