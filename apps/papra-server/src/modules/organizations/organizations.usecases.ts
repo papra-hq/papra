@@ -21,7 +21,6 @@ import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizati
 import {
   createMaxOrganizationMembersCountReachedError,
   createOnlyPreviousOwnerCanRestoreError,
-  createOrganizationDocumentStorageLimitReachedError,
   createOrganizationInvitationAlreadyExistsError,
   createOrganizationNotDeletedError,
   createOrganizationNotFoundError,
@@ -79,28 +78,6 @@ export async function checkIfUserCanCreateNewOrganization({
 
   if (organizationCount >= maxOrganizationCount) {
     throw createUserMaxOrganizationCountReachedError();
-  }
-}
-
-export async function checkIfOrganizationCanCreateNewDocument({
-  organizationId,
-  newDocumentSize,
-  plansRepository,
-  subscriptionsRepository,
-  documentsRepository,
-}: {
-  organizationId: string;
-  newDocumentSize: number;
-  plansRepository: PlansRepository;
-  subscriptionsRepository: SubscriptionsRepository;
-  documentsRepository: DocumentsRepository;
-}) {
-  const { organizationPlan } = await getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository });
-
-  const { documentsSize } = await documentsRepository.getOrganizationStats({ organizationId });
-
-  if (documentsSize + newDocumentSize > organizationPlan.limits.maxDocumentStorageBytes) {
-    throw createOrganizationDocumentStorageLimitReachedError();
   }
 }
 
@@ -460,7 +437,7 @@ export async function getOrganizationStorageLimits({
 }) {
   const [
     { organizationPlan },
-    { documentsSize },
+    { totalDocumentsSize },
   ] = await Promise.all([
     getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
     documentsRepository.getOrganizationStats({ organizationId }),
@@ -469,7 +446,7 @@ export async function getOrganizationStorageLimits({
   const { maxDocumentStorageBytes, maxFileSize } = organizationPlan.limits;
 
   return {
-    availableDocumentStorageBytes: maxDocumentStorageBytes - documentsSize,
+    availableDocumentStorageBytes: maxDocumentStorageBytes - totalDocumentsSize,
     maxDocumentStorageBytes,
     maxFileSize,
   };

@@ -7,15 +7,14 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createMaxOrganizationMembersCountReachedError, createOrganizationDocumentStorageLimitReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import { createMaxOrganizationMembersCountReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfOrganizationCanCreateNewDocument, checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
+import { checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -155,76 +154,6 @@ describe('organizations usecases', () => {
           usersRepository,
         }),
       ).rejects.toThrow(createUserMaxOrganizationCountReachedError());
-    });
-  });
-
-  describe('checkIfOrganizationCanCreateNewDocument', () => {
-    test('it is possible to create a new document if the organization has enough allowed storage space defined in the organization plan', async () => {
-      const { db } = await createInMemoryDatabase({
-        users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        organizationSubscriptions: [{
-          id: 'org_sub_1',
-          organizationId: 'organization-1',
-          planId: PLUS_PLAN_ID,
-          seatsCount: 10,
-          customerId: 'cus_123',
-          status: 'active',
-          currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
-          currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
-          cancelAtPeriodEnd: false,
-        }],
-        documents: [{
-          id: 'doc_1',
-          organizationId: 'organization-1',
-          originalSize: 100,
-          mimeType: 'text/plain',
-          originalName: 'test.txt',
-          originalStorageKey: 'test.txt',
-          originalSha256Hash: '123',
-          name: 'test.txt',
-        }],
-      });
-
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
-          organizationPlan: {
-            id: PLUS_PLAN_ID,
-            name: 'Plus',
-            limits: {
-              maxDocumentStorageBytes: 512,
-              maxIntakeEmailsCount: 10,
-              maxOrganizationsMembersCount: 100,
-            },
-          },
-        }),
-      } as unknown as PlansRepository;
-
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const documentsRepository = createDocumentsRepository({ db });
-
-      // no throw as the document size is less than the allowed storage space
-      await checkIfOrganizationCanCreateNewDocument({
-        organizationId: 'organization-1',
-        newDocumentSize: 100,
-        documentsRepository,
-        plansRepository,
-        subscriptionsRepository,
-      });
-
-      // throw as the document size is greater than the allowed storage space
-      await expect(
-        checkIfOrganizationCanCreateNewDocument({
-          organizationId: 'organization-1',
-          newDocumentSize: 413,
-          documentsRepository,
-          plansRepository,
-          subscriptionsRepository,
-        }),
-      ).rejects.toThrow(
-        createOrganizationDocumentStorageLimitReachedError(),
-      );
     });
   });
 
