@@ -212,7 +212,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
   ));
 
   return (
-    <DocumentUploadProvider>
+    <DocumentUploadProvider organizationId={params.organizationId}>
       <SidenavLayout
         children={props.children}
         sideNav={OrganizationLayoutSideNav}

@@ -1,17 +1,13 @@
 import type { Component } from 'solid-js';
-import { useParams } from '@solidjs/router';
 import { createSignal } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 import { useDocumentUpload } from './document-import-status.component';
 
-export const DocumentUploadArea: Component<{ organizationId?: string }> = (props) => {
+export const DocumentUploadArea: Component = () => {
   const [isDragging, setIsDragging] = createSignal(false);
-  const params = useParams();
 
-  const getOrganizationId = () => props.organizationId ?? params.organizationId;
-
-  const { promptImport, uploadDocuments } = useDocumentUpload({ getOrganizationId });
+  const { promptImport, uploadDocuments } = useDocumentUpload();
 
   const handleDragOver = (event: DragEvent) => {
     event.preventDefault();

@@ -2,23 +2,24 @@ import type { ParentComponent } from 'solid-js';
 import type { Document } from '../documents.types';
 import { safely } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
+import { useQuery } from '@tanstack/solid-query';
 import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
-import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { cn } from '@/modules/shared/style/cn';
 import { throttle } from '@/modules/shared/utils/timing';
+import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '@/modules/ui/components/button';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { uploadDocument } from '../documents.services';
 
 const DocumentUploadContext = createContext<{
-  uploadDocuments: (args: { files: File[]; organizationId: string }) => Promise<void>;
+  uploadDocuments: (args: { files: File[] }) => Promise<void>;
 }>();
 
-export function useDocumentUpload({ getOrganizationId }: { getOrganizationId: () => string }) {
+export function useDocumentUpload() {
   const context = useContext(DocumentUploadContext);
 
   if (!context) {
@@ -28,11 +29,11 @@ export function useDocumentUpload({ getOrganizationId }: { getOrganizationId: ()
   const { uploadDocuments } = context;
 
   return {
-    uploadDocuments: async ({ files }: { files: File[] }) => uploadDocuments({ files, organizationId: getOrganizationId() }),
+    uploadDocuments: async ({ files }: { files: File[] }) => uploadDocuments({ files }),
     promptImport: async () => {
       const { files } = await promptUploadFiles();
 
-      await uploadDocuments({ files, organizationId: getOrganizationId() });
+      await uploadDocuments({ files });
     },
   };
 }
@@ -54,11 +55,10 @@ type Task = TaskSuccess | TaskError | {
   status: 'pending' | 'uploading';
 };
 
-export const DocumentUploadProvider: ParentComponent = (props) => {
+export const DocumentUploadProvider: ParentComponent<{ organizationId: string }> = (props) => {
   const throttledInvalidateOrganizationDocumentsQuery = throttle(invalidateOrganizationDocumentsQuery, 500);
   const { getErrorMessage } = useI18nApiErrors();
   const { t } = useI18n();
-  const { config } = useConfig();
 
   const [getState, setState] = createSignal<'open' | 'closed' | 'collapsed'>('closed');
   const [getTasks, setTasks] = createSignal<Task[]>([]);
@@ -67,20 +67,33 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
     setTasks(tasks => tasks.map(task => task.file === args.file ? { ...task, ...args } : task));
   };
 
-  const uploadDocuments = async ({ files, organizationId }: { files: File[]; organizationId: string }) => {
+  const organizationLimitsQuery = useQuery(() => ({
+    queryKey: ['organizations', props.organizationId, 'subscription'],
+    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
+    refetchOnWindowFocus: false,
+  }));
+
+  const uploadDocuments = async ({ files }: { files: File[] }) => {
     setTasks(tasks => [...tasks, ...files.map(file => ({ file, status: 'pending' } as const))]);
     setState('open');
 
+    if (!organizationLimitsQuery.data) {
+      await organizationLimitsQuery.promise;
+    }
+
+    // Optimistic prevent upload if file is too large, the server will still validate it
+    const maxUploadSize = organizationLimitsQuery.data?.plan.limits.maxFileSize;
+
     await Promise.all(files.map(async (file) => {
-      const { maxUploadSize } = config.documentsStorage;
       updateTaskStatus({ file, status: 'uploading' });
 
-      if (maxUploadSize > 0 && file.size > maxUploadSize) {
+      // maxUploadSize can also be null when self hosting which means no limit
+      if (maxUploadSize && file.size > maxUploadSize) {
         updateTaskStatus({ file, status: 'error', error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }) });
         return;
       }
 
-      const [result, error] = await safely(uploadDocument({ file, organizationId }));
+      const [result, error] = await safely(uploadDocument({ file, organizationId: props.organizationId }));
 
       if (error) {
         updateTaskStatus({ file, status: 'error', error });
@@ -90,7 +103,7 @@ export const DocumentUploadProvider: ParentComponent = (props) => {
         updateTaskStatus({ file, status: 'success', document });
       }
 
-      throttledInvalidateOrganizationDocumentsQuery({ organizationId });
+      throttledInvalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
     }));
   };
 

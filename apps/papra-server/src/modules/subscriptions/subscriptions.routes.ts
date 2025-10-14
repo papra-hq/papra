@@ -228,16 +228,17 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
       ]);
 
       const nullifiedLimits = {
-        maxDocumentsSize: nullifyPositiveInfinity(organizationPlan.limits.maxDocumentStorageBytes),
+        maxDocumentStorageBytes: nullifyPositiveInfinity(organizationPlan.limits.maxDocumentStorageBytes),
         maxIntakeEmailsCount: nullifyPositiveInfinity(organizationPlan.limits.maxIntakeEmailsCount),
         maxOrganizationsMembersCount: nullifyPositiveInfinity(organizationPlan.limits.maxOrganizationsMembersCount),
+        maxFileSize: nullifyPositiveInfinity(organizationPlan.limits.maxFileSize),
       };
 
       return context.json({
         usage: {
           documentsStorage: {
             used: documentsSize,
-            limit: nullifiedLimits.maxDocumentsSize,
+            limit: nullifiedLimits.maxDocumentStorageBytes,
           },
           intakeEmailsCount: {
             used: intakeEmailCount,

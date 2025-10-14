@@ -73,9 +73,6 @@ describe('config models', () => {
           intakeEmails: {
             isEnabled: true,
           },
-          documentsStorage: {
-            maxUploadSize: 10485760,
-          },
           organizations: {
             deletedOrganizationsPurgeDaysDelay: 30,
           },
