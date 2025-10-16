@@ -239,6 +239,11 @@ export const translations = {
   'documents.list.no-documents.title': 'No documents',
   'documents.list.no-documents.description': 'There are no documents in this organization yet. Start by uploading some documents.',
   'documents.list.no-results': 'No documents found',
+  'documents.list.table.headers.file-name': 'File name',
+  'documents.list.table.headers.created': 'Created at',
+  'documents.list.table.headers.deleted': 'Deleted at',
+  'documents.list.table.headers.actions': 'Actions',
+  'documents.list.table.headers.tags': 'Tags',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Content',
