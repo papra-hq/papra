@@ -1,4 +1,4 @@
-# @papra/app-server
+# @papra/docker
 
 ## 25.10.0
 
