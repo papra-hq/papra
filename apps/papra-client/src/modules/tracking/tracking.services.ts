@@ -1,10 +1,10 @@
-import posthog from 'posthog-js';
+import { PostHog } from 'posthog-js-lite';
 import { buildTimeConfig, isDev } from '../config/config';
 
 type TrackingServices = {
   capture: (args: {
     event: string;
-    properties?: Record<string, unknown>;
+    properties?: Record<string, string | number | boolean>;
   }) => void;
 
   reset: () => void;
@@ -38,13 +38,7 @@ function createTrackingServices(): TrackingServices {
     return dummyTrackingServices;
   }
 
-  posthog.init(
-    apiKey,
-    {
-      api_host: host,
-      capture_pageview: false,
-    },
-  );
+  const posthog = new PostHog(apiKey, { host });
 
   return {
     capture: ({ event, properties }) => {
