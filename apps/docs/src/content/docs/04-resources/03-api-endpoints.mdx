@@ -307,3 +307,13 @@ Remove a tag from a document.
 
 - Required API key permissions: `tags:read` and `documents:update`
 - Response: empty (204 status code)
+
+### Apply tagging rule to existing documents
+
+**POST** `/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply`
+
+Enqueue a background task to apply a tagging rule to all existing documents in the organization. This endpoint returns immediately with a task ID, and the processing happens asynchronously in the background. The task will check all documents and apply tags where the rule's conditions match.
+
+- Required API key permissions: `tags:read` and `documents:update`
+- Response (JSON, HTTP 202)
+  - `taskId`: The ID of the background task. You can use this to track the task's progress (task status retrieval coming in a future release).

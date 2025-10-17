@@ -5,14 +5,17 @@ import { useMutation, useQuery } from '@tanstack/solid-query';
 import { For, Match, Show, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { useConfirmModal } from '@/modules/shared/confirm';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
-import { deleteTaggingRule, fetchTaggingRules } from '../tagging-rules.services';
+import { createToast } from '@/modules/ui/components/sonner';
+import { applyTaggingRuleToExistingDocuments, deleteTaggingRule, fetchTaggingRules } from '../tagging-rules.services';
 
 const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
   const { t } = useI18n();
+  const { confirm } = useConfirmModal();
 
   const getConditionsLabel = () => {
     const count = props.taggingRule.conditions.length;
@@ -37,6 +40,43 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
     },
   }));
 
+  const applyRuleMutation = useMutation(() => ({
+    mutationFn: async () => {
+      return applyTaggingRuleToExistingDocuments({
+        organizationId: props.taggingRule.organizationId,
+        taggingRuleId: props.taggingRule.id,
+      });
+    },
+    onSuccess: () => {
+      createToast({
+        message: t('tagging-rules.apply.success'),
+        type: 'success',
+      });
+      // Note: Documents will be processed in the background
+      // We'll invalidate this once task status retrieval is implemented
+    },
+    onError: () => {
+      createToast({
+        message: t('tagging-rules.apply.error'),
+        type: 'error',
+      });
+    },
+  }));
+
+  const handleApplyRule = async () => {
+    const isConfirmed = await confirm({
+      title: t('tagging-rules.apply.confirm.title'),
+      message: t('tagging-rules.apply.confirm.description'),
+      confirmButton: {
+        text: t('tagging-rules.apply.confirm.button'),
+      },
+    });
+
+    if (isConfirmed) {
+      applyRuleMutation.mutate();
+    }
+  };
+
   return (
     <div class="flex items-center gap-2 bg-card py-4 px-6 rounded-md border">
       <A href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`}>
@@ -52,6 +92,17 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
       </div>
 
       <div class="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleApplyRule}
+          disabled={applyRuleMutation.isPending}
+          aria-label={t('tagging-rules.apply.button')}
+        >
+          <div class="i-tabler-player-play size-4 mr-1" />
+          {applyRuleMutation.isPending ? t('tagging-rules.apply.processing') : t('tagging-rules.apply.button')}
+        </Button>
+
         <Button
           as={A}
           href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`}

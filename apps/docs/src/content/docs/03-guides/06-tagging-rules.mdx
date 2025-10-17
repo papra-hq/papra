@@ -1,0 +1,102 @@
+---
+title: Using Tagging Rules
+description: Learn how to automate document organization with tagging rules.
+slug: guides/tagging-rules
+---
+
+## What are Tagging Rules?
+
+Tagging rules allow you to automatically apply tags to documents based on specific conditions. This helps maintain consistent organization without manual effort, especially when dealing with large numbers of documents.
+
+## How Tagging Rules Work
+
+When a tagging rule is enabled, it automatically checks new documents as they're uploaded. If a document matches the rule's conditions, the specified tags are automatically applied.
+
+### Rule Components
+
+Each tagging rule consists of:
+
+1. **Conditions**: Rules that determine which documents should be tagged
+   - Field: The document property to check (e.g., name, content)
+   - Operator: How to compare the field (e.g., contains, equals)
+   - Value: The text to match against
+
+2. **Actions**: The tags to apply when conditions are met
+
+## Applying Rules to Existing Documents
+
+### The "Run Now" Feature
+
+When you create a new tagging rule, it only applies to documents uploaded *after* the rule is created. To apply the rule to documents that already exist in your organization, use the **"Apply to existing documents"** button.
+
+This feature is particularly useful when:
+- You create a new rule and want to organize your existing documents
+- You modify a rule and want to reprocess documents
+- You're setting up your organization and want to retroactively organize imported documents
+
+### How to Apply a Rule to Existing Documents
+
+1. Navigate to your organization's Tagging Rules page
+2. Find the rule you want to apply
+3. Click the **"Apply to existing documents"** button
+4. Confirm the action in the dialog
+5. The task is queued and will be processed in the background
+
+The system will:
+- Queue a background task to process all documents
+- Process documents in batches to avoid overloading the system
+- Check all existing documents in your organization
+- Apply tags where the rule's conditions match
+- Show you a success message once the task is queued
+
+:::tip
+Applying a rule to existing documents runs as a background task, so you don't need to wait for it to complete. The processing happens asynchronously and efficiently handles large document collections by processing them in batches.
+:::
+
+## Best Practices
+
+### Creating Effective Rules
+
+1. **Be specific**: Use precise conditions to avoid over-tagging
+2. **Test first**: Create a rule and test it on a few documents before applying to all existing documents
+3. **Use multiple conditions**: Combine conditions for more accurate matching
+4. **Review regularly**: Periodically review your rules to ensure they're still relevant
+
+### Example Rules
+
+**Invoice Classification**
+- Condition: Document name contains "invoice"
+- Action: Apply "Invoice" tag
+
+**Quarterly Reports**
+- Condition: Document name contains "Q1" or "Q2" or "Q3" or "Q4"
+- Action: Apply "Report" tag
+
+## Using the API
+
+You can also apply tagging rules programmatically using the API. The endpoint enqueues a background task and returns immediately:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  https://api.papra.app/api/organizations/YOUR_ORG_ID/tagging-rules/RULE_ID/apply
+```
+
+Response (HTTP 202 Accepted):
+```json
+{
+  "taskId": "task_abc123"
+}
+```
+
+Where:
+- `taskId`: The ID of the background task processing your request
+
+:::note
+The API returns a task ID immediately. The actual processing happens in the background and may take some time depending on the number of documents. Task status retrieval will be available in a future release.
+:::
+
+## Related Resources
+
+- [API Endpoints Documentation](/resources/api-endpoints)
+- [CLI Documentation](/resources/cli)

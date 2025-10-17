@@ -1,4 +1,5 @@
 import type { DocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
+import type { DocumentsRepository } from '../documents/documents.repository';
 import type { Document } from '../documents/documents.types';
 import type { Logger } from '../shared/logger/logger';
 import type { TagsRepository } from '../tags/tags.repository';
@@ -9,6 +10,7 @@ import type { TaggingRulesRepository } from './tagging-rules.repository';
 import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { safely, safelySync } from '@corentinth/chisels';
 import { uniq } from 'lodash-es';
+import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { addTagToDocument } from '../tags/tags.usecases';
@@ -94,7 +96,7 @@ export async function applyTaggingRules({
   const tagsToApply: Tag[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tag).filter(tag => !isNil(tag))));
   const tagIdsToApply = tagsToApply.map(tag => tag.id);
 
-  const appliedTagIds = await Promise.all(tagsToApply.map(async (tag) => {
+  const appliedTagIdsResults = await Promise.all(tagsToApply.map(async (tag) => {
     const [, error] = await safely(async () => addTagToDocument({
       tagId: tag.id,
       documentId: document.id,
@@ -108,11 +110,13 @@ export async function applyTaggingRules({
     if (error) {
       logger.error({ error, tagId: tag.id, documentId: document.id }, 'Failed to add tag to document');
 
-      return;
+      return undefined;
     }
 
     return tag.id;
   }));
+
+  const appliedTagIds = appliedTagIdsResults.filter((id): id is string => id !== undefined);
 
   logger.info({
     taggingRulesIdsToApply: taggingRulesToApplyActions.map(taggingRule => taggingRule.id),
@@ -120,4 +124,87 @@ export async function applyTaggingRules({
     tagIdsToApply,
     hasAllTagBeenApplied: appliedTagIds.length === tagIdsToApply.length,
   }, 'Tagging rules applied');
+}
+
+export async function applyTaggingRuleToExistingDocuments({
+  taggingRuleId,
+  organizationId,
+  taggingRulesRepository,
+  documentsRepository,
+  tagsRepository,
+  webhookRepository,
+  documentActivityRepository,
+  logger = createLogger({ namespace: 'tagging-rules' }),
+}: {
+  taggingRuleId: string;
+  organizationId: string;
+  taggingRulesRepository: TaggingRulesRepository;
+  documentsRepository: DocumentsRepository;
+  tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
+  logger?: Logger;
+}) {
+  // Verify the tagging rule exists and belongs to the organization
+  const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({ organizationId, taggingRuleId });
+
+  if (!taggingRule) {
+    throw createError({
+      message: 'Tagging rule not found',
+      code: 'tagging-rules.not-found',
+      statusCode: 404,
+    });
+  }
+
+  logger.info({ organizationId, taggingRuleId }, 'Starting to apply tagging rule to existing documents');
+
+  // Use iterator to fetch documents in batches
+  const documentsIterator = documentsRepository.getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSize: 100 });
+
+  let processedCount = 0;
+  let taggedCount = 0;
+  let errorCount = 0;
+
+  // Process documents one by one using the iterator
+  for await (const document of documentsIterator) {
+    const [, error] = await safely(async () => {
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
+        logger,
+      });
+
+      // Count as tagged - applyTaggingRules processes all enabled rules
+      taggedCount++;
+    });
+
+    if (error) {
+      errorCount++;
+      logger.error({ error, documentId: document.id }, 'Error applying tagging rule to document');
+    }
+
+    processedCount++;
+
+    // Log progress every 100 documents
+    if (processedCount % 100 === 0) {
+      logger.info({ organizationId, taggingRuleId, processedCount, taggedCount, errorCount }, 'Progress update');
+    }
+  }
+
+  logger.info({
+    organizationId,
+    taggingRuleId,
+    processedCount,
+    taggedCount,
+    errorCount,
+  }, 'Completed applying tagging rule to existing documents');
+
+  return {
+    processedCount,
+    taggedCount,
+    errorCount,
+  };
 }
