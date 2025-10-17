@@ -761,6 +761,72 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       return { document: newDocument };
     },
   }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/subscription',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      // Demo mode uses free plan with no subscription
+      return {
+        subscription: null,
+        plan: {
+          id: 'free',
+          name: 'Free',
+          limits: {
+            maxDocumentStorageBytes: 1024 * 1024 * 500, // 500 MiB
+            maxIntakeEmailsCount: 1,
+            maxOrganizationsMembersCount: 3,
+            maxFileSize: 1024 * 1024 * 50, // 50 MiB
+          },
+        },
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/usage',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+
+      const totalDocumentsSize = documents.reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
+      const deletedDocumentsSize = documents
+        .filter(doc => doc.deletedAt)
+        .reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
+
+      return {
+        usage: {
+          documentsStorage: {
+            used: totalDocumentsSize,
+            deleted: deletedDocumentsSize,
+            limit: 1024 * 1024 * 500, // 500 MiB
+          },
+          intakeEmailsCount: {
+            used: 0,
+            limit: 1,
+          },
+          membersCount: {
+            used: 1,
+            limit: 3,
+          },
+        },
+        limits: {
+          maxDocumentStorageBytes: 1024 * 1024 * 500, // 500 MiB
+          maxIntakeEmailsCount: 1,
+          maxOrganizationsMembersCount: 3,
+          maxFileSize: 1024 * 1024 * 50, // 50 MiB
+        },
+      };
+    },
+  }),
 };
 
 export const router = createRouter({ routes: inMemoryApiMock, strictTrailingSlash: false });
