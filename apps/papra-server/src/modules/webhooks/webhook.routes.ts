@@ -148,7 +148,7 @@ function setupUpdateWebhookRoute({ app, db }: RouteDefinitionContext) {
       });
 
       return context.json({
-        webhook,
+        webhook: omit(webhook, ['secret']),
       });
     },
   );
