@@ -1,7 +1,7 @@
 /* @refresh reload */
 
 import type { ConfigColorMode } from '@kobalte/core/color-mode';
-import { ColorModeProvider, ColorModeScript, createLocalStorageManager } from '@kobalte/core/color-mode';
+import { ColorModeProvider, createLocalStorageManager } from '@kobalte/core/color-mode';
 import { Router } from '@solidjs/router';
 import { QueryClientProvider } from '@tanstack/solid-query';
 
@@ -37,7 +37,6 @@ render(
               <IdentifyUser />
               <I18nProvider>
                 <ConfirmModalProvider>
-                  <ColorModeScript storageType={localStorageManager.type} storageKey={colorModeStorageKey} initialColorMode={initialColorMode} />
                   <ColorModeProvider
                     initialColorMode={initialColorMode}
                     storageManager={localStorageManager}

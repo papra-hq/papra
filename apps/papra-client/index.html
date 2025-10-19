@@ -65,8 +65,19 @@
     </script>
 
     <style>.sr-only {position: absolute;width: 1px;height: 1px;padding: 0;margin: -1px;overflow: hidden;clip: rect(0, 0, 0, 0);white-space: nowrap;border-width: 0;}</style>
+
+    <!-- Prevent flash of wrong theme on load -->
+    <script>
+      (function () {
+        const stored = localStorage?.getItem('papra_color_mode') ?? 'dark';
+
+        if (stored === 'dark') {
+          document.documentElement.setAttribute('data-kb-theme', 'dark');
+        }
+      })();
+    </script>
   </head>
-  <body>
+  <body class="bg-background text-foreground">
     <h1 class="sr-only">Papra - Document archiving and sharing platform</h1>
     <p class="sr-only">Papra, the document archiving and sharing platform.</p>
 
