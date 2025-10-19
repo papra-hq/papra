@@ -1,4 +1,3 @@
-import type { TooltipTriggerProps } from '@kobalte/core/tooltip';
 import type { Component, ComponentProps, JSX, ParentComponent } from 'solid-js';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { Show, Suspense } from 'solid-js';
@@ -16,7 +15,6 @@ import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../components/tooltip';
 
 type MenuItem = {
   label: string;
@@ -43,57 +41,10 @@ export const SideNav: Component<{
   footer?: Component;
   preFooter?: Component;
 }> = (props) => {
-  const getShortSideNavItems = () => [
-    {
-      label: 'All organizations',
-      to: '/organizations',
-      icon: 'i-tabler-building-community',
-    },
-    {
-      label: 'GitHub repository',
-      href: 'https://github.com/papra-hq/papra',
-      icon: 'i-tabler-brand-github',
-    },
-    {
-      label: 'Bluesky',
-      href: 'https://bsky.app/profile/papra.app',
-      icon: 'i-tabler-brand-bluesky',
-    },
-  ];
-
   return (
     <div class="flex h-full">
-      <div class="w-65px border-r bg-card pt-4 pb-6 flex flex-col">
-        <Button variant="link" size="icon" as={A} href="/" class="text-lg font-bold hover:no-underline flex items-center text-primary mb-4 mx-auto">
-          <div class="i-tabler-file-text size-10 transform rotate-12deg hover:rotate-25deg transition"></div>
-        </Button>
-
-        <div class="flex flex-col gap-0.5 flex-1">
-          {getShortSideNavItems().map(menuItem => (
-            <Tooltip>
-              <TooltipTrigger
-                as={(tooltipProps: TooltipTriggerProps) => (
-                  <Button
-                    variant="link"
-                    class="text-lg font-bold hover:no-underline flex items-center text-foreground dark:text-muted-foreground hover:text-primary"
-                    {...tooltipProps}
-                    aria-label={menuItem.label}
-                    {...(menuItem.href
-                      ? { as: 'a', href: menuItem.href, target: '_blank', rel: 'noopener noreferrer' }
-                      : { as: A, href: menuItem.to })}
-                  >
-                    <div class={cn(menuItem.icon, 'size-5')} />
-                  </Button>
-                )}
-              />
-
-              <TooltipContent>{menuItem.label}</TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
-      </div>
       {(props.header || props.mainMenu || props.footerMenu || props.footer || props.preFooter) && (
-        <div class="h-full flex flex-col pb-6 flex-1">
+        <div class="h-full flex flex-col pb-6 flex-1 min-w-0">
           {props.header && <props.header />}
 
           {props.mainMenu && (
@@ -183,7 +134,7 @@ export const SidenavLayout: ParentComponent<{
 
   return (
     <div class="flex flex-row h-screen min-h-0">
-      <div class="w-350px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
+      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
         <props.sideNav />
 
       </div>
