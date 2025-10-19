@@ -1,8 +1,8 @@
 import type { ParentComponent } from 'solid-js';
 import type { Config, RuntimePublicConfig } from './config';
 import { useQuery } from '@tanstack/solid-query';
-import { merge } from 'lodash-es';
 import { createContext, Match, Switch, useContext } from 'solid-js';
+import { deepMerge } from '../shared/utils/object';
 import { Button } from '../ui/components/button';
 import { EmptyState } from '../ui/components/empty';
 import { createToast } from '../ui/components/sonner';
@@ -31,7 +31,7 @@ export const ConfigProvider: ParentComponent = (props) => {
   }));
 
   const mergeConfigs = (runtimeConfig: RuntimePublicConfig): Config => {
-    return merge({}, buildTimeConfig, runtimeConfig);
+    return deepMerge(buildTimeConfig, runtimeConfig);
   };
 
   const retry = async () => {

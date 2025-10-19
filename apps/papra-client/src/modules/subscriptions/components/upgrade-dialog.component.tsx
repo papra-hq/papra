@@ -3,11 +3,21 @@ import type { Component, JSX } from 'solid-js';
 import { safely } from '@corentinth/chisels';
 import { createSignal } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { PLUS_PLAN_ID } from '@/modules/plans/plans.constants';
+import { PLUS_PLAN_ID, PRO_PLAN_ID } from '@/modules/plans/plans.constants';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
 import { getCheckoutUrl } from '../subscriptions.services';
+
+// Hardcoded global reduction configuration, will be replaced by a dynamic configuration later
+const globalReduction = {
+  enabled: true,
+  multiplier: 0.5,
+  // 31 december 2025 23h59 Paris time
+  untilDate: new Date('2025-12-31T22:59:59Z'),
+};
+
+type BillingInterval = 'monthly' | 'annual';
 
 type PlanCardProps = {
   name: string;
@@ -20,8 +30,10 @@ type PlanCardProps = {
   };
   isRecommended?: boolean;
   isCurrent?: boolean;
-  price: number;
   onUpgrade?: () => Promise<void>;
+  billingInterval: BillingInterval;
+  monthlyPrice: number;
+  annualPrice: number;
 };
 
 const PlanCard: Component<PlanCardProps> = (props) => {
@@ -66,21 +78,47 @@ const PlanCard: Component<PlanCardProps> = (props) => {
     setIsUpgradeLoading(false);
   };
 
+  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) => globalReduction.enabled && now < globalReduction.untilDate;
+  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) => getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
+
+  const getMonthlyPrice = ({ now = new Date() }: { now?: Date } = {}) => {
+    const multiplier = getReductionMultiplier({ now });
+    const basePrice = props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice;
+
+    return Math.round(100 * basePrice * multiplier) / 100;
+  };
+
+  const getAnnualPrice = () => {
+    const multiplier = getReductionMultiplier();
+    return Math.round(100 * props.annualPrice * multiplier) / 100;
+  };
+
   return (
     <div class="border rounded-xl">
-      <div class="p-4">
-        <div class="text-sm font-medium text-muted-foreground flex items-center gap-2 justify-between">
-          <span>{props.name}</span>
-          {props.isCurrent && <span class="text-xs font-medium text-muted-foreground bg-muted rounded-md px-2 py-1">{t('subscriptions.upgrade-dialog.current-plan')}</span>}
-          {props.isRecommended && <div class="text-xs font-medium text-primary bg-primary/10 rounded-md px-2 py-1">{t('subscriptions.upgrade-dialog.recommended')}</div>}
-        </div>
-        <div class="text-xl font-semibold flex items-center gap-2">
-          $
-          {props.price}
-          <span class="text-sm font-normal text-muted-foreground">{t('subscriptions.upgrade-dialog.per-month')}</span>
+
+      <div class="p-6">
+        <div class="text-sm font-medium text-muted-foreground flex items-center gap-2 justify-between mb-1">
+          <span class="min-h-24px">{props.name}</span>
+          {getIsReductionActive() && props.annualPrice > 0 && <div class="text-xs font-medium text-primary bg-primary/10 rounded-md px-2 py-1">{`-${100 * (1 - getReductionMultiplier())}%`}</div>}
         </div>
 
-        <hr class="my-4" />
+        {getIsReductionActive() && props.annualPrice > 0 && (
+          <span class="text-lg text-muted-foreground relative after:(content-[''] absolute left--5px right--5px top-1/2 h-2px bg-muted-foreground/40 rounded-full -rotate-12 origin-center)">{`$${(props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice)}`}</span>
+        )}
+        <div class="flex items-baseline gap-1">
+          <span class="text-4xl font-semibold">{`$${getMonthlyPrice()}`}</span>
+          <span class="text-sm text-muted-foreground">{t('subscriptions.upgrade-dialog.per-month')}</span>
+        </div>
+
+        {
+          props.annualPrice > 0 && (
+            <div class="overflow-hidden transition-all duration-300" style={{ 'max-height': props.billingInterval === 'annual' ? '24px' : '0px', 'opacity': props.billingInterval === 'annual' ? '1' : '0' }}>
+              <span class="text-xs text-muted-foreground">{t('subscriptions.upgrade-dialog.billed-annually', { price: getAnnualPrice() })}</span>
+            </div>
+          )
+        }
+
+        <hr class="my-6" />
 
         <div class="flex flex-col gap-3 ">
           {featureItems.map(feature => (
@@ -100,7 +138,7 @@ const PlanCard: Component<PlanCardProps> = (props) => {
 
         { props.onUpgrade && (
           <>
-            <hr class="my-4" />
+            <hr class="my-6" />
 
             <Button onClick={upgrade} class="w-full" autofocus isLoading={getIsUpgradeLoading()}>
               {t('subscriptions.upgrade-dialog.upgrade-now')}
@@ -121,11 +159,11 @@ type UpgradeDialogProps = {
 export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   const { t } = useI18n();
   const [getIsOpen, setIsOpen] = createSignal(false);
-  const defaultBillingInterval: 'monthly' | 'annual' = 'annual';
-  const [getBillingInterval, setBillingInterval] = createSignal<'monthly' | 'annual'>(defaultBillingInterval);
+  const defaultBillingInterval: BillingInterval = 'annual';
+  const [getBillingInterval, setBillingInterval] = createSignal<BillingInterval>(defaultBillingInterval);
 
-  const onUpgrade = async () => {
-    const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId: PLUS_PLAN_ID, billingInterval: getBillingInterval() });
+  const onUpgrade = async (planId: string) => {
+    const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId, billingInterval: getBillingInterval() });
     window.location.href = checkoutUrl;
   };
 
@@ -158,14 +196,23 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
     isRecommended: true,
   };
 
-  const getPlanPrice = (plan: { monthlyPrice: number; annualPrice: number }) => {
-    return getBillingInterval() === 'monthly' ? plan.monthlyPrice : Math.round(100 * plan.annualPrice / 12) / 100;
+  const proPlan = {
+    name: t('subscriptions.plan.pro.name'),
+    monthlyPrice: 30,
+    annualPrice: 300,
+    features: {
+      storageSize: 50,
+      members: 50,
+      emailIntakes: 100,
+      maxUploadSize: 500,
+      support: t('subscriptions.features.support-priority'),
+    },
   };
 
   return (
     <Dialog open={getIsOpen()} onOpenChange={setIsOpen}>
       <DialogTrigger as={props.children} />
-      <DialogContent class="sm:max-w-xl">
+      <DialogContent class="sm:max-w-5xl">
         <DialogHeader>
           <div class="flex items-center gap-3">
             <div class="p-2 bg-primary/10 rounded-lg">
@@ -193,27 +240,25 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
             <Button
               size="sm"
               variant="ghost"
-              class={cn('text-sm pr-1.5', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
+              class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
               onClick={() => setBillingInterval('annual')}
             >
               {t('subscriptions.billing-interval.annual')}
-              <span class="ml-2 text-xs text-muted-foreground rounded bg-primary/10 text-primary px-1 py-0.5">-20%</span>
             </Button>
           </div>
         </div>
 
-        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 ">
-          <div>
-            <PlanCard {...currentPlan} price={getPlanPrice(currentPlan)} />
-
-            <p class="text-muted-foreground text-xs p-4 ml-1">
-              <a href="https://papra.app/contact" class="underline" target="_blank" rel="noreferrer">{t('subscriptions.upgrade-dialog.contact-us')}</a>
-              {' '}
-              {t('subscriptions.upgrade-dialog.enterprise-plans')}
-            </p>
-          </div>
-          <PlanCard {...plusPlan} onUpgrade={onUpgrade} price={getPlanPrice(plusPlan)} />
+        <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <PlanCard {...currentPlan} billingInterval={getBillingInterval()} />
+          <PlanCard {...plusPlan} onUpgrade={() => onUpgrade(PLUS_PLAN_ID)} billingInterval={getBillingInterval()} />
+          <PlanCard {...proPlan} onUpgrade={() => onUpgrade(PRO_PLAN_ID)} billingInterval={getBillingInterval()} />
         </div>
+
+        <p class="text-muted-foreground text-xs text-center mt-2">
+          <a href="https://papra.app/contact" class="underline" target="_blank" rel="noreferrer">{t('subscriptions.upgrade-dialog.contact-us')}</a>
+          {' '}
+          {t('subscriptions.upgrade-dialog.enterprise-plans')}
+        </p>
       </DialogContent>
     </Dialog>
   );

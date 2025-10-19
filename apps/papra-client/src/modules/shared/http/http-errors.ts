@@ -1,13 +1,13 @@
-import { get } from 'lodash-es';
+import { get } from '../utils/get';
 
 export { isHttpErrorWithCode, isHttpErrorWithStatusCode, isRateLimitError };
 
 function isHttpErrorWithCode({ error, code }: { error: unknown; code: string }) {
-  return get(error, 'data.error.code') === code;
+  return get(error, ['data', 'error', 'code']) === code;
 }
 
 function isHttpErrorWithStatusCode({ error, statusCode }: { error: unknown; statusCode: number }) {
-  return get(error, 'status') === statusCode;
+  return get(error, ['status']) === statusCode;
 }
 
 function isRateLimitError({ error }: { error: unknown }) {

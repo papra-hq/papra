@@ -2,7 +2,7 @@ import type { Component, JSX } from 'solid-js';
 import type { DocumentActivity } from '../documents.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
-import { createQueries, useInfiniteQuery } from '@tanstack/solid-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -122,17 +122,14 @@ export const DocumentPage: Component = () => {
     setSearchParams({ tab: getTab() }, { replace: true });
   });
 
-  const queries = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
-        queryFn: () => fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
-      },
-      {
-        queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
-        queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
-      },
-    ],
+  const documentQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
+    queryFn: () => fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
+  }));
+
+  const documentFileQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
+    queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
   const activityPageSize = 20;
@@ -160,14 +157,14 @@ export const DocumentPage: Component = () => {
   }));
 
   const deleteDoc = async () => {
-    if (!queries[0].data) {
+    if (!documentQuery.data) {
       return;
     }
 
     const { hasDeleted } = await deleteDocument({
       documentId: params.documentId,
       organizationId: params.organizationId,
-      documentName: queries[0].data.document.name,
+      documentName: documentQuery.data.document.name,
     });
 
     if (!hasDeleted) {
@@ -177,13 +174,13 @@ export const DocumentPage: Component = () => {
     navigate(`/organizations/${params.organizationId}/documents`);
   };
 
-  const getDataUrl = () => queries[1].data ? URL.createObjectURL(queries[1].data) : undefined;
+  const getDataUrl = () => documentFileQuery.data ? URL.createObjectURL(documentFileQuery.data) : undefined;
 
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
         <div class="md:flex-1 md:border-r">
-          <Show when={queries[0].data?.document}>
+          <Show when={documentQuery.data?.document}>
             {getDocument => (
               <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
@@ -390,7 +387,7 @@ export const DocumentPage: Component = () => {
         </div>
 
         <div class="flex-1 min-h-50vh">
-          <Show when={queries[0].data?.document}>
+          <Show when={documentQuery.data?.document}>
             {getDocument => (
               <DocumentPreview document={getDocument()} />
             )}

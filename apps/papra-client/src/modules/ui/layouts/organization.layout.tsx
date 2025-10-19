@@ -3,13 +3,13 @@ import type { Component, ParentComponent } from 'solid-js';
 import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { useNavigate, useParams } from '@solidjs/router';
-import { createQueries, useQuery } from '@tanstack/solid-query';
-import { get } from 'lodash-es';
+import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '../components/button';
@@ -27,7 +27,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { config } = useConfig();
 
   const query = useQuery(() => ({
-    queryKey: ['organizations', 'subscription'],
+    queryKey: ['organizations', props.organizationId, 'subscription'],
     queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
   }));
 
@@ -40,27 +40,28 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   };
 
   return (
-    <Show when={shouldShowUpgradeCTA()}>
+    <div>
+      <Show when={shouldShowUpgradeCTA()}>
 
-      <div class="p-4 mx-4 mt-4 bg-background bg-gradient-to-br from-primary/15 to-transparent rounded-lg">
-        <div class="flex items-center gap-2 text-sm font-medium">
-          <div class="i-tabler-sparkles size-4 text-primary"></div>
-          {t('layout.upgrade-cta.title')}
+        <div class="p-4 mx-4 mt-4 bg-background bg-gradient-to-br from-primary/15 to-transparent rounded-lg">
+          <div class="flex items-center gap-2 text-sm font-medium">
+            <div class="i-tabler-sparkles size-4 text-primary"></div>
+            {t('layout.upgrade-cta.title')}
+          </div>
+          <div class="text-xs mt-1 mb-3 text-muted-foreground">
+            {t('layout.upgrade-cta.description')}
+          </div>
+          <UpgradeDialog organizationId={props.organizationId}>
+            {dialogProps => (
+              <Button size="sm" class="w-full font-semibold" {...dialogProps}>
+                {t('layout.upgrade-cta.button')}
+                <div class="i-tabler-arrow-right size-4 ml-1"></div>
+              </Button>
+            )}
+          </UpgradeDialog>
         </div>
-        <div class="text-xs mt-1 mb-3 text-muted-foreground">
-          {t('layout.upgrade-cta.description')}
-        </div>
-        <UpgradeDialog organizationId={props.organizationId}>
-          {dialogProps => (
-            <Button size="sm" class="w-full font-semibold" {...dialogProps}>
-              {t('layout.upgrade-cta.button')}
-              <div class="i-tabler-arrow-right size-4 ml-1"></div>
-            </Button>
-          )}
-        </UpgradeDialog>
-      </div>
-    </Show>
-
+      </Show>
+    </div>
   );
 };
 
@@ -111,24 +112,21 @@ const OrganizationLayoutSideNav: Component = () => {
     },
   ];
 
-  const queries = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['organizations'],
-        queryFn: fetchOrganizations,
-      },
-      {
-        queryKey: ['organizations', params.organizationId],
-        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
-      },
-    ],
+  const organizationsQuery = useQuery(() => ({
+    queryKey: ['organizations'],
+    queryFn: fetchOrganizations,
+  }));
+
+  const organizationQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId],
+    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
   createEffect(on(
-    () => queries[1].error,
+    () => organizationQuery.error,
     (error) => {
       if (error) {
-        const status = get(error, 'status');
+        const status = getErrorStatus(error);
 
         if (status && [
           400, // when the id of the organization is not valid
@@ -149,10 +147,10 @@ const OrganizationLayoutSideNav: Component = () => {
         (
           <div class="px-6 pt-4 max-w-285px min-w-0">
             <Select
-              options={[...queries[0].data?.organizations ?? [], { id: 'create' }]}
+              options={[...organizationsQuery.data?.organizations ?? [], { id: 'create' }]}
               optionValue="id"
               optionTextValue="name"
-              value={queries[0].data?.organizations.find(organization => organization.id === params.organizationId)}
+              value={organizationsQuery.data?.organizations.find(organization => organization.id === params.organizationId)}
               onChange={(value) => {
                 if (!value || value.id === params.organizationId) {
                   return;
@@ -177,8 +175,8 @@ const OrganizationLayoutSideNav: Component = () => {
                   )}
             >
               <SelectTrigger>
-                <SelectValue<Organization> class="truncate">
-                  {state => state.selectedOption().name}
+                <SelectValue<Organization | undefined> class="truncate">
+                  {state => state.selectedOption()?.name}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent />
@@ -204,7 +202,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
     () => query.error,
     (error) => {
       if (error) {
-        const status = get(error, 'status');
+        const status = getErrorStatus(error);
 
         if (status && [401, 403].includes(status)) {
           navigate('/');
@@ -214,7 +212,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
   ));
 
   return (
-    <DocumentUploadProvider>
+    <DocumentUploadProvider organizationId={params.organizationId}>
       <SidenavLayout
         children={props.children}
         sideNav={OrganizationLayoutSideNav}

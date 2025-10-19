@@ -22,4 +22,10 @@ export default antfu({
       caughtErrorsIgnorePattern: '^_',
     }],
   },
+}, {
+  files: ['src/locales/*.dictionary.ts'],
+  rules: {
+    // Sometimes for formatting amounts of dollar, we need "${{value}}" as value is interpolated later, it's not a template string here
+    'no-template-curly-in-string': 'off',
+  },
 });

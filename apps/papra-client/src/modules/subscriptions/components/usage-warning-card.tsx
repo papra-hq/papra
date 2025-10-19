@@ -24,11 +24,11 @@ export const UsageWarningCard: Component<{ organizationId: string }> = (props) =
   const getStorageSizeUsedPercent = () => {
     const { data: usageData } = query;
 
-    if (!usageData || usageData.limits.maxDocumentsSize === null) {
+    if (!usageData || usageData.usage.documentsStorage.limit === null) {
       return 0;
     }
 
-    return (usageData.usage.documentsStorage.used / usageData.limits.maxDocumentsSize) * 100;
+    return (usageData.usage.documentsStorage.used / usageData.usage.documentsStorage.limit) * 100;
   };
 
   const shouldShow = () => {

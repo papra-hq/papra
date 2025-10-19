@@ -1,3 +1,4 @@
+import type { PlanLimits } from '../plans/plans.types';
 import type { OrganizationSubscription } from './subscriptions.types';
 import { apiClient } from '../shared/http/api-client';
 
@@ -24,7 +25,14 @@ export async function getCustomerPortalUrl({ organizationId }: { organizationId:
 }
 
 export async function fetchOrganizationSubscription({ organizationId }: { organizationId: string }) {
-  const { subscription, plan } = await apiClient<{ subscription: OrganizationSubscription; plan: { id: string; name: string } }>({
+  const { subscription, plan } = await apiClient<{
+    subscription: OrganizationSubscription;
+    plan: {
+      id: string;
+      name: string;
+      limits: PlanLimits;
+    };
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/subscription`,
   });
@@ -35,11 +43,11 @@ export async function fetchOrganizationSubscription({ organizationId }: { organi
 export async function fetchOrganizationUsage({ organizationId }: { organizationId: string }) {
   const { usage, limits } = await apiClient<{
     usage: {
-      documentsStorage: { used: number; limit: number | null };
+      documentsStorage: { used: number; deleted: number; limit: number | null };
       intakeEmailsCount: { used: number; limit: number | null };
       membersCount: { used: number; limit: number | null };
     };
-    limits: { maxDocumentsSize: number | null; maxIntakeEmailsCount: number | null; maxOrganizationsMembersCount: number | null };
+    limits: PlanLimits;
   }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/usage`,

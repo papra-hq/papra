@@ -1,0 +1,35 @@
+# https://fly.io/docs/reference/configuration/
+
+app = 'papra-server'
+primary_region = 'cdg'
+kill_timeout = 10 # seconds
+
+[build]
+dockerfile = "./Dockerfile"
+
+[deploy]
+release_command = "pnpm --silent migrate:up:prod"
+strategy = "rolling"
+
+[processes]
+web = "pnpm --silent start"
+
+[http_service]
+internal_port = 1221
+force_https = true
+auto_stop_machines = 'stop'
+auto_start_machines = true
+min_machines_running = 0
+processes = [ 'web' ]
+
+[checks]
+
+[checks.http]
+type = "http"
+method = "get"
+path = "/api/health"
+port = 1221
+interval = "15s"
+grace_period = "20s"
+timeout = "3s"
+processes = [ "web" ]

@@ -2,7 +2,7 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { subDays } from 'date-fns';
-import { and, count, desc, eq, getTableColumns, lt, sql, sum } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
 import { omit } from 'lodash-es';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
@@ -332,14 +332,17 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
 async function getOrganizationStats({ organizationId, db }: { organizationId: string; db: Database }) {
   const [record] = await db
     .select({
-      documentsCount: count(documentsTable.id),
-      documentsSize: sum(documentsTable.originalSize),
+      totalDocumentsCount: count(documentsTable.id),
+      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as('totalDocumentsSize'),
+      deletedDocumentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as('deletedDocumentsCount'),
+      documentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
+      documentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as('documentsSize'),
+      deletedDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as('deletedDocumentsSize'),
     })
     .from(documentsTable)
     .where(
       and(
         eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, false),
       ),
     );
 
@@ -347,11 +350,15 @@ async function getOrganizationStats({ organizationId, db }: { organizationId: st
     throw createOrganizationNotFoundError();
   }
 
-  const { documentsCount, documentsSize } = record;
+  const { documentsCount, documentsSize, deletedDocumentsCount, deletedDocumentsSize, totalDocumentsCount, totalDocumentsSize } = record;
 
   return {
     documentsCount,
     documentsSize: Number(documentsSize ?? 0),
+    deletedDocumentsCount,
+    deletedDocumentsSize,
+    totalDocumentsCount,
+    totalDocumentsSize,
   };
 }
 

@@ -1,10 +1,9 @@
 import type { Component } from 'solid-js';
 import { useParams, useSearchParams } from '@solidjs/router';
-import { createQueries, keepPreviousData } from '@tanstack/solid-query';
-import { castArray } from 'lodash-es';
+import { keepPreviousData, useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { fetchOrganization } from '@/modules/organizations/organizations.services';
+import { castArray } from '@/modules/shared/utils/array';
 import { Tag } from '@/modules/tags/components/tag.component';
 import { fetchTags } from '@/modules/tags/tags.services';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
@@ -19,37 +18,30 @@ export const DocumentsPage: Component = () => {
 
   const getFiltererTagIds = () => searchParams.tags ? castArray(searchParams.tags) : [];
 
-  const query = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['organizations', params.organizationId, 'documents', getPagination(), getFiltererTagIds()],
-        queryFn: () => fetchOrganizationDocuments({
-          organizationId: params.organizationId,
-          ...getPagination(),
-          filters: {
-            tags: getFiltererTagIds(),
-          },
-        }),
-        placeholderData: keepPreviousData,
+  const documentsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', getPagination(), getFiltererTagIds()],
+    queryFn: () => fetchOrganizationDocuments({
+      organizationId: params.organizationId,
+      ...getPagination(),
+      filters: {
+        tags: getFiltererTagIds(),
       },
-      {
-        queryKey: ['organizations', params.organizationId],
-        queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
-      },
-      {
-        queryKey: ['organizations', params.organizationId, 'tags'],
-        queryFn: () => fetchTags({ organizationId: params.organizationId }),
-      },
-    ],
+    }),
+    placeholderData: keepPreviousData,
   }));
 
-  const getFilteredTags = () => query[2].data?.tags.filter(tag => getFiltererTagIds().includes(tag.id)) ?? [];
+  const tagsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'tags'],
+    queryFn: () => fetchTags({ organizationId: params.organizationId }),
+  }));
+
+  const getFilteredTags = () => tagsQuery.data?.tags.filter(tag => getFiltererTagIds().includes(tag.id)) ?? [];
   const hasFilters = () => getFiltererTagIds().length > 0;
 
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
       <Suspense>
-        {query[0].data?.documents?.length === 0 && !hasFilters()
+        {documentsQuery.data?.documents?.length === 0 && !hasFilters()
           ? (
               <>
                 <h2 class="text-xl font-bold ">
@@ -83,15 +75,15 @@ export const DocumentsPage: Component = () => {
                   </div>
                 </Show>
 
-                <Show when={hasFilters() && query[0].data?.documentsCount === 0}>
+                <Show when={hasFilters() && documentsQuery.data?.documentsCount === 0}>
                   <p class="text-muted-foreground mt-1 mb-6">
                     {t('documents.list.no-results')}
                   </p>
                 </Show>
 
                 <DocumentsPaginatedList
-                  documents={query[0].data?.documents ?? []}
-                  documentsCount={query[0].data?.documentsCount ?? 0}
+                  documents={documentsQuery.data?.documents ?? []}
+                  documentsCount={documentsQuery.data?.documentsCount ?? 0}
                   getPagination={getPagination}
                   setPagination={setPagination}
                   extraColumns={[

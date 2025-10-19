@@ -155,6 +155,8 @@ describe('documents repository', () => {
           { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 10, originalSha256Hash: 'hash2' },
           { id: 'doc-3', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 5, originalSha256Hash: 'hash3' },
           { id: 'doc-4', organizationId: 'organization-2', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash4' },
+          { id: 'doc-5', organizationId: 'organization-1', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash5', deletedAt: new Date(0), isDeleted: true },
+          { id: 'doc-6', organizationId: 'organization-1', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash6', deletedAt: new Date(0), isDeleted: true },
         ],
       });
 
@@ -167,6 +169,10 @@ describe('documents repository', () => {
       expect(stats).to.deep.equal({
         documentsCount: 3,
         documentsSize: 215,
+        totalDocumentsSize: 415,
+        totalDocumentsCount: 5,
+        deletedDocumentsCount: 2,
+        deletedDocumentsSize: 200,
       });
     });
 
@@ -192,6 +198,10 @@ describe('documents repository', () => {
       expect(stats).to.deep.equal({
         documentsCount: 0,
         documentsSize: 0,
+        totalDocumentsSize: 0,
+        totalDocumentsCount: 0,
+        deletedDocumentsCount: 0,
+        deletedDocumentsSize: 0,
       });
     });
 
@@ -207,6 +217,10 @@ describe('documents repository', () => {
       expect(stats).to.deep.equal({
         documentsCount: 0,
         documentsSize: 0,
+        totalDocumentsSize: 0,
+        totalDocumentsCount: 0,
+        deletedDocumentsCount: 0,
+        deletedDocumentsSize: 0,
       });
     });
   });

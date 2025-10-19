@@ -1,8 +1,11 @@
+import type { Logger } from '@crowlog/logger';
 import type { Buffer } from 'node:buffer';
 import type { Config } from '../config/config.types';
-import { buildUrl, injectArguments } from '@corentinth/chisels';
+import { buildUrl, injectArguments, safely } from '@corentinth/chisels';
 import Stripe from 'stripe';
 import { getClientBaseUrl } from '../config/config.models';
+import { createLogger } from '../shared/logger/logger';
+import { isNil } from '../shared/utils';
 
 export type SubscriptionsServices = ReturnType<typeof createSubscriptionsServices>;
 
@@ -16,6 +19,7 @@ export function createSubscriptionsServices({ config }: { config: Config }) {
       parseWebhookEvent,
       getCustomerPortalUrl,
       getCheckoutSession,
+      getCoupon,
     },
     { stripeClient, config },
   );
@@ -53,6 +57,16 @@ export async function createCheckoutUrl({
   const successUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-success?sessionId={CHECKOUT_SESSION_ID}' });
   const cancelUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-cancel' });
 
+  const { globalCouponId } = config.subscriptions;
+
+  const { coupon } = await getCoupon({ stripeClient, couponId: globalCouponId });
+
+  // If there's no coupon or if the coupon is invalid (expired), we just don't apply any discount but allow promotion codes
+  // to be used at checkout, can't do both at the same time
+  const discountDetails = isNil(coupon)
+    ? { allow_promotion_codes: true }
+    : { discounts: [{ coupon: coupon.id }] };
+
   const session = await stripeClient.checkout.sessions.create({
     customer: customerId,
     payment_method_types: ['card'],
@@ -66,7 +80,6 @@ export async function createCheckoutUrl({
       },
     ],
     mode: 'subscription',
-    allow_promotion_codes: true,
     success_url: successUrl,
     cancel_url: cancelUrl,
     subscription_data: {
@@ -74,6 +87,7 @@ export async function createCheckoutUrl({
         organizationId,
       },
     },
+    ...discountDetails,
   });
 
   return { checkoutUrl: session.url };
@@ -110,4 +124,35 @@ async function getCheckoutSession({ stripeClient, sessionId }: { stripeClient: S
   const checkoutSession = await stripeClient.checkout.sessions.retrieve(sessionId);
 
   return { checkoutSession };
+}
+
+async function getCoupon({ stripeClient, couponId, logger = createLogger({ namespace: 'subscriptions:services:getCoupon' }) }: { stripeClient: Stripe; couponId?: string; logger?: Logger }) {
+  if (isNil(couponId)) {
+    return { coupon: null };
+  }
+
+  const [coupon, error] = await safely(stripeClient.coupons.retrieve(couponId));
+
+  if (!isNil(error)) {
+    logger.error({ error }, 'Error while retrieving coupon');
+    return { coupon: null };
+  }
+
+  if (isNil(coupon)) {
+    logger.error({ couponId }, 'Failed to retrieve coupon');
+    return { coupon: null };
+  }
+
+  if (!coupon.valid) {
+    logger.warn({ couponId, couponName: coupon.name }, 'Coupon is not valid');
+    return { coupon: null };
+  }
+
+  return {
+    coupon: {
+      id: coupon.id,
+      name: coupon.name ?? undefined,
+      percentOff: coupon.percent_off ?? undefined,
+    },
+  };
 }

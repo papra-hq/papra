@@ -1,9 +1,9 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Document } from '../documents/documents.types';
 import type { Webhook } from '../webhooks/webhooks.types';
-import { get } from 'lodash-es';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
+import { get } from '../shared/utils/get';
 import { defineHandler } from './demo-api-mock.models';
 import {
   apiKeyStorage,
@@ -341,9 +341,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const tag = {
         id: createId({ prefix: 'tag' }),
         organizationId,
-        name: get(body, 'name'),
-        color: get(body, 'color'),
-        description: get(body, 'description'),
+        name: get(body, ['name']) as string,
+        color: get(body, ['color']) as string,
+        description: (get(body, ['description']) ?? null) as string | null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -396,7 +396,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const tagId = get(body, 'tagId');
+      const tagId = get(body, ['tagId']) as string;
 
       assert(tagId, { status: 400 });
 
@@ -441,7 +441,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     handler: async ({ body }) => {
       const organization = {
         id: createId({ prefix: 'org' }),
-        name: get(body, 'name'),
+        name: get(body, ['name']) as string,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -480,7 +480,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      organization.name = get(body, 'name');
+      organization.name = get(body, ['name']) as string;
       organization.updatedAt = new Date();
 
       await organizationStorage.setItem(organizationId, organization);
@@ -506,10 +506,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const taggingRule = {
         id: createId({ prefix: 'tr' }),
         organizationId,
-        name: get(body, 'name'),
-        description: get(body, 'description'),
-        conditions: get(body, 'conditions'),
-        actions: get(body, 'tagIds').map((tagId: string) => ({ tagId })),
+        name: get(body, ['name']) as string,
+        description: (get(body, ['description']) ?? '') as string,
+        conditions: get(body, ['conditions']) as any,
+        actions: (get(body, ['tagIds']) as string[]).map((tagId: string) => ({ tagId })),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -641,11 +641,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const apiKey = {
         id: createId({ prefix: 'apiKey' }),
-        name: get(body, 'name'),
-        permissions: get(body, 'permissions'),
-        organizationIds: get(body, 'organizationIds'),
-        allOrganizations: get(body, 'allOrganizations'),
-        expiresAt: get(body, 'expiresAt'),
+        name: get(body, ['name']),
+        permissions: get(body, ['permissions']),
+        organizationIds: get(body, ['organizationIds']),
+        allOrganizations: get(body, ['allOrganizations']),
+        expiresAt: get(body, ['expiresAt']),
         createdAt: new Date(),
         updatedAt: new Date(),
         prefix: token.slice(0, 11),
@@ -694,10 +694,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const webhook: Webhook = {
         id: createId({ prefix: 'webhook' }),
         organizationId,
-        name: get(body, 'name'),
-        url: get(body, 'url'),
+        name: get(body, ['name']) as string,
+        url: get(body, ['url']) as string,
         enabled: true,
-        events: get(body, 'events'),
+        events: get(body, ['events']) as Webhook['events'],
         createdAt: new Date(),
         updatedAt: new Date(),
       };

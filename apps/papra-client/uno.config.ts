@@ -1,4 +1,3 @@
-import { uniq, values } from 'lodash-es';
 import {
   defineConfig,
   presetIcons,
@@ -113,9 +112,9 @@ export default defineConfig({
     },
   },
   safelist: [
-    ...uniq([
-      ...values(iconByFileType),
-      ...values(documentActivityIcon),
+    ...new Set([
+      ...Object.values(iconByFileType),
+      ...Object.values(documentActivityIcon),
       ...(ssoProviders.map(p => p.icon)),
     ]),
   ],

@@ -639,10 +639,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.current-plan': 'Plan curent',
   'subscriptions.upgrade-dialog.recommended': 'Recomandat',
   'subscriptions.upgrade-dialog.per-month': '/lună',
+  'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturat anual',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade acum',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',
+  'subscriptions.plan.pro.name': 'Pro',
 
   'subscriptions.features.storage-size': 'Dimensiune stocare documente',
   'subscriptions.features.members': 'Membri ai organizației',
@@ -654,6 +656,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.features.support': 'Asistență',
   'subscriptions.features.support-community': 'Asistență comunitate',
   'subscriptions.features.support-email': 'Asistență email',
+  'subscriptions.features.support-priority': 'Asistență prioritară',
 
   'subscriptions.billing-interval.monthly': 'Lunar',
   'subscriptions.billing-interval.annual': 'Anual',

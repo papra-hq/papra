@@ -14,4 +14,10 @@ export const subscriptionsConfig = {
     default: 'change-me',
     env: 'STRIPE_WEBHOOK_SECRET',
   },
+  globalCouponId: {
+    doc: 'The Stripe coupon ID to apply globally for launch promotions',
+    schema: z.string().optional(),
+    default: undefined,
+    env: 'GLOBAL_COUPON_ID',
+  },
 } as const satisfies ConfigDefinition;

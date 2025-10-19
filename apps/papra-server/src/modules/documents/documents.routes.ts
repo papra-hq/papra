@@ -352,12 +352,23 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documentsCount, documentsSize } = await documentsRepository.getOrganizationStats({ organizationId });
+      const {
+        documentsCount,
+        documentsSize,
+        deletedDocumentsCount,
+        deletedDocumentsSize,
+        totalDocumentsCount,
+        totalDocumentsSize,
+      } = await documentsRepository.getOrganizationStats({ organizationId });
 
       return context.json({
         organizationStats: {
           documentsCount,
           documentsSize,
+          deletedDocumentsCount,
+          deletedDocumentsSize,
+          totalDocumentsCount,
+          totalDocumentsSize,
         },
       });
     },

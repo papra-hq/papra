@@ -1,7 +1,7 @@
 import type { ParentComponent } from 'solid-js';
 import type { UserMe } from '../users.types';
 import { makePersisted } from '@solid-primitives/storage';
-import { createQueries } from '@tanstack/solid-query';
+import { useQuery } from '@tanstack/solid-query';
 import { createContext, createSignal, Show, useContext } from 'solid-js';
 import { fetchCurrentUser } from '../users.services';
 
@@ -26,23 +26,18 @@ export function useCurrentUser() {
 export const CurrentUserProvider: ParentComponent = (props) => {
   const [getLatestOrganizationId, setLatestOrganizationId] = makePersisted(createSignal<string | null>(null), { name: 'papra_current_organization_id', storage: localStorage });
 
-  const queries = createQueries(() => ({
-    queries: [
-      {
-        queryKey: ['users', 'me'],
-        queryFn: fetchCurrentUser,
-      },
-
-    ],
+  const query = useQuery(() => ({
+    queryKey: ['users', 'me'],
+    queryFn: fetchCurrentUser,
   }));
 
   return (
-    <Show when={queries[0].data}>
+    <Show when={query.data}>
       <currentUserContext.Provider
         value={{
-          user: queries[0].data!.user,
+          user: query.data!.user,
           refreshCurrentUser: async () => {
-            queries[0].refetch();
+            query.refetch();
           },
 
           getLatestOrganizationId,
