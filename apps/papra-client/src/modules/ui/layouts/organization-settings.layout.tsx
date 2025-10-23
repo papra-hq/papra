@@ -33,7 +33,7 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
 
   return (
     <div class="flex flex-row h-screen min-h-0">
-      <div class="w-350px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
+      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
 
         <SideNav
           mainMenu={getNavigationItems()}

@@ -4,7 +4,7 @@ import type {
   SelectItemProps,
   SelectTriggerProps,
 } from '@kobalte/core/select';
-import type { ParentProps, ValidComponent } from 'solid-js';
+import type { JSX, ParentProps, ValidComponent } from 'solid-js';
 import { Select as SelectPrimitive } from '@kobalte/core/select';
 import { splitProps } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
@@ -17,12 +17,13 @@ export const SelectItemDescription = SelectPrimitive.ItemDescription;
 export const SelectHiddenSelect = SelectPrimitive.HiddenSelect;
 export const SelectSection = SelectPrimitive.Section;
 
-type selectTriggerProps<T extends ValidComponent = 'button'> = ParentProps<SelectTriggerProps<T> & { class?: string }>;
+type selectTriggerProps<T extends ValidComponent = 'button'> = ParentProps<SelectTriggerProps<T> & { class?: string; caretIcon?: JSX.Element }>;
 
 export function SelectTrigger<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, selectTriggerProps<T>>) {
   const [local, rest] = splitProps(props as selectTriggerProps, [
     'class',
     'children',
+    'caretIcon',
   ]);
 
   return (
@@ -34,23 +35,27 @@ export function SelectTrigger<T extends ValidComponent = 'button'>(props: Polymo
       {...rest}
     >
       {local.children}
-      <SelectPrimitive.Icon
-        as="svg"
-        xmlns="http://www.w3.org/2000/svg"
-        width="1em"
-        height="1em"
-        viewBox="0 0 24 24"
-        class="size-4 opacity-50 flex items-center justify-center"
-      >
-        <path
-          fill="none"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="m8 9l4-4l4 4m0 6l-4 4l-4-4"
-        />
-      </SelectPrimitive.Icon>
+      {local.caretIcon !== undefined
+        ? local.caretIcon
+        : (
+            <SelectPrimitive.Icon
+              as="svg"
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+              class="size-4 opacity-50 flex items-center justify-center"
+            >
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m8 9l4-4l4 4m0 6l-4 4l-4-4"
+              />
+            </SelectPrimitive.Icon>
+          )}
     </SelectPrimitive.Trigger>
   );
 }

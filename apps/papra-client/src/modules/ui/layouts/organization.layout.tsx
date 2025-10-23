@@ -145,8 +145,9 @@ const OrganizationLayoutSideNav: Component = () => {
       footer={() => <UpgradeCTAFooter organizationId={params.organizationId} />}
       header={() =>
         (
-          <div class="px-6 pt-4 max-w-285px min-w-0">
+          <div class="p-4 pb-0 min-w-0 max-w-full">
             <Select
+              class="w-full"
               options={[...organizationsQuery.data?.organizations ?? [], { id: 'create' }]}
               optionValue="id"
               optionTextValue="name"
@@ -174,11 +175,23 @@ const OrganizationLayoutSideNav: Component = () => {
                     <SelectItem class="cursor-pointer" item={props.item}>{props.item.rawValue.name}</SelectItem>
                   )}
             >
-              <SelectTrigger>
-                <SelectValue<Organization | undefined> class="truncate">
-                  {state => state.selectedOption()?.name}
+              <SelectTrigger class="hover:bg-accent/50 transition rounded-lg h-auto pl-2" caretIcon={<div class="i-tabler-chevron-down size-4 opacity-50 ml-2 flex-shrink-0" />}>
+                <SelectValue<Organization | undefined> class="flex items-center gap-2 min-w-0">
+                  {state => (
+                    <>
+                      <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
+                        <div class="i-tabler-file-text size-5.5"></div>
+                      </span>
+
+                      <span class="truncate text-base font-medium">
+                        {state.selectedOption()?.name}
+                      </span>
+                    </>
+                  )}
+
                 </SelectValue>
               </SelectTrigger>
+
               <SelectContent />
             </Select>
 
