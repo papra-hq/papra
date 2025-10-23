@@ -1,6 +1,6 @@
 {
   "name": "@papra/docker",
-  "version": "25.10.0",
+  "version": "25.10.1",
   "private": true,
   "description": "Docker image version tracker for Papra, calver-ish versioned.",
   "repository": {
