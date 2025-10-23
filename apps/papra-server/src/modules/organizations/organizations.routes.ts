@@ -151,10 +151,11 @@ function setupSoftDeleteOrganizationRoute({ app, db, config }: RouteDefinitionCo
       const { organizationId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await softDeleteOrganization({ organizationId, deletedBy: userId, organizationsRepository, config });
+      await softDeleteOrganization({ organizationId, deletedBy: userId, organizationsRepository, subscriptionsRepository, config });
 
       return context.body(null, 204);
     },

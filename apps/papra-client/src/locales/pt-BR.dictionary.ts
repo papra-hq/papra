@@ -157,6 +157,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Cancelar',
   'organization.settings.delete.success': 'Organização excluída',
   'organization.settings.delete.only-owner': 'Apenas o proprietário da organização pode excluir esta organização.',
+  'organization.settings.delete.has-active-subscription': 'Não é possível excluir a organização com uma assinatura ativa, por favor cancele sua assinatura acima primeiro.',
 
   'organization.usage.page.title': 'Uso',
   'organization.usage.page.description': 'Visualize o uso atual e os limites da sua organização.',
@@ -589,6 +590,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.',
   'api-errors.auth.invalid_origin': 'Origem da aplicação inválida. Se você está hospedando o Papra, certifique-se de que a variável de ambiente APP_BASE_URL corresponde à sua URL atual. Para mais detalhes, consulte https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'O número máximo de membros e convites pendentes para esta organização foi atingido. Atualize seu plano para adicionar mais membros.',
+  'api-errors.organization.has_active_subscription': 'Não é possível excluir a organização com uma assinatura ativa. Por favor, cancele sua assinatura primeiro usando o botão Gerenciar Assinatura acima.',
 
   // Not found
 

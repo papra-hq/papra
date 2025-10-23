@@ -1,16 +1,17 @@
 import type { Component } from 'solid-js';
 import type { Organization } from '../organizations.types';
 import { safely } from '@corentinth/chisels';
-import { useParams } from '@solidjs/router';
+import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { createSignal, Show, Suspense } from 'solid-js';
+import { createSignal, Match, Show, Suspense, Switch } from 'solid-js';
 import * as v from 'valibot';
 import { buildTimeConfig } from '@/modules/config/config';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
-import { getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
+import { fetchOrganizationSubscription, getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
@@ -23,8 +24,38 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
   const { deleteOrganization } = useDeleteOrganization();
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
+  const { getErrorMessage } = useI18nApiErrors();
+  const navigate = useNavigate();
+  const { config } = useConfig();
 
   const { getIsOwner, query } = useCurrentUserRole({ organizationId: props.organization.id });
+
+  // Fetch subscription to check if organization has an active subscription
+  const subscriptionQuery = useQuery(() => ({
+    queryKey: ['organizations', props.organization.id, 'subscription'],
+    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organization.id }),
+    enabled: config.isSubscriptionsEnabled,
+  }));
+
+  // Check if subscription blocks deletion (active and not scheduled to cancel)
+  const getHasBlockingSubscription = () => {
+    if (!config.isSubscriptionsEnabled) {
+      return false;
+    }
+
+    const subscription = subscriptionQuery.data?.subscription;
+    if (!subscription) {
+      return false;
+    }
+
+    // Allow deletion if subscription is canceled or scheduled to cancel
+    if (subscription.status === 'canceled' || subscription.cancelAtPeriodEnd) {
+      return false;
+    }
+
+    // Block deletion for all other active subscription statuses
+    return true;
+  };
 
   const handleDelete = async () => {
     const confirmed = await confirm({
@@ -40,11 +71,19 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
       shouldType: props.organization.name,
     });
 
-    if (confirmed) {
-      await deleteOrganization({ organizationId: props.organization.id });
-
-      createToast({ type: 'success', message: t('organization.settings.delete.success') });
+    if (!confirmed) {
+      return;
     }
+
+    const [, error] = await safely(deleteOrganization({ organizationId: props.organization.id }));
+
+    if (error) {
+      createToast({ type: 'error', message: getErrorMessage({ error }) });
+      return;
+    }
+
+    createToast({ type: 'success', message: t('organization.settings.delete.success') });
+    navigate('/organizations');
   };
 
   return (
@@ -57,16 +96,25 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
           </CardDescription>
         </CardHeader>
 
-        <CardFooter class="pt-6 gap-4">
-          <Button onClick={handleDelete} variant="destructive" disabled={!getIsOwner()}>
+        <CardFooter class="pt-6 gap-4 flex-col items-start sm:flex-row sm:items-center">
+          <Button class="flex-shrink-0" onClick={handleDelete} variant="destructive" disabled={!getIsOwner() || getHasBlockingSubscription()}>
             {t('organization.settings.delete.confirm.confirm-button')}
           </Button>
 
-          <Show when={query.isSuccess && !getIsOwner()}>
-            <span class="text-sm text-muted-foreground">
-              {t('organization.settings.delete.only-owner')}
-            </span>
-          </Show>
+          <Switch>
+            <Match when={query.isSuccess && !getIsOwner()}>
+              <span class="text-xs text-muted-foreground">
+                {t('organization.settings.delete.only-owner')}
+              </span>
+            </Match>
+
+            <Match when={getHasBlockingSubscription()}>
+              <span class="text-xs text-muted-foreground">
+                {t('organization.settings.delete.has-active-subscription')}
+              </span>
+            </Match>
+          </Switch>
+
         </CardFooter>
       </Card>
     </div>
