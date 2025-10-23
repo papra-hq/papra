@@ -1,5 +1,31 @@
 # @papra/docker
 
+## 25.10.1
+
+### Patch Changes
+
+- [#567](https://github.com/papra-hq/papra/pull/567) [`d7df2f0`](https://github.com/papra-hq/papra/commit/d7df2f095b8cdcdf5ac068a7e1ff6ead12a874c6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed unnecessary left icon navbar
+
+- [#556](https://github.com/papra-hq/papra/pull/556) [`f66a9f5`](https://github.com/papra-hq/papra/commit/f66a9f5d1b3fe7a918802f9d6d1a90b073bd50c8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added deleted and total document counts and sizes in the `/api/organizations/:organizationId/documents/statistics` route
+
+- [#570](https://github.com/papra-hq/papra/pull/570) [`c3ffa83`](https://github.com/papra-hq/papra/commit/c3ffa8387e2e757098d5344023363897e7e0a416) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added server hostname configuration
+
+- [#552](https://github.com/papra-hq/papra/pull/552) [`8aabd28`](https://github.com/papra-hq/papra/commit/8aabd28168fe7e77f5186ae7dd79e1f5d0bb7288) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Lighten the client bundle by removing lodash dep
+
+- [#550](https://github.com/papra-hq/papra/pull/550) [`1a7a14b`](https://github.com/papra-hq/papra/commit/1a7a14b3ed4caf1d9fec86a034249f3f7267d4e8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix weird navigation freeze when direct navigation to organizations
+
+- [#548](https://github.com/papra-hq/papra/pull/548) [`17cebde`](https://github.com/papra-hq/papra/commit/17cebde051eb2a09b9ac7bfc32674afc15e60ad2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Made the validation more permissive for incoming intake email webhook addresses, allowing RFC 5322 compliant email addresses instead of just simple emails.
+
+- [#565](https://github.com/papra-hq/papra/pull/565) [`e4295e1`](https://github.com/papra-hq/papra/commit/e4295e14abf3a0bce9db10f41d46fd86c4bb4cb5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevent small flash of wrong theme on initial load for slower connections
+
+- [#566](https://github.com/papra-hq/papra/pull/566) [`92daaa3`](https://github.com/papra-hq/papra/commit/92daaa35bb5e3b515b7eeda837f0a9e7dc0005f1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Redacted webhook signing secret in api update response
+
+- [#560](https://github.com/papra-hq/papra/pull/560) [`54cc140`](https://github.com/papra-hq/papra/commit/54cc14052c5c6bc5e0b29a8feb92604d13e0fd52) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Reduced the client bundle size by switching to posthog-lite
+
+- [#555](https://github.com/papra-hq/papra/pull/555) [`c5b337f`](https://github.com/papra-hq/papra/commit/c5b337f3bb63fb0fc700dae08bacf0095f9b98e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use organization max file size limit for pre-upload validation
+
+- [#567](https://github.com/papra-hq/papra/pull/567) [`d7df2f0`](https://github.com/papra-hq/papra/commit/d7df2f095b8cdcdf5ac068a7e1ff6ead12a874c6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Redesigned the organization picker in the sidenav
+
 ## 25.10.0
 
 ### Minor Changes
