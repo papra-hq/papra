@@ -2,4 +2,4 @@
 "@papra/docker": patch
 ---
 
-Removed unecessary left icon navbar
+Removed unnecessary left icon navbar
