@@ -17,10 +17,12 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { sanitize } from '../shared/html/html';
 import { createLogger } from '../shared/logger/logger';
 import { isDefined } from '../shared/utils';
+import { doesSubscriptionBlockDeletion } from '../subscriptions/subscriptions.models';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import {
   createMaxOrganizationMembersCountReachedError,
   createOnlyPreviousOwnerCanRestoreError,
+  createOrganizationHasActiveSubscriptionError,
   createOrganizationInvitationAlreadyExistsError,
   createOrganizationNotDeletedError,
   createOrganizationNotFoundError,
@@ -456,16 +458,25 @@ export async function softDeleteOrganization({
   organizationId,
   deletedBy,
   organizationsRepository,
+  subscriptionsRepository,
   config,
   now = new Date(),
 }: {
   organizationId: string;
   deletedBy: string;
   organizationsRepository: OrganizationsRepository;
+  subscriptionsRepository: SubscriptionsRepository;
   config: Config;
   now?: Date;
 }) {
   await ensureUserIsOwnerOfOrganization({ userId: deletedBy, organizationId, organizationsRepository });
+
+  // Check if organization has a subscription that blocks deletion
+  const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({ organizationId });
+
+  if (doesSubscriptionBlockDeletion(subscription)) {
+    throw createOrganizationHasActiveSubscriptionError();
+  }
 
   await organizationsRepository.deleteAllMembersFromOrganization({ organizationId });
   await organizationsRepository.deleteAllOrganizationInvitations({ organizationId });

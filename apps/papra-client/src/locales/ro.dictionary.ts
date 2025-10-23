@@ -157,6 +157,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Anulează',
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
   'organization.settings.delete.only-owner': 'Doar proprietarul organizației poate șterge această organizație.',
+  'organization.settings.delete.has-active-subscription': 'Nu se poate șterge organizația cu un abonament activ, vă rugăm să anulați mai întâi abonamentul de mai sus.',
 
   'organization.usage.page.title': 'Utilizare',
   'organization.usage.page.description': 'Vizualizează utilizarea curentă și limitele organizației tale.',
@@ -589,6 +590,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.',
   'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
+  'api-errors.organization.has_active_subscription': 'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
 
   // Not found
 

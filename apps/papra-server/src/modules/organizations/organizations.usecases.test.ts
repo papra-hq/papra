@@ -11,7 +11,7 @@ import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createMaxOrganizationMembersCountReachedError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import { createMaxOrganizationMembersCountReachedError, createOrganizationHasActiveSubscriptionError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 import { checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
@@ -968,12 +968,14 @@ describe('organizations usecases', () => {
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
         const config = overrideConfig();
 
         await softDeleteOrganization({
           organizationId: 'organization-1',
           deletedBy: 'usr_1',
           organizationsRepository,
+          subscriptionsRepository,
           config,
           now: new Date('2025-10-05'),
         });
@@ -998,6 +1000,7 @@ describe('organizations usecases', () => {
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
         const config = overrideConfig();
 
         await expect(
@@ -1005,6 +1008,7 @@ describe('organizations usecases', () => {
             organizationId: 'organization-1',
             deletedBy: 'admin-user',
             organizationsRepository,
+            subscriptionsRepository,
             config,
           }),
         ).rejects.toThrow(createUserNotOrganizationOwnerError());
@@ -1030,12 +1034,14 @@ describe('organizations usecases', () => {
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
         const config = overrideConfig();
 
         await softDeleteOrganization({
           organizationId: 'organization-1',
           deletedBy: 'usr_1',
           organizationsRepository,
+          subscriptionsRepository,
           config,
         });
 
@@ -1052,6 +1058,7 @@ describe('organizations usecases', () => {
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
         const config = overrideConfig();
 
         await expect(
@@ -1059,6 +1066,7 @@ describe('organizations usecases', () => {
             organizationId: 'non-existent-org',
             deletedBy: 'usr_1',
             organizationsRepository,
+            subscriptionsRepository,
             config,
           }),
         ).rejects.toThrow(createOrganizationNotFoundError());
@@ -1078,12 +1086,14 @@ describe('organizations usecases', () => {
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
         const config = overrideConfig();
 
         await softDeleteOrganization({
           organizationId: 'organization-1',
           deletedBy: 'usr_1',
           organizationsRepository,
+          subscriptionsRepository,
           config,
           now: new Date('2025-10-05'),
         });
@@ -1097,6 +1107,128 @@ describe('organizations usecases', () => {
 
         expect(org1?.deletedAt).to.eql(new Date('2025-10-05'));
         expect(org2?.deletedAt).to.eql(null);
+      });
+
+      test('cannot delete organization with an active subscription', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Test Org', customerId: 'cus_123' }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+          organizationSubscriptions: [
+            {
+              id: 'sub_123',
+              organizationId: 'organization-1',
+              customerId: 'cus_123',
+              planId: 'plan_pro',
+              status: 'active',
+              seatsCount: 5,
+              currentPeriodStart: new Date('2025-10-01'),
+              currentPeriodEnd: new Date('2025-11-01'),
+              cancelAtPeriodEnd: false,
+            },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const config = overrideConfig();
+
+        await expect(
+          softDeleteOrganization({
+            organizationId: 'organization-1',
+            deletedBy: 'usr_1',
+            organizationsRepository,
+            subscriptionsRepository,
+            config,
+          }),
+        ).rejects.toThrow(createOrganizationHasActiveSubscriptionError());
+
+        // Organization should not be deleted
+        const [organization] = await db.select().from(organizationsTable);
+        expect(organization?.deletedAt).to.eql(null);
+      });
+
+      test('can delete organization with subscription scheduled to cancel at period end', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Test Org', customerId: 'cus_123' }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+          organizationSubscriptions: [
+            {
+              id: 'sub_123',
+              organizationId: 'organization-1',
+              customerId: 'cus_123',
+              planId: 'plan_pro',
+              status: 'active',
+              seatsCount: 5,
+              currentPeriodStart: new Date('2025-10-01'),
+              currentPeriodEnd: new Date('2025-11-01'),
+              cancelAtPeriodEnd: true, // User already canceled, allow org deletion
+            },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const config = overrideConfig();
+
+        await softDeleteOrganization({
+          organizationId: 'organization-1',
+          deletedBy: 'usr_1',
+          organizationsRepository,
+          subscriptionsRepository,
+          config,
+          now: new Date('2025-10-05'),
+        });
+
+        // Organization should be deleted
+        const [organization] = await db.select().from(organizationsTable);
+        expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
+        expect(organization?.deletedBy).to.eql('usr_1');
+      });
+
+      test('can delete organization after subscription is canceled', async () => {
+        const { db } = await createInMemoryDatabase({
+          users: [{ id: 'usr_1', email: 'owner@example.com' }],
+          organizations: [{ id: 'organization-1', name: 'Test Org', customerId: 'cus_123' }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+          ],
+          organizationSubscriptions: [
+            {
+              id: 'sub_123',
+              organizationId: 'organization-1',
+              customerId: 'cus_123',
+              planId: 'plan_pro',
+              status: 'canceled',
+              seatsCount: 5,
+              currentPeriodStart: new Date('2025-10-01'),
+              currentPeriodEnd: new Date('2025-11-01'),
+              cancelAtPeriodEnd: false,
+            },
+          ],
+        });
+
+        const organizationsRepository = createOrganizationsRepository({ db });
+        const subscriptionsRepository = createSubscriptionsRepository({ db });
+        const config = overrideConfig();
+
+        await softDeleteOrganization({
+          organizationId: 'organization-1',
+          deletedBy: 'usr_1',
+          organizationsRepository,
+          subscriptionsRepository,
+          config,
+          now: new Date('2025-10-05'),
+        });
+
+        const [organization] = await db.select().from(organizationsTable);
+        expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
+        expect(organization?.deletedBy).to.eql('usr_1');
       });
     });
   });

@@ -166,9 +166,19 @@ pnpm dev               # localhost:4321
 
 - Use **Vitest** for all testing
 - Test files: `*.test.ts` for unit tests, `*.int.test.ts` for integration tests
-- Use business-oriented test names (avoid `it('should return true')`)
 - Integration tests may use Testcontainers (Azurite, LocalStack)
 - All new features require test coverage
+
+### Writing Good Test Names
+
+Test names should explain the **why** (business logic, user scenario, or expected behavior), not the **how** (implementation details or return values).
+
+**Key principles:**
+- **Describe blocks** should explain the business goal or rule being tested
+- **Test names** should explain the scenario, context, and reason for the behavior
+- Avoid implementation details like "returns X", "should be Y", "calls Z method"
+- Focus on user scenarios and business rules
+- Make tests readable as documentation - someone unfamiliar with the code should understand what's being tested and why
 
 ## Code Style
 

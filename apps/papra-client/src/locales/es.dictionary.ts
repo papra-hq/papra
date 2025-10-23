@@ -157,6 +157,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Cancelar',
   'organization.settings.delete.success': 'Organización eliminada',
   'organization.settings.delete.only-owner': 'Solo el propietario de la organización puede eliminar esta organización.',
+  'organization.settings.delete.has-active-subscription': 'No se puede eliminar la organización con una suscripción activa, por favor cancela tu suscripción arriba primero.',
 
   'organization.usage.page.title': 'Uso',
   'organization.usage.page.description': 'Ver el uso y los límites actuales de su organización.',
@@ -589,6 +590,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.',
   'api-errors.auth.invalid_origin': 'Origen de la aplicación inválido. Si estás alojando Papra, asegúrate de que la variable de entorno APP_BASE_URL coincida con tu URL actual. Para más detalles, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Se ha alcanzado el número máximo de miembros e invitaciones pendientes para esta organización. Por favor, actualiza tu plan para añadir más miembros.',
+  'api-errors.organization.has_active_subscription': 'No se puede eliminar la organización con una suscripción activa. Por favor, cancela tu suscripción primero usando el botón Gestionar Suscripción arriba.',
 
   // Not found
 

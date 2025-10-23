@@ -157,6 +157,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Annuler',
   'organization.settings.delete.success': 'Organisation supprimée',
   'organization.settings.delete.only-owner': 'Seul le propriétaire de l\'organisation peut supprimer cette organisation.',
+  'organization.settings.delete.has-active-subscription': 'Impossible de supprimer l\'organisation avec un abonnement actif, veuillez d\'abord annuler votre abonnement ci-dessus.',
 
   'organization.usage.page.title': 'Utilisation',
   'organization.usage.page.description': 'Consultez l\'utilisation actuelle et les limites de votre organisation.',
@@ -589,6 +590,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'Une erreur est survenue lors du traitement de votre requête. Veuillez réessayer.',
   'api-errors.auth.invalid_origin': 'Origine de l\'application invalide. Si vous hébergez Papra, assurez-vous que la variable d\'environnement APP_BASE_URL correspond à votre URL actuelle. Pour plus de détails, consultez https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Le nombre maximum de membres et d\'invitations en attente pour cette organisation a été atteint. Veuillez mettre à niveau votre plan pour ajouter plus de membres.',
+  'api-errors.organization.has_active_subscription': 'Impossible de supprimer l\'organisation avec un abonnement actif. Veuillez d\'abord annuler votre abonnement en utilisant le bouton Gérer l\'abonnement ci-dessus.',
 
   // Not found
 
