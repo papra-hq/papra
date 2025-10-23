@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableSubscription } from './subscriptions.types';
 import { injectArguments } from '@corentinth/chisels';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { omitUndefined } from '../shared/utils';
 import { organizationSubscriptionsTable } from './subscriptions.tables';
 
@@ -10,7 +10,7 @@ export type SubscriptionsRepository = ReturnType<typeof createSubscriptionsRepos
 export function createSubscriptionsRepository({ db }: { db: Database }) {
   return injectArguments(
     {
-      getOrganizationSubscription,
+      getActiveOrganizationSubscription,
       createSubscription,
       updateSubscription,
     },
@@ -20,12 +20,15 @@ export function createSubscriptionsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getOrganizationSubscription({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getActiveOrganizationSubscription({ organizationId, db }: { organizationId: string; db: Database }) {
   const [subscription] = await db
     .select()
     .from(organizationSubscriptionsTable)
     .where(
-      eq(organizationSubscriptionsTable.organizationId, organizationId),
+      and(
+        eq(organizationSubscriptionsTable.organizationId, organizationId),
+        ne(organizationSubscriptionsTable.status, 'canceled'),
+      ),
     );
 
   return { subscription };
