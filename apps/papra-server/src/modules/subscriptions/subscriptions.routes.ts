@@ -172,7 +172,7 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
         organizationsRepository,
       });
 
-      const { subscription } = await subscriptionsRepository.getOrganizationSubscription({
+      const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({
         organizationId,
       });
 

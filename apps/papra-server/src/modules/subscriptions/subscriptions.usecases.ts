@@ -68,5 +68,52 @@ export async function handleStripeWebhookEvent({
       cancelAtPeriodEnd,
       planId: organizationPlan.id,
     });
+
+    return;
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    const subscriptionId = event.data.object.id;
+
+    if (isNil(subscriptionId)) {
+      return;
+    }
+
+    await subscriptionsRepository.updateSubscription({
+      subscriptionId,
+      status: 'canceled',
+    });
+  }
+
+  if (event.type === 'invoice.payment_failed') {
+    const subscriptionId = get(event, 'data.object.subscription') as string | undefined;
+
+    if (isNil(subscriptionId)) {
+      return;
+    }
+
+    await subscriptionsRepository.updateSubscription({
+      subscriptionId,
+      status: 'past_due',
+    });
+
+    return;
+  }
+
+  if (event.type === 'invoice.payment_succeeded') {
+    const subscriptionId = get(event, 'data.object.subscription') as string | undefined;
+    const currentPeriodEnd = coerceStripeTimestampToDate(get(event, 'data.object.lines.data[0].period.end'));
+    const currentPeriodStart = coerceStripeTimestampToDate(get(event, 'data.object.lines.data[0].period.start'));
+
+    if (isNil(subscriptionId)) {
+      return;
+    }
+
+    await subscriptionsRepository.updateSubscription({
+      subscriptionId,
+      status: 'active',
+      currentPeriodEnd,
+      currentPeriodStart,
+    });
   }
 }
