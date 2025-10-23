@@ -61,6 +61,12 @@ export const configDefinition = {
       default: 1221,
       env: 'PORT',
     },
+    hostname: {
+      doc: 'The hostname to bind to when using node server',
+      schema: z.string(),
+      default: '0.0.0.0',
+      env: 'SERVER_HOSTNAME',
+    },
     routeTimeoutMs: {
       doc: 'The maximum time in milliseconds for a route to complete before timing out',
       schema: z.coerce.number().int().positive(),
