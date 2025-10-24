@@ -3,6 +3,7 @@ import process, { env } from 'node:process';
 import { serve } from '@hono/node-server';
 import { setupDatabase } from './modules/app/database/database';
 import { ensureLocalDatabaseDirectoryExists } from './modules/app/database/database.services';
+import { createGracefulShutdownService } from './modules/app/graceful-shutdown/graceful-shutdown.services';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
 import { createDocumentStorageService } from './modules/documents/storage/documents.storage.services';
@@ -15,86 +16,81 @@ const logger = createLogger({ namespace: 'app-server' });
 
 const { config } = await parseConfig({ env });
 
+const isWebMode = config.processMode === 'all' || config.processMode === 'web';
+const isWorkerMode = config.processMode === 'all' || config.processMode === 'worker';
+
+logger.info({ processMode: config.processMode, isWebMode, isWorkerMode }, 'Starting application');
+
+// Shutdown callback collector
+const shutdownService = createGracefulShutdownService({ logger });
+const { registerShutdownHandler } = shutdownService;
+
 await ensureLocalDatabaseDirectoryExists({ config });
-const { db, client } = setupDatabase(config.database);
+const { db } = setupDatabase({ ...config.database, registerShutdownHandler });
 
 const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
 
 const taskServices = createTaskServices({ config });
 await taskServices.initialize();
 
-const { app } = await createServer({ config, db, taskServices, documentsStorageService });
+if (isWebMode) {
+  const { app } = await createServer({ config, db, taskServices, documentsStorageService });
 
-const server = serve(
-  {
-    fetch: app.fetch,
-    port: config.server.port,
-    hostname: config.server.hostname,
-  },
-  ({ port }) => logger.info({ port }, 'Server started'),
-);
+  const server = serve(
+    {
+      fetch: app.fetch,
+      port: config.server.port,
+      hostname: config.server.hostname,
+    },
+    ({ port }) => logger.info({ port }, 'Server started'),
+  );
 
-if (config.ingestionFolder.isEnabled) {
-  const { startWatchingIngestionFolders } = createIngestionFolderWatcher({
-    taskServices,
-    config,
-    db,
-    documentsStorageService,
+  registerShutdownHandler({
+    id: 'web-server-close',
+    handler: () => {
+      server.close();
+    },
   });
-
-  await startWatchingIngestionFolders();
 }
 
-await registerTaskDefinitions({ taskServices, db, config, documentsStorageService });
+if (isWorkerMode) {
+  if (config.ingestionFolder.isEnabled) {
+    const { startWatchingIngestionFolders } = createIngestionFolderWatcher({
+      taskServices,
+      config,
+      db,
+      documentsStorageService,
+    });
 
-taskServices.start();
+    await startWatchingIngestionFolders();
+  }
+
+  await registerTaskDefinitions({ taskServices, db, config, documentsStorageService });
+
+  taskServices.start();
+  logger.info('Worker started');
+}
 
 // Global error handlers
 process.on('uncaughtException', (error) => {
   logger.error({ error }, 'Uncaught exception');
-
-  // Give the logger time to flush before exiting
-  setTimeout(() => {
-    process.exit(1);
-  }, 1000);
+  setTimeout(() => process.exit(1), 1000); // Give the logger time to flush before exiting
 });
 
 process.on('unhandledRejection', (error) => {
-  logger.error({
-    error,
-  }, 'Unhandled promise rejection');
-
-  // Give the logger time to flush before exiting
-  setTimeout(() => {
-    process.exit(1);
-  }, 1000);
+  logger.error({ error }, 'Unhandled promise rejection');
+  setTimeout(() => process.exit(1), 1000); // Give the logger time to flush before exiting
 });
 
 // Graceful shutdown handler
-process.on('SIGINT', async () => {
-  logger.info('Received SIGINT, shutting down gracefully...');
+async function gracefulShutdown(signal: string) {
+  logger.info({ signal }, 'Received shutdown signal, shutting down gracefully...');
 
-  try {
-    server.close();
-    client.close();
-    logger.info('Server shut down successfully');
-  } catch (error) {
-    logger.error({ error }, 'Error during shutdown');
-  }
+  await shutdownService.executeShutdownHandlers();
 
+  logger.info('Shutdown complete, exiting process');
   process.exit(0);
-});
+}
 
-process.on('SIGTERM', async () => {
-  logger.info('Received SIGTERM, shutting down gracefully...');
-
-  try {
-    server.close();
-    client.close();
-    logger.info('Server shut down successfully');
-  } catch (error) {
-    logger.error({ error }, 'Error during shutdown');
-  }
-
-  process.exit(0);
-});
+process.on('SIGINT', () => void gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => void gracefulShutdown('SIGTERM'));
