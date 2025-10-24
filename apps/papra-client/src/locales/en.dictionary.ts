@@ -636,6 +636,8 @@ export const translations = {
   'subscriptions.upgrade-dialog.per-month': '/month',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} billed annually',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade now',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Limited Time Offer',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Get {{ percent }}% off all plans forever per organization as an early adopter! Offer expires in {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
 
   'subscriptions.plan.free.name': 'Free plan',
   'subscriptions.plan.plus.name': 'Plus',
