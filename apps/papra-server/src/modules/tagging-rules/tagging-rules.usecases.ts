@@ -57,6 +57,98 @@ export async function createTaggingRule({
   ]);
 }
 
+/**
+ * Apply a single tagging rule to a document.
+ * Checks if the rule's conditions match the document, and if so, applies the rule's tags.
+ * Returns the list of tag IDs that were successfully applied.
+ */
+export async function applyTaggingRule({
+  document,
+  taggingRule,
+  tagsRepository,
+  webhookRepository,
+  documentActivityRepository,
+  taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
+  logger = createLogger({ namespace: 'tagging-rules' }),
+}: {
+  document: Document;
+  taggingRule: {
+    id: string;
+    conditions: Array<{
+      operator: string;
+      field: string;
+      value: string;
+      isCaseSensitive: boolean;
+    }>;
+    actions: Array<{
+      tag: Tag | null;
+    }>;
+  };
+  tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
+  taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
+  logger?: Logger;
+}): Promise<{ appliedTagIds: string[] }> {
+  // Check if all conditions match
+  const allConditionsMatch = taggingRule.conditions.every(({ operator, field, value: conditionValue, isCaseSensitive }) => {
+    const { validate } = taggingRuleOperatorValidatorRegistry.getTaggingRuleOperatorValidator({ operator });
+    const { fieldValue } = getDocumentFieldValue({ document, field });
+
+    const [isValid, error] = safelySync(() => validate({ conditionValue, fieldValue, isCaseSensitive }));
+
+    if (error) {
+      logger.error({ error, conditionValue, fieldValue, isCaseSensitive }, 'Failed to validate tagging rule condition');
+      return false;
+    }
+
+    return isValid;
+  });
+
+  // If conditions don't match, return empty array
+  if (!allConditionsMatch) {
+    return { appliedTagIds: [] };
+  }
+
+  // Get tags to apply from the rule's actions
+  const tagsToApply: Tag[] = taggingRule.actions.map(action => action.tag).filter((tag): tag is Tag => !isNil(tag));
+
+  // Apply each tag to the document
+  const appliedTagIdsResults = await Promise.all(tagsToApply.map(async (tag) => {
+    const [, error] = await safely(async () => addTagToDocument({
+      tagId: tag.id,
+      documentId: document.id,
+      organizationId: document.organizationId,
+      tag,
+      tagsRepository,
+      webhookRepository,
+      documentActivityRepository,
+    }));
+
+    if (error) {
+      logger.error({ error, tagId: tag.id, documentId: document.id }, 'Failed to add tag to document');
+      return undefined;
+    }
+
+    return tag.id;
+  }));
+
+  const appliedTagIds = appliedTagIdsResults.filter((id): id is string => id !== undefined);
+
+  logger.info({
+    taggingRuleId: taggingRule.id,
+    appliedTagIds,
+    expectedTagCount: tagsToApply.length,
+    hasAllTagBeenApplied: appliedTagIds.length === tagsToApply.length,
+  }, 'Tagging rule applied to document');
+
+  return { appliedTagIds };
+}
+
+/**
+ * Apply all enabled tagging rules to a document.
+ * Fetches all enabled rules for the document's organization and applies each one.
+ */
 export async function applyTaggingRules({
   document,
 
@@ -78,52 +170,76 @@ export async function applyTaggingRules({
 }) {
   const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: document.organizationId });
 
-  const taggingRulesToApplyActions = taggingRules.filter(taggingRule => taggingRule.conditions.every(({ operator, field, value: conditionValue, isCaseSensitive }) => {
-    const { validate } = taggingRuleOperatorValidatorRegistry.getTaggingRuleOperatorValidator({ operator });
-    const { fieldValue } = getDocumentFieldValue({ document, field });
-
-    const [isValid, error] = safelySync(() => validate({ conditionValue, fieldValue, isCaseSensitive }));
-
-    if (error) {
-      logger.error({ error, conditionValue, fieldValue, isCaseSensitive }, 'Failed to validate tagging rule condition');
-
-      return false;
-    }
-
-    return isValid;
-  }));
-
-  const tagsToApply: Tag[] = uniq(taggingRulesToApplyActions.flatMap(taggingRule => taggingRule.actions.map(action => action.tag).filter(tag => !isNil(tag))));
-  const tagIdsToApply = tagsToApply.map(tag => tag.id);
-
-  const appliedTagIdsResults = await Promise.all(tagsToApply.map(async (tag) => {
-    const [, error] = await safely(async () => addTagToDocument({
-      tagId: tag.id,
-      documentId: document.id,
-      organizationId: document.organizationId,
-      tag,
+  // Apply each enabled rule to the document
+  const appliedTagIdsPerRule = await Promise.all(taggingRules.map(async (taggingRule) => {
+    return applyTaggingRule({
+      document,
+      taggingRule,
       tagsRepository,
       webhookRepository,
       documentActivityRepository,
-    }));
-
-    if (error) {
-      logger.error({ error, tagId: tag.id, documentId: document.id }, 'Failed to add tag to document');
-
-      return undefined;
-    }
-
-    return tag.id;
+      taggingRuleOperatorValidatorRegistry,
+      logger,
+    });
   }));
 
-  const appliedTagIds = appliedTagIdsResults.filter((id): id is string => id !== undefined);
+  const allAppliedTagIds = uniq(appliedTagIdsPerRule.map(({ appliedTagIds }) => appliedTagIds).flat());
 
   logger.info({
-    taggingRulesIdsToApply: taggingRulesToApplyActions.map(taggingRule => taggingRule.id),
-    appliedTagIds,
-    tagIdsToApply,
-    hasAllTagBeenApplied: appliedTagIds.length === tagIdsToApply.length,
-  }, 'Tagging rules applied');
+    taggingRulesCount: taggingRules.length,
+    appliedTagIds: allAppliedTagIds,
+  }, 'All tagging rules applied to document');
+}
+
+type ProcessingStats = {
+  processedCount: number;
+  taggedDocumentsCount: number;
+  errorCount: number;
+};
+
+async function processDocumentWithTaggingRule({
+  document,
+  taggingRule,
+  tagsRepository,
+  webhookRepository,
+  documentActivityRepository,
+  logger,
+}: {
+  document: Document;
+  taggingRule: {
+    id: string;
+    conditions: Array<{
+      operator: string;
+      field: string;
+      value: string;
+      isCaseSensitive: boolean;
+    }>;
+    actions: Array<{
+      tag: Tag | null;
+    }>;
+  };
+  tagsRepository: TagsRepository;
+  webhookRepository: WebhookRepository;
+  documentActivityRepository: DocumentActivityRepository;
+  logger: Logger;
+}) {
+  const [result, error] = await safely(async () => {
+    return applyTaggingRule({
+      document,
+      taggingRule,
+      tagsRepository,
+      webhookRepository,
+      documentActivityRepository,
+      logger,
+    });
+  });
+
+  if (error) {
+    logger.error({ error, documentId: document.id }, 'Error applying tagging rule to document');
+    return { wasTagged: false, hadError: true };
+  }
+
+  return { wasTagged: result.appliedTagIds.length > 0, hadError: false };
 }
 
 export async function applyTaggingRuleToExistingDocuments({
@@ -145,7 +261,6 @@ export async function applyTaggingRuleToExistingDocuments({
   documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;
 }) {
-  // Verify the tagging rule exists and belongs to the organization
   const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({ organizationId, taggingRuleId });
 
   if (!taggingRule) {
@@ -158,53 +273,35 @@ export async function applyTaggingRuleToExistingDocuments({
 
   logger.info({ organizationId, taggingRuleId }, 'Starting to apply tagging rule to existing documents');
 
-  // Use iterator to fetch documents in batches
   const documentsIterator = documentsRepository.getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSize: 100 });
 
-  let processedCount = 0;
-  let taggedCount = 0;
-  let errorCount = 0;
+  const stats: ProcessingStats = {
+    processedCount: 0,
+    taggedDocumentsCount: 0,
+    errorCount: 0,
+  };
 
-  // Process documents one by one using the iterator
   for await (const document of documentsIterator) {
-    const [, error] = await safely(async () => {
-      await applyTaggingRules({
-        document,
-        taggingRulesRepository,
-        tagsRepository,
-        webhookRepository,
-        documentActivityRepository,
-        logger,
-      });
-
-      // Count as tagged - applyTaggingRules processes all enabled rules
-      taggedCount++;
+    const result = await processDocumentWithTaggingRule({
+      document,
+      taggingRule,
+      tagsRepository,
+      webhookRepository,
+      documentActivityRepository,
+      logger,
     });
 
-    if (error) {
-      errorCount++;
-      logger.error({ error, documentId: document.id }, 'Error applying tagging rule to document');
-    }
-
-    processedCount++;
+    stats.processedCount += 1;
+    stats.taggedDocumentsCount += result.wasTagged ? 1 : 0;
+    stats.errorCount += result.hadError ? 1 : 0;
 
     // Log progress every 100 documents
-    if (processedCount % 100 === 0) {
-      logger.info({ organizationId, taggingRuleId, processedCount, taggedCount, errorCount }, 'Progress update');
+    if (stats.processedCount % 100 === 0) {
+      logger.info({ organizationId, taggingRuleId, ...stats }, 'Re-tagging progress update');
     }
   }
 
-  logger.info({
-    organizationId,
-    taggingRuleId,
-    processedCount,
-    taggedCount,
-    errorCount,
-  }, 'Completed applying tagging rule to existing documents');
+  logger.info({ organizationId, taggingRuleId, ...stats }, 'Completed applying tagging rule to existing documents');
 
-  return {
-    processedCount,
-    taggedCount,
-    errorCount,
-  };
+  return stats;
 }

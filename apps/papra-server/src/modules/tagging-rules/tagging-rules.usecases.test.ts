@@ -48,13 +48,22 @@ describe('tagging-rules usecases', () => {
       expect(getLogs({ excludeTimestampMs: true })).to.eql([
         {
           data: {
-            tagIdsToApply: ['tag_1'],
+            taggingRuleId: 'tr_1',
             appliedTagIds: ['tag_1'],
-            taggingRulesIdsToApply: ['tr_1'],
+            expectedTagCount: 1,
             hasAllTagBeenApplied: true,
           },
           level: 'info',
-          message: 'Tagging rules applied',
+          message: 'Tagging rule applied to document',
+          namespace: 'test',
+        },
+        {
+          data: {
+            taggingRulesCount: 1,
+            appliedTagIds: ['tag_1'],
+          },
+          level: 'info',
+          message: 'All tagging rules applied to document',
           namespace: 'test',
         },
       ]);
@@ -146,7 +155,7 @@ describe('tagging-rules usecases', () => {
       });
 
       expect(result.processedCount).toBe(3);
-      expect(result.taggedCount).toBe(3); // All documents are processed (applyTaggingRules is called for each)
+      expect(result.taggedDocumentsCount).toBe(2); // All documents are processed (applyTaggingRules is called for each)
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -180,7 +189,7 @@ describe('tagging-rules usecases', () => {
       ).rejects.toThrow('Tagging rule not found');
     });
 
-    test('processes all documents even when there are no tagging rules enabled', async () => {
+    test('processes all documents even when the tagging rule is disabled', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [
@@ -206,7 +215,7 @@ describe('tagging-rules usecases', () => {
       });
 
       expect(result.processedCount).toBe(1);
-      expect(result.taggedCount).toBe(1);
+      expect(result.taggedDocumentsCount).toBe(0); // No documents tagged because rule is disabled
 
       const documentTags = await db.select().from(documentsTagsTable);
       expect(documentTags).toHaveLength(0); // No tags applied because rule is disabled
