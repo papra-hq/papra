@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Error al actualizar la regla de etiquetado',
   'tagging-rules.update.submit': 'Actualizar regla',
   'tagging-rules.update.cancel': 'Cancelar',
+  'tagging-rules.apply.button': 'Aplicar a documentos existentes',
+  'tagging-rules.apply.confirm.title': '¿Aplicar regla a documentos existentes?',
+  'tagging-rules.apply.confirm.description': 'Esta regla de etiquetado se aplicará a todos los documentos existentes en la organización que coincidan con las condiciones de la regla. Esta operación ocurre en segundo plano y puede tardar algún tiempo dependiendo del número de documentos en la organización.',
+  'tagging-rules.apply.confirm.button': 'Aplicar regla',
+  'tagging-rules.apply.success': 'Aplicación de regla iniciada en segundo plano',
+  'tagging-rules.apply.error': 'Error al iniciar la aplicación de la regla',
+  'tagging-rules.apply.processing': 'Iniciando...',
 
   // Intake emails
 

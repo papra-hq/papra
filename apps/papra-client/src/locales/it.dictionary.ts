@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Errore nell\'aggiornamento della regola di tagging',
   'tagging-rules.update.submit': 'Aggiorna regola',
   'tagging-rules.update.cancel': 'Annulla',
+  'tagging-rules.apply.button': 'Applica ai documenti esistenti',
+  'tagging-rules.apply.confirm.title': 'Applicare la regola ai documenti esistenti?',
+  'tagging-rules.apply.confirm.description': 'Questa regola di tagging verrà applicata a tutti i documenti esistenti nell\'organizzazione che corrispondono alle condizioni della regola. Questa operazione avviene in background e potrebbe richiedere del tempo a seconda del numero di documenti nell\'organizzazione.',
+  'tagging-rules.apply.confirm.button': 'Applica regola',
+  'tagging-rules.apply.success': 'Applicazione della regola avviata in background',
+  'tagging-rules.apply.error': 'Impossibile avviare l\'applicazione della regola',
+  'tagging-rules.apply.processing': 'Avvio...',
 
   // Intake emails
 
