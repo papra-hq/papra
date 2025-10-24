@@ -12,7 +12,8 @@ release_command = "pnpm --silent migrate:up:prod"
 strategy = "rolling"
 
 [processes]
-web = "pnpm --silent start"
+web = "PROCESS_MODE=web pnpm --silent start"
+worker = "PROCESS_MODE=worker pnpm --silent start"
 
 [http_service]
 internal_port = 1221
