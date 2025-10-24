@@ -49,9 +49,52 @@ await registerTaskDefinitions({ taskServices, db, config, documentsStorageServic
 
 taskServices.start();
 
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  logger.error({ error }, 'Uncaught exception');
+
+  // Give the logger time to flush before exiting
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});
+
+process.on('unhandledRejection', (error) => {
+  logger.error({
+    error,
+  }, 'Unhandled promise rejection');
+
+  // Give the logger time to flush before exiting
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});
+
+// Graceful shutdown handler
 process.on('SIGINT', async () => {
-  server.close();
-  client.close();
+  logger.info('Received SIGINT, shutting down gracefully...');
+
+  try {
+    server.close();
+    client.close();
+    logger.info('Server shut down successfully');
+  } catch (error) {
+    logger.error({ error }, 'Error during shutdown');
+  }
+
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  logger.info('Received SIGTERM, shutting down gracefully...');
+
+  try {
+    server.close();
+    client.close();
+    logger.info('Server shut down successfully');
+  } catch (error) {
+    logger.error({ error }, 'Error during shutdown');
+  }
 
   process.exit(0);
 });
