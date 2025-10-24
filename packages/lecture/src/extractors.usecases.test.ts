@@ -9,7 +9,7 @@ import { extractText, extractTextFromBlob, extractTextFromFile } from './extract
 const currentFile = fileURLToPath(import.meta.url);
 const packageRoot = join(dirname(currentFile), '..');
 
-const fixturesDir = await glob(['fixtures/*'], { onlyDirectories: true, cwd: packageRoot, absolute: true });
+const fixturesDir = await glob(['fixtures/*', '!fixtures/_*'], { onlyDirectories: true, cwd: packageRoot, absolute: true });
 
 describe('extractors usecases', () => {
   describe('extractText', () => {
