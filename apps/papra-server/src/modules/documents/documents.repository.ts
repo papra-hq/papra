@@ -34,7 +34,6 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationDocumentBySha256Hash,
       getAllOrganizationTrashDocuments,
       getAllOrganizationDocuments,
-      getOrganizationDocumentsQuery,
       getAllOrganizationDocumentsIterator,
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
@@ -392,15 +391,6 @@ async function getAllOrganizationDocuments({ organizationId, db }: { organizatio
   };
 }
 
-function getOrganizationDocumentsQuery({ organizationId, db }: { organizationId: string; db: Database }) {
-  return db.select({
-    id: documentsTable.id,
-    originalStorageKey: documentsTable.originalStorageKey,
-  }).from(documentsTable).where(
-    eq(documentsTable.organizationId, organizationId),
-  );
-}
-
 function getAllOrganizationDocumentsIterator({ organizationId, batchSize = 100, db }: { organizationId: string; batchSize?: number; db: Database }) {
   const query = db
     .select({
@@ -411,7 +401,8 @@ function getAllOrganizationDocumentsIterator({ organizationId, batchSize = 100, 
     .where(
       eq(documentsTable.organizationId, organizationId),
     )
-    .orderBy(documentsTable.createdAt);
+    .orderBy(documentsTable.createdAt)
+    .$dynamic();
 
   return createIterator({ query, batchSize }) as AsyncGenerator<{ id: string; originalStorageKey: string }>;
 }
@@ -426,7 +417,8 @@ function getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSiz
         eq(documentsTable.isDeleted, false),
       ),
     )
-    .orderBy(documentsTable.createdAt);
+    .orderBy(documentsTable.createdAt)
+    .$dynamic();
 
   return createIterator({ query, batchSize });
 }
