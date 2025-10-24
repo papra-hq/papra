@@ -638,6 +638,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.per-month': '/mes',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturado anualmente',
   'subscriptions.upgrade-dialog.upgrade-now': 'Actualizar ahora',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Oferta por tiempo limitado',
+  'subscriptions.upgrade-dialog.promo-banner.description': '¡Obtén {{ percent }}% de descuento por organización en todos los planes para siempre como early adopter! La oferta expira en {{ days, >1:{days} días, =1:1 día, menos de un día }}.',
 
   'subscriptions.plan.free.name': 'Plan gratuito',
   'subscriptions.plan.plus.name': 'Plus',

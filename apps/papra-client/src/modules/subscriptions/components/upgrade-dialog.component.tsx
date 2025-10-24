@@ -162,6 +162,17 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   const defaultBillingInterval: BillingInterval = 'annual';
   const [getBillingInterval, setBillingInterval] = createSignal<BillingInterval>(defaultBillingInterval);
 
+  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) => globalReduction.enabled && now < globalReduction.untilDate;
+  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) => getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
+  const getReductionPercent = () => 100 * (1 - getReductionMultiplier());
+  const getDaysUntilReductionExpiry = ({ now = new Date() }: { now?: Date } = {}) => {
+    if (!getIsReductionActive({ now })) {
+      return 0;
+    }
+    const timeDiff = globalReduction.untilDate.getTime() - now.getTime();
+    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  };
+
   const onUpgrade = async (planId: string) => {
     const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId, billingInterval: getBillingInterval() });
     window.location.href = checkoutUrl;
@@ -214,39 +225,62 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
       <DialogTrigger as={props.children} />
       <DialogContent class="sm:max-w-5xl">
         <DialogHeader>
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-primary/10 rounded-lg">
-              <div class="i-tabler-sparkles size-7 text-primary"></div>
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-primary/10 rounded-lg">
+                <div class="i-tabler-sparkles size-7 text-primary"></div>
+              </div>
+              <div>
+                <DialogTitle class="text-xl mb-0">{t('subscriptions.upgrade-dialog.title')}</DialogTitle>
+                <DialogDescription class="text-sm text-muted-foreground">
+                  {t('subscriptions.upgrade-dialog.description')}
+                </DialogDescription>
+              </div>
             </div>
-            <div>
-              <DialogTitle class="text-xl mb-0">{t('subscriptions.upgrade-dialog.title')}</DialogTitle>
-              <DialogDescription class="text-sm text-muted-foreground">
-                {t('subscriptions.upgrade-dialog.description')}
-              </DialogDescription>
+
+            <div class="flex flex-col items-center flex-1">
+              <div class="inline-flex items-center justify-center border rounded-lg bg-muted p-1 gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'monthly' })}
+                  onClick={() => setBillingInterval('monthly')}
+                >
+                  {t('subscriptions.billing-interval.monthly')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
+                  onClick={() => setBillingInterval('annual')}
+                >
+                  {t('subscriptions.billing-interval.annual')}
+                </Button>
+              </div>
             </div>
           </div>
         </DialogHeader>
 
-        <div class="mt-2 flex flex-col items-center">
-          <div class="inline-flex items-center justify-center border rounded-lg bg-muted p-1 gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'monthly' })}
-              onClick={() => setBillingInterval('monthly')}
-            >
-              {t('subscriptions.billing-interval.monthly')}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
-              onClick={() => setBillingInterval('annual')}
-            >
-              {t('subscriptions.billing-interval.annual')}
-            </Button>
+        {getIsReductionActive() && (
+          <div class="mt-4 bg-gradient-to-r from-primary/20 to-primary/2 border border-primary/30 rounded-lg p-4 flex-shrink-0">
+            <div class="flex items-center gap-4">
+              <div class="p-2.5 bg-primary/20 rounded-lg border border-primary/30 flex-shrink-0">
+                <div class="i-tabler-gift size-6 text-primary"></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-base font-semibold text-foreground">{t('subscriptions.upgrade-dialog.promo-banner.title')}</h4>
+                  <div class="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-md">
+                    {`-${getReductionPercent()}%`}
+                  </div>
+                </div>
+                <p class="text-sm text-muted-foreground mb-1">
+                  {t('subscriptions.upgrade-dialog.promo-banner.description', { percent: getReductionPercent(), days: getDaysUntilReductionExpiry() })}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
           <PlanCard {...currentPlan} billingInterval={getBillingInterval()} />

@@ -638,6 +638,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.per-month': '/lună',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturat anual',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade acum',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Ofertă pe durată limitată',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Obțineți {{ percent }}% reducere pe organizație la toate planurile pentru totdeauna ca early adopter! Oferta expiră în {{ days, >1:{days} zile, =1:1 zi, mai puțin de o zi }}.',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',
