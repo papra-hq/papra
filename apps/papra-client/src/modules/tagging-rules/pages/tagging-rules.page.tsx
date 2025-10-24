@@ -109,6 +109,7 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
           variant="outline"
           size="icon"
           aria-label={t('tagging-rules.list.card.edit')}
+          class="size-8"
         >
           <div class="i-tabler-edit size-4" />
         </Button>
@@ -119,6 +120,7 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
           onClick={() => deleteTaggingRuleMutation.mutate()}
           disabled={deleteTaggingRuleMutation.isPending}
           aria-label={t('tagging-rules.list.card.delete')}
+          class="size-8"
         >
           <div class="i-tabler-trash size-4" />
         </Button>
