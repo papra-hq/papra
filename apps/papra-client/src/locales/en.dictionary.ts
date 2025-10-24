@@ -402,6 +402,13 @@ export const translations = {
   'tagging-rules.update.error': 'Failed to update tagging rule',
   'tagging-rules.update.submit': 'Update rule',
   'tagging-rules.update.cancel': 'Cancel',
+  'tagging-rules.apply.button': 'Apply to existing documents',
+  'tagging-rules.apply.confirm.title': 'Apply rule to existing documents?',
+  'tagging-rules.apply.confirm.description': 'This will check all existing documents in your organization and apply tags where conditions match. The processing will happen in the background.',
+  'tagging-rules.apply.confirm.button': 'Apply rule',
+  'tagging-rules.apply.success': 'Rule application started in the background',
+  'tagging-rules.apply.error': 'Failed to start rule application',
+  'tagging-rules.apply.processing': 'Starting...',
 
   // Intake emails
 
