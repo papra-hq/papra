@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Falha ao atualizar a regra de marcação',
   'tagging-rules.update.submit': 'Atualizar regra',
   'tagging-rules.update.cancel': 'Cancelar',
+  'tagging-rules.apply.button': 'Aplicar a documentos existentes',
+  'tagging-rules.apply.confirm.title': 'Aplicar regra a documentos existentes?',
+  'tagging-rules.apply.confirm.description': 'Esta regra de marcação será aplicada a todos os documentos existentes na organização que correspondem às condições da regra. Esta operação acontece em segundo plano e pode levar algum tempo dependendo do número de documentos na organização.',
+  'tagging-rules.apply.confirm.button': 'Aplicar regra',
+  'tagging-rules.apply.success': 'Aplicação da regra iniciada em segundo plano',
+  'tagging-rules.apply.error': 'Falha ao iniciar aplicação da regra',
+  'tagging-rules.apply.processing': 'Iniciando...',
 
   // Intake emails
 

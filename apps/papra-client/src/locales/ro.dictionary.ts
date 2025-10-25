@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Nu s-a putut actualiza regula de etichetare',
   'tagging-rules.update.submit': 'Actualizează regula',
   'tagging-rules.update.cancel': 'Anulează',
+  'tagging-rules.apply.button': 'Aplică la documentele existente',
+  'tagging-rules.apply.confirm.title': 'Aplică regula la documentele existente?',
+  'tagging-rules.apply.confirm.description': 'Această regulă de etichetare va fi aplicată tuturor documentelor existente din organizație care corespund condițiilor regulii. Această operațiune are loc în fundal și poate dura ceva timp în funcție de numărul de documente din organizație.',
+  'tagging-rules.apply.confirm.button': 'Aplică regula',
+  'tagging-rules.apply.success': 'Aplicarea regulii a fost inițiată în fundal',
+  'tagging-rules.apply.error': 'Nu s-a putut iniția aplicarea regulii',
+  'tagging-rules.apply.processing': 'Se inițiază...',
 
   // Intake emails
 

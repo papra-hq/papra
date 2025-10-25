@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Nie udało się zaktualizować reguły tagowania',
   'tagging-rules.update.submit': 'Zaktualizuj regułę',
   'tagging-rules.update.cancel': 'Anuluj',
+  'tagging-rules.apply.button': 'Zastosuj do istniejących dokumentów',
+  'tagging-rules.apply.confirm.title': 'Zastosować regułę do istniejących dokumentów?',
+  'tagging-rules.apply.confirm.description': 'Ta reguła tagowania zostanie zastosowana do wszystkich istniejących dokumentów w organizacji, które spełniają warunki reguły. Ta operacja działa w tle i może potrwać pewien czas w zależności od liczby dokumentów w organizacji.',
+  'tagging-rules.apply.confirm.button': 'Zastosuj regułę',
+  'tagging-rules.apply.success': 'Rozpoczęto stosowanie reguły w tle',
+  'tagging-rules.apply.error': 'Nie udało się rozpocząć stosowania reguły',
+  'tagging-rules.apply.processing': 'Uruchamianie...',
 
   // Intake emails
 

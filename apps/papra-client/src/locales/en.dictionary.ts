@@ -404,7 +404,7 @@ export const translations = {
   'tagging-rules.update.cancel': 'Cancel',
   'tagging-rules.apply.button': 'Apply to existing documents',
   'tagging-rules.apply.confirm.title': 'Apply rule to existing documents?',
-  'tagging-rules.apply.confirm.description': 'This will check all existing documents in your organization and apply tags where conditions match. The processing will happen in the background.',
+  'tagging-rules.apply.confirm.description': 'This tagging rule will be applied to all existing documents in the organization that match the rule conditions. This operation happens in the background and may take some time depending on the number of documents in the organization.',
   'tagging-rules.apply.confirm.button': 'Apply rule',
   'tagging-rules.apply.success': 'Rule application started in the background',
   'tagging-rules.apply.error': 'Failed to start rule application',

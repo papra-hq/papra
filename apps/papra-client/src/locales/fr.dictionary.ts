@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Échec de la mise à jour de la règle de catégorisation',
   'tagging-rules.update.submit': 'Mettre à jour la règle',
   'tagging-rules.update.cancel': 'Annuler',
+  'tagging-rules.apply.button': 'Appliquer aux documents existants',
+  'tagging-rules.apply.confirm.title': 'Appliquer la règle aux documents existants ?',
+  'tagging-rules.apply.confirm.description': 'Cette règle de catégorisation sera appliquée à tous les documents existants de l\'organisation qui correspondent aux conditions de la règle. Cette opération se déroule en arrière-plan et peut prendre un certain temps en fonction du nombre de documents dans l\'organisation.',
+  'tagging-rules.apply.confirm.button': 'Appliquer la règle',
+  'tagging-rules.apply.success': 'Application de la règle démarrée en arrière-plan',
+  'tagging-rules.apply.error': 'Échec du démarrage de l\'application de la règle',
+  'tagging-rules.apply.processing': 'Démarrage...',
 
   // Intake emails
 
