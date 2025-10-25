@@ -2,7 +2,6 @@ import type { Component } from 'solid-js';
 import type { Webhook } from '../webhooks.types';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { format } from 'date-fns';
 import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -13,7 +12,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { deleteWebhook, fetchWebhooks } from '../webhooks.services';
 
 export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
-  const { t } = useI18n();
+  const { t, formatRelativeTime } = useI18n();
   const { confirm } = useConfirmModal();
   const params = useParams();
 
@@ -61,12 +60,12 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
         <p class="text-muted-foreground text-xs">
           {t('webhooks.list.card.last-triggered')}
           {' '}
-          {webhook.lastTriggeredAt ? format(webhook.lastTriggeredAt, 'MMM d, yyyy') : t('webhooks.list.card.never')}
+          {webhook.lastTriggeredAt ? formatRelativeTime(webhook.lastTriggeredAt) : t('webhooks.list.card.never')}
         </p>
         <p class="text-muted-foreground text-xs">
           {t('webhooks.list.card.created')}
           {' '}
-          {format(webhook.createdAt, 'MMM d, yyyy')}
+          {formatRelativeTime(webhook.createdAt)}
         </p>
       </div>
 

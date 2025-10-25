@@ -1,6 +1,7 @@
 import type { JSX } from 'solid-js';
 import type { Locale } from './i18n.provider';
 import { createBranchlet } from '@branchlet/core';
+import { IN_MS } from '../shared/utils/units';
 
 // This tries to get the most preferred language compatible with the supported languages
 // It tries to find a supported language by comparing both region and language, if not, then just language
@@ -69,5 +70,48 @@ export function createFragmentTranslator<Dict extends Record<string, string>>({ 
     }
 
     return translation;
+  };
+}
+
+export function createDateFormatter({ getLocale }: { getLocale: () => string }) {
+  return (date: Date, options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }) => {
+    return new Intl.DateTimeFormat(getLocale(), options).format(date);
+  };
+}
+
+export function createRelativeTimeFormatter({ getLocale }: { getLocale: () => string }) {
+  return (rawDate: Date | string, { now = new Date(), numeric = 'auto', style = 'long' }: { now?: Date; numeric?: 'auto' | 'always'; style?: 'long' | 'short' } = {}) => {
+    const formatter = new Intl.RelativeTimeFormat(getLocale(), { numeric, style });
+
+    const date = typeof rawDate === 'string' ? new Date(rawDate) : rawDate;
+    const msDiff = now.getTime() - date.getTime();
+    const absDiff = Math.abs(msDiff);
+    const sign = msDiff >= 0 ? -1 : 1;
+
+    if (absDiff < IN_MS.MINUTE) {
+      return formatter.format(sign * Math.round(absDiff / 1_000), 'second');
+    }
+
+    if (absDiff < IN_MS.HOUR) {
+      return formatter.format(sign * Math.round(absDiff / IN_MS.MINUTE), 'minute');
+    }
+
+    if (absDiff < IN_MS.DAY) {
+      return formatter.format(sign * Math.round(absDiff / IN_MS.HOUR), 'hour');
+    }
+
+    if (absDiff < IN_MS.WEEK) {
+      return formatter.format(sign * Math.round(absDiff / IN_MS.DAY), 'day');
+    }
+
+    if (absDiff < IN_MS.MONTH) {
+      return formatter.format(sign * Math.round(absDiff / IN_MS.WEEK), 'week');
+    }
+
+    if (absDiff < IN_MS.YEAR) {
+      return formatter.format(sign * Math.round(absDiff / IN_MS.MONTH), 'month');
+    }
+
+    return formatter.format(sign * Math.round(absDiff / IN_MS.YEAR), 'year');
   };
 }
