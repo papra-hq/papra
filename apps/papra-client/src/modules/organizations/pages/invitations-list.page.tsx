@@ -4,10 +4,10 @@ import { A, useNavigate, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { For, Match, onMount, Show, Switch } from 'solid-js';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cancelInvitation, resendInvitation } from '@/modules/invitations/invitations.services';
 import { useConfirmModal } from '@/modules/shared/confirm';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
@@ -148,7 +148,7 @@ const InvitationsList: Component = () => {
       {
         header: t('organizations.members.table.headers.created'),
         accessorKey: 'createdAt',
-        cell: data => <span title={data.getValue<Date>().toLocaleString()} class="text-muted-foreground">{timeAgo({ date: data.getValue<Date>() })}</span>,
+        cell: data => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
       },
       {
         header: '',

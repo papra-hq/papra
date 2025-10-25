@@ -1,6 +1,8 @@
 import type { JSX } from 'solid-js';
+import type { CoercibleDate } from '../shared/date/date.types';
 import type { Locale } from './i18n.provider';
 import { createBranchlet } from '@branchlet/core';
+import { coerceDate } from '../shared/date/coerce-date';
 import { IN_MS } from '../shared/utils/units';
 
 // This tries to get the most preferred language compatible with the supported languages
@@ -74,16 +76,16 @@ export function createFragmentTranslator<Dict extends Record<string, string>>({ 
 }
 
 export function createDateFormatter({ getLocale }: { getLocale: () => string }) {
-  return (date: Date, options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }) => {
-    return new Intl.DateTimeFormat(getLocale(), options).format(date);
+  return (date: CoercibleDate, options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }) => {
+    return new Intl.DateTimeFormat(getLocale(), options).format(coerceDate(date));
   };
 }
 
 export function createRelativeTimeFormatter({ getLocale }: { getLocale: () => string }) {
-  return (rawDate: Date | string, { now = new Date(), numeric = 'auto', style = 'long' }: { now?: Date; numeric?: 'auto' | 'always'; style?: 'long' | 'short' } = {}) => {
+  return (rawDate: CoercibleDate, { now = new Date(), numeric = 'auto', style = 'long' }: { now?: Date; numeric?: 'auto' | 'always'; style?: 'long' | 'short' } = {}) => {
     const formatter = new Intl.RelativeTimeFormat(getLocale(), { numeric, style });
 
-    const date = typeof rawDate === 'string' ? new Date(rawDate) : rawDate;
+    const date = coerceDate(rawDate);
     const msDiff = now.getTime() - date.getTime();
     const absDiff = Math.abs(msDiff);
     const sign = msDiff >= 0 ? -1 : 1;

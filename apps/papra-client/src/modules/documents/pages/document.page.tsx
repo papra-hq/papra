@@ -5,8 +5,8 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { downloadFile } from '@/modules/shared/files/download';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { TagLink } from '@/modules/tags/components/tag.component';
@@ -83,7 +83,7 @@ const ActivityItem: Component<{ activity: DocumentActivity }> = (props) => {
         </Switch>
 
         <div class="flex items-center gap-1 text-xs text-muted-foreground">
-          <span title={props.activity.createdAt.toLocaleString()}>{timeAgo({ date: props.activity.createdAt })}</span>
+          <RelativeTime date={props.activity.createdAt} />
           <Show when={props.activity.user}>
             {getUser => (
               <span>{te('activity.document.user.name', { name: <A href={`/organizations/${params.organizationId}/members`} class="underline hover:text-primary transition">{getUser().name}</A> })}</span>
@@ -99,7 +99,7 @@ const tabs = ['info', 'content', 'activity'] as const;
 type Tab = typeof tabs[number];
 
 export const DocumentPage: Component = () => {
-  const { t } = useI18n();
+  const { t, formatRelativeTime } = useI18n();
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { deleteDocument } = useDeleteDocument();
@@ -325,12 +325,12 @@ export const DocumentPage: Component = () => {
                         },
                         {
                           label: t('documents.info.created-at'),
-                          value: timeAgo({ date: getDocument().createdAt }),
+                          value: formatRelativeTime(getDocument().createdAt),
                           icon: 'i-tabler-calendar',
                         },
                         {
                           label: t('documents.info.updated-at'),
-                          value: getDocument().updatedAt ? timeAgo({ date: getDocument().updatedAt! }) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
+                          value: getDocument().updatedAt ? formatRelativeTime(getDocument().updatedAt!) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
                           icon: 'i-tabler-calendar',
                         },
                       ]}
