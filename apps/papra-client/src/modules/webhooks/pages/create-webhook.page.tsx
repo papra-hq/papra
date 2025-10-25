@@ -1,6 +1,7 @@
 import type { Component } from 'solid-js';
 import { setValue } from '@modular-forms/solid';
 import { A, useNavigate, useParams } from '@solidjs/router';
+import { useMutation } from '@tanstack/solid-query';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
@@ -17,17 +18,9 @@ export const CreateWebhookPage: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const { form, Form, Field } = createForm({
-    onSubmit: async ({ name, url, secret, enabled, events }) => {
-      await createWebhook({
-        name,
-        url,
-        secret,
-        enabled,
-        events,
-        organizationId: params.organizationId,
-      });
-
+  const createWebhookMutation = useMutation(() => ({
+    mutationFn: createWebhook,
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
 
       createToast({
@@ -36,6 +29,19 @@ export const CreateWebhookPage: Component = () => {
       });
 
       navigate(`/organizations/${params.organizationId}/settings/webhooks`);
+    },
+  }));
+
+  const { form, Form, Field } = createForm({
+    onSubmit: async ({ name, url, secret, enabled, events }) => {
+      await createWebhookMutation.mutateAsync({
+        name,
+        url,
+        secret: secret === '' ? undefined : secret,
+        enabled,
+        events,
+        organizationId: params.organizationId,
+      });
     },
     schema: v.object({
       name: v.pipe(
