@@ -11,7 +11,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { fetchDeletedOrganizations, restoreOrganization } from '../organizations.services';
 
 export const DeletedOrganizationsPage: Component = () => {
-  const { t } = useI18n();
+  const { t, formatDate } = useI18n();
   const queryClient = useQueryClient();
   const { confirm } = useConfirmModal();
   const { config } = useConfig();
@@ -47,14 +47,6 @@ export const DeletedOrganizationsPage: Component = () => {
       return;
     }
     restoreMutation.mutate({ organizationId });
-  };
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
   };
 
   return (

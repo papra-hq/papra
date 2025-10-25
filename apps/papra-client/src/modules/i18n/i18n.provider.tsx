@@ -4,7 +4,7 @@ import { makePersisted } from '@solid-primitives/storage';
 import { createContext, createEffect, createResource, createSignal, Show, useContext } from 'solid-js';
 import { translations as defaultTranslations } from '../../locales/en.dictionary';
 import { locales } from './i18n.constants';
-import { createFragmentTranslator, createTranslator, findMatchingLocale } from './i18n.models';
+import { createDateFormatter, createFragmentTranslator, createRelativeTimeFormatter, createTranslator, findMatchingLocale } from './i18n.models';
 
 export type Locale = typeof locales[number]['key'];
 
@@ -14,6 +14,8 @@ const I18nContext = createContext<{
   getLocale: Accessor<Locale>;
   setLocale: Setter<Locale>;
   locales: typeof locales;
+  formatDate: ReturnType<typeof createDateFormatter>;
+  formatRelativeTime: ReturnType<typeof createRelativeTimeFormatter>;
 }>();
 
 export function useI18n() {
@@ -58,6 +60,8 @@ export const I18nProvider: ParentComponent = (props) => {
             getLocale,
             setLocale,
             locales,
+            formatDate: createDateFormatter({ getLocale }),
+            formatRelativeTime: createRelativeTimeFormatter({ getLocale }),
           }}
         >
           {props.children}

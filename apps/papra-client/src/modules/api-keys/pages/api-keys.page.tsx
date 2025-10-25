@@ -2,7 +2,6 @@ import type { Component } from 'solid-js';
 import type { ApiKey } from '../api-keys.types';
 import { A } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { format } from 'date-fns';
 import { For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -13,7 +12,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { deleteApiKey, fetchApiKeys } from '../api-keys.services';
 
 export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
-  const { t } = useI18n();
+  const { t, formatRelativeTime, formatDate } = useI18n();
   const { confirm } = useConfirmModal();
 
   const deleteApiKeyMutation = useMutation(() => ({
@@ -57,15 +56,15 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
       </div>
 
       <div>
-        <p class="text-muted-foreground text-xs">
+        {/* <p class="text-muted-foreground text-xs">
           {t('api-keys.list.card.last-used')}
           {' '}
-          {apiKey.lastUsedAt ? format(apiKey.lastUsedAt, 'MMM d, yyyy') : t('api-keys.list.card.never')}
-        </p>
-        <p class="text-muted-foreground text-xs">
+          {apiKey.lastUsedAt ? formatDate(apiKey.lastUsedAt) : t('api-keys.list.card.never')}
+        </p> */}
+        <p class="text-muted-foreground text-xs" title={formatDate(apiKey.createdAt, { dateStyle: 'short', timeStyle: 'long' })}>
           {t('api-keys.list.card.created')}
           {' '}
-          {format(apiKey.createdAt, 'MMM d, yyyy')}
+          {formatRelativeTime(apiKey.createdAt)}
         </p>
       </div>
 
