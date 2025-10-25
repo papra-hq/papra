@@ -1,5 +1,27 @@
 # @papra/docker
 
+## 25.10.2
+
+### Patch Changes
+
+- [#577](https://github.com/papra-hq/papra/pull/577) [`bd3e321`](https://github.com/papra-hq/papra/commit/bd3e321eb7216306faf3c0e1f3d2a7072f162d1f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved graceful shutdown
+
+- [#584](https://github.com/papra-hq/papra/pull/584) [`f4740ba`](https://github.com/papra-hq/papra/commit/f4740ba59a63a84978e49d0073f0057c69b2a65f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Reduced client bundle size by removing date-fns
+
+- [#580](https://github.com/papra-hq/papra/pull/580) [`1228486`](https://github.com/papra-hq/papra/commit/1228486f28ec28a100665e08cb62ab65e883f952) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added text extraction support for `.docx`, `.odt`, `.rtf`, `.pptx` and `.odp`
+
+- [#575](https://github.com/papra-hq/papra/pull/575) [`be25de7`](https://github.com/papra-hq/papra/commit/be25de77215c87614a7387dc8dc02d86535d0510) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added global errors handlers
+
+- [#582](https://github.com/papra-hq/papra/pull/582) [`182ccbb`](https://github.com/papra-hq/papra/commit/182ccbb30bdaed33ee565465fd2d79cdbc881d8b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed the webhook last triggered date always showing "never" in the webhook list.
+
+- [#583](https://github.com/papra-hq/papra/pull/583) [`b0abf7f`](https://github.com/papra-hq/papra/commit/b0abf7f78a851fccb4a5d9fce1400d0dc1020c02) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved the translation of dates and relative time
+
+- [#577](https://github.com/papra-hq/papra/pull/577) [`bd3e321`](https://github.com/papra-hq/papra/commit/bd3e321eb7216306faf3c0e1f3d2a7072f162d1f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to start either just the api, just the workers, or both (default)
+
+- [#585](https://github.com/papra-hq/papra/pull/585) [`a857370`](https://github.com/papra-hq/papra/commit/a857370343214566f22120dfeb2cb73e70561166) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix webhook creation form preventing to create webhooks without secrets
+
+- [#540](https://github.com/papra-hq/papra/pull/540) [`75340f0`](https://github.com/papra-hq/papra/commit/75340f0ce7b1cec7b2599a80599dcab7f3013e23) Thanks [@jodli](https://github.com/jodli)! - Added button to reapply a tagging rule
+
 ## 25.10.1
 
 ### Patch Changes
