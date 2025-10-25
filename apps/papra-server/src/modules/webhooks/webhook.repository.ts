@@ -2,7 +2,7 @@ import type { EventName } from '@papra/webhooks';
 import type { Database } from '../app/database/database.types';
 import type { Webhook, WebhookDeliveryInsert, WebhookEvent } from './webhooks.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, eq, getTableColumns } from 'drizzle-orm';
+import { and, eq, getTableColumns, max } from 'drizzle-orm';
 import { omitUndefined } from '../shared/utils';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 
@@ -113,14 +113,25 @@ async function deleteOrganizationWebhook({ db, webhookId, organizationId }: { db
 }
 
 async function getOrganizationWebhooks({ db, organizationId }: { db: Database; organizationId: string }) {
+  // Create a subquery for the latest delivery date per webhook
+  const latestDeliverySubquery = db
+    .select({
+      webhookId: webhookDeliveriesTable.webhookId,
+      lastTriggeredAt: max(webhookDeliveriesTable.createdAt).as('last_triggered_at'),
+    })
+    .from(webhookDeliveriesTable)
+    .groupBy(webhookDeliveriesTable.webhookId)
+    .as('latest_delivery');
+
   const rawWebhooks = await db
     .select()
     .from(webhooksTable)
     .leftJoin(webhookEventsTable, eq(webhooksTable.id, webhookEventsTable.webhookId))
+    .leftJoin(latestDeliverySubquery, eq(webhooksTable.id, latestDeliverySubquery.webhookId))
     .where(eq(webhooksTable.organizationId, organizationId));
 
   const webhooksRecord = rawWebhooks
-    .reduce((acc, { webhooks, webhook_events }) => {
+    .reduce((acc, { webhooks, webhook_events, latest_delivery }) => {
       const webhookId = webhooks.id;
       const webhookEvents = webhook_events;
 
@@ -128,6 +139,7 @@ async function getOrganizationWebhooks({ db, organizationId }: { db: Database; o
         acc[webhookId] = {
           ...webhooks,
           events: [],
+          lastTriggeredAt: latest_delivery?.lastTriggeredAt ?? null,
         };
       }
 
@@ -136,7 +148,7 @@ async function getOrganizationWebhooks({ db, organizationId }: { db: Database; o
       }
 
       return acc;
-    }, {} as Record<string, Webhook & { events: WebhookEvent[] }>);
+    }, {} as Record<string, Webhook & { events: WebhookEvent[]; lastTriggeredAt: Date | null }>);
 
   return { webhooks: Object.values(webhooksRecord) };
 }
