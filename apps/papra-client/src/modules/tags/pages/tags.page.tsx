@@ -7,9 +7,9 @@ import { A, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { createForm } from '@/modules/shared/form/form';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -355,7 +355,7 @@ export const TagsPage: Component = () => {
                           </A>
                         </TableCell>
                         <TableCell class="text-muted-foreground" title={tag.createdAt.toLocaleString()}>
-                          {timeAgo({ date: tag.createdAt })}
+                          <RelativeTime date={tag.createdAt} />
                         </TableCell>
                         <TableCell>
                           <div class="flex gap-2 justify-end">

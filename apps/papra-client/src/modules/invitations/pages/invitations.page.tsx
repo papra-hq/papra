@@ -2,8 +2,8 @@ import type { Component } from 'solid-js';
 import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { For, Show } from 'solid-js';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
@@ -56,7 +56,7 @@ export const InvitationsPage: Component = () => {
       {
         header: t('invitations.list.headers.created'),
         accessorKey: 'createdAt',
-        cell: data => <time dateTime={data.getValue()}>{timeAgo({ date: data.getValue() })}</time>,
+        cell: data => <RelativeTime date={data.getValue()} />,
       },
       {
         header: () => <div class="text-right">{t('invitations.list.headers.actions')}</div>,
