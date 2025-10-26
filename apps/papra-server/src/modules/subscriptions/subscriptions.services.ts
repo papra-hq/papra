@@ -5,7 +5,7 @@ import { buildUrl, injectArguments, safely } from '@corentinth/chisels';
 import Stripe from 'stripe';
 import { getClientBaseUrl } from '../config/config.models';
 import { createLogger } from '../shared/logger/logger';
-import { isNil } from '../shared/utils';
+import { isNil, isNonEmptyString } from '../shared/utils';
 
 export type SubscriptionsServices = ReturnType<typeof createSubscriptionsServices>;
 
@@ -20,6 +20,9 @@ export function createSubscriptionsServices({ config }: { config: Config }) {
       getCustomerPortalUrl,
       getCheckoutSession,
       getCoupon,
+      cancelSubscription,
+      expireActiveCheckoutSessions,
+      getSubscription,
     },
     { stripeClient, config },
   );
@@ -155,4 +158,56 @@ async function getCoupon({ stripeClient, couponId, logger = createLogger({ names
       percentOff: coupon.percent_off ?? undefined,
     },
   };
+}
+
+async function cancelSubscription({ stripeClient, subscriptionId }: { stripeClient: Stripe; subscriptionId: string }) {
+  await stripeClient.subscriptions.cancel(subscriptionId);
+
+  return { success: true };
+}
+
+async function expireActiveCheckoutSessions({ stripeClient, customerId, logger = createLogger({ namespace: 'subscriptions:services:expireActiveCheckoutSessions' }) }: { stripeClient: Stripe; customerId: string; logger?: Logger }) {
+  // List all open checkout sessions for this customer
+  // Note: Checkout sessions auto-expire after 24h, so 100 limit is typically sufficient
+  // For edge cases with 100+ sessions, we paginate through all results
+  let hasMore = true;
+  let startingAfter: string | undefined;
+  const sessionsIds = new Set<string>();
+
+  while (hasMore) {
+    const sessions = await stripeClient.checkout.sessions.list({
+      customer: customerId,
+      status: 'open',
+      limit: 100,
+      ...(isNonEmptyString(startingAfter) ? { starting_after: startingAfter } : {}),
+    });
+
+    sessions.data.forEach(({ id }) => sessionsIds.add(id));
+    hasMore = sessions.has_more;
+
+    const lastSession = sessions.data[sessions.data.length - 1];
+    if (lastSession) {
+      startingAfter = lastSession.id;
+    }
+  }
+
+  // Expire each open session
+  await Promise.allSettled(
+    Array.from(sessionsIds).map(async (sessionId) => {
+      try {
+        await stripeClient.checkout.sessions.expire(sessionId);
+        logger.info({ customerId, sessionId }, 'Expired checkout session');
+      } catch (error) {
+        logger.warn({ customerId, sessionId, error }, 'Failed to expire checkout session');
+      }
+    }),
+  );
+
+  logger.info({ customerId, totalSessions: sessionsIds.size }, 'Expired active checkout sessions');
+}
+
+async function getSubscription({ stripeClient, subscriptionId }: { stripeClient: Stripe; subscriptionId: string }) {
+  const subscription = await stripeClient.subscriptions.retrieve(subscriptionId);
+
+  return { subscription };
 }

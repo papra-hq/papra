@@ -94,42 +94,6 @@ describe('subscriptions models', () => {
         expect(doesSubscriptionBlockDeletion(subscription)).toBe(true);
       });
 
-      test('subscription awaiting payment completion blocks deletion', () => {
-        const subscription = {
-          id: 'sub_123',
-          organizationId: 'org_123',
-          customerId: 'cus_123',
-          planId: 'plan_pro',
-          status: 'incomplete',
-          seatsCount: 5,
-          currentPeriodStart: new Date('2025-10-01'),
-          currentPeriodEnd: new Date('2025-11-01'),
-          cancelAtPeriodEnd: false,
-          createdAt: new Date('2025-10-01'),
-          updatedAt: new Date('2025-10-01'),
-        };
-
-        expect(doesSubscriptionBlockDeletion(subscription)).toBe(true);
-      });
-
-      test('subscription with failed payment setup blocks deletion to prevent data loss', () => {
-        const subscription = {
-          id: 'sub_123',
-          organizationId: 'org_123',
-          customerId: 'cus_123',
-          planId: 'plan_pro',
-          status: 'incomplete_expired',
-          seatsCount: 5,
-          currentPeriodStart: new Date('2025-10-01'),
-          currentPeriodEnd: new Date('2025-11-01'),
-          cancelAtPeriodEnd: false,
-          createdAt: new Date('2025-10-01'),
-          updatedAt: new Date('2025-10-01'),
-        };
-
-        expect(doesSubscriptionBlockDeletion(subscription)).toBe(true);
-      });
-
       test('subscription with failed payment still maintains access and blocks deletion', () => {
         const subscription = {
           id: 'sub_123',
@@ -187,6 +151,43 @@ describe('subscriptions models', () => {
           currentPeriodStart: new Date('2025-10-01'),
           currentPeriodEnd: new Date('2025-11-01'),
           cancelAtPeriodEnd: true, // User canceled via customer portal, will end at period end
+          createdAt: new Date('2025-10-01'),
+          updatedAt: new Date('2025-10-01'),
+
+        };
+
+        expect(doesSubscriptionBlockDeletion(subscription)).toBe(false);
+      });
+
+      test('incomplete subscription allows deletion since payment was never completed', () => {
+        const subscription = {
+          id: 'sub_123',
+          organizationId: 'org_123',
+          customerId: 'cus_123',
+          planId: 'plan_pro',
+          status: 'incomplete',
+          seatsCount: 5,
+          currentPeriodStart: new Date('2025-10-01'),
+          currentPeriodEnd: new Date('2025-11-01'),
+          cancelAtPeriodEnd: false,
+          createdAt: new Date('2025-10-01'),
+          updatedAt: new Date('2025-10-01'),
+        };
+
+        expect(doesSubscriptionBlockDeletion(subscription)).toBe(false);
+      });
+
+      test('incomplete_expired subscription allows deletion since payment failed to complete', () => {
+        const subscription = {
+          id: 'sub_123',
+          organizationId: 'org_123',
+          customerId: 'cus_123',
+          planId: 'plan_pro',
+          status: 'incomplete_expired',
+          seatsCount: 5,
+          currentPeriodStart: new Date('2025-10-01'),
+          currentPeriodEnd: new Date('2025-11-01'),
+          cancelAtPeriodEnd: false,
           createdAt: new Date('2025-10-01'),
           updatedAt: new Date('2025-10-01'),
         };
