@@ -179,14 +179,16 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
       const { organizationPlan } = await plansRepository.getOrganizationPlanById({ planId: subscription?.planId ?? FREE_PLAN_ID });
 
       return context.json({
-        subscription: pick(subscription, [
-          'status',
-          'currentPeriodEnd',
-          'currentPeriodStart',
-          'cancelAtPeriodEnd',
-          'planId',
-          'seatsCount',
-        ]),
+        subscription: subscription
+          ? pick(subscription, [
+              'status',
+              'currentPeriodEnd',
+              'currentPeriodStart',
+              'cancelAtPeriodEnd',
+              'planId',
+              'seatsCount',
+            ])
+          : null,
         plan: organizationPlan,
       });
     },
