@@ -27,6 +27,7 @@
     "tailwind-merge": "^2.6.0",
     "unocss-preset-animations": "^1.2.1",
     "yaml": "^2.8.0",
+    "zod": "^3.25.67",
     "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
