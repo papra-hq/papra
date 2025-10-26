@@ -60,7 +60,6 @@
     "@playwright/test": "^1.53.1",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "jsdom": "^25.0.1",
     "tinyglobby": "^0.2.14",
     "tsx": "^4.20.3",
     "typescript": "catalog:",
