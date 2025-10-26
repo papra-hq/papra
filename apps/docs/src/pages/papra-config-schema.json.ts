@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import type { ConfigDefinition } from 'figue';
-import { z } from 'astro:content';
 import { mapValues } from 'lodash-es';
+import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { configDefinition } from '../../../papra-server/src/modules/config/config';
 
