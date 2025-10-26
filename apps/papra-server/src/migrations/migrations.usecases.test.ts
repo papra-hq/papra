@@ -1,4 +1,5 @@
 import type { Migration } from './migrations.types';
+import { createNoopLogger } from '@crowlog/logger';
 import { sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
@@ -50,7 +51,7 @@ describe('migrations usecases', () => {
 
       const migrations = [createTableUserMigration, createTableOrganizationMigration];
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       const migrationsInDb = await db.select().from(migrationsTable);
 
@@ -61,7 +62,7 @@ describe('migrations usecases', () => {
 
       migrations.push(createTableDocumentMigration);
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       const migrationsInDb2 = await db.select().from(migrationsTable);
 
@@ -92,7 +93,7 @@ describe('migrations usecases', () => {
 
       const migrations = [createTableUserMigration, createTableDocumentMigration];
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       const initialMigrations = await db.select().from(migrationsTable);
 
@@ -131,7 +132,7 @@ describe('migrations usecases', () => {
     test('when the last migration in the database does not exist in the migrations list, an error is thrown', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations: [createTableUserMigration] });
+      await runMigrations({ db, migrations: [createTableUserMigration], logger: createNoopLogger() });
 
       await expect(
         rollbackLastAppliedMigration({ db, migrations: [] }),

@@ -1,4 +1,5 @@
 import type { Migration } from './migrations.types';
+import { createNoopLogger } from '@crowlog/logger';
 import { sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
@@ -26,7 +27,7 @@ describe('migrations registry', () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
       // This will throw if any migration is not able to be applied
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       // check foreign keys are enabled
       const { rows } = await db.run(sql`pragma foreign_keys;`);
@@ -39,7 +40,7 @@ describe('migrations registry', () => {
 
       for (const migrationCombination of migrationCombinations) {
         const { db } = setupDatabase({ url: ':memory:' });
-        await runMigrations({ db, migrations: migrationCombination });
+        await runMigrations({ db, migrations: migrationCombination, logger: createNoopLogger() });
       }
     });
 
@@ -51,9 +52,9 @@ describe('migrations registry', () => {
         const { db } = setupDatabase({ url: ':memory:' });
         const previousMigration = migrationCombinations[index - 1] ?? [] as Migration[];
 
-        await runMigrations({ db, migrations: previousMigration });
+        await runMigrations({ db, migrations: previousMigration, logger: createNoopLogger() });
         const previousDbState = await serializeSchema({ db });
-        await runMigrations({ db, migrations: migrationCombination });
+        await runMigrations({ db, migrations: migrationCombination, logger: createNoopLogger() });
         await rollbackLastAppliedMigration({ db });
 
         const currentDbState = await serializeSchema({ db });
@@ -65,7 +66,7 @@ describe('migrations registry', () => {
     test('regression test of the database state after running migrations, update the snapshot when the database state changes', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).toMatchInlineSnapshot(`
         "CREATE UNIQUE INDEX "api_keys_key_hash_unique" ON "api_keys" ("key_hash");
@@ -131,12 +132,12 @@ describe('migrations registry', () => {
     test('if for some reasons we drop the migrations table, we can reapply all migrations', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       const dbState = await serializeSchema({ db });
 
       await db.run(sql`DROP TABLE migrations`);
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).to.eq(dbState);
     });
