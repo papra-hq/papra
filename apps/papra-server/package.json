@@ -3,7 +3,6 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@10.12.3",
   "description": "Papra app server",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",

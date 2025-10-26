@@ -2,7 +2,7 @@
   "name": "@papra/root",
   "type": "module",
   "version": "0.3.0",
-  "packageManager": "pnpm@10.12.3",
+  "packageManager": "pnpm@10.19.0",
   "description": "Papra document management monorepo root",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",

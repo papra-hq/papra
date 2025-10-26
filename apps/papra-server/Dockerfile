@@ -7,7 +7,7 @@ FROM node:${NODE_VERSION}-slim AS base
 LABEL fly_launch_runtime="Node.js"
 
 # Install pnpm
-ARG PNPM_VERSION=10.12.3
+ARG PNPM_VERSION=10.19.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 
 # Node.js app lives here
