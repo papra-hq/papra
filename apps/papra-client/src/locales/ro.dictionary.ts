@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Nu s-a putut actualiza regula de etichetare',
   'tagging-rules.update.submit': 'Actualizează regula',
   'tagging-rules.update.cancel': 'Anulează',
+  'tagging-rules.apply.button': 'Aplicați la documente existente',
+  'tagging-rules.apply.confirm.title': 'Aplicați regula la documente existente?',
+  'tagging-rules.apply.confirm.description': 'Aceasta va verifica toate documentele existente din organizația dvs. și va aplica etichetele unde condițiile corespund. Procesarea va avea loc în fundal.',
+  'tagging-rules.apply.confirm.button': 'Aplicați regula',
+  'tagging-rules.apply.success': 'Aplicarea regulii a fost pornită în fundal',
+  'tagging-rules.apply.error': 'Eroare la pornirea aplicării regulii',
+  'tagging-rules.apply.processing': 'Se pornește...',
 
   // Intake emails
 
@@ -591,6 +598,31 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
   'api-errors.organization.has_active_subscription': 'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Utilizatorul nu a fost găsit',
+  'api-errors.FAILED_TO_CREATE_USER': 'Eroare la crearea utilizatorului',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Eroare la crearea sesiunii',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Eroare la actualizarea utilizatorului',
+  'api-errors.FAILED_TO_GET_SESSION': 'Eroare la obținerea sesiunii',
+  'api-errors.INVALID_PASSWORD': 'Parolă invalidă',
+  'api-errors.INVALID_EMAIL': 'Email invalid',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Email-ul sau parola este incorectă, sau contul nu există.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Contul social este deja asociat',
+  'api-errors.PROVIDER_NOT_FOUND': 'Furnizorul nu a fost găsit',
+  'api-errors.INVALID_TOKEN': 'Token invalid',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Token ID nu este suportat',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Eroare la obținerea informațiilor utilizatorului',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Email-ul utilizatorului nu a fost găsit',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email-ul nu este verificat',
+  'api-errors.PASSWORD_TOO_SHORT': 'Parolă prea scurtă',
+  'api-errors.PASSWORD_TOO_LONG': 'Parolă prea lungă',
+  'api-errors.USER_ALREADY_EXISTS': 'Există deja un utilizator cu acest email',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'Email-ul nu poate fi actualizat',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Contul de autentificare nu a fost găsit',
+  'api-errors.SESSION_EXPIRED': 'Sesiunea a expirat',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Eroare la disocierea ultimului cont',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Contul nu a fost găsit',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'Utilizatorul are deja o parolă',
 
   // Not found
 

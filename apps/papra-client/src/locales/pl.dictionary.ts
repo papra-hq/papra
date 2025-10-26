@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Nie udało się zaktualizować reguły tagowania',
   'tagging-rules.update.submit': 'Zaktualizuj regułę',
   'tagging-rules.update.cancel': 'Anuluj',
+  'tagging-rules.apply.button': 'Zastosuj do istniejących dokumentów',
+  'tagging-rules.apply.confirm.title': 'Zastosować regułę do istniejących dokumentów?',
+  'tagging-rules.apply.confirm.description': 'Sprawdzi to wszystkie istniejące dokumenty w organizacji i zastosuje tagi tam, gdzie warunki są spełnione. Przetwarzanie odbędzie się w tle.',
+  'tagging-rules.apply.confirm.button': 'Zastosuj regułę',
+  'tagging-rules.apply.success': 'Rozpoczęto stosowanie reguły w tle',
+  'tagging-rules.apply.error': 'Nie udało się rozpocząć stosowania reguły',
+  'tagging-rules.apply.processing': 'Uruchamianie...',
 
   // Intake emails
 
@@ -591,6 +598,31 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Nieprawidłowa lokalizacja aplikacji. Jeśli hostujesz Papra, upewnij się, że zmienna środowiskowa APP_BASE_URL odpowiada bieżącemu adresowi URL. Aby uzyskać więcej informacji, zobacz https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Osiągnięto maksymalną liczbę członków i oczekujących zaproszeń dla tej organizacji. Zaktualizuj swój plan, aby dodać więcej członków.',
   'api-errors.organization.has_active_subscription': 'Nie można usunąć organizacji z aktywną subskrypcją. Proszę najpierw anulować subskrypcję za pomocą przycisku Zarządzaj subskrypcją powyżej.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Nie znaleziono użytkownika',
+  'api-errors.FAILED_TO_CREATE_USER': 'Nie udało się utworzyć użytkownika',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Nie udało się utworzyć sesji',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Nie udało się zaktualizować użytkownika',
+  'api-errors.FAILED_TO_GET_SESSION': 'Nie udało się pobrać sesji',
+  'api-errors.INVALID_PASSWORD': 'Nieprawidłowe hasło',
+  'api-errors.INVALID_EMAIL': 'Nieprawidłowy email',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Email lub hasło jest nieprawidłowe, lub konto nie istnieje.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Konto społecznościowe już połączone',
+  'api-errors.PROVIDER_NOT_FOUND': 'Nie znaleziono dostawcy',
+  'api-errors.INVALID_TOKEN': 'Nieprawidłowy token',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Token ID nie jest obsługiwany',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Nie udało się pobrać informacji o użytkowniku',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Nie znaleziono emaila użytkownika',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email nie został zweryfikowany',
+  'api-errors.PASSWORD_TOO_SHORT': 'Hasło zbyt krótkie',
+  'api-errors.PASSWORD_TOO_LONG': 'Hasło zbyt długie',
+  'api-errors.USER_ALREADY_EXISTS': 'Użytkownik z tym emailem już istnieje',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'Email nie może być zaktualizowany',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Nie znaleziono konta uwierzytelniającego',
+  'api-errors.SESSION_EXPIRED': 'Sesja wygasła',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Nie udało się odłączyć ostatniego konta',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Nie znaleziono konta',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'Użytkownik ma już hasło',
 
   // Not found
 

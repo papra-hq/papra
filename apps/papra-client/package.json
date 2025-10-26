@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@branchlet/core": "^1.0.0",
-    "@corentinth/chisels": "^1.3.1",
+    "@corentinth/chisels": "catalog:",
     "@kobalte/core": "^0.13.10",
     "@kobalte/utils": "^0.9.1",
     "@modular-forms/solid": "^0.25.1",
