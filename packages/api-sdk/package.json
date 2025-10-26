@@ -43,7 +43,7 @@
     "dev": "pnpm build:watch"
   },
   "dependencies": {
-    "@corentinth/chisels": "^1.3.0",
+    "@corentinth/chisels": "catalog:",
     "ofetch": "^1.4.1"
   },
   "devDependencies": {

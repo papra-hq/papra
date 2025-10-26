@@ -404,6 +404,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Échec de la mise à jour de la règle de catégorisation',
   'tagging-rules.update.submit': 'Mettre à jour la règle',
   'tagging-rules.update.cancel': 'Annuler',
+  'tagging-rules.apply.button': 'Appliquer aux documents existants',
+  'tagging-rules.apply.confirm.title': 'Appliquer la règle aux documents existants ?',
+  'tagging-rules.apply.confirm.description': 'Cela vérifiera tous les documents existants dans votre organisation et appliquera les tags où les conditions correspondent. Le traitement se fera en arrière-plan.',
+  'tagging-rules.apply.confirm.button': 'Appliquer la règle',
+  'tagging-rules.apply.success': 'Application de la règle démarrée en arrière-plan',
+  'tagging-rules.apply.error': 'Échec du démarrage de l\'application de la règle',
+  'tagging-rules.apply.processing': 'Démarrage...',
 
   // Intake emails
 
@@ -591,6 +598,31 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Origine de l\'application invalide. Si vous hébergez Papra, assurez-vous que la variable d\'environnement APP_BASE_URL correspond à votre URL actuelle. Pour plus de détails, consultez https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Le nombre maximum de membres et d\'invitations en attente pour cette organisation a été atteint. Veuillez mettre à niveau votre plan pour ajouter plus de membres.',
   'api-errors.organization.has_active_subscription': 'Impossible de supprimer l\'organisation avec un abonnement actif. Veuillez d\'abord annuler votre abonnement en utilisant le bouton Gérer l\'abonnement ci-dessus.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Utilisateur introuvable',
+  'api-errors.FAILED_TO_CREATE_USER': 'Échec de la création de l\'utilisateur',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Échec de la création de la session',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Échec de la mise à jour de l\'utilisateur',
+  'api-errors.FAILED_TO_GET_SESSION': 'Échec de la récupération de la session',
+  'api-errors.INVALID_PASSWORD': 'Mot de passe invalide',
+  'api-errors.INVALID_EMAIL': 'Email invalide',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'L\'email ou le mot de passe est incorrect, ou le compte n\'existe pas.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Compte social déjà associé',
+  'api-errors.PROVIDER_NOT_FOUND': 'Fournisseur introuvable',
+  'api-errors.INVALID_TOKEN': 'Jeton invalide',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Jeton d\'identité non pris en charge',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Échec de la récupération des informations utilisateur',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Email de l\'utilisateur introuvable',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email non vérifié',
+  'api-errors.PASSWORD_TOO_SHORT': 'Mot de passe trop court',
+  'api-errors.PASSWORD_TOO_LONG': 'Mot de passe trop long',
+  'api-errors.USER_ALREADY_EXISTS': 'Un utilisateur avec cet email existe déjà',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'L\'email ne peut pas être modifié',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Compte d\'identification introuvable',
+  'api-errors.SESSION_EXPIRED': 'Session expirée',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Échec de la dissociation du dernier compte',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Compte introuvable',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'L\'utilisateur a déjà un mot de passe',
 
   // Not found
 
