@@ -17,7 +17,6 @@ import { IdentifyUser } from './modules/tracking/components/identify-user.compon
 import { PageViewTracker } from './modules/tracking/components/pageview-tracker.component';
 import { Toaster } from './modules/ui/components/sonner';
 import { routes } from './routes';
-import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import './app.css';
 
