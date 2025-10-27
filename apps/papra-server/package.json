@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
-    "@crowlog/pretty": "^2.0.0",
+    "@crowlog/pretty": "^2.0.1",
     "@testcontainers/azurite": "^11.5.1",
     "@testcontainers/localstack": "^11.5.1",
     "@total-typescript/ts-reset": "^0.6.1",
