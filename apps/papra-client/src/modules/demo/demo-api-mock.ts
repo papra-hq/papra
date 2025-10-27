@@ -94,7 +94,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/documents',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
@@ -197,7 +197,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         searchQuery: rawSearchQuery = '',
       } = query ?? {};
 
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const documents = await findMany(documentStorage, document => document?.organizationId === organizationId);
@@ -221,7 +221,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/documents/deleted',
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const deletedDocuments = await findMany(
