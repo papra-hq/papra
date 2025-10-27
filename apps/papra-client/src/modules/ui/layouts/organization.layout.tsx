@@ -9,6 +9,7 @@ import { useConfig } from '@/modules/config/config.provider';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import { queryClient } from '@/modules/shared/query/query-client';
 import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
@@ -218,6 +219,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
         const status = getErrorStatus(error);
 
         if (status && [401, 403].includes(status)) {
+          queryClient.invalidateQueries({ queryKey: ['organizations'] });
           navigate('/');
         }
       }
