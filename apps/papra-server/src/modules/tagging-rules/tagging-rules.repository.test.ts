@@ -36,6 +36,7 @@ describe('tagging-rules repository', () => {
           id: 'tr_1',
           name: 'Enabled Rule 1',
           organizationId: 'org_1',
+          conditionMatchMode: 'all',
           updatedAt: new Date('2023-04-01T00:00:00.000Z'),
           actions: [
             {

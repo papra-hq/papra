@@ -7,7 +7,7 @@ import type { Tag } from '../tags/tags.types';
 import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import type { TaggingRulesRepository } from './tagging-rules.repository';
-import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
+import type { ConditionMatchMode, TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { safely, safelySync } from '@corentinth/chisels';
 import { uniq } from 'lodash-es';
 import { createError } from '../shared/errors/errors';
@@ -15,12 +15,14 @@ import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { addTagToDocument } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
+import { CONDITION_MATCH_MODES } from './tagging-rules.constants';
 import { getDocumentFieldValue } from './tagging-rules.models';
 
 export async function createTaggingRule({
   name,
   description,
   enabled,
+  conditionMatchMode,
   conditions,
   tagIds,
   organizationId,
@@ -30,6 +32,7 @@ export async function createTaggingRule({
   name: string;
   description: string | undefined;
   enabled: boolean | undefined;
+  conditionMatchMode: ConditionMatchMode | undefined;
   conditions: {
     field: TaggingRuleField;
     operator: TaggingRuleOperator;
@@ -45,6 +48,7 @@ export async function createTaggingRule({
       name,
       description,
       enabled,
+      conditionMatchMode,
       organizationId,
     },
   });
@@ -74,6 +78,7 @@ export async function applyTaggingRule({
   document: Document;
   taggingRule: {
     id: string;
+    conditionMatchMode?: ConditionMatchMode;
     conditions: Array<{
       operator: string;
       field: string;
@@ -90,24 +95,36 @@ export async function applyTaggingRule({
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   logger?: Logger;
 }): Promise<{ appliedTagIds: string[] }> {
-  // Check if all conditions match
-  const allConditionsMatch = taggingRule.conditions.every(({ operator, field, value: conditionValue, isCaseSensitive }) => {
-    const { validate } = taggingRuleOperatorValidatorRegistry.getTaggingRuleOperatorValidator({ operator });
-    const { fieldValue } = getDocumentFieldValue({ document, field });
+  // If there are no conditions, the rule always matches
 
-    const [isValid, error] = safelySync(() => validate({ conditionValue, fieldValue, isCaseSensitive }));
+  const hasConditions = taggingRule.conditions.length > 0;
 
-    if (error) {
-      logger.error({ error, conditionValue, fieldValue, isCaseSensitive }, 'Failed to validate tagging rule condition');
-      return false;
+  if (hasConditions) {
+    // Validate each condition
+    const validateCondition = (condition: { operator: string; field: string; value: string; isCaseSensitive: boolean }) => {
+      const { operator, field, value: conditionValue, isCaseSensitive } = condition;
+      const { validate } = taggingRuleOperatorValidatorRegistry.getTaggingRuleOperatorValidator({ operator });
+      const { fieldValue } = getDocumentFieldValue({ document, field });
+
+      const [isValid, error] = safelySync(() => validate({ conditionValue, fieldValue, isCaseSensitive }));
+
+      if (error) {
+        logger.error({ error, conditionValue, fieldValue, isCaseSensitive }, 'Failed to validate tagging rule condition');
+        return false;
+      }
+
+      return isValid;
+    };
+
+    // Check if conditions match based on match mode (default to 'all' for backwards compatibility)
+    const conditionsMatch = taggingRule.conditionMatchMode === CONDITION_MATCH_MODES.ANY
+      ? taggingRule.conditions.some(validateCondition)
+      : taggingRule.conditions.every(validateCondition);
+
+    // If conditions don't match, return empty array
+    if (!conditionsMatch) {
+      return { appliedTagIds: [] };
     }
-
-    return isValid;
-  });
-
-  // If conditions don't match, return empty array
-  if (!allConditionsMatch) {
-    return { appliedTagIds: [] };
   }
 
   // Get tags to apply from the rule's actions
