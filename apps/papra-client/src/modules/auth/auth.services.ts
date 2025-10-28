@@ -4,6 +4,7 @@ import type { SsoProviderConfig } from './auth.types';
 import { genericOAuthClient } from 'better-auth/client/plugins';
 import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
 import { buildTimeConfig } from '../config/config';
+import { queryClient } from '../shared/query/query-client';
 import { trackingServices } from '../tracking/tracking.services';
 import { createDemoAuthClient } from './auth.demo.services';
 
@@ -27,6 +28,8 @@ export function createAuthClient() {
       trackingServices.capture({ event: 'User logged out' });
       const result = await client.signOut();
       trackingServices.reset();
+
+      queryClient.clear();
 
       return result;
     },
