@@ -356,8 +356,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Tagging rules
 
-  'tagging-rules.field.name': 'nome do documento',
-  'tagging-rules.field.content': 'conteúdo do documento',
+  'tagging-rules.field.name': 'o nome do documento',
+  'tagging-rules.field.content': 'o conteúdo do documento',
   'tagging-rules.operator.equals': 'é igual a',
   'tagging-rules.operator.not-equals': 'é diferente de',
   'tagging-rules.operator.contains': 'contém',
@@ -387,8 +387,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.description.placeholder': 'Exemplo: Marcar documentos com \'fatura\' no nome',
   'tagging-rules.form.description.max-length': 'A descrição deve ter menos de 256 caracteres',
   'tagging-rules.form.conditions.label': 'Condições',
-  'tagging-rules.form.conditions.description': 'Defina as condições que devem ser atendidas para que a regra seja aplicada. Todas as condições devem ser atendidas.',
+  'tagging-rules.form.conditions.description': 'Defina as condições que devem ser atendidas para que a regra seja aplicada. Sem condições significa que a regra será aplicada a todos os documentos',
   'tagging-rules.form.conditions.add-condition': 'Adicionar condição',
+  'tagging-rules.form.conditions.connector.when': 'Quando',
+  'tagging-rules.form.conditions.connector.and': 'e que',
+  'tagging-rules.form.conditions.connector.or': 'ou que',
+  'tagging-rules.condition-match-mode.all': 'Todas as condições devem corresponder',
+  'tagging-rules.condition-match-mode.any': 'Qualquer condição deve corresponder',
   'tagging-rules.form.conditions.no-conditions.title': 'Nenhuma condição',
   'tagging-rules.form.conditions.no-conditions.description': 'Você não adicionou nenhuma condição a esta regra. Ela será aplicada a todos os documentos.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Aplicar regra sem condições',

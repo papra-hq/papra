@@ -27,3 +27,13 @@ export const TAGGING_RULE_FIELDS_LOCALIZATION_KEYS: Record<(typeof TAGGING_RULE_
   [TAGGING_RULE_FIELDS.DOCUMENT_NAME]: 'tagging-rules.field.name',
   [TAGGING_RULE_FIELDS.DOCUMENT_CONTENT]: 'tagging-rules.field.content',
 } as const;
+
+export const CONDITION_MATCH_MODES = {
+  ALL: 'all',
+  ANY: 'any',
+} as const;
+
+export const CONDITION_MATCH_MODES_LOCALIZATION_KEYS: Record<(typeof CONDITION_MATCH_MODES)[keyof typeof CONDITION_MATCH_MODES], TranslationKeys> = {
+  [CONDITION_MATCH_MODES.ALL]: 'tagging-rules.condition-match-mode.all',
+  [CONDITION_MATCH_MODES.ANY]: 'tagging-rules.condition-match-mode.any',
+} as const;

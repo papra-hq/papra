@@ -356,8 +356,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Tagging rules
 
-  'tagging-rules.field.name': 'nume document',
-  'tagging-rules.field.content': 'conținut document',
+  'tagging-rules.field.name': 'numele documentului',
+  'tagging-rules.field.content': 'conținutul documentului',
   'tagging-rules.operator.equals': 'egal cu',
   'tagging-rules.operator.not-equals': 'nu este egal cu',
   'tagging-rules.operator.contains': 'conține',
@@ -387,8 +387,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.description.placeholder': 'Exemplu: Etichetează documentele cu \'factură\' în nume',
   'tagging-rules.form.description.max-length': 'Descrierea trebuie să aibă mai puțin de 256 de caractere',
   'tagging-rules.form.conditions.label': 'Condiții',
-  'tagging-rules.form.conditions.description': 'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Toate condițiile trebuie îndeplinite pentru ca regula să se aplice.',
+  'tagging-rules.form.conditions.description': 'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Fără condiții înseamnă că regula se va aplica tuturor documentelor',
   'tagging-rules.form.conditions.add-condition': 'Adaugă condiție',
+  'tagging-rules.form.conditions.connector.when': 'Când',
+  'tagging-rules.form.conditions.connector.and': 'și că',
+  'tagging-rules.form.conditions.connector.or': 'sau că',
+  'tagging-rules.condition-match-mode.all': 'Toate condițiile trebuie îndeplinite',
+  'tagging-rules.condition-match-mode.any': 'Orice condiție trebuie îndeplinită',
   'tagging-rules.form.conditions.no-conditions.title': 'Nicio condiție',
   'tagging-rules.form.conditions.no-conditions.description': 'Nu ai adăugat nicio condiție acestei reguli. Această regula va aplica etichetele sale tuturor documentelor.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Aplică regula fara condiții',

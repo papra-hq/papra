@@ -78,6 +78,13 @@
       "when": 1760016118956,
       "tag": "0010_soft-delete-organizations",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1761645190314,
+      "tag": "0011_tagging-rule-condition-match-mode",
+      "breakpoints": true
     }
   ]
 }

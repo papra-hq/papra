@@ -1,5 +1,5 @@
 import type { Database } from '../app/database/database.types';
-import type { DbInsertableTaggingRule, TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
+import type { ConditionMatchMode, DbInsertableTaggingRule, TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq } from 'drizzle-orm';
 import { createError } from '../shared/errors/errors';
@@ -103,17 +103,18 @@ async function updateOrganizationTaggingRule({
     name: string;
     description: string | undefined;
     enabled: boolean | undefined;
+    conditionMatchMode: ConditionMatchMode | undefined;
     conditions: { field: TaggingRuleField; operator: TaggingRuleOperator; value: string }[];
     tagIds: string[];
   };
   db: Database;
 }) {
-  const { name, description, enabled, conditions, tagIds } = taggingRule;
+  const { name, description, enabled, conditionMatchMode, conditions, tagIds } = taggingRule;
 
   await db.transaction(async (tx) => {
     const [updatedTaggingRule] = await tx
       .update(taggingRulesTable)
-      .set(omitUndefined({ name, description, enabled }))
+      .set(omitUndefined({ name, description, enabled, conditionMatchMode }))
       .where(and(
         eq(taggingRulesTable.id, taggingRuleId),
         eq(taggingRulesTable.organizationId, organizationId),

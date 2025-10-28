@@ -97,6 +97,34 @@ describe('tagging-rules usecases', () => {
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
     });
 
+    test('a rule without conditions and conditionMatchMode "any" applies tags to all documents', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
+      });
+
+      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        throw new Error('Document not found');
+      }
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+
+      const documentTags = await db.select().from(documentsTagsTable);
+
+      // Should still apply the tag even with conditionMatchMode 'any' and no conditions
+      expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
+    });
+
     test('an organization with no tagging rules will not apply any tag to a document', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
@@ -119,6 +147,138 @@ describe('tagging-rules usecases', () => {
 
       const documentTags = await db.select().from(documentsTagsTable);
 
+      expect(documentTags).to.eql([]);
+    });
+
+    test('when conditionMatchMode is "any", tags are applied when at least one condition matches', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+
+        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        taggingRuleConditions: [
+          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
+          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
+      });
+
+      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        throw new Error('Document not found');
+      }
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+
+      const documentTags = await db.select().from(documentsTagsTable);
+
+      // Tag should be applied because one condition (Invoice) matches
+      expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
+    });
+
+    test('when conditionMatchMode is "any", tags are not applied when no conditions match', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Contract 2024', originalName: 'Contract 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+
+        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        taggingRuleConditions: [
+          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
+          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
+      });
+
+      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        throw new Error('Document not found');
+      }
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+
+      const documentTags = await db.select().from(documentsTagsTable);
+
+      // Tag should not be applied because no conditions match
+      expect(documentTags).to.eql([]);
+    });
+
+    test('when conditionMatchMode is "all" (default), tags are applied only when all conditions match', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+
+        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
+        taggingRuleConditions: [
+          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
+          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: '2024' },
+        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
+      });
+
+      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        throw new Error('Document not found');
+      }
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+
+      const documentTags = await db.select().from(documentsTagsTable);
+
+      // Tag should be applied because all conditions match
+      expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
+    });
+
+    test('when conditionMatchMode is "all" (default), tags are not applied when only some conditions match', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+
+        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
+        taggingRuleConditions: [
+          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
+          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
+      });
+
+      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+
+      if (isNil(document)) {
+        throw new Error('Document not found');
+      }
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+
+      const documentTags = await db.select().from(documentsTagsTable);
+
+      // Tag should not be applied because only one condition matches (Invoice, not Receipt)
       expect(documentTags).to.eql([]);
     });
   });
