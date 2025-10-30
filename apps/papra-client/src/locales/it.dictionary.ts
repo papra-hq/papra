@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'Verifica la tua email',
   'auth.email-validation-required.description': 'Una email di verifica è stata inviata al tuo indirizzo email. Verifica il tuo indirizzo cliccando il link nell\'email.',
 
+  'auth.email-verification.success.title': 'Email verificata',
+  'auth.email-verification.success.description': 'La tua email è stata verificata con successo. Ora puoi accedere al tuo account.',
+  'auth.email-verification.success.login': 'Vai al login',
+  'auth.email-verification.error.title': 'Verifica fallita',
+  'auth.email-verification.error.description': 'Il link di verifica non è valido o è scaduto. Richiedi una nuova email di verifica effettuando l\'accesso.',
+  'auth.email-verification.error.back': 'Torna al login',
+
   'auth.legal-links.description': 'Continuando, confermi di aver letto e accettato i {{ terms }} e l\'{{ privacy }}.',
   'auth.legal-links.terms': 'Termini di servizio',
   'auth.legal-links.privacy': 'Informativa sulla privacy',

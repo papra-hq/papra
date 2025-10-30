@@ -68,6 +68,13 @@ export const translations = {
   'auth.email-validation-required.title': 'Verify your email',
   'auth.email-validation-required.description': 'A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.',
 
+  'auth.email-verification.success.title': 'Email verified',
+  'auth.email-verification.success.description': 'Your email has been successfully verified. You can now log in to your account.',
+  'auth.email-verification.success.login': 'Go to login',
+  'auth.email-verification.error.title': 'Verification failed',
+  'auth.email-verification.error.description': 'The verification link has expired or is invalid. Please request a new verification email by logging in.',
+  'auth.email-verification.error.back': 'Back to login',
+
   'auth.legal-links.description': 'By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.',
   'auth.legal-links.terms': 'Terms of Service',
   'auth.legal-links.privacy': 'Privacy Policy',
