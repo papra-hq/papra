@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
 import type { SsoProviderConfig } from '../auth.types';
+import { buildUrl } from '@corentinth/chisels';
 import { A, useNavigate } from '@solidjs/router';
 import { createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -11,6 +12,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
+import { authPagesPaths } from '../auth.constants';
 import { getEnabledSsoProviderConfigs } from '../auth.models';
 import { authWithProvider, signUp } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
@@ -29,7 +31,8 @@ export const EmailRegisterForm: Component = () => {
         email,
         password,
         name,
-        callbackURL: config.baseUrl,
+        // This URL is where the user will be redirected after email verification
+        callbackURL: buildUrl({ baseUrl: config.baseUrl, path: authPagesPaths.emailVerification }),
       });
 
       if (error) {

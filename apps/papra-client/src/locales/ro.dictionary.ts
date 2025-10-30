@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'Verifică-ți email-ul',
   'auth.email-validation-required.description': 'A fost trimis un e-mail de verificare la adresa ta de e-mail. Te rugăm să îți verifici adresa de e-mail dând click pe linkul din e-mail.',
 
+  'auth.email-verification.success.title': 'Email verificat',
+  'auth.email-verification.success.description': 'Email-ul tău a fost verificat cu succes. Acum te poți autentifica în contul tău.',
+  'auth.email-verification.success.login': 'Mergi la autentificare',
+  'auth.email-verification.error.title': 'Verificare eșuată',
+  'auth.email-verification.error.description': 'Linkul de verificare este invalid sau a expirat. Te rugăm să soliciți un nou e-mail de verificare autentificându-te.',
+  'auth.email-verification.error.back': 'Înapoi la autentificare',
+
   'auth.legal-links.description': 'Continuând, confirmați că întelegeți și sunteti de acord cu {{ terms }} și {{ privacy }}.',
   'auth.legal-links.terms': 'Termenii și condițiile',
   'auth.legal-links.privacy': 'Politica de confidențialitate',

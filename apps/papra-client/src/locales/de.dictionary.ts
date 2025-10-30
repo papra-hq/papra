@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'E-Mail verifizieren',
   'auth.email-validation-required.description': 'Eine Verifizierungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet. Bitte verifizieren Sie Ihre E-Mail-Adresse, indem Sie auf den Link in der E-Mail klicken.',
 
+  'auth.email-verification.success.title': 'E-Mail verifiziert',
+  'auth.email-verification.success.description': 'Ihre E-Mail wurde erfolgreich verifiziert. Sie können sich jetzt in Ihr Konto einloggen.',
+  'auth.email-verification.success.login': 'Zur Anmeldung',
+  'auth.email-verification.error.title': 'Verifizierung fehlgeschlagen',
+  'auth.email-verification.error.description': 'Der Verifizierungslink ist ungültig oder abgelaufen. Bitte fordern Sie eine neue Verifizierungs-E-Mail an, indem Sie sich anmelden.',
+  'auth.email-verification.error.back': 'Zurück zur Anmeldung',
+
   'auth.legal-links.description': 'Indem Sie fortfahren, bestätigen Sie, dass Sie die {{ terms }} und die {{ privacy }} verstanden haben und ihnen zustimmen.',
   'auth.legal-links.terms': 'Nutzungsbedingungen',
   'auth.legal-links.privacy': 'Datenschutzrichtlinie',

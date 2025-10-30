@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
+import { authPagesPaths } from './modules/auth/auth.constants';
 import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
 import { EmailValidationRequiredPage } from './modules/auth/pages/email-validation-required.page';
+import { EmailVerificationPage } from './modules/auth/pages/email-verification.page';
 import { LoginPage } from './modules/auth/pages/login.page';
 import { RegisterPage } from './modules/auth/pages/register.page';
 import { RequestPasswordResetPage } from './modules/auth/pages/request-password-reset.page';
@@ -238,6 +240,10 @@ export const routes: RouteDefinition[] = [
   {
     path: '/email-validation-required',
     component: createProtectedPage({ authType: 'public-only', component: EmailValidationRequiredPage }),
+  },
+  {
+    path: authPagesPaths.emailVerification,
+    component: createProtectedPage({ authType: 'public-only', component: EmailVerificationPage }),
   },
   {
     path: '/checkout-success',
