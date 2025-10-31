@@ -1,5 +1,11 @@
 # @papra/lecture
 
+## 0.3.0
+
+### Minor Changes
+
+- [#580](https://github.com/papra-hq/papra/pull/580) [`1228486`](https://github.com/papra-hq/papra/commit/1228486f28ec28a100665e08cb62ab65e883f952) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added text extraction support for `.docx`, `.odt`, `.rtf`, `.pptx` and `.odp`
+
 ## 0.2.0
 
 ### Minor Changes
