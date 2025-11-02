@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.1.1
+
+### Patch Changes
+
+- [#604](https://github.com/papra-hq/papra/pull/604) [`c70d7e4`](https://github.com/papra-hq/papra/commit/c70d7e419aa84eb63c18b72d529951761de75e33) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use provenance for releases
+
 ## 1.1.0
 
 ### Minor Changes
