@@ -34,10 +34,10 @@ export function getSession({ context }: { context: Context }) {
 
 export function getTrustedOrigins({ config }: { config: Config }) {
   const { clientBaseUrl } = getClientBaseUrl({ config });
-  const { trustedOrigins } = config.server;
+  const { trustedOrigins, trustedAppSchemes } = config.server;
 
   return {
-    trustedOrigins: uniq([clientBaseUrl, ...trustedOrigins]),
+    trustedOrigins: uniq([clientBaseUrl, ...trustedOrigins, ...trustedAppSchemes]),
   };
 }
 

@@ -61,6 +61,15 @@ export const configDefinition = {
       default: [],
       env: 'TRUSTED_ORIGINS',
     },
+    trustedAppSchemes: {
+      doc: 'A comma separated list of app schemes that are trusted for authentication. For example: "papra://,exp://". Note, setting this value will override the default schemes, so make sure to include them if needed.',
+      schema: z.union([
+        z.array(z.string()),
+        z.string().transform(value => value.split(',')),
+      ]),
+      default: ['papra://', 'exp://'],
+      env: 'TRUSTED_APP_SCHEMES',
+    },
     port: {
       doc: 'The port to listen on when using node server',
       schema: z.coerce.number().min(1024).max(65535),

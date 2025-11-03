@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { booleanishSchema, trustedOriginsSchema } from './config.schemas';
+import { booleanishSchema, trustedAppSchemeSchema, trustedOriginsSchema } from './config.schemas';
 
 describe('config schemas', () => {
   describe('booleanishSchema', () => {
@@ -43,6 +43,21 @@ describe('config schemas', () => {
 
     test('otherwise it throws an error', () => {
       expect(() => trustedOriginsSchema.parse('non-url')).toThrow();
+    });
+  });
+
+  describe('trustedAppSchemeSchema', () => {
+    test('validates app schemes ending with ://', () => {
+      expect(trustedAppSchemeSchema.parse('papra://')).toBe('papra://');
+      expect(trustedAppSchemeSchema.parse('exp://')).toBe('exp://');
+      expect(trustedAppSchemeSchema.parse('my-app+test://')).toBe('my-app+test://');
+
+      expect(() => trustedAppSchemeSchema.parse('invalid-scheme')).toThrow();
+      expect(() => trustedAppSchemeSchema.parse('http:/')).toThrow();
+      expect(() => trustedAppSchemeSchema.parse('papra://foo')).toThrow();
+      expect(() => trustedAppSchemeSchema.parse('papra-://')).toThrow();
+      expect(() => trustedAppSchemeSchema.parse('papra+://')).toThrow();
+      expect(() => trustedAppSchemeSchema.parse('://')).toThrow();
     });
   });
 });

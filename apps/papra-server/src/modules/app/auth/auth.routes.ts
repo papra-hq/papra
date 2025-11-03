@@ -2,12 +2,19 @@ import type { Context, RouteDefinitionContext } from '../server.types';
 import type { Session } from './auth.types';
 import { get } from 'lodash-es';
 import { addLogContext } from '../../shared/logger/logger';
-import { isDefined, isString } from '../../shared/utils';
+import { isDefined, isNil, isString } from '../../shared/utils';
 
 export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext) {
   app.on(
     ['POST', 'GET'],
     '/api/auth/*',
+    async (context, next) => {
+      const expoOrigin = context.req.header('expo-origin');
+      if (!isNil(expoOrigin)) {
+        context.req.raw.headers.set('origin', expoOrigin);
+      }
+      return next();
+    },
     async context => auth.handler(context.req.raw),
   );
 
