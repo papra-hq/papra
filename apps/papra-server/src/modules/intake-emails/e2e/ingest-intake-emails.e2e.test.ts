@@ -147,7 +147,7 @@ describe('intake-emails e2e', () => {
 
       expect(response.status).to.eql(202);
 
-      const documents = await db.select().from(documentsTable);
+      const documents = await db.selectFrom('documents').selectAll().execute();
 
       expect(documents).to.have.length(1);
 

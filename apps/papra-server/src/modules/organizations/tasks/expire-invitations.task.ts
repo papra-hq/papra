@@ -1,4 +1,4 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { Config } from '../../config/config.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createLogger } from '../../shared/logger/logger';
@@ -6,7 +6,7 @@ import { createOrganizationsRepository } from '../organizations.repository';
 
 const logger = createLogger({ namespace: 'organizations:tasks:expireInvitations' });
 
-export async function registerExpireInvitationsTask({ taskServices, db, config }: { taskServices: TaskServices; db: Database; config: Config }) {
+export async function registerExpireInvitationsTask({ taskServices, db, config }: { taskServices: TaskServices; db: DatabaseClient; config: Config }) {
   const taskName = 'expire-invitations';
   const { cron, runOnStartup } = config.tasks.expireInvitations;
 

@@ -79,7 +79,7 @@ describe('tags repository', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash' },
+          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash', originalSize: 11 },
         ],
         tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' }],
       });
@@ -104,8 +104,8 @@ describe('tags repository', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1' },
-          { id: 'document-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-2', isDeleted: true },
+          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1', originalSize: 11 },
+          { id: 'document-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-2', isDeleted: true, originalSize: 11 },
         ],
         tags: [
           { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000', createdAt: new Date('2021-01-01'), updatedAt: new Date('2021-01-01') },
@@ -163,7 +163,7 @@ describe('tags repository', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1', isDeleted: true },
+          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1', isDeleted: true, originalSize: 11 },
         ],
         tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' }],
         documentsTags: [{ documentId: 'document-1', tagId: 'tag-1' }],

@@ -1,57 +1,51 @@
 import type { Migration } from '../migrations.types';
-import { sql } from 'drizzle-orm';
 
 export const taggingRulesMigration = {
   name: 'tagging-rules',
 
   up: async ({ db }) => {
-    await db.batch([
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "tagging_rule_actions" (
-          "id" text PRIMARY KEY NOT NULL,
-          "created_at" integer NOT NULL,
-          "updated_at" integer NOT NULL,
-          "tagging_rule_id" text NOT NULL,
-          "tag_id" text NOT NULL,
-          FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade,
-          FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE cascade
-        );
-      `),
+    // Create tagging_rules table first (depends on organizations)
+    await db.schema
+      .createTable('tagging_rules')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('organization_id', 'text', col => col.notNull().references('organizations.id').onDelete('cascade').onUpdate('cascade'))
+      .addColumn('name', 'text', col => col.notNull())
+      .addColumn('description', 'text')
+      .addColumn('enabled', 'integer', col => col.notNull().defaultTo(1))
+      .execute();
 
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "tagging_rule_conditions" (
-          "id" text PRIMARY KEY NOT NULL,
-          "created_at" integer NOT NULL,
-          "updated_at" integer NOT NULL,
-          "tagging_rule_id" text NOT NULL,
-          "field" text NOT NULL,
-          "operator" text NOT NULL,
-          "value" text NOT NULL,
-          "is_case_sensitive" integer DEFAULT false NOT NULL,
-          FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade
-        );
-      `),
+    // Create tagging_rule_conditions table (depends on tagging_rules)
+    await db.schema
+      .createTable('tagging_rule_conditions')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('tagging_rule_id', 'text', col => col.notNull().references('tagging_rules.id').onDelete('cascade').onUpdate('cascade'))
+      .addColumn('field', 'text', col => col.notNull())
+      .addColumn('operator', 'text', col => col.notNull())
+      .addColumn('value', 'text', col => col.notNull())
+      .addColumn('is_case_sensitive', 'integer', col => col.notNull().defaultTo(0))
+      .execute();
 
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "tagging_rules" (
-          "id" text PRIMARY KEY NOT NULL,
-          "created_at" integer NOT NULL,
-          "updated_at" integer NOT NULL,
-          "organization_id" text NOT NULL,
-          "name" text NOT NULL,
-          "description" text,
-          "enabled" integer DEFAULT true NOT NULL,
-          FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade
-        );
-      `),
-    ]);
+    // Create tagging_rule_actions table (depends on tagging_rules and tags)
+    await db.schema
+      .createTable('tagging_rule_actions')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('tagging_rule_id', 'text', col => col.notNull().references('tagging_rules.id').onDelete('cascade').onUpdate('cascade'))
+      .addColumn('tag_id', 'text', col => col.notNull().references('tags.id').onDelete('cascade').onUpdate('cascade'))
+      .execute();
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP TABLE IF EXISTS "tagging_rule_actions"`),
-      db.run(sql`DROP TABLE IF EXISTS "tagging_rule_conditions"`),
-      db.run(sql`DROP TABLE IF EXISTS "tagging_rules"`),
-    ]);
+    await db.schema.dropTable('tagging_rule_actions').ifExists().execute();
+    await db.schema.dropTable('tagging_rule_conditions').ifExists().execute();
+    await db.schema.dropTable('tagging_rules').ifExists().execute();
   },
 } satisfies Migration;

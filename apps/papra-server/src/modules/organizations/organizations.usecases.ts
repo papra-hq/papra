@@ -32,10 +32,14 @@ import {
   createUserNotOrganizationOwnerError,
   createUserOrganizationInvitationLimitReachedError,
 } from './organizations.errors';
-import { canUserRemoveMemberFromOrganization } from './organizations.models';
+import { canUserRemoveMemberFromOrganization, organizationToDb } from './organizations.models';
 
 export async function createOrganization({ name, userId, organizationsRepository }: { name: string; userId: string; organizationsRepository: OrganizationsRepository }) {
-  const { organization } = await organizationsRepository.saveOrganization({ organization: { name } });
+  const { organization } = await organizationsRepository.saveOrganization({ organization: organizationToDb({ name }) });
+
+  if (!organization) {
+    throw new Error('Failed to create organization');
+  }
 
   await organizationsRepository.addUserToOrganization({
     userId,

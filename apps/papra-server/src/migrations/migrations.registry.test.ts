@@ -1,6 +1,6 @@
 import type { Migration } from './migrations.types';
 import { createNoopLogger } from '@crowlog/logger';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
 import { serializeSchema } from '../modules/app/database/database.test-utils';
@@ -30,7 +30,7 @@ describe('migrations registry', () => {
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       // check foreign keys are enabled
-      const { rows } = await db.run(sql`pragma foreign_keys;`);
+      const { rows } = await db.executeQuery<{ foreign_keys: number }>(sql`PRAGMA foreign_keys`.compile(db));
       expect(rows).to.eql([{ foreign_keys: 1 }]);
     });
 
@@ -69,59 +69,59 @@ describe('migrations registry', () => {
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).toMatchInlineSnapshot(`
-        "CREATE UNIQUE INDEX "api_keys_key_hash_unique" ON "api_keys" ("key_hash");
-        CREATE INDEX "auth_sessions_token_index" ON "auth_sessions" ("token");
-        CREATE INDEX "auth_verifications_identifier_index" ON "auth_verifications" ("identifier");
-        CREATE INDEX documents_file_encryption_kek_version_index ON documents (file_encryption_kek_version);
-        CREATE INDEX "documents_organization_id_is_deleted_created_at_index" ON "documents" ("organization_id","is_deleted","created_at");
-        CREATE INDEX "documents_organization_id_is_deleted_index" ON "documents" ("organization_id","is_deleted");
-        CREATE UNIQUE INDEX "documents_organization_id_original_sha256_hash_unique" ON "documents" ("organization_id","original_sha256_hash");
-        CREATE INDEX "documents_organization_id_size_index" ON "documents" ("organization_id","original_size");
-        CREATE INDEX "documents_original_sha256_hash_index" ON "documents" ("original_sha256_hash");
-        CREATE UNIQUE INDEX "intake_emails_email_address_unique" ON "intake_emails" ("email_address");
-        CREATE INDEX "key_hash_index" ON "api_keys" ("key_hash");
-        CREATE INDEX migrations_name_index ON migrations (name);
-        CREATE INDEX migrations_run_at_index ON migrations (run_at);
-        CREATE UNIQUE INDEX "organization_invitations_organization_email_unique" ON "organization_invitations" ("organization_id","email");
-        CREATE UNIQUE INDEX "organization_members_user_organization_unique" ON "organization_members" ("organization_id","user_id");
-        CREATE INDEX "organizations_deleted_at_purge_at_index" ON "organizations" ("deleted_at","scheduled_purge_at");
-        CREATE INDEX "organizations_deleted_by_deleted_at_index" ON "organizations" ("deleted_by","deleted_at");
-        CREATE UNIQUE INDEX "tags_organization_id_name_unique" ON "tags" ("organization_id","name");
-        CREATE INDEX "user_roles_role_index" ON "user_roles" ("role");
-        CREATE UNIQUE INDEX "user_roles_user_id_role_unique_index" ON "user_roles" ("user_id","role");
-        CREATE INDEX "users_email_index" ON "users" ("email");
-        CREATE UNIQUE INDEX "users_email_unique" ON "users" ("email");
-        CREATE UNIQUE INDEX "webhook_events_webhook_id_event_name_unique" ON "webhook_events" ("webhook_id","event_name");
-        CREATE TABLE "api_key_organizations" ( "api_key_id" text NOT NULL, "organization_member_id" text NOT NULL, FOREIGN KEY ("api_key_id") REFERENCES "api_keys"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("organization_member_id") REFERENCES "organization_members"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "api_keys" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "name" text NOT NULL, "key_hash" text NOT NULL, "prefix" text NOT NULL, "user_id" text NOT NULL, "last_used_at" integer, "expires_at" integer, "permissions" text DEFAULT '[]' NOT NULL, "all_organizations" integer DEFAULT false NOT NULL, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "auth_accounts" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "user_id" text, "account_id" text NOT NULL, "provider_id" text NOT NULL, "access_token" text, "refresh_token" text, "access_token_expires_at" integer, "refresh_token_expires_at" integer, "scope" text, "id_token" text, "password" text, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "auth_sessions" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "token" text NOT NULL, "user_id" text, "expires_at" integer NOT NULL, "ip_address" text, "user_agent" text, "active_organization_id" text, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("active_organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE set null );
-        CREATE TABLE "auth_verifications" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "identifier" text NOT NULL, "value" text NOT NULL, "expires_at" integer NOT NULL );
-        CREATE TABLE "document_activity_log" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "document_id" text NOT NULL, "event" text NOT NULL, "event_data" text, "user_id" text, "tag_id" text, FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE set null );
-        CREATE TABLE "documents" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "is_deleted" integer DEFAULT false NOT NULL, "deleted_at" integer, "organization_id" text NOT NULL, "created_by" text, "deleted_by" text, "original_name" text NOT NULL, "original_size" integer DEFAULT 0 NOT NULL, "original_storage_key" text NOT NULL, "original_sha256_hash" text NOT NULL, "name" text NOT NULL, "mime_type" text NOT NULL, "content" text DEFAULT '' NOT NULL, file_encryption_key_wrapped TEXT, file_encryption_kek_version TEXT, file_encryption_algorithm TEXT, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("deleted_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null );
+        "CREATE UNIQUE INDEX "api_keys_key_hash_unique" on "api_keys" ("key_hash");
+        CREATE INDEX "auth_sessions_token_index" on "auth_sessions" ("token");
+        CREATE INDEX "auth_verifications_identifier_index" on "auth_verifications" ("identifier");
+        CREATE INDEX "documents_file_encryption_kek_version_index" on "documents" ("file_encryption_kek_version");
+        CREATE INDEX "documents_organization_id_is_deleted_created_at_index" on "documents" ("organization_id", "is_deleted", "created_at");
+        CREATE INDEX "documents_organization_id_is_deleted_index" on "documents" ("organization_id", "is_deleted");
+        CREATE UNIQUE INDEX "documents_organization_id_original_sha256_hash_unique" on "documents" ("organization_id", "original_sha256_hash");
+        CREATE INDEX "documents_organization_id_size_index" on "documents" ("organization_id", "original_size");
+        CREATE INDEX "documents_original_sha256_hash_index" on "documents" ("original_sha256_hash");
+        CREATE UNIQUE INDEX "intake_emails_email_address_unique" on "intake_emails" ("email_address");
+        CREATE INDEX "key_hash_index" on "api_keys" ("key_hash");
+        CREATE INDEX "migrations_name_index" on "migrations" ("name");
+        CREATE INDEX "migrations_run_at_index" on "migrations" ("run_at");
+        CREATE UNIQUE INDEX "organization_invitations_organization_email_unique" on "organization_invitations" ("organization_id", "email");
+        CREATE UNIQUE INDEX "organization_members_user_organization_unique" on "organization_members" ("organization_id", "user_id");
+        CREATE INDEX "organizations_deleted_at_purge_at_index" on "organizations" ("deleted_at", "scheduled_purge_at");
+        CREATE INDEX "organizations_deleted_by_deleted_at_index" on "organizations" ("deleted_by", "deleted_at");
+        CREATE UNIQUE INDEX "tags_organization_id_name_unique" on "tags" ("organization_id", "name");
+        CREATE INDEX "user_roles_role_index" on "user_roles" ("role");
+        CREATE UNIQUE INDEX "user_roles_user_id_role_unique_index" on "user_roles" ("user_id", "role");
+        CREATE INDEX "users_email_index" on "users" ("email");
+        CREATE UNIQUE INDEX "users_email_unique" on "users" ("email");
+        CREATE UNIQUE INDEX "webhook_events_webhook_id_event_name_unique" on "webhook_events" ("webhook_id", "event_name");
+        CREATE TABLE "api_key_organizations" ("api_key_id" text not null references "api_keys" ("id") on delete cascade on update cascade, "organization_member_id" text not null references "organization_members" ("id") on delete cascade on update cascade);
+        CREATE TABLE "api_keys" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "name" text not null, "key_hash" text not null, "prefix" text not null, "user_id" text not null references "users" ("id") on delete cascade on update cascade, "last_used_at" integer, "expires_at" integer, "permissions" text default '[]' not null, "all_organizations" integer default 0 not null);
+        CREATE TABLE "auth_accounts" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "user_id" text references "users" ("id") on delete cascade on update cascade, "account_id" text not null, "provider_id" text not null, "access_token" text, "refresh_token" text, "access_token_expires_at" integer, "refresh_token_expires_at" integer, "scope" text, "id_token" text, "password" text);
+        CREATE TABLE "auth_sessions" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "token" text not null, "user_id" text references "users" ("id") on delete cascade on update cascade, "expires_at" integer not null, "ip_address" text, "user_agent" text, "active_organization_id" text references "organizations" ("id") on delete set null on update cascade);
+        CREATE TABLE "auth_verifications" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "identifier" text not null, "value" text not null, "expires_at" integer not null);
+        CREATE TABLE "document_activity_log" ("id" text not null primary key, "created_at" integer not null, "document_id" text not null references "documents" ("id") on delete cascade on update cascade, "event" text not null, "event_data" text, "user_id" text references "users" ("id") on delete set null on update cascade, "tag_id" text references "tags" ("id") on delete set null on update cascade);
+        CREATE TABLE "documents" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "is_deleted" integer default 0 not null, "deleted_at" integer, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "created_by" text references "users" ("id") on delete set null on update cascade, "deleted_by" text references "users" ("id") on delete set null on update cascade, "original_name" text not null, "original_size" integer default 0 not null, "original_storage_key" text not null, "original_sha256_hash" text not null, "name" text not null, "mime_type" text not null, "content" text default '' not null, "file_encryption_key_wrapped" text, "file_encryption_kek_version" text, "file_encryption_algorithm" text);
         CREATE VIRTUAL TABLE documents_fts USING fts5(id UNINDEXED, name, original_name, content, prefix='2 3 4');
         CREATE TABLE 'documents_fts_config'(k PRIMARY KEY, v) WITHOUT ROWID;
         CREATE TABLE 'documents_fts_content'(id INTEGER PRIMARY KEY, c0, c1, c2, c3);
         CREATE TABLE 'documents_fts_data'(id INTEGER PRIMARY KEY, block BLOB);
         CREATE TABLE 'documents_fts_docsize'(id INTEGER PRIMARY KEY, sz BLOB);
         CREATE TABLE 'documents_fts_idx'(segid, term, pgno, PRIMARY KEY(segid, term)) WITHOUT ROWID;
-        CREATE TABLE "documents_tags" ( "document_id" text NOT NULL, "tag_id" text NOT NULL, PRIMARY KEY("document_id", "tag_id"), FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "intake_emails" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "email_address" text NOT NULL, "organization_id" text NOT NULL, "allowed_origins" text DEFAULT '[]' NOT NULL, "is_enabled" integer DEFAULT true NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, run_at INTEGER NOT NULL);
-        CREATE TABLE "organization_invitations" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "email" text NOT NULL, "role" text NOT NULL, "status" text NOT NULL DEFAULT 'pending', "expires_at" integer NOT NULL, "inviter_id" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("inviter_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "organization_members" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "user_id" text NOT NULL, "role" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "organization_subscriptions" ( "id" text PRIMARY KEY NOT NULL, "customer_id" text NOT NULL, "organization_id" text NOT NULL, "plan_id" text NOT NULL, "status" text NOT NULL, "seats_count" integer NOT NULL, "current_period_end" integer NOT NULL, "current_period_start" integer NOT NULL, "cancel_at_period_end" integer DEFAULT false NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "organizations" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "name" text NOT NULL, "customer_id" text , "deleted_by" text REFERENCES users(id), "deleted_at" integer, "scheduled_purge_at" integer);
+        CREATE TABLE "documents_tags" ("document_id" text not null references "documents" ("id") on delete cascade on update cascade, "tag_id" text not null references "tags" ("id") on delete cascade on update cascade, constraint "documents_tags_pkey" primary key ("document_id", "tag_id"));
+        CREATE TABLE "intake_emails" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "email_address" text not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "allowed_origins" text default '[]' not null, "is_enabled" integer default 1 not null);
+        CREATE TABLE "migrations" ("id" integer primary key autoincrement, "name" text not null, "run_at" integer not null);
+        CREATE TABLE "organization_invitations" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "email" text not null, "role" text not null, "status" text not null DEFAULT 'pending', "expires_at" integer not null, "inviter_id" text not null references "users" ("id") on delete cascade on update cascade);
+        CREATE TABLE "organization_members" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "user_id" text not null references "users" ("id") on delete cascade on update cascade, "role" text not null);
+        CREATE TABLE "organization_subscriptions" ("id" text not null primary key, "customer_id" text not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "plan_id" text not null, "status" text not null, "seats_count" integer not null, "current_period_end" integer not null, "current_period_start" integer not null, "cancel_at_period_end" integer default 0 not null, "created_at" integer not null, "updated_at" integer not null);
+        CREATE TABLE "organizations" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "name" text not null, "customer_id" text, "deleted_by" text references "users" ("id") on delete set null on update cascade, "deleted_at" integer, "scheduled_purge_at" integer);
         CREATE TABLE sqlite_sequence(name,seq);
-        CREATE TABLE "tagging_rule_actions" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "tagging_rule_id" text NOT NULL, "tag_id" text NOT NULL, FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "tagging_rule_conditions" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "tagging_rule_id" text NOT NULL, "field" text NOT NULL, "operator" text NOT NULL, "value" text NOT NULL, "is_case_sensitive" integer DEFAULT false NOT NULL, FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "tagging_rules" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "description" text, "enabled" integer DEFAULT true NOT NULL, "condition_match_mode" text DEFAULT 'all' NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "tags" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "color" text NOT NULL, "description" text, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "user_roles" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "user_id" text NOT NULL, "role" text NOT NULL, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "users" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "email" text NOT NULL, "email_verified" integer DEFAULT false NOT NULL, "name" text, "image" text, "max_organization_count" integer );
-        CREATE TABLE "webhook_deliveries" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "webhook_id" text NOT NULL, "event_name" text NOT NULL, "request_payload" text NOT NULL, "response_payload" text NOT NULL, "response_status" integer NOT NULL, FOREIGN KEY ("webhook_id") REFERENCES "webhooks"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "webhook_events" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "webhook_id" text NOT NULL, "event_name" text NOT NULL, FOREIGN KEY ("webhook_id") REFERENCES "webhooks"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "webhooks" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "name" text NOT NULL, "url" text NOT NULL, "secret" text, "enabled" integer DEFAULT true NOT NULL, "created_by" text, "organization_id" text, FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
+        CREATE TABLE "tagging_rule_actions" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "tagging_rule_id" text not null references "tagging_rules" ("id") on delete cascade on update cascade, "tag_id" text not null references "tags" ("id") on delete cascade on update cascade);
+        CREATE TABLE "tagging_rule_conditions" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "tagging_rule_id" text not null references "tagging_rules" ("id") on delete cascade on update cascade, "field" text not null, "operator" text not null, "value" text not null, "is_case_sensitive" integer default 0 not null);
+        CREATE TABLE "tagging_rules" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "name" text not null, "description" text, "enabled" integer default 1 not null, "condition_match_mode" text default 'all' not null);
+        CREATE TABLE "tags" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "organization_id" text not null references "organizations" ("id") on delete cascade on update cascade, "name" text not null, "color" text not null, "description" text);
+        CREATE TABLE "user_roles" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "user_id" text not null references "users" ("id") on delete cascade on update cascade, "role" text not null);
+        CREATE TABLE "users" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "email" text not null, "email_verified" integer default 0 not null, "name" text, "image" text, "max_organization_count" integer);
+        CREATE TABLE "webhook_deliveries" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "webhook_id" text not null references "webhooks" ("id") on delete cascade on update cascade, "event_name" text not null, "request_payload" text not null, "response_payload" text not null, "response_status" integer not null);
+        CREATE TABLE "webhook_events" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "webhook_id" text not null references "webhooks" ("id") on delete cascade on update cascade, "event_name" text not null);
+        CREATE TABLE "webhooks" ("id" text not null primary key, "created_at" integer not null, "updated_at" integer not null, "name" text not null, "url" text not null, "secret" text, "enabled" integer default 1 not null, "created_by" text references "users" ("id") on delete set null on update cascade, "organization_id" text references "organizations" ("id") on delete cascade on update cascade);
         CREATE TRIGGER trigger_documents_fts_delete AFTER DELETE ON documents BEGIN DELETE FROM documents_fts WHERE id = old.id; END;
         CREATE TRIGGER trigger_documents_fts_insert AFTER INSERT ON documents BEGIN INSERT INTO documents_fts(id, name, original_name, content) VALUES (new.id, new.name, new.original_name, new.content); END;
         CREATE TRIGGER trigger_documents_fts_update AFTER UPDATE ON documents BEGIN UPDATE documents_fts SET name = new.name, original_name = new.original_name, content = new.content WHERE id = new.id; END;"
@@ -136,7 +136,7 @@ describe('migrations registry', () => {
 
       const dbState = await serializeSchema({ db });
 
-      await db.run(sql`DROP TABLE migrations`);
+      await db.executeQuery(sql`DROP TABLE migrations`.compile(db));
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).to.eq(dbState);

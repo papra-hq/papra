@@ -1,15 +1,15 @@
-import type { Database } from '../app/database/database.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, eq } from 'drizzle-orm';
+import { sql } from 'kysely';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/utils';
 import { createIntakeEmailAlreadyExistsError, createIntakeEmailNotFoundError } from './intake-emails.errors';
-import { intakeEmailsTable } from './intake-emails.tables';
+import { dbToIntakeEmail, intakeEmailToDb } from './intake-emails.models';
 
 export type IntakeEmailsRepository = ReturnType<typeof createIntakeEmailsRepository>;
 
-export function createIntakeEmailsRepository({ db }: { db: Database }) {
+export function createIntakeEmailsRepository({ db }: { db: DatabaseClient }) {
   return injectArguments(
     {
       createIntakeEmail,
@@ -24,8 +24,14 @@ export function createIntakeEmailsRepository({ db }: { db: Database }) {
   );
 }
 
-async function createIntakeEmail({ organizationId, emailAddress, db }: { organizationId: string; emailAddress: string; db: Database }) {
-  const [result, error] = await safely(db.insert(intakeEmailsTable).values({ organizationId, emailAddress }).returning());
+async function createIntakeEmail({ organizationId, emailAddress, db }: { organizationId: string; emailAddress: string; db: DatabaseClient }) {
+  const [result, error] = await safely(
+    db
+      .insertInto('intake_emails')
+      .values(intakeEmailToDb({ organizationId, emailAddress }))
+      .returningAll()
+      .executeTakeFirst(),
+  );
 
   if (isUniqueConstraintError({ error })) {
     throw createIntakeEmailAlreadyExistsError();
@@ -35,7 +41,7 @@ async function createIntakeEmail({ organizationId, emailAddress, db }: { organiz
     throw error;
   }
 
-  const [intakeEmail] = result;
+  const intakeEmail = dbToIntakeEmail(result);
 
   if (!intakeEmail) {
     // Very unlikely to happen as the insertion should throw an issue, it's for type safety
@@ -50,22 +56,26 @@ async function createIntakeEmail({ organizationId, emailAddress, db }: { organiz
   return { intakeEmail };
 }
 
-async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, allowedOrigins, db }: { intakeEmailId: string; organizationId: string; isEnabled?: boolean; allowedOrigins?: string[]; db: Database }) {
-  const [intakeEmail] = await db
-    .update(intakeEmailsTable)
-    .set(
-      omitUndefined({
-        isEnabled,
-        allowedOrigins,
-      }),
-    )
-    .where(
-      and(
-        eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId),
-      ),
-    )
-    .returning();
+async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, allowedOrigins, db }: { intakeEmailId: string; organizationId: string; isEnabled?: boolean; allowedOrigins?: string[]; db: DatabaseClient }) {
+  const updates: { is_enabled?: number; allowed_origins?: string } = {};
+
+  if (isEnabled !== undefined) {
+    updates.is_enabled = isEnabled ? 1 : 0;
+  }
+
+  if (allowedOrigins !== undefined) {
+    updates.allowed_origins = JSON.stringify(allowedOrigins);
+  }
+
+  const dbIntakeEmail = await db
+    .updateTable('intake_emails')
+    .set(omitUndefined(updates))
+    .where('id', '=', intakeEmailId)
+    .where('organization_id', '=', organizationId)
+    .returningAll()
+    .executeTakeFirst();
+
+  const intakeEmail = dbToIntakeEmail(dbIntakeEmail);
 
   if (!intakeEmail) {
     throw createIntakeEmailNotFoundError();
@@ -74,64 +84,63 @@ async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, all
   return { intakeEmail };
 }
 
-async function getIntakeEmail({ intakeEmailId, organizationId, db }: { intakeEmailId: string; organizationId: string; db: Database }) {
-  const [intakeEmail] = await db
-    .select()
-    .from(intakeEmailsTable)
-    .where(
-      and(
-        eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId),
-      ),
-    );
+async function getIntakeEmail({ intakeEmailId, organizationId, db }: { intakeEmailId: string; organizationId: string; db: DatabaseClient }) {
+  const dbIntakeEmail = await db
+    .selectFrom('intake_emails')
+    .where('id', '=', intakeEmailId)
+    .where('organization_id', '=', organizationId)
+    .selectAll()
+    .executeTakeFirst();
+
+  const intakeEmail = dbToIntakeEmail(dbIntakeEmail);
 
   return { intakeEmail };
 }
 
-async function getIntakeEmailByEmailAddress({ emailAddress, db }: { emailAddress: string; db: Database }) {
-  const [intakeEmail] = await db
-    .select()
-    .from(intakeEmailsTable)
-    .where(eq(intakeEmailsTable.emailAddress, emailAddress));
+async function getIntakeEmailByEmailAddress({ emailAddress, db }: { emailAddress: string; db: DatabaseClient }) {
+  const dbIntakeEmail = await db
+    .selectFrom('intake_emails')
+    .where('email_address', '=', emailAddress)
+    .selectAll()
+    .executeTakeFirst();
+
+  const intakeEmail = dbToIntakeEmail(dbIntakeEmail);
 
   return { intakeEmail };
 }
 
-async function getOrganizationIntakeEmails({ organizationId, db }: { organizationId: string; db: Database }) {
-  const intakeEmails = await db
-    .select()
-    .from(intakeEmailsTable)
-    .where(
-      eq(intakeEmailsTable.organizationId, organizationId),
-    );
+async function getOrganizationIntakeEmails({ organizationId, db }: { organizationId: string; db: DatabaseClient }) {
+  const dbIntakeEmails = await db
+    .selectFrom('intake_emails')
+    .where('organization_id', '=', organizationId)
+    .selectAll()
+    .execute();
+
+  const intakeEmails = dbIntakeEmails.map(dbEmail => dbToIntakeEmail(dbEmail)).filter((email): email is NonNullable<typeof email> => email !== undefined);
 
   return { intakeEmails };
 }
 
-async function deleteIntakeEmail({ intakeEmailId, organizationId, db }: { intakeEmailId: string; organizationId: string; db: Database }) {
+async function deleteIntakeEmail({ intakeEmailId, organizationId, db }: { intakeEmailId: string; organizationId: string; db: DatabaseClient }) {
   await db
-    .delete(intakeEmailsTable)
-    .where(
-      and(
-        eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId),
-      ),
-    );
+    .deleteFrom('intake_emails')
+    .where('id', '=', intakeEmailId)
+    .where('organization_id', '=', organizationId)
+    .execute();
 }
 
-async function getOrganizationIntakeEmailsCount({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [record] = await db
-    .select({ intakeEmailCount: count() })
-    .from(intakeEmailsTable)
-    .where(
-      eq(intakeEmailsTable.organizationId, organizationId),
-    );
+async function getOrganizationIntakeEmailsCount({ organizationId, db }: { organizationId: string; db: DatabaseClient }) {
+  const result = await db
+    .selectFrom('intake_emails')
+    .select(sql<number>`count(*)`.as('intake_email_count'))
+    .where('organization_id', '=', organizationId)
+    .executeTakeFirst();
 
-  if (!record) {
+  if (!result) {
     throw createIntakeEmailNotFoundError();
   }
 
-  const { intakeEmailCount } = record;
+  const { intake_email_count: intakeEmailCount } = result;
 
   return { intakeEmailCount };
 }

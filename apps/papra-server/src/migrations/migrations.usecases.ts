@@ -1,4 +1,4 @@
-import type { Database } from '../modules/app/database/database.types';
+import type { DatabaseClient } from '../modules/app/database/database.types';
 import type { Logger } from '../modules/shared/logger/logger';
 import type { Migration } from './migrations.types';
 import { safely } from '@corentinth/chisels';
@@ -6,7 +6,7 @@ import { createLogger } from '../modules/shared/logger/logger';
 import { migrations as migrationsList } from './migrations.registry';
 import { deleteMigration, getMigrations, saveMigration, setupMigrationTableIfNotExists } from './migrations.repository';
 
-export async function runMigrations({ db, migrations = migrationsList, logger = createLogger({ namespace: 'migrations' }) }: { db: Database; migrations?: Migration[]; logger?: Logger }) {
+export async function runMigrations({ db, migrations = migrationsList, logger = createLogger({ namespace: 'migrations' }) }: { db: DatabaseClient; migrations?: Migration[]; logger?: Logger }) {
   await setupMigrationTableIfNotExists({ db });
 
   if (migrations.length === 0) {
@@ -45,14 +45,14 @@ export async function runMigrations({ db, migrations = migrationsList, logger = 
   logger.info('All migrations run successfully');
 }
 
-async function upMigration({ db, migration }: { db: Database; migration: Migration }) {
+async function upMigration({ db, migration }: { db: DatabaseClient; migration: Migration }) {
   const { name, up } = migration;
 
   await up({ db });
   await saveMigration({ db, migrationName: name });
 }
 
-export async function rollbackLastAppliedMigration({ db, migrations = migrationsList, logger = createLogger({ namespace: 'migrations' }) }: { db: Database; migrations?: Migration[]; logger?: Logger }) {
+export async function rollbackLastAppliedMigration({ db, migrations = migrationsList, logger = createLogger({ namespace: 'migrations' }) }: { db: DatabaseClient; migrations?: Migration[]; logger?: Logger }) {
   await setupMigrationTableIfNotExists({ db });
 
   const { migrations: existingMigrations } = await getMigrations({ db });
@@ -75,7 +75,7 @@ export async function rollbackLastAppliedMigration({ db, migrations = migrations
   logger.info({ migrationName: lastMigration.name }, 'Migration rolled back successfully');
 }
 
-async function downMigration({ db, migration }: { db: Database; migration: Migration }) {
+async function downMigration({ db, migration }: { db: DatabaseClient; migration: Migration }) {
   const { name, down } = migration;
 
   await down?.({ db });

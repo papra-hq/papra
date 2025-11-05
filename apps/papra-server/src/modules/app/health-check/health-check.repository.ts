@@ -1,9 +1,10 @@
-import type { Database } from '../database/database.types';
+import type { DatabaseClient } from '../database/database.types';
 import { safely } from '@corentinth/chisels';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 
-export async function isDatabaseHealthy({ db }: { db: Database }) {
-  const [result, error] = await safely(db.run(sql`SELECT 1;`));
+export async function isDatabaseHealthy({ db }: { db: DatabaseClient }) {
+  // "SELECT 1 as one"
+  const [result, error] = await safely(db.selectNoFrom(sql.lit('1').as('one')).executeTakeFirst());
 
-  return error === null && result.rows.length > 0 && result.rows[0]?.['1'] === 1;
+  return error === null && result?.one === '1';
 }

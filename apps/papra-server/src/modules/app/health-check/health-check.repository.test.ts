@@ -1,13 +1,13 @@
-import type { Database } from '../database/database.types';
+import type { DatabaseClient } from '../database/database.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../database/database.test-utils';
 import { isDatabaseHealthy } from './health-check.repository';
 
 const faultyDatabase = {
-  run: async () => {
+  executeTakeFirst: () => {
     throw new Error('Alerte générale !');
   },
-} as unknown as Database;
+} as unknown as DatabaseClient;
 
 describe('health-check repository', () => {
   describe('isDatabaseHealthy', () => {

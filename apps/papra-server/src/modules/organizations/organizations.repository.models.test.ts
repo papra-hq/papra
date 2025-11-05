@@ -1,4 +1,4 @@
-import type { OrganizationInvitation } from './organizations.types';
+import type { OrganizationInvitation } from './organizations.tables';
 import { describe, expect, test } from 'vitest';
 import { ORGANIZATION_INVITATION_STATUS } from './organizations.constants';
 import { ensureInvitationStatus } from './organizations.repository.models';

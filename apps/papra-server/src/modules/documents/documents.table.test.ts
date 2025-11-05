@@ -1,8 +1,7 @@
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { documentsTable } from './documents.table';
 
 describe('documents table', () => {
   describe('table documents_fts', () => {
@@ -14,32 +13,41 @@ describe('documents table', () => {
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
-        await db.insert(documentsTable).values([
+        const now = Date.now();
+        await db.insertInto('documents').values([
           {
             id: 'document-1',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Document 1',
-            originalName: 'document-1.pdf',
-            originalStorageKey: 'document-1.pdf',
+            original_name: 'document-1.pdf',
+            original_storage_key: 'document-1.pdf',
+            original_size: 0,
             content: 'lorem ipsum',
-            originalSha256Hash: 'hash1',
+            original_sha256_hash: 'hash1',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
           {
             id: 'document-2',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Photo 1',
-            originalName: 'photo-1.jpg',
-            originalStorageKey: 'photo-1.jpg',
+            original_name: 'photo-1.jpg',
+            original_storage_key: 'photo-1.jpg',
+            original_size: 0,
             content: 'dolor sit amet',
-            originalSha256Hash: 'hash2',
+            original_sha256_hash: 'hash2',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
-        ]);
+        ]).execute();
 
-        const { rows } = await db.run(sql`SELECT * FROM documents_fts;`);
+        const { rows } = await db.executeQuery(sql`SELECT * FROM documents_fts;`.compile(db));
 
         expect(rows).to.eql([
           {
@@ -56,7 +64,7 @@ describe('documents table', () => {
           },
         ]);
 
-        const { rows: searchResults } = await db.run(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'lorem';`);
+        const { rows: searchResults } = await db.executeQuery(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'lorem';`.compile(db));
 
         expect(searchResults).to.eql([
           {
@@ -75,34 +83,43 @@ describe('documents table', () => {
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
-        await db.insert(documentsTable).values([
+        const now = Date.now();
+        await db.insertInto('documents').values([
           {
             id: 'document-1',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Document 1',
-            originalName: 'document-1.pdf',
-            originalStorageKey: 'document-1.pdf',
+            original_name: 'document-1.pdf',
+            original_storage_key: 'document-1.pdf',
+            original_size: 0,
             content: 'lorem ipsum',
-            originalSha256Hash: 'hash1',
+            original_sha256_hash: 'hash1',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
           {
             id: 'document-2',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Photo 1',
-            originalName: 'photo-1.jpg',
-            originalStorageKey: 'photo-1.jpg',
+            original_name: 'photo-1.jpg',
+            original_storage_key: 'photo-1.jpg',
+            original_size: 0,
             content: 'dolor sit amet',
-            originalSha256Hash: 'hash2',
+            original_sha256_hash: 'hash2',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
-        ]);
+        ]).execute();
 
-        await db.update(documentsTable).set({ content: 'foo bar baz' }).where(eq(documentsTable.id, 'document-1'));
+        await db.updateTable('documents').set({ content: 'foo bar baz' }).where('id', '=', 'document-1').execute();
 
-        const { rows } = await db.run(sql`SELECT * FROM documents_fts;`);
+        const { rows } = await db.executeQuery(sql`SELECT * FROM documents_fts;`.compile(db));
 
         expect(rows).to.eql([
           {
@@ -119,7 +136,7 @@ describe('documents table', () => {
           },
         ]);
 
-        const { rows: searchResults } = await db.run(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'foo';`);
+        const { rows: searchResults } = await db.executeQuery(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'foo';`.compile(db));
 
         expect(searchResults).to.eql([
           {
@@ -138,34 +155,43 @@ describe('documents table', () => {
           organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         });
 
-        await db.insert(documentsTable).values([
+        const now = Date.now();
+        await db.insertInto('documents').values([
           {
             id: 'document-1',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Document 1',
-            originalName: 'document-1.pdf',
-            originalStorageKey: 'document-1.pdf',
+            original_name: 'document-1.pdf',
+            original_storage_key: 'document-1.pdf',
+            original_size: 0,
             content: 'lorem ipsum',
-            originalSha256Hash: 'hash1',
+            original_sha256_hash: 'hash1',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
           {
             id: 'document-2',
-            organizationId: 'organization-1',
-            createdBy: 'user-1',
-            mimeType: 'application/pdf',
+            organization_id: 'organization-1',
+            created_by: 'user-1',
+            mime_type: 'application/pdf',
             name: 'Photo 1',
-            originalName: 'photo-1.jpg',
-            originalStorageKey: 'photo-1.jpg',
+            original_name: 'photo-1.jpg',
+            original_storage_key: 'photo-1.jpg',
+            original_size: 0,
             content: 'dolor sit amet',
-            originalSha256Hash: 'hash2',
+            original_sha256_hash: 'hash2',
+            created_at: now,
+            updated_at: now,
+            is_deleted: 0,
           },
-        ]);
+        ]).execute();
 
-        await db.delete(documentsTable).where(eq(documentsTable.id, 'document-1'));
+        await db.deleteFrom('documents').where('id', '=', 'document-1').execute();
 
-        const { rows } = await db.run(sql`SELECT * FROM documents_fts;`);
+        const { rows } = await db.executeQuery(sql`SELECT * FROM documents_fts;`.compile(db));
 
         expect(rows).to.eql([
           {
@@ -176,7 +202,7 @@ describe('documents table', () => {
           },
         ]);
 
-        const { rows: searchResults } = await db.run(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'lorem';`);
+        const { rows: searchResults } = await db.executeQuery(sql`SELECT * FROM documents_fts WHERE documents_fts MATCH 'lorem';`.compile(db));
 
         expect(searchResults).to.eql([]);
       });

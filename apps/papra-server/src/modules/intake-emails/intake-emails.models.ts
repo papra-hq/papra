@@ -1,5 +1,10 @@
+import type { DbInsertableIntakeEmail, DbSelectableIntakeEmail, InsertableIntakeEmail, IntakeEmail } from './intake-emails.new.tables';
 import { createError } from '../shared/errors/errors';
+import { generateId } from '../shared/random/ids';
 import { isDefined, isNil } from '../shared/utils';
+import { INTAKE_EMAIL_ID_PREFIX } from './intake-emails.constants';
+
+const generateIntakeEmailId = () => generateId({ prefix: INTAKE_EMAIL_ID_PREFIX });
 
 export function buildEmailAddress({
   username,
@@ -58,4 +63,43 @@ export function getIsFromAllowedOrigin({
   return allowedOrigins
     .map(allowedOrigin => allowedOrigin.toLowerCase())
     .includes(origin.toLowerCase());
+}
+
+// DB <-> Business model transformers
+
+export function dbToIntakeEmail(dbIntakeEmail?: DbSelectableIntakeEmail): IntakeEmail | undefined {
+  if (!dbIntakeEmail) {
+    return undefined;
+  }
+
+  return {
+    id: dbIntakeEmail.id,
+    emailAddress: dbIntakeEmail.email_address,
+    organizationId: dbIntakeEmail.organization_id,
+    allowedOrigins: JSON.parse(dbIntakeEmail.allowed_origins) as string[],
+    isEnabled: dbIntakeEmail.is_enabled === 1,
+    createdAt: new Date(dbIntakeEmail.created_at),
+    updatedAt: new Date(dbIntakeEmail.updated_at),
+  };
+}
+
+export function intakeEmailToDb(
+  intakeEmail: InsertableIntakeEmail,
+  {
+    now = new Date(),
+    generateId = generateIntakeEmailId,
+  }: {
+    now?: Date;
+    generateId?: () => string;
+  } = {},
+): DbInsertableIntakeEmail {
+  return {
+    id: intakeEmail.id ?? generateId(),
+    email_address: intakeEmail.emailAddress,
+    organization_id: intakeEmail.organizationId,
+    allowed_origins: JSON.stringify(intakeEmail.allowedOrigins ?? []),
+    is_enabled: intakeEmail.isEnabled === true ? 1 : 0,
+    created_at: intakeEmail.createdAt?.getTime() ?? now.getTime(),
+    updated_at: intakeEmail.updatedAt?.getTime() ?? now.getTime(),
+  };
 }

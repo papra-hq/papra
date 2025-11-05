@@ -1,48 +1,77 @@
+import type { DatabaseClient } from '../modules/app/database/database.types';
 import type { Migration } from './migrations.types';
 import { createNoopLogger } from '@crowlog/logger';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
-import { migrationsTable } from './migration.tables';
 import { rollbackLastAppliedMigration, runMigrations } from './migrations.usecases';
 
 const createTableUserMigration: Migration = {
   name: 'create-table-user',
   up: async ({ db }) => {
-    await db.run(sql`CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`);
+    await db.schema
+      .createTable('users')
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', col => col.notNull())
+      .execute();
   },
   down: async ({ db }) => {
-    await db.run(sql`DROP TABLE users`);
+    await db.schema
+      .dropTable('users')
+      .execute();
   },
 };
 
 const createTableOrganizationMigration: Migration = {
   name: 'create-table-organization',
   up: async ({ db }) => {
-    await db.batch([
-      db.run(sql`CREATE TABLE organizations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`),
-      db.run(sql`CREATE TABLE organization_members (id INTEGER PRIMARY KEY AUTOINCREMENT, organization_id INTEGER NOT NULL, user_id INTEGER NOT NULL, role TEXT NOT NULL, created_at INTEGER NOT NULL)`),
-    ]);
+    await db.schema
+      .createTable('organizations')
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', col => col.notNull())
+      .execute();
+
+    await db.schema
+      .createTable('organization_members')
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('organization_id', 'integer', col => col.notNull())
+      .addColumn('user_id', 'integer', col => col.notNull())
+      .addColumn('role', 'text', col => col.notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .execute();
   },
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP TABLE organizations`),
-      db.run(sql`DROP TABLE organization_members`),
-    ]);
+    await db.schema
+      .dropTable('organization_members')
+      .execute();
+
+    await db.schema
+      .dropTable('organizations')
+      .execute();
   },
 };
 
 const createTableDocumentMigration: Migration = {
   name: 'create-table-document',
   up: async ({ db }) => {
-    await db.batch([
-      db.run(sql`CREATE TABLE documents (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, created_at INTEGER NOT NULL)`),
-    ]);
+    await db.schema
+      .createTable('documents')
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', col => col.notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .execute();
   },
   down: async ({ db }) => {
-    await db.run(sql`DROP TABLE documents`);
+    await db.schema
+      .dropTable('documents')
+      .execute();
   },
 };
+
+async function getTablesNames({ db }: { db: DatabaseClient }) {
+  const { rows: tables } = await db.executeQuery<{ name: string }>(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`.compile(db));
+  return tables.map(({ name }) => name);
+}
 
 describe('migrations usecases', () => {
   describe('runMigrations', () => {
@@ -53,7 +82,7 @@ describe('migrations usecases', () => {
 
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
-      const migrationsInDb = await db.select().from(migrationsTable);
+      const migrationsInDb = await db.selectFrom('migrations').selectAll().execute();
 
       expect(migrationsInDb.map(({ id, name }) => ({ id, name }))).to.eql([
         { id: 1, name: 'create-table-user' },
@@ -64,7 +93,7 @@ describe('migrations usecases', () => {
 
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
-      const migrationsInDb2 = await db.select().from(migrationsTable);
+      const migrationsInDb2 = await db.selectFrom('migrations').selectAll().execute();
 
       expect(migrationsInDb2.map(({ id, name }) => ({ id, name }))).to.eql([
         { id: 1, name: 'create-table-user' },
@@ -72,10 +101,8 @@ describe('migrations usecases', () => {
         { id: 3, name: 'create-table-document' },
       ]);
 
-      const { rows: tables } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
-
       // Ensure all tables and indexes are created
-      expect(tables.map(t => t.name)).to.eql([
+      expect(await getTablesNames({ db })).to.eql([
         'migrations',
         'migrations_name_index',
         'migrations_run_at_index',
@@ -95,7 +122,7 @@ describe('migrations usecases', () => {
 
       await runMigrations({ db, migrations, logger: createNoopLogger() });
 
-      const initialMigrations = await db.select().from(migrationsTable);
+      const initialMigrations = await db.selectFrom('migrations').selectAll().execute();
 
       expect(initialMigrations.map(({ id, name }) => ({ id, name }))).to.eql([
         { id: 1, name: 'create-table-user' },
@@ -103,20 +130,22 @@ describe('migrations usecases', () => {
       ]);
 
       // Ensure the tables exists, no error is thrown
-      await db.run(sql`SELECT * FROM users`);
-      await db.run(sql`SELECT * FROM documents`);
+      await db.selectFrom('users').selectAll().execute();
+      await db.selectFrom('documents').selectAll().execute();
 
       await rollbackLastAppliedMigration({ db, migrations });
 
-      const migrationsInDb = await db.select().from(migrationsTable);
+      const migrationsInDb = await db.selectFrom('migrations').selectAll().execute();
 
       expect(migrationsInDb.map(({ id, name }) => ({ id, name }))).to.eql([
         { id: 1, name: 'create-table-user' },
       ]);
 
       // Ensure the table document is dropped
-      await db.run(sql`SELECT * FROM users`);
-      await expect(db.run(sql`SELECT * FROM documents`)).rejects.toThrow();
+      await db.selectFrom('users').selectAll().execute();
+      await expect(
+        db.selectFrom('documents').selectAll().execute(),
+      ).rejects.toThrow();
     });
 
     test('when their is no migration to rollback, nothing is done', async () => {
@@ -124,7 +153,7 @@ describe('migrations usecases', () => {
 
       await rollbackLastAppliedMigration({ db });
 
-      const migrationsInDb = await db.select().from(migrationsTable);
+      const migrationsInDb = await db.selectFrom('migrations').selectAll().execute();
 
       expect(migrationsInDb).to.eql([]);
     });

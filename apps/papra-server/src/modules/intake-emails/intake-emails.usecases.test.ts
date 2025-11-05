@@ -49,10 +49,10 @@ describe('intake-emails usecases', () => {
           createDocument,
         });
 
-        const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
+        const documents = await db.selectFrom('documents').selectAll().orderBy('name', 'asc').execute();
 
         expect(
-          documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
+          documents.map((doc: typeof documents[0]) => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
         ).to.eql([
           { organizationId: 'org-1', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
           { organizationId: 'org-1', name: 'file2.txt', mimeType: 'text/plain', originalName: 'file2.txt' },
@@ -92,7 +92,7 @@ describe('intake-emails usecases', () => {
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
           { level: 'info', message: 'Intake email is disabled', namespace: 'test', data: {} },
         ]);
-        expect(await db.select().from(documentsTable)).to.eql([]);
+        expect(await db.selectFrom('documents').selectAll().execute()).to.eql([]);
       });
 
       test('when no intake email is found for the recipient, nothing happens, only a log is emitted', async () => {
@@ -125,7 +125,7 @@ describe('intake-emails usecases', () => {
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
           { level: 'info', message: 'Intake email not found', namespace: 'test', data: { } },
         ]);
-        expect(await db.select().from(documentsTable)).to.eql([]);
+        expect(await db.selectFrom('documents').selectAll().execute()).to.eql([]);
       });
 
       test(`in order to be processed, the emitter of the email must be allowed for the intake email
@@ -170,7 +170,7 @@ describe('intake-emails usecases', () => {
             },
           },
         ]);
-        expect(await db.select().from(documentsTable)).to.eql([]);
+        expect(await db.selectFrom('documents').selectAll().execute()).to.eql([]);
       });
     });
   });
@@ -210,10 +210,10 @@ describe('intake-emails usecases', () => {
         createDocument,
       });
 
-      const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
+      const documents = await db.selectFrom('documents').selectAll().orderBy('organization_id', 'asc').execute();
 
       expect(
-        documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
+        documents.map((doc: typeof documents[0]) => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
       ).to.eql([
         { organizationId: 'org-1', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
         { organizationId: 'org-2', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
@@ -263,10 +263,15 @@ describe('intake-emails usecases', () => {
         intakeEmailsRepository,
       });
 
-      await db.insert(intakeEmailsTable).values({
-        organizationId: 'org-1',
-        emailAddress: 'email-2@papra.email',
-      });
+      await db.insertInto('intake_emails').values({
+        id: 'intake-email-2',
+        organization_id: 'org-1',
+        email_address: 'email-2@papra.email',
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        allowed_origins: JSON.stringify([]),
+        is_enabled: 1,
+      }).execute();
 
       await expect(
         checkIfOrganizationCanCreateNewIntakeEmail({

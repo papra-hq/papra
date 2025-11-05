@@ -16,7 +16,7 @@ import { isNil } from '../shared/utils';
 import { addTagToDocument } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import { CONDITION_MATCH_MODES } from './tagging-rules.constants';
-import { getDocumentFieldValue } from './tagging-rules.models';
+import { getDocumentFieldValue, taggingRuleToDb } from './tagging-rules.models';
 
 export async function createTaggingRule({
   name,
@@ -44,13 +44,13 @@ export async function createTaggingRule({
   taggingRulesRepository: TaggingRulesRepository;
 }) {
   const { taggingRule } = await taggingRulesRepository.createTaggingRule({
-    taggingRule: {
+    taggingRule: taggingRuleToDb({
       name,
       description,
       enabled,
       conditionMatchMode,
       organizationId,
-    },
+    }),
   });
 
   const { id: taggingRuleId } = taggingRule;

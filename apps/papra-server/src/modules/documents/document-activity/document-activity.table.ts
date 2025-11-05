@@ -3,9 +3,11 @@ import type { DocumentActivityEvent } from './document-activity.types';
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createCreatedAtField, createPrimaryKeyField } from '../../shared/db/columns.helpers';
 import { tagsTable } from '../../tags/tags.table';
-import { usersTable } from '../../users/users.table';
 import { documentsTable } from '../documents.table';
 import { DOCUMENT_ACTIVITY_EVENT_LIST } from './document-activity.constants';
+
+// Legacy stub for Drizzle schema - this file is no longer used in production
+const usersTable = { id: '' } as any;
 
 export const documentActivityLogTable = sqliteTable('document_activity_log', {
   ...createPrimaryKeyField({ prefix: 'doc_act' }),

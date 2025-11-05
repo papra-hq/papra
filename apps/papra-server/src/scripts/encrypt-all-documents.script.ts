@@ -1,6 +1,4 @@
 import process from 'node:process';
-import { isNull } from 'drizzle-orm';
-import { documentsTable } from '../modules/documents/documents.table';
 import { createDocumentStorageService } from '../modules/documents/storage/documents.storage.services';
 import { encryptAllUnencryptedDocuments } from '../modules/documents/storage/encryption/document-encryption.usecases';
 import { isNil } from '../modules/shared/utils';
@@ -30,9 +28,10 @@ await runScriptWithDb(
 
       // In dry run mode, just count the documents that would be encrypted
       const documents = await db
-        .select({ id: documentsTable.id, originalName: documentsTable.originalName })
-        .from(documentsTable)
-        .where(isNull(documentsTable.fileEncryptionKeyWrapped));
+        .selectFrom('documents')
+        .select(['id', 'original_name as originalName'])
+        .where('file_encryption_key_wrapped', 'is', null)
+        .execute();
 
       logger.info({
         count: documents.length,

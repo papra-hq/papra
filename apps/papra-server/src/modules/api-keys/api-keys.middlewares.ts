@@ -1,4 +1,4 @@
-import type { Database } from '../app/database/database.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import type { Context } from '../app/server.types';
 import { createMiddleware } from 'hono/factory';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
@@ -10,7 +10,7 @@ import { getApiKey } from './api-keys.usecases';
 
 // The role of this middleware is to extract the api key from the authorization header if present
 // and set it on the context, no auth enforcement is done here
-export function createApiKeyMiddleware({ db }: { db: Database }) {
+export function createApiKeyMiddleware({ db }: { db: DatabaseClient }) {
   const apiKeyRepository = createApiKeysRepository({ db });
 
   return createMiddleware(async (context: Context, next) => {

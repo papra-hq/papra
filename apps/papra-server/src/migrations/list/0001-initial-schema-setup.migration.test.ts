@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../../modules/app/database/database';
 import { initialSchemaSetupMigration } from './0001-initial-schema-setup.migration';
@@ -9,7 +9,7 @@ describe('0001-initial-schema-setup migration', () => {
       const { db } = setupDatabase({ url: ':memory:' });
       await initialSchemaSetupMigration.up({ db });
 
-      const { rows: existingTables } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
+      const { rows: existingTables } = await db.executeQuery<{ name: string }>(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`.compile(db));
 
       expect(existingTables.map(({ name }) => name)).to.eql([
         'documents',
@@ -43,7 +43,7 @@ describe('0001-initial-schema-setup migration', () => {
 
       await initialSchemaSetupMigration.down({ db });
 
-      const { rows: existingTablesAfterDown } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
+      const { rows: existingTablesAfterDown } = await db.executeQuery<{ name: string }>(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`.compile(db));
 
       expect(existingTablesAfterDown.map(({ name }) => name)).to.eql([]);
     });

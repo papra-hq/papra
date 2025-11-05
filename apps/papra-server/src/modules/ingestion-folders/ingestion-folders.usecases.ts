@@ -1,5 +1,5 @@
 import type { Stats } from 'node:fs';
-import type { Database } from '../app/database/database.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
@@ -34,7 +34,7 @@ export function createIngestionFolderWatcher({
 }: {
   config: Config;
   logger?: Logger;
-  db: Database;
+  db: DatabaseClient;
   taskServices: TaskServices;
   documentsStorageService: DocumentStorageService;
 }) {

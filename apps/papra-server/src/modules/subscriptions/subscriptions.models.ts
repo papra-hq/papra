@@ -1,4 +1,10 @@
 import type { Subscription } from './subscriptions.types';
+import type {
+  DbInsertableOrganizationSubscription,
+  DbSelectableOrganizationSubscription,
+  InsertableOrganizationSubscription,
+  OrganizationSubscription,
+} from './subscriptions.new.tables';
 import { isNil, isNonEmptyString } from '../shared/utils';
 
 export function coerceStripeTimestampToDate(timestamp: number) {
@@ -56,4 +62,49 @@ export function doesSubscriptionBlockDeletion(subscription: Subscription | null 
 
   // All other subscription statuses block deletion
   return true;
+}
+
+// DB <-> Business model transformers
+
+export function dbToOrganizationSubscription(dbSubscription?: DbSelectableOrganizationSubscription): OrganizationSubscription | undefined {
+  if (!dbSubscription) {
+    return undefined;
+  }
+
+  return {
+    id: dbSubscription.id,
+    customerId: dbSubscription.customer_id,
+    organizationId: dbSubscription.organization_id,
+    planId: dbSubscription.plan_id,
+    status: dbSubscription.status,
+    seatsCount: dbSubscription.seats_count,
+    cancelAtPeriodEnd: dbSubscription.cancel_at_period_end === 1,
+    createdAt: new Date(dbSubscription.created_at),
+    updatedAt: new Date(dbSubscription.updated_at),
+    currentPeriodEnd: new Date(dbSubscription.current_period_end),
+    currentPeriodStart: new Date(dbSubscription.current_period_start),
+  };
+}
+
+export function organizationSubscriptionToDb(
+  subscription: InsertableOrganizationSubscription,
+  {
+    now = new Date(),
+  }: {
+    now?: Date;
+  } = {},
+): DbInsertableOrganizationSubscription {
+  return {
+    id: subscription.id,
+    customer_id: subscription.customerId,
+    organization_id: subscription.organizationId,
+    plan_id: subscription.planId,
+    status: subscription.status,
+    seats_count: subscription.seatsCount,
+    cancel_at_period_end: subscription.cancelAtPeriodEnd === true ? 1 : 0,
+    created_at: subscription.createdAt?.getTime() ?? now.getTime(),
+    updated_at: subscription.updatedAt?.getTime() ?? now.getTime(),
+    current_period_end: subscription.currentPeriodEnd.getTime(),
+    current_period_start: subscription.currentPeriodStart.getTime(),
+  };
 }

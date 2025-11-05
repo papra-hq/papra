@@ -1,7 +1,9 @@
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../../shared/db/columns.helpers';
-import { usersTable } from '../../users/users.table';
+
+// Legacy stub for Drizzle schema - this file is no longer used in production
+const usersTable = { id: '' } as any;
 
 export const sessionsTable = sqliteTable(
   'auth_sessions',

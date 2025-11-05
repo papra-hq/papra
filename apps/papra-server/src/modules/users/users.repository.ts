@@ -1,16 +1,15 @@
-import type { Database } from '../app/database/database.types';
-import type { DbInsertableUser } from './users.types';
+import type { DatabaseClient } from '../app/database/database.types';
+import type { InsertableUser } from './users.tables';
 import { injectArguments } from '@corentinth/chisels';
-import { eq } from 'drizzle-orm';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createUserAlreadyExistsError, createUsersNotFoundError } from './users.errors';
-import { usersTable } from './users.table';
+import { dbToUser, userToDb } from './users.models';
 
 export { createUsersRepository };
 
 export type UsersRepository = ReturnType<typeof createUsersRepository>;
 
-function createUsersRepository({ db }: { db: Database }) {
+function createUsersRepository({ db }: { db: DatabaseClient }) {
   return injectArguments(
     {
       createUser,
@@ -23,11 +22,15 @@ function createUsersRepository({ db }: { db: Database }) {
   );
 }
 
-async function createUser({ user: userToCreate, db }: { user: DbInsertableUser; db: Database }) {
+async function createUser({ user, db, now = new Date() }: { user: InsertableUser; db: DatabaseClient; now?: Date }) {
   try {
-    const [user] = await db.insert(usersTable).values(userToCreate).returning();
+    const dbUser = await db
+      .insertInto('users')
+      .values(userToDb(user, { now }))
+      .returningAll()
+      .executeTakeFirst();
 
-    return { user };
+    return { user: dbToUser(dbUser) };
   } catch (error) {
     if (isUniqueConstraintError({ error })) {
       throw createUserAlreadyExistsError();
@@ -37,27 +40,27 @@ async function createUser({ user: userToCreate, db }: { user: DbInsertableUser; 
   }
 }
 
-async function getUserByEmail({ email, db }: { email: string; db: Database }) {
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
+async function getUserByEmail({ email, db }: { email: string; db: DatabaseClient }) {
+  const dbUser = await db
+    .selectFrom('users')
+    .where('email', '=', email)
+    .selectAll()
+    .executeTakeFirst();
 
-  if (!user) {
-    return { user: undefined };
-  }
-
-  return { user };
+  return { user: dbToUser(dbUser) };
 }
 
-async function getUserById({ userId, db }: { userId: string; db: Database }) {
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+async function getUserById({ userId, db }: { userId: string; db: DatabaseClient }) {
+  const dbUser = await db
+    .selectFrom('users')
+    .where('id', '=', userId)
+    .selectAll()
+    .executeTakeFirst();
 
-  if (!user) {
-    return { user: undefined };
-  }
-
-  return { user };
+  return { user: dbToUser(dbUser) };
 }
 
-async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFoundError }: { userId: string; db: Database; errorFactory?: () => Error }) {
+async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFoundError }: { userId: string; db: DatabaseClient; errorFactory?: () => Error }) {
   const { user } = await getUserById({ userId, db });
 
   if (!user) {
@@ -67,8 +70,13 @@ async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFou
   return { user };
 }
 
-async function updateUser({ userId, name, db }: { userId: string; name: string; db: Database }) {
-  const [user] = await db.update(usersTable).set({ name }).where(eq(usersTable.id, userId)).returning();
+async function updateUser({ userId, name, db }: { userId: string; name: string; db: DatabaseClient }) {
+  const dbUser = await db
+    .updateTable('users')
+    .set({ name })
+    .where('id', '=', userId)
+    .returningAll()
+    .executeTakeFirst();
 
-  return { user };
+  return { user: dbToUser(dbUser) };
 }

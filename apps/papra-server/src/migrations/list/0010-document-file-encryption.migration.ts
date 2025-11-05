@@ -1,32 +1,49 @@
-import type { BatchItem } from 'drizzle-orm/batch';
 import type { Migration } from '../migrations.types';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 
 export const documentFileEncryptionMigration = {
   name: 'document-file-encryption',
 
   up: async ({ db }) => {
     // Check if columns already exist to handle reapplying migrations
-    const tableInfo = await db.run(sql`PRAGMA table_info(documents)`);
+    const tableInfo = await db.executeQuery<{ name: string }>(sql`PRAGMA table_info(documents)`.compile(db));
     const existingColumns = tableInfo.rows.map(row => row.name);
     const hasColumn = (columnName: string) => existingColumns.includes(columnName);
 
-    const statements = [
-      ...(!hasColumn('file_encryption_key_wrapped') ? [sql`ALTER TABLE documents ADD COLUMN file_encryption_key_wrapped TEXT`] : []),
-      ...(!hasColumn('file_encryption_kek_version') ? [sql`ALTER TABLE documents ADD COLUMN file_encryption_kek_version TEXT`] : []),
-      ...(!hasColumn('file_encryption_algorithm') ? [sql`ALTER TABLE documents ADD COLUMN file_encryption_algorithm TEXT`] : []),
-      sql`CREATE INDEX IF NOT EXISTS documents_file_encryption_kek_version_index ON documents (file_encryption_kek_version)`,
-    ];
+    if (!hasColumn('file_encryption_key_wrapped')) {
+      await db.schema
+        .alterTable('documents')
+        .addColumn('file_encryption_key_wrapped', 'text')
+        .execute();
+    }
 
-    await db.batch(statements.map(statement => db.run(statement) as BatchItem<'sqlite'>) as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]]);
+    if (!hasColumn('file_encryption_kek_version')) {
+      await db.schema
+        .alterTable('documents')
+        .addColumn('file_encryption_kek_version', 'text')
+        .execute();
+    }
+
+    if (!hasColumn('file_encryption_algorithm')) {
+      await db.schema
+        .alterTable('documents')
+        .addColumn('file_encryption_algorithm', 'text')
+        .execute();
+    }
+
+    await db.schema
+      .createIndex('documents_file_encryption_kek_version_index')
+      .ifNotExists()
+      .on('documents')
+      .column('file_encryption_kek_version')
+      .execute();
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP INDEX IF EXISTS documents_file_encryption_kek_version_index`),
-      db.run(sql`ALTER TABLE documents DROP COLUMN file_encryption_key_wrapped`),
-      db.run(sql`ALTER TABLE documents DROP COLUMN file_encryption_kek_version`),
-      db.run(sql`ALTER TABLE documents DROP COLUMN file_encryption_algorithm`),
-    ]);
+    await db.schema.dropIndex('documents_file_encryption_kek_version_index').ifExists().execute();
+
+    await db.schema.alterTable('documents').dropColumn('file_encryption_key_wrapped').execute();
+    await db.schema.alterTable('documents').dropColumn('file_encryption_kek_version').execute();
+    await db.schema.alterTable('documents').dropColumn('file_encryption_algorithm').execute();
   },
 } satisfies Migration;

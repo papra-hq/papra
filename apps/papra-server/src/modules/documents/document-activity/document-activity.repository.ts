@@ -1,16 +1,11 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { DocumentActivityEvent } from './document-activity.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, desc, eq, getTableColumns } from 'drizzle-orm';
-import { withPagination } from '../../shared/db/pagination';
-import { tagsTable } from '../../tags/tags.table';
-import { usersTable } from '../../users/users.table';
-import { documentsTable } from '../documents.table';
-import { documentActivityLogTable } from './document-activity.table';
+import { dbToDocumentActivity, documentActivityToDb } from './document-activity.models';
 
 export type DocumentActivityRepository = ReturnType<typeof createDocumentActivityRepository>;
 
-export function createDocumentActivityRepository({ db }: { db: Database }) {
+export function createDocumentActivityRepository({ db }: { db: DatabaseClient }) {
   return injectArguments(
     {
       saveDocumentActivity,
@@ -33,20 +28,21 @@ async function saveDocumentActivity({
   eventData?: Record<string, unknown>;
   userId?: string;
   tagId?: string;
-  db: Database;
+  db: DatabaseClient;
 }) {
-  const [activity] = await db
-    .insert(documentActivityLogTable)
-    .values({
+  const dbActivity = await db
+    .insertInto('document_activity_log')
+    .values(documentActivityToDb({
       documentId,
       event,
       eventData,
       userId,
       tagId,
-    })
-    .returning();
+    }))
+    .returningAll()
+    .executeTakeFirst();
 
-  return { activity };
+  return { activity: dbToDocumentActivity(dbActivity) };
 }
 
 async function getOrganizationDocumentActivities({
@@ -60,42 +56,35 @@ async function getOrganizationDocumentActivities({
   documentId: string;
   pageIndex: number;
   pageSize: number;
-  db: Database;
+  db: DatabaseClient;
 }) {
-  const query = db
-    .select({
-      ...getTableColumns(documentActivityLogTable),
-      user: {
-        id: usersTable.id,
-        name: usersTable.name,
-      },
-      tag: {
-        id: tagsTable.id,
-        name: tagsTable.name,
-        color: tagsTable.color,
-        description: tagsTable.description,
-      },
-    })
-    .from(documentActivityLogTable)
+  const activities = await db
+    .selectFrom('document_activity_log')
     // Join with documents table to ensure the document exists in the organization
-    .innerJoin(documentsTable, eq(documentActivityLogTable.documentId, documentsTable.id))
-    .leftJoin(usersTable, eq(documentActivityLogTable.userId, usersTable.id))
-    .leftJoin(tagsTable, eq(documentActivityLogTable.tagId, tagsTable.id))
-    .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentActivityLogTable.documentId, documentId),
-      ),
-    );
-
-  const activities = await withPagination(
-    query.$dynamic(),
-    {
-      orderByColumn: desc(documentActivityLogTable.createdAt),
-      pageIndex,
-      pageSize,
-    },
-  );
+    .innerJoin('documents', 'document_activity_log.document_id', 'documents.id')
+    .leftJoin('users', 'document_activity_log.user_id', 'users.id')
+    .leftJoin('tags', 'document_activity_log.tag_id', 'tags.id')
+    .where('documents.organization_id', '=', organizationId)
+    .where('document_activity_log.document_id', '=', documentId)
+    .select([
+      'document_activity_log.id',
+      'document_activity_log.document_id',
+      'document_activity_log.event',
+      'document_activity_log.event_data',
+      'document_activity_log.user_id',
+      'document_activity_log.tag_id',
+      'document_activity_log.created_at',
+      'users.id as user_id_ref',
+      'users.name as user_name',
+      'tags.id as tag_id_ref',
+      'tags.name as tag_name',
+      'tags.color as tag_color',
+      'tags.description as tag_description',
+    ])
+    .orderBy('document_activity_log.created_at', 'desc')
+    .limit(pageSize)
+    .offset(pageIndex * pageSize)
+    .execute();
 
   return { activities };
 }

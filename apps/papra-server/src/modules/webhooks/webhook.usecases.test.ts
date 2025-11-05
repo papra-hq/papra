@@ -6,7 +6,7 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createWebhookRepository } from './webhook.repository';
 import { createWebhook, triggerWebhooks, updateWebhook } from './webhook.usecases';
-import { webhookEventsTable, webhooksTable } from './webhooks.tables';
+import { WebhookEventsTable, WebhooksTable } from './webhooks.tables';
 
 describe('webhook usecases', () => {
   describe('createWebhook', () => {
@@ -42,8 +42,8 @@ describe('webhook usecases', () => {
       });
 
       // Verify events were created
-      const events = await db.select().from(webhookEventsTable).where(eq(webhookEventsTable.webhookId, webhook.id));
-      expect(events.map(e => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
+      const events = await db.selectFrom('webhook_events').selectAll().where('webhook_id', '=', webhook.id).execute();
+      expect(events.map((e: typeof events[0]) => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
         {
           webhookId: webhook.id,
           eventName: 'document:created',
@@ -82,7 +82,7 @@ describe('webhook usecases', () => {
         organizationId: 'org_1',
       });
 
-      const webhooks = await db.select().from(webhooksTable);
+      const webhooks = await db.selectFrom('webhooks').selectAll().execute();
       expect(webhooks.length).to.eq(1);
       const [webhook] = webhooks;
 
@@ -94,8 +94,8 @@ describe('webhook usecases', () => {
         organizationId: 'org_1',
       });
 
-      const events = await db.select().from(webhookEventsTable).where(eq(webhookEventsTable.webhookId, 'wbh_1'));
-      expect(events.map(e => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
+      const events = await db.selectFrom('webhook_events').selectAll().where('webhook_id', '=', 'wbh_1').execute();
+      expect(events.map((e: typeof events[0]) => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
         {
           webhookId: 'wbh_1',
           eventName: 'document:deleted',

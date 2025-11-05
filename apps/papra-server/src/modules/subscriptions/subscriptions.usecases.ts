@@ -7,7 +7,7 @@ import { get } from 'lodash-es';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
-import { coerceStripeTimestampToDate } from './subscriptions.models';
+import { coerceStripeTimestampToDate, organizationSubscriptionToDb } from './subscriptions.models';
 
 export async function handleStripeWebhookEvent({
   event,
@@ -73,17 +73,19 @@ export async function handleStripeWebhookEvent({
     const { organizationPlan } = await plansRepository.getOrganizationPlanByPriceId({ priceId: subscriptionItem.price.id });
 
     // Upsert subscription with current state from Stripe
-    await subscriptionsRepository.upsertSubscription({
-      id: subscriptionId,
-      organizationId,
-      planId: organizationPlan.id,
-      seatsCount: organizationPlan.limits.maxOrganizationsMembersCount,
-      customerId,
-      status,
-      currentPeriodEnd,
-      currentPeriodStart,
-      cancelAtPeriodEnd,
-    });
+    await subscriptionsRepository.upsertSubscription(
+      organizationSubscriptionToDb({
+        id: subscriptionId,
+        organizationId,
+        planId: organizationPlan.id,
+        seatsCount: organizationPlan.limits.maxOrganizationsMembersCount,
+        customerId,
+        status,
+        currentPeriodEnd,
+        currentPeriodStart,
+        cancelAtPeriodEnd,
+      }),
+    );
 
     logger.info({
       subscriptionId,

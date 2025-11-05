@@ -1,13 +1,12 @@
-import type { Database } from '../app/database/database.types';
-import type { DbInsertableSubscription } from './subscriptions.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, eq, inArray } from 'drizzle-orm';
 import { omitUndefined } from '../shared/utils';
-import { organizationSubscriptionsTable } from './subscriptions.tables';
+import { dbToOrganizationSubscription, organizationSubscriptionToDb } from './subscriptions.models';
+import type { DbInsertableOrganizationSubscription } from './subscriptions.new.tables';
 
 export type SubscriptionsRepository = ReturnType<typeof createSubscriptionsRepository>;
 
-export function createSubscriptionsRepository({ db }: { db: Database }) {
+export function createSubscriptionsRepository({ db }: { db: DatabaseClient }) {
   return injectArguments(
     {
       getActiveOrganizationSubscription,
@@ -22,68 +21,73 @@ export function createSubscriptionsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getActiveOrganizationSubscription({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getActiveOrganizationSubscription({ organizationId, db }: { organizationId: string; db: DatabaseClient }) {
   // Allowlist approach: explicitly include only statuses that grant access
   // - active: paid and active subscription
   // - trialing: in trial period (has access)
   // - past_due: payment failed but still has access during grace period
-  const [subscription] = await db
-    .select()
-    .from(organizationSubscriptionsTable)
-    .where(
-      and(
-        eq(organizationSubscriptionsTable.organizationId, organizationId),
-        inArray(organizationSubscriptionsTable.status, ['active', 'trialing', 'past_due']),
-      ),
-    );
+  const dbSubscription = await db
+    .selectFrom('organization_subscriptions')
+    .where('organization_id', '=', organizationId)
+    .where('status', 'in', ['active', 'trialing', 'past_due'])
+    .selectAll()
+    .executeTakeFirst();
+
+  const subscription = dbToOrganizationSubscription(dbSubscription);
 
   return { subscription };
 }
 
-async function getAllOrganizationSubscriptions({ organizationId, db }: { organizationId: string; db: Database }) {
-  const subscriptions = await db
-    .select()
-    .from(organizationSubscriptionsTable)
-    .where(
-      eq(organizationSubscriptionsTable.organizationId, organizationId),
-    );
+async function getAllOrganizationSubscriptions({ organizationId, db }: { organizationId: string; db: DatabaseClient }) {
+  const dbSubscriptions = await db
+    .selectFrom('organization_subscriptions')
+    .where('organization_id', '=', organizationId)
+    .selectAll()
+    .execute();
+
+  const subscriptions = dbSubscriptions.map(dbSub => dbToOrganizationSubscription(dbSub)).filter((sub): sub is NonNullable<typeof sub> => sub !== undefined);
 
   return { subscriptions };
 }
 
-async function getSubscriptionById({ subscriptionId, db }: { subscriptionId: string; db: Database }) {
-  const [subscription] = await db
-    .select()
-    .from(organizationSubscriptionsTable)
-    .where(
-      eq(organizationSubscriptionsTable.id, subscriptionId),
-    );
+async function getSubscriptionById({ subscriptionId, db }: { subscriptionId: string; db: DatabaseClient }) {
+  const dbSubscription = await db
+    .selectFrom('organization_subscriptions')
+    .where('id', '=', subscriptionId)
+    .selectAll()
+    .executeTakeFirst();
+
+  const subscription = dbToOrganizationSubscription(dbSubscription);
 
   return { subscription };
 }
 
-async function updateSubscription({ subscriptionId, db, ...subscription }: { subscriptionId: string; db: Database } & Omit<Partial<DbInsertableSubscription>, 'id'>) {
-  const [updatedSubscription] = await db
-    .update(organizationSubscriptionsTable)
+async function updateSubscription({ subscriptionId, db, ...subscription }: { subscriptionId: string; db: DatabaseClient } & Omit<Partial<DbInsertableOrganizationSubscription>, 'id'>) {
+  const dbUpdatedSubscription = await db
+    .updateTable('organization_subscriptions')
     .set(omitUndefined(subscription))
-    .where(
-      eq(organizationSubscriptionsTable.id, subscriptionId),
-    )
-    .returning();
+    .where('id', '=', subscriptionId)
+    .returningAll()
+    .executeTakeFirst();
+
+  const updatedSubscription = dbToOrganizationSubscription(dbUpdatedSubscription);
 
   return { updatedSubscription };
 }
 
 // cspell:ignore upserted Insertable
-async function upsertSubscription({ db, ...subscription }: { db: Database } & DbInsertableSubscription) {
-  const [upsertedSubscription] = await db
-    .insert(organizationSubscriptionsTable)
+async function upsertSubscription({ db, ...subscription }: { db: DatabaseClient } & DbInsertableOrganizationSubscription) {
+  const dbUpsertedSubscription = await db
+    .insertInto('organization_subscriptions')
     .values(subscription)
-    .onConflictDoUpdate({
-      target: organizationSubscriptionsTable.id,
-      set: omitUndefined(subscription),
-    })
-    .returning();
+    .onConflict((oc) => oc
+      .column('id')
+      .doUpdateSet(omitUndefined(subscription)),
+    )
+    .returningAll()
+    .executeTakeFirst();
+
+  const upsertedSubscription = dbToOrganizationSubscription(dbUpsertedSubscription);
 
   return { subscription: upsertedSubscription };
 }

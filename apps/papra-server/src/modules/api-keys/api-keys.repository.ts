@@ -1,17 +1,16 @@
-import type { Database } from '../app/database/database.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import type { Logger } from '../shared/logger/logger';
 import type { ApiKeyPermissions } from './api-keys.types';
 import { injectArguments } from '@corentinth/chisels';
-import { and, eq, getTableColumns, inArray } from 'drizzle-orm';
-import { omit, pick } from 'lodash-es';
-import { organizationMembersTable, organizationsTable } from '../organizations/organizations.table';
+import { pick } from 'lodash-es';
+import { dbToOrganizationMember } from '../organizations/organizations.models';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
-import { apiKeyOrganizationsTable, apiKeysTable } from './api-keys.tables';
+import { apiKeyOrganizationToDb, apiKeyToDb, dbToApiKey } from './api-keys.models';
 
 export type ApiKeysRepository = ReturnType<typeof createApiKeysRepository>;
 
-export function createApiKeysRepository({ db, logger = createLogger({ namespace: 'api-keys.repository' }) }: { db: Database; logger?: Logger }) {
+export function createApiKeysRepository({ db, logger = createLogger({ namespace: 'api-keys.repository' }) }: { db: DatabaseClient; logger?: Logger }) {
   return injectArguments(
     {
       saveApiKey,
@@ -35,7 +34,7 @@ async function saveApiKey({
   organizationIds,
   expiresAt,
 }: {
-  db: Database;
+  db: DatabaseClient;
   logger: Logger;
   name: string;
   keyHash: string;
@@ -46,9 +45,9 @@ async function saveApiKey({
   expiresAt?: Date;
   userId: string;
 }) {
-  const [apiKey] = await db
-    .insert(apiKeysTable)
-    .values({
+  const dbApiKey = await db
+    .insertInto('api_keys')
+    .values(apiKeyToDb({
       name,
       keyHash,
       prefix,
@@ -56,10 +55,11 @@ async function saveApiKey({
       allOrganizations,
       userId,
       expiresAt,
-    })
-    .returning();
+    }))
+    .returningAll()
+    .executeTakeFirst();
 
-  if (!apiKey) {
+  if (!dbApiKey) {
     // Very unlikely to happen as the insertion should throw an issue, it's for type safety
     throw createError({
       message: 'Error while creating api key',
@@ -69,18 +69,19 @@ async function saveApiKey({
     });
   }
 
+  const apiKey = dbToApiKey(dbApiKey);
+
   if (organizationIds && organizationIds.length > 0) {
     const apiKeyId = apiKey.id;
 
-    const organizationMembers = await db
-      .select()
-      .from(organizationMembersTable)
-      .where(
-        and(
-          inArray(organizationMembersTable.organizationId, organizationIds),
-          eq(organizationMembersTable.userId, userId),
-        ),
-      );
+    const dbOrganizationMembers = await db
+      .selectFrom('organization_members')
+      .where('organization_id', 'in', organizationIds)
+      .where('user_id', '=', userId)
+      .selectAll()
+      .execute();
+
+    const organizationMembers = dbOrganizationMembers.map(dbOm => (dbToOrganizationMember(dbOm)));
 
     if (!organizationIds.every(id => organizationMembers.some(om => om.organizationId === id))) {
       logger.warn({
@@ -91,41 +92,44 @@ async function saveApiKey({
     }
 
     await db
-      .insert(apiKeyOrganizationsTable)
+      .insertInto('api_key_organizations')
       .values(
-        organizationMembers.map(({ id: organizationMemberId }) => ({ apiKeyId, organizationMemberId })),
-      );
+        organizationMembers.map(({ id: organizationMemberId }) => apiKeyOrganizationToDb({ apiKeyId, organizationMemberId })),
+      )
+      .execute();
   }
 
   return { apiKey };
 }
 
-async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) {
-  const apiKeys = await db
-    .select({
-      ...omit(getTableColumns(apiKeysTable), 'keyHash'),
-    })
-    .from(apiKeysTable)
-    .where(
-      eq(apiKeysTable.userId, userId),
-    );
+async function getUserApiKeys({ userId, db }: { userId: string; db: DatabaseClient }) {
+  const dbApiKeys = await db
+    .selectFrom('api_keys')
+    .where('user_id', '=', userId)
+    .select(['api_keys.id', 'api_keys.user_id', 'api_keys.name', 'api_keys.prefix', 'api_keys.last_used_at', 'api_keys.expires_at', 'api_keys.permissions', 'api_keys.all_organizations', 'api_keys.created_at', 'api_keys.updated_at'])
+    .execute()
+    .then(rows => rows.map(row => dbToApiKey(row)));
 
   const relatedOrganizations = await db
-    .select({
-      ...getTableColumns(organizationsTable),
-      apiKeyId: apiKeyOrganizationsTable.apiKeyId,
-    })
-    .from(apiKeyOrganizationsTable)
-    .leftJoin(organizationMembersTable, eq(apiKeyOrganizationsTable.organizationMemberId, organizationMembersTable.id))
-    .leftJoin(organizationsTable, eq(organizationMembersTable.organizationId, organizationsTable.id))
-    .where(
-      and(
-        inArray(apiKeyOrganizationsTable.apiKeyId, apiKeys.map(apiKey => apiKey.id)),
-        eq(organizationMembersTable.userId, userId),
-      ),
-    );
+    .selectFrom('api_key_organizations')
+    .innerJoin('organization_members', 'api_key_organizations.organization_member_id', 'organization_members.id')
+    .innerJoin('organizations', 'organization_members.organization_id', 'organizations.id')
+    .where('api_key_organizations.api_key_id', 'in', dbApiKeys.map(apiKey => apiKey.id))
+    .where('organization_members.user_id', '=', userId)
+    .select([
+      'organizations.id',
+      'organizations.name',
+      'organizations.customer_id',
+      'organizations.deleted_at',
+      'organizations.deleted_by',
+      'organizations.scheduled_purge_at',
+      'organizations.created_at',
+      'organizations.updated_at',
+      'api_key_organizations.api_key_id as apiKeyId',
+    ])
+    .execute();
 
-  const apiKeysWithOrganizations = apiKeys.map(apiKey => ({
+  const apiKeysWithOrganizations = dbApiKeys.map(apiKey => ({
     ...apiKey,
     organizations: relatedOrganizations
       .filter(organization => organization.apiKeyId === apiKey.id)
@@ -137,24 +141,22 @@ async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) 
   };
 }
 
-async function deleteUserApiKey({ apiKeyId, userId, db }: { apiKeyId: string; userId: string; db: Database }) {
+async function deleteUserApiKey({ apiKeyId, userId, db }: { apiKeyId: string; userId: string; db: DatabaseClient }) {
   await db
-    .delete(apiKeysTable)
-    .where(
-      and(
-        eq(apiKeysTable.id, apiKeyId),
-        eq(apiKeysTable.userId, userId),
-      ),
-    );
+    .deleteFrom('api_keys')
+    .where('id', '=', apiKeyId)
+    .where('user_id', '=', userId)
+    .execute();
 }
 
-async function getApiKeyByHash({ keyHash, db }: { keyHash: string; db: Database }) {
-  const [apiKey] = await db
-    .select()
-    .from(apiKeysTable)
-    .where(
-      eq(apiKeysTable.keyHash, keyHash),
-    );
+async function getApiKeyByHash({ keyHash, db }: { keyHash: string; db: DatabaseClient }) {
+  const dbApiKey = await db
+    .selectFrom('api_keys')
+    .where('key_hash', '=', keyHash)
+    .selectAll()
+    .executeTakeFirst();
+
+  const apiKey = dbApiKey ? dbToApiKey(dbApiKey) : undefined;
 
   return { apiKey };
 }

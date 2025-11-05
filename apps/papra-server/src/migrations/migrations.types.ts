@@ -1,7 +1,7 @@
-import type { Database } from '../modules/app/database/database.types';
+import type { DatabaseClient } from '../modules/app/database/database.types';
 
 export type MigrationArguments = {
-  db: Database;
+  db: DatabaseClient;
 };
 
 export type Migration = {

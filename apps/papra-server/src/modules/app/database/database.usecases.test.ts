@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-import { usersTable } from '../../users/users.table';
 import { createInMemoryDatabase } from './database.test-utils';
 import { createIterator } from './database.usecases';
 
@@ -12,7 +11,7 @@ describe('database usecases', () => {
         users: createUsers({ count: 10 }),
       });
 
-      const query = db.select().from(usersTable).orderBy(usersTable.id).$dynamic();
+      const query = db.selectFrom('users').selectAll().orderBy('id');
       const iterator = createIterator({ query });
 
       const results: string[] = [];
@@ -29,7 +28,7 @@ describe('database usecases', () => {
         users: createUsers({ count: 10 }),
       });
 
-      const query = db.select().from(usersTable).orderBy(usersTable.id).$dynamic();
+      const query = db.selectFrom('users').selectAll().orderBy('id');
       const iterator = createIterator({ query });
 
       const results = await Array.fromAsync(iterator);
@@ -42,7 +41,7 @@ describe('database usecases', () => {
         users: createUsers({ count: 10 }),
       });
 
-      const query = db.select().from(usersTable).orderBy(usersTable.id).$dynamic();
+      const query = db.selectFrom('users').selectAll().orderBy('id');
       const iterator = createIterator({ query, batchSize: 3 });
 
       const results: string[] = [];

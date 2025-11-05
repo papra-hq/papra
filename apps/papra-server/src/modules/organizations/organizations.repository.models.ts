@@ -1,4 +1,4 @@
-import type { OrganizationInvitation } from './organizations.types';
+import type { OrganizationInvitation } from './organizations.tables';
 import { isAfter } from 'date-fns';
 import { ORGANIZATION_INVITATION_STATUS } from './organizations.constants';
 

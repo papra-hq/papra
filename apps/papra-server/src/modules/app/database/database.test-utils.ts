@@ -1,21 +1,21 @@
-import type { Database } from './database.types';
+import type { Database, DatabaseClient } from './database.types';
 import { createNoopLogger } from '@crowlog/logger';
-import { sql } from 'drizzle-orm';
+import { CompiledQuery } from 'kysely';
 import { runMigrations } from '../../../migrations/migrations.usecases';
-import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.tables';
-import { documentsTable } from '../../documents/documents.table';
-import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
-import { organizationSubscriptionsTable } from '../../subscriptions/subscriptions.tables';
-import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from '../../tagging-rules/tagging-rules.tables';
-import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
-import { usersTable } from '../../users/users.table';
-import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from '../../webhooks/webhooks.tables';
+import { apiKeyOrganizationToDb, apiKeyToDb } from '../../api-keys/api-keys.models';
+import { documentToDb } from '../../documents/documents.models';
+import { intakeEmailToDb } from '../../intake-emails/intake-emails.models';
+import { organizationInvitationToDb, organizationMemberToDb, organizationToDb } from '../../organizations/organizations.models';
+import { organizationSubscriptionToDb } from '../../subscriptions/subscriptions.models';
+import { taggingRuleActionToDb, taggingRuleConditionToDb, taggingRuleToDb } from '../../tagging-rules/tagging-rules.models';
+import { documentTagToDb, tagToDb } from '../../tags/tags.models';
+import { userToDb } from '../../users/users.models';
+import { webhookDeliveryToDb, webhookEventToDb, webhookToDb } from '../../webhooks/webhooks.models';
 import { setupDatabase } from './database';
 
 export { createInMemoryDatabase, seedDatabase };
 
-async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDatabase>[0], 'db'> | undefined = {}) {
+async function createInMemoryDatabase(seedingRows: SeedingRows | undefined = {}): Promise<{ db: DatabaseClient }> {
   const { db } = setupDatabase({ url: ':memory:' });
 
   await runMigrations({
@@ -24,73 +24,85 @@ async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDa
     logger: createNoopLogger(),
   });
 
-  await seedDatabase({ db, ...seedOptions });
+  await seedDatabase({ db, seedingRows });
 
   return {
     db,
   };
 }
 
-const seedTables = {
-  users: usersTable,
-  organizations: organizationsTable,
-  organizationMembers: organizationMembersTable,
-  documents: documentsTable,
-  tags: tagsTable,
-  documentsTags: documentsTagsTable,
-  intakeEmails: intakeEmailsTable,
-  organizationSubscriptions: organizationSubscriptionsTable,
-  taggingRules: taggingRulesTable,
-  taggingRuleConditions: taggingRuleConditionsTable,
-  taggingRuleActions: taggingRuleActionsTable,
-  apiKeys: apiKeysTable,
-  apiKeyOrganizations: apiKeyOrganizationsTable,
-  webhooks: webhooksTable,
-  webhookEvents: webhookEventsTable,
-  webhookDeliveries: webhookDeliveriesTable,
-  organizationInvitations: organizationInvitationsTable,
-} as const;
-
-type SeedTablesRows = {
-  [K in keyof typeof seedTables]?: typeof seedTables[K] extends { $inferInsert: infer T } ? T[] : never;
+// Take the insertable rows for each table
+const tableSeedingMappers = {
+  users: { table: 'users', mapper: userToDb },
+  apiKeys: { table: 'api_keys', mapper: apiKeyToDb },
+  apiKeyOrganizations: { table: 'api_key_organizations', mapper: apiKeyOrganizationToDb },
+  organizations: { table: 'organizations', mapper: organizationToDb },
+  organizationMembers: { table: 'organization_members', mapper: organizationMemberToDb },
+  organizationInvitations: { table: 'organization_invitations', mapper: organizationInvitationToDb },
+  organizationSubscriptions: { table: 'organization_subscriptions', mapper: organizationSubscriptionToDb },
+  documents: { table: 'documents', mapper: documentToDb },
+  tags: { table: 'tags', mapper: tagToDb },
+  documentsTags: { table: 'documents_tags', mapper: documentTagToDb },
+  taggingRules: { table: 'tagging_rules', mapper: taggingRuleToDb },
+  taggingRuleActions: { table: 'tagging_rule_actions', mapper: taggingRuleActionToDb },
+  taggingRuleConditions: { table: 'tagging_rule_conditions', mapper: taggingRuleConditionToDb },
+  intakeEmails: { table: 'intake_emails', mapper: intakeEmailToDb },
+  webhooks: { table: 'webhooks', mapper: webhookToDb },
+  webhookEvents: { table: 'webhook_events', mapper: webhookEventToDb },
+  webhookDeliveries: { table: 'webhook_deliveries', mapper: webhookDeliveryToDb },
 };
 
-async function seedDatabase({ db, ...seedRows }: { db: Database } & SeedTablesRows) {
-  await Promise.all(
-    Object
-      .entries(seedRows)
-      .map(async ([table, rows]) => db
-        .insert(seedTables[table as keyof typeof seedTables])
-        .values(rows)
-        .execute(),
-      ),
-  );
+type SeedingRows = {
+  [Table in keyof typeof tableSeedingMappers]?: Parameters<typeof tableSeedingMappers[Table]['mapper']>['0'][];
+};
+
+async function seedDatabase({ db, seedingRows }: { db: DatabaseClient; seedingRows?: SeedingRows }) {
+  if (!seedingRows) {
+    return;
+  }
+
+  // Insert tables in order to respect foreign key constraints
+  const orderedKeys: (keyof typeof tableSeedingMappers)[] = [
+    'users',
+    'organizations',
+    'organizationMembers',
+    'organizationInvitations',
+    'organizationSubscriptions',
+    'apiKeys',
+    'apiKeyOrganizations',
+    'documents',
+    'tags',
+    'documentsTags',
+    'taggingRules',
+    'taggingRuleActions',
+    'taggingRuleConditions',
+    'intakeEmails',
+    'webhooks',
+    'webhookEvents',
+    'webhookDeliveries',
+  ];
+
+  for (const mapperKey of orderedKeys) {
+    const rawRows = seedingRows[mapperKey];
+    if (!rawRows) {
+      continue;
+    }
+
+    const { table, mapper } = tableSeedingMappers[mapperKey];
+    // @ts-expect-error - We know that the mapper exists for the table
+    const rows = rawRows.map(rawRow => mapper(rawRow));
+    await db
+      .insertInto(table as keyof Database)
+      .values(rows)
+      .execute();
+  }
 }
 
-/*
-PRAGMA encoding;
-PRAGMA page_size;
-PRAGMA auto_vacuum;
-PRAGMA journal_mode;      -- WAL is persistent
-PRAGMA user_version;
-PRAGMA application_id;
+export async function serializeSchema({ db }: { db: DatabaseClient }) {
+  const { rows } = await db.executeQuery<{ sql: unknown }>(CompiledQuery.raw(`SELECT sql FROM sqlite_schema WHERE sql IS NOT NULL AND type IN ('table','index','view','trigger') ORDER BY type, name`));
 
-*/
-
-export async function serializeSchema({ db }: { db: Database }) {
-  const result = await db.batch([
-    // db.run(sql`PRAGMA encoding`),
-    // db.run(sql`PRAGMA page_size`),
-    // db.run(sql`PRAGMA auto_vacuum`),
-    // db.run(sql`PRAGMA journal_mode`),
-    // db.run(sql`PRAGMA user_version`),
-    // db.run(sql`PRAGMA application_id`),
-    db.run(sql`SELECT sql FROM sqlite_schema WHERE sql IS NOT NULL AND type IN ('table','index','view','trigger') ORDER BY type, name`),
-  ]);
-
-  return Array
-    .from(result.values())
-    .flatMap(({ rows }) => rows.map(({ sql }) => minifyQuery(String(sql))))
+  return rows
+    .map(({ sql }) => minifyQuery(String(sql)))
     .join('\n');
 }
 

@@ -2,8 +2,10 @@ import type { NonEmptyArray } from '../shared/types';
 import type { OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { index, integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
-import { usersTable } from '../users/users.table';
 import { ORGANIZATION_ID_PREFIX, ORGANIZATION_INVITATION_ID_PREFIX, ORGANIZATION_INVITATION_STATUS, ORGANIZATION_INVITATION_STATUS_LIST, ORGANIZATION_MEMBER_ID_PREFIX, ORGANIZATION_ROLES_LIST } from './organizations.constants';
+
+// Legacy stub for Drizzle schema - this file is no longer used in production
+const usersTable = { id: '' } as any;
 
 export const organizationsTable = sqliteTable('organizations', {
   ...createPrimaryKeyField({ prefix: ORGANIZATION_ID_PREFIX }),

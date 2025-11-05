@@ -1,4 +1,4 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { Config } from '../../config/config.types';
 import type { DocumentStorageService } from '../../documents/storage/documents.storage.services';
 import type { TaskServices } from '../../tasks/tasks.services';
@@ -9,7 +9,7 @@ import { purgeExpiredSoftDeletedOrganizations } from '../organizations.usecases'
 
 const logger = createLogger({ namespace: 'organizations:tasks:purgeExpiredOrganizations' });
 
-export async function registerPurgeExpiredOrganizationsTask({ taskServices, db, config, documentsStorageService }: { taskServices: TaskServices; db: Database; config: Config; documentsStorageService: DocumentStorageService }) {
+export async function registerPurgeExpiredOrganizationsTask({ taskServices, db, config, documentsStorageService }: { taskServices: TaskServices; db: DatabaseClient; config: Config; documentsStorageService: DocumentStorageService }) {
   const taskName = 'purge-expired-organizations';
   const { cron, runOnStartup } = config.tasks.purgeExpiredOrganizations;
 

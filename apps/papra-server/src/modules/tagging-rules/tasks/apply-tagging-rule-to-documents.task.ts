@@ -1,4 +1,4 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createDocumentActivityRepository } from '../../documents/document-activity/document-activity.repository';
 import { createDocumentsRepository } from '../../documents/documents.repository';
@@ -10,7 +10,7 @@ import { applyTaggingRuleToExistingDocuments } from '../tagging-rules.usecases';
 
 const logger = createLogger({ namespace: 'tasks:apply-tagging-rule' });
 
-export async function registerApplyTaggingRuleToDocumentsTask({ taskServices, db }: { taskServices: TaskServices; db: Database }) {
+export async function registerApplyTaggingRuleToDocumentsTask({ taskServices, db }: { taskServices: TaskServices; db: DatabaseClient }) {
   const taskName = 'apply-tagging-rule-to-documents';
 
   taskServices.registerTask({

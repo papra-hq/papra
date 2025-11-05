@@ -12,8 +12,8 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createMaxOrganizationMembersCountReachedError, createOrganizationHasActiveSubscriptionError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import { dbToOrganization } from './organizations.models';
 import { createOrganizationsRepository } from './organizations.repository';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 import { checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
 
 describe('organizations usecases', () => {
@@ -100,8 +100,8 @@ describe('organizations usecases', () => {
       });
 
       // add a second organization owned by the user
-      await db.insert(organizationsTable).values({ id: 'organization-3', name: 'Organization 3' });
-      await db.insert(organizationMembersTable).values({ organizationId: 'organization-3', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER });
+      await db.insertInto('organizations').values({ id: 'organization-3', name: 'Organization 3', created_at: Date.now(), updated_at: Date.now() }).execute();
+      await db.insertInto('organization_members').values({ id: 'member-3', organization_id: 'organization-3', user_id: 'user-1', role: ORGANIZATION_ROLES.OWNER, created_at: Date.now(), updated_at: Date.now() }).execute();
 
       // throw
       await expect(
@@ -142,8 +142,8 @@ describe('organizations usecases', () => {
       });
 
       // add a third organization owned by the user
-      await db.insert(organizationsTable).values({ id: 'organization-3', name: 'Organization 3' });
-      await db.insert(organizationMembersTable).values({ organizationId: 'organization-3', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER });
+      await db.insertInto('organizations').values({ id: 'organization-3', name: 'Organization 3', created_at: Date.now(), updated_at: Date.now() }).execute();
+      await db.insertInto('organization_members').values({ id: 'member-3', organization_id: 'organization-3', user_id: 'user-1', role: ORGANIZATION_ROLES.OWNER, created_at: Date.now(), updated_at: Date.now() }).execute();
 
       // throw
       await expect(
@@ -307,7 +307,7 @@ describe('organizations usecases', () => {
         organizationsRepository,
       });
 
-      const remainingMembers = await db.select().from(organizationMembersTable);
+      const remainingMembers = await db.selectFrom('organization_members').selectAll().execute();
 
       expect(remainingMembers.length).to.equal(1);
       expect(remainingMembers[0]?.id).to.equal('member-1');
@@ -884,7 +884,7 @@ describe('organizations usecases', () => {
       });
 
       // Verify invitation was saved in database
-      const invitations = await db.select().from(organizationInvitationsTable);
+      const invitations = await db.selectFrom('organization_invitations').selectAll().execute();
       expect(invitations).toHaveLength(1);
       expect(invitations[0]).toMatchObject({
         email: 'new-member@example.com',
@@ -980,7 +980,7 @@ describe('organizations usecases', () => {
           now: new Date('2025-10-05'),
         });
 
-        const [organization] = await db.select().from(organizationsTable);
+        const [organization] = await db.selectFrom('organizations').selectAll().execute().then(rows => rows.map(row => dbToOrganization(row)));
         expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
         expect(organization?.deletedBy).to.eql('usr_1');
         expect(organization?.scheduledPurgeAt).to.eql(new Date('2025-11-04'));
@@ -1045,9 +1045,8 @@ describe('organizations usecases', () => {
           config,
         });
 
-        const remainingMembers = await db.select().from(organizationMembersTable);
-        const remainingInvitations = await db.select().from(organizationInvitationsTable);
-
+        const remainingMembers = await db.selectFrom('organization_members').selectAll().execute();
+        const remainingInvitations = await db.selectFrom('organization_invitations').selectAll().execute();
         expect(remainingMembers).toHaveLength(0);
         expect(remainingInvitations).toHaveLength(0);
       });
@@ -1146,7 +1145,7 @@ describe('organizations usecases', () => {
         ).rejects.toThrow(createOrganizationHasActiveSubscriptionError());
 
         // Organization should not be deleted
-        const [organization] = await db.select().from(organizationsTable);
+        const [organization] = await db.selectFrom('organizations').selectAll().execute();
         expect(organization?.deletedAt).to.eql(null);
       });
 
@@ -1186,7 +1185,7 @@ describe('organizations usecases', () => {
         });
 
         // Organization should be deleted
-        const [organization] = await db.select().from(organizationsTable);
+        const [organization] = await db.selectFrom('organizations').selectAll().execute();
         expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
         expect(organization?.deletedBy).to.eql('usr_1');
       });
@@ -1226,7 +1225,7 @@ describe('organizations usecases', () => {
           now: new Date('2025-10-05'),
         });
 
-        const [organization] = await db.select().from(organizationsTable);
+        const [organization] = await db.selectFrom('organizations').selectAll().execute();
         expect(organization?.deletedAt).to.eql(new Date('2025-10-05'));
         expect(organization?.deletedBy).to.eql('usr_1');
       });

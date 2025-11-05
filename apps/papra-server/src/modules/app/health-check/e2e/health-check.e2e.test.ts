@@ -1,4 +1,4 @@
-import type { Database } from '../../database/database.types';
+import type { DatabaseClient } from '../../database/database.types';
 import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../../../config/config.test-utils';
 import { createInMemoryDatabase } from '../../database/database.test-utils';
@@ -23,10 +23,10 @@ describe('health check routes e2e', () => {
 
       test('when their is an issue with the database, the /api/health returns a 500', async () => {
         const db = {
-          run: async () => {
+          executeTakeFirst: async () => {
             throw new Error('Alerte générale !');
           },
-        } as unknown as Database;
+        } as unknown as DatabaseClient;
 
         const { app } = await createServer({ db, config: overrideConfig() });
 

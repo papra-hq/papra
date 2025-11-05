@@ -1,5 +1,5 @@
 import type { Readable } from 'node:stream';
-import type { Database } from '../app/database/database.types';
+import type { DatabaseClient } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
@@ -39,6 +39,7 @@ import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, create
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
+import { documentToDb } from './documents.models';
 
 type DocumentStorageContext = {
   storageKey: string;
@@ -197,7 +198,7 @@ export function createDocumentCreationUsecase({
   documentsStorageService,
   ...initialDeps
 }: {
-  db: Database;
+  db: DatabaseClient;
   taskServices: TaskServices;
   documentsStorageService: DocumentStorageService;
   config: Config;
@@ -318,20 +319,23 @@ async function createNewDocument({
     throw createOrganizationDocumentStorageLimitReachedError();
   }
 
-  const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
-    id: documentId,
-    name: fileName,
-    organizationId,
-    originalName: fileName,
-    createdBy: userId,
-    originalSize: size,
-    originalStorageKey: newFileStorageContext.storageKey,
-    fileEncryptionAlgorithm: newFileStorageContext.fileEncryptionAlgorithm,
-    fileEncryptionKekVersion: newFileStorageContext.fileEncryptionKekVersion,
-    fileEncryptionKeyWrapped: newFileStorageContext.fileEncryptionKeyWrapped,
-    mimeType,
-    originalSha256Hash: hash,
-  }));
+  const [result, error] = await safely(documentsRepository.saveOrganizationDocument(
+    documentToDb({
+      id: documentId,
+      name: fileName,
+      organizationId,
+      originalName: fileName,
+      createdBy: userId,
+      originalSize: size,
+      originalStorageKey: newFileStorageContext.storageKey,
+      fileEncryptionAlgorithm: newFileStorageContext.fileEncryptionAlgorithm,
+      fileEncryptionKekVersion: newFileStorageContext.fileEncryptionKekVersion,
+      fileEncryptionKeyWrapped: newFileStorageContext.fileEncryptionKeyWrapped,
+      mimeType,
+      originalSha256Hash: hash,
+      content: '',  // Content will be extracted later by the extract-document-file-content task
+    }),
+  ));
 
   if (error) {
     logger.error({ error }, 'Error while creating document');

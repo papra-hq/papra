@@ -121,7 +121,7 @@ describe('documents e2e', () => {
       });
 
       // Ensure no document is saved in the db
-      const documentRecords = await db.select().from(documentsTable);
+      const documentRecords = await db.selectFrom('documents').selectAll().execute();
       expect(documentRecords.length).to.eql(0);
 
       // Ensure no file is saved in the storage

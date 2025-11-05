@@ -9,14 +9,12 @@ import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
-import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
+import { dbToDocument } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentsTable } from './documents.table';
 import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
@@ -77,7 +75,8 @@ describe('documents usecases', () => {
       expect(content).to.eql('Hello, world!');
 
       // Ensure the document record is saved in the database
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
 
       expect(documentRecords).to.eql([document]);
     });
@@ -143,7 +142,8 @@ describe('documents usecases', () => {
         createDocumentAlreadyExistsError(),
       );
 
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
 
       expect(documentRecords.map(({ id }) => id)).to.eql(['doc_1']);
 
@@ -180,6 +180,7 @@ describe('documents usecases', () => {
           originalStorageKey: 'organization-1/originals/document-1.txt',
           name: 'file-1.txt',
           originalName: 'file-1.txt',
+          originalSize: 13,
           content: 'Hello, world!',
         }],
         documentsTags: [{
@@ -193,7 +194,7 @@ describe('documents usecases', () => {
           { id: 'tagging-rule-condition-1', taggingRuleId: 'tagging-rule-1', field: 'content', operator: 'contains', value: 'hello' },
         ],
         taggingRuleActions: [
-          { id: 'tagging-rule-action-1', taggingRuleId: 'tagging-rule-1', tagId: 'tag-2' },
+          { id: 'tagging-rule-action-1', taggingRuleId: 'tagging-rule-1', tagId: 'tag-2' } as any,
         ],
       });
 
@@ -228,17 +229,18 @@ describe('documents usecases', () => {
         deletedAt: null,
       });
 
-      const documentsRecordsAfterRestoration = await db.select().from(documentsTable);
+      const dbDocumentsAfterRestoration = await db.selectFrom('documents').selectAll().execute();
+      const documentsRecordsAfterRestoration = dbDocumentsAfterRestoration.map(dbToDocument).filter(Boolean);
 
       expect(documentsRecordsAfterRestoration.length).to.eql(1);
 
       expect(documentsRecordsAfterRestoration[0]).to.eql(documentRestored);
 
-      const documentsTagsRecordsAfterRestoration = await db.select().from(documentsTagsTable);
+      const documentsTagsRecordsAfterRestoration = await db.selectFrom('documents_tags').selectAll().execute();
 
       expect(documentsTagsRecordsAfterRestoration).to.eql([{
-        documentId: 'document-1',
-        tagId: 'tag-2',
+        document_id: 'document-1',
+        tag_id: 'tag-2',
       }]);
     });
 
@@ -285,7 +287,8 @@ describe('documents usecases', () => {
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
 
       expect(documentRecords).to.eql([]);
 
@@ -332,22 +335,22 @@ describe('documents usecases', () => {
 
       await nextTick();
 
-      const documentActivityLogRecords = await db.select().from(documentActivityLogTable);
+      const documentActivityLogRecords = await db.selectFrom('document_activity_log').selectAll().execute();
 
       expect(documentActivityLogRecords.length).to.eql(2);
 
       expect(documentActivityLogRecords[0]).to.deep.include({
         event: 'created',
-        eventData: null,
-        userId: 'user-1',
-        documentId: 'doc_1',
+        event_data: null,
+        user_id: 'user-1',
+        document_id: 'doc_1',
       });
 
       expect(documentActivityLogRecords[1]).to.deep.include({
         event: 'created',
-        eventData: null,
-        userId: null,
-        documentId: 'doc_2',
+        event_data: null,
+        user_id: null,
+        document_id: 'doc_2',
       });
     });
 
@@ -390,7 +393,8 @@ describe('documents usecases', () => {
       ).rejects.toThrow(createOrganizationDocumentStorageLimitReachedError());
 
       // Ensure no document is saved in the db
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
       expect(documentRecords.length).to.eql(0);
 
       // Ensure no file is saved in the storage
@@ -461,7 +465,8 @@ describe('documents usecases', () => {
         }).then(resolve),
       ]);
 
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
 
       expect(documentRecords.length).to.eql(1);
       expect(documentRecords[0]).to.deep.include({
@@ -513,7 +518,8 @@ describe('documents usecases', () => {
       ).rejects.toThrow(createDocumentSizeTooLargeError());
 
       // Ensure no document is saved in the db
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
       expect(documentRecords.length).to.eql(0);
 
       // Ensure no file is saved in the storage
@@ -539,15 +545,20 @@ describe('documents usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 
-      await db.insert(documentsTable).values({
+      await db.insertInto('documents').values({
         id: 'document-1',
-        organizationId: 'organization-1',
-        originalStorageKey: 'organization-1/originals/document-1.txt',
-        mimeType: 'text/plain',
+        organization_id: 'organization-1',
+        original_storage_key: 'organization-1/originals/document-1.txt',
+        original_size: 0,
+        mime_type: 'text/plain',
         name: 'file-1.txt',
-        originalName: 'file-1.txt',
-        originalSha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
-      });
+        original_name: 'file-1.txt',
+        original_sha256_hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+        content: '',
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        is_deleted: 0,
+      }).execute();
 
       await documentsStorageService.saveFile({
         fileStream: createReadableStream({ content: 'hello world' }),
@@ -570,7 +581,8 @@ describe('documents usecases', () => {
         documentActivityRepository,
       });
 
-      const documentRecords = await db.select().from(documentsTable);
+      const dbDocuments = await db.selectFrom('documents').selectAll().execute();
+      const documentRecords = dbDocuments.map(dbToDocument).filter(Boolean);
 
       expect(documentRecords.length).to.eql(1);
       expect(documentRecords[0]).to.deep.include({

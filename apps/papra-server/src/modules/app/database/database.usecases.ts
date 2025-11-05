@@ -1,20 +1,20 @@
-import type { SQLiteSelect } from 'drizzle-orm/sqlite-core';
-import type { ArrayElement } from '../../shared/types';
+import type { SelectQueryBuilder } from 'kysely';
+import type { Database } from './database.types';
 
-export async function* createIterator<T extends SQLiteSelect>({
+export async function* createIterator<O>({
   query,
   batchSize = 100,
-}: { query: T; batchSize?: number }): AsyncGenerator<ArrayElement<T['_']['result']>> {
+}: { query: SelectQueryBuilder<Database, any, O>; batchSize?: number }): AsyncGenerator<O> {
   let offset = 0;
 
   while (true) {
-    const results = await query.limit(batchSize).offset(offset);
+    const results = await query.limit(batchSize).offset(offset).execute();
     if (results.length === 0) {
       break;
     }
 
     for (const result of results) {
-      yield result as ArrayElement<T['_']['result']>;
+      yield result as Awaited<O>;
     }
 
     if (results.length < batchSize) {

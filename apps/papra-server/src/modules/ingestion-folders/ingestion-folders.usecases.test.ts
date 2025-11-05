@@ -56,7 +56,7 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(1);
         expect(documents[0]).to.deep.include({
@@ -158,7 +158,7 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(1);
         expect(documents[0]).to.deep.include({
@@ -263,7 +263,7 @@ describe('ingestion-folders usecases', () => {
         expect(error).to.deep.equal(createInvalidPostProcessingStrategyError({ strategy: 'unknown' }));
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(1);
         expect(documents[0]).to.deep.include({
@@ -354,7 +354,7 @@ describe('ingestion-folders usecases', () => {
         );
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(0);
       });
@@ -407,7 +407,7 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(0);
 
@@ -443,7 +443,7 @@ describe('ingestion-folders usecases', () => {
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org_111111111111111111111111', name: 'Org 1' }],
-          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown' }],
+          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown', content: '', originalSize: 0 }],
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -479,7 +479,7 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(1);
         expect(documents[0]?.id).to.equal('doc_1');
@@ -520,7 +520,7 @@ describe('ingestion-folders usecases', () => {
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org_111111111111111111111111', name: 'Org 1' }],
-          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown' }],
+          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown', content: '', originalSize: 0 }],
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -555,7 +555,7 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check database
-        const documents = await db.select().from(documentsTable);
+        const documents = await db.selectFrom('documents').selectAll().execute();
 
         expect(documents).to.have.length(1);
         expect(documents[0]?.id).to.equal('doc_1');

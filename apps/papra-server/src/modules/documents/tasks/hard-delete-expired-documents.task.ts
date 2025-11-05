@@ -1,4 +1,4 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { Config } from '../../config/config.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import type { DocumentStorageService } from '../storage/documents.storage.services';
@@ -8,7 +8,7 @@ import { deleteExpiredDocuments } from '../documents.usecases';
 
 const logger = createLogger({ namespace: 'documents:tasks:hardDeleteExpiredDocuments' });
 
-export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService }: { taskServices: TaskServices; db: Database; config: Config; documentsStorageService: DocumentStorageService }) {
+export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService }: { taskServices: TaskServices; db: DatabaseClient; config: Config; documentsStorageService: DocumentStorageService }) {
   const taskName = 'hard-delete-expired-documents';
   const { cron, runOnStartup } = config.tasks.hardDeleteExpiredDocuments;
 

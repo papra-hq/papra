@@ -4,7 +4,6 @@ import { Readable } from 'node:stream';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../../app/database/database.test-utils';
 import { overrideConfig } from '../../../config/config.test-utils';
-import { documentsTable } from '../../documents.table';
 import { createDocumentCreationUsecase } from '../../documents.usecases';
 import { createDocumentStorageServiceFromDriver } from '../documents.storage.services';
 import { inMemoryStorageDriverFactory } from '../drivers/memory/memory.storage-driver';
@@ -91,14 +90,15 @@ describe('document-encryption usecases', () => {
 
       // All documents should be encrypted
 
-      const [newDocument1, newDocument2, newDocument3] = await db.select().from(documentsTable).orderBy(documentsTable.createdAt);
+      const documents = await db.selectFrom('documents').selectAll().orderBy('created_at').execute();
+      const [newDocument1, newDocument2, newDocument3] = documents;
 
-      expect(storage.get(newDocument1!.originalStorageKey)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
-      expect(storage.get(newDocument2!.originalStorageKey)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
-      expect(storage.get(newDocument3!.originalStorageKey)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
+      expect(storage.get(newDocument1!.original_storage_key)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
+      expect(storage.get(newDocument2!.original_storage_key)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
+      expect(storage.get(newDocument3!.original_storage_key)?.content.subarray(0, 4).toString('utf-8')).toEqual('PP01');
 
       // The document 3 should have the same original storage key
-      expect(document3.originalStorageKey).to.eql(newDocument3!.originalStorageKey);
+      expect(document3.originalStorageKey).to.eql(newDocument3!.original_storage_key);
     });
   });
 });

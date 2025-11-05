@@ -1,62 +1,61 @@
 import type { Migration } from '../migrations.types';
-import { sql } from 'drizzle-orm';
 
 export const organizationsWebhooksMigration = {
   name: 'organizations-webhooks',
 
   up: async ({ db }) => {
-    await db.batch([
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "webhook_deliveries" (
-          "id" text PRIMARY KEY NOT NULL,
-          "created_at" integer NOT NULL,
-          "updated_at" integer NOT NULL,
-          "webhook_id" text NOT NULL,
-          "event_name" text NOT NULL,
-          "request_payload" text NOT NULL,
-          "response_payload" text NOT NULL,
-          "response_status" integer NOT NULL,
-          FOREIGN KEY ("webhook_id") REFERENCES "webhooks"("id") ON UPDATE cascade ON DELETE cascade
-        );
-      `),
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "webhook_events" (
-          "id" text PRIMARY KEY NOT NULL,
-          "created_at" integer NOT NULL,
-          "updated_at" integer NOT NULL,
-          "webhook_id" text NOT NULL,
-          "event_name" text NOT NULL,
-          FOREIGN KEY ("webhook_id") REFERENCES "webhooks"("id") ON UPDATE cascade ON DELETE cascade
-        );
-      `),
+    // Create webhooks table first
+    await db.schema
+      .createTable('webhooks')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('name', 'text', col => col.notNull())
+      .addColumn('url', 'text', col => col.notNull())
+      .addColumn('secret', 'text')
+      .addColumn('enabled', 'integer', col => col.notNull().defaultTo(1))
+      .addColumn('created_by', 'text', col => col.references('users.id').onDelete('set null').onUpdate('cascade'))
+      .addColumn('organization_id', 'text', col => col.references('organizations.id').onDelete('cascade').onUpdate('cascade'))
+      .execute();
 
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "webhook_events_webhook_id_event_name_unique" ON "webhook_events" ("webhook_id","event_name")`),
+    // Create webhook_events table (depends on webhooks)
+    await db.schema
+      .createTable('webhook_events')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('webhook_id', 'text', col => col.notNull().references('webhooks.id').onDelete('cascade').onUpdate('cascade'))
+      .addColumn('event_name', 'text', col => col.notNull())
+      .execute();
 
-      db.run(sql`
-        CREATE TABLE IF NOT EXISTS "webhooks" (
-        "id" text PRIMARY KEY NOT NULL,
-        "created_at" integer NOT NULL,
-        "updated_at" integer NOT NULL,
-        "name" text NOT NULL,
-        "url" text NOT NULL,
-        "secret" text,
-        "enabled" integer DEFAULT true NOT NULL,
-        "created_by" text,
-        "organization_id" text,
-        FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null,
-        FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade
-      );  
-      `),
+    await db.schema
+      .createIndex('webhook_events_webhook_id_event_name_unique')
+      .unique()
+      .ifNotExists()
+      .on('webhook_events')
+      .columns(['webhook_id', 'event_name'])
+      .execute();
 
-    ]);
+    // Create webhook_deliveries table (depends on webhooks)
+    await db.schema
+      .createTable('webhook_deliveries')
+      .ifNotExists()
+      .addColumn('id', 'text', col => col.primaryKey().notNull())
+      .addColumn('created_at', 'integer', col => col.notNull())
+      .addColumn('updated_at', 'integer', col => col.notNull())
+      .addColumn('webhook_id', 'text', col => col.notNull().references('webhooks.id').onDelete('cascade').onUpdate('cascade'))
+      .addColumn('event_name', 'text', col => col.notNull())
+      .addColumn('request_payload', 'text', col => col.notNull())
+      .addColumn('response_payload', 'text', col => col.notNull())
+      .addColumn('response_status', 'integer', col => col.notNull())
+      .execute();
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP TABLE IF EXISTS "webhook_deliveries"`),
-      db.run(sql`DROP TABLE IF EXISTS "webhook_events"`),
-      db.run(sql`DROP INDEX IF EXISTS "webhook_events_webhook_id_event_name_unique"`),
-      db.run(sql`DROP TABLE IF EXISTS "webhooks"`),
-    ]);
+    await db.schema.dropTable('webhook_deliveries').ifExists().execute();
+    await db.schema.dropTable('webhook_events').ifExists().execute();
+    await db.schema.dropTable('webhooks').ifExists().execute();
   },
 } satisfies Migration;

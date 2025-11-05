@@ -1,8 +1,10 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
-import { usersTable } from '../users/users.table';
 import { generateDocumentId } from './documents.models';
+
+// Legacy stub for Drizzle schema - this file is no longer used in production
+const usersTable = { id: '' } as any;
 
 export const documentsTable = sqliteTable('documents', {
   ...createPrimaryKeyField({ idGenerator: generateDocumentId }),

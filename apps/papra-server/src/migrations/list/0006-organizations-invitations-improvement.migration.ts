@@ -1,22 +1,29 @@
 import type { Migration } from '../migrations.types';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 
 export const organizationsInvitationsImprovementMigration = {
   name: 'organizations-invitations-improvement',
 
   up: async ({ db }) => {
-    await db.batch([
-      db.run(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "role" TO "role" text NOT NULL`),
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "organization_invitations_organization_email_unique" ON "organization_invitations" ("organization_id","email")`),
-      db.run(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "status" TO "status" text NOT NULL DEFAULT 'pending'`),
-    ]);
+    await db.executeQuery(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "role" TO "role" text not null`.compile(db));
+    await db.executeQuery(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "status" TO "status" text not null DEFAULT 'pending'`.compile(db));
+
+    await db.schema
+      .createIndex('organization_invitations_organization_email_unique')
+      .unique()
+      .ifNotExists()
+      .on('organization_invitations')
+      .columns(['organization_id', 'email'])
+      .execute();
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "role" TO "role" text`),
-      db.run(sql`DROP INDEX IF EXISTS "organization_invitations_organization_email_unique"`),
-      db.run(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "status" TO "status" text NOT NULL`),
-    ]);
+    await db.executeQuery(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "role" TO "role" text`.compile(db));
+    await db.executeQuery(sql`ALTER TABLE "organization_invitations" ALTER COLUMN "status" TO "status" text not null`.compile(db));
+
+    await db.schema
+      .dropIndex('organization_invitations_organization_email_unique')
+      .ifExists()
+      .execute();
   },
 } satisfies Migration;

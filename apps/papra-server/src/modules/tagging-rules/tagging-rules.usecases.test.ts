@@ -27,7 +27,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         // type safety
@@ -41,7 +41,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository, logger });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
 
@@ -78,7 +78,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         // type safety
@@ -92,7 +92,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
     });
@@ -106,7 +106,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -119,7 +119,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Should still apply the tag even with conditionMatchMode 'any' and no conditions
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
@@ -131,7 +131,7 @@ describe('tagging-rules usecases', () => {
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         // type safety
@@ -145,7 +145,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       expect(documentTags).to.eql([]);
     });
@@ -164,7 +164,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -177,7 +177,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Tag should be applied because one condition (Invoice) matches
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
@@ -197,7 +197,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -210,7 +210,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Tag should not be applied because no conditions match
       expect(documentTags).to.eql([]);
@@ -230,7 +230,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -243,7 +243,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Tag should be applied because all conditions match
       expect(documentTags).to.eql([{ documentId: 'doc_1', tagId: 'tag_1' }]);
@@ -263,7 +263,7 @@ describe('tagging-rules usecases', () => {
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db.selectFrom('documents').selectAll().where('id', '=', 'doc_1').execute();
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -276,7 +276,7 @@ describe('tagging-rules usecases', () => {
 
       await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Tag should not be applied because only one condition matches (Invoice, not Receipt)
       expect(documentTags).to.eql([]);
@@ -317,12 +317,12 @@ describe('tagging-rules usecases', () => {
       expect(result.processedCount).toBe(3);
       expect(result.taggedDocumentsCount).toBe(2); // All documents are processed (applyTaggingRules is called for each)
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
 
       // Only doc_1 and doc_2 should be tagged (they contain "Invoice")
       expect(documentTags).toHaveLength(2);
-      expect(documentTags.map(dt => dt.documentId).sort()).toEqual(['doc_1', 'doc_2']);
-      expect(documentTags.every(dt => dt.tagId === 'tag_1')).toBe(true);
+      expect(documentTags.map((dt: typeof documentTags[0]) => dt.documentId).sort()).toEqual(['doc_1', 'doc_2']);
+      expect(documentTags.every((dt: typeof documentTags[0]) => dt.tagId === 'tag_1')).toBe(true);
     });
 
     test('returns error when tagging rule does not exist', async () => {
@@ -353,7 +353,7 @@ describe('tagging-rules usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [
-          { id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'hash_1', mimeType: 'text/plain' },
+          { id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'hash_1', mimeType: 'text/plain', content: '', originalSize: 0 },
         ],
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Rule 1', enabled: false }],
       });
@@ -377,7 +377,7 @@ describe('tagging-rules usecases', () => {
       expect(result.processedCount).toBe(1);
       expect(result.taggedDocumentsCount).toBe(0); // No documents tagged because rule is disabled
 
-      const documentTags = await db.select().from(documentsTagsTable);
+      const documentTags = await db.selectFrom('documents_tags').selectAll().execute();
       expect(documentTags).toHaveLength(0); // No tags applied because rule is disabled
     });
   });

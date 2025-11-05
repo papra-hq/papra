@@ -46,7 +46,7 @@ describe('organizations repository', () => {
 
       await organizationsRepository.updateExpiredPendingInvitationsStatus({ now: new Date('2025-05-13') });
 
-      const invitations = await db.select().from(organizationInvitationsTable).orderBy(organizationInvitationsTable.id);
+      const invitations = await db.selectFrom('organization_invitations').selectAll().orderBy('id', 'asc').execute();
 
       expect(invitations).to.eql([
         {
@@ -97,10 +97,10 @@ describe('organizations repository', () => {
 
       await organizationsRepository.deleteAllMembersFromOrganization({ organizationId: 'org_1' });
 
-      const remainingMembers = await db.select().from(organizationMembersTable);
+      const remainingMembers = await db.selectFrom('organization_members').selectAll().execute();
 
       expect(remainingMembers).to.have.lengthOf(1);
-      expect(remainingMembers[0]?.organizationId).to.equal('org_2');
+      expect(remainingMembers[0]?.organization_id).to.equal('org_2');
     });
   });
 
@@ -147,10 +147,10 @@ describe('organizations repository', () => {
 
       await organizationsRepository.deleteAllOrganizationInvitations({ organizationId: 'org_1' });
 
-      const remainingInvitations = await db.select().from(organizationInvitationsTable);
+      const remainingInvitations = await db.selectFrom('organization_invitations').selectAll().execute();
 
       expect(remainingInvitations).to.have.lengthOf(1);
-      expect(remainingInvitations[0]?.organizationId).to.equal('org_2');
+      expect(remainingInvitations[0]?.organization_id).to.equal('org_2');
     });
   });
 
@@ -175,11 +175,11 @@ describe('organizations repository', () => {
         purgeDaysDelay: 30,
       });
 
-      const [organization] = await db.select().from(organizationsTable);
+      const [organization] = await db.selectFrom('organizations').selectAll().execute();
 
-      expect(organization?.deletedAt).to.eql(now);
-      expect(organization?.deletedBy).to.equal('user_1');
-      expect(organization?.scheduledPurgeAt).to.eql(expectedPurgeDate);
+      expect(organization?.deleted_at).to.eql(now.getTime());
+      expect(organization?.deleted_by).to.equal('user_1');
+      expect(organization?.scheduled_purge_at).to.eql(expectedPurgeDate.getTime());
     });
 
     test('uses default purge delay of 30 days when not specified', async () => {
@@ -201,9 +201,9 @@ describe('organizations repository', () => {
         now,
       });
 
-      const [organization] = await db.select().from(organizationsTable);
+      const [organization] = await db.selectFrom('organizations').selectAll().execute();
 
-      expect(organization?.scheduledPurgeAt).to.eql(expectedPurgeDate);
+      expect(organization?.scheduled_purge_at).to.eql(expectedPurgeDate.getTime());
     });
   });
 });

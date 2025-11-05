@@ -1,7 +1,9 @@
 import type { Role } from './roles.types';
 import { index, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
-import { usersTable } from '../users/users.table';
+
+// Legacy stub for Drizzle schema - this file is no longer used in production
+const usersTable = { id: '' } as any;
 
 export const userRolesTable = sqliteTable(
   'user_roles',

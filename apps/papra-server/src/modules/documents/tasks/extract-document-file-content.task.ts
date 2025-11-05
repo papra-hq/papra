@@ -1,4 +1,4 @@
-import type { Database } from '../../app/database/database.types';
+import type { DatabaseClient } from '../../app/database/database.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import type { DocumentStorageService } from '../storage/documents.storage.services';
 import { createTaggingRulesRepository } from '../../tagging-rules/tagging-rules.repository';
@@ -8,7 +8,7 @@ import { createDocumentActivityRepository } from '../document-activity/document-
 import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
 
-export async function registerExtractDocumentFileContentTask({ taskServices, db, documentsStorageService }: { taskServices: TaskServices; db: Database; documentsStorageService: DocumentStorageService }) {
+export async function registerExtractDocumentFileContentTask({ taskServices, db, documentsStorageService }: { taskServices: TaskServices; db: DatabaseClient; documentsStorageService: DocumentStorageService }) {
   const taskName = 'extract-document-file-content';
 
   taskServices.registerTask({

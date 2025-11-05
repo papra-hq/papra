@@ -1,7 +1,7 @@
-import type { Expand } from '@corentinth/chisels';
-import type { documentsTable } from './documents.table';
-
-export type DbInsertableDocument = Expand<typeof documentsTable.$inferInsert>;
-export type DbSelectableDocument = Expand<typeof documentsTable.$inferSelect>;
-
-export type Document = DbSelectableDocument;
+// Re-export types from tables and models for backward compatibility
+export type {
+  Document,
+  InsertableDocument,
+  DbInsertableDocument,
+  DbSelectableDocument,
+} from './documents.tables';

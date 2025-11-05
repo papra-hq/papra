@@ -8,13 +8,13 @@ import type { TaskServices } from '../tasks/tasks.services';
 import type { TrackingServices } from '../tracking/tracking.services';
 import type { Auth } from './auth/auth.services';
 import type { Session } from './auth/auth.types';
-import type { Database } from './database/database.types';
+import type { DatabaseClient } from './database/database.types';
 
 export type ServerInstanceGenerics = {
   Variables: {
     userId: string | null;
     session: Session | null;
-    apiKey: ApiKey | null;
+    apiKey: Omit<ApiKey, 'keyHash'> | null;
     authType: 'session' | 'api-key' | null;
   };
 };
@@ -25,7 +25,7 @@ export type ServerInstance = Hono<ServerInstanceGenerics>;
 
 export type GlobalDependencies = {
   config: Config;
-  db: Database;
+  db: DatabaseClient;
   auth: Auth;
   emailsServices: EmailsServices;
   subscriptionsServices: SubscriptionsServices;

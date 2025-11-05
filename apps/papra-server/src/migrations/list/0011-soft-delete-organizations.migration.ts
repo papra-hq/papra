@@ -1,36 +1,56 @@
-import type { BatchItem } from 'drizzle-orm/batch';
 import type { Migration } from '../migrations.types';
-import { sql } from 'drizzle-orm';
+import { sql } from 'kysely';
 
 export const softDeleteOrganizationsMigration = {
   name: 'soft-delete-organizations',
 
   up: async ({ db }) => {
-    const tableInfo = await db.run(sql`PRAGMA table_info(organizations)`);
+    const tableInfo = await db.executeQuery<{ name: string }>(sql`PRAGMA table_info(organizations)`.compile(db));
     const existingColumns = tableInfo.rows.map(row => row.name);
     const hasColumn = (columnName: string) => existingColumns.includes(columnName);
 
-    const statements = [
-      ...(hasColumn('deleted_by') ? [] : [(sql`ALTER TABLE "organizations" ADD "deleted_by" text REFERENCES users(id);`)]),
-      ...(hasColumn('deleted_at') ? [] : [(sql`ALTER TABLE "organizations" ADD "deleted_at" integer;`)]),
-      ...(hasColumn('scheduled_purge_at') ? [] : [(sql`ALTER TABLE "organizations" ADD "scheduled_purge_at" integer;`)]),
+    if (!hasColumn('deleted_by')) {
+      await db.schema
+        .alterTable('organizations')
+        .addColumn('deleted_by', 'text', col => col.references('users.id').onDelete('set null').onUpdate('cascade'))
+        .execute();
+    }
 
-      sql`CREATE INDEX IF NOT EXISTS "organizations_deleted_at_purge_at_index" ON "organizations" ("deleted_at","scheduled_purge_at");`,
-      sql`CREATE INDEX IF NOT EXISTS "organizations_deleted_by_deleted_at_index" ON "organizations" ("deleted_by","deleted_at");`,
-    ];
+    if (!hasColumn('deleted_at')) {
+      await db.schema
+        .alterTable('organizations')
+        .addColumn('deleted_at', 'integer')
+        .execute();
+    }
 
-    await db.batch(statements.map(statement => db.run(statement) as BatchItem<'sqlite'>) as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]]);
+    if (!hasColumn('scheduled_purge_at')) {
+      await db.schema
+        .alterTable('organizations')
+        .addColumn('scheduled_purge_at', 'integer')
+        .execute();
+    }
+
+    await db.schema
+      .createIndex('organizations_deleted_at_purge_at_index')
+      .ifNotExists()
+      .on('organizations')
+      .columns(['deleted_at', 'scheduled_purge_at'])
+      .execute();
+
+    await db.schema
+      .createIndex('organizations_deleted_by_deleted_at_index')
+      .ifNotExists()
+      .on('organizations')
+      .columns(['deleted_by', 'deleted_at'])
+      .execute();
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP INDEX IF EXISTS "organizations_deleted_at_purge_at_index";`),
-      db.run(sql`DROP INDEX IF EXISTS "organizations_deleted_by_deleted_at_index";`),
+    await db.schema.dropIndex('organizations_deleted_at_purge_at_index').ifExists().execute();
+    await db.schema.dropIndex('organizations_deleted_by_deleted_at_index').ifExists().execute();
 
-      db.run(sql`ALTER TABLE "organizations" DROP COLUMN "deleted_by";`),
-      db.run(sql`ALTER TABLE "organizations" DROP COLUMN "deleted_at";`),
-      db.run(sql`ALTER TABLE "organizations" DROP COLUMN "scheduled_purge_at";`),
-
-    ]);
+    await db.schema.alterTable('organizations').dropColumn('deleted_by').execute();
+    await db.schema.alterTable('organizations').dropColumn('deleted_at').execute();
+    await db.schema.alterTable('organizations').dropColumn('scheduled_purge_at').execute();
   },
 } satisfies Migration;
