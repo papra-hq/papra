@@ -642,7 +642,7 @@ export const translations = {
 
   // Demo
 
-  'demo.popup.description': 'This is a demo environment, all data is save to your browser local storage.',
+  'demo.popup.description': 'This is a demo environment, all data is saved to your browser local storage.',
   'demo.popup.discord': 'Join the {{ discordLink }} to get support, propose features or just chat.',
   'demo.popup.discord-link-label': 'Discord server',
   'demo.popup.reset': 'Reset demo data',
