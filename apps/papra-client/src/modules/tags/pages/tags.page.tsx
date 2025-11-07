@@ -21,7 +21,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { Tag } from '../components/tag.component';
+import { Tag, TagLink } from '../components/tag.component';
 import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';
 
 // To keep, useful for generating swatches
@@ -344,7 +344,7 @@ export const TagsPage: Component = () => {
                       <TableRow>
                         <TableCell>
                           <div>
-                            <Tag name={tag.name} color={tag.color} />
+                            <TagLink {...tag} />
                           </div>
                         </TableCell>
                         <TableCell>{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
