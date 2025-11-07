@@ -1,4 +1,6 @@
-export const translations = {
+import { TranslationsDictionary } from "@/modules/i18n/locales.types";
+
+export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Wachtwoord opnieuw instellen',
