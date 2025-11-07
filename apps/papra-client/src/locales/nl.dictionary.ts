@@ -1,4 +1,4 @@
-import { TranslationsDictionary } from "@/modules/i18n/locales.types";
+import type { TranslationsDictionary } from '@/modules/i18n/locales.types';
 
 export const translations: Partial<TranslationsDictionary> = {
   // Authentication
