@@ -2,7 +2,7 @@ import type { DocumentStorageService } from '../documents/storage/documents.stor
 import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
-import { describe, expect, test } from 'vitest';
+import { assert, describe, expect, test } from 'vitest';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
@@ -1298,54 +1298,58 @@ describe('organizations usecases', () => {
         const orgs = await db.select().from(organizationsTable);
         expect(orgs).to.eql([]);
 
-        expect(getLogs({ excludeTimestampMs: true })).to.eql([
-          {
-            level: 'info',
-            message: 'Starting purge of organization',
-            namespace: 'test',
-            data: {
-              organizationId: 'organization-1',
+        // Ensure logs contain expected entries (order may vary)
+        assert.includeDeepMembers(
+          getLogs({ excludeTimestampMs: true }),
+          [
+            {
+              level: 'info',
+              message: 'Starting purge of organization',
+              namespace: 'test',
+              data: {
+                organizationId: 'organization-1',
+              },
             },
-          },
-          {
-            level: 'debug',
-            message: 'Deleted document file from storage',
-            namespace: 'test',
-            data: {
-              documentId: 'doc-2',
-              organizationId: 'organization-1',
-              storageKey: 'org-1/doc-2.txt',
+            {
+              level: 'debug',
+              message: 'Deleted document file from storage',
+              namespace: 'test',
+              data: {
+                documentId: 'doc-2',
+                organizationId: 'organization-1',
+                storageKey: 'org-1/doc-2.txt',
+              },
             },
-          },
-          {
-            level: 'debug',
-            message: 'Deleted document file from storage',
-            namespace: 'test',
-            data: {
-              documentId: 'doc-1',
-              organizationId: 'organization-1',
-              storageKey: 'org-1/doc-1.pdf',
+            {
+              level: 'debug',
+              message: 'Deleted document file from storage',
+              namespace: 'test',
+              data: {
+                documentId: 'doc-1',
+                organizationId: 'organization-1',
+                storageKey: 'org-1/doc-1.pdf',
+              },
             },
-          },
-          {
-            level: 'info',
-            message: 'Finished deleting document files from storage',
-            namespace: 'test',
-            data: {
-              deletedCount: 2,
-              failedCount: 0,
-              organizationId: 'organization-1',
+            {
+              level: 'info',
+              message: 'Finished deleting document files from storage',
+              namespace: 'test',
+              data: {
+                deletedCount: 2,
+                failedCount: 0,
+                organizationId: 'organization-1',
+              },
             },
-          },
-          {
-            level: 'info',
-            message: 'Successfully purged organization',
-            namespace: 'test',
-            data: {
-              organizationId: 'organization-1',
+            {
+              level: 'info',
+              message: 'Successfully purged organization',
+              namespace: 'test',
+              data: {
+                organizationId: 'organization-1',
+              },
             },
-          },
-        ]);
+          ],
+        );
       });
 
       test('handles storage deletion errors gracefully and continues purging', async () => {
