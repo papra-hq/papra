@@ -38,7 +38,9 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
     .leftJoin(documentsTagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
     .leftJoin(documentsTable, eq(documentsTagsTable.documentId, documentsTable.id))
     .where(eq(tagsTable.organizationId, organizationId))
-    .groupBy(tagsTable.id);
+    .groupBy(tagsTable.id)
+    // NOTE: I've chosen the _name_ to be the default sorting; by modifying this, tags now appear alphabetically sorted pretty much everywhere in the UI
+    .orderBy(tagsTable.name);
 
   return { tags };
 }

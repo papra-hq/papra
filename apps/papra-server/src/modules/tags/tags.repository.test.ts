@@ -123,6 +123,9 @@ describe('tags repository', () => {
 
       const { tags } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
 
+      // NOTE: I think this should take into account the new default sorting order for tags?
+      // e.g. give Tag `tag-1` a name that alphabetically comes AFTER Tag `tag-2`, and expect here that (because `tag-2` is earlier in the `orderBy`) `tag-2` comes as first entry.
+      // this change has not yet been made; waiting on confirmation if this is something Papra wants, or if we're better off with a complete overhaul
       expect(tags).to.eql([
         {
           id: 'tag-1',
