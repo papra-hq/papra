@@ -26,5 +26,8 @@ export async function extractDocumentText({
 
   return {
     text: textContent ?? '',
+    extractionDebugContext: {
+      extractorName,
+    },
   };
 }
