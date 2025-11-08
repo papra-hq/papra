@@ -91,6 +91,7 @@ describe('ingestion-folders usecases', () => {
             {
               data: {
                 documentId: 'doc_1',
+                mimeType: 'text/markdown',
                 organizationId: 'org_111111111111111111111111',
                 userId: undefined,
               },
@@ -193,6 +194,7 @@ describe('ingestion-folders usecases', () => {
             {
               data: {
                 documentId: 'doc_1',
+                mimeType: 'text/markdown',
                 organizationId: 'org_111111111111111111111111',
                 userId: undefined,
               },
