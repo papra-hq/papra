@@ -118,7 +118,7 @@ Papra would not have been possible without the following open-source projects:
   - **[HonoJS](https://hono.dev/)**: A small, fast, and lightweight web framework for building APIs.
   - **[Drizzle](https://orm.drizzle.team/)**: A simple and lightweight ORM for Node.js.
   - **[Better Auth](https://better-auth.com/)**: A simple and lightweight authentication library for Node.js.
-  - **[CadenceMQ](https://github.com/papra-hq/cadence-mq)**: A self-hosted friendly, job queue for Node.js, made by Papra.
+  - **[CadenceMQ](https://github.com/papra-hq/cadence-mq)**: A self-hosted-friendly job queue for Node.js, made by Papra.
   - And other dependencies listed in the **[server package.json](./apps/papra-server/package.json)**
 - **Documentation**
   - **[Astro](https://astro.build)**: A great static site generator.
