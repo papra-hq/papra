@@ -171,6 +171,9 @@ importers:
       ofetch:
         specifier: ^1.4.1
         version: 1.4.1
+      p-limit:
+        specifier: ^6.2.0
+        version: 6.2.0
       posthog-js-lite:
         specifier: ^4.1.5
         version: 4.1.5
@@ -7050,6 +7053,7 @@ packages:
   sitemap@8.0.0:
     resolution: {integrity: sha512-+AbdxhM9kJsHtruUF39bwS/B0Fytw6Fr1o4ZAIAEqA6cke2xcoO2GleBw9Zw7nRzILVEgz7zBM5GiTJjie1G9A==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    deprecated: 'SECURITY: Multiple vulnerabilities fixed in 8.0.1 (XML injection, path traversal, command injection, protocol injection). Upgrade immediately: npm install sitemap@8.0.1'
     hasBin: true
 
   slash@3.0.0:
@@ -12023,6 +12027,14 @@ snapshots:
       chai: 6.2.0
       tinyrainbow: 3.0.3
 
+  '@vitest/mocker@4.0.3(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.8.1))':
+    dependencies:
+      '@vitest/spy': 4.0.3
+      estree-walker: 3.0.3
+      magic-string: 0.30.19
+    optionalDependencies:
+      vite: 7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.8.1)
+
   '@vitest/mocker@4.0.3(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@vitest/spy': 4.0.3
@@ -16817,7 +16829,7 @@ snapshots:
   vitest@4.0.3(@types/debug@4.1.12)(@types/node@24.0.10)(jiti@2.6.1)(jsdom@26.0.0)(tsx@4.19.4)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.3
-      '@vitest/mocker': 4.0.3(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.3(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.8.1))
       '@vitest/pretty-format': 4.0.3
       '@vitest/runner': 4.0.3
       '@vitest/snapshot': 4.0.3

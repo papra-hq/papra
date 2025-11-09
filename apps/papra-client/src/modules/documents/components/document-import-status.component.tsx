@@ -3,6 +3,7 @@ import type { Document } from '../documents.types';
 import { safely } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
+import pLimit from 'p-limit';
 import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -13,6 +14,7 @@ import { throttle } from '@/modules/shared/utils/timing';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '@/modules/ui/components/button';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
+import { MAX_CONCURRENT_DOCUMENT_UPLOADS } from '../documents.constants';
 import { uploadDocument } from '../documents.services';
 
 const DocumentUploadContext = createContext<{
@@ -84,26 +86,31 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
     // Optimistic prevent upload if file is too large, the server will still validate it
     const maxUploadSize = organizationLimitsQuery.data?.plan.limits.maxFileSize;
 
-    await Promise.all(files.map(async (file) => {
-      updateTaskStatus({ file, status: 'uploading' });
+    // Limit concurrent uploads to 3 to avoid overwhelming browser/server
+    const limit = pLimit(MAX_CONCURRENT_DOCUMENT_UPLOADS);
 
+    await Promise.all(files.map(async (file) => {
       // maxUploadSize can also be null when self hosting which means no limit
       if (maxUploadSize && file.size > maxUploadSize) {
         updateTaskStatus({ file, status: 'error', error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }) });
         return;
       }
 
-      const [result, error] = await safely(uploadDocument({ file, organizationId: props.organizationId }));
+      await limit(async () => {
+        updateTaskStatus({ file, status: 'uploading' });
 
-      if (error) {
-        updateTaskStatus({ file, status: 'error', error });
-      } else {
-        const { document } = result;
+        const [result, error] = await safely(uploadDocument({ file, organizationId: props.organizationId }));
 
-        updateTaskStatus({ file, status: 'success', document });
-      }
+        if (error) {
+          updateTaskStatus({ file, status: 'error', error });
+        } else {
+          const { document } = result;
 
-      throttledInvalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
+          updateTaskStatus({ file, status: 'success', document });
+        }
+
+        throttledInvalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
+      });
     }));
   };
 

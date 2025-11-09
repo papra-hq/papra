@@ -8,3 +8,5 @@ export const DOCUMENT_ACTIVITY_EVENTS = {
 } as const;
 
 export const DOCUMENT_ACTIVITY_EVENT_LIST = Object.values(DOCUMENT_ACTIVITY_EVENTS);
+
+export const MAX_CONCURRENT_DOCUMENT_UPLOADS = 3;
