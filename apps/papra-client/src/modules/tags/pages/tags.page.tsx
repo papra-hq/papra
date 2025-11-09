@@ -7,9 +7,9 @@ import { A, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { createForm } from '@/modules/shared/form/form';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -21,7 +21,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { Tag } from '../components/tag.component';
+import { Tag, TagLink } from '../components/tag.component';
 import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';
 
 // To keep, useful for generating swatches
@@ -344,7 +344,7 @@ export const TagsPage: Component = () => {
                       <TableRow>
                         <TableCell>
                           <div>
-                            <Tag name={tag.name} color={tag.color} />
+                            <TagLink {...tag} />
                           </div>
                         </TableCell>
                         <TableCell>{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
@@ -355,7 +355,7 @@ export const TagsPage: Component = () => {
                           </A>
                         </TableCell>
                         <TableCell class="text-muted-foreground" title={tag.createdAt.toLocaleString()}>
-                          {timeAgo({ date: tag.createdAt })}
+                          <RelativeTime date={tag.createdAt} />
                         </TableCell>
                         <TableCell>
                           <div class="flex gap-2 justify-end">

@@ -1,5 +1,20 @@
 # @papra/cli
 
+## 0.1.2
+
+### Patch Changes
+
+- [#604](https://github.com/papra-hq/papra/pull/604) [`c70d7e4`](https://github.com/papra-hq/papra/commit/c70d7e419aa84eb63c18b72d529951761de75e33) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use provenance for releases
+
+- Updated dependencies [[`c70d7e4`](https://github.com/papra-hq/papra/commit/c70d7e419aa84eb63c18b72d529951761de75e33)]:
+  - @papra/api-sdk@1.1.1
+
+## 0.1.1
+
+### Patch Changes
+
+- [#586](https://github.com/papra-hq/papra/pull/586) [`59d5819`](https://github.com/papra-hq/papra/commit/59d5819018aabd3f8b64012143a7fa690636f423) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix invalid import path causing cli crash
+
 ## 0.1.0
 
 ### Minor Changes

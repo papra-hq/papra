@@ -1,8 +1,8 @@
 import {
   defineConfig,
   presetIcons,
-  presetUno,
   presetWebFonts,
+  presetWind4,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
@@ -12,10 +12,13 @@ import { documentActivityIcon, iconByFileType } from './src/modules/documents/do
 
 export default defineConfig({
   presets: [
-    presetUno({
+    presetWind4({
       dark: {
         dark: '[data-kb-theme="dark"]',
         light: '[data-kb-theme="light"]',
+      },
+      preflights: {
+        reset: true,
       },
       prefix: '',
     }),

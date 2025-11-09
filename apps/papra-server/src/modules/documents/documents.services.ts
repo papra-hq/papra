@@ -22,6 +22,8 @@ export async function extractDocumentText({
 
   if (error) {
     logger.error({ error, extractorName }, 'Error while extracting text from document');
+  } else {
+    logger.info({ extractorName }, 'Text extracted from document');
   }
 
   return {

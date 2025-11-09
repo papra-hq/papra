@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'Vérifier votre email',
   'auth.email-validation-required.description': 'Un email de vérification a été envoyé à votre adresse email. Veuillez vérifier votre adresse email en cliquant sur le lien dans l\'email.',
 
+  'auth.email-verification.success.title': 'Email vérifié',
+  'auth.email-verification.success.description': 'Votre email a été vérifié avec succès. Vous pouvez maintenant vous connecter à votre compte.',
+  'auth.email-verification.success.login': 'Aller à la connexion',
+  'auth.email-verification.error.title': 'Échec de la vérification',
+  'auth.email-verification.error.description': 'Le lien de vérification est invalide ou a expiré. Veuillez demander un nouvel email de vérification en vous connectant.',
+  'auth.email-verification.error.back': 'Retour à la connexion',
+
   'auth.legal-links.description': 'En continuant, vous reconnaissez que vous comprenez et acceptez les {{ terms }} et {{ privacy }}.',
   'auth.legal-links.terms': 'Conditions d\'utilisation',
   'auth.legal-links.privacy': 'Politique de confidentialité',
@@ -157,6 +164,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Annuler',
   'organization.settings.delete.success': 'Organisation supprimée',
   'organization.settings.delete.only-owner': 'Seul le propriétaire de l\'organisation peut supprimer cette organisation.',
+  'organization.settings.delete.has-active-subscription': 'Impossible de supprimer l\'organisation avec un abonnement actif, veuillez d\'abord annuler votre abonnement ci-dessus.',
 
   'organization.usage.page.title': 'Utilisation',
   'organization.usage.page.description': 'Consultez l\'utilisation actuelle et les limites de votre organisation.',
@@ -355,8 +363,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Tagging rules
 
-  'tagging-rules.field.name': 'nom du document',
-  'tagging-rules.field.content': 'contenu du document',
+  'tagging-rules.field.name': 'le nom du document',
+  'tagging-rules.field.content': 'le contenu du document',
   'tagging-rules.operator.equals': 'égal à',
   'tagging-rules.operator.not-equals': 'différent de',
   'tagging-rules.operator.contains': 'contient',
@@ -386,8 +394,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.description.placeholder': 'Exemple: Catégoriser les documents avec \'facture\' dans le nom',
   'tagging-rules.form.description.max-length': 'La description doit contenir moins de 256 caractères',
   'tagging-rules.form.conditions.label': 'Conditions',
-  'tagging-rules.form.conditions.description': 'Définissez les conditions que doivent remplir la règle pour qu\'elle s\'applique. Toutes les conditions doivent être remplies pour que la règle s\'applique.',
+  'tagging-rules.form.conditions.description': 'Définissez les conditions que doivent remplir la règle pour qu\'elle s\'applique. Si aucune condition n\'est définie, la règle s\'appliquera à tous les documents.',
   'tagging-rules.form.conditions.add-condition': 'Ajouter une condition',
+  'tagging-rules.form.conditions.connector.when': 'Quand',
+  'tagging-rules.form.conditions.connector.and': 'et que',
+  'tagging-rules.form.conditions.connector.or': 'ou que',
+  'tagging-rules.condition-match-mode.all': 'Toutes les conditions doivent correspondre',
+  'tagging-rules.condition-match-mode.any': 'Au moins une condition doit correspondre',
   'tagging-rules.form.conditions.no-conditions.title': 'Aucune condition',
   'tagging-rules.form.conditions.no-conditions.description': 'Vous n\'avez pas ajouté de conditions à cette règle. Cette règle appliquera ses tags à tous les documents.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Appliquer la règle sans conditions',
@@ -403,6 +416,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Échec de la mise à jour de la règle de catégorisation',
   'tagging-rules.update.submit': 'Mettre à jour la règle',
   'tagging-rules.update.cancel': 'Annuler',
+  'tagging-rules.apply.button': 'Appliquer aux documents existants',
+  'tagging-rules.apply.confirm.title': 'Appliquer la règle aux documents existants ?',
+  'tagging-rules.apply.confirm.description': 'Cela vérifiera tous les documents existants dans votre organisation et appliquera les tags où les conditions correspondent. Le traitement se fera en arrière-plan.',
+  'tagging-rules.apply.confirm.button': 'Appliquer la règle',
+  'tagging-rules.apply.success': 'Application de la règle démarrée en arrière-plan',
+  'tagging-rules.apply.error': 'Échec du démarrage de l\'application de la règle',
+  'tagging-rules.apply.processing': 'Démarrage...',
 
   // Intake emails
 
@@ -589,6 +609,32 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'Une erreur est survenue lors du traitement de votre requête. Veuillez réessayer.',
   'api-errors.auth.invalid_origin': 'Origine de l\'application invalide. Si vous hébergez Papra, assurez-vous que la variable d\'environnement APP_BASE_URL correspond à votre URL actuelle. Pour plus de détails, consultez https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Le nombre maximum de membres et d\'invitations en attente pour cette organisation a été atteint. Veuillez mettre à niveau votre plan pour ajouter plus de membres.',
+  'api-errors.organization.has_active_subscription': 'Impossible de supprimer l\'organisation avec un abonnement actif. Veuillez d\'abord annuler votre abonnement en utilisant le bouton Gérer l\'abonnement ci-dessus.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Utilisateur introuvable',
+  'api-errors.FAILED_TO_CREATE_USER': 'Échec de la création de l\'utilisateur',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Échec de la création de la session',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Échec de la mise à jour de l\'utilisateur',
+  'api-errors.FAILED_TO_GET_SESSION': 'Échec de la récupération de la session',
+  'api-errors.INVALID_PASSWORD': 'Mot de passe invalide',
+  'api-errors.INVALID_EMAIL': 'Email invalide',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'L\'email ou le mot de passe est incorrect, ou le compte n\'existe pas.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Compte social déjà associé',
+  'api-errors.PROVIDER_NOT_FOUND': 'Fournisseur introuvable',
+  'api-errors.INVALID_TOKEN': 'Jeton invalide',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Jeton d\'identité non pris en charge',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Échec de la récupération des informations utilisateur',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Email de l\'utilisateur introuvable',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email non vérifié',
+  'api-errors.PASSWORD_TOO_SHORT': 'Mot de passe trop court',
+  'api-errors.PASSWORD_TOO_LONG': 'Mot de passe trop long',
+  'api-errors.USER_ALREADY_EXISTS': 'Un utilisateur avec cet email existe déjà',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'L\'email ne peut pas être modifié',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Compte d\'identification introuvable',
+  'api-errors.SESSION_EXPIRED': 'Session expirée',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Échec de la dissociation du dernier compte',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Compte introuvable',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'L\'utilisateur a déjà un mot de passe',
 
   // Not found
 
@@ -636,6 +682,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.per-month': '/mois',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturé annuellement',
   'subscriptions.upgrade-dialog.upgrade-now': 'Mettre à niveau',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Offre à durée limitée',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Bénéficiez de {{ percent }}% de réduction à vie par organisation sur tous les forfaits en tant qu\'early adopter ! L\'offre expire dans {{ days, >1:{days} jours, =1:1 jour, moins d\'un jour }}.',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',

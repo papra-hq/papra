@@ -94,7 +94,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/documents',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
@@ -197,7 +197,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         searchQuery: rawSearchQuery = '',
       } = query ?? {};
 
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const documents = await findMany(documentStorage, document => document?.organizationId === organizationId);
@@ -221,7 +221,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/documents/deleted',
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
-      const organization = organizationStorage.getItem(organizationId);
+      const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
       const deletedDocuments = await findMany(
@@ -759,6 +759,72 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await documentStorage.setItem(`${organizationId}:${documentId}`, newDocument);
 
       return { document: newDocument };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/subscription',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      // Demo mode uses free plan with no subscription
+      return {
+        subscription: null,
+        plan: {
+          id: 'free',
+          name: 'Free',
+          limits: {
+            maxDocumentStorageBytes: 1024 * 1024 * 500, // 500 MiB
+            maxIntakeEmailsCount: 1,
+            maxOrganizationsMembersCount: 3,
+            maxFileSize: 1024 * 1024 * 50, // 50 MiB
+          },
+        },
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/usage',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+
+      const totalDocumentsSize = documents.reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
+      const deletedDocumentsSize = documents
+        .filter(doc => doc.deletedAt)
+        .reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
+
+      return {
+        usage: {
+          documentsStorage: {
+            used: totalDocumentsSize,
+            deleted: deletedDocumentsSize,
+            limit: 1024 * 1024 * 500, // 500 MiB
+          },
+          intakeEmailsCount: {
+            used: 0,
+            limit: 1,
+          },
+          membersCount: {
+            used: 1,
+            limit: 3,
+          },
+        },
+        limits: {
+          maxDocumentStorageBytes: 1024 * 1024 * 500, // 500 MiB
+          maxIntakeEmailsCount: 1,
+          maxOrganizationsMembersCount: 3,
+          maxFileSize: 1024 * 1024 * 50, // 50 MiB
+        },
+      };
     },
   }),
 };

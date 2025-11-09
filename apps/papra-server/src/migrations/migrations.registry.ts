@@ -13,6 +13,7 @@ import { dropLegacyMigrationsMigration } from './list/0009-drop-legacy-migration
 import { documentFileEncryptionMigration } from './list/0010-document-file-encryption.migration';
 
 import { softDeleteOrganizationsMigration } from './list/0011-soft-delete-organizations.migration';
+import { taggingRuleConditionMatchModeMigration } from './list/0012-tagging-rule-condition-match-mode.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -26,4 +27,5 @@ export const migrations: Migration[] = [
   dropLegacyMigrationsMigration,
   documentFileEncryptionMigration,
   softDeleteOrganizationsMigration,
+  taggingRuleConditionMatchModeMigration,
 ];

@@ -1,5 +1,5 @@
 import type { DocumentActivityEvent } from './documents.types';
-import { addDays, differenceInDays } from 'date-fns';
+import { IN_MS } from '../shared/utils/units';
 
 export const iconByFileType = {
   '*': 'i-tabler-file',
@@ -44,9 +44,12 @@ export function getDaysBeforePermanentDeletion({ document, deletedDocumentsReten
     return undefined;
   }
 
-  const deletionDate = addDays(document.deletedAt, deletedDocumentsRetentionDays);
+  // Calculate the permanent deletion date by adding retention days to the deleted date
+  const deletionDate = new Date(document.deletedAt);
+  deletionDate.setDate(deletionDate.getDate() + deletedDocumentsRetentionDays);
 
-  const daysBeforeDeletion = differenceInDays(deletionDate, now);
+  // Calculate the difference in milliseconds and convert to days
+  const daysBeforeDeletion = Math.floor((deletionDate.getTime() - now.getTime()) / IN_MS.DAY);
 
   return daysBeforeDeletion;
 }

@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'Verifică-ți email-ul',
   'auth.email-validation-required.description': 'A fost trimis un e-mail de verificare la adresa ta de e-mail. Te rugăm să îți verifici adresa de e-mail dând click pe linkul din e-mail.',
 
+  'auth.email-verification.success.title': 'Email verificat',
+  'auth.email-verification.success.description': 'Email-ul tău a fost verificat cu succes. Acum te poți autentifica în contul tău.',
+  'auth.email-verification.success.login': 'Mergi la autentificare',
+  'auth.email-verification.error.title': 'Verificare eșuată',
+  'auth.email-verification.error.description': 'Linkul de verificare este invalid sau a expirat. Te rugăm să soliciți un nou e-mail de verificare autentificându-te.',
+  'auth.email-verification.error.back': 'Înapoi la autentificare',
+
   'auth.legal-links.description': 'Continuând, confirmați că întelegeți și sunteti de acord cu {{ terms }} și {{ privacy }}.',
   'auth.legal-links.terms': 'Termenii și condițiile',
   'auth.legal-links.privacy': 'Politica de confidențialitate',
@@ -157,6 +164,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Anulează',
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
   'organization.settings.delete.only-owner': 'Doar proprietarul organizației poate șterge această organizație.',
+  'organization.settings.delete.has-active-subscription': 'Nu se poate șterge organizația cu un abonament activ, vă rugăm să anulați mai întâi abonamentul de mai sus.',
 
   'organization.usage.page.title': 'Utilizare',
   'organization.usage.page.description': 'Vizualizează utilizarea curentă și limitele organizației tale.',
@@ -360,8 +368,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Tagging rules
 
-  'tagging-rules.field.name': 'nume document',
-  'tagging-rules.field.content': 'conținut document',
+  'tagging-rules.field.name': 'numele documentului',
+  'tagging-rules.field.content': 'conținutul documentului',
   'tagging-rules.operator.equals': 'egal cu',
   'tagging-rules.operator.not-equals': 'nu este egal cu',
   'tagging-rules.operator.contains': 'conține',
@@ -391,8 +399,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.description.placeholder': 'Exemplu: Etichetează documentele cu \'factură\' în nume',
   'tagging-rules.form.description.max-length': 'Descrierea trebuie să aibă mai puțin de 256 de caractere',
   'tagging-rules.form.conditions.label': 'Condiții',
-  'tagging-rules.form.conditions.description': 'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Toate condițiile trebuie îndeplinite pentru ca regula să se aplice.',
+  'tagging-rules.form.conditions.description': 'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Fără condiții înseamnă că regula se va aplica tuturor documentelor',
   'tagging-rules.form.conditions.add-condition': 'Adaugă condiție',
+  'tagging-rules.form.conditions.connector.when': 'Când',
+  'tagging-rules.form.conditions.connector.and': 'și că',
+  'tagging-rules.form.conditions.connector.or': 'sau că',
+  'tagging-rules.condition-match-mode.all': 'Toate condițiile trebuie îndeplinite',
+  'tagging-rules.condition-match-mode.any': 'Orice condiție trebuie îndeplinită',
   'tagging-rules.form.conditions.no-conditions.title': 'Nicio condiție',
   'tagging-rules.form.conditions.no-conditions.description': 'Nu ai adăugat nicio condiție acestei reguli. Această regula va aplica etichetele sale tuturor documentelor.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Aplică regula fara condiții',
@@ -408,6 +421,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Nu s-a putut actualiza regula de etichetare',
   'tagging-rules.update.submit': 'Actualizează regula',
   'tagging-rules.update.cancel': 'Anulează',
+  'tagging-rules.apply.button': 'Aplicați la documente existente',
+  'tagging-rules.apply.confirm.title': 'Aplicați regula la documente existente?',
+  'tagging-rules.apply.confirm.description': 'Aceasta va verifica toate documentele existente din organizația dvs. și va aplica etichetele unde condițiile corespund. Procesarea va avea loc în fundal.',
+  'tagging-rules.apply.confirm.button': 'Aplicați regula',
+  'tagging-rules.apply.success': 'Aplicarea regulii a fost pornită în fundal',
+  'tagging-rules.apply.error': 'Eroare la pornirea aplicării regulii',
+  'tagging-rules.apply.processing': 'Se pornește...',
 
   // Intake emails
 
@@ -594,6 +614,32 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.',
   'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
+  'api-errors.organization.has_active_subscription': 'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Utilizatorul nu a fost găsit',
+  'api-errors.FAILED_TO_CREATE_USER': 'Eroare la crearea utilizatorului',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Eroare la crearea sesiunii',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Eroare la actualizarea utilizatorului',
+  'api-errors.FAILED_TO_GET_SESSION': 'Eroare la obținerea sesiunii',
+  'api-errors.INVALID_PASSWORD': 'Parolă invalidă',
+  'api-errors.INVALID_EMAIL': 'Email invalid',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Email-ul sau parola este incorectă, sau contul nu există.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Contul social este deja asociat',
+  'api-errors.PROVIDER_NOT_FOUND': 'Furnizorul nu a fost găsit',
+  'api-errors.INVALID_TOKEN': 'Token invalid',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Token ID nu este suportat',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Eroare la obținerea informațiilor utilizatorului',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Email-ul utilizatorului nu a fost găsit',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email-ul nu este verificat',
+  'api-errors.PASSWORD_TOO_SHORT': 'Parolă prea scurtă',
+  'api-errors.PASSWORD_TOO_LONG': 'Parolă prea lungă',
+  'api-errors.USER_ALREADY_EXISTS': 'Există deja un utilizator cu acest email',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'Email-ul nu poate fi actualizat',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Contul de autentificare nu a fost găsit',
+  'api-errors.SESSION_EXPIRED': 'Sesiunea a expirat',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Eroare la disocierea ultimului cont',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Contul nu a fost găsit',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'Utilizatorul are deja o parolă',
 
   // Not found
 
@@ -641,6 +687,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.per-month': '/lună',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturat anual',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade acum',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Ofertă pe durată limitată',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Obțineți {{ percent }}% reducere pe organizație la toate planurile pentru totdeauna ca early adopter! Oferta expiră în {{ days, >1:{days} zile, =1:1 zi, mai puțin de o zi }}.',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',

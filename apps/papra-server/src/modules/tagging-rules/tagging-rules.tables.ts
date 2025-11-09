@@ -1,5 +1,6 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import type { ConditionMatchMode } from './tagging-rules.types';
 
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { tagsTable } from '../tags/tags.table';
@@ -15,6 +16,7 @@ export const taggingRulesTable = sqliteTable(
     name: text('name').notNull(),
     description: text('description'),
     enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
+    conditionMatchMode: text('condition_match_mode').notNull().default('all').$type<ConditionMatchMode>(),
   },
 );
 

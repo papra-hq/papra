@@ -17,3 +17,8 @@ export const TAGGING_RULE_FIELDS = {
   DOCUMENT_NAME: 'name',
   DOCUMENT_CONTENT: 'content',
 } as const satisfies Record<string, keyof DbSelectableDocument>;
+
+export const CONDITION_MATCH_MODES = {
+  ALL: 'all',
+  ANY: 'any',
+} as const;

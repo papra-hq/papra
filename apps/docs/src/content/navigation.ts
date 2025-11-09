@@ -40,6 +40,10 @@ export const sidebar = [
         label: 'Document Encryption',
         slug: 'guides/document-encryption',
       },
+      {
+        label: 'Tagging Rules',
+        slug: 'guides/tagging-rules',
+      },
     ],
   },
   {

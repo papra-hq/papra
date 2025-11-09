@@ -1,4 +1,5 @@
 import type { Migration } from './migrations.types';
+import { createNoopLogger } from '@crowlog/logger';
 import { sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../modules/app/database/database';
@@ -26,7 +27,7 @@ describe('migrations registry', () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
       // This will throw if any migration is not able to be applied
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       // check foreign keys are enabled
       const { rows } = await db.run(sql`pragma foreign_keys;`);
@@ -39,7 +40,7 @@ describe('migrations registry', () => {
 
       for (const migrationCombination of migrationCombinations) {
         const { db } = setupDatabase({ url: ':memory:' });
-        await runMigrations({ db, migrations: migrationCombination });
+        await runMigrations({ db, migrations: migrationCombination, logger: createNoopLogger() });
       }
     });
 
@@ -51,9 +52,9 @@ describe('migrations registry', () => {
         const { db } = setupDatabase({ url: ':memory:' });
         const previousMigration = migrationCombinations[index - 1] ?? [] as Migration[];
 
-        await runMigrations({ db, migrations: previousMigration });
+        await runMigrations({ db, migrations: previousMigration, logger: createNoopLogger() });
         const previousDbState = await serializeSchema({ db });
-        await runMigrations({ db, migrations: migrationCombination });
+        await runMigrations({ db, migrations: migrationCombination, logger: createNoopLogger() });
         await rollbackLastAppliedMigration({ db });
 
         const currentDbState = await serializeSchema({ db });
@@ -65,7 +66,7 @@ describe('migrations registry', () => {
     test('regression test of the database state after running migrations, update the snapshot when the database state changes', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).toMatchInlineSnapshot(`
         "CREATE UNIQUE INDEX "api_keys_key_hash_unique" ON "api_keys" ("key_hash");
@@ -114,7 +115,7 @@ describe('migrations registry', () => {
         CREATE TABLE sqlite_sequence(name,seq);
         CREATE TABLE "tagging_rule_actions" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "tagging_rule_id" text NOT NULL, "tag_id" text NOT NULL, FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "tagging_rule_conditions" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "tagging_rule_id" text NOT NULL, "field" text NOT NULL, "operator" text NOT NULL, "value" text NOT NULL, "is_case_sensitive" integer DEFAULT false NOT NULL, FOREIGN KEY ("tagging_rule_id") REFERENCES "tagging_rules"("id") ON UPDATE cascade ON DELETE cascade );
-        CREATE TABLE "tagging_rules" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "description" text, "enabled" integer DEFAULT true NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
+        CREATE TABLE "tagging_rules" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "description" text, "enabled" integer DEFAULT true NOT NULL, "condition_match_mode" text DEFAULT 'all' NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "tags" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "color" text NOT NULL, "description" text, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "user_roles" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "user_id" text NOT NULL, "role" text NOT NULL, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "users" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "email" text NOT NULL, "email_verified" integer DEFAULT false NOT NULL, "name" text, "image" text, "max_organization_count" integer );
@@ -131,12 +132,12 @@ describe('migrations registry', () => {
     test('if for some reasons we drop the migrations table, we can reapply all migrations', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       const dbState = await serializeSchema({ db });
 
       await db.run(sql`DROP TABLE migrations`);
-      await runMigrations({ db, migrations });
+      await runMigrations({ db, migrations, logger: createNoopLogger() });
 
       expect(await serializeSchema({ db })).to.eq(dbState);
     });

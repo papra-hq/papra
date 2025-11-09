@@ -353,7 +353,7 @@ async function createNewDocument({
     trackingServices.captureUserEvent({ userId, event: 'Document created' });
   }
 
-  logger.info({ documentId, userId, organizationId }, 'Document created');
+  logger.info({ documentId, userId, organizationId, mimeType }, 'Document created');
 
   return { document: result.document };
 }

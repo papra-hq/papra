@@ -1,7 +1,7 @@
-import { isRecord } from './object';
+import { isObject } from './object';
 
 export function getErrorStatus(error: unknown): number | undefined {
-  if (isRecord(error) && 'status' in error && typeof error.status === 'number') {
+  if (isObject(error) && 'status' in error && typeof error.status === 'number') {
     return error.status;
   }
 

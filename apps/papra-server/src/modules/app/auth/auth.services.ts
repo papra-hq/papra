@@ -54,9 +54,14 @@ export function getAuth({
         enabled: true,
       },
     },
-    emailVerification: {
-      sendVerificationEmail: authEmailsServices.sendVerificationEmail,
-    },
+    emailVerification: config.auth.isEmailVerificationRequired
+      ? {
+          sendVerificationEmail: authEmailsServices.sendVerificationEmail,
+          autoSignInAfterVerification: false,
+          sendOnSignIn: true,
+          sendOnSignUp: true,
+        }
+      : undefined,
 
     database: drizzleAdapter(
       db,
@@ -74,9 +79,9 @@ export function getAuth({
     databaseHooks: {
       user: {
         create: {
-          after: async (user) => {
-            logger.info({ userId: user.id }, 'User signed up');
-            trackingServices.captureUserEvent({ userId: user.id, event: 'User signed up' });
+          after: async ({ id: userId, email }) => {
+            logger.info({ userId }, 'User signed up');
+            trackingServices.captureUserEvent({ userId, event: 'User signed up', properties: { $set: { email } } });
           },
         },
       },

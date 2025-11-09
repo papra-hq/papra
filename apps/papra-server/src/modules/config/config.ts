@@ -28,6 +28,12 @@ export const configDefinition = {
     default: 'development',
     env: 'NODE_ENV',
   },
+  processMode: {
+    doc: 'The process mode: "all" runs both web and worker, "web" runs only the API server, "worker" runs only background tasks',
+    schema: z.enum(['all', 'web', 'worker']),
+    default: 'all',
+    env: 'PROCESS_MODE',
+  },
   appBaseUrl: {
     doc: 'The base URL of the application. Will override the client baseUrl and server baseUrl when set. Use this one over the client and server baseUrl when the server is serving the client assets (like in docker).',
     schema: z.string().url().optional(),
@@ -60,6 +66,12 @@ export const configDefinition = {
       schema: z.coerce.number().min(1024).max(65535),
       default: 1221,
       env: 'PORT',
+    },
+    hostname: {
+      doc: 'The hostname to bind to when using node server',
+      schema: z.string(),
+      default: '0.0.0.0',
+      env: 'SERVER_HOSTNAME',
     },
     routeTimeoutMs: {
       doc: 'The maximum time in milliseconds for a route to complete before timing out',

@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import type { TaggingRule, TaggingRuleForCreation } from '../tagging-rules.types';
-import { insert, remove, setValue } from '@modular-forms/solid';
+import { getValue, insert, remove, setValue } from '@modular-forms/solid';
 import { A } from '@solidjs/router';
 import { For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/modules/ui/components/separator';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { TAGGING_RULE_FIELDS, TAGGING_RULE_FIELDS_LOCALIZATION_KEYS, TAGGING_RULE_OPERATORS, TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS } from '../tagging-rules.constants';
+import { CONDITION_MATCH_MODES, CONDITION_MATCH_MODES_LOCALIZATION_KEYS, TAGGING_RULE_FIELDS, TAGGING_RULE_FIELDS_LOCALIZATION_KEYS, TAGGING_RULE_OPERATORS, TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS } from '../tagging-rules.constants';
 
 export const TaggingRuleForm: Component<{
   onSubmit: (args: { taggingRule: TaggingRuleForCreation }) => Promise<void> | void;
@@ -26,7 +26,7 @@ export const TaggingRuleForm: Component<{
   const { confirm } = useConfirmModal();
 
   const { form, Form, Field, FieldArray } = createForm({
-    onSubmit: async ({ name, conditions = [], tagIds, description }) => {
+    onSubmit: async ({ name, conditions = [], tagIds, description, conditionMatchMode }) => {
       if (conditions.length === 0) {
         const confirmed = await confirm({
           title: t('tagging-rules.form.conditions.no-conditions.title'),
@@ -45,7 +45,7 @@ export const TaggingRuleForm: Component<{
         }
       }
 
-      props.onSubmit({ taggingRule: { name, conditions, tagIds, description } });
+      props.onSubmit({ taggingRule: { name, conditions, tagIds, description, conditionMatchMode } });
     },
     schema: v.object({
       name: v.pipe(
@@ -57,6 +57,7 @@ export const TaggingRuleForm: Component<{
         v.string(),
         v.maxLength(256, t('tagging-rules.form.description.max-length')),
       ),
+      conditionMatchMode: v.optional(v.picklist(Object.values(CONDITION_MATCH_MODES))),
       conditions: v.optional(
         v.array(v.object({
           field: v.picklist(Object.values(TAGGING_RULE_FIELDS)),
@@ -77,6 +78,7 @@ export const TaggingRuleForm: Component<{
       tagIds: props.taggingRule?.actions.map(action => action.tagId) ?? [],
       name: props.taggingRule?.name,
       description: props.taggingRule?.description,
+      conditionMatchMode: props.taggingRule?.conditionMatchMode ?? CONDITION_MATCH_MODES.ALL,
     },
   });
 
@@ -86,6 +88,20 @@ export const TaggingRuleForm: Component<{
 
   const getFieldLabel = (field: string) => {
     return t(TAGGING_RULE_FIELDS_LOCALIZATION_KEYS[field as keyof typeof TAGGING_RULE_FIELDS_LOCALIZATION_KEYS]);
+  };
+
+  const getConditionConnector = (index: number) => {
+    if (index === 0) {
+      return t('tagging-rules.form.conditions.connector.when');
+    }
+
+    const conditionMatchMode = getValue(form, 'conditionMatchMode');
+
+    if (conditionMatchMode === CONDITION_MATCH_MODES.ALL) {
+      return t('tagging-rules.form.conditions.connector.and');
+    }
+
+    return t('tagging-rules.form.conditions.connector.or');
   };
 
   return (
@@ -126,13 +142,34 @@ export const TaggingRuleForm: Component<{
       <p class="mb-1 font-medium">{t('tagging-rules.form.conditions.label')}</p>
       <p class="mb-2 text-sm text-muted-foreground">{t('tagging-rules.form.conditions.description')}</p>
 
+      <Field name="conditionMatchMode">
+        {field => (
+          <Select
+            id="conditionMatchMode"
+            defaultValue={field.value ?? CONDITION_MATCH_MODES.ALL}
+            onChange={value => value && setValue(form, 'conditionMatchMode', value)}
+            options={Object.values(CONDITION_MATCH_MODES)}
+            itemComponent={props => (
+              <SelectItem item={props.item}>
+                {t(CONDITION_MATCH_MODES_LOCALIZATION_KEYS[props.item.rawValue as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS])}
+              </SelectItem>
+            )}
+          >
+            <SelectTrigger class="w-full mb-4">
+              <SelectValue<string>>{state => t(CONDITION_MATCH_MODES_LOCALIZATION_KEYS[state.selectedOption() as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS])}</SelectValue>
+            </SelectTrigger>
+            <SelectContent />
+          </Select>
+        )}
+      </Field>
+
       <FieldArray name="conditions">
         {fieldArray => (
           <div>
             <For each={fieldArray.items}>
               {(_, index) => (
                 <div class="px-4 py-4 mb-1 flex gap-2 items-center bg-card border rounded-md">
-                  <div>When</div>
+                  <div>{getConditionConnector(index())}</div>
 
                   <Field name={`conditions.${index()}.field`}>
                     {field => (

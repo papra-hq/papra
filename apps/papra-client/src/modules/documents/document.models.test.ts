@@ -99,6 +99,98 @@ describe('files models', () => {
 
       expect(daysBeforeDeletion).to.eql(undefined);
     });
+
+    test('returns 0 when the permanent deletion date is today', () => {
+      const document = { deletedAt: new Date('2021-01-01') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-31');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(0);
+    });
+
+    test('returns negative days when the permanent deletion date has passed', () => {
+      const document = { deletedAt: new Date('2021-01-01') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-02-15');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(-15);
+    });
+
+    test('handles deletion that happened on the same day (considers time of day)', () => {
+      const document = { deletedAt: new Date('2021-01-10T08:00:00') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-10T14:00:00');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      // Since differenceInDays counts full days, and there's only 6 hours difference,
+      // the permanent deletion date (30 days from 08:00) is 29 full days from 14:00
+      expect(daysBeforeDeletion).to.eql(29);
+    });
+
+    test('handles very short retention periods', () => {
+      const document = { deletedAt: new Date('2021-01-10') };
+      const deletedDocumentsRetentionDays = 1;
+      const now = new Date('2021-01-10');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(1);
+    });
+
+    test('handles very long retention periods', () => {
+      const document = { deletedAt: new Date('2021-01-01') };
+      const deletedDocumentsRetentionDays = 365;
+      const now = new Date('2021-01-10');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(356);
+    });
+
+    test('handles zero retention days (immediate deletion)', () => {
+      const document = { deletedAt: new Date('2021-01-10') };
+      const deletedDocumentsRetentionDays = 0;
+      const now = new Date('2021-01-10');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(0);
+    });
+
+    test('handles dates across year boundaries', () => {
+      const document = { deletedAt: new Date('2020-12-20') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-05');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(14);
+    });
+
+    test('handles dates across leap year February', () => {
+      const document = { deletedAt: new Date('2020-02-15') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2020-02-20');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(25);
+    });
+
+    test('handles timestamp precision with hours and minutes', () => {
+      const document = { deletedAt: new Date('2021-01-01T23:59:59') };
+      const deletedDocumentsRetentionDays = 30;
+      const now = new Date('2021-01-02T00:00:01');
+
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+
+      expect(daysBeforeDeletion).to.eql(29);
+    });
   });
 
   describe('getDocumentNameWithoutExtension', () => {

@@ -10,3 +10,7 @@ export const ssoProviders = [
     icon: 'i-tabler-brand-github',
   },
 ] as const;
+
+export const authPagesPaths = {
+  emailVerification: '/email-verification',
+};

@@ -1,8 +1,7 @@
 {
   "name": "@papra/webhooks",
   "type": "module",
-  "version": "0.3.0",
-  "packageManager": "pnpm@10.12.3",
+  "version": "0.3.1",
   "description": "Webhooks helper library for Papra, the document archiving platform.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",
@@ -42,7 +41,7 @@
     "dev": "pnpm build:watch"
   },
   "dependencies": {
-    "@corentinth/chisels": "^1.3.0",
+    "@corentinth/chisels": "catalog:",
     "@paralleldrive/cuid2": "^2.2.2",
     "ofetch": "^1.4.1",
     "tsee": "^1.3.4"

@@ -1,5 +1,65 @@
 # @papra/docker
 
+## 25.10.2
+
+### Patch Changes
+
+- [#602](https://github.com/papra-hq/papra/pull/602) [`79e9bb1`](https://github.com/papra-hq/papra/commit/79e9bb1b6169c12dd0aa6bf75aa9929a9120d947) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an email verification confirmation/expiration page
+
+- [#577](https://github.com/papra-hq/papra/pull/577) [`bd3e321`](https://github.com/papra-hq/papra/commit/bd3e321eb7216306faf3c0e1f3d2a7072f162d1f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved graceful shutdown
+
+- [#584](https://github.com/papra-hq/papra/pull/584) [`f4740ba`](https://github.com/papra-hq/papra/commit/f4740ba59a63a84978e49d0073f0057c69b2a65f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Reduced client bundle size by removing date-fns
+
+- [#598](https://github.com/papra-hq/papra/pull/598) [`377c11c`](https://github.com/papra-hq/papra/commit/377c11c185f56e197d4973a1e28866598dd553e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix client redirection issue on non-existent organization
+
+- [#580](https://github.com/papra-hq/papra/pull/580) [`1228486`](https://github.com/papra-hq/papra/commit/1228486f28ec28a100665e08cb62ab65e883f952) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added text extraction support for `.docx`, `.odt`, `.rtf`, `.pptx` and `.odp`
+
+- [#591](https://github.com/papra-hq/papra/pull/591) [`0aad884`](https://github.com/papra-hq/papra/commit/0aad88471bc813255b82163ba0b223bc326b9cd6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated pnpm version
+
+- [#575](https://github.com/papra-hq/papra/pull/575) [`be25de7`](https://github.com/papra-hq/papra/commit/be25de77215c87614a7387dc8dc02d86535d0510) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added global errors handlers
+
+- [#601](https://github.com/papra-hq/papra/pull/601) [`16ae461`](https://github.com/papra-hq/papra/commit/16ae4617df26d6c2c03e3a9268d7d9fe6f14215f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added missing translations in the tagging rule form
+
+- [#601](https://github.com/papra-hq/papra/pull/601) [`16ae461`](https://github.com/papra-hq/papra/commit/16ae4617df26d6c2c03e3a9268d7d9fe6f14215f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Choose between `All conditions must match` and `Any condition must match` in tagging rules
+
+- [#582](https://github.com/papra-hq/papra/pull/582) [`182ccbb`](https://github.com/papra-hq/papra/commit/182ccbb30bdaed33ee565465fd2d79cdbc881d8b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed the webhook last triggered date always showing "never" in the webhook list.
+
+- [#583](https://github.com/papra-hq/papra/pull/583) [`b0abf7f`](https://github.com/papra-hq/papra/commit/b0abf7f78a851fccb4a5d9fce1400d0dc1020c02) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved the translation of dates and relative time
+
+- [#577](https://github.com/papra-hq/papra/pull/577) [`bd3e321`](https://github.com/papra-hq/papra/commit/bd3e321eb7216306faf3c0e1f3d2a7072f162d1f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to start either just the api, just the workers, or both (default)
+
+- [#585](https://github.com/papra-hq/papra/pull/585) [`a857370`](https://github.com/papra-hq/papra/commit/a857370343214566f22120dfeb2cb73e70561166) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix webhook creation form preventing to create webhooks without secrets
+
+- [#540](https://github.com/papra-hq/papra/pull/540) [`75340f0`](https://github.com/papra-hq/papra/commit/75340f0ce7b1cec7b2599a80599dcab7f3013e23) Thanks [@jodli](https://github.com/jodli)! - Added button to reapply a tagging rule
+
+- [#589](https://github.com/papra-hq/papra/pull/589) [`e9a719d`](https://github.com/papra-hq/papra/commit/e9a719d06a93e8f79f1bacad01e30d9764606117) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed wrongly formatted [object Object] feedback message in auth pages
+
+## 25.10.1
+
+### Patch Changes
+
+- [#567](https://github.com/papra-hq/papra/pull/567) [`d7df2f0`](https://github.com/papra-hq/papra/commit/d7df2f095b8cdcdf5ac068a7e1ff6ead12a874c6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed unnecessary left icon navbar
+
+- [#556](https://github.com/papra-hq/papra/pull/556) [`f66a9f5`](https://github.com/papra-hq/papra/commit/f66a9f5d1b3fe7a918802f9d6d1a90b073bd50c8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added deleted and total document counts and sizes in the `/api/organizations/:organizationId/documents/statistics` route
+
+- [#570](https://github.com/papra-hq/papra/pull/570) [`c3ffa83`](https://github.com/papra-hq/papra/commit/c3ffa8387e2e757098d5344023363897e7e0a416) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added server hostname configuration
+
+- [#552](https://github.com/papra-hq/papra/pull/552) [`8aabd28`](https://github.com/papra-hq/papra/commit/8aabd28168fe7e77f5186ae7dd79e1f5d0bb7288) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Lighten the client bundle by removing lodash dep
+
+- [#550](https://github.com/papra-hq/papra/pull/550) [`1a7a14b`](https://github.com/papra-hq/papra/commit/1a7a14b3ed4caf1d9fec86a034249f3f7267d4e8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix weird navigation freeze when direct navigation to organizations
+
+- [#548](https://github.com/papra-hq/papra/pull/548) [`17cebde`](https://github.com/papra-hq/papra/commit/17cebde051eb2a09b9ac7bfc32674afc15e60ad2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Made the validation more permissive for incoming intake email webhook addresses, allowing RFC 5322 compliant email addresses instead of just simple emails.
+
+- [#565](https://github.com/papra-hq/papra/pull/565) [`e4295e1`](https://github.com/papra-hq/papra/commit/e4295e14abf3a0bce9db10f41d46fd86c4bb4cb5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevent small flash of wrong theme on initial load for slower connections
+
+- [#566](https://github.com/papra-hq/papra/pull/566) [`92daaa3`](https://github.com/papra-hq/papra/commit/92daaa35bb5e3b515b7eeda837f0a9e7dc0005f1) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Redacted webhook signing secret in api update response
+
+- [#560](https://github.com/papra-hq/papra/pull/560) [`54cc140`](https://github.com/papra-hq/papra/commit/54cc14052c5c6bc5e0b29a8feb92604d13e0fd52) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Reduced the client bundle size by switching to posthog-lite
+
+- [#555](https://github.com/papra-hq/papra/pull/555) [`c5b337f`](https://github.com/papra-hq/papra/commit/c5b337f3bb63fb0fc700dae08bacf0095f9b98e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Use organization max file size limit for pre-upload validation
+
+- [#567](https://github.com/papra-hq/papra/pull/567) [`d7df2f0`](https://github.com/papra-hq/papra/commit/d7df2f095b8cdcdf5ac068a7e1ff6ead12a874c6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Redesigned the organization picker in the sidenav
+
 ## 25.10.0
 
 ### Minor Changes

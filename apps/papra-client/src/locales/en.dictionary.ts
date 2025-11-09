@@ -68,6 +68,13 @@ export const translations = {
   'auth.email-validation-required.title': 'Verify your email',
   'auth.email-validation-required.description': 'A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.',
 
+  'auth.email-verification.success.title': 'Email verified',
+  'auth.email-verification.success.description': 'Your email has been successfully verified. You can now log in to your account.',
+  'auth.email-verification.success.login': 'Go to login',
+  'auth.email-verification.error.title': 'Verification failed',
+  'auth.email-verification.error.description': 'The verification link has expired or is invalid. Please request a new verification email by logging in.',
+  'auth.email-verification.error.back': 'Back to login',
+
   'auth.legal-links.description': 'By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.',
   'auth.legal-links.terms': 'Terms of Service',
   'auth.legal-links.privacy': 'Privacy Policy',
@@ -155,6 +162,7 @@ export const translations = {
   'organization.settings.delete.confirm.cancel-button': 'Cancel',
   'organization.settings.delete.success': 'Organization deleted',
   'organization.settings.delete.only-owner': 'Only the organization owner can delete this organization.',
+  'organization.settings.delete.has-active-subscription': 'Cannot delete organization with an active subscription, please cancel your subscription above first.',
 
   'organization.usage.page.title': 'Usage',
   'organization.usage.page.description': 'View your organization\'s current usage and limits.',
@@ -389,8 +397,13 @@ export const translations = {
   'tagging-rules.form.description.placeholder': 'Example: Tag documents with \'invoice\' in the name',
   'tagging-rules.form.description.max-length': 'The description must be less than 256 characters',
   'tagging-rules.form.conditions.label': 'Conditions',
-  'tagging-rules.form.conditions.description': 'Define the conditions that must be met for the rule to apply. All conditions must be met for the rule to apply.',
+  'tagging-rules.form.conditions.description': 'Define the conditions that must be met for the rule to apply. No conditions means the rule will apply to all documents',
   'tagging-rules.form.conditions.add-condition': 'Add condition',
+  'tagging-rules.form.conditions.connector.when': 'When',
+  'tagging-rules.form.conditions.connector.and': 'and',
+  'tagging-rules.form.conditions.connector.or': 'or',
+  'tagging-rules.condition-match-mode.all': 'All conditions must match',
+  'tagging-rules.condition-match-mode.any': 'Any condition must match',
   'tagging-rules.form.conditions.no-conditions.title': 'No conditions',
   'tagging-rules.form.conditions.no-conditions.description': 'You didn\'t add any conditions to this rule. This rule will apply its tags to all documents.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Apply rule without conditions',
@@ -406,6 +419,13 @@ export const translations = {
   'tagging-rules.update.error': 'Failed to update tagging rule',
   'tagging-rules.update.submit': 'Update rule',
   'tagging-rules.update.cancel': 'Cancel',
+  'tagging-rules.apply.button': 'Apply to existing documents',
+  'tagging-rules.apply.confirm.title': 'Apply rule to existing documents?',
+  'tagging-rules.apply.confirm.description': 'This will check all existing documents in your organization and apply tags where conditions match. The processing will happen in the background.',
+  'tagging-rules.apply.confirm.button': 'Apply rule',
+  'tagging-rules.apply.success': 'Rule application started in the background',
+  'tagging-rules.apply.error': 'Failed to start rule application',
+  'tagging-rules.apply.processing': 'Starting...',
 
   // Intake emails
 
@@ -592,6 +612,32 @@ export const translations = {
   'api-errors.internal.error': 'An error occurred while processing your request. Please try again later.',
   'api-errors.auth.invalid_origin': 'Invalid application origin. If you are self-hosting Papra, ensure your APP_BASE_URL environment variable matches your current url. For more details see https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
+  'api-errors.organization.has_active_subscription': 'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'User not found',
+  'api-errors.FAILED_TO_CREATE_USER': 'Failed to create user',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Failed to create session',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Failed to update user',
+  'api-errors.FAILED_TO_GET_SESSION': 'Failed to get session',
+  'api-errors.INVALID_PASSWORD': 'Invalid password',
+  'api-errors.INVALID_EMAIL': 'Invalid email',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'The email or password is incorrect, or the account does not exist.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Social account already linked',
+  'api-errors.PROVIDER_NOT_FOUND': 'Provider not found',
+  'api-errors.INVALID_TOKEN': 'Invalid token',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'ID token not supported',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Failed to get user info',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'User email not found',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email not verified',
+  'api-errors.PASSWORD_TOO_SHORT': 'Password too short',
+  'api-errors.PASSWORD_TOO_LONG': 'Password too long',
+  'api-errors.USER_ALREADY_EXISTS': 'A user with this email already exists',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'Email can not be updated',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Credential account not found',
+  'api-errors.SESSION_EXPIRED': 'Session expired',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Failed to unlink last account',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Account not found',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'User already has password',
 
   // Not found
 
@@ -601,7 +647,7 @@ export const translations = {
 
   // Demo
 
-  'demo.popup.description': 'This is a demo environment, all data is save to your browser local storage.',
+  'demo.popup.description': 'This is a demo environment, all data is saved to your browser local storage.',
   'demo.popup.discord': 'Join the {{ discordLink }} to get support, propose features or just chat.',
   'demo.popup.discord-link-label': 'Discord server',
   'demo.popup.reset': 'Reset demo data',
@@ -639,6 +685,8 @@ export const translations = {
   'subscriptions.upgrade-dialog.per-month': '/month',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} billed annually',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade now',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Limited Time Offer',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Get {{ percent }}% off all plans forever per organization as an early adopter! Offer expires in {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
 
   'subscriptions.plan.free.name': 'Free plan',
   'subscriptions.plan.plus.name': 'Plus',

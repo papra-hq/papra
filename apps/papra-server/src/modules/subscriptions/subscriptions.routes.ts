@@ -58,6 +58,7 @@ function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: Rou
       event,
       plansRepository,
       subscriptionsRepository,
+      subscriptionsServices,
     });
 
     return context.body(null, 204);
@@ -111,6 +112,26 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
       });
 
       const { customerId } = await getOrCreateOrganizationCustomerId({ organizationId, subscriptionsServices, organizationsRepository });
+
+      // Step 1: Expire any active checkout sessions before creating a new one
+      // This allows subscriptions to be canceled (can't cancel while checkout is active)
+      await subscriptionsServices.expireActiveCheckoutSessions({ customerId });
+
+      // Step 2: Cancel any incomplete subscriptions from previous failed attempts
+      // This prevents accumulating orphaned incomplete subscriptions
+      const { subscriptions: allSubscriptions } = await subscriptionsRepository.getAllOrganizationSubscriptions({ organizationId });
+      const incompleteSubscriptions = allSubscriptions.filter(sub => sub.status === 'incomplete' || sub.status === 'incomplete_expired');
+
+      // Now that checkout sessions are expired, we can cancel the subscriptions
+      await Promise.allSettled(
+        incompleteSubscriptions.map(async (sub) => {
+          try {
+            await subscriptionsServices.cancelSubscription({ subscriptionId: sub.id });
+          } catch (error) {
+            logger.warn({ subscriptionId: sub.id, error }, 'Failed to cancel incomplete subscription');
+          }
+        }),
+      );
 
       const { checkoutUrl } = await subscriptionsServices.createCheckoutUrl({
         customerId,
@@ -172,21 +193,23 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
         organizationsRepository,
       });
 
-      const { subscription } = await subscriptionsRepository.getOrganizationSubscription({
+      const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({
         organizationId,
       });
 
       const { organizationPlan } = await plansRepository.getOrganizationPlanById({ planId: subscription?.planId ?? FREE_PLAN_ID });
 
       return context.json({
-        subscription: pick(subscription, [
-          'status',
-          'currentPeriodEnd',
-          'currentPeriodStart',
-          'cancelAtPeriodEnd',
-          'planId',
-          'seatsCount',
-        ]),
+        subscription: subscription
+          ? pick(subscription, [
+              'status',
+              'currentPeriodEnd',
+              'currentPeriodStart',
+              'cancelAtPeriodEnd',
+              'planId',
+              'seatsCount',
+            ])
+          : null,
         plan: organizationPlan,
       });
     },

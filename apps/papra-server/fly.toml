@@ -9,17 +9,18 @@ dockerfile = "./Dockerfile"
 
 [deploy]
 release_command = "pnpm --silent migrate:up:prod"
-strategy = "rolling"
+strategy = "canary"
 
 [processes]
-web = "pnpm --silent start"
+web = "env PROCESS_MODE=web pnpm --silent start"
+worker = "env PROCESS_MODE=worker pnpm --silent start"
 
 [http_service]
 internal_port = 1221
 force_https = true
 auto_stop_machines = 'stop'
 auto_start_machines = true
-min_machines_running = 0
+min_machines_running = 1
 processes = [ 'web' ]
 
 [checks]

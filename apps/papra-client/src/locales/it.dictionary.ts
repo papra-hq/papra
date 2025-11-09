@@ -70,6 +70,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.email-validation-required.title': 'Verifica la tua email',
   'auth.email-validation-required.description': 'Una email di verifica è stata inviata al tuo indirizzo email. Verifica il tuo indirizzo cliccando il link nell\'email.',
 
+  'auth.email-verification.success.title': 'Email verificata',
+  'auth.email-verification.success.description': 'La tua email è stata verificata con successo. Ora puoi accedere al tuo account.',
+  'auth.email-verification.success.login': 'Vai al login',
+  'auth.email-verification.error.title': 'Verifica fallita',
+  'auth.email-verification.error.description': 'Il link di verifica non è valido o è scaduto. Richiedi una nuova email di verifica effettuando l\'accesso.',
+  'auth.email-verification.error.back': 'Torna al login',
+
   'auth.legal-links.description': 'Continuando, confermi di aver letto e accettato i {{ terms }} e l\'{{ privacy }}.',
   'auth.legal-links.terms': 'Termini di servizio',
   'auth.legal-links.privacy': 'Informativa sulla privacy',
@@ -157,6 +164,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.confirm.cancel-button': 'Annulla',
   'organization.settings.delete.success': 'Organizzazione eliminata',
   'organization.settings.delete.only-owner': 'Solo il proprietario dell\'organizzazione può eliminare questa organizzazione.',
+  'organization.settings.delete.has-active-subscription': 'Impossibile eliminare l\'organizzazione con un abbonamento attivo, si prega di annullare prima l\'abbonamento sopra.',
 
   'organization.usage.page.title': 'Utilizzo',
   'organization.usage.page.description': 'Visualizza l\'utilizzo attuale e i limiti della tua organizzazione.',
@@ -355,8 +363,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Tagging rules
 
-  'tagging-rules.field.name': 'nome documento',
-  'tagging-rules.field.content': 'contenuto documento',
+  'tagging-rules.field.name': 'il nome del documento',
+  'tagging-rules.field.content': 'il contenuto del documento',
   'tagging-rules.operator.equals': 'uguale a',
   'tagging-rules.operator.not-equals': 'diverso da',
   'tagging-rules.operator.contains': 'contiene',
@@ -386,8 +394,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.description.placeholder': 'Esempio: Tagga i documenti con \'fattura\' nel nome',
   'tagging-rules.form.description.max-length': 'La descrizione deve essere inferiore a 256 caratteri',
   'tagging-rules.form.conditions.label': 'Condizioni',
-  'tagging-rules.form.conditions.description': 'Definisci le condizioni che devono essere soddisfatte affinché la regola si applichi. Tutte le condizioni devono essere soddisfatte.',
+  'tagging-rules.form.conditions.description': 'Definisci le condizioni che devono essere soddisfatte affinché la regola si applichi. Nessuna condizione significa che la regola si applicherà a tutti i documenti',
   'tagging-rules.form.conditions.add-condition': 'Aggiungi condizione',
+  'tagging-rules.form.conditions.connector.when': 'Quando',
+  'tagging-rules.form.conditions.connector.and': 'e che',
+  'tagging-rules.form.conditions.connector.or': 'o che',
+  'tagging-rules.condition-match-mode.all': 'Tutte le condizioni devono corrispondere',
+  'tagging-rules.condition-match-mode.any': 'Qualsiasi condizione deve corrispondere',
   'tagging-rules.form.conditions.no-conditions.title': 'Nessuna condizione',
   'tagging-rules.form.conditions.no-conditions.description': 'Non hai aggiunto nessuna condizione a questa regola. Questa regola applicherà i suoi tag a tutti i documenti.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Applica regola senza condizioni',
@@ -403,6 +416,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.error': 'Errore nell\'aggiornamento della regola di tagging',
   'tagging-rules.update.submit': 'Aggiorna regola',
   'tagging-rules.update.cancel': 'Annulla',
+  'tagging-rules.apply.button': 'Applica ai documenti esistenti',
+  'tagging-rules.apply.confirm.title': 'Applicare la regola ai documenti esistenti?',
+  'tagging-rules.apply.confirm.description': 'Questo controllerà tutti i documenti esistenti nella tua organizzazione e applicherà i tag dove le condizioni corrispondono. L\'elaborazione avverrà in background.',
+  'tagging-rules.apply.confirm.button': 'Applica regola',
+  'tagging-rules.apply.success': 'Applicazione della regola avviata in background',
+  'tagging-rules.apply.error': 'Impossibile avviare l\'applicazione della regola',
+  'tagging-rules.apply.processing': 'Avvio in corso...',
 
   // Intake emails
 
@@ -589,6 +609,32 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.internal.error': 'Si è verificato un errore durante l\'elaborazione della richiesta. Riprova.',
   'api-errors.auth.invalid_origin': 'Origine dell\'applicazione non valida. Se stai ospitando Papra, assicurati che la variabile di ambiente APP_BASE_URL corrisponda all\'URL corrente. Per maggiori dettagli, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'È stato raggiunto il numero massimo di membri e inviti in sospeso per questa organizzazione. Aggiorna il tuo piano per aggiungere altri membri.',
+  'api-errors.organization.has_active_subscription': 'Impossibile eliminare l\'organizzazione con un abbonamento attivo. Si prega di annullare prima l\'abbonamento utilizzando il pulsante Gestisci abbonamento sopra.',
+  // Better auth api errors
+  'api-errors.USER_NOT_FOUND': 'Utente non trovato',
+  'api-errors.FAILED_TO_CREATE_USER': 'Impossibile creare l\'utente',
+  'api-errors.FAILED_TO_CREATE_SESSION': 'Impossibile creare la sessione',
+  'api-errors.FAILED_TO_UPDATE_USER': 'Impossibile aggiornare l\'utente',
+  'api-errors.FAILED_TO_GET_SESSION': 'Impossibile recuperare la sessione',
+  'api-errors.INVALID_PASSWORD': 'Password non valida',
+  'api-errors.INVALID_EMAIL': 'Email non valida',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'L\'email o la password non è corretta, oppure l\'account non esiste.',
+  'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Account social già collegato',
+  'api-errors.PROVIDER_NOT_FOUND': 'Provider non trovato',
+  'api-errors.INVALID_TOKEN': 'Token non valido',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Token ID non supportato',
+  'api-errors.FAILED_TO_GET_USER_INFO': 'Impossibile recuperare le informazioni utente',
+  'api-errors.USER_EMAIL_NOT_FOUND': 'Email utente non trovata',
+  'api-errors.EMAIL_NOT_VERIFIED': 'Email non verificata',
+  'api-errors.PASSWORD_TOO_SHORT': 'Password troppo corta',
+  'api-errors.PASSWORD_TOO_LONG': 'Password troppo lunga',
+  'api-errors.USER_ALREADY_EXISTS': 'Esiste già un utente con questa email',
+  'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'L\'email non può essere aggiornata',
+  'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Account credenziali non trovato',
+  'api-errors.SESSION_EXPIRED': 'Sessione scaduta',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Impossibile scollegare l\'ultimo account',
+  'api-errors.ACCOUNT_NOT_FOUND': 'Account non trovato',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'L\'utente ha già una password',
 
   // Not found
 
@@ -636,6 +682,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.per-month': '/mese',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} fatturato annualmente',
   'subscriptions.upgrade-dialog.upgrade-now': 'Aggiorna ora',
+  'subscriptions.upgrade-dialog.promo-banner.title': 'Offerta a tempo limitato',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Ottieni {{ percent }}% di sconto per organizzazione su tutti i piani per sempre come early adopter! L\'offerta scade tra {{ days, >1:{days} giorni, =1:1 giorno, meno di un giorno }}.',
 
   'subscriptions.plan.free.name': 'Piano gratuito',
   'subscriptions.plan.plus.name': 'Plus',

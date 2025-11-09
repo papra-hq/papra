@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
 import type { SsoProviderConfig } from '../auth.types';
+import { buildUrl } from '@corentinth/chisels';
 import { A, useNavigate } from '@solidjs/router';
 import { createSignal, For, Show } from 'solid-js';
 import * as v from 'valibot';
@@ -12,6 +13,7 @@ import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/component
 import { Separator } from '@/modules/ui/components/separator';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
+import { authPagesPaths } from '../auth.constants';
 import { getEnabledSsoProviderConfigs, isEmailVerificationRequiredError } from '../auth.models';
 import { authWithProvider, signIn } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
@@ -26,7 +28,13 @@ export const EmailLoginForm: Component = () => {
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
-      const { error } = await signIn.email({ email, password, rememberMe, callbackURL: config.baseUrl });
+      const { error } = await signIn.email({
+        email,
+        password,
+        rememberMe,
+        // This URL is where the user will be redirected after email verification
+        callbackURL: buildUrl({ baseUrl: config.baseUrl, path: authPagesPaths.emailVerification }),
+      });
 
       if (isEmailVerificationRequiredError({ error })) {
         navigate('/email-validation-required');
@@ -35,6 +43,8 @@ export const EmailLoginForm: Component = () => {
       if (error) {
         throw createI18nApiError({ error });
       }
+
+      // If all good guard will redirect to dashboard
     },
     schema: v.object({
       email: v.pipe(

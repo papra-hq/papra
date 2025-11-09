@@ -6,11 +6,13 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createError } from '../shared/errors/errors';
+import { isNil } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { tagIdRegex } from '../tags/tags.constants';
 import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
-import { taggingRuleIdSchema } from './tagging-rules.schemas';
+import { conditionMatchModeSchema, taggingRuleIdSchema } from './tagging-rules.schemas';
 import { createTaggingRule } from './tagging-rules.usecases';
 
 export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
@@ -19,6 +21,7 @@ export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
   setupDeleteTaggingRuleRoute(context);
   setupGetTaggingRuleRoute(context);
   setupUpdateTaggingRuleRoute(context);
+  setupApplyTaggingRuleRoute(context);
 }
 
 function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionContext) {
@@ -58,6 +61,7 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       name: z.string().min(1).max(64),
       description: z.string().max(256).optional(),
       enabled: z.boolean().optional(),
+      conditionMatchMode: conditionMatchModeSchema.optional(),
       conditions: z.array(z.object({
         field: z.enum(Object.values(TAGGING_RULE_FIELDS) as [TaggingRuleField, ...TaggingRuleField[]]), // casting since zod require non-empty array
         operator: z.enum(Object.values(TAGGING_RULE_OPERATORS) as [TaggingRuleOperator, ...TaggingRuleOperator[]]), // casting since zod require non-empty array
@@ -69,14 +73,14 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       const { userId } = getUser({ context });
 
       const { organizationId } = context.req.valid('param');
-      const { name, description, enabled, conditions, tagIds } = context.req.valid('json');
+      const { name, description, enabled, conditionMatchMode, conditions, tagIds } = context.req.valid('json');
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await createTaggingRule({ name, description, enabled, conditions, tagIds, organizationId, taggingRulesRepository });
+      await createTaggingRule({ name, description, enabled, conditionMatchMode, conditions, tagIds, organizationId, taggingRulesRepository });
 
       return context.body(null, 204);
     },
@@ -147,6 +151,7 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       name: z.string().min(1).max(64),
       description: z.string().max(256).optional(),
       enabled: z.boolean().optional(),
+      conditionMatchMode: conditionMatchModeSchema.optional(),
       conditions: z.array(z.object({
         field: z.enum(Object.values(TAGGING_RULE_FIELDS) as [TaggingRuleField, ...TaggingRuleField[]]), // casting since zod require non-empty array
         operator: z.enum(Object.values(TAGGING_RULE_OPERATORS) as [TaggingRuleOperator, ...TaggingRuleOperator[]]), // casting since zod require non-empty array
@@ -158,7 +163,7 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       const { userId } = getUser({ context });
 
       const { organizationId, taggingRuleId } = context.req.valid('param');
-      const { name, description, enabled, conditions, tagIds } = context.req.valid('json');
+      const { name, description, enabled, conditionMatchMode, conditions, tagIds } = context.req.valid('json');
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -168,10 +173,53 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
       await taggingRulesRepository.updateOrganizationTaggingRule({
         organizationId,
         taggingRuleId,
-        taggingRule: { name, description, enabled, conditions, tagIds },
+        taggingRule: { name, description, enabled, conditionMatchMode, conditions, tagIds },
       });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupApplyTaggingRuleRoute({ app, db, taskServices }: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply',
+    requireAuthentication(),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+      taggingRuleId: taggingRuleIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const { organizationId, taggingRuleId } = context.req.valid('param');
+
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      // Verify the tagging rule exists before enqueuing the task
+      const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({ organizationId, taggingRuleId });
+
+      if (isNil(taggingRule)) {
+        throw createError({
+          message: 'Tagging rule not found',
+          code: 'tagging-rules.not-found',
+          statusCode: 404,
+        });
+      }
+
+      // Enqueue background task
+      const { jobId: taskId } = await taskServices.scheduleJob({
+        taskName: 'apply-tagging-rule-to-documents',
+        data: {
+          organizationId,
+          taggingRuleId,
+        },
+      });
+
+      return context.json({ taskId }, 202);
     },
   );
 }

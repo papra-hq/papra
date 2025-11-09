@@ -4,9 +4,9 @@ import { useParams } from '@solidjs/router';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
-import { timeAgo } from '@/modules/shared/date/time-ago';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Alert, AlertDescription } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
@@ -199,7 +199,7 @@ export const DeletedDocumentsPage: Component = () => {
                   <div class="text-muted-foreground hidden sm:block">
                     {t('documents.deleted.deleted-at')}
                     {' '}
-                    <span class="text-foreground font-bold" title={data.row.original.deletedAt?.toLocaleString()}>{timeAgo({ date: data.row.original.deletedAt! })}</span>
+                    <RelativeTime class="text-foreground font-bold" date={data.row.original.deletedAt!} />
                   </div>
                 ),
               },
