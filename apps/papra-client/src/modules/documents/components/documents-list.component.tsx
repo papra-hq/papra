@@ -29,7 +29,7 @@ type Pagination = {
 export const createdAtColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();
-    return <span>{t('documents.list.table.headers.created')}</span>;
+    return <span class="hidden sm:block">{t('documents.list.table.headers.created')}</span>;
   },
   accessorKey: 'createdAt',
   cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
@@ -38,7 +38,7 @@ export const createdAtColumn: ColumnDef<Document> = {
 export const deletedAtColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();
-    return <span>{t('documents.list.table.headers.deleted')}</span>;
+    return <span class="hidden sm:block">{t('documents.list.table.headers.deleted')}</span>;
   },
   accessorKey: 'deletedAt',
   cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
@@ -47,7 +47,7 @@ export const deletedAtColumn: ColumnDef<Document> = {
 export const standardActionsColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();
-    return <span>{t('documents.list.table.headers.actions')}</span>;
+    return <span class="block text-right">{t('documents.list.table.headers.actions')}</span>;
   },
   id: 'actions',
   cell: data => (
@@ -60,7 +60,7 @@ export const standardActionsColumn: ColumnDef<Document> = {
 export const tagsColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();
-    return <span>{t('documents.list.table.headers.tags')}</span>;
+    return <span class="hidden sm:block">{t('documents.list.table.headers.tags')}</span>;
   },
   accessorKey: 'tags',
   cell: data => (
@@ -87,9 +87,7 @@ export const DocumentsPaginatedList: Component<{
     },
     columns: [
       {
-        header: () => (
-          <span>{t('documents.list.table.headers.file-name')}</span>
-        ),
+        header: () => t('documents.list.table.headers.file-name'),
         id: 'fileName',
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
