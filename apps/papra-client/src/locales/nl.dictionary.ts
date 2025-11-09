@@ -249,6 +249,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.no-documents.title': 'Geen documenten',
   'documents.list.no-documents.description': 'Er staan nog geen documenten in deze organisatie. Begin met het uploaden van documenten.',
   'documents.list.no-results': 'Geen documenten gevonden',
+  'documents.list.table.headers.file-name': 'Bestandsnaam',
+  'documents.list.table.headers.created': 'Aangemaakt op',
+  'documents.list.table.headers.deleted': 'Verwijderd op',
+  'documents.list.table.headers.actions': 'Acties',
+  'documents.list.table.headers.tags': 'Tags',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Inhoud',
@@ -710,4 +715,4 @@ export const translations: Partial<TranslationsDictionary> = {
   // Common / Shared
 
   'common.confirm-modal.type-to-confirm': 'Typ "{{ text }}" om te bevestigen',
-} as const;
+};

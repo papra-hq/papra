@@ -249,6 +249,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.no-documents.title': 'Sin documentos',
   'documents.list.no-documents.description': 'Aún no hay documentos en esta organización. Comienza subiendo algunos documentos.',
   'documents.list.no-results': 'No se encontraron documentos',
+  'documents.list.table.headers.file-name': 'Nombre de archivo',
+  'documents.list.table.headers.created': 'Creado el',
+  'documents.list.table.headers.deleted': 'Eliminado el',
+  'documents.list.table.headers.actions': 'Acciones',
+  'documents.list.table.headers.tags': 'Etiquetas',
 
   'documents.tabs.info': 'Información',
   'documents.tabs.content': 'Contenido',
