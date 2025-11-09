@@ -715,4 +715,6 @@ export const translations: Partial<TranslationsDictionary> = {
   // Common / Shared
 
   'common.confirm-modal.type-to-confirm': 'Escriba "{{ text }}" para confirmar',
+  'common.tables.rows-per-page': 'Filas por página',
+  'common.tables.pagination-info': 'Página {{ currentPage }} de {{ totalPages }}',
 };

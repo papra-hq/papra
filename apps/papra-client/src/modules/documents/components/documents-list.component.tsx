@@ -192,7 +192,7 @@ export const DocumentsPaginatedList: Component<{
             <div class="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-end mt-4">
               <div class="flex items-center space-x-2">
                 <p class="whitespace-nowrap text-sm font-medium">
-                  Rows per page
+                  {t('common.tables.rows-per-page')}
                 </p>
                 <Select
                   value={table.getState().pagination.pageSize}
@@ -213,13 +213,10 @@ export const DocumentsPaginatedList: Component<{
                 </Select>
               </div>
               <div class="flex items-center justify-center whitespace-nowrap text-sm font-medium">
-                Page
-                {' '}
-                {table.getState().pagination.pageIndex + 1}
-                {' '}
-                of
-                {' '}
-                {table.getPageCount()}
+                {t('common.tables.pagination-info', {
+                  currentPage: table.getState().pagination.pageIndex + 1,
+                  totalPages: table.getPageCount(),
+                })}
               </div>
               <div class="flex items-center space-x-2">
                 <Button

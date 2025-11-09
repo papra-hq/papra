@@ -713,4 +713,6 @@ export const translations = {
   // Common / Shared
 
   'common.confirm-modal.type-to-confirm': 'Type "{{ text }}" to confirm',
+  'common.tables.rows-per-page': 'Rows per page',
+  'common.tables.pagination-info': 'Page {{ currentPage }} of {{ totalPages }}',
 } as const;
