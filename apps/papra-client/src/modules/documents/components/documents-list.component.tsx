@@ -4,9 +4,15 @@ import type { Document } from '../documents.types';
 import type { Tag } from '@/modules/tags/tags.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
-import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+} from '@tanstack/solid-table';
 import { For, Match, Show, Switch } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { TagLink } from '@/modules/tags/components/tag.component';
 import { Button } from '@/modules/ui/components/button';
@@ -21,19 +27,28 @@ type Pagination = {
 };
 
 export const createdAtColumn: ColumnDef<Document> = {
-  header: () => (<span class="hidden sm:block">Created at</span>),
+  header: () => {
+    const { t } = useI18n();
+    return <span class="hidden sm:block">{t('documents.list.table.headers.created')}</span>;
+  },
   accessorKey: 'createdAt',
   cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
 };
 
 export const deletedAtColumn: ColumnDef<Document> = {
-  header: () => (<span class="hidden sm:block">Deleted at</span>),
+  header: () => {
+    const { t } = useI18n();
+    return <span class="hidden sm:block">{t('documents.list.table.headers.deleted')}</span>;
+  },
   accessorKey: 'deletedAt',
   cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
 };
 
 export const standardActionsColumn: ColumnDef<Document> = {
-  header: () => (<span class="block text-right">Actions</span>),
+  header: () => {
+    const { t } = useI18n();
+    return <span class="block text-right">{t('documents.list.table.headers.actions')}</span>;
+  },
   id: 'actions',
   cell: data => (
     <div class="flex items-center justify-end">
@@ -43,14 +58,15 @@ export const standardActionsColumn: ColumnDef<Document> = {
 };
 
 export const tagsColumn: ColumnDef<Document> = {
-  header: () => (<span class="hidden sm:block">Tags</span>),
+  header: () => {
+    const { t } = useI18n();
+    return <span class="hidden sm:block">{t('documents.list.table.headers.tags')}</span>;
+  },
   accessorKey: 'tags',
   cell: data => (
     <div class="text-muted-foreground hidden sm:flex flex-wrap gap-1">
       <For each={data.getValue<Tag[]>()}>
-        {tag => (
-          <TagLink {...tag} class="text-xs" />
-        )}
+        {tag => <TagLink {...tag} class="text-xs" />}
       </For>
     </div>
   ),
@@ -64,17 +80,25 @@ export const DocumentsPaginatedList: Component<{
   extraColumns?: ColumnDef<Document>[];
   showPagination?: boolean;
 }> = (props) => {
+  const { t } = useI18n();
   const table = createSolidTable({
     get data() {
       return props.documents ?? [];
     },
     columns: [
       {
-        header: 'File name',
+        header: () => t('documents.list.table.headers.file-name'),
+        id: 'fileName',
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
-              <div class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}></div>
+              <div
+                class={cn(
+                  getDocumentIcon({ document: data.row.original }),
+                  'size-6 text-primary',
+                )}
+              >
+              </div>
             </div>
 
             <div class="flex-1 flex flex-col gap-1 truncate">
@@ -82,7 +106,9 @@ export const DocumentsPaginatedList: Component<{
                 href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
                 class="font-bold truncate block hover:underline"
               >
-                {getDocumentNameWithoutExtension({ name: data.row.original.name })}
+                {getDocumentNameWithoutExtension({
+                  name: data.row.original.name,
+                })}
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
@@ -94,24 +120,8 @@ export const DocumentsPaginatedList: Component<{
               </div>
             </div>
           </div>
-
         ),
       },
-      // {
-      //   header: () => (<span class="hidden sm:block">Created at</span>),
-      //   accessorKey: 'createdAt',
-      //   cell: data => <div class="text-muted-foreground hidden sm:block" title={data.getValue<Date>().toLocaleString()}>{timeAgo({ date: data.getValue<Date>() })}</div>,
-      // },
-      // {
-      //   header: () => (<span class="block text-right">Actions</span>),
-      //   id: 'actions',
-      //   cell: data => (
-      //     <div class="flex items-center justify-end">
-      //       <DocumentManagementDropdown documentId={data.row.original.id} organizationId={data.row.original.organizationId} />
-      //     </div>
-      //   ),
-      // },
-
       ...(props.extraColumns ?? []),
     ],
     get rowCount() {
@@ -126,7 +136,6 @@ export const DocumentsPaginatedList: Component<{
       },
     },
     manualPagination: true,
-
   });
 
   return (
@@ -134,7 +143,6 @@ export const DocumentsPaginatedList: Component<{
       <Switch>
         <Match when={props.documentsCount > 0}>
           <Table>
-
             <TableHeader>
               <For each={table.getHeaderGroups()}>
                 {headerGroup => (
@@ -145,7 +153,10 @@ export const DocumentsPaginatedList: Component<{
                           <TableHead>
                             {header.isPlaceholder
                               ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                           </TableHead>
                         );
                       }}
@@ -163,7 +174,10 @@ export const DocumentsPaginatedList: Component<{
                       <For each={row.getVisibleCells()}>
                         {cell => (
                           <TableCell>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
                           </TableCell>
                         )}
                       </For>
@@ -172,19 +186,22 @@ export const DocumentsPaginatedList: Component<{
                 </For>
               </Show>
             </TableBody>
-
           </Table>
 
           <Show when={props.showPagination ?? true}>
             <div class="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-end mt-4">
               <div class="flex items-center space-x-2">
-                <p class="whitespace-nowrap text-sm font-medium">Rows per page</p>
+                <p class="whitespace-nowrap text-sm font-medium">
+                  Rows per page
+                </p>
                 <Select
                   value={table.getState().pagination.pageSize}
                   onChange={value => value && table.setPageSize(value)}
                   options={[15, 50, 100]}
                   itemComponent={props => (
-                    <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
+                    <SelectItem item={props.item}>
+                      {props.item.rawValue}
+                    </SelectItem>
                   )}
                 >
                   <SelectTrigger class="h-8 w-[4.5rem]">
