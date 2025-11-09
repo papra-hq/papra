@@ -715,4 +715,6 @@ export const translations: Partial<TranslationsDictionary> = {
   // Common / Shared
 
   'common.confirm-modal.type-to-confirm': 'Tastează "{{ text }}" pentru confirmare',
+  'common.tables.rows-per-page': 'Rânduri pe pagină',
+  'common.tables.pagination-info': 'Pagina {{ currentPage }} din {{ totalPages }}',
 };
