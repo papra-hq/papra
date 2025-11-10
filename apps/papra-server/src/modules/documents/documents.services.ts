@@ -18,12 +18,12 @@ export async function extractDocumentText({
   ocrLanguages?: string[];
   logger?: Logger;
 }) {
-  const { textContent, error, extractorName } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } } });
+  const { textContent, error, extractorName, extractorType } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } } });
 
   if (error) {
-    logger.error({ error, extractorName }, 'Error while extracting text from document');
+    logger.error({ error, extractorName, extractorType }, 'Error while extracting text from document');
   } else {
-    logger.info({ extractorName }, 'Text extracted from document');
+    logger.info({ extractorName, extractorType }, 'Text extracted from document');
   }
 
   return {

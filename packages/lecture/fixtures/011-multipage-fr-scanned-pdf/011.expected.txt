@@ -25,7 +25,6 @@ Une fois satisfait du résultat, cliquez sur "Générer le Document
 Numérisé”. Le traitement ne prend que quelques secondes. Vous
 pourrez ensuite télécharger votre fichier en cliquant sur
 "Télécharger". Tout le processus s'effectue localement sur votre
-
 appareil et nous ne conservons aucun contenu, garantissant ainsi la
 confidentialité de vos documents.
 

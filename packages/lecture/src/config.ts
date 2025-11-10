@@ -13,7 +13,9 @@ export function parseConfig({ rawConfig = {} }: { rawConfig?: PartialExtractorCo
 
   return {
     config: {
+      ...(rawConfig ?? {}),
       tesseract: {
+        ...(rawConfig.tesseract ?? {}),
         languages: languages.length > 0 ? languages : ['eng'],
       },
     },

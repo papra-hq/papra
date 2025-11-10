@@ -3,6 +3,8 @@ import type { DeepPartial } from '@corentinth/chisels';
 export type ExtractorConfig = {
   tesseract: {
     languages: string[];
+    forceJs?: boolean;
+    binary?: string;
   };
 };
 
