@@ -56,10 +56,21 @@ describe('extractors usecases', () => {
           const arrayBuffer = (await fs.readFile(inputFilePath)).buffer as ArrayBuffer;
           const mimeType = mime.getType(inputFilePath);
 
-          const { textContent, error, extractorName } = await extractText({ arrayBuffer, mimeType, config });
+          const { textContent, error, extractorName, extractorType } = await extractText({
+            arrayBuffer,
+            mimeType,
+            config: {
+              ...config,
+              tesseract: {
+                forceJs: true,
+                ...config?.tesseract,
+              },
+            },
+          });
 
           expect(error).to.eql(undefined);
           expect(extractorName).to.not.eql(undefined);
+          expect(extractorType).to.not.eql(undefined);
 
           const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop().slice(0, 3);
           const expectedFilePath = join(fixtureDir, `${fixtureNumber}.expected.txt`);
