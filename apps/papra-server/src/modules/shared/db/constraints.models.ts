@@ -1,7 +1,12 @@
 import { get } from 'lodash-es';
 
-export { isUniqueConstraintError };
+export function isUniqueConstraintError({ error }: { error: unknown }): boolean {
+  const message: unknown = get(error, 'message');
+  const code: unknown = get(error, 'code');
 
-function isUniqueConstraintError({ error }: { error: unknown }): boolean {
-  return get(error, 'code') === 'SQLITE_CONSTRAINT_UNIQUE';
+  if (code === 'SQLITE_CONSTRAINT_UNIQUE') {
+    return true;
+  }
+
+  return typeof message === 'string' && message.toLowerCase().includes('unique constraint failed');
 }

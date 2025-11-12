@@ -12,5 +12,9 @@ describe('constraints models', () => {
       expect(isUniqueConstraintError({ error: null })).to.eql(false);
       expect(isUniqueConstraintError({ error: new Set([Symbol('bob')]) })).to.eql(false);
     });
+
+    test('when dealing with turso cloud db the error does not have the standard code but the message contains "unique constraint failed"', () => {
+      expect(isUniqueConstraintError({ error: { message: 'SQLITE_CONSTRAINT: SQLite error: UNIQUE constraint failed: tags.organization_id, tags.name' } })).to.eql(true);
+    });
   });
 });
