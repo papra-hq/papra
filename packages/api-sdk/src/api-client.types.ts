@@ -15,3 +15,13 @@ export type PapraDocument = {
   isDeleted: boolean;
   content: string;
 };
+
+export type PapraTag = {
+  id: string;
+  name: string;
+  color: string;
+  description?: string;
+  organizationId: string;
+  createdAt: string;
+  updatedAt: string;
+};

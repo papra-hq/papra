@@ -7,6 +7,7 @@ import { createClient } from '@papra/api-sdk';
 import { defineCommand } from 'citty';
 import mime from 'mime-types';
 import { reportClientError } from '../../../client.models';
+import { getOrganizationId } from '../../../organizations/organizations.usecases';
 import { getConfig } from '../../config/config.services';
 import { organizationIdArgument } from '../documents.arguments';
 
@@ -24,15 +25,7 @@ export const importCommand = defineCommand({
     organizationId: organizationIdArgument,
   },
   run: async ({ args }) => {
-    const { apiKey, apiUrl, defaultOrganizationId } = await getConfig();
-
-    const orgId = args.organizationId ?? defaultOrganizationId;
-
-    if (!orgId) {
-      prompts.cancel('No organization ID provided');
-
-      process.exit(1);
-    }
+    const { apiKey, apiUrl } = await getConfig();
 
     if (!apiKey) {
       prompts.cancel('No API key provided');
@@ -40,10 +33,12 @@ export const importCommand = defineCommand({
       process.exit(1);
     }
 
-    const client = createClient({
+    const apiClient = createClient({
       apiKey,
       apiBaseUrl: apiUrl,
     });
+
+    const { organizationId } = await getOrganizationId({ apiClient, argOrganizationId: args.organizationId });
 
     await prompts.tasks([
       {
@@ -55,8 +50,8 @@ export const importCommand = defineCommand({
 
           const file = new File([fileBuffer], fileName, { type: mimeType });
 
-          const [, error] = await safely(client.uploadDocument({
-            organizationId: orgId,
+          const [, error] = await safely(apiClient.uploadDocument({
+            organizationId,
             file,
           }));
 
