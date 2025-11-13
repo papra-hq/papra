@@ -23,6 +23,7 @@ export const pdfExtractorDefinition = defineTextExtractor({
     const { extract, extractorType } = await createTesseractExtractor(config.tesseract);
 
     const imageTexts = [];
+    const startOcrTime = Date.now();
 
     for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
       const images = await extractImages(pdf, pageIndex);
@@ -52,6 +53,10 @@ export const pdfExtractorDefinition = defineTextExtractor({
         imageTexts.push(imageText);
       }
     }
+
+    const totalOcrDuration = Date.now() - startOcrTime;
+
+    logger?.info({ pageCount, imagesProcessedCount: imageTexts.length, durationMs: totalOcrDuration }, 'Completed OCR on PDF images.');
 
     return {
       content: imageTexts.join('\n'),
