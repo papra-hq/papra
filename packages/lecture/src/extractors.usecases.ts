@@ -1,8 +1,8 @@
-import type { PartialExtractorConfig } from './types';
+import type { Logger, PartialExtractorConfig } from './types';
 import { parseConfig } from './config';
 import { getExtractor } from './extractors.registry';
 
-export async function extractText({ arrayBuffer, mimeType, config: rawConfig }: { arrayBuffer: ArrayBuffer; mimeType: string; config?: PartialExtractorConfig }): Promise<{
+export async function extractText({ arrayBuffer, mimeType, config: rawConfig, logger }: { arrayBuffer: ArrayBuffer; mimeType: string; config?: PartialExtractorConfig; logger?: Logger }): Promise<{
   extractorName: string | undefined;
   extractorType: string | undefined;
   textContent: string | undefined;
@@ -13,6 +13,8 @@ export async function extractText({ arrayBuffer, mimeType, config: rawConfig }: 
   const { extractor } = getExtractor({ mimeType });
 
   if (!extractor) {
+    logger?.warn({ mimeType }, 'No extractor found');
+
     return {
       extractorName: undefined,
       extractorType: undefined,
@@ -21,19 +23,27 @@ export async function extractText({ arrayBuffer, mimeType, config: rawConfig }: 
     };
   }
 
+  const extractorName = extractor.name;
+
   try {
+    logger?.debug({ extractorName, mimeType }, 'Starting extraction');
+    const startTime = Date.now();
     const { content, subExtractorsUsed } = await extractor.extract({ arrayBuffer, config });
+    const duration = Date.now() - startTime;
+    const extractorType = [extractorName, ...subExtractorsUsed ?? []].join(':');
+
+    logger?.info({ extractorName, extractorType, mimeType, durationMs: duration }, 'Extraction completed');
 
     return {
-      extractorName: extractor.name,
-      extractorType: [extractor.name, ...subExtractorsUsed ?? []].join(':'),
+      extractorName,
+      extractorType,
       textContent: content,
       subExtractorsUsed,
     };
   } catch (error) {
     return {
       error,
-      extractorName: extractor.name,
+      extractorName,
       extractorType: undefined,
       textContent: undefined,
       subExtractorsUsed: [],
@@ -41,13 +51,13 @@ export async function extractText({ arrayBuffer, mimeType, config: rawConfig }: 
   }
 }
 
-export async function extractTextFromBlob({ blob, config }: { blob: Blob; config?: PartialExtractorConfig }) {
+export async function extractTextFromBlob({ blob, ...rest }: { blob: Blob; config?: PartialExtractorConfig; logger?: Logger }) {
   const arrayBuffer = await blob.arrayBuffer();
   const mimeType = blob.type;
 
-  return extractText({ arrayBuffer, mimeType, config });
+  return extractText({ arrayBuffer, mimeType, ...rest });
 }
 
-export async function extractTextFromFile({ file, config }: { file: File; config?: PartialExtractorConfig }) {
-  return extractTextFromBlob({ blob: file, config });
+export async function extractTextFromFile({ file, ...rest }: { file: File; config?: PartialExtractorConfig; logger?: Logger }) {
+  return extractTextFromBlob({ blob: file, ...rest });
 }

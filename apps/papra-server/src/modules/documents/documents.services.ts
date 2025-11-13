@@ -18,7 +18,7 @@ export async function extractDocumentText({
   ocrLanguages?: string[];
   logger?: Logger;
 }) {
-  const { textContent, error, extractorName, extractorType } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } } });
+  const { textContent, error, extractorName, extractorType } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } }, logger });
 
   if (error) {
     logger.error({ error, extractorName, extractorType }, 'Error while extracting text from document');
