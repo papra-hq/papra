@@ -29,11 +29,11 @@ export const pdfExtractorDefinition = defineTextExtractor({
       const imageCount = images.length;
 
       if (imageCount === 0) {
-        logger?.debug({ pageIndex }, 'No images found on PDF page for OCR.');
+        logger?.debug({ pageIndex, pageCount }, 'No images found on PDF page for OCR.');
         continue;
       }
 
-      logger?.debug({ pageIndex, imageCount, pageCount }, 'Extracted images from PDF page.');
+      logger?.debug({ pageIndex, pageCount, imageCount }, 'Extracted images from PDF page.');
 
       for (const [imageIndex, image] of images.entries()) {
         const startTime = Date.now();
@@ -44,11 +44,11 @@ export const pdfExtractorDefinition = defineTextExtractor({
           .toBuffer();
 
         const bufferDelay = Date.now() - startTime;
-        logger?.debug({ pageIndex, imageIndex, imageCount, pageCount, durationMs: bufferDelay }, 'Converted image to PNG buffer for OCR.');
+        logger?.debug({ pageIndex, pageCount, imageIndex, imageCount, durationMs: bufferDelay }, 'Converted image to PNG buffer for OCR.');
 
         const imageText = await extract(imageBuffer);
         const ocrDelay = Date.now() - startTime - bufferDelay;
-        logger?.debug({ pageIndex, imageIndex, imageCount, pageCount, durationMs: ocrDelay }, 'Extracted text from image using OCR.');
+        logger?.debug({ pageIndex, pageCount, imageIndex, imageCount, durationMs: ocrDelay }, 'Extracted text from image using OCR.');
         imageTexts.push(imageText);
       }
     }
