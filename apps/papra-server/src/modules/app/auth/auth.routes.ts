@@ -1,6 +1,7 @@
 import type { Context, RouteDefinitionContext } from '../server.types';
 import type { Session } from './auth.types';
 import { get } from 'lodash-es';
+import { addLogContext } from '../../shared/logger/logger';
 import { isDefined, isString } from '../../shared/utils';
 
 export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext) {
@@ -11,12 +12,18 @@ export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext
   );
 
   app.use('*', async (context: Context, next) => {
-    const session = await auth.api.getSession({ headers: context.req.raw.headers });
+    const sessionData = await auth.api.getSession({ headers: context.req.raw.headers });
 
-    if (session) {
-      context.set('userId', session.user.id);
-      context.set('session', session.session);
-      context.set('authType', 'session');
+    if (sessionData) {
+      const { user, session } = sessionData;
+      const userId = user.id;
+      const authType = 'session';
+
+      context.set('userId', userId);
+      context.set('session', session);
+      context.set('authType', authType);
+
+      addLogContext({ userId, authType, sessionId: session.id });
     }
 
     return next();

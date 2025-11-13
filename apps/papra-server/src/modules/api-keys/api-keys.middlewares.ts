@@ -3,6 +3,7 @@ import type { Context } from '../app/server.types';
 import { createMiddleware } from 'hono/factory';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { getAuthorizationHeader } from '../shared/headers/headers.models';
+import { addLogContext } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { looksLikeAnApiKey } from './api-keys.models';
 import { createApiKeysRepository } from './api-keys.repository';
@@ -39,9 +40,14 @@ export function createApiKeyMiddleware({ db }: { db: Database }) {
     const { apiKey } = await getApiKey({ token, apiKeyRepository });
 
     if (apiKey) {
+      const userId = apiKey.userId;
+      const authType = 'api-key';
+
       context.set('apiKey', apiKey);
-      context.set('userId', apiKey.userId);
-      context.set('authType', 'api-key');
+      context.set('userId', userId);
+      context.set('authType', authType);
+
+      addLogContext({ userId, authType, apiKeyId: apiKey.id });
     }
 
     await next();
