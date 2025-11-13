@@ -25,7 +25,7 @@ export const DemoIndicator: Component = () => {
             ? (
                 <div class="fixed bottom-4 right-4 z-50 rounded-xl max-w-280px">
                   <Button onClick={() => setIsMinified(false)} size="icon">
-                    <div class="i-tabler-info-circle size-5.5"></div>
+                    <div class="i-tabler-info-circle size-5.5" />
                   </Button>
                 </div>
               )

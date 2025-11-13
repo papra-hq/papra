@@ -97,8 +97,7 @@ export const DocumentsPaginatedList: Component<{
                   getDocumentIcon({ document: data.row.original }),
                   'size-6 text-primary',
                 )}
-              >
-              </div>
+              />
             </div>
 
             <div class="flex-1 flex flex-col gap-1 truncate">

@@ -1,7 +1,7 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX } from 'solid-js';
 import { safely } from '@corentinth/chisels';
-import { createSignal } from 'solid-js';
+import { createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { PLUS_PLAN_ID, PRO_PLAN_ID } from '@/modules/plans/plans.constants';
 import { cn } from '@/modules/shared/style/cn';
@@ -121,19 +121,21 @@ const PlanCard: Component<PlanCardProps> = (props) => {
         <hr class="my-6" />
 
         <div class="flex flex-col gap-3 ">
-          {featureItems.map(feature => (
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class={`p-1.5 rounded-lg ${props.isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
-                  <div class={`size-5 ${feature.icon}`}></div>
-                </div>
-                <div>
-                  <div class="font-medium text-sm">{feature.value}</div>
-                  <div class="text-xs text-muted-foreground">{feature.title}</div>
+          <For each={featureItems}>
+            {feature => (
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class={`p-1.5 rounded-lg ${props.isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                    <div class={`size-5 ${feature.icon}`} />
+                  </div>
+                  <div>
+                    <div class="font-medium text-sm">{feature.value}</div>
+                    <div class="text-xs text-muted-foreground">{feature.title}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )}
+          </For>
         </div>
 
         { props.onUpgrade && (
@@ -142,7 +144,7 @@ const PlanCard: Component<PlanCardProps> = (props) => {
 
             <Button onClick={upgrade} class="w-full" autofocus isLoading={getIsUpgradeLoading()}>
               {t('subscriptions.upgrade-dialog.upgrade-now')}
-              <div class="i-tabler-arrow-right size-5 ml-2"></div>
+              <div class="i-tabler-arrow-right size-5 ml-2" />
             </Button>
           </>
         )}
@@ -228,7 +230,7 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
           <div class="flex flex-col sm:flex-row items-center gap-3">
             <div class="flex items-center gap-3">
               <div class="p-2 bg-primary/10 rounded-lg">
-                <div class="i-tabler-sparkles size-7 text-primary"></div>
+                <div class="i-tabler-sparkles size-7 text-primary" />
               </div>
               <div>
                 <DialogTitle class="text-xl mb-0">{t('subscriptions.upgrade-dialog.title')}</DialogTitle>
@@ -265,7 +267,7 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
           <div class="mt-4 bg-gradient-to-r from-primary/20 to-primary/2 border border-primary/30 rounded-lg p-4 flex-shrink-0">
             <div class="flex items-center gap-4">
               <div class="p-2.5 bg-primary/20 rounded-lg border border-primary/30 flex-shrink-0">
-                <div class="i-tabler-gift size-6 text-primary"></div>
+                <div class="i-tabler-gift size-6 text-primary" />
               </div>
               <div class="flex-1">
                 <div class="flex items-center gap-2">

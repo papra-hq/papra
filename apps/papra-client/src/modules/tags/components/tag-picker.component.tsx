@@ -61,9 +61,7 @@ export const DocumentTagPicker: Component<{
         </span>
 
       )}
-      >
-
-      </ComboboxTrigger>
+      />
       <ComboboxContent />
     </Combobox>
   );

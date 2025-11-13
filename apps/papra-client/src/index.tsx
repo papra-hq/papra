@@ -5,7 +5,8 @@ import { ColorModeProvider, createLocalStorageManager } from '@kobalte/core/colo
 import { Router } from '@solidjs/router';
 import { QueryClientProvider } from '@tanstack/solid-query';
 
-import { render, Suspense } from 'solid-js/web';
+import { Suspense } from 'solid-js';
+import { render } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { ConfigProvider } from './modules/config/config.provider';
 import { DemoIndicator } from './modules/demo/demo.provider';

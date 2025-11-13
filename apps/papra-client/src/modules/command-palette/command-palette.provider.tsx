@@ -143,7 +143,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
         <CommandList>
           <Show when={getIsLoading()}>
             <CommandLoading>
-              <div class="i-tabler-loader-2 size-6 animate-spin text-muted-foreground mx-auto"></div>
+              <div class="i-tabler-loader-2 size-6 animate-spin text-muted-foreground mx-auto" />
             </CommandLoading>
           </Show>
           <Show when={!getIsLoading()}>

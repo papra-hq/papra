@@ -13,7 +13,7 @@ export const CreateOrganizationPage: Component = () => {
     <div>
       <div class="max-w-md mx-auto pt-12 sm:pt-24 px-6">
         <Button as={A} href="/" class="mb-4" variant="outline">
-          <div class="i-tabler-arrow-left mr-2"></div>
+          <div class="i-tabler-arrow-left mr-2" />
           {t('organizations.create.back')}
         </Button>
 

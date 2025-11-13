@@ -46,7 +46,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
 
         <div class="p-4 mx-4 mt-4 bg-background bg-gradient-to-br from-primary/15 to-transparent rounded-lg">
           <div class="flex items-center gap-2 text-sm font-medium">
-            <div class="i-tabler-sparkles size-4 text-primary"></div>
+            <div class="i-tabler-sparkles size-4 text-primary" />
             {t('layout.upgrade-cta.title')}
           </div>
           <div class="text-xs mt-1 mb-3 text-muted-foreground">
@@ -56,7 +56,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
             {dialogProps => (
               <Button size="sm" class="w-full font-semibold" {...dialogProps}>
                 {t('layout.upgrade-cta.button')}
-                <div class="i-tabler-arrow-right size-4 ml-1"></div>
+                <div class="i-tabler-arrow-right size-4 ml-1" />
               </Button>
             )}
           </UpgradeDialog>
@@ -167,7 +167,7 @@ const OrganizationLayoutSideNav: Component = () => {
                 ? (
                     <SelectItem class="cursor-pointer" item={props.item}>
                       <div class="flex items-center gap-2 text-muted-foreground">
-                        <div class="i-tabler-plus size-4"></div>
+                        <div class="i-tabler-plus size-4" />
                         <div>Create new organization</div>
                       </div>
                     </SelectItem>
@@ -181,7 +181,7 @@ const OrganizationLayoutSideNav: Component = () => {
                   {state => (
                     <>
                       <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
-                        <div class="i-tabler-file-text size-5.5"></div>
+                        <div class="i-tabler-file-text size-5.5" />
                       </span>
 
                       <span class="truncate text-base font-medium">

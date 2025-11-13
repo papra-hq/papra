@@ -36,11 +36,11 @@ export const DocumentUploadArea: Component = () => {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div class="i-tabler-cloud-upload size-12 mb-4"></div>
+      <div class="i-tabler-cloud-upload size-12 mb-4" />
       <p>{isDragging() ? 'Drop files to upload' : 'Drag and drop files here to upload'}</p>
 
       <Button class="mt-4" variant="outline" onClick={promptImport}>
-        <div class="i-tabler-upload mr-2"></div>
+        <div class="i-tabler-upload mr-2" />
         Select files
       </Button>
     </div>

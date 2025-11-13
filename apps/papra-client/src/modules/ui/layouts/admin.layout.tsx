@@ -23,7 +23,7 @@ const MenuItemButton: Component<MenuItem> = (props) => {
       <Show when={props.onClick}>
         <Button class="block" onClick={props.onClick} variant="ghost">
           <div class="flex items-center gap-2">
-            <div class={cn(props.icon, 'size-5 text-muted-foreground')}></div>
+            <div class={cn(props.icon, 'size-5 text-muted-foreground')} />
             <div>{props.label}</div>
           </div>
         </Button>
@@ -32,7 +32,7 @@ const MenuItemButton: Component<MenuItem> = (props) => {
       <Show when={!props.onClick}>
         <Button class="block" as={A} href={props.href!} variant="ghost" activeClass="bg-accent/50! text-accent-foreground!">
           <div class="flex items-center gap-2">
-            <div class={cn(props.icon, 'size-5 text-muted-foreground')}></div>
+            <div class={cn(props.icon, 'size-5 text-muted-foreground')} />
             <div>{props.label}</div>
           </div>
         </Button>
@@ -85,7 +85,7 @@ const SideNav: Component = () => {
         </For>
       </nav>
 
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <nav class="flex flex-col gap-0.5 text-muted-foreground">
         <For each={getFooterMenuItems()}>
@@ -102,15 +102,15 @@ const ThemeSwitcher: Component = () => {
   return (
     <>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'light' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-sun text-lg"></div>
+        <div class="i-tabler-sun text-lg" />
         Light Mode
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'dark' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-moon text-lg"></div>
+        <div class="i-tabler-moon text-lg" />
         Dark Mode
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'system' })} class="flex items-center gap-2 cursor-pointer">
-        <div class="i-tabler-device-laptop text-lg"></div>
+        <div class="i-tabler-device-laptop text-lg" />
         System Mode
       </DropdownMenuItem>
     </>
@@ -131,7 +131,7 @@ export const AdminLayout: ParentComponent = (props) => {
             <Sheet>
               <SheetTrigger>
                 <Button variant="ghost" size="icon" class="md:hidden">
-                  <div class="i-tabler-menu-2 size-6"></div>
+                  <div class="i-tabler-menu-2 size-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
@@ -144,8 +144,8 @@ export const AdminLayout: ParentComponent = (props) => {
 
             <DropdownMenu>
               <DropdownMenuTrigger as={Button} class="text-base" variant="outline" aria-label="Theme switcher">
-                <div classList={{ 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' }}></div>
-                <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm"></div>
+                <div classList={{ 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' }} />
+                <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
               </DropdownMenuTrigger>
               <DropdownMenuContent class="w-42">
                 <ThemeSwitcher />
@@ -153,7 +153,7 @@ export const AdminLayout: ParentComponent = (props) => {
             </DropdownMenu>
 
             <Button as={A} href="/renderings">
-              <div class="i-tabler-home size-4 mr-1"></div>
+              <div class="i-tabler-home size-4 mr-1" />
               App
             </Button>
 

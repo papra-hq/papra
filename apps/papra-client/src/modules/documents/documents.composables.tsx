@@ -11,21 +11,25 @@ export function invalidateOrganizationDocumentsQuery({ organizationId }: { organ
   });
 }
 
+function getConfirmMessage(documentName: string) {
+  return (
+    <>
+      Are you sure you want to delete
+      {' '}
+      <span class="font-bold">{documentName}</span>
+      ?
+    </>
+  );
+}
+
 export function useDeleteDocument() {
   const { confirm } = useConfirmModal();
 
   return {
-    async deleteDocument({ documentId, organizationId, documentName }: { documentId: string; organizationId: string; documentName: string }) {
+    async deleteDocument({ documentId, organizationId, documentName }: { documentId: string; organizationId: string; documentName: string }): Promise<{ hasDeleted: boolean }> {
       const isConfirmed = await confirm({
         title: 'Delete document',
-        message: (
-          <>
-            Are you sure you want to delete
-            {' '}
-            <span class="font-bold">{documentName}</span>
-            ?
-          </>
-        ),
+        message: getConfirmMessage(documentName),
         confirmButton: {
           text: 'Delete document',
           variant: 'destructive',

@@ -226,7 +226,7 @@ export const TaggingRuleForm: Component<{
                   </Field>
 
                   <Button variant="outline" size="icon" onClick={() => remove(form, 'conditions', { at: index() })}>
-                    <div class="i-tabler-x size-4"></div>
+                    <div class="i-tabler-x size-4" />
                   </Button>
                 </div>
               )}
@@ -241,7 +241,7 @@ export const TaggingRuleForm: Component<{
         onClick={() => insert(form, 'conditions', { value: { field: 'name', operator: 'contains', value: '' } })}
         class="gap-2 mt-2"
       >
-        <div class="i-tabler-plus size-4"></div>
+        <div class="i-tabler-plus size-4" />
         {t('tagging-rules.form.conditions.add-condition')}
       </Button>
 
@@ -266,7 +266,7 @@ export const TaggingRuleForm: Component<{
               <CreateTagModal organizationId={props.organizationId}>
                 {props => (
                   <Button variant="outline" {...props}>
-                    <div class="i-tabler-plus size-4 mr-2"></div>
+                    <div class="i-tabler-plus size-4 mr-2" />
                     {t('tagging-rules.form.tags.add-tag')}
                   </Button>
                 )}
