@@ -58,6 +58,11 @@ FROM base
 ENV NODE_ENV="production"
 ENV PORT=1221
 
+# Install Tesseract OCR
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y tesseract-ocr tesseract-ocr-all && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy built application from production deployment
 COPY --from=build /app/production /app
 
