@@ -153,7 +153,13 @@ const MemberList: Component = () => {
         </TableHeader>
         <TableBody>
           <For each={table.getRowModel().rows}>
-            {row => <TableRow>{row.getVisibleCells().map(cell => <TableCell>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>)}</TableRow>}
+            {row => (
+              <TableRow>
+                <For each={row.getVisibleCells()}>
+                  {cell => <TableCell>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>}
+                </For>
+              </TableRow>
+            )}
           </For>
         </TableBody>
       </Table>

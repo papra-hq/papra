@@ -17,11 +17,11 @@ export function Toaster(props: Parameters<typeof Sonner>[0]) {
         },
       }}
       icons={{
-        success: <div class="i-tabler-circle-check size-5 text-primary"></div>,
-        info: <div class="i-tabler-info-circle size-5 text-primary"></div>,
-        warning: <div class="i-tabler-alert-triangle size-5 text-red"></div>,
-        error: <div class="i-tabler-alert-octagon size-5 text-red"></div>,
-        loading: <div class="i-tabler-loader size-5 text-primary"></div>,
+        success: <div class="i-tabler-circle-check size-5 text-primary" />,
+        info: <div class="i-tabler-info-circle size-5 text-primary" />,
+        warning: <div class="i-tabler-alert-triangle size-5 text-red" />,
+        error: <div class="i-tabler-alert-octagon size-5 text-red" />,
+        loading: <div class="i-tabler-loader size-5 text-primary" />,
       }}
 
       {...props}

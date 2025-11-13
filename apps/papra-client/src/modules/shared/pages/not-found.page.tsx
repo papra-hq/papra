@@ -15,13 +15,13 @@ export const NotFoundPage: Component = () => {
             {t('not-found.description')}
           </p>
           <Button as={A} href="/" class="mt-4" variant="default">
-            <div class="i-tabler-arrow-left mr-2"></div>
+            <div class="i-tabler-arrow-left mr-2" />
             {t('not-found.back-to-home')}
           </Button>
         </div>
 
         <div class="hidden sm:block light:text-muted-foreground">
-          <div class="i-tabler-file-shredder text-200px"></div>
+          <div class="i-tabler-file-shredder text-200px" />
         </div>
       </div>
     </div>

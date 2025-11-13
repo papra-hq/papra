@@ -37,7 +37,7 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
           {item => (
             <tr>
               <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                {item.icon && <div class={item.icon}></div>}
+                {item.icon && <div class={item.icon} />}
                 {item.label}
               </td>
               <td class="py-1 pl-2 text-sm">{item.value}</td>
@@ -197,7 +197,7 @@ export const DocumentPage: Component = () => {
                       {getDocument().name}
                     </h1>
 
-                    <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0"></div>
+                    <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
@@ -207,7 +207,7 @@ export const DocumentPage: Component = () => {
                       variant="outline"
                       size="sm"
                     >
-                      <div class="i-tabler-download size-4 mr-2"></div>
+                      <div class="i-tabler-download size-4 mr-2" />
                       {t('documents.actions.download')}
                     </Button>
 
@@ -219,7 +219,7 @@ export const DocumentPage: Component = () => {
                             onClick={() => restore({ document: getDocument() })}
                             isLoading={getIsRestoring()}
                           >
-                            <div class="i-tabler-refresh size-4 mr-2"></div>
+                            <div class="i-tabler-refresh size-4 mr-2" />
                             {t('documents.actions.restore')}
                           </Button>
                         )
@@ -229,7 +229,7 @@ export const DocumentPage: Component = () => {
                             size="sm"
                             onClick={deleteDoc}
                           >
-                            <div class="i-tabler-trash size-4 mr-2"></div>
+                            <div class="i-tabler-trash size-4 mr-2" />
                             {t('documents.actions.delete')}
                           </Button>
                         )}
@@ -261,7 +261,7 @@ export const DocumentPage: Component = () => {
                     <CreateTagModal organizationId={params.organizationId}>
                       {params => (
                         <Button variant="outline" {...params}>
-                          <div class="i-tabler-plus size-4 mr-2"></div>
+                          <div class="i-tabler-plus size-4 mr-2" />
                           {t('tagging-rules.form.tags.add-tag')}
                         </Button>
                       )}
@@ -308,7 +308,7 @@ export const DocumentPage: Component = () => {
                             >
                               {getDocument().name}
 
-                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0"></div>
+                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                             </Button>
                           ),
                           icon: 'i-tabler-file-text',

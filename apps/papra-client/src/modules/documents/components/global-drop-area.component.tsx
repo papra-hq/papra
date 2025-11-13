@@ -45,7 +45,7 @@ export const GlobalDropArea: Component<{ onFilesDrop?: (args: { files: File[] })
       class={cn('fixed top-0 left-0 w-screen h-screen z-80 bg-background bg-opacity-50 backdrop-blur transition-colors', isDragging() ? 'block' : 'hidden')}
     >
       <div class="flex items-center justify-center h-full text-center flex-col">
-        <div class="i-tabler-file-plus text-6xl text-muted-foreground mx-auto"></div>
+        <div class="i-tabler-file-plus text-6xl text-muted-foreground mx-auto" />
         <div class="text-xl my-2 font-semibold text-muted-foreground">
           Drop files here
         </div>

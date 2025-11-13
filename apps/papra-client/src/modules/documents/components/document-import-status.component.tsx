@@ -154,7 +154,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
               </Button>
 
               <Button variant="ghost" size="icon" onClick={close}>
-                <div class="i-tabler-x size-5"></div>
+                <div class="i-tabler-x size-5" />
               </Button>
 
             </div>
@@ -175,8 +175,8 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                           </div>
 
                           <div class="flex-none">
-                            <div class="i-tabler-circle-check text-primary size-5.5 group-hover:hidden"></div>
-                            <div class="i-tabler-arrow-right text-muted-foreground size-5.5 hidden group-hover:block"></div>
+                            <div class="i-tabler-circle-check text-primary size-5.5 group-hover:hidden" />
+                            <div class="i-tabler-arrow-right text-muted-foreground size-5.5 hidden group-hover:block" />
                           </div>
                         </A>
                       </Match>
@@ -192,7 +192,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                           </div>
 
                           <div class="flex-none">
-                            <div class="i-tabler-circle-x text-red-500 size-5.5"></div>
+                            <div class="i-tabler-circle-x text-red-500 size-5.5" />
                           </div>
                         </div>
                       </Match>
@@ -204,7 +204,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                           </div>
 
                           <div class="flex-none">
-                            <div class="i-tabler-loader-2 animate-spin text-muted-foreground size-5.5"></div>
+                            <div class="i-tabler-loader-2 animate-spin text-muted-foreground size-5.5" />
                           </div>
                         </div>
                       </Match>
@@ -216,7 +216,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                 <Show when={getTasks().length === 0}>
                   <div class="flex flex-col items-center justify-center gap-2 h-full mb-10">
                     <div class="flex flex-col items-center justify-center gap-2 ">
-                      <div class="i-tabler-file-import size-10 text-muted-foreground"></div>
+                      <div class="i-tabler-file-import size-10 text-muted-foreground" />
                     </div>
 
                     <div class="text-sm text-muted-foreground text-center mt-2">

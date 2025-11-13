@@ -13,7 +13,7 @@ export const AuthLayout: ParentComponent = (props) => {
     <div class="h-screen w-full flex flex-col">
       <div class="p-6 flex justify-between items-center gap-2">
         <A href="/" class="group text-base text-muted-foreground flex gap-2 font-semibold hover:text-foreground transition">
-          <div class="i-tabler-file-text size-6 text-primary transform rotate-12deg group-hover:rotate-25deg transition"></div>
+          <div class="i-tabler-file-text size-6 text-primary transform rotate-12deg group-hover:rotate-25deg transition" />
 
           Papra
         </A>
@@ -21,8 +21,8 @@ export const AuthLayout: ParentComponent = (props) => {
         <div class="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger as={Button} variant="outline" aria-label="Theme switcher">
-              <div class={cn('size-4.5', { 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' })}></div>
-              <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm"></div>
+              <div class={cn('size-4.5', { 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' })} />
+              <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-42">
               <ThemeSwitcher />
@@ -31,8 +31,8 @@ export const AuthLayout: ParentComponent = (props) => {
 
           <DropdownMenu>
             <DropdownMenuTrigger as={Button} variant="outline" aria-label="Language switcher">
-              <div class="i-tabler-language size-5"></div>
-              <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm"></div>
+              <div class="i-tabler-language size-5" />
+              <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-42">
               <LanguageSwitcher />

@@ -164,7 +164,7 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
           style={{ 'background-color': getIsNotInSwatch(local.value) ? local.value : '' }}
           aria-label={t('color-picker.select-a-color')}
         >
-          <div class="i-tabler-plus size-4" style={{ color: getIsNotInSwatch(local.value) ? getContrastTextColor(local.value ?? '') : undefined }}></div>
+          <div class="i-tabler-plus size-4" style={{ color: getIsNotInSwatch(local.value) ? getContrastTextColor(local.value ?? '') : undefined }} />
         </PopoverTrigger>
         <PopoverContent>
           <p class="text-sm font-medium mb-4">{t('color-picker.select-a-color')}</p>

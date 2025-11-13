@@ -59,6 +59,7 @@
     "@playwright/test": "^1.53.1",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "eslint-plugin-solid": "^0.14.5",
     "tinyglobby": "^0.2.14",
     "tsx": "^4.20.3",
     "typescript": "catalog:",

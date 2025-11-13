@@ -5,6 +5,8 @@ export default antfu({
     semi: true,
   },
 
+  solid: true,
+
   ignores: [
     'public/manifest.json',
   ],

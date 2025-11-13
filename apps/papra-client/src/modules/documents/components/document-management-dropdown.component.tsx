@@ -23,7 +23,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
       <DropdownMenuTrigger
         as={(props: DropdownMenuSubTriggerProps) => (
           <Button variant="ghost" size="icon" {...props}>
-            <div class="i-tabler-dots-vertical size-4"></div>
+            <div class="i-tabler-dots-vertical size-4" />
           </Button>
         )}
       />
@@ -33,7 +33,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           as={A}
           href={`/organizations/${props.document.organizationId}/documents/${props.document.id}`}
         >
-          <div class="i-tabler-info-circle size-4 mr-2"></div>
+          <div class="i-tabler-info-circle size-4 mr-2" />
           <span>Document details</span>
         </DropdownMenuItem>
 
@@ -45,7 +45,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
             documentName: props.document.name,
           })}
         >
-          <div class="i-tabler-pencil size-4 mr-2"></div>
+          <div class="i-tabler-pencil size-4 mr-2" />
           <span>Rename document</span>
         </DropdownMenuItem>
 
@@ -53,7 +53,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           class="cursor-pointer text-red"
           onClick={() => deleteDoc()}
         >
-          <div class="i-tabler-trash size-4 mr-2"></div>
+          <div class="i-tabler-trash size-4 mr-2" />
           <span>Delete document</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

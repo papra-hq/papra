@@ -59,7 +59,7 @@ export const OrganizationsPage: Component = () => {
               class="border rounded-lg overflow-hidden"
             >
               <div class="bg-card border-b flex items-center justify-center p-6">
-                <div class="size-16 text-muted-foreground"></div>
+                <div class="size-16 text-muted-foreground" />
               </div>
 
               <div class="p-4">

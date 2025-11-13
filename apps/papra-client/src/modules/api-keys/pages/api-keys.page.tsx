@@ -11,7 +11,7 @@ import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { deleteApiKey, fetchApiKeys } from '../api-keys.services';
 
-export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
+export const ApiKeyCard: Component<{ apiKey: ApiKey }> = (props) => {
   const { t, formatRelativeTime, formatDate } = useI18n();
   const { confirm } = useConfirmModal();
 
@@ -42,7 +42,7 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
       return;
     }
 
-    deleteApiKeyMutation.mutate({ apiKeyId: apiKey.id });
+    deleteApiKeyMutation.mutate({ apiKeyId: props.apiKey.id });
   };
 
   return (
@@ -51,20 +51,15 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = ({ apiKey }) => {
         <div class="i-tabler-key text-muted-foreground size-5 text-primary" />
       </div>
       <div class="flex-1">
-        <h2 class="text-sm font-medium leading-tight">{apiKey.name}</h2>
-        <p class="text-muted-foreground text-xs font-mono">{`${apiKey.prefix}...`}</p>
+        <h2 class="text-sm font-medium leading-tight">{props.apiKey.name}</h2>
+        <p class="text-muted-foreground text-xs font-mono">{`${props.apiKey.prefix}...`}</p>
       </div>
 
       <div>
-        {/* <p class="text-muted-foreground text-xs">
-          {t('api-keys.list.card.last-used')}
-          {' '}
-          {apiKey.lastUsedAt ? formatDate(apiKey.lastUsedAt) : t('api-keys.list.card.never')}
-        </p> */}
-        <p class="text-muted-foreground text-xs" title={formatDate(apiKey.createdAt, { dateStyle: 'short', timeStyle: 'long' })}>
+        <p class="text-muted-foreground text-xs" title={formatDate(props.apiKey.createdAt, { dateStyle: 'short', timeStyle: 'long' })}>
           {t('api-keys.list.card.created')}
           {' '}
-          {formatRelativeTime(apiKey.createdAt)}
+          {formatRelativeTime(props.apiKey.createdAt)}
         </p>
       </div>
 

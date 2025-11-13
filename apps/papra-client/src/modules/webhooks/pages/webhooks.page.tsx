@@ -11,7 +11,7 @@ import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
 import { deleteWebhook, fetchWebhooks } from '../webhooks.services';
 
-export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
+export const WebhookCard: Component<{ webhook: Webhook }> = (props) => {
   const { t, formatRelativeTime } = useI18n();
   const { confirm } = useConfirmModal();
   const params = useParams();
@@ -43,7 +43,7 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
       return;
     }
 
-    deleteWebhookMutation.mutate({ webhookId: webhook.id, organizationId: params.organizationId });
+    deleteWebhookMutation.mutate({ webhookId: props.webhook.id, organizationId: params.organizationId });
   };
 
   return (
@@ -52,20 +52,20 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
         <div class="i-tabler-webhook text-muted-foreground size-5 text-primary" />
       </div>
       <div class="flex-1 flex flex-col gap-1 overflow-hidden">
-        <h2 class="text-sm font-medium leading-tight">{webhook.name}</h2>
-        <p class="text-muted-foreground text-xs font-mono truncate">{webhook.url}</p>
+        <h2 class="text-sm font-medium leading-tight">{props.webhook.name}</h2>
+        <p class="text-muted-foreground text-xs font-mono truncate">{props.webhook.url}</p>
       </div>
 
       <div>
         <p class="text-muted-foreground text-xs">
           {t('webhooks.list.card.last-triggered')}
           {' '}
-          {webhook.lastTriggeredAt ? formatRelativeTime(webhook.lastTriggeredAt) : t('webhooks.list.card.never')}
+          {props.webhook.lastTriggeredAt ? formatRelativeTime(props.webhook.lastTriggeredAt) : t('webhooks.list.card.never')}
         </p>
         <p class="text-muted-foreground text-xs">
           {t('webhooks.list.card.created')}
           {' '}
-          {formatRelativeTime(webhook.createdAt)}
+          {formatRelativeTime(props.webhook.createdAt)}
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export const WebhookCard: Component<{ webhook: Webhook }> = ({ webhook }) => {
           variant="outline"
           size="icon"
           as={A}
-          href={`/organizations/${params.organizationId}/settings/webhooks/${webhook.id}`}
+          href={`/organizations/${params.organizationId}/settings/webhooks/${props.webhook.id}`}
         >
           <div class="i-tabler-edit text-muted-foreground size-4" />
         </Button>
