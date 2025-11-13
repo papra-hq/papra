@@ -6,10 +6,10 @@ import { createTesseractExtractor } from '../tesseract/tesseract.usecases';
 export const pdfExtractorDefinition = defineTextExtractor({
   name: 'pdf',
   mimeTypes: ['application/pdf'],
-  extract: async ({ arrayBuffer, config }) => {
+  extract: async ({ arrayBuffer, config, logger }) => {
     const pdf = await getDocumentProxy(arrayBuffer);
 
-    const { text, totalPages } = await extractText(pdf, { mergePages: true });
+    const { text, totalPages: pageCount } = await extractText(pdf, { mergePages: true });
 
     if (text && text.trim().length > 0) {
       return {
@@ -18,21 +18,37 @@ export const pdfExtractorDefinition = defineTextExtractor({
       };
     }
 
+    logger?.debug({ pageCount }, 'No text found in PDF, falling back to OCR on images.');
+
     const { extract, extractorType } = await createTesseractExtractor(config.tesseract);
 
     const imageTexts = [];
 
-    for (let i = 1; i <= totalPages; i++) {
-      const images = await extractImages(pdf, i);
+    for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
+      const images = await extractImages(pdf, pageIndex);
+      const imageCount = images.length;
 
-      for (const image of images) {
+      if (imageCount === 0) {
+        logger?.debug({ pageIndex }, 'No images found on PDF page for OCR.');
+        continue;
+      }
+
+      logger?.debug({ pageIndex, imageCount, pageCount }, 'Extracted images from PDF page.');
+
+      for (const [imageIndex, image] of images.entries()) {
+        const startTime = Date.now();
         const imageBuffer = await sharp(image.data, {
           raw: { width: image.width, height: image.height, channels: image.channels },
         })
           .png()
           .toBuffer();
 
+        const bufferDelay = Date.now() - startTime;
+        logger?.debug({ pageIndex, imageIndex, imageCount, pageCount, durationMs: bufferDelay }, 'Converted image to PNG buffer for OCR.');
+
         const imageText = await extract(imageBuffer);
+        const ocrDelay = Date.now() - startTime - bufferDelay;
+        logger?.debug({ pageIndex, imageIndex, imageCount, pageCount, durationMs: ocrDelay }, 'Extracted text from image using OCR.');
         imageTexts.push(imageText);
       }
     }

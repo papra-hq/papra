@@ -28,7 +28,7 @@ export async function extractText({ arrayBuffer, mimeType, config: rawConfig, lo
   try {
     logger?.debug({ extractorName, mimeType }, 'Starting extraction');
     const startTime = Date.now();
-    const { content, subExtractorsUsed } = await extractor.extract({ arrayBuffer, config });
+    const { content, subExtractorsUsed } = await extractor.extract({ arrayBuffer, config, logger });
     const duration = Date.now() - startTime;
     const extractorType = [extractorName, ...subExtractorsUsed ?? []].join(':');
 
