@@ -9,3 +9,10 @@ export type ExtractorConfig = {
 };
 
 export type PartialExtractorConfig = undefined | DeepPartial<ExtractorConfig>;
+
+export type Logger = {
+  debug: (...args: [data: Record<string, unknown>, message: string] | [message: string]) => void;
+  info: (...args: [data: Record<string, unknown>, message: string] | [message: string]) => void;
+  warn: (...args: [data: Record<string, unknown>, message: string] | [message: string]) => void;
+  error: (...args: [data: Record<string, unknown>, message: string] | [message: string]) => void;
+};
