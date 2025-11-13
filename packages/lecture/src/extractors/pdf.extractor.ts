@@ -45,7 +45,16 @@ export const pdfExtractorDefinition = defineTextExtractor({
           .toBuffer();
 
         const bufferDelay = Date.now() - startTime;
-        logger?.debug({ pageIndex, pageCount, imageIndex, imageCount, durationMs: bufferDelay }, 'Converted image to PNG buffer for OCR.');
+        logger?.debug({
+          pageIndex,
+          pageCount,
+          imageIndex,
+          imageCount,
+          durationMs: bufferDelay,
+          imageWidth: image.width,
+          imageHeight: image.height,
+          imageSizeBytes: image.data.length,
+        }, 'Converted image to PNG buffer for OCR.');
 
         const imageText = await extract(imageBuffer);
         const ocrDelay = Date.now() - startTime - bufferDelay;
