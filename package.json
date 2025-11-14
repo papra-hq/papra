@@ -11,6 +11,7 @@
     "version": "changeset version && pnpm install --no-frozen-lockfile",
     "changeset": "changeset",
     "build:packages": "pnpm --filter './packages/*' --stream build",
+    "build:packages:watch": "pnpm --filter './packages/*' --stream build:watch",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
