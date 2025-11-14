@@ -1,8 +1,7 @@
 import type { Component } from 'solid-js';
 import { Navigate } from '@solidjs/router';
-import { Suspense } from 'solid-js';
+import { Match, Suspense, Switch } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { match } from 'ts-pattern';
 import { useSession } from '../auth.services';
 
 export function createProtectedPage({ authType, component }: { authType: 'public' | 'private' | 'public-only' | 'admin'; component: Component }) {
@@ -13,19 +12,14 @@ export function createProtectedPage({ authType, component }: { authType: 'public
 
     return (
       <Suspense>
-        {
-          match({
-            authType,
-            isAuthenticated: getIsAuthenticated(),
-            // isAdmin: user?.roles.includes('admin'),
-          })
-
-            .with({ authType: 'private', isAuthenticated: false }, () => <Navigate href="/login" />)
-            .with({ authType: 'public-only', isAuthenticated: true }, () => <Navigate href="/" />)
-            // .with({ authType: 'admin', isAuthenticated: false }, () => <Navigate href="/login" />)
-            // .with({ authType: 'admin', isAuthenticated: true, isAdmin: false }, () => <Navigate href="/" />)
-            .otherwise(() => <Dynamic component={component} />)
-        }
+        <Switch fallback={<Dynamic component={component} />}>
+          <Match when={authType === 'private' && !getIsAuthenticated()}>
+            <Navigate href="/login" />
+          </Match>
+          <Match when={authType === 'public-only' && getIsAuthenticated()}>
+            <Navigate href="/" />
+          </Match>
+        </Switch>
       </Suspense>
     );
   };

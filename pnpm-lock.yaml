@@ -15,18 +15,12 @@ catalogs:
     '@types/node':
       specifier: ^24.0.0
       version: 24.0.10
-    '@vitest/coverage-v8':
-      specifier: ^4.0.3
-      version: 4.0.3
     better-auth:
       specifier: 1.3.32
       version: 1.3.32
     eslint:
       specifier: ^9.38.0
       version: 9.38.0
-    tsdown:
-      specifier: ^0.13.4
-      version: 0.13.4
     typescript:
       specifier: ^5.6.2
       version: 5.8.3
@@ -189,9 +183,6 @@ importers:
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.0
-      ts-pattern:
-        specifier: ^5.7.1
-        version: 5.7.1
       unocss-preset-animations:
         specifier: ^1.3.0
         version: 1.3.0(@unocss/preset-wind3@66.5.4)(unocss@66.5.4(postcss@8.5.6)(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.1)))
@@ -7385,9 +7376,6 @@ packages:
     resolution: {integrity: sha512-EDyGAwH1gO0Ausm9gV6T2nUvBgXT5kGoCMJPllOaooZ+4VvJiKBdZE7wK18N1deEowhcUptS+5GXZK8U/fvpwA==}
     peerDependencies:
       typescript: '>=4.0.0'
-
-  ts-pattern@5.7.1:
-    resolution: {integrity: sha512-EGs8PguQqAAUIcQfK4E9xdXxB6s2GK4sJfT/vcc9V1ELIvC4LH/zXu2t/5fajtv6oiRCxdv7BgtVK3vWgROxag==}
 
   tsconfck@3.1.5:
     resolution: {integrity: sha512-CLDfGgUp7XPswWnezWwsCRxNmgQjhYq3VXHM0/XIRxhVrKw0M1if9agzryh1QS3nxjCROvV+xWxoJO1YctzzWg==}
@@ -16399,8 +16387,6 @@ snapshots:
     dependencies:
       picomatch: 4.0.3
       typescript: 5.8.3
-
-  ts-pattern@5.7.1: {}
 
   tsconfck@3.1.5(typescript@5.8.3):
     optionalDependencies:
