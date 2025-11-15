@@ -48,7 +48,7 @@ export const importCommand = defineCommand({
           const fileName = basename(args.path);
           const mimeType = mime.lookup(fileName) || 'application/octet-stream';
 
-          const file = new File([fileBuffer], fileName, { type: mimeType });
+          const file = new File([fileBuffer as BlobPart], fileName, { type: mimeType });
 
           const [, error] = await safely(apiClient.uploadDocument({
             organizationId,
