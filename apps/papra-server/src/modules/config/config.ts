@@ -56,9 +56,9 @@ export const configDefinition = {
       env: 'SERVER_BASE_URL',
     },
     trustedOrigins: {
-      doc: 'A comma separated list of origins that are trusted to make requests to the server. The client baseUrl (CLIENT_BASE_URL) is automatically added by default, no need to add it to the list.',
+      doc: 'A comma separated list of origins that are trusted to make requests to the server. The client baseUrl (CLIENT_BASE_URL) is automatically added by default, no need to add it to the list. For mobile apps, include the scheme with :// suffix (e.g., "papra://").',
       schema: trustedOriginsSchema,
-      default: [],
+      default: ['papra://', 'exp://'],
       env: 'TRUSTED_ORIGINS',
     },
     port: {
