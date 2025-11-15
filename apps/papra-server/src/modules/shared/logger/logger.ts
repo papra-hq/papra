@@ -1,8 +1,12 @@
 import type { Logger } from '@crowlog/logger';
 import { addLogContext, createAsyncContextPlugin, wrapWithLoggerContext } from '@crowlog/async-context-plugin';
-import { createLoggerFactory } from '@crowlog/logger';
+import { createGlobalLogContextPlugin, createLoggerFactory } from '@crowlog/logger';
+
+const { addToGlobalLogContext, globalContextPlugin } = createGlobalLogContextPlugin<{
+  processMode: 'web' | 'worker' | 'all';
+}>();
 
 export type { Logger };
-export { addLogContext, wrapWithLoggerContext };
+export { addLogContext, addToGlobalLogContext, wrapWithLoggerContext };
 
-export const createLogger = createLoggerFactory({ plugins: [createAsyncContextPlugin()] });
+export const createLogger = createLoggerFactory({ plugins: [createAsyncContextPlugin(), globalContextPlugin] });

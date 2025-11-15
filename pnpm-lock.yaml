@@ -272,8 +272,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@crowlog/logger':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.0
+        version: 2.1.0
       '@hono/node-server':
         specifier: ^1.14.4
         version: 1.14.4(hono@4.8.2)
@@ -1192,8 +1192,8 @@ packages:
     resolution: {integrity: sha512-nlzv+dXfWxuY2/O05m05YT/1e5u/x/EKF1HnHdNJVDUI7OUs4ZrNF1jsKP9GnNoApaXNnYiPrDBlYcH80DkDPw==}
     engines: {node: '>=22.0.0'}
 
-  '@crowlog/logger@2.0.0':
-    resolution: {integrity: sha512-TNbi6SutY8gvwvE6YvJIxOxa6Rrj6u8iieawwF+KzSbxxBAgPQ7wtGI5Hmf4LSs6dJNElx441Cw4vQyMHFlq5w==}
+  '@crowlog/logger@2.1.0':
+    resolution: {integrity: sha512-dPlzr9y0EXUweHGAcM35HTEcLf0VDsakgJ9H47/mOfzq4gCN+Uh1qPY8EkMF1cZWMGhJ9K2TFXPFzMwfA5AIeA==}
     engines: {node: '>=22.0.0'}
 
   '@crowlog/pretty@2.0.1':
@@ -1262,9 +1262,11 @@ packages:
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild-kit/esm-loader@2.6.5':
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild/aix-ppc64@0.19.12':
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
@@ -4552,6 +4554,9 @@ packages:
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
+  csstype@3.2.1:
+    resolution: {integrity: sha512-98XGutrXoh75MlgLihlNxAGbUuFQc7l1cqcnEZlLNKc0UrVdPndgmaDmYTDDh929VS/eqTZV0rozmhu2qqT1/g==}
+
   data-uri-to-buffer@4.0.1:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
     engines: {node: '>= 12'}
@@ -6332,6 +6337,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
@@ -7054,6 +7060,7 @@ packages:
   sitemap@8.0.0:
     resolution: {integrity: sha512-+AbdxhM9kJsHtruUF39bwS/B0Fytw6Fr1o4ZAIAEqA6cke2xcoO2GleBw9Zw7nRzILVEgz7zBM5GiTJjie1G9A==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    deprecated: 'SECURITY: Multiple vulnerabilities fixed in 8.0.1 (XML injection, path traversal, command injection, protocol injection). Upgrade immediately: npm install sitemap@8.0.1'
     hasBin: true
 
   slash@3.0.0:
@@ -9316,7 +9323,7 @@ snapshots:
 
   '@crowlog/async-context-plugin@2.0.0': {}
 
-  '@crowlog/logger@2.0.0': {}
+  '@crowlog/logger@2.1.0': {}
 
   '@crowlog/pretty@2.0.1':
     dependencies:
@@ -12015,7 +12022,7 @@ snapshots:
       '@vue/reactivity': 3.5.13
       '@vue/runtime-core': 3.5.13
       '@vue/shared': 3.5.13
-      csstype: 3.1.3
+      csstype: 3.2.1
 
   '@vue/server-renderer@3.5.13(vue@3.5.13(typescript@5.9.3))':
     dependencies:
@@ -12732,6 +12739,8 @@ snapshots:
     optional: true
 
   csstype@3.1.3: {}
+
+  csstype@3.2.1: {}
 
   data-uri-to-buffer@4.0.1: {}
 
