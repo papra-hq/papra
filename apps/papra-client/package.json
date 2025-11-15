@@ -60,7 +60,7 @@
     "eslint": "catalog:",
     "eslint-plugin-solid": "^0.14.5",
     "tinyglobby": "^0.2.14",
-    "tsx": "^4.20.3",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "unocss": "^66.5.4",
     "vite": "^7.1.9",
