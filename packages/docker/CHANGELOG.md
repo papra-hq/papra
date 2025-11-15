@@ -1,5 +1,25 @@
 # @papra/docker
 
+## 25.10.3
+
+### Patch Changes
+
+- [#633](https://github.com/papra-hq/papra/pull/633) [`d267605`](https://github.com/papra-hq/papra/commit/d2676052c372ddf81c653cec699879cc2af212f9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Lazy load some demo-mode specific code to reduce production client bundle
+
+- [#618](https://github.com/papra-hq/papra/pull/618) [`868281b`](https://github.com/papra-hq/papra/commit/868281bcffeef5adcf949c68721a90b7d5dd8e8f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added translations for document table headers
+
+- [#619](https://github.com/papra-hq/papra/pull/619) [`5b5ce85`](https://github.com/papra-hq/papra/commit/5b5ce85061b0aff3edb947db131d7149adc01605) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Limit concurrent browser upload to avoid network crashes
+
+- [#609](https://github.com/papra-hq/papra/pull/609) [`cb1f1b5`](https://github.com/papra-hq/papra/commit/cb1f1b5b019069e1119db015cc8ff55a1bed1d1c) Thanks [@dbarenholz](https://github.com/dbarenholz)! - Made the tags clickable in the tag list
+
+- [#616](https://github.com/papra-hq/papra/pull/616) [`1922f24`](https://github.com/papra-hq/papra/commit/1922f24c0ad2acbe3a54559c30cfbaff3e1ccf5b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Upgraded to node v24
+
+- [#607](https://github.com/papra-hq/papra/pull/607) [`abc463f`](https://github.com/papra-hq/papra/commit/abc463f75192ca0812466ea874ad2c6d363bd25a) Thanks [@dbarenholz](https://github.com/dbarenholz)! - Added Dutch translation
+
+- [#625](https://github.com/papra-hq/papra/pull/625) [`ee9eff4`](https://github.com/papra-hq/papra/commit/ee9eff491428020ec95ed0af7ac64de64c70f21a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved server authentication logging
+
+- [#623](https://github.com/papra-hq/papra/pull/623) [`b087764`](https://github.com/papra-hq/papra/commit/b0877645a868998cae2b022e94f20c63946c9bae) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved unique constraints error when dealing with hosted libsql db
+
 ## 25.10.2
 
 ### Patch Changes
