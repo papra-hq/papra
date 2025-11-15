@@ -8,13 +8,15 @@ import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
 import { createDocumentStorageService } from './modules/documents/storage/documents.storage.services';
 import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
-import { createLogger } from './modules/shared/logger/logger';
+import { addToGlobalLogContext, createLogger } from './modules/shared/logger/logger';
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
 import { createTaskServices } from './modules/tasks/tasks.services';
 
 const logger = createLogger({ namespace: 'app-server' });
 
 const { config } = await parseConfig({ env });
+
+addToGlobalLogContext({ processMode: config.processMode });
 
 const isWebMode = config.processMode === 'all' || config.processMode === 'web';
 const isWorkerMode = config.processMode === 'all' || config.processMode === 'worker';

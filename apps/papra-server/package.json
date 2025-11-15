@@ -47,7 +47,7 @@
     "@corentinth/chisels": "catalog:",
     "@corentinth/friendly-ids": "^0.0.1",
     "@crowlog/async-context-plugin": "^2.0.0",
-    "@crowlog/logger": "^2.0.0",
+    "@crowlog/logger": "^2.1.0",
     "@hono/node-server": "^1.14.4",
     "@libsql/client": "^0.14.0",
     "@owlrelay/api-sdk": "^0.0.2",
