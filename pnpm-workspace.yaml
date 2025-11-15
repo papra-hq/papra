@@ -6,7 +6,7 @@ catalog:
   "@antfu/eslint-config": ^6.1.0
   "@types/node": ^24.0.0
   eslint: ^9.38.0
-  tsx: ^4.17.0
+  tsx: ^4.20.6
   typescript: ^5.9.3
   vitest: ^4.0.3
   "@vitest/coverage-v8": ^4.0.3
