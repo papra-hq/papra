@@ -40,7 +40,7 @@
     "figue": "^3.1.1",
     "lodash-es": "^4.17.21",
     "marked": "^15.0.6",
-    "typescript": "^5.7.3",
+    "typescript": "catalog:",
     "unocss": "0.65.0-beta.2",
     "vitest": "catalog:"
   }
