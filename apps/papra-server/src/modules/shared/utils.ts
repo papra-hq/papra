@@ -12,6 +12,10 @@ export function isNil(value: unknown): value is undefined | null {
   return value === undefined || value === null;
 }
 
+export function isNilOrEmptyString(value: unknown): value is null | undefined | '' {
+  return isNil(value) || (isString(value) && value.length === 0);
+}
+
 export function isDefined<T>(value: T): value is Exclude<T, undefined | null> {
   return !isNil(value);
 }

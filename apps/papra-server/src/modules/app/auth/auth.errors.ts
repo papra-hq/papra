@@ -11,3 +11,9 @@ export const createForbiddenError = createErrorFactory({
   code: 'auth.forbidden',
   statusCode: 403,
 });
+
+export const createForbiddenEmailDomainError = createErrorFactory({
+  message: 'Email domain is not allowed',
+  code: 'auth.forbidden_email_domain',
+  statusCode: 403,
+});

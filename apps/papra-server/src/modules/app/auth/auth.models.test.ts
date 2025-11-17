@@ -2,7 +2,7 @@ import type { ApiKey, ApiKeyPermissions } from '../../api-keys/api-keys.types';
 import type { Config } from '../../config/config.types';
 import type { Session } from './auth.types';
 import { describe, expect, test } from 'vitest';
-import { getTrustedOrigins, isAuthenticationValid } from './auth.models';
+import { getTrustedOrigins, isAuthenticationValid, isEmailDomainAllowed } from './auth.models';
 
 describe('auth models', () => {
   describe('getTrustedOrigins', () => {
@@ -191,6 +191,90 @@ describe('auth models', () => {
         authType: 'session',
         session: {} as Session,
       })).to.eql(true);
+    });
+  });
+
+  describe('isEmailDomainAllowed', () => {
+    test('when no forbidden domains are configured, all email domains are allowed', () => {
+      expect(isEmailDomainAllowed({
+        email: 'user@example.com',
+        forbiddenEmailDomains: undefined,
+      })).to.eql(true);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@example.com',
+        forbiddenEmailDomains: new Set(),
+      })).to.eql(true);
+    });
+
+    test('when an email domain is in the forbidden list, the email is rejected', () => {
+      const forbiddenEmailDomains = new Set(['tempmail.com', 'disposable.email']);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@tempmail.com',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@disposable.email',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+    });
+
+    test('when an email domain is not in the forbidden list, the email is allowed', () => {
+      const forbiddenEmailDomains = new Set(['tempmail.com', 'disposable.email']);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@example.com',
+        forbiddenEmailDomains,
+      })).to.eql(true);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@papra.app',
+        forbiddenEmailDomains,
+      })).to.eql(true);
+    });
+
+    test('email domain matching is case-insensitive', () => {
+      const forbiddenEmailDomains = new Set(['tempmail.com']);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@TEMPMAIL.COM',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@TempMail.Com',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+    });
+
+    test('when an email has no @ symbol, it is rejected', () => {
+      const forbiddenEmailDomains = new Set(['notanemail']);
+
+      expect(isEmailDomainAllowed({
+        email: 'notanemail',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+
+      expect(isEmailDomainAllowed({
+        email: 'notanemail@',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+    });
+
+    test('email domains with whitespace are properly trimmed before checking', () => {
+      const forbiddenEmailDomains = new Set(['tempmail.com']);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@tempmail.com  ',
+        forbiddenEmailDomains,
+      })).to.eql(false);
+
+      expect(isEmailDomainAllowed({
+        email: 'user@  tempmail.com  ',
+        forbiddenEmailDomains,
+      })).to.eql(false);
     });
   });
 });

@@ -5,7 +5,7 @@ import type { Session } from './auth.types';
 import { uniq } from 'lodash-es';
 import { getClientBaseUrl } from '../../config/config.models';
 import { createError } from '../../shared/errors/errors';
-import { isNil } from '../../shared/utils';
+import { isNil, isNilOrEmptyString } from '../../shared/utils';
 
 export function getUser({ context }: { context: Context }) {
   const userId = context.get('userId');
@@ -83,4 +83,27 @@ export function isAuthenticationValid({
   }
 
   return false;
+}
+
+export function isEmailDomainAllowed({
+  email,
+  forbiddenEmailDomains,
+}: {
+  email: string;
+  /**
+   * A set of toLowerCased forbidden email domains (e.g. "papra.app", "callback.email")
+   */
+  forbiddenEmailDomains?: Set<string>;
+}): boolean {
+  if (isNil(forbiddenEmailDomains) || forbiddenEmailDomains.size === 0) {
+    return true;
+  }
+
+  const emailDomain = email.split('@').at(1)?.trim().toLowerCase();
+
+  if (isNilOrEmptyString(emailDomain)) {
+    return false;
+  }
+
+  return !forbiddenEmailDomains.has(emailDomain);
 }

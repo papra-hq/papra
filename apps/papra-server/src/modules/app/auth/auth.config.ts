@@ -57,7 +57,7 @@ export const authConfig = {
   },
   ipAddressHeaders: {
     doc: `The header, or comma separated list of headers, to use to get the real IP address of the user, use for rate limiting. Make sur to use a non-spoofable header, one set by your proxy.
-- If behind a standard proxy, you might want to set this to "x-forwarded-for". 
+- If behind a standard proxy, you might want to set this to "x-forwarded-for".
 - If behind Cloudflare, you might want to set this to "cf-connecting-ip".`,
     schema: z.union([
       z.string(),
@@ -65,6 +65,19 @@ export const authConfig = {
     ]).transform(value => (typeof value === 'string' ? value.split(',').map(v => v.trim()) : value)),
     default: ['x-forwarded-for'],
     env: 'AUTH_IP_ADDRESS_HEADERS',
+  },
+  forbiddenEmailDomains: {
+    doc: 'A comma separated list of email domains that are forbidden for registration (e.g. "foo.com,bar.com"), if set, it will override the default forbidden domains.',
+    schema: z.union([
+      z.string(),
+      z.array(z.string()),
+    ]).transform((value) => {
+      const asArray = typeof value === 'string' ? value.split(',') : value;
+      const cleaned = asArray.map(v => v.trim().toLowerCase()).filter(v => v.length > 0);
+      return new Set(cleaned);
+    }),
+    default: ['papra.app', 'papra.email', 'owlrelay.email', 'callback.email', 'clb.email'],
+    env: 'AUTH_FORBIDDEN_EMAIL_DOMAINS',
   },
   providers: {
     email: {

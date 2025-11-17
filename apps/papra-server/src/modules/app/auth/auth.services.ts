@@ -8,7 +8,8 @@ import { genericOAuth } from 'better-auth/plugins';
 import { getServerBaseUrl } from '../../config/config.models';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
-import { getTrustedOrigins } from './auth.models';
+import { createForbiddenEmailDomainError } from './auth.errors';
+import { getTrustedOrigins, isEmailDomainAllowed } from './auth.models';
 import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
 
 export type Auth = ReturnType<typeof getAuth>['auth'];
@@ -79,6 +80,11 @@ export function getAuth({
     databaseHooks: {
       user: {
         create: {
+          before: async ({ email }) => {
+            if (!isEmailDomainAllowed({ email, forbiddenEmailDomains: config.auth.forbiddenEmailDomains })) {
+              throw createForbiddenEmailDomainError();
+            }
+          },
           after: async ({ id: userId, email }) => {
             logger.info({ userId }, 'User signed up');
             trackingServices.captureUserEvent({ userId, event: 'User signed up', properties: { $set: { email } } });
