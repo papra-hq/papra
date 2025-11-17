@@ -347,7 +347,7 @@ export const TagsPage: Component = () => {
                             <TagLink {...tag} />
                           </div>
                         </TableCell>
-                        <TableCell>{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
+                        <TableCell class="text-wrap">{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
                         <TableCell>
                           <A href={`/organizations/${params.organizationId}/documents?tags=${tag.id}`} class="inline-flex items-center gap-1 hover:underline">
                             <div class="i-tabler-file-text size-5 text-muted-foreground" />
