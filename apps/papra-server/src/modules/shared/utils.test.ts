@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { isDefined, isNil, isNonEmptyString, isString, nullifyPositiveInfinity, omitUndefined } from './utils';
+import { isDefined, isNil, isNilOrEmptyString, isNonEmptyString, isString, nullifyPositiveInfinity, omitUndefined } from './utils';
 
 describe('utils', () => {
   describe('omitUndefined', () => {
@@ -89,6 +89,22 @@ describe('utils', () => {
       expect(nullifyPositiveInfinity(0)).to.eql(0);
       expect(nullifyPositiveInfinity(-42)).to.eql(-42);
       expect(nullifyPositiveInfinity(Number.NEGATIVE_INFINITY)).to.eql(Number.NEGATIVE_INFINITY);
+    });
+  });
+
+  describe('isNilOrEmptyString', () => {
+    test('returns true for undefined, null, or empty string', () => {
+      expect(isNilOrEmptyString(undefined)).toBe(true);
+      expect(isNilOrEmptyString(null)).toBe(true);
+      expect(isNilOrEmptyString('')).toBe(true);
+    });
+
+    test('returns false for non-empty strings and other types', () => {
+      expect(isNilOrEmptyString('foo')).toBe(false);
+      expect(isNilOrEmptyString(0)).toBe(false);
+      expect(isNilOrEmptyString(false)).toBe(false);
+      expect(isNilOrEmptyString({})).toBe(false);
+      expect(isNilOrEmptyString([])).toBe(false);
     });
   });
 });

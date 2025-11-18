@@ -1,5 +1,4 @@
 import type { TranslationKeys } from '@/modules/i18n/locales.types';
-import { castError } from '@corentinth/chisels';
 import { FetchError } from 'ofetch';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { get } from '@/modules/shared/utils/get';
@@ -15,39 +14,45 @@ function codeToKey(code: string): TranslationKeys {
 }
 
 export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof useI18n>['t'] } = {}) {
-  const getDefaultErrorMessage = () => t('api-errors.default');
+  const getErrorMessage = ({ error, defaultMessage = t('api-errors.default') }: { error: unknown; defaultMessage?: string }) => {
+    const code = get(
+      error,
+      ['data', 'error', 'code'], // From fetch errors
+      ['details', 'code'], // From custom errors throw in better auth hooks, must be before ['code'] as they have both
+      ['code'], // From generic errors
+    );
 
-  const getErrorMessage = (args: { error: unknown } | { code: string }) => {
-    if ('code' in args) {
-      const { code } = args;
-      return t(codeToKey(code)) ?? getDefaultErrorMessage();
-    }
+    if (code && typeof code === 'string') {
+      const translation = t(codeToKey(code));
 
-    if ('error' in args) {
-      const error = castError(args.error);
-      const code = get(error, ['data', 'error', 'code'], ['code']);
-      const translation = code && typeof code === 'string' ? t(codeToKey(code)) : undefined;
-
+      // Fallback to potential error message if translation not found
       if (translation) {
         return translation;
       }
-
-      // Fetch error message is not helpful
-      if (error instanceof FetchError) {
-        return getDefaultErrorMessage();
-      }
-
-      if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
-        return error.message;
-      }
     }
 
-    return getDefaultErrorMessage();
+    // Fetch error messages without codes are not helpful
+    if (error instanceof FetchError) {
+      return defaultMessage;
+    }
+
+    const message = get(
+      error,
+      ['data', 'error', 'message'], // From fetch errors
+      ['details', 'message'], // From custom errors throw in better auth hooks, must be before ['message'] as they have both
+      ['message'], // From generic errors
+    );
+
+    if (message && typeof message === 'string') {
+      return message;
+    }
+
+    return defaultMessage;
   };
 
   return {
     getErrorMessage,
-    createI18nApiError: (args: { error: unknown } | { code: string }) => {
+    createI18nApiError: (args: { error: unknown }) => {
       return new Error(getErrorMessage(args));
     },
   };
