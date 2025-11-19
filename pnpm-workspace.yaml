@@ -3,20 +3,23 @@ packages:
   - apps/*
 
 catalog:
-  "@antfu/eslint-config": ^6.1.0
-  "@types/node": ^24.0.0
+  '@antfu/eslint-config': ^6.1.0
+  '@better-auth/expo': 1.3.34
+  '@corentinth/chisels': 2.1.0
+  '@types/node': ^24.0.0
+  '@vitest/coverage-v8': ^4.0.3
+  better-auth: 1.3.34
   eslint: ^9.38.0
+  tsdown: ^0.13.4
   tsx: ^4.20.6
   typescript: ^5.9.3
-  vitest: ^4.0.3
-  "@vitest/coverage-v8": ^4.0.3
-  better-auth: 1.3.32
-  tsdown: ^0.13.4
-  "@corentinth/chisels": 2.1.0
+  vitest: 4.0.3
 
 ignoredBuiltDependencies:
   - esbuild
   - tesseract.js
+
+nodeLinker: hoisted
 
 onlyBuiltDependencies:
   - canvas

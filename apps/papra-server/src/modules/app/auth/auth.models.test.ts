@@ -13,6 +13,7 @@ describe('auth models', () => {
         },
         server: {
           trustedOrigins: [] as string[],
+          trustedAppSchemes: [] as string[],
         },
       } as Config;
 
@@ -33,6 +34,7 @@ describe('auth models', () => {
             'http://localhost:3001',
             'http://localhost:3002',
           ],
+          trustedAppSchemes: [] as string[],
         },
       } as Config;
 
@@ -60,6 +62,7 @@ describe('auth models', () => {
             'http://localhost:3001',
             'http://localhost:3002',
           ],
+          trustedAppSchemes: [] as string[],
         },
       } as Config;
 
@@ -70,6 +73,34 @@ describe('auth models', () => {
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
+      ]);
+    });
+
+    test('when trusted app schemes are defined, they should be included in the trusted origins', () => {
+      const config = {
+        client: {
+          baseUrl: 'http://localhost:3000',
+        },
+        server: {
+          trustedOrigins: [
+            'http://localhost:3001',
+          ],
+          trustedAppSchemes: [
+            'papra://',
+            'exp://',
+          ],
+        },
+      } as Config;
+
+      const { trustedOrigins } = getTrustedOrigins({ config });
+
+      expect(
+        trustedOrigins,
+      ).to.deep.equal([
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'papra://',
+        'exp://',
       ]);
     });
   });
