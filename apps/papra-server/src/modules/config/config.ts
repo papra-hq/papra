@@ -7,6 +7,7 @@ import { memoize } from 'lodash-es';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
 import { databaseConfig } from '../app/database/database.config';
+import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { emailsConfig } from '../emails/emails.config';
@@ -108,6 +109,7 @@ export const configDefinition = {
   database: databaseConfig,
   documents: documentsConfig,
   documentsStorage: documentStorageConfig,
+  documentSearch: documentSearchConfig,
   auth: authConfig,
   ingestionFolder: ingestionFolderConfig,
   tasks: tasksConfig,

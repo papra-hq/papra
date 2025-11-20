@@ -211,8 +211,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const filteredDocuments = documents.filter(matchQuery);
 
       return {
-        documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-        documentsCount: filteredDocuments.length,
+        searchResults: {
+          documents: filteredDocuments
+            .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
+            .map(({ id, name }) => ({ id, name })),
+        },
       };
     },
   }),
