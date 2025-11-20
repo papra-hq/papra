@@ -301,7 +301,7 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
   );
 }
 
-function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
+function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/search',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
@@ -321,15 +321,14 @@ function setupSearchDocumentsRoute({ app, db }: RouteDefinitionContext) {
       const { organizationId } = context.req.valid('param');
       const { searchQuery, pageIndex, pageSize } = context.req.valid('query');
 
-      const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents } = await documentsRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
+      const { searchResults } = await documentSearchServices.searchDocuments({ organizationId, searchQuery, pageIndex, pageSize });
 
       return context.json({
-        documents: formatDocumentsForApi({ documents }),
+        searchResults,
       });
     },
   );

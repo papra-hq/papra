@@ -1,42 +1,122 @@
 import type { DocumentActivityEvent } from './documents.types';
 import { IN_MS } from '../shared/utils/units';
 
-export const iconByFileType = {
-  '*': 'i-tabler-file',
-  'image': 'i-tabler-photo',
-  'video': 'i-tabler-video',
-  'audio': 'i-tabler-file-music',
-  'application': 'i-tabler-file-code',
-  'application/pdf': 'i-tabler-file-type-pdf',
-  'application/zip': 'i-tabler-file-zip',
-  'application/vnd.ms-excel': 'i-tabler-file-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'i-tabler-file-excel',
-  'application/msword': 'i-tabler-file-word',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'i-tabler-file-word',
-  'application/json': 'i-tabler-file-code',
-  'application/xml': 'i-tabler-file-code',
-  'application/javascript': 'i-tabler-file-type-js',
-  'application/typescript': 'i-tabler-file-type-ts',
-  'application/vnd.ms-powerpoint': 'i-tabler-file-type-ppt',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'i-tabler-file-type-ppt',
-  'text/plain': 'i-tabler-file-text',
-  'text/html': 'i-tabler-file-type-html',
-  'text/css': 'i-tabler-file-type-css',
-  'text/csv': 'i-tabler-file-type-csv',
-  'text/xml': 'i-tabler-file-type-xml',
-  'text/javascript': 'i-tabler-file-type-js',
-  'text/typescript': 'i-tabler-file-type-ts',
-};
+export const fileIcons: { mimeTypes: string[]; extensions: string[]; icon: string }[] = [
+  {
+    mimeTypes: ['image'],
+    extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'tiff', 'heic'],
+    icon: 'i-tabler-photo',
+  },
+  {
+    mimeTypes: ['video'],
+    extensions: ['mp4', 'mov', 'avi', 'mkv', 'wmv', 'flv', 'webm'],
+    icon: 'i-tabler-video',
+  },
+  {
+    mimeTypes: ['audio'],
+    extensions: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
+    icon: 'i-tabler-file-music',
+  },
+  {
+    mimeTypes: ['application/pdf'],
+    extensions: ['pdf'],
+    icon: 'i-tabler-file-type-pdf',
+  },
+  {
+    mimeTypes: ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
+    extensions: ['zip', 'rar', '7z'],
+    icon: 'i-tabler-file-zip',
+  },
+  {
+    mimeTypes: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    extensions: ['xls', 'xlsx'],
+    icon: 'i-tabler-file-excel',
+  },
+  {
+    mimeTypes: ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    extensions: ['doc', 'docx'],
+    icon: 'i-tabler-file-word',
+  },
+  {
+    mimeTypes: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    extensions: ['ppt', 'pptx'],
+    icon: 'i-tabler-file-type-ppt',
+  },
+  {
+    mimeTypes: ['text/plain'],
+    extensions: ['txt', 'md', 'rtf'],
+    icon: 'i-tabler-file-text',
+  },
+  {
+    mimeTypes: ['application/json', 'application/xml', 'application/javascript', 'application/typescript', 'text/xml', 'text/javascript', 'text/typescript'],
+    extensions: ['json', 'xml', 'js', 'ts'],
+    icon: 'i-tabler-file-code',
+  },
+  {
+    mimeTypes: ['text/html'],
+    extensions: ['html', 'htm'],
+    icon: 'i-tabler-file-type-html',
+  },
+  {
+    mimeTypes: ['text/css'],
+    extensions: ['css'],
+    icon: 'i-tabler-file-type-css',
+  },
+  {
+    mimeTypes: ['text/csv'],
+    extensions: ['csv'],
+    icon: 'i-tabler-file-type-csv',
+  },
+];
 
-type FileTypes = keyof typeof iconByFileType;
+// Indexed the icons by mime type and extension for quick lookup
+export const { iconByExtension, iconByFileType } = fileIcons.reduce(
+  ({ iconByFileType, iconByExtension }, { mimeTypes, extensions, icon }) => ({
+    iconByFileType: {
+      ...iconByFileType,
+      ...Object.fromEntries(mimeTypes.map(mimeType => [mimeType, icon])),
+    },
+    iconByExtension: {
+      ...iconByExtension,
+      ...Object.fromEntries(extensions.map(extension => [extension, icon])),
+    },
+  }),
+  { iconByFileType: {} as Record<string, string>, iconByExtension: {} as Record<string, string> },
+);
 
-export function getDocumentIcon({ document, iconsMap = iconByFileType }: { document: { mimeType: string }; iconsMap?: Record<string, string> & { '*': string } }): string {
-  const { mimeType } = document;
-  const fileTypeGroup = mimeType?.split('/')[0];
+export function getDocumentIcon({
+  document,
+  iconByMimeTypeMap = iconByFileType,
+  iconByExtensionMap = iconByExtension,
+  defaultIcon = 'i-tabler-file',
+}: { document: {
+  mimeType?: string;
+  name?: string;
+}; iconByMimeTypeMap?: Record<string, string>; iconByExtensionMap?: Record<string, string>; defaultIcon?: string; }): string {
+  const { mimeType, name } = document;
 
-  const icon = iconsMap[mimeType as FileTypes] ?? iconsMap[fileTypeGroup as FileTypes] ?? iconsMap['*'];
+  const mimeTypeIcon = mimeType ? iconByMimeTypeMap[mimeType] : undefined;
+  if (mimeTypeIcon) {
+    return mimeTypeIcon;
+  }
 
-  return icon;
+  const mimeTypeGroup = mimeType?.split('/')[0];
+  const mimeTypeGroupIcon = mimeTypeGroup ? iconByMimeTypeMap[mimeTypeGroup] : undefined;
+  if (mimeTypeGroupIcon) {
+    return mimeTypeGroupIcon;
+  }
+
+  if (!name || !name.includes('.')) {
+    return defaultIcon;
+  }
+
+  const extension = getDocumentNameExtension({ name });
+  const extensionIcon = extension ? iconByExtensionMap[extension] : undefined;
+  if (extensionIcon) {
+    return extensionIcon;
+  }
+
+  return defaultIcon;
 }
 
 export function getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now = new Date() }: { document: { deletedAt?: Date }; deletedDocumentsRetentionDays: number; now?: Date }) {

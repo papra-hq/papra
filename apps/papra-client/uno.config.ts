@@ -8,7 +8,7 @@ import {
 } from 'unocss';
 import { presetAnimations } from 'unocss-preset-animations';
 import { ssoProviders } from './src/modules/auth/auth.constants';
-import { documentActivityIcon, iconByFileType } from './src/modules/documents/document.models';
+import { documentActivityIcon, fileIcons } from './src/modules/documents/document.models';
 
 export default defineConfig({
   presets: [
@@ -116,9 +116,9 @@ export default defineConfig({
   },
   safelist: [
     ...new Set([
-      ...Object.values(iconByFileType),
+      ...fileIcons.map(({ icon }) => icon),
       ...Object.values(documentActivityIcon),
-      ...(ssoProviders.map(p => p.icon)),
+      ...ssoProviders.map(({ icon }) => icon),
     ]),
   ],
 });

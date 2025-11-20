@@ -1,33 +1,59 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
 import { describe, expect, test } from 'vitest';
-import { getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension, iconByFileType } from './document.models';
+import { fileIcons, getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
-    const icons = Object.values(iconByFileType);
-
-    test('they must at least have the default icon', () => {
-      expect(iconByFileType['*']).toBeDefined();
-    });
-
     test('all the icons should be from tabler icon set', () => {
-      for (const icon of icons) {
+      for (const { icon } of fileIcons) {
         expect(icon).to.match(/^i-tabler-/, `Icon ${icon} is not from tabler icon set`);
       }
     });
 
     test('icons should not contain any spaces', () => {
-      for (const icon of icons) {
+      for (const { icon } of fileIcons) {
         expect(icon).not.to.match(/\s/, `Icon ${icon} contains spaces`);
       }
     });
 
     test('the icons used for showing file types should exists with current iconify configuration', () => {
-      for (const icon of icons) {
+      for (const { icon } of fileIcons) {
         const iconName = icon.replace('i-tabler-', '');
         const iconData = tablerIconSet.icons[iconName] ?? tablerIconSet.aliases?.[iconName];
 
         expect(iconData).to.not.eql(undefined, `Icon ${icon} does not exist in tabler icon set`);
+      }
+    });
+
+    test('there should not be duplicate icons for a file extension', () => {
+      const seenExtensions = new Set<string>();
+
+      for (const { extensions, icon } of fileIcons) {
+        for (const extension of extensions) {
+          expect(
+            seenExtensions.has(extension),
+          ).to.eql(
+            false,
+            `Duplicate icon ${icon} found for extension .${extension}`,
+          );
+          seenExtensions.add(extension);
+        }
+      }
+    });
+
+    test('there should not be duplicate icons for a mime type', () => {
+      const seenMimeTypes = new Set<string>();
+
+      for (const { mimeTypes, icon } of fileIcons) {
+        for (const mimeType of mimeTypes) {
+          expect(
+            seenMimeTypes.has(mimeType),
+          ).to.eql(
+            false,
+            `Duplicate icon ${icon} found for mime type ${mimeType}`,
+          );
+          seenMimeTypes.add(mimeType);
+        }
       }
     });
   });
@@ -35,45 +61,62 @@ describe('files models', () => {
   describe('getFileIcon', () => {
     test('a file icon is selected based on the file type', () => {
       const document = { mimeType: 'text/plain' };
-      const iconsMap = {
-        '*': 'i-tabler-file',
-        'text/plain': 'i-tabler-file-text',
-      };
-      const icon = getDocumentIcon({ document, iconsMap });
+
+      const icon = getDocumentIcon({ document });
 
       expect(icon).to.eql('i-tabler-file-text');
     });
 
     test('if a file type is not associated with an icon, the default icon is used', () => {
-      const document = { mimeType: 'text/html' };
-      const iconsMap = {
-        '*': 'i-tabler-file',
-        'text/plain': 'i-tabler-file-text',
-      };
-      const icon = getDocumentIcon({ document, iconsMap });
+      const document = { mimeType: 'foo/bar' };
+
+      const icon = getDocumentIcon({ document });
 
       expect(icon).to.eql('i-tabler-file');
     });
 
     test('a file icon can be selected based on the file type group', () => {
-      const document = { mimeType: 'text/html' };
-      const iconsMap = {
-        '*': 'i-tabler-file',
-        'text': 'i-tabler-file-text',
-      };
-      const icon = getDocumentIcon({ document, iconsMap });
+      const document = { mimeType: 'image/unknow-image-format' };
 
-      expect(icon).to.eql('i-tabler-file-text');
+      const icon = getDocumentIcon({ document });
+
+      expect(icon).to.eql('i-tabler-photo');
     });
 
     test('when an icon is defined for both the whole type and the group type, the file type icon is used', () => {
       const document = { mimeType: 'text/html' };
-      const iconsMap = {
-        '*': 'i-tabler-file',
-        'text': 'i-tabler-file-text',
-        'text/html': 'i-tabler-file-type-html',
-      };
-      const icon = getDocumentIcon({ document, iconsMap });
+      const icon = getDocumentIcon({ document, iconByMimeTypeMap: { 'text/html': 'i-tabler-file-type-html', 'text': 'i-tabler-file-text' } });
+
+      expect(icon).to.eql('i-tabler-file-type-html');
+    });
+
+    test('a file icon can be selected based on the file extension', () => {
+      const document = { name: 'document.css' };
+
+      const icon = getDocumentIcon({ document });
+
+      expect(icon).to.eql('i-tabler-file-type-css');
+    });
+
+    test('if no file type or extension match is found, the default icon is used', () => {
+      const document = { name: 'document.unknownextension' };
+
+      const icon = getDocumentIcon({ document });
+
+      expect(icon).to.eql('i-tabler-file');
+    });
+
+    test('if the document has no name nor mimeType, the default icon is used', () => {
+      expect(getDocumentIcon({ document: { name: undefined, mimeType: undefined } })).to.eql('i-tabler-file');
+      expect(getDocumentIcon({ document: { name: undefined } })).to.eql('i-tabler-file');
+      expect(getDocumentIcon({ document: { mimeType: undefined } })).to.eql('i-tabler-file');
+      expect(getDocumentIcon({ document: { } })).to.eql('i-tabler-file');
+    });
+
+    test('when a document has both a mimeType and a name, the mimeType takes precedence for icon selection', () => {
+      const document = { name: 'document.css', mimeType: 'text/html' };
+
+      const icon = getDocumentIcon({ document });
 
       expect(icon).to.eql('i-tabler-file-type-html');
     });

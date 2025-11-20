@@ -151,8 +151,8 @@ export async function searchDocuments({
   pageSize: number;
 }) {
   const {
-    documents,
-  } = await apiClient<{ documents: AsDto<Document>[] }>({
+    searchResults,
+  } = await apiClient<{ searchResults: { documents: { id: string; name: string }[] } }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/search`,
     query: {
@@ -163,7 +163,7 @@ export async function searchDocuments({
   });
 
   return {
-    documents: documents.map(coerceDates),
+    searchResults,
   };
 }
 

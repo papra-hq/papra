@@ -1,5 +1,4 @@
 import type { Accessor, ParentComponent } from 'solid-js';
-import type { Document } from '../documents/documents.types';
 import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
@@ -29,7 +28,7 @@ export function useCommandPalette() {
 
 export const CommandPaletteProvider: ParentComponent = (props) => {
   const [getIsCommandPaletteOpen, setIsCommandPaletteOpen] = createSignal(false);
-  const [getMatchingDocuments, setMatchingDocuments] = createSignal<Document[]>([]);
+  const [getMatchingDocuments, setMatchingDocuments] = createSignal<{ id: string; name: string }[]>([]);
   const [getSearchQuery, setSearchQuery] = createSignal('');
   const [getIsLoading, setIsLoading] = createSignal(false);
 
@@ -57,9 +56,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
     const [result] = await safely(searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
 
-    const { documents = [] } = result ?? {};
-
-    setMatchingDocuments(documents);
+    setMatchingDocuments(result?.searchResults.documents ?? []);
     setIsLoading(false);
   }, 300);
 
