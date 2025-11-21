@@ -168,7 +168,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
   return StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: themeColors.background,
       justifyContent: 'flex-end',
     },
     sheet: {
