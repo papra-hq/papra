@@ -257,13 +257,15 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       paddingVertical: 16,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: themeColors.primary,
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: themeColors.primary,
       borderRadius: 12,
     },
     cancelButtonText: {
       fontSize: 16,
       fontWeight: '600',
-      color: themeColors.mutedForeground,
+      color: themeColors.foreground,
     },
   });
 }
