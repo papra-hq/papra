@@ -7,21 +7,26 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient } from '@/modules/api/providers/api.provider';
+import { type CoerceDate } from '@/modules/api/api.models';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
 import { OrganizationPickerDrawer } from '@/modules/organizations/components/organization-picker-drawer';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { fetchOrganizationDocuments } from '../documents.services';
+import { DocumentActionSheet } from '@/modules/documents-actions/components/DocumentActionSheet';
+import { Document } from '../documents.types';
 
 export function DocumentsListScreen() {
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
+  const [isDocumentActionSheetVisible, setIsDocumentActionSheetVisible] = useState<CoerceDate<Document> | undefined>(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const pagination = { pageIndex: 0, pageSize: 20 };
 
@@ -72,6 +77,17 @@ export function DocumentsListScreen() {
       </View>
     );
   }
+  if (isDocumentActionSheetVisible !== undefined) {
+    return (
+      <DocumentActionSheet
+        visible={isDocumentActionSheetVisible !== undefined}
+        document={isDocumentActionSheetVisible}
+        onClose={() => setIsDocumentActionSheetVisible(undefined)}
+        onView={() => {}}
+        onDownloadAndShare={() => {}}
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,6 +107,7 @@ export function DocumentsListScreen() {
               data={documentsQuery.data?.documents ?? []}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => setIsDocumentActionSheetVisible(item)}>
                 <View style={styles.documentCard}>
                   <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
                     <Icon name="file-text" size={24} color={themeColors.primary} />
@@ -121,9 +138,9 @@ export function DocumentsListScreen() {
                         </View>
                       )}
                     </View>
-
                   </View>
                 </View>
+                </TouchableOpacity>
               )}
               ListEmptyComponent={(
                 <View style={styles.emptyContainer}>
