@@ -19,7 +19,7 @@ import { useOrganizations } from '@/modules/organizations/organizations.provider
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { fetchOrganizationDocuments } from '../documents.services';
-import { DocumentActionSheet } from '@/modules/documents-actions/components/DocumentActionSheet';
+import { DocumentActionSheet } from '@/modules/documents-actions/components/document-action-sheet';
 import { Document } from '../documents.types';
 
 export function DocumentsListScreen() {
@@ -77,20 +77,18 @@ export function DocumentsListScreen() {
       </View>
     );
   }
-  if (isDocumentActionSheetVisible !== undefined) {
-    return (
-      <DocumentActionSheet
-        visible={isDocumentActionSheetVisible !== undefined}
-        document={isDocumentActionSheetVisible}
-        onClose={() => setIsDocumentActionSheetVisible(undefined)}
-        onView={() => {}}
-        onDownloadAndShare={() => {}}
-      />
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
+      {isDocumentActionSheetVisible && (
+        <DocumentActionSheet
+          visible={isDocumentActionSheetVisible !== undefined}
+          document={isDocumentActionSheetVisible}
+          onClose={() => setIsDocumentActionSheetVisible(undefined)}
+          onView={() => {}}
+          onDownloadAndShare={() => {}}
+        />
+      )}
       <View style={styles.header}>
         <Text style={styles.title}>Documents</Text>
         <OrganizationPickerButton onPress={() => setIsDrawerVisible(true)} />
