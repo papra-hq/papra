@@ -60,6 +60,7 @@
     "eslint": "catalog:",
     "eslint-config-expo": "~10.0.0",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "@react-native-community/cli": "latest"
   }
 }
