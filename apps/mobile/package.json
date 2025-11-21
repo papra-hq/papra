@@ -36,6 +36,7 @@
     "expo-linking": "~8.0.8",
     "expo-router": "~6.0.14",
     "expo-secure-store": "^15.0.7",
+    "expo-sharing": "^14.0.7",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-symbols": "~1.0.7",
@@ -55,12 +56,12 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
+    "@react-native-community/cli": "latest",
     "@types/react": "~19.1.0",
     "eas-cli": "^16.27.0",
     "eslint": "catalog:",
     "eslint-config-expo": "~10.0.0",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "@react-native-community/cli": "latest"
+    "vitest": "catalog:"
   }
 }

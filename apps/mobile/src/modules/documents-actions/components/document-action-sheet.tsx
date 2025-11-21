@@ -5,12 +5,17 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { type CoerceDate } from '@/modules/api/api.models';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import type { Document } from '@/modules/documents/documents.types';
+import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
+import { fetchDocumentFile } from '@/modules/documents/documents.services';
+import * as Sharing from 'expo-sharing';
+import { useAlert } from '@/modules/ui/providers/alert-provider';
+import { configLocalStorage } from '@/modules/config/config.local-storage';
 
 interface DocumentActionSheetProps {
   visible: boolean;
@@ -29,12 +34,15 @@ export function DocumentActionSheet({
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
+  const { showAlert } = useAlert();
+  const apiClient = useApiClient();
+  const authClient = useAuthClient();
 
   if (document == undefined) return null;
 
   // Check if document can be viewed in DocumentViewerScreen
   // Supported types: images (image/*) and PDFs (application/pdf)
-  const isViewable = 
+  const isViewable =
     document.mimeType.startsWith('image/') ||
     document.mimeType.startsWith('application/pdf');
 
@@ -51,6 +59,36 @@ export function DocumentActionSheet({
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  const handleDownloadAndShare = async () => {
+    const baseUrl = await configLocalStorage.getApiServerBaseUrl();
+
+    if (!baseUrl) {
+      showAlert({
+        title: 'Error',
+        message: 'Base URL not found',
+      });
+      return
+    }
+
+    const fileUri = await fetchDocumentFile({
+      document: document,
+      organizationId: document.organizationId,
+      baseUrl,
+      authClient,
+    });
+
+    const canShare = await Sharing.isAvailableAsync();
+    if (canShare) {
+      await Sharing.shareAsync(fileUri);
+    } else {
+      showAlert({
+        title: 'Sharing Failed',
+        message: 'Sharing is not available on this device. Please share the document manually.',
+      });
+    }
+
   };
 
   return (
@@ -72,7 +110,7 @@ export function DocumentActionSheet({
                 <Text style={styles.documentName} numberOfLines={2}>
                   {document.name}
                 </Text>
-                
+
                 {/* Document details */}
                 <View style={styles.detailsContainer}>
                   <View style={styles.detailRow}>
@@ -133,16 +171,16 @@ export function DocumentActionSheet({
                   style={styles.actionButton}
                   onPress={() => {
                     onClose();
-                    onDownloadAndShare();
+                    handleDownloadAndShare();
                   }}
                   activeOpacity={0.7}
                 >
                   <View style={[styles.actionIcon, styles.downloadIcon]}>
-                      <MaterialCommunityIcons
-                        name="download"
-                        size={20}
-                        color={themeColors.primary}
-                      />
+                    <MaterialCommunityIcons
+                      name="download"
+                      size={20}
+                      color={themeColors.primary}
+                    />
                   </View>
                   <Text style={styles.actionText}>Download & Share</Text>
                 </TouchableOpacity>

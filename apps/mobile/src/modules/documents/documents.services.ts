@@ -1,6 +1,9 @@
 import type { ApiClient } from '../api/api.client';
 import type { Document } from './documents.types';
 import { coerceDates } from '../api/api.models';
+import { AuthClient } from '../auth/auth.client';
+import * as FileSystem from 'expo-file-system/legacy';
+
 
 export function getFormData(pojo: Record<string, string | Blob>): FormData {
   const formData = new FormData();
@@ -70,5 +73,40 @@ export async function fetchOrganizationDocuments({
   } catch (error) {
     console.error('Error fetching documents:', error);
     throw error;
+  }
+}
+
+export async function fetchDocumentFile({
+  document,
+  organizationId,
+  baseUrl,
+  authClient,
+}: {
+  document: Document;
+  organizationId: string;
+  baseUrl: string,
+  authClient: AuthClient;
+}) {
+  const cookies = await authClient.getCookie();
+  const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
+  const headers = {
+    'Cookie': cookies,
+    'Content-Type': 'application/json',
+  };
+  // Use documentDirectory for better app compatibility
+  const fileUri = `${FileSystem.documentDirectory}${document.name}`;
+
+  // Download the file with authentication headers
+  const downloadResult = await FileSystem.downloadAsync(uri,
+    fileUri,
+    {
+      headers: headers,
+    }
+  );
+
+  if (downloadResult.status === 200) {
+    return downloadResult.uri;
+  } else {
+    throw new Error('Download failed');
   }
 }

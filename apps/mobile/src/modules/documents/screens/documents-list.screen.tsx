@@ -26,7 +26,7 @@ export function DocumentsListScreen() {
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
-  const [isDocumentActionSheetVisible, setIsDocumentActionSheetVisible] = useState<CoerceDate<Document> | undefined>(undefined);
+  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDate<Document> | undefined>(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const pagination = { pageIndex: 0, pageSize: 20 };
 
@@ -80,11 +80,11 @@ export function DocumentsListScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isDocumentActionSheetVisible && (
+      {onDocumentActionSheet && (
         <DocumentActionSheet
-          visible={isDocumentActionSheetVisible !== undefined}
-          document={isDocumentActionSheetVisible}
-          onClose={() => setIsDocumentActionSheetVisible(undefined)}
+          visible={onDocumentActionSheet !== undefined}
+          document={onDocumentActionSheet}
+          onClose={() => setOnDocumentActionSheet(undefined)}
           onView={() => {}}
           onDownloadAndShare={() => {}}
         />
@@ -105,7 +105,7 @@ export function DocumentsListScreen() {
               data={documentsQuery.data?.documents ?? []}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => setIsDocumentActionSheetVisible(item)}>
+                <TouchableOpacity onPress={() => setOnDocumentActionSheet(item)}>
                 <View style={styles.documentCard}>
                   <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
                     <Icon name="file-text" size={24} color={themeColors.primary} />
