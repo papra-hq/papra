@@ -59,11 +59,13 @@ export function DocumentActionSheet({
 
   const handleView = async () => {
     onClose();
-    router.setParams({
-      documentId: document.id,
-      organizationId: document.organizationId,
+    router.push({
+      pathname: '/(app)/document/view',
+      params: {
+        documentId: document.id,
+        organizationId: document.organizationId,
+      },
     });
-    router.push('/(app)/document/view');
   };
 
   const handleDownloadAndShare = async () => {
