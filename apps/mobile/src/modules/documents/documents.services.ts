@@ -76,6 +76,21 @@ export async function fetchOrganizationDocuments({
   }
 }
 
+export async function fetchDocument({
+  organizationId,
+  documentId,
+  apiClient,
+}: {
+  organizationId: string;
+  documentId: string;
+  apiClient: ApiClient;
+}) {
+  return await apiClient<{ document: Document }>({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/${documentId}`,
+  });
+}
+
 export async function fetchDocumentFile({
   document,
   organizationId,

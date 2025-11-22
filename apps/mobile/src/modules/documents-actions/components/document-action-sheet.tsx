@@ -11,31 +11,27 @@ import { type CoerceDate } from '@/modules/api/api.models';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import type { Document } from '@/modules/documents/documents.types';
-import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
+import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { fetchDocumentFile } from '@/modules/documents/documents.services';
 import * as Sharing from 'expo-sharing';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
+import { router } from 'expo-router';
 
 interface DocumentActionSheetProps {
   visible: boolean;
   document: CoerceDate<Document> | undefined;
   onClose: () => void;
-  onView: () => void;
-  onDownloadAndShare: () => void;
 }
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
-  onView,
-  onDownloadAndShare,
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
-  const apiClient = useApiClient();
   const authClient = useAuthClient();
 
   if (document == undefined) return null;
@@ -59,6 +55,15 @@ export function DocumentActionSheet({
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  const handleView = async () => {
+    onClose();
+    router.setParams({
+      documentId: document.id,
+      organizationId: document.organizationId,
+    });
+    router.push('/(app)/document/view');
   };
 
   const handleDownloadAndShare = async () => {
@@ -152,7 +157,7 @@ export function DocumentActionSheet({
                     style={styles.actionButton}
                     onPress={() => {
                       onClose();
-                      onView();
+                      handleView();
                     }}
                     activeOpacity={0.7}
                   >

@@ -85,8 +85,6 @@ export function DocumentsListScreen() {
           visible={onDocumentActionSheet !== undefined}
           document={onDocumentActionSheet}
           onClose={() => setOnDocumentActionSheet(undefined)}
-          onView={() => {}}
-          onDownloadAndShare={() => {}}
         />
       )}
       <View style={styles.header}>
