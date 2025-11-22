@@ -5,7 +5,6 @@ import { AppProviders } from '@/modules/app/providers/app-providers';
 
 import { useColorScheme } from '@/modules/ui/providers/use-color-scheme';
 import 'react-native-reanimated';
-import { ApiProvider } from '@/modules/api/providers/api.provider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -13,7 +12,6 @@ export default function RootLayout() {
   return (
     <AppProviders>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ApiProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="config/server-selection" options={{ headerShown: false }} />
@@ -21,7 +19,6 @@ export default function RootLayout() {
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="auto" />
-        </ApiProvider>
       </ThemeProvider>
     </AppProviders>
   );
