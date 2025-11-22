@@ -11,7 +11,14 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
         <Stack.Screen name="(with-organizations)" options={{ headerShown: false }} />
-        <Stack.Screen name="document/view" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="document/view" 
+          options={{ 
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_bottom'
+          }} 
+        />
       </Stack>
       <StatusBar style="auto" />
     </ApiProvider>

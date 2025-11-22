@@ -161,7 +161,7 @@ export default function DocumentViewerScreen() {
           onPress={() => router.back()}
         >
           <MaterialCommunityIcons
-            name="arrow-left"
+            name="close"
             size={24}
             color={themeColors.foreground}
           />
@@ -211,7 +211,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       borderRadius: 20,
       backgroundColor: themeColors.secondaryBackground,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'flex-start',
     },
     headerTitle: {
       flex: 1,
