@@ -3,7 +3,7 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useApiClient } from '../api/providers/api.provider';
+import { useAuthClient, useApiClient } from '../api/providers/api.provider';
 import { organizationsLocalStorage } from './organizations.local-storage';
 import { fetchOrganizations } from './organizations.services';
 
@@ -24,6 +24,7 @@ type OrganizationsProviderProps = {
 export function OrganizationsProvider({ children }: OrganizationsProviderProps) {
   const router = useRouter();
   const apiClient = useApiClient();
+  const authClient = useAuthClient();
   const queryClient = useQueryClient();
   const [currentOrganizationId, setCurrentOrganizationIdState] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -35,6 +36,7 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
 
   // Load current organization ID from storage on mount
   useEffect(() => {
+
     const loadCurrentOrganizationId = async () => {
       const storedOrgId = await organizationsLocalStorage.getCurrentOrganizationId();
       setCurrentOrganizationIdState(storedOrgId);
@@ -56,6 +58,11 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
     }
 
     const organizations = organizationsQuery.data?.organizations ?? [];
+
+    if(!authClient.getCookie()) {
+      router.replace('/auth/login');
+      return;
+    }
 
     if (organizations.length === 0) {
       // No organizations, redirect to organization create to create one
