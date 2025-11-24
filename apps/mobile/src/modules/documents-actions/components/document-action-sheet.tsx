@@ -35,7 +35,6 @@ export function DocumentActionSheet({
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
-  const apiClient = useApiClient();
   const authClient = useAuthClient();
 
   if (document == undefined) return null;
@@ -69,24 +68,34 @@ export function DocumentActionSheet({
         title: 'Error',
         message: 'Base URL not found',
       });
-      return
+      return;
     }
 
-    const fileUri = await fetchDocumentFile({
-      document: document,
-      organizationId: document.organizationId,
-      baseUrl,
-      authClient,
-    });
-
-    const canShare = await Sharing.isAvailableAsync();
-    if (canShare) {
-      await Sharing.shareAsync(fileUri);
-    } else {
-      showAlert({
-        title: 'Sharing Failed',
-        message: 'Sharing is not available on this device. Please share the document manually.',
+    try {
+      const fileUri = await fetchDocumentFile({
+        document: document,
+        organizationId: document.organizationId,
+        baseUrl,
+        authClient,
       });
+
+      const canShare = await Sharing.isAvailableAsync();
+      if (canShare) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        showAlert({
+          title: 'Sharing Failed',
+          message: 'Sharing is not available on this device. Please share the document manually.',
+        });
+      }
+
+    } catch (error) {
+      console.error('Error downloading document file:', error);
+      showAlert({
+        title: 'Error',
+        message: 'Failed to download document file',
+      });
+      return;
     }
 
   };

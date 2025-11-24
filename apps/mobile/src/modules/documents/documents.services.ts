@@ -84,10 +84,10 @@ export async function fetchDocumentFile({
 }: {
   document: Document;
   organizationId: string;
-  baseUrl: string,
+  baseUrl: string;
   authClient: AuthClient;
 }) {
-  const cookies = await authClient.getCookie();
+  const cookies = authClient.getCookie();
   const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
   const headers = {
     'Cookie': cookies,
@@ -107,6 +107,6 @@ export async function fetchDocumentFile({
   if (downloadResult.status === 200) {
     return downloadResult.uri;
   } else {
-    throw new Error('Download failed');
+    throw new Error(`Download failed with status: ${downloadResult.status}`)
   }
 }
