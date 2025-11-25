@@ -17,6 +17,7 @@ import { validateFormData, validateJsonBody, validateParams } from '../shared/va
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
+import { getRecipientAddresses } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
@@ -162,7 +163,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskSe
     async (context) => {
       const { email, 'attachments[]': attachments = [] } = context.req.valid('form');
       const fromAddress = email.from.address;
-      const recipientsAddresses = email.to.map(({ address }) => address);
+      const recipientsAddresses = getRecipientAddresses({ email });
 
       addLogContext({ fromAddress, recipientsAddresses });
 

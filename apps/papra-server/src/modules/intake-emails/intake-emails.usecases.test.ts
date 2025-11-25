@@ -123,7 +123,7 @@ describe('intake-emails usecases', () => {
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
-          { level: 'info', message: 'Intake email not found', namespace: 'test', data: { } },
+          { level: 'info', message: 'Intake email not found', namespace: 'test', data: { recipientAddress: 'bar@example.fr' } },
         ]);
         expect(await db.select().from(documentsTable)).to.eql([]);
       });
