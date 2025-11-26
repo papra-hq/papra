@@ -82,7 +82,7 @@ export function DocumentsListScreen() {
     <SafeAreaView style={styles.container}>
       {onDocumentActionSheet && (
         <DocumentActionSheet
-          visible={onDocumentActionSheet !== undefined}
+          visible={true}
           document={onDocumentActionSheet}
           onClose={() => setOnDocumentActionSheet(undefined)}
           onView={() => {}}
