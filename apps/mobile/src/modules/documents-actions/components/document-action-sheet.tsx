@@ -71,6 +71,15 @@ export function DocumentActionSheet({
       return;
     }
 
+    const canShare = await Sharing.isAvailableAsync();
+    if (!canShare) {
+      showAlert({
+        title: 'Sharing Failed',
+        message: 'Sharing is not available on this device. Please share the document manually.',
+      });
+      return;
+    }
+
     try {
       const fileUri = await fetchDocumentFile({
         document: document,
@@ -79,15 +88,7 @@ export function DocumentActionSheet({
         authClient,
       });
 
-      const canShare = await Sharing.isAvailableAsync();
-      if (canShare) {
-        await Sharing.shareAsync(fileUri);
-      } else {
-        showAlert({
-          title: 'Sharing Failed',
-          message: 'Sharing is not available on this device. Please share the document manually.',
-        });
-      }
+      await Sharing.shareAsync(fileUri);
 
     } catch (error) {
       console.error('Error downloading document file:', error);

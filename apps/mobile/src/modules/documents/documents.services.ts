@@ -94,7 +94,7 @@ export async function fetchDocumentFile({
     'Content-Type': 'application/json',
   };
   // Use documentDirectory for better app compatibility
-  const fileUri = `${FileSystem.documentDirectory}${document.name}`;
+  const fileUri = `${FileSystem.cacheDirectory}${document.name}`;
 
   // Download the file with authentication headers
   const downloadResult = await FileSystem.downloadAsync(uri,
