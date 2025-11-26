@@ -59,11 +59,6 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
 
     const organizations = organizationsQuery.data?.organizations ?? [];
 
-    if(!authClient.getCookie()) {
-      router.replace('/auth/login');
-      return;
-    }
-
     if (organizations.length === 0) {
       // No organizations, redirect to organization create to create one
       router.replace('/(app)/(with-organizations)/organizations/create');

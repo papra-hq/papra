@@ -11,7 +11,7 @@ import { type CoerceDate } from '@/modules/api/api.models';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import type { Document } from '@/modules/documents/documents.types';
-import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
+import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { fetchDocumentFile } from '@/modules/documents/documents.services';
 import * as Sharing from 'expo-sharing';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
