@@ -191,7 +191,7 @@ export function DocumentActionSheet({
                       color={themeColors.primary}
                     />
                   </View>
-                  <Text style={styles.actionText}>Download & Share</Text>
+                  <Text style={styles.actionText}>Share</Text>
                 </TouchableOpacity>
               </View>
 
