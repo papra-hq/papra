@@ -1,6 +1,6 @@
 type DateKeys = 'createdAt' | 'updatedAt' | 'deletedAt' | 'expiresAt' | 'lastTriggeredAt' | 'lastUsedAt' | 'scheduledPurgeAt';
 
-type CoerceDate<T> = T extends string | Date
+export type CoerceDate<T> = T extends string | Date
   ? Date
   : T extends string | Date | null | undefined
     ? Date | undefined
