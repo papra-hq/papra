@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Redirect } from 'expo-router';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { createAuthClient } from '@/modules/auth/auth.client';
+import { configLocalStorage } from '@/modules/config/config.local-storage';
 
 export default function Index() {
   const query = useQuery({

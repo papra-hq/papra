@@ -3,7 +3,7 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuthClient, useApiClient } from '../api/providers/api.provider';
+import { useApiClient } from '../api/providers/api.provider';
 import { organizationsLocalStorage } from './organizations.local-storage';
 import { fetchOrganizations } from './organizations.services';
 
@@ -24,7 +24,6 @@ type OrganizationsProviderProps = {
 export function OrganizationsProvider({ children }: OrganizationsProviderProps) {
   const router = useRouter();
   const apiClient = useApiClient();
-  const authClient = useAuthClient();
   const queryClient = useQueryClient();
   const [currentOrganizationId, setCurrentOrganizationIdState] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -36,7 +35,6 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
 
   // Load current organization ID from storage on mount
   useEffect(() => {
-
     const loadCurrentOrganizationId = async () => {
       const storedOrgId = await organizationsLocalStorage.getCurrentOrganizationId();
       setCurrentOrganizationIdState(storedOrgId);

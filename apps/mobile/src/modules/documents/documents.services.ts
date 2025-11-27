@@ -1,9 +1,8 @@
 import type { ApiClient } from '../api/api.client';
+import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
-import { coerceDates } from '../api/api.models';
-import { AuthClient } from '../auth/auth.client';
 import * as FileSystem from 'expo-file-system/legacy';
-
+import { coerceDates } from '../api/api.models';
 
 export function getFormData(pojo: Record<string, string | Blob>): FormData {
   const formData = new FormData();
@@ -97,16 +96,13 @@ export async function fetchDocumentFile({
   const fileUri = `${FileSystem.cacheDirectory}${document.name}`;
 
   // Download the file with authentication headers
-  const downloadResult = await FileSystem.downloadAsync(uri,
-    fileUri,
-    {
-      headers: headers,
-    }
-  );
+  const downloadResult = await FileSystem.downloadAsync(uri, fileUri, {
+    headers,
+  });
 
   if (downloadResult.status === 200) {
     return downloadResult.uri;
   } else {
-    throw new Error(`Download failed with status: ${downloadResult.status}`)
+    throw new Error(`Download failed with status: ${downloadResult.status}`);
   }
 }

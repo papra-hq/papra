@@ -1,29 +1,29 @@
+import type { CoerceDate } from '@/modules/api/api.models';
+import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
 import {
   Modal,
-  View,
-  Text,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import { type CoerceDate } from '@/modules/api/api.models';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import type { Document } from '@/modules/documents/documents.types';
 import { useAuthClient } from '@/modules/api/providers/api.provider';
-import { fetchDocumentFile } from '@/modules/documents/documents.services';
-import * as Sharing from 'expo-sharing';
-import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
+import { fetchDocumentFile } from '@/modules/documents/documents.services';
+import { useAlert } from '@/modules/ui/providers/alert-provider';
+import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
-interface DocumentActionSheetProps {
+type DocumentActionSheetProps = {
   visible: boolean;
   document: CoerceDate<Document> | undefined;
   onClose: () => void;
   onView: () => void;
   onDownloadAndShare: () => void;
-}
+};
 
 export function DocumentActionSheet({
   visible,
@@ -37,17 +37,23 @@ export function DocumentActionSheet({
   const { showAlert } = useAlert();
   const authClient = useAuthClient();
 
-  if (document == undefined) return null;
+  if (document === undefined) {
+    return null;
+  }
 
   // Check if document can be viewed in DocumentViewerScreen
   // Supported types: images (image/*) and PDFs (application/pdf)
-  const isViewable =
-    document.mimeType.startsWith('image/') ||
-    document.mimeType.startsWith('application/pdf');
+  const isViewable
+    = document.mimeType.startsWith('image/')
+      || document.mimeType.startsWith('application/pdf');
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
@@ -82,23 +88,20 @@ export function DocumentActionSheet({
 
     try {
       const fileUri = await fetchDocumentFile({
-        document: document,
+        document,
         organizationId: document.organizationId,
         baseUrl,
         authClient,
       });
 
       await Sharing.shareAsync(fileUri);
-
     } catch (error) {
       console.error('Error downloading document file:', error);
       showAlert({
         title: 'Error',
         message: 'Failed to download document file',
       });
-      return;
     }
-
   };
 
   return (
@@ -317,4 +320,3 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
   });
 }
-
