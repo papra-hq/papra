@@ -1,7 +1,7 @@
 {
   "name": "@papra/lecture",
   "type": "module",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A simple library to extract text from files",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
