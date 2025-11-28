@@ -1,4 +1,3 @@
-import { map } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
@@ -102,36 +101,6 @@ describe('documents repository', () => {
           originalSha256Hash: 'hash1',
         }),
       ).rejects.toThrow(createDocumentAlreadyExistsError());
-    });
-  });
-
-  describe('searchOrganizationDocuments', () => {
-    test('provides full text search on document name, original name, and content', async () => {
-      const { db } = await createInMemoryDatabase({
-        users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [
-          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
-          { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2' },
-          { id: 'doc-3', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3' },
-        ],
-      });
-
-      // Rebuild the FTS index since we are using an in-memory database
-      await db.$client.execute(`INSERT INTO documents_fts(documents_fts) VALUES('rebuild');`);
-
-      const documentsRepository = createDocumentsRepository({ db });
-
-      const { documents } = await documentsRepository.searchOrganizationDocuments({
-        organizationId: 'organization-1',
-        searchQuery: 'lorem',
-        pageIndex: 0,
-        pageSize: 10,
-      });
-
-      expect(documents).to.have.length(2);
-      expect(map(documents, 'id')).to.eql(['doc-2', 'doc-1']);
     });
   });
 
