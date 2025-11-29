@@ -1,5 +1,5 @@
 ---
-"@papra/docker": patch
+"@papra/docker": minor
 ---
 
 Api breaking change: the document search endpoint return format changed, impacting any custom clients consuming it.
