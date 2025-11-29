@@ -168,7 +168,7 @@ describe('documents e2e', () => {
         { loggedInUserId: 'usr_222222222222222222222222' },
       );
 
-      // expect(createDocumentResponse.status).to.eql(403);
+      expect(createDocumentResponse.status).to.eql(403);
       expect(await createDocumentResponse.json()).to.eql({
         error: {
           code: 'user.not_in_organization',
