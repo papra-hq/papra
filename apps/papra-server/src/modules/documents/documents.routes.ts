@@ -34,7 +34,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
 }
 
 function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
-  const { config } = deps;
+  const { config, db } = deps;
 
   app.post(
     '/api/organizations/:organizationId/documents',
@@ -45,6 +45,9 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { maxUploadSize } = config.documentsStorage;
 
