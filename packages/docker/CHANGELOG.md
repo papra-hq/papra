@@ -1,5 +1,69 @@
 # @papra/docker
 
+## 25.11.0
+
+### Minor Changes
+
+- [#638](https://github.com/papra-hq/papra/pull/638) [`ae3abe9`](https://github.com/papra-hq/papra/commit/ae3abe9ec71bee5749a18190ef05228338ad1573) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to filter out some email domain names for new registration
+
+- [#633](https://github.com/papra-hq/papra/pull/633) [`d267605`](https://github.com/papra-hq/papra/commit/d2676052c372ddf81c653cec699879cc2af212f9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Lazy load some demo-mode specific code to reduce production client bundle
+
+- [#618](https://github.com/papra-hq/papra/pull/618) [`868281b`](https://github.com/papra-hq/papra/commit/868281bcffeef5adcf949c68721a90b7d5dd8e8f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added translations for document table headers
+
+- [#653](https://github.com/papra-hq/papra/pull/653) [`ca80806`](https://github.com/papra-hq/papra/commit/ca808064fa82c4827eb0b3038ceb840291fe637b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added some logging context when an intake email is received
+
+- [#650](https://github.com/papra-hq/papra/pull/650) [`dc6ee5b`](https://github.com/papra-hq/papra/commit/dc6ee5b22877e1d679aeec7d42e3894e6de54ff7) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Api breaking change: the document search endpoint return format changed, impacting any custom clients consuming it.
+
+  Before
+
+  ```ts
+  // Get /api/organizations/:organizationId/documents/search
+  {
+    documents: {
+      id: string;
+      name: string;
+      mimeType: string;
+      // ... other document fields
+    }
+    [];
+  }
+  ```
+
+  After
+
+  ```ts
+  // Get /api/organizations/:organizationId/documents/search
+  {
+    searchResults: {
+      documents: {
+        id: string;
+        name: string;
+      }
+      [];
+    }
+  }
+  ```
+
+- [#619](https://github.com/papra-hq/papra/pull/619) [`5b5ce85`](https://github.com/papra-hq/papra/commit/5b5ce85061b0aff3edb947db131d7149adc01605) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Limit concurrent browser upload to avoid network crashes
+
+- [#609](https://github.com/papra-hq/papra/pull/609) [`cb1f1b5`](https://github.com/papra-hq/papra/commit/cb1f1b5b019069e1119db015cc8ff55a1bed1d1c) Thanks [@dbarenholz](https://github.com/dbarenholz)! - Made the tags clickable in the tag list
+
+- [#655](https://github.com/papra-hq/papra/pull/655) [`08f4a1c`](https://github.com/papra-hq/papra/commit/08f4a1cd058277a63e4966ce1bdf73e94df22d39) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Intake email edge case: use original destination addresses when available for intake emails when forwarded
+
+- [#660](https://github.com/papra-hq/papra/pull/660) [`9b43baf`](https://github.com/papra-hq/papra/commit/9b43bafe333717de254c88fbfae2497538c0eaf9) Thanks [@bkwi](https://github.com/bkwi)! - Removed the possibility for unauthorized upload to another organization you're not member of
+
+- [#616](https://github.com/papra-hq/papra/pull/616) [`1922f24`](https://github.com/papra-hq/papra/commit/1922f24c0ad2acbe3a54559c30cfbaff3e1ccf5b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Upgraded to node v24
+
+- [#607](https://github.com/papra-hq/papra/pull/607) [`abc463f`](https://github.com/papra-hq/papra/commit/abc463f75192ca0812466ea874ad2c6d363bd25a) Thanks [@dbarenholz](https://github.com/dbarenholz)! - Added Dutch translation
+
+- [#625](https://github.com/papra-hq/papra/pull/625) [`ee9eff4`](https://github.com/papra-hq/papra/commit/ee9eff491428020ec95ed0af7ac64de64c70f21a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved server authentication logging
+
+- [#623](https://github.com/papra-hq/papra/pull/623) [`b087764`](https://github.com/papra-hq/papra/commit/b0877645a868998cae2b022e94f20c63946c9bae) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved unique constraints error when dealing with hosted libsql db
+
+- [#637](https://github.com/papra-hq/papra/pull/637) [`479a603`](https://github.com/papra-hq/papra/commit/479a6030015d9df437d4bcb16078a4daf3fe9b60) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix tags table overflow for long tag descriptions: added some text wrapping for the description
+
+- [#657](https://github.com/papra-hq/papra/pull/657) [`96403c0`](https://github.com/papra-hq/papra/commit/96403c00473763dabc47745556b3a135ff4db3aa) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix environment variable `DOCUMENT_STORAGE_S3_FORCE_PATH_STYLE` validation schema to account for boolean string
+
 ## 25.10.2
 
 ### Patch Changes
