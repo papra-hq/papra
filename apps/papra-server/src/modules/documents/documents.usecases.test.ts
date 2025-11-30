@@ -14,6 +14,7 @@ import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { documentActivityLogTable } from './document-activity/document-activity.table';
+import { createDocumentSearchServices } from './document-search/document-search.registry';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -558,12 +559,14 @@ describe('documents usecases', () => {
 
       const webhookRepository = createWebhookRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
+      const documentSearchServices = createDocumentSearchServices({ db, config });
 
       await extractAndSaveDocumentFileContent({
         documentId: 'document-1',
         organizationId: 'organization-1',
         documentsRepository,
         documentsStorageService,
+        documentSearchServices,
         taggingRulesRepository,
         tagsRepository,
         webhookRepository,

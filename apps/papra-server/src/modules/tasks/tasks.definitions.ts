@@ -12,6 +12,6 @@ export async function registerTaskDefinitions({ taskServices, db, config, docume
   await registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService });
   await registerExpireInvitationsTask({ taskServices, db, config });
   await registerPurgeExpiredOrganizationsTask({ taskServices, db, config, documentsStorageService });
-  await registerExtractDocumentFileContentTask({ taskServices, db, documentsStorageService });
+  await registerExtractDocumentFileContentTask({ taskServices, db, config, documentsStorageService });
   await registerApplyTaggingRuleToDocumentsTask({ taskServices, db });
 }

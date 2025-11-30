@@ -6,12 +6,14 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { safelyDefer } from '../shared/async/defer';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
+import { createDocumentSearchServices } from './document-search/document-search.registry';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -177,7 +179,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupDeleteDocumentRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
@@ -200,6 +202,8 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
 
+      safelyDefer(async () => documentSearchServices.updateDocument({ documentId, document: { isDeleted: true } }));
+
       deferTriggerWebhooks({
         webhookRepository,
         organizationId,
@@ -221,7 +225,7 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupRestoreDocumentRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     requireAuthentication(),
@@ -247,6 +251,8 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
       }
 
       await documentsRepository.restoreDocument({ documentId, organizationId });
+
+      safelyDefer(async () => documentSearchServices.updateDocument({ documentId, document: { isDeleted: false } }));
 
       deferRegisterDocumentActivityLog({
         documentId,
@@ -428,7 +434,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService }:
   );
 }
 
-function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupUpdateDocumentRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
@@ -460,6 +466,8 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
         organizationId,
         ...updateData,
       });
+
+      safelyDefer(async () => documentSearchServices.updateDocument({ documentId, document }));
 
       deferTriggerWebhooks({
         webhookRepository,

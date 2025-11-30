@@ -15,6 +15,8 @@ import { documentFileEncryptionMigration } from './list/0010-document-file-encry
 import { softDeleteOrganizationsMigration } from './list/0011-soft-delete-organizations.migration';
 import { taggingRuleConditionMatchModeMigration } from './list/0012-tagging-rule-condition-match-mode.migration';
 
+import { dropFts5TriggersMigration } from './list/0013-drop-fts-5-triggers.migration';
+
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
   documentsFtsMigration,
@@ -28,4 +30,5 @@ export const migrations: Migration[] = [
   documentFileEncryptionMigration,
   softDeleteOrganizationsMigration,
   taggingRuleConditionMatchModeMigration,
+  dropFts5TriggersMigration,
 ];

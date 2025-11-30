@@ -21,6 +21,7 @@ import pLimit from 'p-limit';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { getOrganizationStorageLimits } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
+import { safelyDefer } from '../shared/async/defer';
 import { createLogger } from '../shared/logger/logger';
 import { createByteCounter } from '../shared/streams/byte-counter';
 import { createSha256HashTransformer } from '../shared/streams/stream-hash';
@@ -35,6 +36,7 @@ import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
+import { createDocumentSearchServices } from './document-search/document-search.registry';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -53,6 +55,7 @@ export async function createDocument({
   ocrLanguages = [],
   documentsRepository,
   documentsStorageService,
+  documentSearchServices,
   generateDocumentId = generateDocumentIdImpl,
   plansRepository,
   subscriptionsRepository,
@@ -72,6 +75,7 @@ export async function createDocument({
   ocrLanguages?: string[];
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  documentSearchServices: ReturnType<typeof createDocumentSearchServices>;
   generateDocumentId?: () => string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
@@ -143,6 +147,7 @@ export async function createDocument({
         webhookRepository,
         documentActivityRepository,
         documentsStorageService,
+        documentSearchServices,
         logger,
       })
     : await createNewDocument({
@@ -155,6 +160,7 @@ export async function createDocument({
         organizationId,
         documentsRepository,
         documentsStorageService,
+        documentSearchServices,
         plansRepository,
         subscriptionsRepository,
         documentId,
@@ -211,6 +217,7 @@ export function createDocumentCreationUsecase({
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
     webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
+    documentSearchServices: initialDeps.documentSearchServices ?? createDocumentSearchServices({ db, config }),
 
     ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
     generateDocumentId: initialDeps.generateDocumentId,
@@ -237,6 +244,7 @@ async function handleExistingDocument({
   webhookRepository,
   documentActivityRepository,
   documentsStorageService,
+  documentSearchServices,
   newDocumentStorageKey,
   logger,
 }: {
@@ -250,6 +258,7 @@ async function handleExistingDocument({
   webhookRepository: WebhookRepository;
   documentActivityRepository: DocumentActivityRepository;
   documentsStorageService: DocumentStorageService;
+  documentSearchServices: ReturnType<typeof createDocumentSearchServices>;
   newDocumentStorageKey: string;
   logger: Logger;
 }) {
@@ -265,6 +274,8 @@ async function handleExistingDocument({
     tagsRepository.removeAllTagsFromDocument({ documentId: existingDocument.id }),
     documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
   ]);
+
+  safelyDefer(async () => documentSearchServices.indexDocument({ document: restoredDocument }));
 
   await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
@@ -282,6 +293,7 @@ async function createNewDocument({
   subscriptionsRepository,
   documentsRepository,
   documentsStorageService,
+  documentSearchServices,
   newFileStorageContext,
   documentId,
   trackingServices,
@@ -298,6 +310,7 @@ async function createNewDocument({
   documentId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  documentSearchServices: ReturnType<typeof createDocumentSearchServices>;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
   trackingServices: TrackingServices;
@@ -344,6 +357,10 @@ async function createNewDocument({
     throw error;
   }
 
+  const { document } = result;
+
+  safelyDefer(async () => documentSearchServices.indexDocument({ document }));
+
   await taskServices.scheduleJob({
     taskName: 'extract-document-file-content',
     data: { documentId, organizationId, ocrLanguages },
@@ -355,7 +372,7 @@ async function createNewDocument({
 
   logger.info({ documentId, userId, organizationId, mimeType }, 'Document created');
 
-  return { document: result.document };
+  return { document };
 }
 
 export async function getDocumentOrThrow({
@@ -487,6 +504,7 @@ export async function extractAndSaveDocumentFileContent({
   organizationId,
   documentsRepository,
   documentsStorageService,
+  documentSearchServices,
   ocrLanguages,
   taggingRulesRepository,
   tagsRepository,
@@ -498,6 +516,7 @@ export async function extractAndSaveDocumentFileContent({
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  documentSearchServices: ReturnType<typeof createDocumentSearchServices>;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
@@ -526,6 +545,8 @@ export async function extractAndSaveDocumentFileContent({
     // This should never happen, but for type safety
     throw createDocumentNotFoundError();
   }
+
+  await documentSearchServices.updateDocument({ document: updatedDocument });
 
   await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 

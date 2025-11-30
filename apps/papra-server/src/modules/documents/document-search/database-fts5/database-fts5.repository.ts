@@ -1,4 +1,5 @@
 import type { Database } from '../../../app/database/database.types';
+import type { DocumentSearchableData } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
 import { sql } from 'drizzle-orm';
 import { documentsTable } from '../../documents.table';
@@ -8,6 +9,9 @@ export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRep
 export function createDocumentSearchRepository({ db }: { db: Database }) {
   return injectArguments({
     searchOrganizationDocuments,
+    indexDocument,
+    updateDocument,
+    deleteDocument,
   }, { db });
 }
 
@@ -31,4 +35,26 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
   return {
     documents: result.rows as unknown as (typeof documentsTable.$inferSelect)[],
   };
+}
+
+async function indexDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {
+  await db.run(sql`
+    INSERT INTO documents_fts(id, name, original_name, content)
+    VALUES (${document.id}, ${document.name}, ${document.originalName}, ${document.content})
+  `);
+}
+
+async function updateDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {
+  await db.run(sql`
+    UPDATE documents_fts
+    SET name = ${document.name}, original_name = ${document.originalName}, content = ${document.content}
+    WHERE id = ${document.id}
+  `);
+}
+
+async function deleteDocument({ documentId, db }: { documentId: string; db: Database }) {
+  await db.run(sql`
+    DELETE FROM documents_fts
+    WHERE id = ${documentId}
+  `);
 }
