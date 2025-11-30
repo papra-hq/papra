@@ -92,7 +92,7 @@ export async function fetchDocumentFile({
     'Cookie': cookies,
     'Content-Type': 'application/json',
   };
-  // Use documentDirectory for better app compatibility
+  // Use cacheDirectory for better app compatibility
   const fileUri = `${FileSystem.cacheDirectory}${document.name}`;
 
   // Download the file with authentication headers
