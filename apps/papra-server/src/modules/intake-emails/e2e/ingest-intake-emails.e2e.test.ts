@@ -3,6 +3,7 @@ import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
+import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
 import { documentsTable } from '../../documents/documents.table';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
@@ -11,14 +12,14 @@ describe('intake-emails e2e', () => {
   describe('ingest an intake email', () => {
     test('when intake email ingestion is disabled, a 403 is returned', async () => {
       const { db } = await createInMemoryDatabase();
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         config: overrideConfig({
           intakeEmails: {
             isEnabled: false,
           },
         }),
-      });
+      }));
 
       const { body } = serializeEmailForWebhook({ email: {
         from: { address: 'foo@example.fr', name: 'Foo' },
@@ -42,7 +43,7 @@ describe('intake-emails e2e', () => {
     describe('when ingesting an email, the request must have an X-Signature header with the hmac signature of the body', async () => {
       test('when the header is missing, a 400 is returned', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = await createServer({
+        const { app } = createServer(createTestServerDependencies({
           db,
           config: overrideConfig({
             intakeEmails: {
@@ -50,7 +51,7 @@ describe('intake-emails e2e', () => {
               webhookSecret: 'super-secret',
             },
           }),
-        });
+        }));
 
         const { body } = serializeEmailForWebhook({ email: {
           from: { address: 'foo@example.fr', name: 'Foo' },
@@ -73,7 +74,7 @@ describe('intake-emails e2e', () => {
 
       test('when the header is invalid, a 401 is returned', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = await createServer({
+        const { app } = createServer(createTestServerDependencies({
           db,
           config: overrideConfig({
             intakeEmails: {
@@ -81,7 +82,7 @@ describe('intake-emails e2e', () => {
               webhookSecret: 'super-secret',
             },
           }),
-        });
+        }));
 
         const { body } = serializeEmailForWebhook({ email: {
           from: { address: 'foo@example.fr', name: 'Foo' },
@@ -114,12 +115,12 @@ describe('intake-emails e2e', () => {
         intakeEmails: [{ id: 'ie_1', organizationId: 'org_1', emailAddress: 'email-1@papra.email', allowedOrigins: ['foo@example.fr'] }],
       });
 
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         config: overrideConfig({
           intakeEmails: { isEnabled: true, webhookSecret: 'super-secret' },
         }),
-      });
+      }));
 
       const { body } = serializeEmailForWebhook({ email: {
         from: { address: 'foo@example.fr', name: 'Foo' },
