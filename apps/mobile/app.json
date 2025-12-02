@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.jibran666.mobile"
+      "package": "com.papra.android"
     },
     "web": {
       "output": "static",
