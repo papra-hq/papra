@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Redirect } from 'expo-router';
+import { createAuthClient } from '@/modules/auth/auth.client';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
 
 export default function Index() {
@@ -15,6 +16,11 @@ export default function Index() {
 
     if (query.isError || query.data == null) {
       return <Redirect href="/config/server-selection" />;
+    }
+
+    const authClient = createAuthClient({ baseUrl: query.data });
+    if (authClient.getCookie()) {
+      return <Redirect href="/(app)/(with-organizations)/(tabs)/list" />;
     }
 
     return <Redirect href="/auth/login" />;

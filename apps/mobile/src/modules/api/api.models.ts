@@ -1,12 +1,12 @@
 type DateKeys = 'createdAt' | 'updatedAt' | 'deletedAt' | 'expiresAt' | 'lastTriggeredAt' | 'lastUsedAt' | 'scheduledPurgeAt';
 
-type CoerceDate<T> = T extends string | Date
+export type CoerceDate<T> = T extends string | Date
   ? Date
   : T extends string | Date | null | undefined
     ? Date | undefined
     : T;
 
-type CoerceDates<T> = {
+export type CoerceDates<T> = {
   [K in keyof T]: K extends DateKeys ? CoerceDate<T[K]> : T[K];
 };
 

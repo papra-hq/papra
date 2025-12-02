@@ -1,3 +1,5 @@
+import type { Document } from '../documents.types';
+import type { CoerceDates } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -7,10 +9,12 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient } from '@/modules/api/providers/api.provider';
+import { DocumentActionSheet } from '@/modules/documents-actions/components/document-action-sheet';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
 import { OrganizationPickerDrawer } from '@/modules/organizations/components/organization-picker-drawer';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
@@ -22,6 +26,7 @@ export function DocumentsListScreen() {
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
+  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDates<Document> | undefined>(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const pagination = { pageIndex: 0, pageSize: 20 };
 
@@ -75,6 +80,14 @@ export function DocumentsListScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {onDocumentActionSheet && (
+        <DocumentActionSheet
+          visible={true}
+          document={onDocumentActionSheet}
+          onClose={() => setOnDocumentActionSheet(undefined)}
+          onView={() => {}}
+        />
+      )}
       <View style={styles.header}>
         <Text style={styles.title}>Documents</Text>
         <OrganizationPickerButton onPress={() => setIsDrawerVisible(true)} />
@@ -91,39 +104,40 @@ export function DocumentsListScreen() {
               data={documentsQuery.data?.documents ?? []}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <View style={styles.documentCard}>
-                  <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
-                    <Icon name="file-text" size={24} color={themeColors.primary} />
-                  </View>
-                  <View>
-                    <Text style={styles.documentTitle} numberOfLines={2}>
-                      {item.name}
-                    </Text>
-                    <View style={styles.documentMeta}>
-                      <Text style={styles.metaText}>{formatFileSize(item.originalSize)}</Text>
-                      <Text style={styles.metaSplitter}>-</Text>
-                      <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
-                      {item.tags.length > 0 && (
-                        <View style={styles.tagsContainer}>
-                          {item.tags.map(tag => (
-                            <View
-                              key={tag.id}
-                              style={[
-                                styles.tag,
-                                { backgroundColor: `${tag.color}10` },
-                              ]}
-                            >
-                              <Text style={[styles.tagText, { color: tag.color }]}>
-                                {tag.name}
-                              </Text>
-                            </View>
-                          ))}
-                        </View>
-                      )}
+                <TouchableOpacity onPress={() => setOnDocumentActionSheet(item)}>
+                  <View style={styles.documentCard}>
+                    <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
+                      <Icon name="file-text" size={24} color={themeColors.primary} />
                     </View>
-
+                    <View>
+                      <Text style={styles.documentTitle} numberOfLines={2}>
+                        {item.name}
+                      </Text>
+                      <View style={styles.documentMeta}>
+                        <Text style={styles.metaText}>{formatFileSize(item.originalSize)}</Text>
+                        <Text style={styles.metaSplitter}>-</Text>
+                        <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
+                        {item.tags.length > 0 && (
+                          <View style={styles.tagsContainer}>
+                            {item.tags.map(tag => (
+                              <View
+                                key={tag.id}
+                                style={[
+                                  styles.tag,
+                                  { backgroundColor: `${tag.color}10` },
+                                ]}
+                              >
+                                <Text style={[styles.tagText, { color: tag.color }]}>
+                                  {tag.name}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
               ListEmptyComponent={(
                 <View style={styles.emptyContainer}>
