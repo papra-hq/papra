@@ -1,3 +1,4 @@
+import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -21,7 +22,7 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type DocumentFile = {
   uri: string;
-  doc: Document;
+  doc: CoerceDates<Document>;
 };
 
 export default function DocumentViewerScreen() {
@@ -37,32 +38,11 @@ export default function DocumentViewerScreen() {
   const [documentFile, setDocumentFile] = useState<DocumentFile | null>(null);
   const [loadingDoc, setLoadingDoc] = useState(false);
 
-  useEffect(() => {
-    void loadDocument();
-  }, [documentId, organizationId]);
-
-  const loadDocument = async () => {
-    try {
-      const { document } = await fetchDocument({ organizationId, documentId, apiClient });
-
-      // Download file locally for viewer
-      await loadDocumentFile(document);
-    } catch (error) {
-      console.error('Error loading document:', error);
-      showAlert({
-        title: 'Error',
-        message: 'Failed to load document',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadDocumentFile = async (doc: Document) => {
+  const loadDocumentFile = async (doc: CoerceDates<Document>) => {
     try {
       setLoadingDoc(true);
       const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-      if (!baseUrl) {
+      if (baseUrl == null) {
         throw new Error('Base URL not found');
       }
 
@@ -85,6 +65,27 @@ export default function DocumentViewerScreen() {
     }
   };
 
+  const loadDocument = async () => {
+    try {
+      const { document } = await fetchDocument({ organizationId, documentId, apiClient });
+
+      // Download file locally for viewer
+      await loadDocumentFile(document);
+    } catch (error) {
+      console.error('Error loading document:', error);
+      showAlert({
+        title: 'Error',
+        message: 'Failed to load document',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadDocument();
+  }, [documentId, organizationId]);
+
   const renderDocumentFile = (file: DocumentFile) => {
     if (file.doc.mimeType.startsWith('image/')) {
       return (
@@ -99,9 +100,6 @@ export default function DocumentViewerScreen() {
         <Pdf
           source={{ uri: file.uri, cache: true }}
           style={styles.pdfViewer}
-          onLoadComplete={(numberOfPages) => {
-            console.log(`PDF loaded with ${numberOfPages} pages`);
-          }}
           onError={(error) => {
             console.error('PDF error:', error);
             showAlert({
@@ -151,7 +149,7 @@ export default function DocumentViewerScreen() {
       </SafeAreaView>
     );
   }
-
+  const documentName = documentFile?.doc.name ?? 'PDF Viewer';
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -166,7 +164,7 @@ export default function DocumentViewerScreen() {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          {documentFile?.doc.name || 'PDF Viewer'}
+          {documentName}
         </Text>
         <View style={styles.headerSpacer} />
       </View>

@@ -4,9 +4,6 @@ import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
-import { AuthClient } from '../auth/auth.client';
-import * as FileSystem from 'expo-file-system/legacy';
-
 
 export function getFormData(pojo: Record<string, string | Blob>): FormData {
   const formData = new FormData();
@@ -79,7 +76,6 @@ export async function fetchOrganizationDocuments({
   }
 }
 
-<<<<<<< HEAD
 export async function fetchDocument({
   organizationId,
   documentId,
@@ -89,52 +85,29 @@ export async function fetchDocument({
   documentId: string;
   apiClient: ApiClient;
 }) {
-  return await apiClient<{ document: Document }>({
+  return apiClient<{ document: Document }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
   });
 }
 
-=======
->>>>>>> main
 export async function fetchDocumentFile({
   document,
   organizationId,
   baseUrl,
   authClient,
 }: {
-<<<<<<< HEAD
-  document: Document;
-  organizationId: string;
-  baseUrl: string,
-  authClient: AuthClient;
-}) {
-  const cookies = await authClient.getCookie();
-=======
   document: CoerceDates<Document>;
   organizationId: string;
   baseUrl: string;
   authClient: AuthClient;
 }) {
   const cookies = authClient.getCookie();
->>>>>>> main
   const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
   const headers = {
     'Cookie': cookies,
     'Content-Type': 'application/json',
   };
-<<<<<<< HEAD
-  // Use documentDirectory for better app compatibility
-  const fileUri = `${FileSystem.documentDirectory}${document.name}`;
-
-  // Download the file with authentication headers
-  const downloadResult = await FileSystem.downloadAsync(uri,
-    fileUri,
-    {
-      headers: headers,
-    }
-  );
-=======
   // Use cacheDirectory for better app compatibility
   const fileUri = `${FileSystem.cacheDirectory}${document.name}`;
 
@@ -142,17 +115,10 @@ export async function fetchDocumentFile({
   const downloadResult = await FileSystem.downloadAsync(uri, fileUri, {
     headers,
   });
->>>>>>> main
 
   if (downloadResult.status === 200) {
     return downloadResult.uri;
   } else {
-<<<<<<< HEAD
-    throw new Error('Download failed');
-  }
-}
-=======
     throw new Error(`Download failed with status: ${downloadResult.status}`);
   }
 }
->>>>>>> main

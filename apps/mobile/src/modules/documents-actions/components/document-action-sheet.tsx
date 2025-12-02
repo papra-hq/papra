@@ -1,34 +1,8 @@
-<<<<<<< HEAD
-import type { ThemeColors } from '@/modules/ui/theme.constants';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback
-} from 'react-native';
-import { type CoerceDate } from '@/modules/api/api.models';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import type { Document } from '@/modules/documents/documents.types';
-import { useAuthClient } from '@/modules/api/providers/api.provider';
-import { fetchDocumentFile } from '@/modules/documents/documents.services';
-import * as Sharing from 'expo-sharing';
-import { useAlert } from '@/modules/ui/providers/alert-provider';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
-import { router } from 'expo-router';
-
-interface DocumentActionSheetProps {
-  visible: boolean;
-  document: CoerceDate<Document> | undefined;
-  onClose: () => void;
-}
-=======
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
   Modal,
@@ -48,37 +22,18 @@ type DocumentActionSheetProps = {
   visible: boolean;
   document: CoerceDates<Document> | undefined;
   onClose: () => void;
-  onView: () => void;
 };
->>>>>>> main
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
-<<<<<<< HEAD
-=======
-  onView,
->>>>>>> main
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
   const authClient = useAuthClient();
 
-<<<<<<< HEAD
-  if (document == undefined) return null;
-
-  // Check if document can be viewed in DocumentViewerScreen
-  // Supported types: images (image/*) and PDFs (application/pdf)
-  const isViewable =
-    document.mimeType.startsWith('image/') ||
-    document.mimeType.startsWith('application/pdf');
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-=======
   if (document === undefined) {
     return null;
   }
@@ -96,7 +51,6 @@ export function DocumentActionSheet({
     if (bytes < 1024 * 1024) {
       return `${(bytes / 1024).toFixed(1)} KB`;
     }
->>>>>>> main
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
@@ -109,7 +63,6 @@ export function DocumentActionSheet({
     });
   };
 
-<<<<<<< HEAD
   const handleView = async () => {
     onClose();
     router.push({
@@ -124,49 +77,20 @@ export function DocumentActionSheet({
   const handleDownloadAndShare = async () => {
     const baseUrl = await configLocalStorage.getApiServerBaseUrl();
 
-    if (!baseUrl) {
-=======
-  const handleDownloadAndShare = async () => {
-    const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-
     if (baseUrl == null) {
->>>>>>> main
       showAlert({
         title: 'Error',
         message: 'Base URL not found',
       });
-<<<<<<< HEAD
-      return
-    }
-
-    const fileUri = await fetchDocumentFile({
-      document: document,
-      organizationId: document.organizationId,
-      baseUrl,
-      authClient,
-    });
-
-    const canShare = await Sharing.isAvailableAsync();
-    if (canShare) {
-      await Sharing.shareAsync(fileUri);
-    } else {
-=======
       return;
     }
 
     const canShare = await Sharing.isAvailableAsync();
     if (!canShare) {
->>>>>>> main
       showAlert({
         title: 'Sharing Failed',
         message: 'Sharing is not available on this device. Please share the document manually.',
       });
-<<<<<<< HEAD
-    }
-
-  };
-
-=======
       return;
     }
 
@@ -193,7 +117,6 @@ export function DocumentActionSheet({
   const mimeSubtype = mimeParts[1];
   const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype : document.mimeType;
 
->>>>>>> main
   return (
     <Modal
       visible={visible}
@@ -232,11 +155,7 @@ export function DocumentActionSheet({
                       color={themeColors.mutedForeground}
                       style={styles.detailIcon}
                     />
-<<<<<<< HEAD
-                    <Text style={styles.detailText}>{formatDate(document.createdAt)}</Text>
-=======
                     <Text style={styles.detailText}>{formatDate(document.createdAt.toISOString())}</Text>
->>>>>>> main
                   </View>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons
@@ -246,11 +165,7 @@ export function DocumentActionSheet({
                       style={styles.detailIcon}
                     />
                     <Text style={styles.detailText} numberOfLines={1}>
-<<<<<<< HEAD
-                      {document.mimeType.split('/')[1] || document.mimeType}
-=======
                       {displayMimeType}
->>>>>>> main
                     </Text>
                   </View>
                 </View>
@@ -261,13 +176,9 @@ export function DocumentActionSheet({
                 {isViewable && (
                   <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => {
+                    onPress={async () => {
                       onClose();
-<<<<<<< HEAD
-                      handleView();
-=======
-                      onView();
->>>>>>> main
+                      await handleView();
                     }}
                     activeOpacity={0.7}
                   >
@@ -284,15 +195,9 @@ export function DocumentActionSheet({
 
                 <TouchableOpacity
                   style={styles.actionButton}
-<<<<<<< HEAD
-                  onPress={() => {
-                    onClose();
-                    handleDownloadAndShare();
-=======
                   onPress={async () => {
                     onClose();
                     await handleDownloadAndShare();
->>>>>>> main
                   }}
                   activeOpacity={0.7}
                 >
@@ -303,11 +208,7 @@ export function DocumentActionSheet({
                       color={themeColors.primary}
                     />
                   </View>
-<<<<<<< HEAD
-                  <Text style={styles.actionText}>Download & Share</Text>
-=======
                   <Text style={styles.actionText}>Share</Text>
->>>>>>> main
                 </TouchableOpacity>
               </View>
 
@@ -432,7 +333,3 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
   });
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> main
