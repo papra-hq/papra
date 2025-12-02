@@ -1,4 +1,4 @@
-import type { CoerceDate } from '@/modules/api/api.models';
+import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +19,7 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type DocumentActionSheetProps = {
   visible: boolean;
-  document: CoerceDate<Document> | undefined;
+  document: CoerceDates<Document> | undefined;
   onClose: () => void;
   onView: () => void;
 };
