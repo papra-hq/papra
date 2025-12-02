@@ -1,4 +1,4 @@
-import type { ShutdownHandlerRegistration } from '../graceful-shutdown/graceful-shutdown.services';
+import type { ShutdownServices } from '../graceful-shutdown/graceful-shutdown.services';
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 
@@ -8,18 +8,18 @@ function setupDatabase({
   url,
   authToken,
   encryptionKey,
-  registerShutdownHandler,
+  shutdownServices,
 }: {
   url: string;
   authToken?: string;
   encryptionKey?: string;
-  registerShutdownHandler?: ShutdownHandlerRegistration;
+  shutdownServices?: ShutdownServices;
 }) {
   const client = createClient({ url, authToken, encryptionKey });
 
   const db = drizzle(client);
 
-  registerShutdownHandler?.({
+  shutdownServices?.registerShutdownHandler({
     id: 'database-client-close',
     handler: () => client.close(),
   });

@@ -2,6 +2,7 @@ import type { Document } from '../documents.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
+import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { documentsTable } from '../documents.table';
@@ -16,7 +17,7 @@ describe('documents e2e', () => {
         organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         config: overrideConfig({
           env: 'test',
@@ -24,7 +25,7 @@ describe('documents e2e', () => {
             driver: 'in-memory',
           },
         }),
-      });
+      }));
 
       const formData = new FormData();
       formData.append('file', new File(['this is an invoice'], 'invoice.txt', { type: 'text/plain' }));
@@ -85,7 +86,7 @@ describe('documents e2e', () => {
 
       const documentsStorageService = inMemoryStorageDriverFactory();
 
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         documentsStorageService,
         config: overrideConfig({
@@ -94,7 +95,7 @@ describe('documents e2e', () => {
             maxUploadSize: 100,
           },
         }),
-      });
+      }));
 
       const formData = new FormData();
       formData.append('file', new File(['a'.repeat(101)], 'invoice.txt', { type: 'text/plain' }));
@@ -141,7 +142,7 @@ describe('documents e2e', () => {
         ],
       });
 
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         config: overrideConfig({
           env: 'test',
@@ -149,7 +150,7 @@ describe('documents e2e', () => {
             driver: 'in-memory',
           },
         }),
-      });
+      }));
 
       const formData = new FormData();
       formData.append('file', new File(['sensitive document'], 'document.txt', { type: 'text/plain' }));
@@ -189,7 +190,7 @@ describe('documents e2e', () => {
         organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const { app } = await createServer({
+      const { app } = createServer(createTestServerDependencies({
         db,
         config: overrideConfig({
           env: 'test',
@@ -197,7 +198,7 @@ describe('documents e2e', () => {
             driver: 'in-memory',
           },
         }),
-      });
+      }));
 
       // Various UTF-8 characters that cause encoding issues
       const testCases = [

@@ -7,6 +7,8 @@ export type ShutdownHandlerConfig = {
 };
 export type ShutdownHandlerRegistration = (handlerConfig: ShutdownHandlerConfig) => void;
 
+export type ShutdownServices = ReturnType<typeof createGracefulShutdownService>;
+
 export function createGracefulShutdownService({ logger = createLogger({ namespace: 'graceful-shutdown' }) }: { logger?: Logger } = {}) {
   const shutdownHandlers: ShutdownHandlerConfig[] = [];
 
