@@ -58,7 +58,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
-    "@react-native-community/cli": "latest",
     "@types/react": "~19.1.0",
     "eas-cli": "^16.27.0",
     "eslint": "catalog:",
