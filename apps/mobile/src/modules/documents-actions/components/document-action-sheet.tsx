@@ -145,7 +145,7 @@ export function DocumentActionSheet({
                       color={themeColors.mutedForeground}
                       style={styles.detailIcon}
                     />
-                    <Text style={styles.detailText}>{formatDate(document.createdAt)}</Text>
+                    <Text style={styles.detailText}>{formatDate(document.createdAt.toISOString())}</Text>
                   </View>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons

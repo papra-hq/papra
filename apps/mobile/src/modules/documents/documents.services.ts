@@ -2,7 +2,7 @@ import type { ApiClient } from '../api/api.client';
 import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
-import { coerceDates } from '../api/api.models';
+import { coerceDates, CoerceDates } from '../api/api.models';
 
 export function getFormData(pojo: Record<string, string | Blob>): FormData {
   const formData = new FormData();
@@ -81,7 +81,7 @@ export async function fetchDocumentFile({
   baseUrl,
   authClient,
 }: {
-  document: Document;
+  document: CoerceDates<Document>;
   organizationId: string;
   baseUrl: string;
   authClient: AuthClient;
