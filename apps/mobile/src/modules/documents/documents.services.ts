@@ -1,8 +1,9 @@
 import type { ApiClient } from '../api/api.client';
+import type { CoerceDates } from '../api/api.models';
 import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
-import { coerceDates, CoerceDates } from '../api/api.models';
+import { coerceDates } from '../api/api.models';
 
 export function getFormData(pojo: Record<string, string | Blob>): FormData {
   const formData = new FormData();
