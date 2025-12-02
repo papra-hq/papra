@@ -22,7 +22,6 @@ type DocumentActionSheetProps = {
   document: CoerceDate<Document> | undefined;
   onClose: () => void;
   onView: () => void;
-  onDownloadAndShare: () => void;
 };
 
 export function DocumentActionSheet({
@@ -30,7 +29,6 @@ export function DocumentActionSheet({
   document,
   onClose,
   onView,
-  onDownloadAndShare,
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
@@ -69,7 +67,7 @@ export function DocumentActionSheet({
   const handleDownloadAndShare = async () => {
     const baseUrl = await configLocalStorage.getApiServerBaseUrl();
 
-    if (!baseUrl) {
+    if (baseUrl == null) {
       showAlert({
         title: 'Error',
         message: 'Base URL not found',
@@ -103,6 +101,11 @@ export function DocumentActionSheet({
       });
     }
   };
+
+  // Extract MIME type subtype, fallback to full MIME type if subtype is missing
+  const mimeParts = document.mimeType.split('/');
+  const mimeSubtype = mimeParts[1];
+  const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype : document.mimeType;
 
   return (
     <Modal
@@ -152,7 +155,7 @@ export function DocumentActionSheet({
                       style={styles.detailIcon}
                     />
                     <Text style={styles.detailText} numberOfLines={1}>
-                      {document.mimeType.split('/')[1] || document.mimeType}
+                      {displayMimeType}
                     </Text>
                   </View>
                 </View>
@@ -182,9 +185,9 @@ export function DocumentActionSheet({
 
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => {
+                  onPress={async () => {
                     onClose();
-                    handleDownloadAndShare();
+                    await handleDownloadAndShare();
                   }}
                   activeOpacity={0.7}
                 >
