@@ -1,3 +1,4 @@
+import type { Context } from 'hono';
 import type { Config } from '../../config/config.types';
 import type { ServerInstance } from '../server.types';
 import { readFile } from 'node:fs/promises';
@@ -26,7 +27,7 @@ export function registerStaticAssetsRoutes({ app, config }: { app: ServerInstanc
           index: `unexisting-file-${Math.random().toString(36).substring(2)}`,
         });
 
-        return staticMiddleware(context, next);
+        return staticMiddleware(context as Context<any, string>, next);
       },
     )
     .use(
