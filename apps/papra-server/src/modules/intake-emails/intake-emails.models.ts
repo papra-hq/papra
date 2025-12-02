@@ -1,5 +1,5 @@
 import { createError } from '../shared/errors/errors';
-import { isDefined, isNil } from '../shared/utils';
+import { isDefined, isNil, uniq } from '../shared/utils';
 
 export function buildEmailAddress({
   username,
@@ -58,4 +58,13 @@ export function getIsFromAllowedOrigin({
   return allowedOrigins
     .map(allowedOrigin => allowedOrigin.toLowerCase())
     .includes(origin.toLowerCase());
+}
+
+export function getRecipientAddresses({ email }: { email: {
+  to: { address: string }[];
+  originalTo: { address: string }[];
+}; }): string[] {
+  const { to, originalTo } = email;
+
+  return uniq([...to, ...originalTo].map(({ address }) => address.toLowerCase()));
 }

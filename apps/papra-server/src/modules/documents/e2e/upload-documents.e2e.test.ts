@@ -128,6 +128,59 @@ describe('documents e2e', () => {
       expect(documentsStorageService._getStorage().size).to.eql(0);
     });
 
+    test('uploading a document to an organization the user is not a member of returns a 403', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_111111111111111111111111', email: 'member@example.com' },
+          { id: 'usr_222222222222222222222222', email: 'nonmember@example.com' },
+        ],
+        organizations: [{ id: 'org_aaaaaaaaaaaaaaaaaaaaaaaa', name: 'Org 1' }],
+        organizationMembers: [
+          // Only user 1 is a member of the organization
+          { organizationId: 'org_aaaaaaaaaaaaaaaaaaaaaaaa', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const { app } = await createServer({
+        db,
+        config: overrideConfig({
+          env: 'test',
+          documentsStorage: {
+            driver: 'in-memory',
+          },
+        }),
+      });
+
+      const formData = new FormData();
+      formData.append('file', new File(['sensitive document'], 'document.txt', { type: 'text/plain' }));
+      const body = new Response(formData);
+
+      // User 2 attempts to upload to an organization they are not a member of
+      const createDocumentResponse = await app.request(
+        '/api/organizations/org_aaaaaaaaaaaaaaaaaaaaaaaa/documents',
+        {
+          method: 'POST',
+          headers: {
+            ...Object.fromEntries(body.headers.entries()),
+          },
+          body: await body.arrayBuffer(),
+        },
+        { loggedInUserId: 'usr_222222222222222222222222' },
+      );
+
+      expect(createDocumentResponse.status).to.eql(403);
+      expect(await createDocumentResponse.json()).to.eql({
+        error: {
+          code: 'user.not_in_organization',
+          message: 'You are not part of this organization.',
+        },
+      });
+
+      // Ensure no document is saved in the db
+      const documentRecords = await db.select().from(documentsTable);
+      expect(documentRecords.length).to.eql(0);
+    });
+
     // https://github.com/papra-hq/papra/issues/519
     test('uploading documents with various UTF-8 characters in filenames', async () => {
       const { db } = await createInMemoryDatabase({

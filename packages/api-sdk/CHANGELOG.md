@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.1.2
+
+### Patch Changes
+
+- [#622](https://github.com/papra-hq/papra/pull/622) [`432a192`](https://github.com/papra-hq/papra/commit/432a192b94d06c663a7f345046e20fcff41dbf53) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added listOrganizations, listTags, createTag, addTagToDocument method in papra sdk
+
 ## 1.1.1
 
 ### Patch Changes

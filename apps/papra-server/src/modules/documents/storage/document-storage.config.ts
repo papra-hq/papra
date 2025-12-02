@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../../config/config.schemas';
 import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
@@ -61,7 +62,7 @@ export const documentStorageConfig = {
       },
       forcePathStyle: {
         doc: 'Whether to force path style URLs for S3',
-        schema: z.boolean(),
+        schema: booleanishSchema,
         default: false,
         env: 'DOCUMENT_STORAGE_S3_FORCE_PATH_STYLE',
       },

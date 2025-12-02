@@ -26,7 +26,6 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       softDeleteDocument,
       getOrganizationDocumentsCount,
       getOrganizationDeletedDocumentsCount,
-      searchOrganizationDocuments,
       restoreDocument,
       hardDeleteDocument,
       getExpiredDeletedDocuments,
@@ -304,28 +303,6 @@ async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new
 
   return {
     documents,
-  };
-}
-
-async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {
-  // TODO: extract this logic to a tested function
-  // when searchquery is a single word, we append a wildcard to it to make it a prefix search
-  const cleanedSearchQuery = searchQuery.replace(/"/g, '').replace(/\*/g, '').trim();
-  const formattedSearchQuery = cleanedSearchQuery.includes(' ') ? cleanedSearchQuery : `${cleanedSearchQuery}*`;
-
-  const result = await db.run(sql`
-    SELECT * FROM ${documentsTable}
-    JOIN documents_fts ON documents_fts.id = ${documentsTable.id}
-    WHERE ${documentsTable.organizationId} = ${organizationId}
-          AND ${documentsTable.isDeleted} = 0
-          AND documents_fts MATCH ${formattedSearchQuery}
-    ORDER BY rank
-    LIMIT ${pageSize}
-    OFFSET ${pageIndex * pageSize}
-  `);
-
-  return {
-    documents: result.rows as unknown as (typeof documentsTable.$inferSelect)[],
   };
 }
 

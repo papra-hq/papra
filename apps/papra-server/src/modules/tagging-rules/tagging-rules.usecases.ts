@@ -9,10 +9,9 @@ import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-
 import type { TaggingRulesRepository } from './tagging-rules.repository';
 import type { ConditionMatchMode, TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
 import { safely, safelySync } from '@corentinth/chisels';
-import { uniq } from 'lodash-es';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
-import { isNil } from '../shared/utils';
+import { isNil, uniq } from '../shared/utils';
 import { addTagToDocument } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import { CONDITION_MATCH_MODES } from './tagging-rules.constants';

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { isDefined, isNil, isNilOrEmptyString, isNonEmptyString, isString, nullifyPositiveInfinity, omitUndefined } from './utils';
+import { isDefined, isNil, isNilOrEmptyString, isNonEmptyString, isString, nullifyPositiveInfinity, omitUndefined, uniq, uniqBy } from './utils';
 
 describe('utils', () => {
   describe('omitUndefined', () => {
@@ -105,6 +105,34 @@ describe('utils', () => {
       expect(isNilOrEmptyString(false)).toBe(false);
       expect(isNilOrEmptyString({})).toBe(false);
       expect(isNilOrEmptyString([])).toBe(false);
+    });
+  });
+
+  describe('uniq', () => {
+    test('returns an array with unique values', () => {
+      expect(uniq([1, 2, 2, 3, 3, 3])).toEqual([1, 2, 3]);
+      expect(uniq(['a', 'b', 'a', 'c', 'b'])).toEqual(['a', 'b', 'c']);
+      expect(uniq([])).toEqual([]);
+    });
+  });
+
+  describe('uniqBy', () => {
+    test('returns an array with unique values based on an extracted key', () => {
+      const data = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 1, name: 'Alice' },
+        { id: 3, name: 'Charlie' },
+        { id: 2, name: 'Bob' },
+      ];
+
+      const result = uniqBy(data, item => item.id);
+
+      expect(result).toEqual([
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]);
     });
   });
 });

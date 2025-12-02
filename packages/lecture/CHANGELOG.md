@@ -1,5 +1,15 @@
 # @papra/lecture
 
+## 0.4.0
+
+### Minor Changes
+
+- [#621](https://github.com/papra-hq/papra/pull/621) [`8308e93`](https://github.com/papra-hq/papra/commit/8308e93fdf0c4d52b8ee1de71f1557366d6e622f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for native tesseract cli when available
+
+### Patch Changes
+
+- [#627](https://github.com/papra-hq/papra/pull/627) [`5ccdf44`](https://github.com/papra-hq/papra/commit/5ccdf446f0603467ab8f8833110efbe197bc0f0f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added logger parameter
+
 ## 0.3.1
 
 ### Patch Changes

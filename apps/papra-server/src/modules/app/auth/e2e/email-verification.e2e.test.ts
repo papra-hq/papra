@@ -1,6 +1,7 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../../../config/config.test-utils';
 import { createInMemoryDatabase } from '../../database/database.test-utils';
+import { createEventServices } from '../../events/events.services';
 import { createServer } from '../../server';
 import { createAuthEmailsServices } from '../auth.emails.services';
 import { getAuth } from '../auth.services';
@@ -34,7 +35,7 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
         const { app } = await createServer({ db, config, auth });
 
@@ -75,7 +76,7 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
         const { app } = await createServer({ db, config, auth });
 
@@ -135,7 +136,7 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
         const { app } = await createServer({ db, config, auth });
 
@@ -166,7 +167,7 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
         const { app } = await createServer({ db, config, auth });
 
