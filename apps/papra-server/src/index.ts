@@ -3,6 +3,8 @@ import process, { env } from 'node:process';
 import { serve } from '@hono/node-server';
 import { setupDatabase } from './modules/app/database/database';
 import { ensureLocalDatabaseDirectoryExists } from './modules/app/database/database.services';
+import { registerEventHandlers } from './modules/app/events/events.handlers';
+import { createEventServices } from './modules/app/events/events.services';
 import { createGracefulShutdownService } from './modules/app/graceful-shutdown/graceful-shutdown.services';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
@@ -11,6 +13,7 @@ import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingest
 import { addToGlobalLogContext, createLogger } from './modules/shared/logger/logger';
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
 import { createTaskServices } from './modules/tasks/tasks.services';
+import { createTrackingServices } from './modules/tracking/tracking.services';
 
 const logger = createLogger({ namespace: 'app-server' });
 
@@ -35,8 +38,12 @@ const documentsStorageService = createDocumentStorageService({ documentStorageCo
 const taskServices = createTaskServices({ config });
 await taskServices.initialize();
 
+const trackingServices = createTrackingServices({ config });
+const eventServices = createEventServices();
+registerEventHandlers({ eventServices, trackingServices });
+
 if (isWebMode) {
-  const { app } = await createServer({ config, db, taskServices, documentsStorageService });
+  const { app } = await createServer({ config, db, taskServices, documentsStorageService, eventServices, trackingServices });
 
   const server = serve(
     {
