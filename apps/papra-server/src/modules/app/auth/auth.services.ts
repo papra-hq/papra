@@ -1,6 +1,6 @@
 import type { Config } from '../../config/config.types';
-import type { TrackingServices } from '../../tracking/tracking.services';
 import type { Database } from '../database/database.types';
+import type { EventServices } from '../events/events.services';
 import type { AuthEmailsServices } from './auth.emails.services';
 import { expo } from '@better-auth/expo';
 import { betterAuth } from 'better-auth';
@@ -21,12 +21,12 @@ export function getAuth({
   db,
   config,
   authEmailsServices,
-  trackingServices,
+  eventServices,
 }: {
   db: Database;
   config: Config;
   authEmailsServices: AuthEmailsServices;
-  trackingServices: TrackingServices;
+  eventServices: EventServices;
 }) {
   const { secret } = config.auth;
 
@@ -86,9 +86,13 @@ export function getAuth({
               throw createForbiddenEmailDomainError();
             }
           },
-          after: async ({ id: userId, email }) => {
+          after: async ({ id: userId, email, createdAt }) => {
             logger.info({ userId }, 'User signed up');
-            trackingServices.captureUserEvent({ userId, event: 'User signed up', properties: { $set: { email } } });
+
+            eventServices.emitEvent({
+              eventName: 'user.created',
+              payload: { userId, email, createdAt },
+            });
           },
         },
       },

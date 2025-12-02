@@ -13,6 +13,7 @@ import { createTrackingServices } from '../tracking/tracking.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { setupDatabase } from './database/database';
+import { createEventServices } from './events/events.services';
 import { createCorsMiddleware } from './middlewares/cors.middleware';
 import { registerErrorMiddleware } from './middlewares/errors.middleware';
 import { createTimeoutMiddleware } from './middlewares/timeout.middleware';
@@ -23,8 +24,9 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
   const config = partialDeps.config ?? (await parseConfig()).config;
   const db = partialDeps.db ?? setupDatabase(config.database).db;
   const emailsServices = createEmailsServices({ config });
-  const trackingServices = createTrackingServices({ config });
-  const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), trackingServices }).auth;
+  const trackingServices = partialDeps.trackingServices ?? createTrackingServices({ config });
+  const eventServices = partialDeps.eventServices ?? createEventServices();
+  const auth = partialDeps.auth ?? getAuth({ db, config, authEmailsServices: createAuthEmailsServices({ emailsServices }), eventServices }).auth;
   const subscriptionsServices = createSubscriptionsServices({ config });
   const taskServices = partialDeps.taskServices ?? createTaskServices({ config });
   const documentsStorageService = partialDeps.documentsStorageService ?? createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
@@ -40,6 +42,7 @@ async function createGlobalDependencies(partialDeps: Partial<GlobalDependencies>
     trackingServices,
     taskServices,
     documentSearchServices,
+    eventServices,
   };
 }
 
