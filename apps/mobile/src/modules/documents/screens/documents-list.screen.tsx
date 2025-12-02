@@ -1,5 +1,5 @@
 import type { Document } from '../documents.types';
-import type { CoerceDate } from '@/modules/api/api.models';
+import type { CoerceDates } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -26,7 +26,7 @@ export function DocumentsListScreen() {
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
-  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDate<Document> | undefined>(undefined);
+  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDates<Document> | undefined>(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const pagination = { pageIndex: 0, pageSize: 20 };
 
