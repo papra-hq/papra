@@ -3,13 +3,14 @@ import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../../../config/config.test-utils';
 import { createInMemoryDatabase } from '../../database/database.test-utils';
 import { createServer } from '../../server';
+import { createTestServerDependencies } from '../../server.test-utils';
 
 describe('health check routes e2e', () => {
   describe('health check', () => {
     describe('the /api/health is a publicly accessible route that provides health information about the server', () => {
       test('when the database is healthy, the /api/health returns 200', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = await createServer({ db, config: overrideConfig() });
+        const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
 
         const response = await app.request('/api/health');
 
@@ -28,7 +29,7 @@ describe('health check routes e2e', () => {
           },
         } as unknown as Database;
 
-        const { app } = await createServer({ db, config: overrideConfig() });
+        const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
 
         const response = await app.request('/api/health');
 

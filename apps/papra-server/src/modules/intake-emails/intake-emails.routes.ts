@@ -11,12 +11,13 @@ import { ensureUserIsInOrganization } from '../organizations/organizations.useca
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
-import { createLogger } from '../shared/logger/logger';
+import { addLogContext, createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
+import { getRecipientAddresses } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailsIngestionMetaSchema, parseJson } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
@@ -161,6 +162,12 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskSe
     }), { allowAdditionalFields: true }),
     async (context) => {
       const { email, 'attachments[]': attachments = [] } = context.req.valid('form');
+      const fromAddress = email.from.address;
+      const recipientsAddresses = getRecipientAddresses({ email });
+
+      addLogContext({ fromAddress, recipientsAddresses });
+
+      logger.info({ attachmentsCount: attachments.length }, 'Received intake email ingestion request');
 
       if (!config.intakeEmails.isEnabled) {
         throw createError({
@@ -204,8 +211,8 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskSe
       });
 
       await processIntakeEmailIngestion({
-        fromAddress: email.from.address,
-        recipientsAddresses: email.to.map(({ address }) => address),
+        fromAddress,
+        recipientsAddresses,
         attachments,
         intakeEmailsRepository,
         createDocument,

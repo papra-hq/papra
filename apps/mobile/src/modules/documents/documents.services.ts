@@ -1,5 +1,8 @@
 import type { ApiClient } from '../api/api.client';
+import type { CoerceDates } from '../api/api.models';
+import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
+import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
 import { AuthClient } from '../auth/auth.client';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -76,6 +79,7 @@ export async function fetchOrganizationDocuments({
   }
 }
 
+<<<<<<< HEAD
 export async function fetchDocument({
   organizationId,
   documentId,
@@ -91,23 +95,35 @@ export async function fetchDocument({
   });
 }
 
+=======
+>>>>>>> main
 export async function fetchDocumentFile({
   document,
   organizationId,
   baseUrl,
   authClient,
 }: {
+<<<<<<< HEAD
   document: Document;
   organizationId: string;
   baseUrl: string,
   authClient: AuthClient;
 }) {
   const cookies = await authClient.getCookie();
+=======
+  document: CoerceDates<Document>;
+  organizationId: string;
+  baseUrl: string;
+  authClient: AuthClient;
+}) {
+  const cookies = authClient.getCookie();
+>>>>>>> main
   const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
   const headers = {
     'Cookie': cookies,
     'Content-Type': 'application/json',
   };
+<<<<<<< HEAD
   // Use documentDirectory for better app compatibility
   const fileUri = `${FileSystem.documentDirectory}${document.name}`;
 
@@ -118,10 +134,25 @@ export async function fetchDocumentFile({
       headers: headers,
     }
   );
+=======
+  // Use cacheDirectory for better app compatibility
+  const fileUri = `${FileSystem.cacheDirectory}${document.name}`;
+
+  // Download the file with authentication headers
+  const downloadResult = await FileSystem.downloadAsync(uri, fileUri, {
+    headers,
+  });
+>>>>>>> main
 
   if (downloadResult.status === 200) {
     return downloadResult.uri;
   } else {
+<<<<<<< HEAD
     throw new Error('Download failed');
   }
 }
+=======
+    throw new Error(`Download failed with status: ${downloadResult.status}`);
+  }
+}
+>>>>>>> main

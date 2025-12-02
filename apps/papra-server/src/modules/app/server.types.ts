@@ -10,6 +10,8 @@ import type { TrackingServices } from '../tracking/tracking.services';
 import type { Auth } from './auth/auth.services';
 import type { Session } from './auth/auth.types';
 import type { Database } from './database/database.types';
+import type { EventServices } from './events/events.services';
+import type { ShutdownServices } from './graceful-shutdown/graceful-shutdown.services';
 
 export type ServerInstanceGenerics = {
   Variables: {
@@ -34,6 +36,8 @@ export type GlobalDependencies = {
   taskServices: TaskServices;
   documentsStorageService: DocumentStorageService;
   documentSearchServices: DocumentSearchServices;
+  eventServices: EventServices;
+  shutdownServices: ShutdownServices;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

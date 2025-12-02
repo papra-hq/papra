@@ -1,23 +1,23 @@
+import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   ActivityIndicator,
-  TouchableOpacity,
   Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Pdf from 'react-native-pdf';
-import type { Document } from '@/modules/documents/documents.types';
-import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import { useAlert } from '@/modules/ui/providers/alert-provider';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
-import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
+import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import { useAlert } from '@/modules/ui/providers/alert-provider';
+import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type DocumentFile = {
   uri: string;
@@ -43,7 +43,6 @@ export default function DocumentViewerScreen() {
 
   const loadDocument = async () => {
     try {
-
       const { document } = await fetchDocument({ organizationId, documentId, apiClient });
 
       // Download file locally for viewer
@@ -119,7 +118,7 @@ export default function DocumentViewerScreen() {
       );
     }
     return <View style={styles.pdfViewer} />;
-  }
+  };
 
   if (loading) {
     return (
@@ -173,23 +172,25 @@ export default function DocumentViewerScreen() {
       </View>
 
       <View style={styles.pdfContainer}>
-        {loadingDoc ? (
-          <View style={styles.pdfLoadingContainer}>
-            <ActivityIndicator size="large" color={themeColors.primary} />
-            <Text style={styles.pdfLoadingText}>Loading document...</Text>
-          </View>
-        ) : documentFile ? renderDocumentFile(documentFile) : (
-          <View style={styles.pdfLoadingContainer}>
-            <ActivityIndicator size="large" color={themeColors.primary} />
-            <Text style={styles.pdfLoadingText}>Preparing document...</Text>
-          </View>
-        )}
+        {loadingDoc
+          ? (
+              <View style={styles.pdfLoadingContainer}>
+                <ActivityIndicator size="large" color={themeColors.primary} />
+                <Text style={styles.pdfLoadingText}>Loading document...</Text>
+              </View>
+            )
+          : documentFile
+            ? renderDocumentFile(documentFile)
+            : (
+                <View style={styles.pdfLoadingContainer}>
+                  <ActivityIndicator size="large" color={themeColors.primary} />
+                  <Text style={styles.pdfLoadingText}>Preparing document...</Text>
+                </View>
+              )}
       </View>
     </SafeAreaView>
   );
 }
-
-
 
 function createStyles({ themeColors }: { themeColors: ThemeColors }) {
   return StyleSheet.create({
@@ -279,4 +280,3 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
   });
 }
-

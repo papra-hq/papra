@@ -6,7 +6,7 @@ export type CoerceDate<T> = T extends string | Date
     ? Date | undefined
     : T;
 
-type CoerceDates<T> = {
+export type CoerceDates<T> = {
   [K in keyof T]: K extends DateKeys ? CoerceDate<T[K]> : T[K];
 };
 

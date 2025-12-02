@@ -11,6 +11,7 @@ export const emailInfoSchema = z.object({
 export const intakeEmailsIngestionMetaSchema = z.object({
   from: emailInfoSchema,
   to: z.array(emailInfoSchema),
+  originalTo: z.array(emailInfoSchema).optional().default([]),
   // cc: z.array(emailInfoSchema).optional(),
   // subject: z.string(),
   // text: z.string().optional(),

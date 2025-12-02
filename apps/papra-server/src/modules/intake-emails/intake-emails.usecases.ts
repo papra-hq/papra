@@ -89,7 +89,7 @@ export async function ingestEmailForRecipient({
   const { intakeEmail } = await intakeEmailsRepository.getIntakeEmailByEmailAddress({ emailAddress: recipientAddress });
 
   if (!intakeEmail) {
-    logger.info('Intake email not found');
+    logger.info({ recipientAddress }, 'Intake email not found');
 
     return;
   }

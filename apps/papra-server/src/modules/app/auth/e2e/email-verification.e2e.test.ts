@@ -1,7 +1,9 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../../../config/config.test-utils';
 import { createInMemoryDatabase } from '../../database/database.test-utils';
+import { createEventServices } from '../../events/events.services';
 import { createServer } from '../../server';
+import { createTestServerDependencies } from '../../server.test-utils';
 import { createAuthEmailsServices } from '../auth.emails.services';
 import { getAuth } from '../auth.services';
 
@@ -34,9 +36,9 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
-        const { app } = await createServer({ db, config, auth });
+        const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
         const response = await app.request('/api/auth/sign-up/email', {
           method: 'POST',
@@ -75,9 +77,9 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
-        const { app } = await createServer({ db, config, auth });
+        const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
         // First, sign up
         await app.request('/api/auth/sign-up/email', {
@@ -135,9 +137,9 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
-        const { app } = await createServer({ db, config, auth });
+        const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
         const response = await app.request('/api/auth/sign-up/email', {
           method: 'POST',
@@ -166,9 +168,9 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, trackingServices: { captureUserEvent: vi.fn(), shutdown: vi.fn() } });
+        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
 
-        const { app } = await createServer({ db, config, auth });
+        const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
         // Sign up
         await app.request('/api/auth/sign-up/email', {

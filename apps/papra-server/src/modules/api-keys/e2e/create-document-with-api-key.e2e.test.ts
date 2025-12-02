@@ -2,6 +2,7 @@ import type { Document } from '../../documents/documents.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
+import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 
@@ -13,7 +14,7 @@ describe('api-key e2e', () => {
       organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
     });
 
-    const { app } = await createServer({
+    const { app } = createServer(createTestServerDependencies({
       db,
       config: overrideConfig({
         env: 'test',
@@ -21,7 +22,7 @@ describe('api-key e2e', () => {
           driver: 'in-memory',
         },
       }),
-    });
+    }));
 
     const createApiKeyResponse = await app.request(
       '/api/api-keys',

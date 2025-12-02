@@ -2,10 +2,9 @@ import type { ApiKey, ApiKeyPermissions } from '../../api-keys/api-keys.types';
 import type { Config } from '../../config/config.types';
 import type { Context } from '../server.types';
 import type { Session } from './auth.types';
-import { uniq } from 'lodash-es';
 import { getClientBaseUrl } from '../../config/config.models';
 import { createError } from '../../shared/errors/errors';
-import { isNil, isNilOrEmptyString } from '../../shared/utils';
+import { isNil, isNilOrEmptyString, uniq } from '../../shared/utils';
 
 export function getUser({ context }: { context: Context }) {
   const userId = context.get('userId');
