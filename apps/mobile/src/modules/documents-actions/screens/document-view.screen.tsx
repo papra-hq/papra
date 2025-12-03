@@ -130,59 +130,52 @@ export default function DocumentViewScreen() {
   const isLoading = documentQuery.isLoading || documentFileQuery.isLoading;
   const error = documentQuery.error ?? documentFileQuery.error;
   const documentFile = documentFileQuery.data;
+  const documentName = documentFile?.doc.name ?? 'Document';
 
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        {renderHeader('Document')}
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={themeColors.primary} />
-          <Text style={styles.loadingText}>Loading document...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error != null) {
-    return (
-      <SafeAreaView style={styles.container}>
-        {renderHeader('Document')}
-        <View style={styles.errorContainer}>
-          <MaterialCommunityIcons
-            name="file-pdf-box"
-            size={64}
-            color={themeColors.mutedForeground}
-          />
-          <Text style={styles.errorText}>Failed to load document</Text>
-          <TouchableOpacity
-            style={styles.errorButton}
-            onPress={() => {
-              void documentQuery.refetch();
-            }}
-          >
-            <Text style={styles.errorButtonText}>Retry</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.errorButton}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.errorButtonText}>Go Back</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (documentFile != null) {
-    return (
-      <SafeAreaView style={styles.container}>
-        {renderHeader(documentFile.doc.name)}
-        <View style={styles.pdfContainer}>
-          {renderDocumentFile(documentFile)}
-        </View>
-      </SafeAreaView>
-    );
-  }
+  return (
+    <SafeAreaView style={styles.container}>
+      {renderHeader(documentName)}
+      {isLoading
+        ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={themeColors.primary} />
+              <Text style={styles.loadingText}>Loading document...</Text>
+            </View>
+          )
+        : error != null
+          ? (
+              <View style={styles.errorContainer}>
+                <MaterialCommunityIcons
+                  name="file-pdf-box"
+                  size={64}
+                  color={themeColors.mutedForeground}
+                />
+                <Text style={styles.errorText}>Failed to load document</Text>
+                <TouchableOpacity
+                  style={styles.errorButton}
+                  onPress={() => {
+                    void documentQuery.refetch();
+                  }}
+                >
+                  <Text style={styles.errorButtonText}>Retry</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.errorButton}
+                  onPress={() => router.back()}
+                >
+                  <Text style={styles.errorButtonText}>Go Back</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          : documentFile != null
+            ? (
+                <View style={styles.pdfContainer}>
+                  {renderDocumentFile(documentFile)}
+                </View>
+              )
+            : null}
+    </SafeAreaView>
+  );
 }
 
 function createStyles({ themeColors }: { themeColors: ThemeColors }) {
@@ -225,17 +218,6 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flex: 1,
       width: '100%',
       height: '100%',
-    },
-    pdfLoadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 32,
-    },
-    pdfLoadingText: {
-      marginTop: 16,
-      fontSize: 16,
-      color: themeColors.mutedForeground,
     },
     loadingContainer: {
       flex: 1,
