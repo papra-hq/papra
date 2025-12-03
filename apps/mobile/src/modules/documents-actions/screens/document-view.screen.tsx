@@ -36,6 +36,7 @@ export default function DocumentViewScreen() {
   const { documentId, organizationId } = params;
   const [documentFile, setDocumentFile] = useState<DocumentFile | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const loadDocumentFile = async (doc: CoerceDates<Document>) => {
     try {
@@ -53,11 +54,7 @@ export default function DocumentViewScreen() {
 
       setDocumentFile({ uri: fileUri, doc });
     } catch (error) {
-      console.error('Error loading document file:', error);
-      showAlert({
-        title: 'Error',
-        message: 'Failed to load document file',
-      });
+      setError(error as Error);
     } finally {
       setLoading(false);
     }
@@ -66,16 +63,14 @@ export default function DocumentViewScreen() {
   const loadDocument = async () => {
     try {
       setLoading(true);
+      setError(null);
       const { document } = await fetchDocument({ organizationId, documentId, apiClient });
 
       // Download file locally for viewer
       await loadDocumentFile(document);
     } catch (error) {
       console.error('Error loading document:', error);
-      showAlert({
-        title: 'Error',
-        message: 'Failed to load document',
-      });
+      setError(error as Error);
     } finally {
       setLoading(false);
     }
@@ -128,7 +123,7 @@ export default function DocumentViewScreen() {
     );
   }
 
-  if (!loading && !documentFile) {
+  if (error != null) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
