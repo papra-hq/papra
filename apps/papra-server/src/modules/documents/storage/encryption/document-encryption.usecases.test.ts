@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../../app/database/database.test-utils';
+import { createTestEventServices } from '../../../app/events/events.test-utils';
 import { overrideConfig } from '../../../config/config.test-utils';
 import { documentsTable } from '../../documents.table';
 import { createDocumentCreationUsecase } from '../../documents.usecases';
@@ -34,6 +35,7 @@ describe('document-encryption usecases', () => {
             documentKeyEncryptionKeys: [],
           },
         }),
+        eventServices: createTestEventServices(),
       });
 
       const { document: document1 } = await createDocumentWithoutEncryption({
@@ -66,6 +68,7 @@ describe('document-encryption usecases', () => {
         documentsStorageService: documentStorageServiceWithEncryption,
         config: overrideConfig(),
         taskServices: noopTaskServices,
+        eventServices: createTestEventServices(),
       });
 
       const { document: document3 } = await createDocumentWithEncryption({

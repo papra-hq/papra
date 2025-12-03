@@ -4,6 +4,7 @@ import { asc } from 'drizzle-orm';
 import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
@@ -36,6 +37,7 @@ describe('intake-emails usecases', () => {
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
+          eventServices: createTestEventServices(),
         });
 
         await ingestEmailForRecipient({
@@ -78,6 +80,7 @@ describe('intake-emails usecases', () => {
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
+          eventServices: createTestEventServices(),
         });
 
         await ingestEmailForRecipient({
@@ -111,6 +114,7 @@ describe('intake-emails usecases', () => {
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
+          eventServices: createTestEventServices(),
         });
 
         await ingestEmailForRecipient({
@@ -149,6 +153,7 @@ describe('intake-emails usecases', () => {
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
+          eventServices: createTestEventServices(),
         });
 
         await ingestEmailForRecipient({
@@ -198,6 +203,7 @@ describe('intake-emails usecases', () => {
         config: overrideConfig({
           organizationPlans: { isFreePlanUnlimited: true },
         }),
+        eventServices: createTestEventServices(),
       });
 
       await processIntakeEmailIngestion({
