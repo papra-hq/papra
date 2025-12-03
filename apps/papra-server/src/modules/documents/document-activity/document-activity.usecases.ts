@@ -16,7 +16,7 @@ export async function registerDocumentActivityLog({
   documentId: string;
   event: DocumentActivityEvent;
   eventData?: Record<string, unknown>;
-  userId?: string;
+  userId?: string | null;
   tagId?: string;
   documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;

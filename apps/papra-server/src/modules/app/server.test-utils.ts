@@ -29,7 +29,7 @@ export function createTestServerDependencies(overrides: Partial<GlobalDependenci
   const subscriptionsServices = overrides.subscriptionsServices ?? createSubscriptionsServices({ config });
   const documentSearchServices = overrides.documentSearchServices ?? createDocumentSearchServices({ db, config });
 
-  registerEventHandlers({ eventServices, trackingServices });
+  registerEventHandlers({ eventServices, trackingServices, db });
 
   return {
     config,

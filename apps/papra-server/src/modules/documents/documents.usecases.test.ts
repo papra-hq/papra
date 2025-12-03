@@ -2,10 +2,10 @@ import type { PlansRepository } from '../plans/plans.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
-import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -13,7 +13,6 @@ import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -43,6 +42,7 @@ describe('documents usecases', () => {
         generateDocumentId: () => 'doc_1',
         documentsStorageService,
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -104,6 +104,7 @@ describe('documents usecases', () => {
         generateDocumentId: () => `doc_${documentIdIndex++}`,
         documentsStorageService,
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -208,6 +209,7 @@ describe('documents usecases', () => {
         config,
         taskServices,
         documentsStorageService: inMemoryStorageDriverFactory(),
+        eventServices: createTestEventServices(),
       });
 
       // 3. Re-create the document
@@ -270,6 +272,7 @@ describe('documents usecases', () => {
           },
         },
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -292,63 +295,6 @@ describe('documents usecases', () => {
       await expect(
         documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' }),
       ).rejects.toThrow('File not found');
-    });
-
-    test('when a document is created by a user, a document activity log is registered with the user id', async () => {
-      const taskServices = createInMemoryTaskServices();
-      const { db } = await createInMemoryDatabase({
-        users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-      });
-
-      const config = overrideConfig({
-        organizationPlans: { isFreePlanUnlimited: true },
-      });
-
-      let documentIdIndex = 1;
-      const createDocument = createDocumentCreationUsecase({
-        db,
-        config,
-        generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: inMemoryStorageDriverFactory(),
-        taskServices,
-      });
-
-      await createDocument({
-        fileStream: createReadableStream({ content: 'content-1' }),
-        fileName: 'file.txt',
-        mimeType: 'text/plain',
-        userId: 'user-1',
-        organizationId: 'organization-1',
-      });
-
-      await createDocument({
-        fileStream: createReadableStream({ content: 'content-2' }),
-        fileName: 'file.txt',
-        mimeType: 'text/plain',
-        organizationId: 'organization-1',
-      });
-
-      await nextTick();
-
-      const documentActivityLogRecords = await db.select().from(documentActivityLogTable);
-
-      expect(documentActivityLogRecords.length).to.eql(2);
-
-      expect(documentActivityLogRecords[0]).to.deep.include({
-        event: 'created',
-        eventData: null,
-        userId: 'user-1',
-        documentId: 'doc_1',
-      });
-
-      expect(documentActivityLogRecords[1]).to.deep.include({
-        event: 'created',
-        eventData: null,
-        userId: null,
-        documentId: 'doc_2',
-      });
     });
 
     test('if the document size exceeds the organization storage limit, an error is thrown and nothing is saved in the db', async () => {
@@ -377,6 +323,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService: inMemoryDocumentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       await expect(
@@ -442,6 +389,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       const [result1, result2] = await Promise.allSettled([
@@ -500,6 +448,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService: inMemoryDocumentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       await expect(
@@ -518,6 +467,54 @@ describe('documents usecases', () => {
 
       // Ensure no file is saved in the storage
       expect(inMemoryDocumentsStorageService._getStorage().size).to.eql(0);
+    });
+
+    test('when a document is added, a "document.created" event is triggered', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+      });
+
+      let documentIdIndex = 1;
+      const eventServices = createTestEventServices();
+      const createDocument = createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => `doc_${documentIdIndex++}`,
+        documentsStorageService: inMemoryStorageDriverFactory(),
+        taskServices,
+        eventServices,
+      });
+
+      await createDocument({
+        fileStream: createReadableStream({ content: 'content-1' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
+        userId: 'user-1',
+        organizationId: 'organization-1',
+      });
+
+      const emittedEvents = eventServices.getEmittedEvents();
+
+      expect(emittedEvents.length).to.eql(1);
+      const { eventName, payload } = emittedEvents[0]!;
+
+      expect(eventName).to.eql('document.created');
+      expect(payload.document).to.include({
+        id: 'doc_1',
+        organizationId: 'organization-1',
+        createdBy: 'user-1',
+        name: 'file.txt',
+        originalName: 'file.txt',
+        originalSize: 9,
+        mimeType: 'text/plain',
+      });
     });
   });
 
