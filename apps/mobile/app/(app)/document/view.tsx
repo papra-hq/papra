@@ -1,3 +1,3 @@
-import DocumentViewerScreen from '@/modules/documents-actions/screens/document-view.screen';
+import DocumentViewScreen from '@/modules/documents-actions/screens/document-view.screen';
 
-export default DocumentViewerScreen;
+export default DocumentViewScreen;

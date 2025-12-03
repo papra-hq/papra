@@ -85,10 +85,13 @@ export async function fetchDocument({
   documentId: string;
   apiClient: ApiClient;
 }) {
-  return apiClient<{ document: Document }>({
+  const { document } = await apiClient<{ document: Document }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
   });
+  return {
+    document: coerceDates(document),
+  };
 }
 
 export async function fetchDocumentFile({

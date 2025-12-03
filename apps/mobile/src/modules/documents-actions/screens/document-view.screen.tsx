@@ -25,7 +25,7 @@ type DocumentFile = {
   doc: CoerceDates<Document>;
 };
 
-export default function DocumentViewerScreen() {
+export default function DocumentViewScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ documentId: string; organizationId: string }>();
   const themeColors = useThemeColor();
@@ -34,13 +34,11 @@ export default function DocumentViewerScreen() {
   const apiClient = useApiClient();
   const authClient = useAuthClient();
   const { documentId, organizationId } = params;
-  const [loading, setLoading] = useState(true);
   const [documentFile, setDocumentFile] = useState<DocumentFile | null>(null);
-  const [loadingDoc, setLoadingDoc] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const loadDocumentFile = async (doc: CoerceDates<Document>) => {
     try {
-      setLoadingDoc(true);
       const baseUrl = await configLocalStorage.getApiServerBaseUrl();
       if (baseUrl == null) {
         throw new Error('Base URL not found');
@@ -61,12 +59,13 @@ export default function DocumentViewerScreen() {
         message: 'Failed to load document file',
       });
     } finally {
-      setLoadingDoc(false);
+      setLoading(false);
     }
   };
 
   const loadDocument = async () => {
     try {
+      setLoading(true);
       const { document } = await fetchDocument({ organizationId, documentId, apiClient });
 
       // Download file locally for viewer
@@ -138,7 +137,7 @@ export default function DocumentViewerScreen() {
             size={64}
             color={themeColors.mutedForeground}
           />
-          <Text style={styles.errorText}>Document not found</Text>
+          <Text style={styles.errorText}>Failed to load document</Text>
           <TouchableOpacity
             style={styles.errorButton}
             onPress={() => router.back()}
@@ -170,7 +169,7 @@ export default function DocumentViewerScreen() {
       </View>
 
       <View style={styles.pdfContainer}>
-        {loadingDoc
+        {loading
           ? (
               <View style={styles.pdfLoadingContainer}>
                 <ActivityIndicator size="large" color={themeColors.primary} />
