@@ -2,8 +2,9 @@ import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -34,51 +35,65 @@ export default function DocumentViewScreen() {
   const apiClient = useApiClient();
   const authClient = useAuthClient();
   const { documentId, organizationId } = params;
-  const [documentFile, setDocumentFile] = useState<DocumentFile | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
 
-  const loadDocumentFile = async (doc: CoerceDates<Document>) => {
-    try {
+  const documentQuery = useQuery({
+    queryKey: ['organizations', organizationId, 'documents', documentId],
+    queryFn: async () => {
+      if (organizationId == null || documentId == null) {
+        throw new Error('Organization ID and Document ID are required');
+      }
+      return fetchDocument({ organizationId, documentId, apiClient });
+    },
+    enabled: organizationId != null && documentId != null,
+  });
+
+  const documentFileQuery = useQuery({
+    queryKey: ['organizations', organizationId, 'documents', documentId, 'file'],
+    queryFn: async () => {
+      if (documentQuery.data == null) {
+        throw new Error('Document not loaded');
+      }
+
       const baseUrl = await configLocalStorage.getApiServerBaseUrl();
       if (baseUrl == null) {
         throw new Error('Base URL not found');
       }
 
       const fileUri = await fetchDocumentFile({
-        document: doc,
+        document: documentQuery.data.document,
         organizationId,
         baseUrl,
         authClient,
       });
 
-      setDocumentFile({ uri: fileUri, doc });
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
+      return {
+        uri: fileUri,
+        doc: documentQuery.data.document,
+      } as DocumentFile;
+    },
+    enabled: documentQuery.isSuccess && documentQuery.data != null,
+  });
+
+  const renderHeader = (documentName: string) => {
+    return (
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <MaterialCommunityIcons
+            name="close"
+            size={24}
+            color={themeColors.foreground}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {documentName}
+        </Text>
+        <View style={styles.headerSpacer} />
+      </View>
+    );
   };
-
-  const loadDocument = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { document } = await fetchDocument({ organizationId, documentId, apiClient });
-
-      // Download file locally for viewer
-      await loadDocumentFile(document);
-    } catch (error) {
-      console.error('Error loading document:', error);
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void loadDocument();
-  }, [documentId, organizationId]);
 
   const renderDocumentFile = (file: DocumentFile) => {
     if (file.doc.mimeType.startsWith('image/')) {
@@ -112,9 +127,14 @@ export default function DocumentViewScreen() {
     return <View style={styles.pdfViewer} />;
   };
 
-  if (loading) {
+  const isLoading = documentQuery.isLoading || documentFileQuery.isLoading;
+  const error = documentQuery.error ?? documentFileQuery.error;
+  const documentFile = documentFileQuery.data;
+
+  if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
+        {renderHeader('Document')}
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={themeColors.primary} />
           <Text style={styles.loadingText}>Loading document...</Text>
@@ -126,6 +146,7 @@ export default function DocumentViewScreen() {
   if (error != null) {
     return (
       <SafeAreaView style={styles.container}>
+        {renderHeader('Document')}
         <View style={styles.errorContainer}>
           <MaterialCommunityIcons
             name="file-pdf-box"
@@ -133,6 +154,14 @@ export default function DocumentViewScreen() {
             color={themeColors.mutedForeground}
           />
           <Text style={styles.errorText}>Failed to load document</Text>
+          <TouchableOpacity
+            style={styles.errorButton}
+            onPress={() => {
+              void documentQuery.refetch();
+            }}
+          >
+            <Text style={styles.errorButtonText}>Retry</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.errorButton}
             onPress={() => router.back()}
@@ -143,45 +172,17 @@ export default function DocumentViewScreen() {
       </SafeAreaView>
     );
   }
-  const documentName = documentFile?.doc.name ?? 'PDF Viewer';
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <MaterialCommunityIcons
-            name="close"
-            size={24}
-            color={themeColors.foreground}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          {documentName}
-        </Text>
-        <View style={styles.headerSpacer} />
-      </View>
 
-      <View style={styles.pdfContainer}>
-        {loading
-          ? (
-              <View style={styles.pdfLoadingContainer}>
-                <ActivityIndicator size="large" color={themeColors.primary} />
-                <Text style={styles.pdfLoadingText}>Loading document...</Text>
-              </View>
-            )
-          : documentFile
-            ? renderDocumentFile(documentFile)
-            : (
-                <View style={styles.pdfLoadingContainer}>
-                  <ActivityIndicator size="large" color={themeColors.primary} />
-                  <Text style={styles.pdfLoadingText}>Preparing document...</Text>
-                </View>
-              )}
-      </View>
-    </SafeAreaView>
-  );
+  if (documentFile != null) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader(documentFile.doc.name)}
+        <View style={styles.pdfContainer}>
+          {renderDocumentFile(documentFile)}
+        </View>
+      </SafeAreaView>
+    );
+  }
 }
 
 function createStyles({ themeColors }: { themeColors: ThemeColors }) {
