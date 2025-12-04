@@ -16,7 +16,7 @@ import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow } from './documents.usecases';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, trashDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -177,7 +177,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
@@ -192,26 +192,16 @@ function setupDeleteDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
-      await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
-
-      deferTriggerWebhooks({
-        webhookRepository,
-        organizationId,
-        event: 'document:deleted',
-        payload: { documentId, organizationId },
-      });
-
-      deferRegisterDocumentActivityLog({
+      await trashDocument({
         documentId,
-        event: 'deleted',
+        organizationId,
         userId,
-        documentActivityRepository,
+        documentsRepository,
+        eventServices,
       });
 
       return context.json({
