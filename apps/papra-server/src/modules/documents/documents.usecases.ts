@@ -507,3 +507,24 @@ export async function extractAndSaveDocumentFileContent({
 
   return { document: updatedDocument };
 }
+
+export async function trashDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+}) {
+  await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
+
+  eventServices.emitEvent({
+    eventName: 'document.trashed',
+    payload: { documentId, organizationId, trashedBy: userId },
+  });
+}
