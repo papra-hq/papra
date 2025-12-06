@@ -688,7 +688,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.billed-annually': '按年计费：${{ price }}',
   'subscriptions.upgrade-dialog.upgrade-now': '立即升级',
   'subscriptions.upgrade-dialog.promo-banner.title': '限时优惠',
-  'subscriptions.upgrade-dialog.promo-banner.description': '作为早期采用者，组织可永久获得所有方案 {{ percent }}% 折扣！优惠于 {{ days, >1:{days} 天, =1:1 天, less than 1 day }} 到期。',
+  'subscriptions.upgrade-dialog.promo-banner.description': '作为早期采用者，组织可永久获得所有方案 {{ percent }}% 折扣！优惠于 {{ days, >1:{days} 天, =1:1 天, 少于 1 天 }} 到期。',
 
   'subscriptions.plan.free.name': '免费方案',
   'subscriptions.plan.plus.name': 'Plus',

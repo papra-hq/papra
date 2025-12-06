@@ -2,4 +2,4 @@
 "@papra/docker": patch
 ---
 
-Added support for simplified chinese language
+Added support for Simplified Chinese language
