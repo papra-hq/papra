@@ -8,15 +8,13 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
-import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, trashDocument } from './documents.usecases';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -418,7 +416,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService }:
   );
 }
 
-function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
@@ -435,37 +433,21 @@ function setupUpdateDocumentRoute({ app, db }: RouteDefinitionContext) {
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
-      const updateData = context.req.valid('json');
+      const changes = context.req.valid('json');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
-      const { document } = await documentsRepository.updateDocument({
+      const { document } = await updateDocument({
         documentId,
         organizationId,
-        ...updateData,
-      });
-
-      deferTriggerWebhooks({
-        webhookRepository,
-        organizationId,
-        event: 'document:updated',
-        payload: { documentId, organizationId, ...updateData },
-      });
-
-      deferRegisterDocumentActivityLog({
-        documentId,
-        event: 'updated',
         userId,
-        documentActivityRepository,
-        eventData: {
-          updatedFields: Object.entries(updateData).filter(([_, value]) => value !== undefined).map(([key]) => key),
-        },
+        documentsRepository,
+        eventServices,
+        changes,
       });
 
       return context.json({ document: formatDocumentForApi({ document }) });

@@ -413,7 +413,6 @@ async function updateDocument({ documentId, organizationId, name, content, db }:
     .returning();
 
   if (isNil(document)) {
-    // This should never happen, but for type safety
     throw createDocumentNotFoundError();
   }
 
