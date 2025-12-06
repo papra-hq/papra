@@ -565,6 +565,7 @@ describe('documents usecases', () => {
         tagsRepository,
         webhookRepository,
         documentActivityRepository,
+        eventServices: createTestEventServices(),
       });
 
       const documentRecords = await db.select().from(documentsTable);
@@ -575,6 +576,71 @@ describe('documents usecases', () => {
         organizationId: 'organization-1',
         content: 'hello world', // The content is extracted and saved in the db
       });
+    });
+
+    test('a document.updated event is emitted when the document content is extracted and saved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+
+      await db.insert(documentsTable).values({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        originalStorageKey: 'organization-1/originals/document-1.txt',
+        mimeType: 'text/plain',
+        name: 'file-1.txt',
+        originalName: 'file-1.txt',
+        originalSha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+      });
+
+      await documentsStorageService.saveFile({
+        fileStream: createReadableStream({ content: 'hello world' }),
+        fileName: 'file-1.txt',
+        mimeType: 'text/plain',
+        storageKey: 'organization-1/originals/document-1.txt',
+      });
+
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await extractAndSaveDocumentFileContent({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        documentsRepository,
+        documentsStorageService,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
+        eventServices,
+      });
+
+      expect(
+        eventServices.getEmittedEvents(),
+      ).to.eql([{
+        eventName: 'document.updated',
+        payload: {
+          changes: {
+            content: 'hello world',
+          },
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          userId: undefined,
+        },
+      }]);
     });
   });
 
