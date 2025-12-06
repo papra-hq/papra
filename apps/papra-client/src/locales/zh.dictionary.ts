@@ -1,4 +1,6 @@
-export const translations = {
+import type { TranslationsDictionary } from '@/modules/i18n/locales.types';
+
+export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': '重置您的密码',
@@ -21,7 +23,7 @@ export const translations = {
   'auth.reset-password.form.new-password.min-length': '密码长度至少为 {{ minLength }} 个字符',
   'auth.reset-password.form.new-password.max-length': '密码长度不能超过 {{ maxLength }} 个字符',
   'auth.reset-password.form.submit': '重置密码',
-  
+
   'auth.email-provider.open': '打开 {{ provider }}',
 
   'auth.login.title': '登录 Papra',
@@ -64,7 +66,7 @@ export const translations = {
   'auth.register.form.name.required': '请输入您的姓名',
   'auth.register.form.name.max-length': '姓名长度不能超过 {{ maxLength }} 个字符',
   'auth.register.form.submit': '注册',
-  
+
   'auth.email-validation-required.title': '验证您的电子邮件',
   'auth.email-validation-required.description': '一封验证邮件已发送到您的电子邮件地址。请通过点击邮件中的链接来验证您的电子邮件地址。',
 
@@ -120,7 +122,7 @@ export const translations = {
   'organizations.list.deleted.deleted-at': '已删除 {{ date }}',
   'organizations.list.deleted.purge-at': '将于 {{ date }} 被永久删除',
   'organizations.list.deleted.days-remaining': '（剩余 {{ daysUntilPurge, =1:{daysUntilPurge} 天, {daysUntilPurge} 天 }}）',
-  
+
   'organizations.details.no-documents.title': '没有文档',
   'organizations.details.no-documents.description': '该组织中尚无文档。您可以开始上传一些文档。',
   'organizations.details.upload-documents': '上传文档',
@@ -289,7 +291,7 @@ export const translations = {
   'import-documents.title.pending': '{{ count }} / {{ total }} 个文档已导入',
   'import-documents.title.none': '导入文档',
   'import-documents.no-import-in-progress': '没有正在进行的文档导入',
-  
+
   'documents.deleted.title': '已删除的文档',
   'documents.deleted.empty.title': '没有已删除的文档',
   'documents.deleted.empty.description': '您没有已删除的文档。被删除的文档将在 {{ days }} 天内移至回收站。',
@@ -394,7 +396,7 @@ export const translations = {
   'tagging-rules.form.name.min-length': '请输入规则名称',
   'tagging-rules.form.name.max-length': '名称必须少于 64 个字符',
   'tagging-rules.form.description.label': '描述',
-  'tagging-rules.form.description.placeholder': "例如：名称中包含 'invoice' 的文档将被打标签",
+  'tagging-rules.form.description.placeholder': '例如：名称中包含 \'invoice\' 的文档将被打标签',
   'tagging-rules.form.description.max-length': '描述必须少于 256 个字符',
   'tagging-rules.form.conditions.label': '条件',
   'tagging-rules.form.conditions.description': '定义规则适用的条件。若无条件，规则将应用于所有文档',
@@ -715,4 +717,4 @@ export const translations = {
   'common.confirm-modal.type-to-confirm': '输入 "{{ text }}" 以确认',
   'common.tables.rows-per-page': '每页行数',
   'common.tables.pagination-info': '第 {{ currentPage }} 页，共 {{ totalPages }} 页',
-} as const;
+};
