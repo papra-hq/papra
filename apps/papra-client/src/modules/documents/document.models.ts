@@ -1,5 +1,6 @@
 import type { DocumentActivityEvent } from './documents.types';
 import { IN_MS } from '../shared/utils/units';
+import { DEFAULT_DOCUMENT_ICON } from './documents.constants';
 
 export const fileIcons: { mimeTypes: string[]; extensions: string[]; icon: string }[] = [
   {
@@ -88,7 +89,7 @@ export function getDocumentIcon({
   document,
   iconByMimeTypeMap = iconByFileType,
   iconByExtensionMap = iconByExtension,
-  defaultIcon = 'i-tabler-file',
+  defaultIcon = DEFAULT_DOCUMENT_ICON,
 }: { document: {
   mimeType?: string;
   name?: string;
