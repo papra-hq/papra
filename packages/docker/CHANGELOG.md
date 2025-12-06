@@ -1,5 +1,11 @@
 # @papra/docker
 
+## 25.11.1
+
+### Patch Changes
+
+- [#675](https://github.com/papra-hq/papra/pull/675) [`17d6e9a`](https://github.com/papra-hq/papra/commit/17d6e9aa6a7152f3ceac3e829884cbd511166b99) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for Simplified Chinese language
+
 ## 25.11.0
 
 ### Minor Changes
