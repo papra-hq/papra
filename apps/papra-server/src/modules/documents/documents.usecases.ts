@@ -528,3 +528,32 @@ export async function trashDocument({
     payload: { documentId, organizationId, trashedBy: userId },
   });
 }
+
+export async function updateDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+  changes,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId?: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+  changes: {
+    name?: string;
+    content?: string;
+  };
+}) {
+  // It throws if the document does not exist
+  const { document } = await documentsRepository.updateDocument({ documentId, organizationId, ...changes });
+
+  eventServices.emitEvent({
+    eventName: 'document.updated',
+    payload: { documentId, organizationId, userId, changes },
+  });
+
+  return { document };
+}

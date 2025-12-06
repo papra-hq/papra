@@ -16,7 +16,7 @@ import { createDocumentActivityRepository } from './document-activity/document-a
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, trashDocument } from './documents.usecases';
+import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, trashDocument, updateDocument } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
 
@@ -654,6 +654,53 @@ describe('documents usecases', () => {
         organizationId: 'organization-1',
         trashedBy: 'user-1',
       });
+    });
+  });
+
+  describe('updateDocument', () => {
+    test('when a document is updated, a "document.updated" event is triggered', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          content: 'Original content',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await updateDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+        changes: { name: 'new-name.txt', content: 'Updated content' },
+      });
+
+      expect(
+        eventServices.getEmittedEvents(),
+      ).to.eql([{
+        eventName: 'document.updated',
+        payload: {
+          changes: {
+            content: 'Updated content',
+            name: 'new-name.txt',
+          },
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          userId: 'user-1',
+        },
+      }]);
     });
   });
 });
