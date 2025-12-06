@@ -468,6 +468,7 @@ export async function extractAndSaveDocumentFileContent({
   tagsRepository,
   webhookRepository,
   documentActivityRepository,
+  eventServices,
 }: {
   documentId: string;
   ocrLanguages?: string[];
@@ -478,6 +479,7 @@ export async function extractAndSaveDocumentFileContent({
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
   documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -496,7 +498,7 @@ export async function extractAndSaveDocumentFileContent({
 
   const { text } = await extractDocumentText({ file, ocrLanguages });
 
-  const { document: updatedDocument } = await documentsRepository.updateDocument({ documentId, organizationId, content: text });
+  const { document: updatedDocument } = await updateDocument({ documentId, organizationId, changes: { content: text }, documentsRepository, eventServices });
 
   if (isNil(updatedDocument)) {
     // This should never happen, but for type safety
