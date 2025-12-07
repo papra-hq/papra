@@ -531,6 +531,27 @@ export async function trashDocument({
   });
 }
 
+export async function restoreDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+}) {
+  await documentsRepository.restoreDocument({ documentId, organizationId });
+
+  eventServices.emitEvent({
+    eventName: 'document.restored',
+    payload: { documentId, organizationId, restoredBy: userId },
+  });
+}
+
 export async function updateDocument({
   documentId,
   organizationId,

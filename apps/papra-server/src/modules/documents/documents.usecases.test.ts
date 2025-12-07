@@ -16,7 +16,7 @@ import { createDocumentActivityRepository } from './document-activity/document-a
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, trashDocument, updateDocument } from './documents.usecases';
+import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
 
@@ -720,6 +720,89 @@ describe('documents usecases', () => {
         organizationId: 'organization-1',
         trashedBy: 'user-1',
       });
+    });
+  });
+
+  describe('restoreDocument', () => {
+    test('users can restore a document from the trash, the document is no longer marked as deleted and the deletedBy and deletedAt fields are cleared', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          isDeleted: true,
+          deletedBy: 'user-1',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await restoreDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices: createTestEventServices(),
+      });
+
+      const documentRecords = await db.select().from(documentsTable);
+
+      expect(documentRecords.length).to.eql(1);
+      expect(documentRecords[0]).to.deep.include({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        isDeleted: false,
+        deletedBy: null,
+        deletedAt: null,
+      });
+    });
+
+    test('when a document is restored, a "document.restored" event is triggered', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          isDeleted: true,
+          deletedBy: 'user-1',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await restoreDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+      });
+
+      expect(
+        eventServices.getEmittedEvents(),
+      ).to.eql([{
+        eventName: 'document.restored',
+        payload: {
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          restoredBy: 'user-1',
+        },
+      }]);
     });
   });
 

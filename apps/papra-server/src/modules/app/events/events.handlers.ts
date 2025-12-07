@@ -2,6 +2,7 @@ import type { TrackingServices } from '../../tracking/tracking.services';
 import type { Database } from '../database/database.types';
 import type { EventServices } from './events.services';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from '../../documents/events/activity-log.document-created';
+import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../documents/events/activity-log.document-restored';
 import { registerInsertActivityLogOnDocumentTrashedHandler } from '../../documents/events/activity-log.document-trashed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
 import { registerTrackDocumentCreatedHandler } from '../../documents/events/tracking.document-created';
@@ -17,6 +18,7 @@ export function registerEventHandlers(deps: { trackingServices: TrackingServices
   registerTrackDocumentCreatedHandler(deps);
   registerTriggerWebhooksOnDocumentTrashedHandler(deps);
   registerInsertActivityLogOnDocumentTrashedHandler(deps);
+  registerInsertActivityLogOnDocumentRestoredHandler(deps);
   registerTriggerWebhooksOnDocumentUpdatedHandler(deps);
   registerInsertActivityLogOnDocumentUpdatedHandler(deps);
 }
