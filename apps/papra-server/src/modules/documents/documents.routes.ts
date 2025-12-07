@@ -8,13 +8,11 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
-import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, trashDocument, updateDocument } from './documents.usecases';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -209,7 +207,7 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   );
 }
 
-function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     requireAuthentication(),
@@ -224,7 +222,6 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -234,13 +231,12 @@ function setupRestoreDocumentRoute({ app, db }: RouteDefinitionContext) {
         throw createDocumentIsNotDeletedError();
       }
 
-      await documentsRepository.restoreDocument({ documentId, organizationId });
-
-      deferRegisterDocumentActivityLog({
+      await restoreDocument({
         documentId,
-        event: 'restored',
+        organizationId,
         userId,
-        documentActivityRepository,
+        documentsRepository,
+        eventServices,
       });
 
       return context.body(null, 204);
