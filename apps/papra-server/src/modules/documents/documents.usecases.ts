@@ -324,6 +324,8 @@ async function createNewDocument({
     throw error;
   }
 
+  const { document } = result;
+
   await taskServices.scheduleJob({
     taskName: 'extract-document-file-content',
     data: { documentId, organizationId, ocrLanguages },
@@ -331,7 +333,7 @@ async function createNewDocument({
 
   logger.info({ documentId, userId, organizationId, mimeType }, 'Document created');
 
-  return { document: result.document };
+  return { document };
 }
 
 export async function getDocumentOrThrow({
@@ -590,7 +592,7 @@ export async function updateDocument({
 
   eventServices.emitEvent({
     eventName: 'document.updated',
-    payload: { documentId, organizationId, userId, changes },
+    payload: { userId, changes, document },
   });
 
   return { document };

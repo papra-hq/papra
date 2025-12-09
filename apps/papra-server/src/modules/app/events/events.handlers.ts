@@ -1,6 +1,8 @@
+import type { DocumentSearchServices } from '../../documents/document-search/document-search.types';
 import type { TrackingServices } from '../../tracking/tracking.services';
 import type { Database } from '../database/database.types';
 import type { EventServices } from './events.services';
+import { registerSyncDocumentSearchEventHandlers } from '../../documents/document-search/events/sync-document-search.handlers';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from '../../documents/events/activity-log.document-created';
 import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../documents/events/activity-log.document-restored';
 import { registerInsertActivityLogOnDocumentTrashedHandler } from '../../documents/events/activity-log.document-trashed';
@@ -11,7 +13,7 @@ import { registerTriggerWebhooksOnDocumentTrashedHandler } from '../../documents
 import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents/events/webhook.document-updated';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
 
-export function registerEventHandlers(deps: { trackingServices: TrackingServices; eventServices: EventServices; db: Database }) {
+export function registerEventHandlers(deps: { trackingServices: TrackingServices; eventServices: EventServices; db: Database; documentSearchServices: DocumentSearchServices }) {
   registerTrackingUserCreatedEventHandler(deps);
   registerTriggerWebhooksOnDocumentCreatedHandler(deps);
   registerInsertActivityLogOnDocumentCreatedHandler(deps);
@@ -21,4 +23,5 @@ export function registerEventHandlers(deps: { trackingServices: TrackingServices
   registerInsertActivityLogOnDocumentRestoredHandler(deps);
   registerTriggerWebhooksOnDocumentUpdatedHandler(deps);
   registerInsertActivityLogOnDocumentUpdatedHandler(deps);
+  registerSyncDocumentSearchEventHandlers(deps);
 }

@@ -629,18 +629,10 @@ describe('documents usecases', () => {
       });
 
       expect(
-        eventServices.getEmittedEvents(),
-      ).to.eql([{
-        eventName: 'document.updated',
-        payload: {
-          changes: {
-            content: 'hello world',
-          },
-          documentId: 'document-1',
-          organizationId: 'organization-1',
-          userId: undefined,
-        },
-      }]);
+        eventServices.getEmittedEvents().map(({ eventName }) => (eventName)),
+      ).to.eql([
+        'document.updated',
+      ]);
     });
   });
 
@@ -821,6 +813,8 @@ describe('documents usecases', () => {
           originalName: 'file-1.txt',
           originalSha256Hash: 'hash',
           content: 'Original content',
+          createdAt: new Date('2025-12-10'),
+          updatedAt: new Date('2025-12-11'),
         }],
       });
 
@@ -838,18 +832,40 @@ describe('documents usecases', () => {
 
       expect(
         eventServices.getEmittedEvents(),
-      ).to.eql([{
-        eventName: 'document.updated',
-        payload: {
-          changes: {
-            content: 'Updated content',
-            name: 'new-name.txt',
+      ).to.eql(
+        [
+          {
+            eventName: 'document.updated',
+            payload: {
+              changes: {
+                content: 'Updated content',
+                name: 'new-name.txt',
+              },
+              document: {
+                content: 'Updated content',
+                createdAt: new Date('2025-12-10'),
+                createdBy: null,
+                deletedAt: null,
+                deletedBy: null,
+                fileEncryptionAlgorithm: null,
+                fileEncryptionKekVersion: null,
+                fileEncryptionKeyWrapped: null,
+                id: 'document-1',
+                isDeleted: false,
+                mimeType: 'text/plain',
+                name: 'new-name.txt',
+                organizationId: 'organization-1',
+                originalName: 'file-1.txt',
+                originalSha256Hash: 'hash',
+                originalSize: 0,
+                originalStorageKey: 'organization-1/originals/document-1.txt',
+                updatedAt: new Date('2025-12-11'),
+              },
+              userId: 'user-1',
+            },
           },
-          documentId: 'document-1',
-          organizationId: 'organization-1',
-          userId: 'user-1',
-        },
-      }]);
+        ],
+      );
     });
   });
 });
