@@ -13,4 +13,5 @@ export type DocumentEvents = {
       content?: string;
     };
   };
+  'document.deleted': { documentId: string; organizationId: string }; // Hard deleted from trash
 };

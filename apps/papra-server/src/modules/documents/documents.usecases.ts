@@ -368,26 +368,35 @@ export async function hardDeleteDocument({
   document,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
-  document: Pick<Document, 'id' | 'originalStorageKey'>;
+  document: Pick<Document, 'id' | 'originalStorageKey' | 'organizationId'>;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   await Promise.all([
     documentsRepository.hardDeleteDocument({ documentId: document.id }),
     documentsStorageService.deleteFile({ storageKey: document.originalStorageKey }),
   ]);
+
+  eventServices.emitEvent({
+    eventName: 'document.deleted',
+    payload: { documentId: document.id, organizationId: document.organizationId },
+  });
 }
 
 export async function deleteExpiredDocuments({
   documentsRepository,
   documentsStorageService,
+  eventServices,
   config,
   now = new Date(),
   logger = createLogger({ namespace: 'documents:deleteExpiredDocuments' }),
 }: {
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
   config: Config;
   now?: Date;
   logger?: Logger;
@@ -401,7 +410,7 @@ export async function deleteExpiredDocuments({
 
   await Promise.all(
     documents.map(async document => limit(async () => {
-      const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService }));
+      const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices }));
 
       if (error) {
         logger.error({ document, error }, 'Error while deleting expired document');
@@ -419,11 +428,13 @@ export async function deleteTrashDocument({
   organizationId,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
   documentId: string;
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -435,17 +446,19 @@ export async function deleteTrashDocument({
     throw createDocumentNotDeletedError();
   }
 
-  await hardDeleteDocument({ document, documentsRepository, documentsStorageService });
+  await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
 }
 
 export async function deleteAllTrashDocuments({
   organizationId,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   const { documents } = await documentsRepository.getAllOrganizationTrashDocuments({ organizationId });
 
@@ -454,7 +467,9 @@ export async function deleteAllTrashDocuments({
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(async document => limit(async () => hardDeleteDocument({ document, documentsRepository, documentsStorageService }))),
+    documents.map(async document => limit(async () => {
+      await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
+    })),
   );
 }
 
