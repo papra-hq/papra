@@ -15,9 +15,9 @@ export function registerInsertActivityLogOnDocumentUpdatedHandler({
   eventServices.onEvent({
     eventName: 'document.updated',
     handlerName: 'insert-activity-log',
-    async handler({ documentId, changes, userId }) {
+    async handler({ document, changes, userId }) {
       await registerDocumentActivityLog({
-        documentId,
+        documentId: document.id,
         event: 'updated',
         userId,
         documentActivityRepository,

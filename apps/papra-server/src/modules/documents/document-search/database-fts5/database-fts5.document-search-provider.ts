@@ -8,6 +8,7 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
 
   return {
     name: DATABASE_FTS5_DOCUMENT_SEARCH_PROVIDER_NAME,
+
     searchDocuments: async ({ searchQuery, organizationId, pageIndex, pageSize }) => {
       const { documents } = await documentsSearchRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
 
@@ -17,5 +18,18 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
         },
       };
     },
+
+    indexDocument: async ({ document }) => {
+      await documentsSearchRepository.indexDocument({ document });
+    },
+
+    updateDocument: async ({ document, documentId }) => {
+      await documentsSearchRepository.updateDocument({ documentId, document });
+    },
+
+    deleteDocument: async ({ documentId }) => {
+      await documentsSearchRepository.deleteDocument({ documentId });
+    },
+
   };
 }

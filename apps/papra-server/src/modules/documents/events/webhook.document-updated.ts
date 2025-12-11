@@ -15,14 +15,14 @@ export function registerTriggerWebhooksOnDocumentUpdatedHandler({
   eventServices.onEvent({
     eventName: 'document.updated',
     handlerName: 'trigger-webhooks',
-    async handler({ documentId, organizationId, changes }) {
+    async handler({ document, changes }) {
       await triggerWebhooks({
         webhookRepository,
-        organizationId,
+        organizationId: document.organizationId,
         event: 'document:updated',
         payload: {
-          documentId,
-          organizationId,
+          documentId: document.id,
+          organizationId: document.organizationId,
           ...changes,
         },
       });

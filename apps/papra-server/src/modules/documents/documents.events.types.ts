@@ -5,9 +5,8 @@ export type DocumentEvents = {
   'document.trashed': { documentId: string; organizationId: string; trashedBy: string }; // Soft deleted by moving to trash
   'document.restored': { documentId: string; organizationId: string; restoredBy: string };
   'document.updated': {
-    documentId: string;
-    organizationId: string;
     userId?: string;
+    document: Document;
     changes: {
       name?: string;
       content?: string;
