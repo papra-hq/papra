@@ -294,6 +294,7 @@ async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new
   const documents = await db.select({
     id: documentsTable.id,
     originalStorageKey: documentsTable.originalStorageKey,
+    organizationId: documentsTable.organizationId,
   }).from(documentsTable).where(
     and(
       eq(documentsTable.isDeleted, true),
@@ -343,6 +344,7 @@ async function getAllOrganizationTrashDocuments({ organizationId, db }: { organi
   const documents = await db.select({
     id: documentsTable.id,
     originalStorageKey: documentsTable.originalStorageKey,
+    organizationId: documentsTable.organizationId,
   }).from(documentsTable).where(
     and(
       eq(documentsTable.organizationId, organizationId),

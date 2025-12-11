@@ -361,7 +361,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   );
 }
 
-function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
+function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, eventServices }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     requireAuthentication(),
@@ -379,7 +379,7 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService }: Rou
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await deleteTrashDocument({ documentId, organizationId, documentsRepository, documentsStorageService });
+      await deleteTrashDocument({ documentId, organizationId, documentsRepository, documentsStorageService, eventServices });
 
       return context.json({
         success: true,
@@ -388,7 +388,7 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService }: Rou
   );
 }
 
-function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
+function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService, eventServices }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     requireAuthentication(),
@@ -405,7 +405,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService }:
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService });
+      await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService, eventServices });
 
       return context.body(null, 204);
     },
