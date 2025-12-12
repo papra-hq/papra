@@ -2,6 +2,7 @@ import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
   Modal,
@@ -21,14 +22,12 @@ type DocumentActionSheetProps = {
   visible: boolean;
   document: CoerceDates<Document> | undefined;
   onClose: () => void;
-  onView: () => void;
 };
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
-  onView,
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
@@ -61,6 +60,17 @@ export function DocumentActionSheet({
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+    });
+  };
+
+  const handleView = async () => {
+    onClose();
+    router.push({
+      pathname: '/(app)/document/view',
+      params: {
+        documentId: document.id,
+        organizationId: document.organizationId,
+      },
     });
   };
 
@@ -166,9 +176,9 @@ export function DocumentActionSheet({
                 {isViewable && (
                   <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => {
+                    onPress={async () => {
                       onClose();
-                      onView();
+                      await handleView();
                     }}
                     activeOpacity={0.7}
                   >

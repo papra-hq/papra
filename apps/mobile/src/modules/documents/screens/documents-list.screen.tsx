@@ -85,7 +85,6 @@ export function DocumentsListScreen() {
           visible={true}
           document={onDocumentActionSheet}
           onClose={() => setOnDocumentActionSheet(undefined)}
-          onView={() => {}}
         />
       )}
       <View style={styles.header}>
