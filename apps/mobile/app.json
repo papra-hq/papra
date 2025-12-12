@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.papra.android"
+      "package": "app.papra.android"
     },
     "web": {
       "output": "static",
