@@ -1,3 +1,4 @@
+import type { LocalDocument } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import * as DocumentPicker from 'expo-document-picker';
 import {
@@ -14,7 +15,6 @@ import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { uploadDocument } from '../documents.services';
-import { LocalDocument } from '@/modules/api/api.models';
 
 type ImportDrawerProps = {
   visible: boolean;

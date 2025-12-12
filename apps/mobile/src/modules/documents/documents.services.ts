@@ -1,21 +1,17 @@
 import type { ApiClient } from '../api/api.client';
-import type { CoerceDates } from '../api/api.models';
+import type { CoerceDates, LocalDocument } from '../api/api.models';
 import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
-import { coerceDates, LocalDocument } from '../api/api.models';
+import { coerceDates } from '../api/api.models';
 
-export function getFormData(localDocuments: LocalDocument[]): FormData {
+export function getFormData(localDocument: LocalDocument): FormData {
   const formData = new FormData();
-
-  localDocuments.forEach(localDocument => {
-    formData.append('file', {
-      uri: localDocument.uri,
-      name: localDocument.name,
-      type: localDocument.type,
-    } as any);
-  });
-
+  formData.append('file', {
+    uri: localDocument.uri,
+    name: localDocument.name,
+    type: localDocument.type,
+  } as unknown as Blob);
   return formData;
 }
 
@@ -31,7 +27,7 @@ export async function uploadDocument({
   const { document } = await apiClient<{ document: Document }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
-    body: getFormData([file]),
+    body: getFormData(file),
   });
 
   return {
