@@ -1,31 +1,33 @@
 import type { ApiClient } from '../api/api.client';
-import type { CoerceDates } from '../api/api.models';
+import type { CoerceDates, LocalDocument } from '../api/api.models';
 import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
 
-export function getFormData(pojo: Record<string, string | Blob>): FormData {
+export function getFormData(localDocument: LocalDocument): FormData {
   const formData = new FormData();
-  Object.entries(pojo).forEach(([key, value]) => formData.append(key, value));
+  formData.append('file', {
+    uri: localDocument.uri,
+    name: localDocument.name,
+    type: localDocument.type,
+  } as unknown as Blob);
   return formData;
 }
 
 export async function uploadDocument({
   file,
   organizationId,
-
   apiClient,
 }: {
-  file: Blob;
+  file: LocalDocument;
   organizationId: string;
-
   apiClient: ApiClient;
 }) {
   const { document } = await apiClient<{ document: Document }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
-    body: getFormData({ file }),
+    body: getFormData(file),
   });
 
   return {
