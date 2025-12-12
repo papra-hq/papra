@@ -20,7 +20,7 @@ export function createAuthClient() {
     // we can't spread the client because it is a proxy object
     signIn: client.signIn,
     signUp: client.signUp,
-    forgetPassword: client.forgetPassword,
+    requestPasswordReset: client.requestPasswordReset,
     resetPassword: client.resetPassword,
     sendVerificationEmail: client.sendVerificationEmail,
     useSession: client.useSession,
@@ -41,7 +41,7 @@ export const {
   signIn,
   signUp,
   signOut,
-  forgetPassword,
+  requestPasswordReset,
   resetPassword,
   sendVerificationEmail,
 } = buildTimeConfig.isDemoMode

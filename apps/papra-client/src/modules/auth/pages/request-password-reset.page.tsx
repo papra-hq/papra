@@ -9,7 +9,7 @@ import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
-import { forgetPassword } from '../auth.services';
+import { requestPasswordReset } from '../auth.services';
 import { OpenEmailProvider } from '../components/open-email-provider.component';
 
 export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) => Promise<void> }> = (props) => {
@@ -64,7 +64,7 @@ export const RequestPasswordResetPage: Component = () => {
   });
 
   const onPasswordResetRequested = async ({ email }: { email: string }) => {
-    const { error } = await forgetPassword({
+    const { error } = await requestPasswordReset({
       email,
       redirectTo: buildUrl({
         path: '/reset-password',

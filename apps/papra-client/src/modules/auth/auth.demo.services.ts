@@ -17,7 +17,7 @@ export function createDemoAuthClient() {
     },
     signOut: () => Promise.resolve({}),
     signUp: () => Promise.resolve({}),
-    forgetPassword: () => Promise.resolve({}),
+    requestPasswordReset: () => Promise.resolve({}),
     resetPassword: () => Promise.resolve({}),
     sendVerificationEmail: () => Promise.resolve({}),
   };

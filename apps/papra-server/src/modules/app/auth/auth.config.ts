@@ -2,6 +2,7 @@ import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
 import { booleanishSchema } from '../../config/config.schemas';
 import { parseJson } from '../../intake-emails/intake-emails.schemas';
+import { DEFAULT_AUTH_SECRET } from './auth.constants';
 
 const customOAuthProviderSchema = z.object({
   providerId: z.string(),
@@ -26,9 +27,9 @@ const customOAuthProviderSchema = z.object({
 
 export const authConfig = {
   secret: {
-    doc: 'The secret for the auth',
-    schema: z.string(),
-    default: 'change-me-for-god-sake',
+    doc: 'The secret for the auth, it should be at least 32 characters long, you can generate a secure one using `openssl rand -hex 48`',
+    schema: z.string({ required_error: 'Please provide an auth secret using the AUTH_SECRET environment variable, you can use `openssl rand -hex 48` to generate a secure one' }).min(32),
+    default: DEFAULT_AUTH_SECRET,
     env: 'AUTH_SECRET',
   },
   isRegistrationEnabled: {

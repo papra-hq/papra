@@ -1,11 +1,11 @@
 import type { ConfigDefinition } from 'figue';
 import process from 'node:process';
-import { safelySync } from '@corentinth/chisels';
+import { memoizeOnce, safelySync } from '@corentinth/chisels';
 import { loadConfig } from 'c12';
 import { defineConfig } from 'figue';
-import { memoize } from 'lodash-es';
 import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
+import { ensureAuthSecretIsNotDefaultInProduction } from '../app/auth/auth.config.models';
 import { databaseConfig } from '../app/database/database.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
@@ -20,6 +20,7 @@ import { isString } from '../shared/utils';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
+import { exitProcessDueToConfigError, validateParsedConfig } from './config.models';
 import { booleanishSchema, trustedOriginsSchema } from './config.schemas';
 
 export const configDefinition = {
@@ -137,18 +138,25 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
   const [configResult, configError] = safelySync(() => defineConfig(configDefinition, { envSource: env, defaults: configFromFile }));
 
   if (configError) {
-    logger.error({ error: configError }, `Invalid config: ${configError.message}`);
-    process.exit(1);
+    exitProcessDueToConfigError({ error: configError, logger });
   }
 
   const { config } = configResult;
+
+  validateParsedConfig({
+    config,
+    logger,
+    validators: [
+      ensureAuthSecretIsNotDefaultInProduction,
+    ],
+  });
 
   return { config };
 }
 
 // Permit to load the default config, regardless of environment variables, and config files
 // memoized to avoid re-parsing the config definition
-export const loadDryConfig = memoize(() => {
+export const loadDryConfig = memoizeOnce(() => {
   const { config } = defineConfig(configDefinition);
 
   return { config };
