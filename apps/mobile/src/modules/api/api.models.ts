@@ -41,3 +41,9 @@ export function coerceDates<T extends Record<string, unknown>>(obj: T): CoerceDa
     ...('scheduledPurgeAt' in obj ? { scheduledPurgeAt: coerceDateOrUndefined(obj.scheduledPurgeAt) } : {}),
   } as CoerceDates<T>;
 }
+
+export type LocalDocument = {
+  uri: string;
+  name: string;
+  type: string | undefined;
+};

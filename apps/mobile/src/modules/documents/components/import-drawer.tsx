@@ -1,6 +1,5 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import * as DocumentPicker from 'expo-document-picker';
-import { File } from 'expo-file-system';
 import {
   Modal,
   StyleSheet,
@@ -15,6 +14,7 @@ import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { uploadDocument } from '../documents.services';
+import { LocalDocument } from '@/modules/api/api.models';
 
 type ImportDrawerProps = {
   visible: boolean;
@@ -58,12 +58,16 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
         return;
       }
 
-      const [pickerFile] = result.assets;
+      const pickerFile = result.assets[0];
       if (!pickerFile) {
         return;
       }
 
-      const file = new File(pickerFile.uri);
+      const file: LocalDocument = {
+        uri: pickerFile.uri,
+        name: pickerFile.name,
+        type: pickerFile.mimeType,
+      };
 
       await uploadDocument({ file, apiClient, organizationId: currentOrganizationId });
       await queryClient.invalidateQueries({ queryKey: ['organizations', currentOrganizationId, 'documents'] });
