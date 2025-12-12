@@ -1,12 +1,10 @@
 import type { Logger } from '../../shared/logger/logger';
-import type { UserEvents } from '../../users/users.events.types';
+import type { AppEvents } from './events.types';
 import { safely } from '@corentinth/chisels';
 import { createError } from '../../shared/errors/errors';
 import { createLogger, wrapWithLoggerContext } from '../../shared/logger/logger';
 import { generateId } from '../../shared/random/ids';
 import { isNil } from '../../shared/utils';
-
-type AppEvents = UserEvents;
 
 type HandlerMeta = {
   emittedAt: Date;

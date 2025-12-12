@@ -2,10 +2,10 @@ import type { PlansRepository } from '../plans/plans.repository';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
-import { nextTick } from '../shared/async/defer.test-utils';
 import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -13,11 +13,10 @@ import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { documentActivityLogTable } from './document-activity/document-activity.table';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent } from './documents.usecases';
+import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
 
@@ -43,6 +42,7 @@ describe('documents usecases', () => {
         generateDocumentId: () => 'doc_1',
         documentsStorageService,
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -104,6 +104,7 @@ describe('documents usecases', () => {
         generateDocumentId: () => `doc_${documentIdIndex++}`,
         documentsStorageService,
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -208,6 +209,7 @@ describe('documents usecases', () => {
         config,
         taskServices,
         documentsStorageService: inMemoryStorageDriverFactory(),
+        eventServices: createTestEventServices(),
       });
 
       // 3. Re-create the document
@@ -270,6 +272,7 @@ describe('documents usecases', () => {
           },
         },
         taskServices,
+        eventServices: createTestEventServices(),
       });
 
       const userId = 'user-1';
@@ -292,63 +295,6 @@ describe('documents usecases', () => {
       await expect(
         documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' }),
       ).rejects.toThrow('File not found');
-    });
-
-    test('when a document is created by a user, a document activity log is registered with the user id', async () => {
-      const taskServices = createInMemoryTaskServices();
-      const { db } = await createInMemoryDatabase({
-        users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-      });
-
-      const config = overrideConfig({
-        organizationPlans: { isFreePlanUnlimited: true },
-      });
-
-      let documentIdIndex = 1;
-      const createDocument = createDocumentCreationUsecase({
-        db,
-        config,
-        generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: inMemoryStorageDriverFactory(),
-        taskServices,
-      });
-
-      await createDocument({
-        fileStream: createReadableStream({ content: 'content-1' }),
-        fileName: 'file.txt',
-        mimeType: 'text/plain',
-        userId: 'user-1',
-        organizationId: 'organization-1',
-      });
-
-      await createDocument({
-        fileStream: createReadableStream({ content: 'content-2' }),
-        fileName: 'file.txt',
-        mimeType: 'text/plain',
-        organizationId: 'organization-1',
-      });
-
-      await nextTick();
-
-      const documentActivityLogRecords = await db.select().from(documentActivityLogTable);
-
-      expect(documentActivityLogRecords.length).to.eql(2);
-
-      expect(documentActivityLogRecords[0]).to.deep.include({
-        event: 'created',
-        eventData: null,
-        userId: 'user-1',
-        documentId: 'doc_1',
-      });
-
-      expect(documentActivityLogRecords[1]).to.deep.include({
-        event: 'created',
-        eventData: null,
-        userId: null,
-        documentId: 'doc_2',
-      });
     });
 
     test('if the document size exceeds the organization storage limit, an error is thrown and nothing is saved in the db', async () => {
@@ -377,6 +323,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService: inMemoryDocumentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       await expect(
@@ -442,6 +389,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       const [result1, result2] = await Promise.allSettled([
@@ -500,6 +448,7 @@ describe('documents usecases', () => {
         taskServices,
         plansRepository,
         documentsStorageService: inMemoryDocumentsStorageService,
+        eventServices: createTestEventServices(),
       });
 
       await expect(
@@ -518,6 +467,54 @@ describe('documents usecases', () => {
 
       // Ensure no file is saved in the storage
       expect(inMemoryDocumentsStorageService._getStorage().size).to.eql(0);
+    });
+
+    test('when a document is added, a "document.created" event is triggered', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+      });
+
+      let documentIdIndex = 1;
+      const eventServices = createTestEventServices();
+      const createDocument = createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: () => `doc_${documentIdIndex++}`,
+        documentsStorageService: inMemoryStorageDriverFactory(),
+        taskServices,
+        eventServices,
+      });
+
+      await createDocument({
+        fileStream: createReadableStream({ content: 'content-1' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
+        userId: 'user-1',
+        organizationId: 'organization-1',
+      });
+
+      const emittedEvents = eventServices.getEmittedEvents();
+
+      expect(emittedEvents.length).to.eql(1);
+      const { eventName, payload } = emittedEvents[0]!;
+
+      expect(eventName).to.eql('document.created');
+      expect(payload.document).to.include({
+        id: 'doc_1',
+        organizationId: 'organization-1',
+        createdBy: 'user-1',
+        name: 'file.txt',
+        originalName: 'file.txt',
+        originalSize: 9,
+        mimeType: 'text/plain',
+      });
     });
   });
 
@@ -568,6 +565,7 @@ describe('documents usecases', () => {
         tagsRepository,
         webhookRepository,
         documentActivityRepository,
+        eventServices: createTestEventServices(),
       });
 
       const documentRecords = await db.select().from(documentsTable);
@@ -578,6 +576,296 @@ describe('documents usecases', () => {
         organizationId: 'organization-1',
         content: 'hello world', // The content is extracted and saved in the db
       });
+    });
+
+    test('a document.updated event is emitted when the document content is extracted and saved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const taggingRulesRepository = createTaggingRulesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
+
+      await db.insert(documentsTable).values({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        originalStorageKey: 'organization-1/originals/document-1.txt',
+        mimeType: 'text/plain',
+        name: 'file-1.txt',
+        originalName: 'file-1.txt',
+        originalSha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+      });
+
+      await documentsStorageService.saveFile({
+        fileStream: createReadableStream({ content: 'hello world' }),
+        fileName: 'file-1.txt',
+        mimeType: 'text/plain',
+        storageKey: 'organization-1/originals/document-1.txt',
+      });
+
+      const webhookRepository = createWebhookRepository({ db });
+      const documentActivityRepository = createDocumentActivityRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await extractAndSaveDocumentFileContent({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        documentsRepository,
+        documentsStorageService,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookRepository,
+        documentActivityRepository,
+        eventServices,
+      });
+
+      expect(
+        eventServices.getEmittedEvents().map(({ eventName }) => (eventName)),
+      ).to.eql([
+        'document.updated',
+      ]);
+    });
+  });
+
+  describe('trashDocument', () => {
+    test('users can soft delete a document by moving it to the trash', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await trashDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices: createTestEventServices(),
+      });
+
+      const documentRecords = await db.select().from(documentsTable);
+
+      expect(documentRecords.length).to.eql(1);
+      expect(documentRecords[0]).to.deep.include({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        isDeleted: true,
+        deletedBy: 'user-1',
+      });
+    });
+
+    test('when a document is trashed, a "document.trashed" event is triggered', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await trashDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+      });
+
+      const emittedEvents = eventServices.getEmittedEvents();
+
+      expect(emittedEvents.length).to.eql(1);
+      const { eventName, payload } = emittedEvents[0]!;
+
+      expect(eventName).to.eql('document.trashed');
+      expect(payload).to.deep.include({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        trashedBy: 'user-1',
+      });
+    });
+  });
+
+  describe('restoreDocument', () => {
+    test('users can restore a document from the trash, the document is no longer marked as deleted and the deletedBy and deletedAt fields are cleared', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          isDeleted: true,
+          deletedBy: 'user-1',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await restoreDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices: createTestEventServices(),
+      });
+
+      const documentRecords = await db.select().from(documentsTable);
+
+      expect(documentRecords.length).to.eql(1);
+      expect(documentRecords[0]).to.deep.include({
+        id: 'document-1',
+        organizationId: 'organization-1',
+        isDeleted: false,
+        deletedBy: null,
+        deletedAt: null,
+      });
+    });
+
+    test('when a document is restored, a "document.restored" event is triggered', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          isDeleted: true,
+          deletedBy: 'user-1',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await restoreDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+      });
+
+      expect(
+        eventServices.getEmittedEvents(),
+      ).to.eql([{
+        eventName: 'document.restored',
+        payload: {
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          restoredBy: 'user-1',
+        },
+      }]);
+    });
+  });
+
+  describe('updateDocument', () => {
+    test('when a document is updated, a "document.updated" event is triggered', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          content: 'Original content',
+          createdAt: new Date('2025-12-10'),
+          updatedAt: new Date('2025-12-11'),
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      await updateDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+        changes: { name: 'new-name.txt', content: 'Updated content' },
+      });
+
+      expect(
+        eventServices.getEmittedEvents(),
+      ).to.eql(
+        [
+          {
+            eventName: 'document.updated',
+            payload: {
+              changes: {
+                content: 'Updated content',
+                name: 'new-name.txt',
+              },
+              document: {
+                content: 'Updated content',
+                createdAt: new Date('2025-12-10'),
+                createdBy: null,
+                deletedAt: null,
+                deletedBy: null,
+                fileEncryptionAlgorithm: null,
+                fileEncryptionKekVersion: null,
+                fileEncryptionKeyWrapped: null,
+                id: 'document-1',
+                isDeleted: false,
+                mimeType: 'text/plain',
+                name: 'new-name.txt',
+                organizationId: 'organization-1',
+                originalName: 'file-1.txt',
+                originalSha256Hash: 'hash',
+                originalSize: 0,
+                originalStorageKey: 'organization-1/originals/document-1.txt',
+                updatedAt: new Date('2025-12-11'),
+              },
+              userId: 'user-1',
+            },
+          },
+        ],
+      );
     });
   });
 });

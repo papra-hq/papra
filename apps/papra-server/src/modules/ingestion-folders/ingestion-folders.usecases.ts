@@ -1,5 +1,6 @@
 import type { Stats } from 'node:fs';
 import type { Database } from '../app/database/database.types';
+import type { EventServices } from '../app/events/events.services';
 import type { Config } from '../config/config.types';
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
@@ -30,12 +31,14 @@ export function createIngestionFolderWatcher({
   db,
   taskServices,
   documentsStorageService,
+  eventServices,
 }: {
   config: Config;
   logger?: Logger;
   db: Database;
   taskServices: TaskServices;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   const { folderRootPath, watcher: { usePolling, pollingInterval }, processingConcurrency } = config.ingestionFolder;
 
@@ -46,7 +49,7 @@ export function createIngestionFolderWatcher({
   return {
     startWatchingIngestionFolders: async () => {
       const organizationsRepository = createOrganizationsRepository({ db });
-      const createDocument = createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService });
+      const createDocument = createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService, eventServices });
 
       const ignored = await buildPathIgnoreFunction({ config, cwd, organizationsRepository });
 

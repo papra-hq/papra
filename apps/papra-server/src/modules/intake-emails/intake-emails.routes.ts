@@ -152,7 +152,7 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskServices, documentsStorageService }: RouteDefinitionContext) {
+function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsStorageService, eventServices }: RouteDefinitionContext) {
   app.post(
     INTAKE_EMAILS_INGEST_ROUTE,
     validateFormData(z.object({
@@ -206,8 +206,8 @@ function setupIngestIntakeEmailRoute({ app, db, config, trackingServices, taskSe
         documentsStorageService,
         db,
         config,
-        trackingServices,
         taskServices,
+        eventServices,
       });
 
       await processIntakeEmailIngestion({

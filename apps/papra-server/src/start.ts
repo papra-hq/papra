@@ -30,19 +30,16 @@ async function startWebMode({ logger, ...dependencies }: { logger: Logger } & Gl
   });
 }
 
-async function startWorkerMode({ logger, config, db, taskServices, documentsStorageService }: { logger: Logger } & GlobalDependencies) {
+async function startWorkerMode({ logger, ...deps }: { logger: Logger } & GlobalDependencies) {
+  const { taskServices, config } = deps;
+
   if (config.ingestionFolder.isEnabled) {
-    const { startWatchingIngestionFolders } = createIngestionFolderWatcher({
-      taskServices,
-      config,
-      db,
-      documentsStorageService,
-    });
+    const { startWatchingIngestionFolders } = createIngestionFolderWatcher(deps);
 
     await startWatchingIngestionFolders();
   }
 
-  await registerTaskDefinitions({ taskServices, db, config, documentsStorageService });
+  await registerTaskDefinitions(deps);
 
   taskServices.start();
   logger.info('Worker started');
@@ -66,7 +63,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
 
   // --- Services initialization
   await taskServices.initialize();
-  registerEventHandlers({ eventServices, trackingServices });
+  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices });
 
   return {
     config,

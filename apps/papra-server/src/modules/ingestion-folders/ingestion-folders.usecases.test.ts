@@ -1,6 +1,7 @@
 import { safely } from '@corentinth/chisels';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
@@ -52,7 +53,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
         });
 
         // Check database
@@ -155,7 +156,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
         });
 
         // Check database
@@ -259,7 +260,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
         }));
 
         expect(error).to.deep.equal(createInvalidPostProcessingStrategyError({ strategy: 'unknown' }));
@@ -337,7 +338,7 @@ describe('ingestion-folders usecases', () => {
               throw new Error('File not found');
             },
           },
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
         });
 
         // Check logs
@@ -477,7 +478,7 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices }),
+          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
         });
 
         // Check database

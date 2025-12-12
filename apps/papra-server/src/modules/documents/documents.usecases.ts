@@ -1,5 +1,6 @@
 import type { Readable } from 'node:stream';
 import type { Database } from '../app/database/database.types';
+import type { EventServices } from '../app/events/events.services';
 import type { Config } from '../config/config.types';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
@@ -7,7 +8,6 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TaskServices } from '../tasks/tasks.services';
-import type { TrackingServices } from '../tracking/tracking.services';
 import type { WebhookRepository } from '../webhooks/webhook.repository';
 import type { DocumentActivityRepository } from './document-activity/document-activity.repository';
 import type { DocumentsRepository } from './documents.repository';
@@ -25,16 +25,13 @@ import { createLogger } from '../shared/logger/logger';
 import { createByteCounter } from '../shared/streams/byte-counter';
 import { createSha256HashTransformer } from '../shared/streams/stream-hash';
 import { collectStreamToFile } from '../shared/streams/stream.convertion';
-import { isDefined, isNil } from '../shared/utils';
+import { isNil } from '../shared/utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
-import { createTrackingServices } from '../tracking/tracking.services';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
-import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { deferRegisterDocumentActivityLog } from './document-activity/document-activity.usecases';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
 import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -56,11 +53,11 @@ export async function createDocument({
   generateDocumentId = generateDocumentIdImpl,
   plansRepository,
   subscriptionsRepository,
-  trackingServices,
   taggingRulesRepository,
   tagsRepository,
   webhookRepository,
   documentActivityRepository,
+  eventServices,
   taskServices,
   logger = createLogger({ namespace: 'documents:usecases' }),
 }: {
@@ -75,11 +72,11 @@ export async function createDocument({
   generateDocumentId?: () => string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
-  trackingServices: TrackingServices;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
   documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   taskServices: TaskServices;
   logger?: Logger;
 }) {
@@ -158,30 +155,14 @@ export async function createDocument({
         plansRepository,
         subscriptionsRepository,
         documentId,
-        trackingServices,
         taskServices,
         ocrLanguages,
         logger,
       });
 
-  deferRegisterDocumentActivityLog({
-    documentId: document.id,
-    event: 'created',
-    userId,
-    documentActivityRepository,
-  });
-
-  deferTriggerWebhooks({
-    webhookRepository,
-    organizationId,
-    event: 'document:created',
-    payload: {
-      documentId: document.id,
-      organizationId,
-      name: document.name,
-      createdAt: document.createdAt,
-      updatedAt: document.updatedAt,
-    },
+  eventServices.emitEvent({
+    eventName: 'document.created',
+    payload: { document },
   });
 
   return { document };
@@ -195,18 +176,19 @@ export function createDocumentCreationUsecase({
   config,
   taskServices,
   documentsStorageService,
+  eventServices,
   ...initialDeps
 }: {
   db: Database;
   taskServices: TaskServices;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
   config: Config;
 } & Partial<DocumentUsecaseDependencies>) {
   const deps = {
     documentsRepository: initialDeps.documentsRepository ?? createDocumentsRepository({ db }),
     plansRepository: initialDeps.plansRepository ?? createPlansRepository({ config }),
     subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
-    trackingServices: initialDeps.trackingServices ?? createTrackingServices({ config }),
     taggingRulesRepository: initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
     webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
@@ -223,7 +205,7 @@ export function createDocumentCreationUsecase({
     mimeType: string;
     userId?: string;
     organizationId: string;
-  }) => createDocument({ taskServices, documentsStorageService, ...args, ...deps });
+  }) => createDocument({ taskServices, documentsStorageService, eventServices, ...args, ...deps });
 }
 
 async function handleExistingDocument({
@@ -284,7 +266,6 @@ async function createNewDocument({
   documentsStorageService,
   newFileStorageContext,
   documentId,
-  trackingServices,
   taskServices,
   ocrLanguages = [],
   logger,
@@ -300,7 +281,6 @@ async function createNewDocument({
   documentsStorageService: DocumentStorageService;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
-  trackingServices: TrackingServices;
   newFileStorageContext: DocumentStorageContext;
   taskServices: TaskServices;
   ocrLanguages?: string[];
@@ -344,18 +324,16 @@ async function createNewDocument({
     throw error;
   }
 
+  const { document } = result;
+
   await taskServices.scheduleJob({
     taskName: 'extract-document-file-content',
     data: { documentId, organizationId, ocrLanguages },
   });
 
-  if (isDefined(userId)) {
-    trackingServices.captureUserEvent({ userId, event: 'Document created' });
-  }
-
   logger.info({ documentId, userId, organizationId, mimeType }, 'Document created');
 
-  return { document: result.document };
+  return { document };
 }
 
 export async function getDocumentOrThrow({
@@ -392,26 +370,35 @@ export async function hardDeleteDocument({
   document,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
-  document: Pick<Document, 'id' | 'originalStorageKey'>;
+  document: Pick<Document, 'id' | 'originalStorageKey' | 'organizationId'>;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   await Promise.all([
     documentsRepository.hardDeleteDocument({ documentId: document.id }),
     documentsStorageService.deleteFile({ storageKey: document.originalStorageKey }),
   ]);
+
+  eventServices.emitEvent({
+    eventName: 'document.deleted',
+    payload: { documentId: document.id, organizationId: document.organizationId },
+  });
 }
 
 export async function deleteExpiredDocuments({
   documentsRepository,
   documentsStorageService,
+  eventServices,
   config,
   now = new Date(),
   logger = createLogger({ namespace: 'documents:deleteExpiredDocuments' }),
 }: {
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
   config: Config;
   now?: Date;
   logger?: Logger;
@@ -425,7 +412,7 @@ export async function deleteExpiredDocuments({
 
   await Promise.all(
     documents.map(async document => limit(async () => {
-      const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService }));
+      const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices }));
 
       if (error) {
         logger.error({ document, error }, 'Error while deleting expired document');
@@ -443,11 +430,13 @@ export async function deleteTrashDocument({
   organizationId,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
   documentId: string;
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -459,17 +448,19 @@ export async function deleteTrashDocument({
     throw createDocumentNotDeletedError();
   }
 
-  await hardDeleteDocument({ document, documentsRepository, documentsStorageService });
+  await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
 }
 
 export async function deleteAllTrashDocuments({
   organizationId,
   documentsRepository,
   documentsStorageService,
+  eventServices,
 }: {
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
 }) {
   const { documents } = await documentsRepository.getAllOrganizationTrashDocuments({ organizationId });
 
@@ -478,7 +469,9 @@ export async function deleteAllTrashDocuments({
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(async document => limit(async () => hardDeleteDocument({ document, documentsRepository, documentsStorageService }))),
+    documents.map(async document => limit(async () => {
+      await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
+    })),
   );
 }
 
@@ -492,6 +485,7 @@ export async function extractAndSaveDocumentFileContent({
   tagsRepository,
   webhookRepository,
   documentActivityRepository,
+  eventServices,
 }: {
   documentId: string;
   ocrLanguages?: string[];
@@ -502,6 +496,7 @@ export async function extractAndSaveDocumentFileContent({
   tagsRepository: TagsRepository;
   webhookRepository: WebhookRepository;
   documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -520,7 +515,7 @@ export async function extractAndSaveDocumentFileContent({
 
   const { text } = await extractDocumentText({ file, ocrLanguages });
 
-  const { document: updatedDocument } = await documentsRepository.updateDocument({ documentId, organizationId, content: text });
+  const { document: updatedDocument } = await updateDocument({ documentId, organizationId, changes: { content: text }, documentsRepository, eventServices });
 
   if (isNil(updatedDocument)) {
     // This should never happen, but for type safety
@@ -530,4 +525,75 @@ export async function extractAndSaveDocumentFileContent({
   await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
 
   return { document: updatedDocument };
+}
+
+export async function trashDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+}) {
+  await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
+
+  eventServices.emitEvent({
+    eventName: 'document.trashed',
+    payload: { documentId, organizationId, trashedBy: userId },
+  });
+}
+
+export async function restoreDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+}) {
+  await documentsRepository.restoreDocument({ documentId, organizationId });
+
+  eventServices.emitEvent({
+    eventName: 'document.restored',
+    payload: { documentId, organizationId, restoredBy: userId },
+  });
+}
+
+export async function updateDocument({
+  documentId,
+  organizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+  changes,
+}: {
+  documentId: string;
+  organizationId: string;
+  userId?: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+  changes: {
+    name?: string;
+    content?: string;
+  };
+}) {
+  // It throws if the document does not exist
+  const { document } = await documentsRepository.updateDocument({ documentId, organizationId, ...changes });
+
+  eventServices.emitEvent({
+    eventName: 'document.updated',
+    payload: { userId, changes, document },
+  });
+
+  return { document };
 }

@@ -1,4 +1,5 @@
 import type { Database } from '../../app/database/database.types';
+import type { EventServices } from '../../app/events/events.services';
 import type { Config } from '../../config/config.types';
 import type { TaskServices } from '../../tasks/tasks.services';
 import type { DocumentStorageService } from '../storage/documents.storage.services';
@@ -8,7 +9,7 @@ import { deleteExpiredDocuments } from '../documents.usecases';
 
 const logger = createLogger({ namespace: 'documents:tasks:hardDeleteExpiredDocuments' });
 
-export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService }: { taskServices: TaskServices; db: Database; config: Config; documentsStorageService: DocumentStorageService }) {
+export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService, eventServices }: { taskServices: TaskServices; db: Database; config: Config; documentsStorageService: DocumentStorageService; eventServices: EventServices }) {
   const taskName = 'hard-delete-expired-documents';
   const { cron, runOnStartup } = config.tasks.hardDeleteExpiredDocuments;
 
@@ -21,6 +22,7 @@ export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db,
         config,
         documentsRepository,
         documentsStorageService,
+        eventServices,
       });
 
       logger.info({ deletedDocumentsCount }, 'Expired documents deleted');

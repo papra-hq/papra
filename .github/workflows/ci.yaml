@@ -29,7 +29,7 @@ jobs:
         run: pnpm -r --parallel -F "./packages/*" build
 
       - name: Run linters
-        run: pnpm -r --parallel lint
+        run: pnpm -r --parallel lint --quiet
 
       - name: Type check
         # Exclude docs as their are some typing issues we are ok with for now
