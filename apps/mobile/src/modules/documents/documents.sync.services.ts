@@ -2,6 +2,7 @@ import type { ApiClient } from '../api/api.client';
 import type { LocalDocument } from '../api/api.models';
 import { queryClient } from '../api/providers/query.provider';
 import { documentsLocalStorage } from './documents.local-storage';
+import { uploadDocument } from './documents.services';
 import { getFormData } from './documents.services';
 
 export async function syncUnsyncedDocuments({
@@ -23,19 +24,7 @@ export async function syncUnsyncedDocuments({
 
   for (const unsyncedDoc of unsyncedDocuments) {
     try {
-      // Read the file and upload it
-      const file: LocalDocument = {
-        uri: unsyncedDoc.localUri ?? '',
-        name: unsyncedDoc.name,
-        type: unsyncedDoc.mimeType,
-      };
-
-      const formData = getFormData(file);
-      await apiClient<{ document: { id: string } }>({
-        method: 'POST',
-        path: `/api/organizations/${organizationId}/documents`,
-        body: formData,
-      });
+      await uploadDocument({ file: { uri: unsyncedDoc.localUri ?? '', name: unsyncedDoc.name, type: unsyncedDoc.mimeType }, apiClient, organizationId });
 
       // Delete the local file and remove from unsynced list
       await documentsLocalStorage.deleteUnsyncedDocumentFile(unsyncedDoc.id);

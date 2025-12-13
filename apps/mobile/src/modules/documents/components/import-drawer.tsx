@@ -2,6 +2,7 @@ import type { LocalDocument } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
+import { useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -20,6 +21,7 @@ import { convertImagesToPdf } from '../documents-scan.services';
 import { documentsLocalStorage } from '../documents.local-storage';
 import { uploadDocument } from '../documents.services';
 import { syncUnsyncedDocuments } from '../documents.sync.services';
+import { RenameDocumentDialog } from './rename-document-dialog';
 
 type ImportDrawerProps = {
   visible: boolean;
@@ -32,6 +34,9 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
   const styles = createStyles({ themeColors });
   const apiClient = useApiClient();
   const { currentOrganizationId } = useOrganizations();
+  const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const [scannedImageUris, setScannedImageUris] = useState<string[]>([]);
+  const [defaultDocumentName, setDefaultDocumentName] = useState('');
 
   const handleImportFromFiles = async () => {
     onClose();
@@ -89,7 +94,7 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
     }
   };
 
-  const processScannedImages = async (imageUris: string[]) => {
+  const processScannedImages = async (imageUris: string[], fileName: string) => {
     try {
       if (currentOrganizationId == null) {
         showAlert({
@@ -100,12 +105,12 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
       }
 
       const timestamp = Date.now();
-      const fileName = `scanned_document_${timestamp}.pdf`;
+      const finalFileName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
 
       const pdfUri = await convertImagesToPdf(imageUris);
 
       // Copy PDF to permanent location
-      const permanentUri = `${FileSystem.documentDirectory}${timestamp}_${fileName}`;
+      const permanentUri = `${FileSystem.documentDirectory}${timestamp}_${finalFileName}`;
       await FileSystem.copyAsync({
         from: pdfUri,
         to: permanentUri,
@@ -118,7 +123,7 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
       // Save as unsynced document
       const unsyncedDoc = {
         id: `local_${timestamp}_${Math.random().toString(36).substring(7)}`,
-        name: fileName,
+        name: finalFileName,
         mimeType: 'application/pdf',
         localUri: permanentUri,
         organizationId: currentOrganizationId,
@@ -148,6 +153,19 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
     }
   };
 
+  const handleRenameConfirm = async (name: string) => {
+    setRenameModalVisible(false);
+    await processScannedImages(scannedImageUris, name);
+    setScannedImageUris([]);
+    setDefaultDocumentName('');
+  };
+
+  const handleRenameCancel = () => {
+    setRenameModalVisible(false);
+    setScannedImageUris([]);
+    setDefaultDocumentName('');
+  };
+
   const handleScanDocument = async () => {
     onClose();
 
@@ -161,7 +179,10 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
       }
 
       if (scannedImages && scannedImages.length > 0) {
-        await processScannedImages(scannedImages);
+        const timestamp = Date.now();
+        setDefaultDocumentName(`scanned_document_${timestamp}`);
+        setScannedImageUris(scannedImages);
+        setRenameModalVisible(true);
       } else {
         showAlert({
           title: 'Scan Error',
@@ -178,65 +199,74 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
+    <>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="slide"
+        onRequestClose={onClose}
       >
-        <View style={styles.drawer}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Import Document</Text>
-          </View>
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        >
+          <View style={styles.drawer}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Import Document</Text>
+            </View>
 
-          <View style={styles.optionsContainer}>
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity
+                style={styles.optionItem}
+                onPress={handleImportFromFiles}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Icon name="file-plus" size={24} style={styles.optionIcon} />
+                </View>
+                <View style={styles.optionTextContainer}>
+                  <Text style={styles.optionTitle}>Import from Files</Text>
+                  <Text style={styles.optionDescription}>
+                    Choose a document from your device
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.optionItem}
+                onPress={handleScanDocument}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Icon name="camera" size={24} style={styles.optionIcon} />
+                </View>
+                <View style={styles.optionTextContainer}>
+                  <Text style={styles.optionTitle}>Scan Document</Text>
+                  <Text style={styles.optionDescription}>
+                    Use camera to scan a document
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleImportFromFiles}
+              style={styles.cancelButton}
+              onPress={onClose}
             >
-              <View style={styles.optionIconContainer}>
-                <Icon name="file-plus" size={24} style={styles.optionIcon} />
-              </View>
-              <View style={styles.optionTextContainer}>
-                <Text style={styles.optionTitle}>Import from Files</Text>
-                <Text style={styles.optionDescription}>
-                  Choose a document from your device
-                </Text>
-              </View>
-              <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleScanDocument}
-            >
-              <View style={styles.optionIconContainer}>
-                <Icon name="camera" size={24} style={styles.optionIcon} />
-              </View>
-              <View style={styles.optionTextContainer}>
-                <Text style={styles.optionTitle}>Scan Document</Text>
-                <Text style={styles.optionDescription}>
-                  Use camera to scan a document
-                </Text>
-              </View>
-              <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
+        </TouchableOpacity>
+      </Modal>
 
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={onClose}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    </Modal>
+      <RenameDocumentDialog
+        visible={renameModalVisible}
+        defaultName={defaultDocumentName}
+        onConfirm={handleRenameConfirm}
+        onCancel={handleRenameCancel}
+      />
+    </>
   );
 }
 
