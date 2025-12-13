@@ -189,6 +189,9 @@ importers:
       expo-network:
         specifier: ^8.0.8
         version: 8.0.8(expo@54.0.23)(react@19.1.0)
+      expo-print:
+        specifier: ^15.0.7
+        version: 15.0.8(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))
       expo-router:
         specifier: ~6.0.14
         version: 6.0.14(49a2902d0574a0052a669c80d9729e84)
@@ -225,6 +228,9 @@ importers:
       react-native:
         specifier: 0.81.5
         version: 0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
+      react-native-document-scanner-plugin:
+        specifier: ^2.0.2
+        version: 2.0.2(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-gesture-handler:
         specifier: ~2.28.0
         version: 2.28.0(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -7404,6 +7410,12 @@ packages:
       expo: '*'
       react: '*'
 
+  expo-print@15.0.8:
+    resolution: {integrity: sha512-4O0Qzm0On5AmJIl9d+BT+ieTipFp658nHI4aX7vKEFPfj3dfQxG6rDJJpca+rrc9c4Ha8ZFYGvxJG5+4lFq2Pw==}
+    peerDependencies:
+      expo: '*'
+      react-native: '*'
+
   expo-router@6.0.14:
     resolution: {integrity: sha512-vizLO4SgnMEL+PPs2dXr+etEOuksjue7yUQBCtfCEdqoDkQlB0r35zI7rS34Wt53sxKWSlM2p+038qQEpxtiFw==}
     peerDependencies:
@@ -10072,6 +10084,12 @@ packages:
 
   react-native-blob-util@0.23.2:
     resolution: {integrity: sha512-ZsUUFQYyZ7BI57c31XdPCkPlteoH7+PvcVy2w6wh1OPSUWGtKL79pj7fa6MepMX0v87fn0V9Heq0n6OjEpLdCw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
+  react-native-document-scanner-plugin@2.0.2:
+    resolution: {integrity: sha512-8Q3P96evd2tjbxvmDCCeseOlSCnzOlfP38Xuc4kn1y+PPVxERinKLSHBrPviZYknNf4zGtSueP4H6CZcJ4RxGw==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -20478,6 +20496,11 @@ snapshots:
       expo: 54.0.23(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.14)(graphql@16.8.1)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
 
+  expo-print@15.0.8(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)):
+    dependencies:
+      expo: 54.0.23(@babel/core@7.28.4)(@expo/metro-runtime@6.1.2)(expo-router@6.0.14)(graphql@16.8.1)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native: 0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
+
   expo-router@6.0.14(49a2902d0574a0052a669c80d9729e84):
     dependencies:
       '@expo/metro-runtime': 6.1.2(expo@54.0.23)(react-dom@19.1.0(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -23907,6 +23930,11 @@ snapshots:
     dependencies:
       base-64: 0.1.0
       glob: 10.4.5
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
+
+  react-native-document-scanner-plugin@2.0.2(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
 

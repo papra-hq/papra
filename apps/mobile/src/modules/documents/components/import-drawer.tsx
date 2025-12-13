@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DocumentScanner from 'react-native-document-scanner-plugin';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { queryClient } from '@/modules/api/providers/query.provider';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
+import { convertImagesToPdf } from '../documents-scan.services';
 import { uploadDocument } from '../documents.services';
 
 type ImportDrawerProps = {
@@ -84,13 +86,65 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
     }
   };
 
-  // const handleScanDocument = () => {
-  //   onClose();
-  //   showAlert({
-  //     title: 'Coming Soon',
-  //     message: 'Camera document scanning will be available soon!',
-  //   });
-  // };
+  const processScannedImages = async (imageUris: string[]) => {
+    try {
+      if (currentOrganizationId == null) {
+        showAlert({
+          title: 'No Organization Selected',
+          message: 'Please select an organization before importing documents.',
+        });
+        return;
+      }
+
+      const timestamp = new Date().getTime();
+      const fileName = `scanned_document_${timestamp}.pdf`;
+
+      const pdfUri = await convertImagesToPdf(imageUris);
+
+      await uploadDocument({ file: { uri: pdfUri, name: fileName, type: 'application/pdf' }, apiClient, organizationId: currentOrganizationId });
+      await queryClient.invalidateQueries({ queryKey: ['organizations', currentOrganizationId, 'documents'] });
+
+      showAlert({
+        title: 'Upload Successful',
+        message: `Successfully uploaded: ${fileName}`,
+      });
+    } catch (error) {
+      console.error('Error processing scanned image:', error);
+      showAlert({
+        title: 'Scan Error',
+        message: error instanceof Error ? error.message : 'Failed to process scanned document',
+      });
+    }
+  };
+
+  const handleScanDocument = async () => {
+    onClose();
+
+    try {
+      const { scannedImages, status } = await DocumentScanner.scanDocument({
+        croppedImageQuality: 100,
+      });
+
+      if (status === 'cancel') {
+        return;
+      }
+
+      if (scannedImages && scannedImages.length > 0) {
+        await processScannedImages(scannedImages);
+      } else {
+        showAlert({
+          title: 'Scan Error',
+          message: 'No images were scanned',
+        });
+      }
+    } catch (error) {
+      console.error('Error in handleScan:', error);
+      showAlert({
+        title: 'Scan Error',
+        message: error instanceof Error ? error.message : 'Failed to scan document',
+      });
+    }
+  };
 
   return (
     <Modal
@@ -126,7 +180,7 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
             </TouchableOpacity>
 
-            {/* <TouchableOpacity
+            <TouchableOpacity
               style={styles.optionItem}
               onPress={handleScanDocument}
             >
@@ -136,11 +190,11 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Scan Document</Text>
                 <Text style={styles.optionDescription}>
-                  Use camera to scan (Coming soon)
+                  Use camera to scan a document
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
