@@ -1,6 +1,7 @@
 import type { LocalDocument } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import {
   Modal,
   StyleSheet,
@@ -16,7 +17,9 @@ import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { convertImagesToPdf } from '../documents-scan.services';
+import { documentsLocalStorage } from '../documents.local-storage';
 import { uploadDocument } from '../documents.services';
+import { syncUnsyncedDocuments } from '../documents.sync.services';
 
 type ImportDrawerProps = {
   visible: boolean;
@@ -96,18 +99,46 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
         return;
       }
 
-      const timestamp = new Date().getTime();
+      const timestamp = Date.now();
       const fileName = `scanned_document_${timestamp}.pdf`;
 
       const pdfUri = await convertImagesToPdf(imageUris);
 
-      await uploadDocument({ file: { uri: pdfUri, name: fileName, type: 'application/pdf' }, apiClient, organizationId: currentOrganizationId });
-      await queryClient.invalidateQueries({ queryKey: ['organizations', currentOrganizationId, 'documents'] });
-
-      showAlert({
-        title: 'Upload Successful',
-        message: `Successfully uploaded: ${fileName}`,
+      // Copy PDF to permanent location
+      const permanentUri = `${FileSystem.documentDirectory}${timestamp}_${fileName}`;
+      await FileSystem.copyAsync({
+        from: pdfUri,
+        to: permanentUri,
       });
+
+      // Get file size
+      const fileInfo = await FileSystem.getInfoAsync(permanentUri);
+      const fileSize = fileInfo.exists && 'size' in fileInfo ? fileInfo.size : 0;
+
+      // Save as unsynced document
+      const unsyncedDoc = {
+        id: `local_${timestamp}_${Math.random().toString(36).substring(7)}`,
+        name: fileName,
+        mimeType: 'application/pdf',
+        localUri: permanentUri,
+        organizationId: currentOrganizationId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tags: [],
+        originalSize: fileSize,
+      };
+
+      await documentsLocalStorage.addUnsyncedDocument(unsyncedDoc);
+
+      try {
+        await FileSystem.deleteAsync(pdfUri, { idempotent: true });
+      } catch (error) {
+        console.error('Error cleaning up temporary PDF:', error);
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ['organizations', currentOrganizationId, 'documents'] });
+      // Trigger background sync
+      void syncUnsyncedDocuments({ organizationId: currentOrganizationId, apiClient });
     } catch (error) {
       console.error('Error processing scanned image:', error);
       showAlert({

@@ -21,6 +21,7 @@ import { useOrganizations } from '@/modules/organizations/organizations.provider
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { fetchOrganizationDocuments } from '../documents.services';
+import { syncUnsyncedDocuments } from '../documents.sync.services';
 
 export function DocumentsListScreen() {
   const themeColors = useThemeColor();
@@ -68,6 +69,9 @@ export function DocumentsListScreen() {
 
   const onRefresh = async () => {
     await documentsQuery.refetch();
+    if (currentOrganizationId != null) {
+      void syncUnsyncedDocuments({ organizationId: currentOrganizationId, apiClient });
+    }
   };
 
   if (isLoadingOrganizations) {
@@ -116,6 +120,11 @@ export function DocumentsListScreen() {
                         <Text style={styles.metaText}>{formatFileSize(item.originalSize)}</Text>
                         <Text style={styles.metaSplitter}>-</Text>
                         <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
+                        {item.localUri !== undefined && (
+                          <View style={[styles.unsyncedBadge, { backgroundColor: `${themeColors.primary}20` }]}>
+                            <Icon name="upload" size={12} color={themeColors.primary} />
+                          </View>
+                        )}
                         {item.tags.length > 0 && (
                           <View style={styles.tagsContainer}>
                             {item.tags.map(tag => (
@@ -248,6 +257,14 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       fontSize: 12,
       fontWeight: '500',
       lineHeight: 12,
+    },
+    unsyncedBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
     },
   });
 }

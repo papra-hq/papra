@@ -4,6 +4,7 @@ import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
+import { documentsLocalStorage } from './documents.local-storage';
 
 export function getFormData(localDocument: LocalDocument): FormData {
   const formData = new FormData();
@@ -66,11 +67,12 @@ export async function fetchOrganizationDocuments({
   });
 
   try {
-    const documents = apiDocuments.map(coerceDates);
-
+    const remote = apiDocuments.map(coerceDates);
+    const local = await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId);
+    const documents = [...local, ...remote];
     return {
-      documentsCount,
-      documents,
+      documentsCount: documentsCount + local.length,
+      documents: documents.map(coerceDates),
     };
   } catch (error) {
     console.error('Error fetching documents:', error);
