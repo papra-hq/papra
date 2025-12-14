@@ -3,6 +3,7 @@ import { pick } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { getPermissionsForRoles } from '../roles/roles.methods';
 import { createRolesRepository } from '../roles/roles.repository';
 import { validateJsonBody } from '../shared/validation/validation';
 import { createUsersRepository } from './users.repository';
@@ -30,9 +31,11 @@ function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
         rolesRepository.getUserRoles({ userId }),
       ]);
 
+      const { permissions } = getPermissionsForRoles({ roles });
+
       return context.json({
         user: {
-          roles,
+          permissions,
           ...pick(
             user,
             [

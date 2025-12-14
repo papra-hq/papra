@@ -49,6 +49,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       restoreOrganization,
       getUserDeletedOrganizations,
       getExpiredSoftDeletedOrganizations,
+      getOrganizationCount,
     },
     { db },
   );
@@ -539,5 +540,16 @@ async function getExpiredSoftDeletedOrganizations({ db, now = new Date() }: { db
 
   return {
     organizationIds: organizations.map(org => org.id),
+  };
+}
+
+async function getOrganizationCount({ db }: { db: Database }) {
+  const [{ organizationCount = 0 } = {}] = await db
+    .select({ organizationCount: count() })
+    .from(organizationsTable)
+    .where(isNull(organizationsTable.deletedAt));
+
+  return {
+    organizationCount,
   };
 }

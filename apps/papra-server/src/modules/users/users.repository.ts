@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableUser } from './users.types';
 import { injectArguments } from '@corentinth/chisels';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createUserAlreadyExistsError, createUsersNotFoundError } from './users.errors';
 import { usersTable } from './users.table';
@@ -18,6 +18,7 @@ function createUsersRepository({ db }: { db: Database }) {
       getUserById,
       getUserByIdOrThrow,
       updateUser,
+      getUserCount,
     },
     { db },
   );
@@ -71,4 +72,12 @@ async function updateUser({ userId, name, db }: { userId: string; name: string; 
   const [user] = await db.update(usersTable).set({ name }).where(eq(usersTable.id, userId)).returning();
 
   return { user };
+}
+
+export async function getUserCount({ db }: { db: Database }) {
+  const [{ userCount = 0 } = {}] = await db.select({ userCount: count() }).from(usersTable);
+
+  return {
+    userCount,
+  };
 }

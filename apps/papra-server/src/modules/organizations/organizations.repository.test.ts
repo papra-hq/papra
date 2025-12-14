@@ -206,4 +206,48 @@ describe('organizations repository', () => {
       expect(organization?.scheduledPurgeAt).to.eql(expectedPurgeDate);
     });
   });
+
+  describe('getOrganizationCount', () => {
+    test('when no organizations exist in the database, the count is zero', async () => {
+      const { db } = await createInMemoryDatabase();
+      const { getOrganizationCount } = createOrganizationsRepository({ db });
+
+      const { organizationCount } = await getOrganizationCount();
+
+      expect(organizationCount).to.equal(0);
+    });
+
+    test('when multiple organizations exist in the database, the count reflects the total number of organizations', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'org_1', name: 'Org 1' },
+          { id: 'org_2', name: 'Org 2' },
+          { id: 'org_3', name: 'Org 3' },
+        ],
+      });
+
+      const { getOrganizationCount } = createOrganizationsRepository({ db });
+
+      const { organizationCount } = await getOrganizationCount();
+
+      expect(organizationCount).to.equal(3);
+    });
+
+    test('when some organizations are soft-deleted, they are excluded from the count', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user_1', email: 'user1@test.com' }],
+        organizations: [
+          { id: 'org_1', name: 'Org 1' },
+          { id: 'org_2', name: 'Org 2', deletedAt: new Date('2025-05-15'), deletedBy: 'user_1', scheduledPurgeAt: new Date('2025-06-15') },
+          { id: 'org_3', name: 'Org 3' },
+        ],
+      });
+
+      const { getOrganizationCount } = createOrganizationsRepository({ db });
+
+      const { organizationCount } = await getOrganizationCount();
+
+      expect(organizationCount).to.equal(2);
+    });
+  });
 });

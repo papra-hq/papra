@@ -1,10 +1,20 @@
 import type { Component } from 'solid-js';
-import { A } from '@solidjs/router';
+import { A, useLocation } from '@solidjs/router';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 
 export const NotFoundPage: Component = () => {
   const { t } = useI18n();
+  const location = useLocation();
+
+  const getRedirectionUrl = () => {
+    if (location.pathname.startsWith('/admin/') || location.pathname === '/admin') {
+      return '/admin';
+    }
+
+    return '/';
+  };
+
   return (
     <div class="h-screen flex flex-col items-center justify-center p-6">
 
@@ -14,7 +24,7 @@ export const NotFoundPage: Component = () => {
           <p class="text-muted-foreground">
             {t('not-found.description')}
           </p>
-          <Button as={A} href="/" class="mt-4" variant="default">
+          <Button as={A} href={getRedirectionUrl()} class="mt-4" variant="default">
             <div class="i-tabler-arrow-left mr-2" />
             {t('not-found.back-to-home')}
           </Button>
