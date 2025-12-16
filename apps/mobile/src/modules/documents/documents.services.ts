@@ -7,9 +7,13 @@ import { coerceDates } from '../api/api.models';
 
 export function getFormData(localDocument: LocalDocument): FormData {
   const formData = new FormData();
+  
+  // to avoid %20 in file name it is issue in react native that upload file name replaces spaces with %20
+  const filename  = localDocument.name.replace(/ /g, '_');
+
   formData.append('file', {
     uri: localDocument.uri,
-    name: localDocument.name,
+    name: filename,
     type: localDocument.type,
   } as unknown as Blob);
   return formData;
