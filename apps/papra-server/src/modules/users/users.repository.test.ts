@@ -20,4 +20,28 @@ describe('users repository', () => {
       }
     });
   });
+
+  describe('getUserCount', () => {
+    test('when no users exist in the database, the count is zero', async () => {
+      const { db } = await createInMemoryDatabase();
+      const { getUserCount } = createUsersRepository({ db });
+
+      const { userCount } = await getUserCount();
+
+      expect(userCount).to.equal(0);
+    });
+
+    test('when multiple users exist in the database, the count reflects the total number of users', async () => {
+      const { db } = await createInMemoryDatabase();
+      const { createUser, getUserCount } = createUsersRepository({ db });
+
+      await createUser({ user: { email: 'user1@example.com' } });
+      await createUser({ user: { email: 'user2@example.com' } });
+      await createUser({ user: { email: 'user3@example.com' } });
+
+      const { userCount } = await getUserCount();
+
+      expect(userCount).to.equal(3);
+    });
+  });
 });

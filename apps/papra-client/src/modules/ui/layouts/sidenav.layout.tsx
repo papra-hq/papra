@@ -13,6 +13,7 @@ import { cn } from '@/modules/shared/style/cn';
 import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
+import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 
@@ -131,6 +132,7 @@ export const SidenavLayout: ParentComponent<{
   const navigate = useNavigate();
   const { getPendingInvitationsCount } = usePendingInvitationsCount();
   const { t } = useI18n();
+  const { hasPermission } = useCurrentUser();
 
   const { promptImport, uploadDocuments } = useDocumentUpload();
 
@@ -239,6 +241,12 @@ export const SidenavLayout: ParentComponent<{
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Show when={hasPermission('bo:access')}>
+              <Button as={A} href="/admin" variant="outline" class="hidden sm:flex" size="icon">
+                <div class="i-tabler-settings size-4.5" />
+              </Button>
+            </Show>
 
           </div>
         </div>

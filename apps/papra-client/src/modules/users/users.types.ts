@@ -3,7 +3,7 @@ export type UserMe = {
   email: string;
   planId: string;
   name: string;
-  roles: string[];
+  permissions: string[];
 };
 
 export type User = {
