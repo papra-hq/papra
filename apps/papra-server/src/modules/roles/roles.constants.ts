@@ -1,12 +1,12 @@
 export const PERMISSIONS = {
   BO_ACCESS: 'bo:access',
-  USERS_LIST: 'users:list',
+  VIEW_USERS: 'users:view',
   VIEW_ANALYTICS: 'analytics:view',
 } as const;
 
 export const PERMISSIONS_BY_ROLE = {
   admin: [
-    PERMISSIONS.USERS_LIST,
+    PERMISSIONS.VIEW_USERS,
     PERMISSIONS.BO_ACCESS,
     PERMISSIONS.VIEW_ANALYTICS,
   ],

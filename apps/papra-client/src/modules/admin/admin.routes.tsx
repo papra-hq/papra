@@ -13,7 +13,11 @@ export const adminRoutes: RouteDefinition = {
     },
     {
       path: '/users',
-      component: lazy(() => import('./pages/list-users.page')),
+      component: lazy(() => import('./users/pages/list-users.page')),
+    },
+    {
+      path: '/users/:userId',
+      component: lazy(() => import('./users/pages/user-detail.page')),
     },
     {
       path: '/analytics',

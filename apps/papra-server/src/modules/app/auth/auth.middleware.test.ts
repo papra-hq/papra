@@ -107,7 +107,7 @@ describe('createRoleMiddleware', () => {
   describe('when the user has multiple permissions and one matches', () => {
     test('the request is allowed to proceed', async () => {
       const extendedPermissionsByRole = {
-        admin: [PERMISSIONS.BO_ACCESS, PERMISSIONS.USERS_LIST],
+        admin: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS],
       };
 
       const { db } = await createInMemoryDatabase({
@@ -123,7 +123,7 @@ describe('createRoleMiddleware', () => {
 
       app.get(
         '/protected',
-        requirePermissions({ requiredPermissions: [PERMISSIONS.USERS_LIST] }),
+        requirePermissions({ requiredPermissions: [PERMISSIONS.VIEW_USERS] }),
         async c => c.json({ success: true }),
       );
 
@@ -137,7 +137,7 @@ describe('createRoleMiddleware', () => {
   describe('when multiple permissions are required', () => {
     test('the request is allowed if the user has all required permissions', async () => {
       const extendedPermissionsByRole = {
-        admin: [PERMISSIONS.BO_ACCESS, PERMISSIONS.USERS_LIST],
+        admin: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS],
       };
 
       const { db } = await createInMemoryDatabase({
@@ -153,7 +153,7 @@ describe('createRoleMiddleware', () => {
 
       app.get(
         '/protected',
-        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.USERS_LIST] }),
+        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS] }),
         async c => c.json({ success: true }),
       );
 
@@ -181,7 +181,7 @@ describe('createRoleMiddleware', () => {
 
       app.get(
         '/protected',
-        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.USERS_LIST] }),
+        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS] }),
         async c => c.json({ success: true }),
       );
 
