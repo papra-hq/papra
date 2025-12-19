@@ -1,9 +1,12 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableUser } from './users.types';
 import { injectArguments } from '@corentinth/chisels';
-import { count, eq } from 'drizzle-orm';
+import { count, desc, eq, getTableColumns } from 'drizzle-orm';
+import { organizationMembersTable } from '../organizations/organizations.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
+import { withPagination } from '../shared/db/pagination';
 import { createUserAlreadyExistsError, createUsersNotFoundError } from './users.errors';
+import { createSearchUserWhereClause } from './users.repository.models';
 import { usersTable } from './users.table';
 
 export { createUsersRepository };
@@ -19,6 +22,7 @@ function createUsersRepository({ db }: { db: Database }) {
       getUserByIdOrThrow,
       updateUser,
       getUserCount,
+      listUsers,
     },
     { db },
   );
@@ -79,5 +83,51 @@ export async function getUserCount({ db }: { db: Database }) {
 
   return {
     userCount,
+  };
+}
+
+async function listUsers({
+  db,
+  search,
+  pageIndex = 0,
+  pageSize = 25,
+}: {
+  db: Database;
+  search?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}) {
+  const searchWhereClause = createSearchUserWhereClause({ search });
+
+  const query = db
+    .select({
+      ...getTableColumns(usersTable),
+      organizationCount: count(organizationMembersTable.id),
+    })
+    .from(usersTable)
+    .leftJoin(
+      organizationMembersTable,
+      eq(usersTable.id, organizationMembersTable.userId),
+    )
+    .where(searchWhereClause)
+    .groupBy(usersTable.id)
+    .$dynamic();
+
+  const users = await withPagination(query, {
+    orderByColumn: desc(usersTable.createdAt),
+    pageIndex,
+    pageSize,
+  });
+
+  const [{ totalCount = 0 } = {}] = await db
+    .select({ totalCount: count() })
+    .from(usersTable)
+    .where(searchWhereClause);
+
+  return {
+    users,
+    totalCount,
+    pageIndex,
+    pageSize,
   };
 }
