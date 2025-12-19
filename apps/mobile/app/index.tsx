@@ -4,7 +4,8 @@ import { createAuthClient } from '@/modules/auth/auth.client';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
 
 if (__DEV__) {
-  require("./ReactotronConfig");
+  // eslint-disable-next-line ts/no-require-imports
+  require('./ReactotronConfig');
 }
 
 export default function Index() {
