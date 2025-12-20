@@ -63,8 +63,8 @@ describe('users repository', () => {
     test('when multiple users exist, all users are returned with organization counts', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'alice@example.com', name: 'Alice' },
-          { id: 'usr_2', email: 'bob@example.com', name: 'Bob' },
+          { id: 'usr_1', email: 'alice@example.com', name: 'Alice', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'bob@example.com', name: 'Bob', createdAt: new Date('2025-01-02') },
         ],
         organizations: [
           { id: 'org_1', name: 'Org 1' },
@@ -89,8 +89,8 @@ describe('users repository', () => {
           organizationCount: u.organizationCount,
         })),
       ).to.deep.equal([
-        { id: 'usr_1', email: 'alice@example.com', organizationCount: 1 },
         { id: 'usr_2', email: 'bob@example.com', organizationCount: 0 },
+        { id: 'usr_1', email: 'alice@example.com', organizationCount: 1 },
       ]);
     });
 
