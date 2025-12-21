@@ -1,5 +1,11 @@
 # @papra/webhooks
 
+## 0.3.2
+
+### Patch Changes
+
+- [#699](https://github.com/papra-hq/papra/pull/699) [`4342b31`](https://github.com/papra-hq/papra/commit/4342b319ea1b787b80d02090f3820797b928e115) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix mising prepublish script
+
 ## 0.3.1
 
 ### Patch Changes
