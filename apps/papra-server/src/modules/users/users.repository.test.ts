@@ -97,8 +97,8 @@ describe('users repository', () => {
     test('when searching by user ID, only the exact matching user is returned', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_123456789012345678901234', email: 'alice@example.com', name: 'Alice' },
-          { id: 'usr_abcdefghijklmnopqrstuvwx', email: 'bob@example.com', name: 'Bob' },
+          { id: 'usr_123456789012345678901234', email: 'alice@example.com', name: 'Alice', createdAt: new Date('2025-01-01') },
+          { id: 'usr_abcdefghijklmnopqrstuvwx', email: 'bob@example.com', name: 'Bob', createdAt: new Date('2025-01-02') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
@@ -113,9 +113,9 @@ describe('users repository', () => {
     test('when searching by partial email, matching users are returned', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'alice@example.com', name: 'Alice' },
-          { id: 'usr_2', email: 'bob@example.com', name: 'Bob' },
-          { id: 'usr_3', email: 'alice.smith@test.com', name: 'Alice Smith' },
+          { id: 'usr_1', email: 'alice@example.com', name: 'Alice', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'bob@example.com', name: 'Bob', createdAt: new Date('2025-01-02') },
+          { id: 'usr_3', email: 'alice.smith@test.com', name: 'Alice Smith', createdAt: new Date('2025-01-03') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
@@ -125,17 +125,17 @@ describe('users repository', () => {
       expect(result.users).to.have.length(2);
       expect(result.totalCount).to.equal(2);
       expect(result.users.map(u => u.email)).to.deep.equal([
-        'alice@example.com',
         'alice.smith@test.com',
+        'alice@example.com',
       ]);
     });
 
     test('when searching by partial name, matching users are returned', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'alice@example.com', name: 'Alice Johnson' },
-          { id: 'usr_2', email: 'bob@example.com', name: 'Bob Smith' },
-          { id: 'usr_3', email: 'charlie@example.com', name: 'Charlie Johnson' },
+          { id: 'usr_1', email: 'alice@example.com', name: 'Alice Johnson', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'bob@example.com', name: 'Bob Smith', createdAt: new Date('2025-01-02') },
+          { id: 'usr_3', email: 'charlie@example.com', name: 'Charlie Johnson', createdAt: new Date('2025-01-03') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
@@ -145,16 +145,16 @@ describe('users repository', () => {
       expect(result.users).to.have.length(2);
       expect(result.totalCount).to.equal(2);
       expect(result.users.map(u => u.name)).to.deep.equal([
-        'Alice Johnson',
         'Charlie Johnson',
+        'Alice Johnson',
       ]);
     });
 
     test('when searching with an empty string, all users are returned', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'alice@example.com', name: 'Alice' },
-          { id: 'usr_2', email: 'bob@example.com', name: 'Bob' },
+          { id: 'usr_1', email: 'alice@example.com', name: 'Alice', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'bob@example.com', name: 'Bob', createdAt: new Date('2025-01-02') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
@@ -168,11 +168,11 @@ describe('users repository', () => {
     test('when using pagination, only the requested page is returned', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'user1@example.com', name: 'User 1' },
-          { id: 'usr_2', email: 'user2@example.com', name: 'User 2' },
-          { id: 'usr_3', email: 'user3@example.com', name: 'User 3' },
-          { id: 'usr_4', email: 'user4@example.com', name: 'User 4' },
-          { id: 'usr_5', email: 'user5@example.com', name: 'User 5' },
+          { id: 'usr_1', email: 'user1@example.com', name: 'User 1', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'user2@example.com', name: 'User 2', createdAt: new Date('2025-01-02') },
+          { id: 'usr_3', email: 'user3@example.com', name: 'User 3', createdAt: new Date('2025-01-03') },
+          { id: 'usr_4', email: 'user4@example.com', name: 'User 4', createdAt: new Date('2025-01-04') },
+          { id: 'usr_5', email: 'user5@example.com', name: 'User 5', createdAt: new Date('2025-01-05') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
@@ -190,10 +190,10 @@ describe('users repository', () => {
     test('when searching with pagination, the total count reflects the search results', async () => {
       const { db } = await createInMemoryDatabase({
         users: [
-          { id: 'usr_1', email: 'alice1@example.com', name: 'Alice 1' },
-          { id: 'usr_2', email: 'alice2@example.com', name: 'Alice 2' },
-          { id: 'usr_3', email: 'alice3@example.com', name: 'Alice 3' },
-          { id: 'usr_4', email: 'bob@example.com', name: 'Bob' },
+          { id: 'usr_1', email: 'alice1@example.com', name: 'Alice 1', createdAt: new Date('2025-01-01') },
+          { id: 'usr_2', email: 'alice2@example.com', name: 'Alice 2', createdAt: new Date('2025-01-02') },
+          { id: 'usr_3', email: 'alice3@example.com', name: 'Alice 3', createdAt: new Date('2025-01-03') },
+          { id: 'usr_4', email: 'bob@example.com', name: 'Bob', createdAt: new Date('2025-01-04') },
         ],
       });
       const { listUsers } = createUsersRepository({ db });
