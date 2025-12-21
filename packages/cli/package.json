@@ -42,7 +42,8 @@
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
     "build": "tsdown",
-    "build:watch": "tsdown --watch"
+    "build:watch": "tsdown --watch",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0-alpha.6",
