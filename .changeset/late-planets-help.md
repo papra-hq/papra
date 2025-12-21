@@ -1,5 +1,5 @@
 ---
-"@papra/docker": patch
+"@papra/docker": minor
 ---
 
 Added a platform administration dashboard
