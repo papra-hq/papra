@@ -25,11 +25,11 @@ export const adminRoutes: RouteDefinition = {
     },
     {
       path: '/organizations',
-      component: () => <div class="p-6 text-muted-foreground">Not implemented yet.</div>,
+      component: lazy(() => import('./organizations/pages/list-organizations.page')),
     },
     {
-      path: '/settings',
-      component: () => <div class="p-6 text-muted-foreground">Not implemented yet.</div>,
+      path: '/organizations/:organizationId',
+      component: lazy(() => import('./organizations/pages/organization-detail.page')),
     },
     {
       path: '/*404',

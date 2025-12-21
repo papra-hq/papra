@@ -1,11 +1,8 @@
 import { eq, like, or } from 'drizzle-orm';
+import { escapeLikeWildcards } from '../shared/db/sql.helpers';
 import { isNilOrEmptyString } from '../shared/utils';
 import { USER_ID_REGEX } from './users.constants';
 import { usersTable } from './users.table';
-
-export function escapeLikeWildcards(input: string) {
-  return input.replace(/\\/g, '\\\\').replace(/[%_]/g, '\\$&');
-}
 
 export function createSearchUserWhereClause({ search }: { search?: string }) {
   const trimmedSearch = search?.trim();
