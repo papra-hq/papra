@@ -39,7 +39,8 @@
     "typecheck": "tsc --noEmit",
     "build": "tsdown",
     "build:watch": "tsdown --watch",
-    "dev": "pnpm build:watch"
+    "dev": "pnpm build:watch",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@corentinth/chisels": "catalog:",
