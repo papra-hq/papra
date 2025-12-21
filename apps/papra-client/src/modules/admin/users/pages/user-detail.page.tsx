@@ -129,8 +129,22 @@ export const AdminUserDetailPage: Component = () => {
                           <For each={data().organizations}>
                             {org => (
                               <TableRow>
-                                <TableCell>{org.id}</TableCell>
-                                <TableCell class="font-medium">{org.name}</TableCell>
+                                <TableCell>
+                                  <A
+                                    href={`/admin/organizations/${org.id}`}
+                                    class="font-mono text-xs hover:underline text-primary"
+                                  >
+                                    {org.id}
+                                  </A>
+                                </TableCell>
+                                <TableCell>
+                                  <A
+                                    href={`/admin/organizations/${org.id}`}
+                                    class="font-medium hover:underline"
+                                  >
+                                    {org.name}
+                                  </A>
+                                </TableCell>
                                 <TableCell>
                                   <RelativeTime class="text-muted-foreground text-sm" date={new Date(org.createdAt)} />
                                 </TableCell>

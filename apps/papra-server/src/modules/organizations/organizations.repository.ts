@@ -2,13 +2,14 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { addDays, startOfDay } from 'date-fns';
-import { and, count, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { withPagination } from '../shared/db/pagination';
 import { omitUndefined } from '../shared/utils';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationNotFoundError } from './organizations.errors';
-import { ensureInvitationStatus } from './organizations.repository.models';
+import { createSearchOrganizationWhereClause, ensureInvitationStatus } from './organizations.repository.models';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
 
 export type OrganizationsRepository = ReturnType<typeof createOrganizationsRepository>;
@@ -50,6 +51,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       getUserDeletedOrganizations,
       getExpiredSoftDeletedOrganizations,
       getOrganizationCount,
+      listOrganizations,
     },
     { db },
   );
@@ -551,5 +553,54 @@ async function getOrganizationCount({ db }: { db: Database }) {
 
   return {
     organizationCount,
+  };
+}
+
+async function listOrganizations({
+  db,
+  search,
+  pageIndex = 0,
+  pageSize = 25,
+}: {
+  db: Database;
+  search?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}) {
+  const searchWhereClause = createSearchOrganizationWhereClause({ search });
+  const whereClause = searchWhereClause
+    ? and(searchWhereClause, isNull(organizationsTable.deletedAt))
+    : isNull(organizationsTable.deletedAt);
+
+  const query = db
+    .select({
+      ...getTableColumns(organizationsTable),
+      memberCount: count(organizationMembersTable.id),
+    })
+    .from(organizationsTable)
+    .leftJoin(
+      organizationMembersTable,
+      eq(organizationsTable.id, organizationMembersTable.organizationId),
+    )
+    .where(whereClause)
+    .groupBy(organizationsTable.id)
+    .$dynamic();
+
+  const organizations = await withPagination(query, {
+    orderByColumn: desc(organizationsTable.createdAt),
+    pageIndex,
+    pageSize,
+  });
+
+  const [{ totalCount = 0 } = {}] = await db
+    .select({ totalCount: count() })
+    .from(organizationsTable)
+    .where(whereClause);
+
+  return {
+    organizations,
+    totalCount,
+    pageIndex,
+    pageSize,
   };
 }

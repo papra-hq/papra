@@ -4,60 +4,53 @@ import { useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
-import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { UserListDetail } from '../components/user-list-detail.component';
-import { listUsers } from '../users.services';
+import { listOrganizations } from '../organizations.services';
 
-export const AdminListUsersPage: Component = () => {
+export const AdminListOrganizationsPage: Component = () => {
   const [search, setSearch] = createSignal('');
   const [pagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 25 });
 
   const query = useQuery(() => ({
-    queryKey: ['admin', 'users', search(), pagination()],
-    queryFn: () => listUsers({
+    queryKey: ['admin', 'organizations', search(), pagination()],
+    queryFn: () => listOrganizations({
       search: search() || undefined,
-      ...pagination(),
+      pageIndex: pagination().pageIndex,
+      pageSize: pagination().pageSize,
     }),
   }));
 
   const table = createSolidTable({
     get data() {
-      return query.data?.users ?? [];
+      return query.data?.organizations ?? [];
     },
     columns: [
-
-      {
-        header: 'User',
-        accessorKey: 'email',
-        cell: data => <UserListDetail {...data.row.original} />,
-      },
       {
         header: 'ID',
         accessorKey: 'id',
         cell: data => (
           <A
-            href={`/admin/users/${data.getValue<string>()}`}
-            class="font-mono hover:underline text-muted-foreground"
+            href={`/admin/organizations/${data.getValue<string>()}`}
+            class="font-mono hover:underline text-primary"
           >
             {data.getValue<string>()}
           </A>
         ),
       },
       {
-        header: 'Status',
-        accessorKey: 'emailVerified',
+        header: 'Name',
+        accessorKey: 'name',
         cell: data => (
-          <Badge variant={data.getValue<boolean>() ? 'default' : 'outline'}>
-            {data.getValue<boolean>() ? 'Verified' : 'Unverified'}
-          </Badge>
+          <div class="font-medium">
+            {data.getValue<string>()}
+          </div>
         ),
       },
       {
-        header: 'Orgs',
-        accessorKey: 'organizationCount',
+        header: 'Members',
+        accessorKey: 'memberCount',
         cell: data => (
           <div class="text-center">
             {data.getValue<number>()}
@@ -67,6 +60,11 @@ export const AdminListUsersPage: Component = () => {
       {
         header: 'Created',
         accessorKey: 'createdAt',
+        cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
+      },
+      {
+        header: 'Updated',
+        accessorKey: 'updatedAt',
         cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
       },
     ],
@@ -94,10 +92,10 @@ export const AdminListUsersPage: Component = () => {
     <div class="p-6">
       <div class="border-b mb-6 pb-4">
         <h1 class="text-xl font-bold mb-1">
-          User Management
+          Organization Management
         </h1>
         <p class="text-sm text-muted-foreground">
-          Manage and view all users in the system
+          Manage and view all organizations in the system
         </p>
       </div>
 
@@ -105,7 +103,7 @@ export const AdminListUsersPage: Component = () => {
         <TextFieldRoot class="max-w-sm">
           <TextField
             type="text"
-            placeholder="Search by name, email, or ID..."
+            placeholder="Search by name or ID..."
             value={search()}
             onInput={handleSearch}
           />
@@ -114,13 +112,13 @@ export const AdminListUsersPage: Component = () => {
 
       <Show
         when={!query.isLoading}
-        fallback={<div class="text-center py-8 text-muted-foreground">Loading users...</div>}
+        fallback={<div class="text-center py-8 text-muted-foreground">Loading organizations...</div>}
       >
         <Show
-          when={(query.data?.users.length ?? 0) > 0}
+          when={(query.data?.organizations.length ?? 0) > 0}
           fallback={(
             <div class="text-center py-8 text-muted-foreground">
-              {search() ? 'No users found matching your search.' : 'No users found.'}
+              {search() ? 'No organizations found matching your search.' : 'No organizations found.'}
             </div>
           )}
         >
@@ -173,7 +171,7 @@ export const AdminListUsersPage: Component = () => {
               {' '}
               {query.data?.totalCount ?? 0}
               {' '}
-              users
+              organizations
             </div>
             <div class="flex items-center space-x-2">
               <Button
@@ -229,4 +227,4 @@ export const AdminListUsersPage: Component = () => {
   );
 };
 
-export default AdminListUsersPage;
+export default AdminListOrganizationsPage;
