@@ -12,6 +12,7 @@ export default antfu({
   stylistic: {
     semi: true,
   },
+  ignores: ['**/*.d.ts'],
 
   rules: {
     // To allow export on top of files
