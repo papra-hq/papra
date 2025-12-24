@@ -1,3 +1,6 @@
+/* eslint-disable ts/consistent-type-definitions */
+/* eslint-disable ts/method-signature-style */
+
 // Source - https://stackoverflow.com/a
 // Posted by Patrick Roberts, modified by community. See post 'Timeline' for change history
 // Retrieved 2025-12-19, License - CC BY-SA 4.0
