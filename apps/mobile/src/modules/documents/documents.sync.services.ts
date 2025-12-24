@@ -1,9 +1,7 @@
 import type { ApiClient } from '../api/api.client';
-import type { LocalDocument } from '../api/api.models';
 import { queryClient } from '../api/providers/query.provider';
 import { documentsLocalStorage } from './documents.local-storage';
 import { uploadDocument } from './documents.services';
-import { getFormData } from './documents.services';
 
 export async function syncUnsyncedDocuments({
   organizationId,

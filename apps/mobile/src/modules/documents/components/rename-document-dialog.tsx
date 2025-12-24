@@ -1,5 +1,5 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -9,8 +9,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
+import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type RenameDocumentDialogProps = {
   visible: boolean;
@@ -170,4 +170,3 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
   });
 }
-
