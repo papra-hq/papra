@@ -1,4 +1,5 @@
 import type { RouteDefinitionContext } from './server.types';
+import { registerAdminRoutes } from '../admin/admin.routes';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
@@ -29,4 +30,5 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerWebhooksRoutes(context);
   registerInvitationsRoutes(context);
   registerDocumentActivityRoutes(context);
+  registerAdminRoutes(context);
 }

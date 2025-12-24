@@ -12,5 +12,11 @@ function baseHttpClient<A, R extends ResponseType = 'json'>({ url, baseUrl, ...r
   });
 }
 
-// eslint-disable-next-line antfu/no-top-level-await
-export const httpClient = buildTimeConfig.isDemoMode ? await import('@/modules/demo/demo-http-client').then(m => m.demoHttpClient) : baseHttpClient;
+export async function httpClient<A, R extends ResponseType = 'json'>(options: HttpClientOptions<R>) {
+  if (buildTimeConfig.isDemoMode) {
+    const { demoHttpClient } = await import('@/modules/demo/demo-http-client');
+    return demoHttpClient<A, R>(options);
+  }
+
+  return baseHttpClient<A, R>(options);
+}

@@ -36,6 +36,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationDocumentsIterator,
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
+      getGlobalDocumentsStats,
     },
     { db },
   );
@@ -419,4 +420,39 @@ async function updateDocument({ documentId, organizationId, name, content, db }:
   }
 
   return { document };
+}
+
+async function getGlobalDocumentsStats({ db }: { db: Database }) {
+  const [record] = await db
+    .select({
+      totalDocumentsCount: count(documentsTable.id),
+      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as('totalDocumentsSize'),
+      deletedDocumentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as('deletedDocumentsCount'),
+      documentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
+      documentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as('documentsSize'),
+      deletedDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as('deletedDocumentsSize'),
+    })
+    .from(documentsTable);
+
+  if (isNil(record)) {
+    return {
+      documentsCount: 0,
+      documentsSize: 0,
+      deletedDocumentsCount: 0,
+      deletedDocumentsSize: 0,
+      totalDocumentsCount: 0,
+      totalDocumentsSize: 0,
+    };
+  }
+
+  const { documentsCount, documentsSize, deletedDocumentsCount, deletedDocumentsSize, totalDocumentsCount, totalDocumentsSize } = record;
+
+  return {
+    documentsCount,
+    documentsSize: Number(documentsSize ?? 0),
+    deletedDocumentsCount,
+    deletedDocumentsSize: Number(deletedDocumentsSize ?? 0),
+    totalDocumentsCount,
+    totalDocumentsSize: Number(totalDocumentsSize ?? 0),
+  };
 }

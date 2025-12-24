@@ -6,13 +6,10 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
 import { documentsLocalStorage } from './documents.local-storage';
 
-export function getFormData(localDocument: LocalDocument): FormData {
+export function getFormData(pojo: Record<string, string | FormDataValue | Blob>): FormData {
   const formData = new FormData();
-  formData.append('file', {
-    uri: localDocument.uri,
-    name: localDocument.name,
-    type: localDocument.type,
-  } as unknown as Blob);
+  Object.entries(pojo).forEach(([key, value]) => formData.append(key, value));
+
   return formData;
 }
 
@@ -28,7 +25,14 @@ export async function uploadDocument({
   const { document } = await apiClient<{ document: Document }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
-    body: getFormData(file),
+    body: getFormData({
+      file: {
+        uri: file.uri,
+        // to avoid %20 in file name it is issue in react native that upload file name replaces spaces with %20
+        name: file.name.replace(/ /g, '_'),
+        type: file.type ?? 'application/json',
+      },
+    }),
   });
 
   return {

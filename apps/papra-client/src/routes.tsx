@@ -2,6 +2,7 @@ import type { RouteDefinition } from '@solidjs/router';
 import { Navigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { Match, Show, Suspense, Switch } from 'solid-js';
+import { adminRoutes } from './modules/admin/admin.routes';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
 import { authPagesPaths } from './modules/auth/auth.constants';
@@ -197,6 +198,7 @@ export const routes: RouteDefinition[] = [
           },
         ],
       },
+      adminRoutes,
     ],
   },
   {

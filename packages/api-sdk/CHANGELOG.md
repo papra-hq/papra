@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.1.3
+
+### Patch Changes
+
+- [#698](https://github.com/papra-hq/papra/pull/698) [`815f6f9`](https://github.com/papra-hq/papra/commit/815f6f94f84478fef049f9baea9b0b30b56906a2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed prepublishing assets
+
 ## 1.1.2
 
 ### Patch Changes

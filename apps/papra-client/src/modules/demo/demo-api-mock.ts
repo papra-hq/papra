@@ -85,7 +85,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         id: 'usr_1',
         email: 'jane.doe@papra.app',
         name: 'Jane Doe',
-        roles: [],
+        permissions: [],
       },
     }),
   }),

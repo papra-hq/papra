@@ -3,6 +3,11 @@ import { Redirect } from 'expo-router';
 import { createAuthClient } from '@/modules/auth/auth.client';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
 
+if (__DEV__) {
+  // eslint-disable-next-line ts/no-require-imports
+  require('./ReactotronConfig');
+}
+
 export default function Index() {
   const query = useQuery({
     queryKey: ['api-server-url'],

@@ -65,6 +65,7 @@
     "eas-cli": "^16.27.0",
     "eslint": "catalog:",
     "eslint-config-expo": "~10.0.0",
+    "reactotron-react-native": "^5.1.18",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

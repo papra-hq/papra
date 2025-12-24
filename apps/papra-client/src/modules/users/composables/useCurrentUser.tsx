@@ -11,6 +11,7 @@ const currentUserContext = createContext<{
 
   getLatestOrganizationId: () => string | null;
   setLatestOrganizationId: (organizationId: string) => void;
+  hasPermission: (permission: string) => boolean;
 }>();
 
 export function useCurrentUser() {
@@ -42,6 +43,7 @@ export const CurrentUserProvider: ParentComponent = (props) => {
 
           getLatestOrganizationId,
           setLatestOrganizationId,
+          hasPermission: (permission: string) => query.data?.user.permissions?.includes(permission) ?? false,
         }}
       >
         {props.children}

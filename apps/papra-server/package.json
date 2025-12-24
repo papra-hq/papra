@@ -35,6 +35,7 @@
     "dev:reset": "pnpm clean:all && pnpm migrate:up",
     "script:send-intake-email": "tsx --env-file-if-exists=.env src/scripts/send-intake-email.script.ts | crowlog-pretty",
     "stripe:webhook": "stripe listen --forward-to localhost:1221/api/stripe/webhook",
+    "script:make-user-admin": "tsx --env-file-if-exists=.env src/scripts/make-user-admin.script.ts",
     "maintenance:encrypt-all-documents": "tsx --env-file-if-exists=.env src/scripts/encrypt-all-documents.script.ts"
   },
   "dependencies": {

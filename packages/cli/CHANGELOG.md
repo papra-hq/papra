@@ -1,5 +1,18 @@
 # @papra/cli
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`815f6f9`](https://github.com/papra-hq/papra/commit/815f6f94f84478fef049f9baea9b0b30b56906a2)]:
+  - @papra/api-sdk@1.1.3
+
+## 0.2.1
+
+### Patch Changes
+
+- [#696](https://github.com/papra-hq/papra/pull/696) [`1c64bca`](https://github.com/papra-hq/papra/commit/1c64bca2971ed8f000dd91785a9f0dc5dfff4873) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed the publication of cli assets
+
 ## 0.2.0
 
 ### Minor Changes

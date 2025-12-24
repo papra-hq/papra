@@ -1,5 +1,22 @@
 # @papra/docker
 
+## 25.12.0
+
+### Minor Changes
+
+- [#685](https://github.com/papra-hq/papra/pull/685) [`cf91515`](https://github.com/papra-hq/papra/commit/cf91515cfe448176ac2f2c54f781495725678515) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Document search indexing and synchronization is now asynchronous, and no longer relies on database triggers.
+  This significantly improves the responsiveness of the application when adding, updating, trashing, restoring, or deleting documents. It's even more noticeable when dealing with a large number of documents or on low-end hardware.
+
+- [#686](https://github.com/papra-hq/papra/pull/686) [`95662d0`](https://github.com/papra-hq/papra/commit/95662d025f535bf0f4f48683c1f7cb1fffeff0a7) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Enforcing the auth secret to be at least 32 characters long for security reasons
+
+- [#686](https://github.com/papra-hq/papra/pull/686) [`95662d0`](https://github.com/papra-hq/papra/commit/95662d025f535bf0f4f48683c1f7cb1fffeff0a7) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Now throw an error if AUTH_SECRET is not set in production mode
+
+- [#689](https://github.com/papra-hq/papra/pull/689) [`d795798`](https://github.com/papra-hq/papra/commit/d7957989310693934fd6e30f6ce540d76f10c9a2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a platform administration dashboard
+
+- [#675](https://github.com/papra-hq/papra/pull/675) [`17d6e9a`](https://github.com/papra-hq/papra/commit/17d6e9aa6a7152f3ceac3e829884cbd511166b99) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for Simplified Chinese language
+
+- [#679](https://github.com/papra-hq/papra/pull/679) [`6f38659`](https://github.com/papra-hq/papra/commit/6f38659638f5b84cd3ca330e5c44cb3b452921ae) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an issue where the document icon didn't load for unknown file types
+
 ## 25.11.0
 
 ### Minor Changes

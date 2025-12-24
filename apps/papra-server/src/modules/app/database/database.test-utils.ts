@@ -6,6 +6,7 @@ import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
+import { userRolesTable } from '../../roles/roles.table';
 import { organizationSubscriptionsTable } from '../../subscriptions/subscriptions.tables';
 import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from '../../tagging-rules/tagging-rules.tables';
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
@@ -49,6 +50,7 @@ const seedTables = {
   webhookEvents: webhookEventsTable,
   webhookDeliveries: webhookDeliveriesTable,
   organizationInvitations: organizationInvitationsTable,
+  userRoles: userRolesTable,
 } as const;
 
 type SeedTablesRows = {
