@@ -198,7 +198,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       borderRadius: 20,
       backgroundColor: themeColors.secondaryBackground,
       justifyContent: 'center',
-      alignItems: 'flex-start',
+      alignItems: 'center',
     },
     headerTitle: {
       flex: 1,

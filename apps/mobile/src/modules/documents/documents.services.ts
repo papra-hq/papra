@@ -1,31 +1,37 @@
 import type { ApiClient } from '../api/api.client';
-import type { CoerceDates } from '../api/api.models';
+import type { CoerceDates, LocalDocument } from '../api/api.models';
 import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
 
-export function getFormData(pojo: Record<string, string | Blob>): FormData {
+export function getFormData(pojo: Record<string, string | FormDataValue | Blob>): FormData {
   const formData = new FormData();
   Object.entries(pojo).forEach(([key, value]) => formData.append(key, value));
+
   return formData;
 }
 
 export async function uploadDocument({
   file,
   organizationId,
-
   apiClient,
 }: {
-  file: Blob;
+  file: LocalDocument;
   organizationId: string;
-
   apiClient: ApiClient;
 }) {
   const { document } = await apiClient<{ document: Document }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
-    body: getFormData({ file }),
+    body: getFormData({
+      file: {
+        uri: file.uri,
+        // to avoid %20 in file name it is issue in react native that upload file name replaces spaces with %20
+        name: file.name.replace(/ /g, '_'),
+        type: file.type ?? 'application/json',
+      },
+    }),
   });
 
   return {
