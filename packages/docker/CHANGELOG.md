@@ -1,5 +1,11 @@
 # @papra/docker
 
+## 25.12.1
+
+### Patch Changes
+
+- [#702](https://github.com/papra-hq/papra/pull/702) [`ec34cf1`](https://github.com/papra-hq/papra/commit/ec34cf17880682369d1ecf2957c2d7e0eed9f499) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Organizations listing and details in the admin dashboard
+
 ## 25.12.0
 
 ### Minor Changes
