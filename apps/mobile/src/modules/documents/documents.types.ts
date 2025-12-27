@@ -6,6 +6,7 @@ export type Document = {
   organizationId: string;
   createdAt: string;
   updatedAt: string;
+  localUri: string | undefined;
   tags: {
     id: string;
     name: string;
