@@ -284,7 +284,7 @@ export const TaggingRuleForm: Component<{
           </Button>
         </Show>
 
-        <Button type="submit">{props.submitButtonText ?? t('tagging-rules.form.submit')}</Button>
+        <Button type="submit" isLoading={form.submitting}>{props.submitButtonText ?? t('tagging-rules.form.submit')}</Button>
       </div>
     </Form>
   );

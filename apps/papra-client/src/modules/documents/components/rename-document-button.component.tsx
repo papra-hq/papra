@@ -83,7 +83,7 @@ export const RenameDocumentDialog: Component<{
             <Button type="button" variant="secondary" onClick={() => props.setIsOpen(false)}>
               {t('documents.rename.cancel')}
             </Button>
-            <Button type="submit">{t('documents.rename.form.submit')}</Button>
+            <Button type="submit" isLoading={renameDocumentMutation.isPending}>{t('documents.rename.form.submit')}</Button>
           </div>
         </Form>
       </DialogContent>

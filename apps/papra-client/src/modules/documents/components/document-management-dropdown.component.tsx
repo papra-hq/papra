@@ -2,13 +2,14 @@ import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { A } from '@solidjs/router';
+import { Show } from 'solid-js';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { useDeleteDocument } from '../documents.composables';
 import { useRenameDocumentDialog } from './rename-document-button.component';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
-  const { deleteDocument } = useDeleteDocument();
+  const { deleteDocument, getIsDeletingDocument } = useDeleteDocument();
   const { openRenameDialog } = useRenameDocumentDialog();
 
   const deleteDoc = () => deleteDocument({
@@ -52,8 +53,14 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
         <DropdownMenuItem
           class="cursor-pointer text-red"
           onClick={() => deleteDoc()}
+          disabled={getIsDeletingDocument()}
         >
-          <div class="i-tabler-trash size-4 mr-2" />
+          <Show when={getIsDeletingDocument()}>
+            <div class="i-tabler-loader-2 animate-spin size-4 mr-2" />
+          </Show>
+          <Show when={!getIsDeletingDocument()}>
+            <div class="i-tabler-trash size-4 mr-2" />
+          </Show>
           <span>Delete document</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

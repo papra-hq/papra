@@ -115,7 +115,7 @@ const TagForm: Component<{
       </Field>
 
       <div class="flex flex-row-reverse justify-between items-center mt-6">
-        <Button type="submit">
+        <Button type="submit" isLoading={form.submitting}>
           {props.submitLabel ?? t('tags.create')}
         </Button>
 
@@ -229,6 +229,7 @@ export const TagsPage: Component = () => {
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
+  const [deletingTagId, setDeletingTagId] = createSignal<string | null>(null);
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
@@ -253,6 +254,8 @@ export const TagsPage: Component = () => {
       return;
     }
 
+    setDeletingTagId(tag.id);
+
     const [, error] = await safely(deleteTag({
       organizationId: params.organizationId,
       tagId: tag.id,
@@ -264,6 +267,7 @@ export const TagsPage: Component = () => {
         type: 'error',
       });
 
+      setDeletingTagId(null);
       return;
     }
 
@@ -276,6 +280,8 @@ export const TagsPage: Component = () => {
       message: t('tags.delete.success'),
       type: 'success',
     });
+
+    setDeletingTagId(null);
   };
 
   return (
@@ -368,7 +374,7 @@ export const TagsPage: Component = () => {
                               )}
                             </UpdateTagModal>
 
-                            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ tag })}>
+                            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ tag })} isLoading={deletingTagId() === tag.id}>
                               <div class="i-tabler-trash size-4" />
                             </Button>
                           </div>

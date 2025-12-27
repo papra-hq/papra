@@ -37,7 +37,7 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: stri
         )}
       </Field>
 
-      <Button type="submit" class="w-full">
+      <Button type="submit" class="w-full" isLoading={form.submitting}>
         {t('auth.reset-password.form.submit')}
       </Button>
 

@@ -30,6 +30,7 @@ const AllowedOriginsDialog: Component<{
   onOpenChange?: (isOpen: boolean) => void;
 }> = (props) => {
   const [getAllowedOrigins, setAllowedOrigins] = createSignal(props.intakeEmails?.allowedOrigins || []);
+  const [deletingOrigin, setDeletingOrigin] = createSignal<string | null>(null);
   const { t } = useI18n();
 
   const update = async () => {
@@ -45,8 +46,10 @@ const AllowedOriginsDialog: Component<{
   };
 
   const deleteAllowedOrigin = async ({ origin }: { origin: string }) => {
+    setDeletingOrigin(origin);
     setAllowedOrigins(origins => origins.filter(o => o !== origin));
     await update();
+    setDeletingOrigin(null);
   };
 
   const { form, Form, Field } = createForm({
@@ -109,7 +112,7 @@ const AllowedOriginsDialog: Component<{
 
                 <div class="flex items-center gap-2">
                   <TextField type="email" id="email" placeholder={t('intake-emails.allowed-origins.add.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
-                  <Button type="submit">
+                  <Button type="submit" isLoading={form.submitting}>
                     <div class="i-tabler-plus size-4 mr-2" />
                     {t('intake-emails.allowed-origins.add.button')}
                   </Button>
@@ -140,6 +143,7 @@ const AllowedOriginsDialog: Component<{
                   size="icon"
                   class="text-red"
                   onClick={() => deleteAllowedOrigin({ origin })}
+                  isLoading={deletingOrigin() === origin}
                 >
                   <div class="i-tabler-trash size-4" />
                 </Button>
@@ -157,6 +161,9 @@ export const IntakeEmailsPage: Component = () => {
   const { t, te } = useI18n();
   const [selectedIntakeEmail, setSelectedIntakeEmail] = createSignal<IntakeEmail | null>(null);
   const [openDropdownId, setOpenDropdownId] = createSignal<string | null>(null);
+  const [isCreatingEmail, setIsCreatingEmail] = createSignal(false);
+  const [updatingEmailId, setUpdatingEmailId] = createSignal<string | null>(null);
+  const [deletingEmailId, setDeletingEmailId] = createSignal<string | null>(null);
 
   if (!config.intakeEmails.isEnabled) {
     return (
@@ -195,6 +202,8 @@ export const IntakeEmailsPage: Component = () => {
   }));
 
   const createEmail = async () => {
+    setIsCreatingEmail(true);
+
     const [,error] = await safely(createIntakeEmail({ organizationId: params.organizationId }));
 
     if (error) {
@@ -203,6 +212,7 @@ export const IntakeEmailsPage: Component = () => {
         type: 'error',
       });
 
+      setIsCreatingEmail(false);
       throw error;
     }
 
@@ -212,6 +222,8 @@ export const IntakeEmailsPage: Component = () => {
       message: t('intake-emails.create.success'),
       type: 'success',
     });
+
+    setIsCreatingEmail(false);
   };
 
   const deleteEmail = async ({ intakeEmailId }: { intakeEmailId: string }) => {
@@ -231,6 +243,8 @@ export const IntakeEmailsPage: Component = () => {
       return;
     }
 
+    setDeletingEmailId(intakeEmailId);
+
     await deleteIntakeEmail({ organizationId: params.organizationId, intakeEmailId });
     await query.refetch();
 
@@ -238,9 +252,13 @@ export const IntakeEmailsPage: Component = () => {
       message: t('intake-emails.delete.success'),
       type: 'success',
     });
+
+    setDeletingEmailId(null);
   };
 
   const updateEmail = async ({ intakeEmailId, isEnabled }: { intakeEmailId: string; isEnabled: boolean }) => {
+    setUpdatingEmailId(intakeEmailId);
+
     await updateIntakeEmail({ organizationId: params.organizationId, intakeEmailId, isEnabled });
     await query.refetch();
 
@@ -248,6 +266,8 @@ export const IntakeEmailsPage: Component = () => {
       message: isEnabled ? t('intake-emails.update.success.enabled') : t('intake-emails.update.success.disabled'),
       type: 'success',
     });
+
+    setUpdatingEmailId(null);
   };
 
   const openAllowedOriginsDialog = (intakeEmail: IntakeEmail) => {
@@ -284,7 +304,7 @@ export const IntakeEmailsPage: Component = () => {
                     class="pt-0"
                     icon="i-tabler-mail"
                     cta={(
-                      <Button variant="secondary" onClick={createEmail}>
+                      <Button variant="secondary" onClick={createEmail} isLoading={isCreatingEmail()}>
                         <div class="i-tabler-plus size-4 mr-2" />
                         {t('intake-emails.empty.generate')}
                       </Button>
@@ -301,7 +321,7 @@ export const IntakeEmailsPage: Component = () => {
                   })}
                 </div>
 
-                <Button onClick={createEmail}>
+                <Button onClick={createEmail} isLoading={isCreatingEmail()}>
                   <div class="i-tabler-plus size-4 mr-2" />
                   {t('intake-emails.new')}
                 </Button>
@@ -359,8 +379,14 @@ export const IntakeEmailsPage: Component = () => {
                                 setOpenDropdownId(null);
                                 updateEmail({ intakeEmailId: intakeEmail.id, isEnabled: !intakeEmail.isEnabled });
                               }}
+                              disabled={updatingEmailId() === intakeEmail.id}
                             >
-                              <div class="i-tabler-power size-4 mr-2" />
+                              <Show when={updatingEmailId() === intakeEmail.id}>
+                                <div class="i-tabler-loader-2 animate-spin size-4 mr-2" />
+                              </Show>
+                              <Show when={updatingEmailId() !== intakeEmail.id}>
+                                <div class="i-tabler-power size-4 mr-2" />
+                              </Show>
                               {intakeEmail.isEnabled ? t('intake-emails.actions.disable') : t('intake-emails.actions.enable')}
                             </DropdownMenuItem>
 
@@ -377,8 +403,14 @@ export const IntakeEmailsPage: Component = () => {
                                 deleteEmail({ intakeEmailId: intakeEmail.id });
                               }}
                               class="text-red"
+                              disabled={deletingEmailId() === intakeEmail.id}
                             >
-                              <div class="i-tabler-trash size-4 mr-2" />
+                              <Show when={deletingEmailId() === intakeEmail.id}>
+                                <div class="i-tabler-loader-2 animate-spin size-4 mr-2" />
+                              </Show>
+                              <Show when={deletingEmailId() !== intakeEmail.id}>
+                                <div class="i-tabler-trash size-4 mr-2" />
+                              </Show>
                               {t('intake-emails.actions.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>

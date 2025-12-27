@@ -24,8 +24,10 @@ function getConfirmMessage(documentName: string) {
 
 export function useDeleteDocument() {
   const { confirm } = useConfirmModal();
+  const [getIsDeletingDocument, setIsDeletingDocument] = createSignal(false);
 
   return {
+    getIsDeletingDocument,
     async deleteDocument({ documentId, organizationId, documentName }: { documentId: string; organizationId: string; documentName: string }): Promise<{ hasDeleted: boolean }> {
       const isConfirmed = await confirm({
         title: 'Delete document',
@@ -43,6 +45,8 @@ export function useDeleteDocument() {
         return { hasDeleted: false };
       }
 
+      setIsDeletingDocument(true);
+
       await deleteDocument({
         documentId,
         organizationId,
@@ -50,6 +54,8 @@ export function useDeleteDocument() {
 
       await invalidateOrganizationDocumentsQuery({ organizationId });
       createToast({ type: 'success', message: 'Document deleted' });
+
+      setIsDeletingDocument(false);
 
       return { hasDeleted: true };
     },

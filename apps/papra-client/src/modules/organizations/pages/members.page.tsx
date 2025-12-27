@@ -3,7 +3,7 @@ import type { OrganizationMemberRole } from '../organizations.types';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
-import { For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
@@ -29,6 +29,9 @@ const MemberList: Component = () => {
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const { getIsAtLeastAdmin, getRole } = useCurrentUserRole({ organizationId: params.organizationId });
+
+  const [deletingMemberId, setDeletingMemberId] = createSignal<string | null>(null);
+  const [updatingMemberId, setUpdatingMemberId] = createSignal<string | null>(null);
 
   const removeMemberMutation = useMutation(() => ({
     mutationFn: ({ memberId }: { memberId: string }) => removeOrganizationMember({ organizationId: params.organizationId, memberId }),
@@ -75,11 +78,23 @@ const MemberList: Component = () => {
       return;
     }
 
-    removeMemberMutation.mutate({ memberId });
+    setDeletingMemberId(memberId);
+    try {
+      await removeMemberMutation.mutateAsync({ memberId });
+    }
+    finally {
+      setDeletingMemberId(null);
+    }
   };
 
   const handleUpdateMemberRole = async ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) => {
-    await updateMemberRoleMutation.mutateAsync({ memberId, role });
+    setUpdatingMemberId(memberId);
+    try {
+      await updateMemberRoleMutation.mutateAsync({ memberId, role });
+    }
+    finally {
+      setUpdatingMemberId(null);
+    }
   };
 
   const table = createSolidTable({
@@ -99,9 +114,14 @@ const MemberList: Component = () => {
             <DropdownMenuContent>
               <DropdownMenuItem
                 onClick={() => handleDelete({ memberId: data.row.original.id })}
-                disabled={data.row.original.role === ORGANIZATION_ROLES.OWNER || !getIsAtLeastAdmin()}
+                disabled={data.row.original.role === ORGANIZATION_ROLES.OWNER || !getIsAtLeastAdmin() || deletingMemberId() === data.row.original.id}
               >
-                <div class="i-tabler-user-x size-4 mr-2" />
+                <Show when={deletingMemberId() === data.row.original.id}>
+                  <div class="i-tabler-loader-2 animate-spin size-4 mr-2" />
+                </Show>
+                <Show when={deletingMemberId() !== data.row.original.id}>
+                  <div class="i-tabler-user-x size-4 mr-2" />
+                </Show>
                 {t('organizations.members.remove-from-organization')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -111,19 +131,19 @@ const MemberList: Component = () => {
                 <DropdownMenuRadioGroup value={data.row.original.role} onChange={role => handleUpdateMemberRole({ memberId: data.row.original.id, role: role as OrganizationMemberRole })}>
                   <DropdownMenuRadioItem
                     value={ORGANIZATION_ROLES.OWNER}
-                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.OWNER })}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.OWNER }) || updatingMemberId() === data.row.original.id}
                   >
                     {t(`organizations.members.roles.owner`)}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value={ORGANIZATION_ROLES.ADMIN}
-                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.ADMIN })}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.ADMIN }) || updatingMemberId() === data.row.original.id}
                   >
                     {t(`organizations.members.roles.admin`)}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value={ORGANIZATION_ROLES.MEMBER}
-                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.MEMBER })}
+                    disabled={getIsMemberRoleDisabled({ currentUserRole: getRole(), memberRole: data.row.original.role, targetRole: ORGANIZATION_ROLES.MEMBER }) || updatingMemberId() === data.row.original.id}
                   >
                     {t(`organizations.members.roles.member`)}
                   </DropdownMenuRadioItem>

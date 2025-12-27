@@ -100,7 +100,7 @@ export const EmailRegisterForm: Component = () => {
         )}
       </Field>
 
-      <Button type="submit" class="w-full">{t('auth.register.form.submit')}</Button>
+      <Button type="submit" class="w-full" isLoading={form.submitting}>{t('auth.register.form.submit')}</Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
 
