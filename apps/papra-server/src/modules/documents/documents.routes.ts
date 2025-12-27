@@ -6,8 +6,11 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createPlansRepository } from '../plans/plans.repository';
+import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -45,12 +48,17 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { maxUploadSize } = config.documentsStorage;
+      // Get organization's plan-specific upload limit
+      const plansRepository = createPlansRepository({ config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+
+      const { organizationPlan } = await getOrganizationPlan({ organizationId, plansRepository, subscriptionsRepository });
+      const { maxFileSize } = organizationPlan.limits;
 
       const { fileStream, fileName, mimeType } = await getFileStreamFromMultipartForm({
         body: context.req.raw.body,
         headers: context.req.header(),
-        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize }) ? maxUploadSize : undefined,
+        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize: maxFileSize }) ? maxFileSize : undefined,
       });
 
       const createDocument = createDocumentCreationUsecase({ ...deps });
