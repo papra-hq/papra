@@ -1,6 +1,7 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
 import { booleanishSchema } from '../config/config.schemas';
+import { IN_MS } from '../shared/units';
 import { isString } from '../shared/utils';
 import { defaultIgnoredPatterns } from './ingestion-folders.constants';
 
@@ -27,7 +28,7 @@ export const ingestionFolderConfig = {
     pollingInterval: {
       doc: 'When polling is used, this is the interval at which the watcher checks for changes in the ingestion folder (in milliseconds)',
       schema: z.coerce.number().int().positive(),
-      default: 2_000,
+      default: 2 * IN_MS.SECOND,
       env: 'INGESTION_FOLDER_WATCHER_POLLING_INTERVAL_MS',
     },
   },

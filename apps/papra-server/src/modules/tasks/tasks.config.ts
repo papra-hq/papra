@@ -2,6 +2,7 @@ import type { ConfigDefinition } from 'figue';
 import type { TasksDriverName } from './drivers/tasks-driver.constants';
 import { z } from 'zod';
 import { booleanishSchema } from '../config/config.schemas';
+import { IN_MS } from '../shared/units';
 import { tasksDriverNames } from './drivers/tasks-driver.constants';
 
 export const tasksConfig = {
@@ -35,7 +36,7 @@ export const tasksConfig = {
         pollIntervalMs: {
           doc: 'The interval at which the task persistence driver polls for new tasks',
           schema: z.coerce.number().int().positive(),
-          default: 1_000,
+          default: 1 * IN_MS.SECOND,
           env: 'TASKS_PERSISTENCE_DRIVERS_LIBSQL_POLL_INTERVAL_MS',
         },
       },
