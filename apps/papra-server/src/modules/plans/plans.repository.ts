@@ -2,6 +2,7 @@ import type { Config } from '../config/config.types';
 import type { OrganizationPlanRecord } from './plans.types';
 import { injectArguments } from '@corentinth/chisels';
 import { isDocumentSizeLimitEnabled } from '../documents/documents.models';
+import { IN_BYTES } from '../shared/units';
 import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from './plans.constants';
 import { createPlanNotFoundError } from './plans.errors';
 
@@ -30,7 +31,7 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       id: FREE_PLAN_ID,
       name: 'Free',
       limits: {
-        maxDocumentStorageBytes: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1024 * 1024 * 500, // 500 MiB
+        maxDocumentStorageBytes: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 500 * IN_BYTES.MEGABYTE,
         maxIntakeEmailsCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1,
         maxOrganizationsMembersCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 3,
         maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize }) ? maxUploadSize : Number.POSITIVE_INFINITY,
@@ -42,10 +43,10 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       monthlyPriceId: config.organizationPlans.plusPlanMonthlyPriceId,
       annualPriceId: config.organizationPlans.plusPlanAnnualPriceId,
       limits: {
-        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 5, // 5 GiB
+        maxDocumentStorageBytes: 5 * IN_BYTES.GIGABYTE, // 5 GiB
         maxIntakeEmailsCount: 10,
         maxOrganizationsMembersCount: 10,
-        maxFileSize: 1024 * 1024 * 100, // 100 MiB
+        maxFileSize: 100 * IN_BYTES.MEGABYTE, // 100 MiB
       },
     },
     [PRO_PLAN_ID]: {
@@ -54,10 +55,10 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       monthlyPriceId: config.organizationPlans.proPlanMonthlyPriceId,
       annualPriceId: config.organizationPlans.proPlanAnnualPriceId,
       limits: {
-        maxDocumentStorageBytes: 1024 * 1024 * 1024 * 50, // 50 GiB
+        maxDocumentStorageBytes: 50 * IN_BYTES.GIGABYTE, // 50 GiB
         maxIntakeEmailsCount: 100,
         maxOrganizationsMembersCount: 50,
-        maxFileSize: 1024 * 1024 * 500, // 500 MiB
+        maxFileSize: 500 * IN_BYTES.MEGABYTE, // 500 MiB
       },
     },
   };

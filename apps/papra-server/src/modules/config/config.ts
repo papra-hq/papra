@@ -16,6 +16,7 @@ import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
+import { IN_MS } from '../shared/units';
 import { isString } from '../shared/utils';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tasksConfig } from '../tasks/tasks.config';
@@ -87,7 +88,7 @@ export const configDefinition = {
     defaultRouteTimeoutMs: {
       doc: 'The maximum time in milliseconds for a route to complete before timing out',
       schema: z.coerce.number().int().positive(),
-      default: 20_000,
+      default: 20 * IN_MS.SECOND,
       env: 'SERVER_API_ROUTES_TIMEOUT_MS',
     },
     routeTimeouts: {
@@ -103,7 +104,7 @@ export const configDefinition = {
         {
           method: 'POST',
           route: '/api/organizations/:organizationId/documents',
-          timeoutMs: 5 * 60 * 1000, // 5 minutes for file uploads
+          timeoutMs: 5 * IN_MS.MINUTE,
         },
       ],
     },
