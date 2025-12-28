@@ -84,11 +84,28 @@ export const configDefinition = {
       default: '0.0.0.0',
       env: 'SERVER_HOSTNAME',
     },
-    routeTimeoutMs: {
+    defaultRouteTimeoutMs: {
       doc: 'The maximum time in milliseconds for a route to complete before timing out',
       schema: z.coerce.number().int().positive(),
       default: 20_000,
       env: 'SERVER_API_ROUTES_TIMEOUT_MS',
+    },
+    routeTimeouts: {
+      doc: 'Route-specific timeout overrides. Allows setting different timeouts for specific HTTP method and route paths.',
+      schema: z.array(
+        z.object({
+          method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']),
+          route: z.string(),
+          timeoutMs: z.number().int().positive(),
+        }),
+      ),
+      default: [
+        {
+          method: 'POST',
+          route: '/api/organizations/:organizationId/documents',
+          timeoutMs: 5 * 60 * 1000, // 5 minutes for file uploads
+        },
+      ],
     },
     corsOrigins: {
       doc: 'The CORS origin for the api server',
