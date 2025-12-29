@@ -598,6 +598,7 @@ export const translations = {
 
   // API errors
 
+  'api-errors.api.timeout': 'The request took too long and timed out. Please try again.',
   'api-errors.document.already_exists': 'The document already exists',
   'api-errors.document.size_too_large': 'The file size is too large',
   'api-errors.intake-emails.already_exists': 'An intake email with this address already exists.',

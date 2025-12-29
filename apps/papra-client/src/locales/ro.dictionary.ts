@@ -600,6 +600,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API errors
 
+  'api-errors.api.timeout': 'Cererea a durat prea mult și a expirat. Vă rugăm să încercați din nou.',
   'api-errors.document.already_exists': 'Documentul există deja',
   'api-errors.document.size_too_large': 'Fișierul este prea mare',
   'api-errors.intake-emails.already_exists': 'Un email de primire cu această adresă există deja.',
