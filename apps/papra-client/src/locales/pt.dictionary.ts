@@ -600,6 +600,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API errors
 
+  'api-errors.api.timeout': 'O pedido demorou muito tempo e expirou. Por favor, tente novamente.',
   'api-errors.document.already_exists': 'O documento já existe',
   'api-errors.document.size_too_large': 'O arquivo é muito grande',
   'api-errors.intake-emails.already_exists': 'Um e-mail de entrada com este endereço já existe.',

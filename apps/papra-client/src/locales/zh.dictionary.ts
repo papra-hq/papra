@@ -600,6 +600,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API errors
 
+  'api-errors.api.timeout': '请求耗时过长已超时。请重试。',
   'api-errors.document.already_exists': '文档已存在',
   'api-errors.document.size_too_large': '文件大小过大',
   'api-errors.intake-emails.already_exists': '具有此地址的接收邮箱已存在。',
