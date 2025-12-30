@@ -13,6 +13,7 @@ export const sidebar = [
     items: [
       { label: 'Using Docker', slug: 'self-hosting/using-docker' },
       { label: 'Using Docker Compose', slug: 'self-hosting/using-docker-compose' },
+      { label: 'From Source', slug: 'self-hosting/from-source' },
       { label: 'Docker Compose Generator', link: '/docker-compose-generator', badge: { text: 'new', variant: 'note' } },
       { label: 'Configuration', slug: 'self-hosting/configuration' },
     ],
