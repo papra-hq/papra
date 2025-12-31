@@ -235,9 +235,10 @@ async function handleExistingDocument({
   newDocumentStorageKey: string;
   logger: Logger;
 }) {
-  if (!existingDocument.isDeleted) {
-    await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
+  // Delete the newly uploaded file since we'll be using the existing document's file
+  await documentsStorageService.deleteFile({ storageKey: newDocumentStorageKey });
 
+  if (!existingDocument.isDeleted) {
     throw createDocumentAlreadyExistsError();
   }
 
