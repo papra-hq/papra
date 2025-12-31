@@ -66,6 +66,19 @@ When creating an API key, you can select from the following permissions:
 
 ## Endpoints
 
+### Check current API key
+
+**GET** `/api/api-keys/current`
+
+Get information about the currently used API key.
+
+- Required API key permissions: none
+- Response (JSON)
+  - `apiKey`: The current API key information.
+    - `id`: The API key ID.
+    - `name`: The API key name.
+    - `permissions`: The list of permissions associated with the API key.
+
 ### List organizations
 
 **GET** `/api/organizations`
