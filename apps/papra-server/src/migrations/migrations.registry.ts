@@ -9,13 +9,11 @@ import { organizationsInvitationsImprovementMigration } from './list/0006-organi
 import { documentActivityLogMigration } from './list/0007-document-activity-log.migration';
 import { documentActivityLogOnDeleteSetNullMigration } from './list/0008-document-activity-log-on-delete-set-null.migration';
 import { dropLegacyMigrationsMigration } from './list/0009-drop-legacy-migrations.migration';
-
 import { documentFileEncryptionMigration } from './list/0010-document-file-encryption.migration';
-
 import { softDeleteOrganizationsMigration } from './list/0011-soft-delete-organizations.migration';
 import { taggingRuleConditionMatchModeMigration } from './list/0012-tagging-rule-condition-match-mode.migration';
-
 import { dropFts5TriggersMigration } from './list/0013-drop-fts-5-triggers.migration';
+import { twoFactorAuthenticationMigration } from './list/0014-two-factor-authentication.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -31,4 +29,5 @@ export const migrations: Migration[] = [
   softDeleteOrganizationsMigration,
   taggingRuleConditionMatchModeMigration,
   dropFts5TriggersMigration,
+  twoFactorAuthenticationMigration,
 ];

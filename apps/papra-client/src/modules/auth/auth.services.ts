@@ -1,7 +1,7 @@
 import type { Config } from '../config/config';
 
 import type { SsoProviderConfig } from './auth.types';
-import { genericOAuthClient } from 'better-auth/client/plugins';
+import { genericOAuthClient, twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
 import { buildTimeConfig } from '../config/config';
 import { queryClient } from '../shared/query/query-client';
@@ -13,6 +13,7 @@ export function createAuthClient() {
     baseURL: buildTimeConfig.baseApiUrl,
     plugins: [
       genericOAuthClient(),
+      twoFactorClient(),
     ],
   });
 
@@ -24,6 +25,7 @@ export function createAuthClient() {
     resetPassword: client.resetPassword,
     sendVerificationEmail: client.sendVerificationEmail,
     useSession: client.useSession,
+    twoFactor: client.twoFactor,
     signOut: async () => {
       trackingServices.capture({ event: 'User logged out' });
       const result = await client.signOut();
@@ -44,6 +46,7 @@ export const {
   requestPasswordReset,
   resetPassword,
   sendVerificationEmail,
+  twoFactor,
 } = buildTimeConfig.isDemoMode
   ? createDemoAuthClient()
   : createAuthClient();

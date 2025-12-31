@@ -12,6 +12,7 @@ export const usersTable = sqliteTable(
     name: text('name'),
     image: text('image'),
     maxOrganizationCount: integer('max_organization_count', { mode: 'number' }),
+    twoFactorEnabled: integer('two_factor_enabled', { mode: 'boolean' }).notNull().default(false),
   },
   table => [
     index('users_email_index').on(table.email),
