@@ -6,6 +6,7 @@ import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
+import { createDeterministicIdGenerator } from '../shared/random/ids';
 import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -242,6 +243,83 @@ describe('documents usecases', () => {
         documentId: 'document-1',
         tagId: 'tag-2',
       }]);
+    });
+
+    test('when restoring a deleted document via duplicate upload, the optimistically saved new file should be cleaned up to prevent orphan files', async () => {
+      const taskServices = createInMemoryTaskServices();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+      });
+
+      const config = overrideConfig({
+        organizationPlans: { isFreePlanUnlimited: true },
+        documentsStorage: { driver: 'in-memory' },
+      });
+      const documentsRepository = createDocumentsRepository({ db });
+      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
+
+      const createDocument = createDocumentCreationUsecase({
+        db,
+        config,
+        generateDocumentId: createDeterministicIdGenerator({ prefix: 'doc' }),
+        documentsStorageService: inMemoryDocumentsStorageService,
+        taskServices,
+        eventServices: createTestEventServices(),
+      });
+
+      const userId = 'user-1';
+      const organizationId = 'organization-1';
+
+      // Step 1: Upload a file
+      const { document: document1 } = await createDocument({
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file.pdf',
+        mimeType: 'application/pdf',
+        userId,
+        organizationId,
+      });
+
+      expect(document1.id).to.eql('doc_000000000000000000000001');
+      expect(
+        Array.from(inMemoryDocumentsStorageService._getStorage().keys()),
+      ).to.eql([
+        'organization-1/originals/doc_000000000000000000000001.pdf',
+      ]);
+
+      // Step 2: Delete the document (soft delete)
+      await trashDocument({
+        documentId: document1.id,
+        organizationId,
+        userId,
+        documentsRepository,
+        eventServices: createTestEventServices(),
+      });
+
+      const { document: trashedDoc } = await documentsRepository.getDocumentById({ documentId: document1.id, organizationId });
+      expect(trashedDoc?.isDeleted).to.eql(true);
+
+      // Step 3: Upload the same file again - this should restore the original document
+      const { document: restoredDocument } = await createDocument({
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file.pdf',
+        mimeType: 'application/pdf',
+        userId,
+        organizationId,
+      });
+
+      // The document should be restored (same ID)
+      expect(restoredDocument.id).to.eql('doc_000000000000000000000001');
+      expect(restoredDocument.isDeleted).to.eql(false);
+
+      // Step 5: Verify no orphan files remain in storage
+      // The optimistically saved file (doc_2.pdf) should have been cleaned up during restoration
+      expect(
+        Array.from(inMemoryDocumentsStorageService._getStorage().keys()),
+      ).to.eql([
+        'organization-1/originals/doc_000000000000000000000001.pdf',
+      ]);
     });
 
     test('when there is an issue when inserting the document in the db, the file should not be saved in the storage', async () => {
