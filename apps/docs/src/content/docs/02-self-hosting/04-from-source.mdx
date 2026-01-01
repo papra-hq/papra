@@ -1,0 +1,194 @@
+---
+title: Installing Papra from source
+description: Self-host Papra by building from source.
+slug: self-hosting/from-source
+---
+import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import SecretKeyGenerator from '../../../components/encryption-key-generator.astro';
+
+This guide covers building and running Papra directly from source code. This method is an alternative to Docker for users who prefer running applications natively on their system.
+
+- **Full control**: Access to all source files for customization
+- **Development ready**: Ideal for contributing or debugging
+- **No containerization required**: Runs directly on your system
+
+## Prerequisites
+
+Ensure you have the following installed on your system:
+
+- **Node.js**: Version 24 or higher
+- **pnpm**: Version 10 or higher
+
+Verify your installation with:
+
+```bash
+node --version  # Should show v24.x.x or higher
+pnpm --version  # Should show 10.x.x or higher
+```
+
+## Building from Source
+
+<Steps>
+
+1. Clone the Repository
+
+    ```bash
+    git clone https://github.com/papra-hq/papra.git
+    cd papra
+    ```
+
+2. Install Dependencies
+
+    ```bash
+    pnpm install
+    ```
+
+3. Build All Packages
+
+    ```bash
+    pnpm -r build
+    ```
+
+4. Copy Client Files to Server
+
+    Create the public directory and copy the built client files:
+
+    ```bash
+    mkdir -p apps/papra-server/public
+    cp -r apps/papra-client/dist/* apps/papra-server/public/
+    ```
+
+5. Create Configuration File
+
+    Navigate to the server directory:
+
+    ```bash
+    cd apps/papra-server
+    ```
+
+    First, generate a secure secret key for authentication:
+
+    <Tabs>
+      <TabItem label="Key generator">
+        <SecretKeyGenerator />
+      </TabItem>
+      <TabItem label="Command line">
+        ```bash
+        node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+        ```
+      </TabItem>
+    </Tabs>
+
+    Then create a `papra.config.yaml` file in this directory with the following content:
+
+    ```yaml
+    server:
+      servePublicDir: true
+      baseUrl: http://localhost:1221
+
+    auth:
+      secret: <your-generated-secret-key>
+    ```
+
+    Alternatively, you can use `papra.config.json`:
+
+    ```json
+    {
+      "$schema": "https://docs.papra.app/papra-config-schema.json",
+      "server": {
+        "servePublicDir": true,
+        "baseUrl": "http://localhost:1221"
+      },
+      "auth": {
+        "secret": "<your-generated-secret-key>"
+      }
+    }
+    ```
+
+6. Start the Server
+
+    Run the server with database migrations:
+
+    ```bash
+    pnpm start:with-migrations
+    ```
+
+</Steps>
+
+The application will be available at [http://localhost:1221](http://localhost:1221).
+
+## Configuration Options
+
+Papra uses configuration files (`papra.config.yaml` or `papra.config.json`) for settings.
+
+<Aside type="note">
+  These three configuration options are the minimum required for a from-source installation.
+</Aside>
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `server.servePublicDir` | Serve the client files from the public directory | `false` |
+| `server.baseUrl` | The base URL of your Papra instance | - |
+| `auth.secret` | Secret key for authentication | - |
+
+For a complete list of configuration options, refer to the [configuration reference](/self-hosting/configuration).
+
+## Updating
+
+To update your from-source installation:
+
+<Steps>
+
+1. Pull the Latest Changes
+
+    ```bash
+    git pull origin main
+    ```
+
+2. Reinstall Dependencies
+
+    ```bash
+    pnpm install
+    ```
+
+3. Rebuild All Packages
+
+    ```bash
+    pnpm -r build
+    ```
+
+4. Copy Updated Client Files
+
+    ```bash
+    mkdir -p apps/papra-server/public
+    cp -r apps/papra-client/dist/* apps/papra-server/public/
+    ```
+
+5. Restart the Server
+
+    ```bash
+    cd apps/papra-server
+    pnpm start:with-migrations
+    ```
+
+</Steps>
+
+## Troubleshooting
+
+### Server returns "API route not found" for all pages
+
+Ensure that:
+- The `public` directory exists in `apps/papra-server/`
+- The client files have been copied to `apps/papra-server/public/`
+- The `server.servePublicDir` option is set to `true` in your configuration file
+
+### Configuration file not loaded
+
+Papra looks for configuration files in the following order:
+1. `papra.config.yaml`
+2. `papra.config.json`
+3. `papra.config.ts`
+
+Make sure your configuration file is in the `apps/papra-server/` directory and has the correct filename.
