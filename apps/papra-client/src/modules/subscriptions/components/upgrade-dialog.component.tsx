@@ -11,9 +11,8 @@ import { getCheckoutUrl } from '../subscriptions.services';
 
 // Hardcoded global reduction configuration, will be replaced by a dynamic configuration later
 const globalReduction = {
-  enabled: true,
-  multiplier: 0.5,
-  // 31 december 2025 23h59 Paris time
+  enabled: false,
+  multiplier: 1,
   untilDate: new Date('2025-12-31T22:59:59Z'),
 };
 
