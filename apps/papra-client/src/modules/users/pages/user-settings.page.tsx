@@ -10,6 +10,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { TwoFactorCard } from '../components/two-factor-card';
 import { useUpdateCurrentUser } from '../users.composables';
 import { nameSchema } from '../users.schemas';
 import { fetchCurrentUser } from '../users.services';
@@ -147,6 +148,7 @@ export const UserSettingsPage: Component = () => {
               <div class="mt-6 flex flex-col gap-6">
                 <UserEmailCard email={getUser().email} />
                 <UpdateFullNameCard name={getUser().name} />
+                <TwoFactorCard twoFactorEnabled={getUser().twoFactorEnabled} onUpdate={() => query.refetch()} />
                 <LogoutCard />
               </div>
             </>

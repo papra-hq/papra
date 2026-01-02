@@ -56,3 +56,15 @@ export const verificationsTable = sqliteTable(
     index('auth_verifications_identifier_index').on(table.identifier),
   ],
 );
+
+export const twoFactorTable = sqliteTable(
+  'auth_two_factor',
+  {
+    ...createPrimaryKeyField({ prefix: 'auth_2fa' }),
+    ...createTimestampColumns(),
+
+    userId: text('user_id').references(() => usersTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    secret: text('secret'),
+    backupCodes: text('backup_codes'),
+  },
+);

@@ -85,6 +85,13 @@
       "when": 1761645190314,
       "tag": "0011_tagging-rule-condition-match-mode",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1766411483931,
+      "tag": "0012_two-factor-authentication",
+      "breakpoints": true
     }
   ]
 }

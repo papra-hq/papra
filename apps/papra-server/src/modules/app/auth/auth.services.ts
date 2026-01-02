@@ -5,13 +5,13 @@ import type { AuthEmailsServices } from './auth.emails.services';
 import { expo } from '@better-auth/expo';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { genericOAuth } from 'better-auth/plugins';
+import { genericOAuth, twoFactor } from 'better-auth/plugins';
 import { getServerBaseUrl } from '../../config/config.models';
 import { createLogger } from '../../shared/logger/logger';
 import { usersTable } from '../../users/users.table';
 import { createForbiddenEmailDomainError } from './auth.errors';
 import { getTrustedOrigins, isEmailDomainAllowed } from './auth.models';
-import { accountsTable, sessionsTable, verificationsTable } from './auth.tables';
+import { accountsTable, sessionsTable, twoFactorTable, verificationsTable } from './auth.tables';
 
 export type Auth = ReturnType<typeof getAuth>['auth'];
 
@@ -74,6 +74,7 @@ export function getAuth({
           account: accountsTable,
           session: sessionsTable,
           verification: verificationsTable,
+          twoFactor: twoFactorTable,
         },
       },
     ),
@@ -127,26 +128,7 @@ export function getAuth({
     },
     plugins: [
       expo(),
-      // Would love to have this but it messes with the error handling in better-auth client
-      // {
-      //   id: 'better-auth-error-adapter',
-      //   onResponse: async (res) => {
-      //     // Transform better auth error to our own error
-      //     if (res.status < 400) {
-      //       return { response: res };
-      //     }
-
-      //     const body = await res.clone().json();
-      //     const code = get(body, 'code', 'unknown');
-
-      //     throw createError({
-      //       message: get(body, 'message', 'Unknown error'),
-      //       code: `auth.${code.toLowerCase()}`,
-      //       statusCode: res.status as ContentfulStatusCode,
-      //       isInternal: res.status >= 500,
-      //     });
-      //   },
-      // },
+      twoFactor(),
 
       ...(config.auth.providers.customs.length > 0
         ? [genericOAuth({ config: config.auth.providers.customs })]

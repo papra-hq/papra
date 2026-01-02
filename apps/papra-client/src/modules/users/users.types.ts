@@ -6,6 +6,7 @@ export type User = {
   updatedAt: Date;
   emailVerified: boolean;
   maxOrganizationCount: number | null;
+  twoFactorEnabled: boolean;
 };
 
 export type UserMe = User & {

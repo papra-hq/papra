@@ -20,6 +20,15 @@ export function createDemoAuthClient() {
     requestPasswordReset: () => Promise.resolve({}),
     resetPassword: () => Promise.resolve({}),
     sendVerificationEmail: () => Promise.resolve({}),
+    twoFactor: {
+      enable: () => Promise.resolve({ data: null, error: null }),
+      disable: () => Promise.resolve({ data: null, error: null }),
+      getTotpUri: () => Promise.resolve({ data: null, error: null }),
+      verifyTotp: () => Promise.resolve({ data: null, error: null }),
+      generateBackupCodes: () => Promise.resolve({ data: null, error: null }),
+      viewBackupCodes: () => Promise.resolve({ data: null, error: null }),
+      verifyBackupCode: () => Promise.resolve({ data: null, error: null }),
+    },
   };
 
   return new Proxy(baseClient, {

@@ -45,6 +45,7 @@ function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
               'createdAt',
               'updatedAt',
               'planId',
+              'twoFactorEnabled',
             ],
           ),
         },
