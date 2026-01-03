@@ -1,25 +1,28 @@
 import type { ParentComponent } from 'solid-js';
 import { A, Navigate } from '@solidjs/router';
 import { Show } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/modules/ui/components/sheet';
 import { SideNav } from '@/modules/ui/layouts/sidenav.layout';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 
 const AdminLayout: ParentComponent = (props) => {
+  const { t } = useI18n();
+
   const getNavigationMenu = () => [
     {
-      label: 'Analytics',
+      label: t('admin.layout.menu.analytics'),
       href: '/admin/analytics',
       icon: 'i-tabler-chart-bar',
     },
     {
-      label: 'Users',
+      label: t('admin.layout.menu.users'),
       href: '/admin/users',
       icon: 'i-tabler-users',
     },
     {
-      label: 'Organizations',
+      label: t('admin.layout.menu.organizations'),
       href: '/admin/organizations',
       icon: 'i-tabler-building-community',
     },
@@ -31,7 +34,7 @@ const AdminLayout: ParentComponent = (props) => {
         <A href="/admin" class="flex items-center gap-2 pl-6 h-14 w-260px">
           <div class="i-tabler-layout-dashboard text-primary size-7" />
           <div class="font-medium text-base">
-            Papra admin
+            {t('admin.layout.header')}
           </div>
         </A>
       )}
@@ -69,7 +72,7 @@ const AdminLayout: ParentComponent = (props) => {
             as={A}
             href="/"
           >
-            Back to App
+            {t('admin.layout.back-to-app')}
           </Button>
         </header>
 

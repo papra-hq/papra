@@ -169,6 +169,7 @@ export const SidenavLayout: ParentComponent<{
           </div>
 
           <div class="flex items-center gap-2">
+
             <GlobalDropArea onFilesDrop={uploadDocuments} />
             <Button onClick={promptImport}>
               <div class="i-tabler-upload size-4" />
@@ -186,6 +187,13 @@ export const SidenavLayout: ParentComponent<{
                 <ThemeSwitcher />
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Show when={hasPermission('bo:access')}>
+              <Button as={A} href="/admin" variant="outline" class="hidden sm:flex gap-2">
+                <div class="i-tabler-settings size-4" />
+                {t('layout.menu.admin')}
+              </Button>
+            </Show>
 
             <DropdownMenu>
               <DropdownMenuTrigger as={Button} class="relative text-base hidden sm:flex" variant="outline" aria-label="User menu" size="icon">
@@ -241,12 +249,6 @@ export const SidenavLayout: ParentComponent<{
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <Show when={hasPermission('bo:access')}>
-              <Button as={A} href="/admin" variant="outline" class="hidden sm:flex" size="icon">
-                <div class="i-tabler-settings size-4.5" />
-              </Button>
-            </Show>
 
           </div>
         </div>

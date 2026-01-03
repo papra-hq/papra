@@ -4,12 +4,14 @@ import { useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { listOrganizations } from '../organizations.services';
 
 export const AdminListOrganizationsPage: Component = () => {
+  const { t } = useI18n();
   const [search, setSearch] = createSignal('');
   const [pagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 25 });
 
@@ -28,7 +30,7 @@ export const AdminListOrganizationsPage: Component = () => {
     },
     columns: [
       {
-        header: 'ID',
+        header: t('admin.organizations.table.id'),
         accessorKey: 'id',
         cell: data => (
           <A
@@ -40,7 +42,7 @@ export const AdminListOrganizationsPage: Component = () => {
         ),
       },
       {
-        header: 'Name',
+        header: t('admin.organizations.table.name'),
         accessorKey: 'name',
         cell: data => (
           <div class="font-medium">
@@ -49,7 +51,7 @@ export const AdminListOrganizationsPage: Component = () => {
         ),
       },
       {
-        header: 'Members',
+        header: t('admin.organizations.table.members'),
         accessorKey: 'memberCount',
         cell: data => (
           <div class="text-center">
@@ -58,12 +60,12 @@ export const AdminListOrganizationsPage: Component = () => {
         ),
       },
       {
-        header: 'Created',
+        header: t('admin.organizations.table.created'),
         accessorKey: 'createdAt',
         cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
       },
       {
-        header: 'Updated',
+        header: t('admin.organizations.table.updated'),
         accessorKey: 'updatedAt',
         cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
       },
@@ -92,10 +94,10 @@ export const AdminListOrganizationsPage: Component = () => {
     <div class="p-6">
       <div class="border-b mb-6 pb-4">
         <h1 class="text-xl font-bold mb-1">
-          Organization Management
+          {t('admin.organizations.title')}
         </h1>
         <p class="text-sm text-muted-foreground">
-          Manage and view all organizations in the system
+          {t('admin.organizations.description')}
         </p>
       </div>
 
@@ -103,7 +105,7 @@ export const AdminListOrganizationsPage: Component = () => {
         <TextFieldRoot class="max-w-sm">
           <TextField
             type="text"
-            placeholder="Search by name or ID..."
+            placeholder={t('admin.organizations.search-placeholder')}
             value={search()}
             onInput={handleSearch}
           />
@@ -112,13 +114,13 @@ export const AdminListOrganizationsPage: Component = () => {
 
       <Show
         when={!query.isLoading}
-        fallback={<div class="text-center py-8 text-muted-foreground">Loading organizations...</div>}
+        fallback={<div class="text-center py-8 text-muted-foreground">{t('admin.organizations.loading')}</div>}
       >
         <Show
           when={(query.data?.organizations.length ?? 0) > 0}
           fallback={(
             <div class="text-center py-8 text-muted-foreground">
-              {search() ? 'No organizations found matching your search.' : 'No organizations found.'}
+              {search() ? t('admin.organizations.no-results') : t('admin.organizations.empty')}
             </div>
           )}
         >
@@ -159,19 +161,11 @@ export const AdminListOrganizationsPage: Component = () => {
 
           <div class="flex items-center justify-between mt-4">
             <div class="text-sm text-muted-foreground">
-              Showing
-              {' '}
-              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
-              {' '}
-              to
-              {' '}
-              {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0)}
-              {' '}
-              of
-              {' '}
-              {query.data?.totalCount ?? 0}
-              {' '}
-              organizations
+              {t('admin.organizations.pagination.info', {
+                start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                end: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0),
+                total: query.data?.totalCount ?? 0,
+              })}
             </div>
             <div class="flex items-center space-x-2">
               <Button
@@ -193,13 +187,10 @@ export const AdminListOrganizationsPage: Component = () => {
                 <div class="size-4 i-tabler-chevron-left" />
               </Button>
               <div class="text-sm whitespace-nowrap">
-                Page
-                {' '}
-                {table.getState().pagination.pageIndex + 1}
-                {' '}
-                of
-                {' '}
-                {table.getPageCount()}
+                {t('admin.organizations.pagination.page-info', {
+                  current: table.getState().pagination.pageIndex + 1,
+                  total: table.getPageCount(),
+                })}
               </div>
               <Button
                 variant="outline"
