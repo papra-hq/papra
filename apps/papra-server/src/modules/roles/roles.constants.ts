@@ -1,3 +1,7 @@
+export const ROLES = {
+  ADMIN: 'admin',
+} as const;
+
 export const PERMISSIONS = {
   BO_ACCESS: 'bo:access',
   VIEW_USERS: 'users:view',
@@ -5,11 +9,11 @@ export const PERMISSIONS = {
 } as const;
 
 export const PERMISSIONS_BY_ROLE = {
-  admin: [
+  [ROLES.ADMIN]: [
     PERMISSIONS.VIEW_USERS,
     PERMISSIONS.BO_ACCESS,
     PERMISSIONS.VIEW_ANALYTICS,
   ],
 } as const;
 
-export const ROLES = Object.keys(PERMISSIONS_BY_ROLE) as (keyof typeof PERMISSIONS_BY_ROLE)[];
+export const ROLES_LIST = Object.values(ROLES);

@@ -38,8 +38,7 @@ async function assignRoleToUser({ userId, role, db }: { userId: string; role: Ro
       userId,
       role,
     })
-    .onConflictDoNothing()
-    .returning();
+    .onConflictDoNothing();
 }
 
 async function removeRoleFromUser({ userId, role, db }: { userId: string; role: Role; db: Database }) {

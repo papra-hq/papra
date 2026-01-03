@@ -1,0 +1,140 @@
+---
+title: Roles and Administration
+slug: guides/roles-administration
+description: Understanding platform roles and admin access in Papra.
+---
+import { Aside } from '@astrojs/starlight/components';
+
+This guide explains the roles and permissions system in Papra, focusing on platform-wide roles and how to manage admin access.
+
+<Aside type="note">
+ The administration features are available starting from Papra version `26.0.0`.
+</Aside>
+
+## Overview
+
+Papra has two separate role systems:
+
+1. **Platform Roles** - System-wide roles like `admin` for managing the entire Papra instance
+2. **Organization Roles** - Workspace-level roles like `owner` and `member` for managing organizations
+
+This guide focuses on platform roles and admin access.
+
+## Platform Roles
+
+### Admin Role
+
+The `admin` role provides system-wide administrative privileges. Admins can:
+
+- **User Management**: View all users, their organizations, and activity
+- **Analytics**: Access platform-wide usage statistics and metrics
+- **Backoffice Access**: Full access to the admin panel at `/admin`
+
+<Aside type="tip">
+  At the moment, the admin panel is focused on read-only operations for monitoring and analytics. Additional management capabilities (user moderation, deletion, system configuration, etc.) will be added in future releases.
+</Aside>
+
+## Accessing the Admin Panel
+
+Users with the `admin` role can access the admin panel by navigating to:
+
+```
+https://your-papra-instance.com/admin
+```
+
+Or click on the `Admin` button in the navigation bar (visible only to admins).
+
+## First User as Admin
+
+### Overview
+
+For self-hosted instances, Papra can automatically assign the `admin` role to the first user who registers. This simplifies initial setup by ensuring you have admin access from the start.
+
+### How It Works
+
+1. User registers (first person to create an account)
+2. Account is created successfully
+3. System checks if this is the first user (user count === 1)
+4. The `admin` role is assigned to this user
+5. User immediately has admin panel access
+6. Subsequent users are normal users without admin privileges
+
+### Configuration
+
+The auto-assignment of the admin role to the first user is controlled by the `AUTH_FIRST_USER_AS_ADMIN` environment variable.
+It is enabled by default for self-hosted instances, but can be disabled by setting it to `false`:
+
+```bash
+AUTH_FIRST_USER_AS_ADMIN=false
+```
+
+### Security Considerations
+
+**Race Conditions:**
+If multiple users register simultaneously, at most one will receive the admin role. The system checks `userCount === 1` and uses idempotent role assignment to prevent duplicate admin grants.
+
+**Recommended Practice:**
+1. Register your admin account first
+2. Disable the feature after setup: `AUTH_FIRST_USER_AS_ADMIN=false`
+3. Restart the service if you changed the config
+
+## Manual Admin Assignment
+
+For existing installations with already registered users, you can manually assign the `admin` role using the CLI script `script:make-user-admin`.
+
+Run the following command, replacing `<user-email-or-id>` with the email or ID of the user you want to promote to admin:
+
+```bash
+pnpm script:make-user-admin <user-email-or-id>
+```
+
+In docker, assuming your container is named `papra`, run:
+
+```bash
+docker exec -it papra pnpm script:make-user-admin <user-email-or-id>
+```
+
+## Admin Panel Features
+
+### User Management
+
+Navigate to `/admin/users` to:
+- View all registered users
+- Search users by email, name, or ID
+- See user organization memberships
+- View user roles and permissions
+- Monitor user activity
+
+### Analytics
+
+Navigate to `/admin/analytics` to:
+- View registration trends
+- Monitor document processing stats
+- Track system usage metrics
+
+### Organizations
+
+Navigate to `/admin/organizations` to:
+- View all organizations
+- Monitor organization activity
+- See organization member counts
+
+## Troubleshooting
+
+### I registered but don't have admin access
+
+You can manually assign admin using the script. See the [Manual Admin Assignment](#manual-admin-assignment) section.
+
+### How do I check if a user has admin?
+
+In the admin panel, navigate to the user management section and search for the user. Their roles will be listed in their profile.
+
+### Can I have multiple admins?
+
+Yes, you can assign the `admin` role to multiple users.
+
+## Related Documentation
+
+- [Configuration Guide](/self-hosting/configuration)
+- [Docker Setup](/self-hosting/using-docker)
+- [CLI Reference](/resources/cli)

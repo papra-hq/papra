@@ -56,6 +56,12 @@ export const authConfig = {
     default: false,
     env: 'AUTH_SHOW_LEGAL_LINKS',
   },
+  firstUserAsAdmin: {
+    doc: 'Automatically assign the admin role to the first user who registers. This is useful for initial setup of self-hosted instances where you need an admin account to manage the platform.',
+    schema: booleanishSchema,
+    default: true,
+    env: 'AUTH_FIRST_USER_AS_ADMIN',
+  },
   ipAddressHeaders: {
     doc: `The header, or comma separated list of headers, to use to get the real IP address of the user, use for rate limiting. Make sur to use a non-spoofable header, one set by your proxy.
 - If behind a standard proxy, you might want to set this to "x-forwarded-for".
