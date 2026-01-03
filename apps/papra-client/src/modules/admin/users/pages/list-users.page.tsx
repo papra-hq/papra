@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/solid-query';
 import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
 import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
@@ -12,6 +13,7 @@ import { UserListDetail } from '../components/user-list-detail.component';
 import { listUsers } from '../users.services';
 
 export const AdminListUsersPage: Component = () => {
+  const { t } = useI18n();
   const [search, setSearch] = createSignal('');
   const [pagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 25 });
 
@@ -30,12 +32,12 @@ export const AdminListUsersPage: Component = () => {
     columns: [
 
       {
-        header: 'User',
+        header: t('admin.users.table.user'),
         accessorKey: 'email',
         cell: data => <UserListDetail {...data.row.original} />,
       },
       {
-        header: 'ID',
+        header: t('admin.users.table.id'),
         accessorKey: 'id',
         cell: data => (
           <A
@@ -47,16 +49,16 @@ export const AdminListUsersPage: Component = () => {
         ),
       },
       {
-        header: 'Status',
+        header: t('admin.users.table.status'),
         accessorKey: 'emailVerified',
         cell: data => (
           <Badge variant={data.getValue<boolean>() ? 'default' : 'outline'}>
-            {data.getValue<boolean>() ? 'Verified' : 'Unverified'}
+            {data.getValue<boolean>() ? t('admin.users.table.status.verified') : t('admin.users.table.status.unverified')}
           </Badge>
         ),
       },
       {
-        header: 'Orgs',
+        header: t('admin.users.table.orgs'),
         accessorKey: 'organizationCount',
         cell: data => (
           <div class="text-center">
@@ -65,7 +67,7 @@ export const AdminListUsersPage: Component = () => {
         ),
       },
       {
-        header: 'Created',
+        header: t('admin.users.table.created'),
         accessorKey: 'createdAt',
         cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
       },
@@ -94,10 +96,10 @@ export const AdminListUsersPage: Component = () => {
     <div class="p-6">
       <div class="border-b mb-6 pb-4">
         <h1 class="text-xl font-bold mb-1">
-          User Management
+          {t('admin.users.title')}
         </h1>
         <p class="text-sm text-muted-foreground">
-          Manage and view all users in the system
+          {t('admin.users.description')}
         </p>
       </div>
 
@@ -105,7 +107,7 @@ export const AdminListUsersPage: Component = () => {
         <TextFieldRoot class="max-w-sm">
           <TextField
             type="text"
-            placeholder="Search by name, email, or ID..."
+            placeholder={t('admin.users.search-placeholder')}
             value={search()}
             onInput={handleSearch}
           />
@@ -114,13 +116,13 @@ export const AdminListUsersPage: Component = () => {
 
       <Show
         when={!query.isLoading}
-        fallback={<div class="text-center py-8 text-muted-foreground">Loading users...</div>}
+        fallback={<div class="text-center py-8 text-muted-foreground">{t('admin.users.loading')}</div>}
       >
         <Show
           when={(query.data?.users.length ?? 0) > 0}
           fallback={(
             <div class="text-center py-8 text-muted-foreground">
-              {search() ? 'No users found matching your search.' : 'No users found.'}
+              {search() ? t('admin.users.no-results') : t('admin.users.empty')}
             </div>
           )}
         >
@@ -161,19 +163,11 @@ export const AdminListUsersPage: Component = () => {
 
           <div class="flex items-center justify-between mt-4">
             <div class="text-sm text-muted-foreground">
-              Showing
-              {' '}
-              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
-              {' '}
-              to
-              {' '}
-              {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0)}
-              {' '}
-              of
-              {' '}
-              {query.data?.totalCount ?? 0}
-              {' '}
-              users
+              {t('admin.users.pagination.info', {
+                start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                end: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0),
+                total: query.data?.totalCount ?? 0,
+              })}
             </div>
             <div class="flex items-center space-x-2">
               <Button
@@ -195,13 +189,10 @@ export const AdminListUsersPage: Component = () => {
                 <div class="size-4 i-tabler-chevron-left" />
               </Button>
               <div class="text-sm whitespace-nowrap">
-                Page
-                {' '}
-                {table.getState().pagination.pageIndex + 1}
-                {' '}
-                of
-                {' '}
-                {table.getPageCount()}
+                {t('admin.users.pagination.page-info', {
+                  current: table.getState().pagination.pageIndex + 1,
+                  total: table.getPageCount(),
+                })}
               </div>
               <Button
                 variant="outline"

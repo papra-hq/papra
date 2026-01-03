@@ -2,6 +2,7 @@ import type { Component } from 'solid-js';
 import { formatBytes } from '@corentinth/chisels';
 import { useQuery } from '@tanstack/solid-query';
 import { Suspense } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { getDocumentStats, getOrganizationCount, getUserCount } from '../analytics.services';
 
 const AnalyticsCard: Component<{
@@ -37,6 +38,8 @@ const AnalyticsCard: Component<{
 };
 
 export const AdminAnalyticsPage: Component = () => {
+  const { t } = useI18n();
+
   const userCountQuery = useQuery(() => ({
     queryKey: ['admin', 'users', 'count'],
     queryFn: getUserCount,
@@ -54,44 +57,44 @@ export const AdminAnalyticsPage: Component = () => {
 
   return (
     <div class="px-6 pt-4">
-      <h1 class="text-2xl font-medium mb-1">Dashboard</h1>
-      <p class="text-muted-foreground">Insights and analytics about Papra usage.</p>
+      <h1 class="text-2xl font-medium mb-1">{t('admin.analytics.title')}</h1>
+      <p class="text-muted-foreground">{t('admin.analytics.description')}</p>
 
       <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnalyticsCard
           icon="i-tabler-users"
-          title="User count"
+          title={t('admin.analytics.user-count')}
           value={() => userCountQuery.data?.userCount}
         />
 
         <AnalyticsCard
           icon="i-tabler-building"
-          title="Organization count"
+          title={t('admin.analytics.organization-count')}
           value={() => organizationCountQuery.data?.organizationCount}
         />
 
         <AnalyticsCard
           icon="i-tabler-file"
-          title="Document count"
+          title={t('admin.analytics.document-count')}
           value={() => documentStatsQuery.data?.documentsCount}
         />
 
         <AnalyticsCard
           icon="i-tabler-database"
-          title="Documents storage"
+          title={t('admin.analytics.documents-storage')}
           value={() => documentStatsQuery.data?.documentsSize}
           formatValue={bytes => formatBytes({ bytes, base: 1000 })}
         />
 
         <AnalyticsCard
           icon="i-tabler-file-x"
-          title="Deleted documents"
+          title={t('admin.analytics.deleted-documents')}
           value={() => documentStatsQuery.data?.deletedDocumentsCount}
         />
 
         <AnalyticsCard
           icon="i-tabler-database-x"
-          title="Deleted storage"
+          title={t('admin.analytics.deleted-storage')}
           value={() => documentStatsQuery.data?.deletedDocumentsSize}
           formatValue={bytes => formatBytes({ bytes, base: 1000 })}
         />
