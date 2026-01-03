@@ -63,7 +63,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
 
   // --- Services initialization
   await taskServices.initialize();
-  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices });
+  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config });
 
   return {
     config,
