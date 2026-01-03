@@ -1,5 +1,25 @@
 # @papra/docker
 
+## 25.12.1
+
+### Patch Changes
+
+- [#723](https://github.com/papra-hq/papra/pull/723) [`68d848e`](https://github.com/papra-hq/papra/commit/68d848e622f862ced34ff055819b4af7d171d727) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Auto assign admin role to the first user registering
+
+- [#707](https://github.com/papra-hq/papra/pull/707) [`a213f06`](https://github.com/papra-hq/papra/commit/a213f0683baebd6546bf38ba9e719c31b60064ed) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a dedicated increased timeout for the document upload route
+
+- [#712](https://github.com/papra-hq/papra/pull/712) [`b8c14d0`](https://github.com/papra-hq/papra/commit/b8c14d0f44628843c7a682f84f7215fecc50f426) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a feedback message upon request timeout
+
+- [#717](https://github.com/papra-hq/papra/pull/717) [`f3fb5ff`](https://github.com/papra-hq/papra/commit/f3fb5ff46a02d9ded9baaa0161d96fdb3ab5649d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for two factor authentication
+
+- [#702](https://github.com/papra-hq/papra/pull/702) [`ec34cf1`](https://github.com/papra-hq/papra/commit/ec34cf17880682369d1ecf2957c2d7e0eed9f499) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Organizations listing and details in the admin dashboard
+
+- [#715](https://github.com/papra-hq/papra/pull/715) [`7448a17`](https://github.com/papra-hq/papra/commit/7448a170afc9f0038a7b8ac086d4d14aac3b0c3a) Thanks [@kirarpit](https://github.com/kirarpit)! - Properly cleanup orphan file when the same document exists in trash
+
+- [#707](https://github.com/papra-hq/papra/pull/707) [`a213f06`](https://github.com/papra-hq/papra/commit/a213f0683baebd6546bf38ba9e719c31b60064ed) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Changed config key `config.server.routeTimeoutMs` to `config.server.defaultRouteTimeoutMs` (env variable remains the same)
+
+- [#718](https://github.com/papra-hq/papra/pull/718) [`8d70a7b`](https://github.com/papra-hq/papra/commit/8d70a7b3c36bcf3f49a27e2c4e92d3b974b552c2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added api endpoint to check current API key (GET /api/api-keys/current)
+
 ## 25.12.0
 
 ### Minor Changes
