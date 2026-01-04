@@ -9,6 +9,7 @@ NODE_MIN_VERSION=24
 PNPM_MIN_VERSION=10
 DEFAULT_INSTALL_DIR="$HOME/papra"
 DEFAULT_BASE_URL="http://localhost:1221"
+REPO_NAME="@papra/root"
 
 # Colors
 RED='\033[0;31m'
@@ -52,11 +53,19 @@ install_node() {
 
     case "$ID" in
         debian|ubuntu|pop|mint)
-            curl -fsSL https://deb.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -E -
+            if command -v curl &> /dev/null; then
+                curl -fsSL https://deb.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -E -
+            else
+                wget -qO- https://deb.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -E -
+            fi
             DEBIAN_FRONTEND=noninteractive run_privileged apt install -y nodejs
             ;;
         fedora|rhel|centos|rocky|alma)
-            curl -fsSL https://rpm.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -
+            if command -v curl &> /dev/null; then
+                curl -fsSL https://rpm.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -
+            else
+                wget -qO- https://rpm.nodesource.com/setup_${NODE_MIN_VERSION}.x | run_privileged bash -
+            fi
             run_privileged dnf install -y nodejs
             ;;
         arch|manjaro)
@@ -188,31 +197,36 @@ echo ""
 echo -e "${GREEN}All prerequisites met!${NC}"
 echo ""
 
-# 2. Clone the repository
+# 2. Clone the repository (skip if already in papra repo)
 echo "==========================================="
 echo " Step 2: Cloning repository"
 echo "==========================================="
 echo ""
 
-read -p "Installation directory [$DEFAULT_INSTALL_DIR]: " INSTALL_DIR < /dev/tty
-INSTALL_DIR=${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}
+if [ -f "package.json" ] && grep -q "\"name\": \"$REPO_NAME\"" package.json 2>/dev/null; then
+    echo "Already in Papra repository, skipping clone..."
+    INSTALL_DIR=$(pwd)
+else
+    read -p "Installation directory [$DEFAULT_INSTALL_DIR]: " INSTALL_DIR < /dev/tty
+    INSTALL_DIR=${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}
 
-if [ -d "$INSTALL_DIR" ]; then
-    echo -e "${RED}❌ Directory $INSTALL_DIR already exists.${NC}"
-    read -p "Do you want to remove it and continue? (y/n): " remove_dir < /dev/tty
-    if [[ $remove_dir == "y" ]]; then
-        rm -rf "$INSTALL_DIR"
-    else
-        echo "Installation cancelled."
-        exit 1
+    if [ -d "$INSTALL_DIR" ]; then
+        echo -e "${RED}❌ Directory $INSTALL_DIR already exists.${NC}"
+        read -p "Do you want to remove it and continue? (y/n): " remove_dir < /dev/tty
+        if [[ $remove_dir == "y" ]]; then
+            rm -rf "$INSTALL_DIR"
+        else
+            echo "Installation cancelled."
+            exit 1
+        fi
     fi
+
+    git clone --depth 1 https://github.com/papra-hq/papra.git "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
 fi
 
-git clone --depth 1 https://github.com/papra-hq/papra.git "$INSTALL_DIR"
-cd "$INSTALL_DIR"
-
 echo ""
-echo -e "${GREEN}✓${NC} Repository cloned to $INSTALL_DIR"
+echo -e "${GREEN}✓${NC} Repository ready at $INSTALL_DIR"
 echo ""
 echo -e "${GREEN}Repository ready!${NC}"
 echo ""
