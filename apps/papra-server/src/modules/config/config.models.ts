@@ -8,6 +8,9 @@ import { merge, pick } from 'lodash-es';
 export function getPublicConfig({ config }: { config: Config }) {
   const publicConfig: DeepPartial<Config> = merge(
     pick(config, [
+      'version',
+      'gitCommitSha',
+      'gitCommitDate',
       'auth.isEmailVerificationRequired',
       'auth.isPasswordResetEnabled',
       'auth.isRegistrationEnabled',

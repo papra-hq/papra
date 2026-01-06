@@ -662,6 +662,7 @@ export const translations = {
   'user-menu.api-keys': 'API keys',
   'user-menu.invitations': 'Invitations',
   'user-menu.language': 'Language',
+  'user-menu.about': 'About Papra',
   'user-menu.logout': 'Logout',
 
   // Command palette
@@ -728,7 +729,6 @@ export const translations = {
 
   'not-found.title': '404 - Not Found',
   'not-found.description': 'Sorry, the page you are looking for does not seem to exist. Please check the URL and try again.',
-  'not-found.back-to-home': 'Go back to home',
 
   // Demo
 
@@ -914,4 +914,28 @@ export const translations = {
   'common.confirm-modal.type-to-confirm': 'Type "{{ text }}" to confirm',
   'common.tables.rows-per-page': 'Rows per page',
   'common.tables.pagination-info': 'Page {{ currentPage }} of {{ totalPages }}',
+  'common.back-to-home': 'Back to home',
+
+  // About page
+
+  'about.title': 'About Papra',
+  'about.version': 'Version',
+  'about.git-commit': 'Git Commit',
+  'about.commit-date': 'Commit Date',
+  'about.description': 'Papra is an open-source document management system that helps you archive, organize, tag, and manage your documents with ease.',
+  'about.links.title': 'Links',
+  'about.links.documentation': 'Documentation',
+  'about.links.documentation-description': 'User guides and API reference',
+  'about.links.github': 'GitHub',
+  'about.links.github-description': 'Source code and issue tracker',
+  'about.links.discord': 'Discord Community',
+  'about.links.discord-description': 'Join our community',
+  'about.links.sponsor': 'Sponsor',
+  'about.links.sponsor-description': 'Support Papra development',
+
+  'socials.bluesky': 'Bluesky',
+  'socials.mastodon': 'Mastodon',
+  'socials.x': 'X',
+  'socials.reddit': 'Reddit',
+  'socials.linkedin': 'LinkedIn',
 } as const;

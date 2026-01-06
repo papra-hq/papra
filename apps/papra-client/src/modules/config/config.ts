@@ -9,6 +9,9 @@ export const buildTimeConfig = {
   baseApiUrl: asString(import.meta.env.VITE_BASE_API_URL, window.location.origin),
   vitrineBaseUrl: asString(import.meta.env.VITE_VITRINE_BASE_URL, 'http://localhost:3000/'),
   isDemoMode: asBoolean(import.meta.env.VITE_IS_DEMO_MODE, false),
+  version: asString(import.meta.env.VITE_APP_VERSION, 'dev'),
+  gitCommitSha: asString(import.meta.env.VITE_GIT_COMMIT, 'unknown'),
+  gitCommitDate: asString(import.meta.env.VITE_BUILD_DATE, 'unknown'),
   auth: {
     isRegistrationEnabled: asBoolean(import.meta.env.VITE_AUTH_IS_REGISTRATION_ENABLED, true),
     isPasswordResetEnabled: asBoolean(import.meta.env.VITE_AUTH_IS_PASSWORD_RESET_ENABLED, true),
@@ -43,4 +46,4 @@ export const buildTimeConfig = {
 } as const;
 
 export type Config = typeof buildTimeConfig;
-export type RuntimePublicConfig = Pick<Config, 'auth' | 'documents' | 'intakeEmails' | 'organizations'>;
+export type RuntimePublicConfig = Pick<Config, 'version' | 'gitCommitSha' | 'gitCommitDate' | 'auth' | 'documents' | 'intakeEmails' | 'organizations'>;

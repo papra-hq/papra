@@ -26,7 +26,7 @@ export const NotFoundPage: Component = () => {
           </p>
           <Button as={A} href={getRedirectionUrl()} class="mt-4" variant="default">
             <div class="i-tabler-arrow-left mr-2" />
-            {t('not-found.back-to-home')}
+            {t('common.back-to-home')}
           </Button>
         </div>
 

@@ -23,6 +23,7 @@ import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
 import { exitProcessDueToConfigError, validateParsedConfig } from './config.models';
 import { booleanishSchema, trustedOriginsSchema } from './config.schemas';
+import { getCommitInfo } from './config.usecases';
 
 export const configDefinition = {
   env: {
@@ -30,6 +31,24 @@ export const configDefinition = {
     schema: z.enum(['development', 'production', 'test']),
     default: 'development',
     env: 'NODE_ENV',
+  },
+  version: {
+    doc: 'The application version. Set via PAPRA_VERSION build arg in Docker.',
+    schema: z.string(),
+    default: 'dev',
+    env: 'PAPRA_VERSION',
+  },
+  gitCommitSha: {
+    doc: 'The git commit hash. Set via GIT_COMMIT build arg in Docker.',
+    schema: z.string(),
+    default: 'unknown',
+    env: 'GIT_COMMIT',
+  },
+  gitCommitDate: {
+    doc: 'The git commit date (ISO 8601 format). Set via BUILD_DATE build arg in Docker.',
+    schema: z.string(),
+    default: 'unknown',
+    env: 'BUILD_DATE',
   },
   processMode: {
     doc: 'The process mode: "all" runs both web and worker, "web" runs only the API server, "worker" runs only background tasks',
@@ -153,7 +172,15 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
     cwd: env.PAPRA_CONFIG_DIR ?? process.cwd(),
   });
 
-  const [configResult, configError] = safelySync(() => defineConfig(configDefinition, { envSource: env, defaults: configFromFile }));
+  const { gitCommitSha, gitCommitDate } = getCommitInfo();
+
+  const [configResult, configError] = safelySync(() => defineConfig(configDefinition, {
+    envSource: env,
+    defaults: [
+      { gitCommitSha, gitCommitDate },
+      configFromFile,
+    ],
+  }));
 
   if (configError) {
     exitProcessDueToConfigError({ error: configError, logger });
