@@ -9,6 +9,7 @@ import { useDocumentUpload } from '@/modules/documents/components/document-impor
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { usePendingInvitationsCount } from '@/modules/invitations/composables/usePendingInvitationsCount';
+import { AboutDialog, useAboutDialog } from '@/modules/shared/components/about-dialog';
 import { cn } from '@/modules/shared/style/cn';
 import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { useThemeStore } from '@/modules/theme/theme.store';
@@ -133,6 +134,7 @@ export const SidenavLayout: ParentComponent<{
   const { getPendingInvitationsCount } = usePendingInvitationsCount();
   const { t } = useI18n();
   const { hasPermission } = useCurrentUser();
+  const aboutDialog = useAboutDialog();
 
   const { promptImport, uploadDocuments } = useDocumentUpload();
 
@@ -238,6 +240,14 @@ export const SidenavLayout: ParentComponent<{
                 </DropdownMenuSub>
 
                 <DropdownMenuItem
+                  onClick={() => aboutDialog.open()}
+                  class="flex items-center gap-2 cursor-pointer"
+                >
+                  <div class="i-tabler-info-circle size-4 text-muted-foreground" />
+                  {t('user-menu.about')}
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
                   onClick={async () => {
                     await signOut();
                     navigate('/login');
@@ -259,6 +269,8 @@ export const SidenavLayout: ParentComponent<{
           </Suspense>
         </div>
       </div>
+
+      <AboutDialog open={aboutDialog.isOpen()} onOpenChange={aboutDialog.setIsOpen} />
     </div>
   );
 };

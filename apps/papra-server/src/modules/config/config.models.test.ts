@@ -49,6 +49,9 @@ describe('config models', () => {
 
       expect(getPublicConfig({ config })).to.eql({
         publicConfig: {
+          version: 'dev',
+          gitCommitSha: 'unknown',
+          gitCommitDate: 'unknown',
           auth: {
             isEmailVerificationRequired: true,
             isPasswordResetEnabled: true,

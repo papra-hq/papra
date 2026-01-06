@@ -29,12 +29,22 @@ RUN pnpm deploy --filter=@papra/app-server --legacy --prod /prod/papra-server
 
 FROM base
 
+# Build arguments for version metadata
+ARG PAPRA_VERSION=dev
+ARG GIT_COMMIT=unknown
+ARG BUILD_DATE=unknown
+
 WORKDIR /app
 
 COPY --from=build /prod/papra-server ./
 COPY --from=build /app/apps/papra-client/dist ./public
 
 EXPOSE 1221
+
+# Convert build args to environment variables for runtime
+ENV PAPRA_VERSION=${PAPRA_VERSION}
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_DATE=${BUILD_DATE}
 
 ENV NODE_ENV=production
 ENV SERVER_SERVE_PUBLIC_DIR=true

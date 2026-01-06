@@ -664,6 +664,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'Clés d\'API',
   'user-menu.invitations': 'Invitations',
   'user-menu.language': 'Langue',
+  'user-menu.about': 'À propos de Papra',
   'user-menu.logout': 'Déconnexion',
 
   // Command palette
@@ -730,7 +731,6 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'not-found.title': '404 - Not Found',
   'not-found.description': 'Désolé, la page que vous cherchez n\'existe pas. Veuillez vérifier l\'URL et réessayer.',
-  'not-found.back-to-home': 'Retour à l\'accueil',
 
   // Demo
 
@@ -916,4 +916,28 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Saisissez "{{ text }}" pour confirmer',
   'common.tables.rows-per-page': 'Lignes par page',
   'common.tables.pagination-info': 'Page {{ currentPage }} sur {{ totalPages }}',
+  'common.back-to-home': 'Retour à l\'accueil',
+
+  // About page
+
+  'about.title': 'À propos de Papra',
+  'about.version': 'Version',
+  'about.git-commit': 'Commit Git',
+  'about.commit-date': 'Date du Commit',
+  'about.description': 'Papra est un système de gestion documentaire open source qui vous aide à archiver, organiser, étiqueter et gérer vos documents en toute simplicité.',
+  'about.links.title': 'Liens',
+  'about.links.documentation': 'Documentation',
+  'about.links.documentation-description': 'Guides utilisateur et référence de l\'API',
+  'about.links.github': 'GitHub',
+  'about.links.github-description': 'Code source et suivi des problèmes',
+  'about.links.discord': 'Communauté Discord',
+  'about.links.discord-description': 'Rejoignez notre communauté',
+  'about.links.sponsor': 'Soutenir',
+  'about.links.sponsor-description': 'Soutenez le développement de Papra',
+
+  'socials.bluesky': 'Bluesky',
+  'socials.mastodon': 'Mastodon',
+  'socials.x': 'X',
+  'socials.reddit': 'Reddit',
+  'socials.linkedin': 'LinkedIn',
 };

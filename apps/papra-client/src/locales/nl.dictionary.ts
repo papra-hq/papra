@@ -664,6 +664,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'API-sleutels',
   'user-menu.invitations': 'Uitnodigingen',
   'user-menu.language': 'Taal',
+  'user-menu.about': 'Over Papra',
   'user-menu.logout': 'Uitloggen',
 
   // Command palette
@@ -730,7 +731,6 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'not-found.title': '404 - Niet gevonden',
   'not-found.description': 'Sorry, de door u gezochte pagina lijkt niet te bestaan. Controleer de URL en probeer het opnieuw.',
-  'not-found.back-to-home': 'Ga terug naar start',
 
   // Demo
 
@@ -916,4 +916,28 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Typ "{{ text }}" om te bevestigen',
   'common.tables.rows-per-page': 'Rijen per pagina',
   'common.tables.pagination-info': 'Pagina {{ currentPage }} van {{ totalPages }}',
+  'common.back-to-home': 'Ga terug naar start',
+
+  // About page
+
+  'about.title': 'Over Papra',
+  'about.version': 'Versie',
+  'about.git-commit': 'Git Commit',
+  'about.commit-date': 'Commitdatum',
+  'about.description': 'Papra is een open-source documentbeheersysteem dat u helpt uw documenten gemakkelijk te archiveren, organiseren, taggen en beheren.',
+  'about.links.title': 'Links',
+  'about.links.documentation': 'Documentatie',
+  'about.links.documentation-description': 'Gebruikershandleidingen en API-referentie',
+  'about.links.github': 'GitHub',
+  'about.links.github-description': 'Broncode en issue tracker',
+  'about.links.discord': 'Discord Community',
+  'about.links.discord-description': 'Word lid van onze community',
+  'about.links.sponsor': 'Sponsor',
+  'about.links.sponsor-description': 'Ondersteun de ontwikkeling van Papra',
+
+  'socials.bluesky': 'Bluesky',
+  'socials.mastodon': 'Mastodon',
+  'socials.x': 'X',
+  'socials.reddit': 'Reddit',
+  'socials.linkedin': 'LinkedIn',
 };

@@ -664,6 +664,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'API 密钥',
   'user-menu.invitations': '邀请',
   'user-menu.language': '语言',
+  'user-menu.about': '关于 Papra',
   'user-menu.logout': '登出',
 
   // Command palette
@@ -730,7 +731,6 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'not-found.title': '404 - 未找到',
   'not-found.description': '抱歉，您访问的页面不存在。请检查 URL 并重试。',
-  'not-found.back-to-home': '返回首页',
 
   // Demo
 
@@ -916,4 +916,28 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': '输入 "{{ text }}" 以确认',
   'common.tables.rows-per-page': '每页行数',
   'common.tables.pagination-info': '第 {{ currentPage }} 页，共 {{ totalPages }} 页',
+  'common.back-to-home': '返回首页',
+
+  // About page
+
+  'about.title': '关于 Papra',
+  'about.version': '版本',
+  'about.git-commit': 'Git 提交',
+  'about.commit-date': '提交日期',
+  'about.description': 'Papra 是一个开源文档管理系统,帮助您轻松归档、组织、标记和管理文档。',
+  'about.links.title': '链接',
+  'about.links.documentation': '文档',
+  'about.links.documentation-description': '用户指南和 API 参考',
+  'about.links.github': 'GitHub',
+  'about.links.github-description': '源代码和问题跟踪',
+  'about.links.discord': 'Discord 社区',
+  'about.links.discord-description': '加入我们的社区',
+  'about.links.sponsor': '赞助',
+  'about.links.sponsor-description': '支持 Papra 开发',
+
+  'socials.bluesky': 'Bluesky',
+  'socials.mastodon': 'Mastodon',
+  'socials.x': 'X',
+  'socials.reddit': 'Reddit',
+  'socials.linkedin': 'LinkedIn',
 };

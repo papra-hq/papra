@@ -10,6 +10,7 @@ import { presetAnimations } from 'unocss-preset-animations';
 import { ssoProviders } from './src/modules/auth/auth.constants';
 import { documentActivityIcon, fileIcons } from './src/modules/documents/document.models';
 import { DEFAULT_DOCUMENT_ICON } from './src/modules/documents/documents.constants';
+import { socials } from './src/modules/shared/socials.constants';
 
 export default defineConfig({
   presets: [
@@ -118,6 +119,7 @@ export default defineConfig({
   safelist: [
     ...new Set([
       DEFAULT_DOCUMENT_ICON,
+      ...socials.map(({ icon }) => icon),
       ...fileIcons.map(({ icon }) => icon),
       ...Object.values(documentActivityIcon),
       ...ssoProviders.map(({ icon }) => icon),

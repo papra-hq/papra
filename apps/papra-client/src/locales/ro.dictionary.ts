@@ -664,6 +664,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'Chei API',
   'user-menu.invitations': 'Invitații',
   'user-menu.language': 'Limbă',
+  'user-menu.about': 'Despre Papra',
   'user-menu.logout': 'Deconectare',
 
   // Command palette
@@ -730,7 +731,6 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'not-found.title': '404 - Nu a fost gasit',
   'not-found.description': 'Ne pare rău, pagina pe care o cauți nu pare să existe. Te rugăm să verifici URL-ul și să încerci din nou.',
-  'not-found.back-to-home': 'Înapoi la pagina principală',
 
   // Demo
 
@@ -916,4 +916,28 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Tastează "{{ text }}" pentru confirmare',
   'common.tables.rows-per-page': 'Rânduri pe pagină',
   'common.tables.pagination-info': 'Pagina {{ currentPage }} din {{ totalPages }}',
+  'common.back-to-home': 'Înapoi la pagina principală',
+
+  // About page
+
+  'about.title': 'Despre Papra',
+  'about.version': 'Versiune',
+  'about.git-commit': 'Commit Git',
+  'about.commit-date': 'Data Commit-ului',
+  'about.description': 'Papra este un sistem de gestionare a documentelor cu sursă deschisă care vă ajută să arhivați, să organizați, să etichetați și să gestionați documentele cu ușurință.',
+  'about.links.title': 'Linkuri',
+  'about.links.documentation': 'Documentație',
+  'about.links.documentation-description': 'Ghiduri utilizator și referință API',
+  'about.links.github': 'GitHub',
+  'about.links.github-description': 'Cod sursă și tracker de probleme',
+  'about.links.discord': 'Comunitatea Discord',
+  'about.links.discord-description': 'Alăturați-vă comunității noastre',
+  'about.links.sponsor': 'Sponsorizează',
+  'about.links.sponsor-description': 'Susține dezvoltarea Papra',
+
+  'socials.bluesky': 'Bluesky',
+  'socials.mastodon': 'Mastodon',
+  'socials.x': 'X',
+  'socials.reddit': 'Reddit',
+  'socials.linkedin': 'LinkedIn',
 };

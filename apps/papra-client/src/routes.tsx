@@ -29,6 +29,7 @@ import { OrganizationUsagePage } from './modules/organizations/pages/organizatio
 import { OrganizationPage } from './modules/organizations/pages/organization.page';
 import { OrganizationsSettingsPage } from './modules/organizations/pages/organizations-settings.page';
 import { OrganizationsPage } from './modules/organizations/pages/organizations.page';
+import { AboutPage } from './modules/shared/pages/about.page';
 import { NotFoundPage } from './modules/shared/pages/not-found.page';
 import { CheckoutCancelPage } from './modules/subscriptions/pages/checkout-cancel.page';
 import { CheckoutSuccessPage } from './modules/subscriptions/pages/checkout-success.page';
@@ -254,6 +255,10 @@ export const routes: RouteDefinition[] = [
   {
     path: '/checkout-cancel',
     component: CheckoutCancelPage,
+  },
+  {
+    path: '/about',
+    component: AboutPage,
   },
   {
     path: '*404',
