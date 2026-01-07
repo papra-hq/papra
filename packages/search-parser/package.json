@@ -44,7 +44,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "eslint": "catalog:",
-    "standardwebhooks": "^1.0.0",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

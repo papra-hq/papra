@@ -746,9 +746,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
-      standardwebhooks:
-        specifier: ^1.0.0
-        version: 1.0.0
       tsdown:
         specifier: 'catalog:'
         version: 0.13.4(typescript@5.9.3)
