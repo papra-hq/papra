@@ -10,7 +10,12 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.papra.ios"
+      "bundleIdentifier": "app.papra.ios",
+      "icon": {
+        "dark": "./src/assets/images/icon-dark.png",
+        "light": "./src/assets/images/icon-light.png",
+        "tinted": "./src/assets/images/icon-tinted.png"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -37,6 +42,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
+            "image": "./src/assets/images/splash-icon-dark.png",
             "backgroundColor": "#000000"
           }
         }
