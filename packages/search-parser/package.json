@@ -1,0 +1,51 @@
+{
+  "name": "@papra/search-parser",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Search query parser library",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papra-hq/papra",
+    "directory": "packages/search-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
+  "keywords": [
+    "papra",
+    "search",
+    "parser",
+    "query"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit",
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "dev": "pnpm build:watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "eslint": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
