@@ -11,6 +11,7 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
@@ -320,7 +321,13 @@ function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDef
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { searchResults } = await documentSearchServices.searchDocuments({ organizationId, searchQuery, pageIndex, pageSize });
+      const { searchResults } = await searchOrganizationDocuments({
+        organizationId,
+        searchQuery,
+        pageIndex,
+        pageSize,
+        documentSearchServices,
+      });
 
       return context.json({
         searchResults,
