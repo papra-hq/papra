@@ -31,7 +31,7 @@ export async function searchOrganizationDocuments({
     pageIndex,
     pageSize,
     durationMs,
-    documentCount: searchResults.documents.length,
+    pageDocumentCount: searchResults.documents.length,
   }, 'Executed document search');
 
   return {
