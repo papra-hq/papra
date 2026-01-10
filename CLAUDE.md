@@ -111,7 +111,6 @@ pnpm dev
 # Run tests
 pnpm test
 pnpm test:watch
-pnpm test:e2e          # Playwright E2E tests
 
 # Lint and typecheck
 pnpm lint
@@ -217,6 +216,6 @@ Test names should explain the **why** (business logic, user scenario, or expecte
 - **Frontend**: SolidJS, UnoCSS, Shadcn Solid, TanStack Query, Vite
 - **Backend**: HonoJS, Drizzle ORM, Better Auth, Zod, Cadence MQ
 - **Database**: SQLite/Turso (libsql)
-- **Testing**: Vitest, Playwright, Testcontainers
+- **Testing**: Vitest, Testcontainers
 - **Monorepo**: PNPM workspaces with catalog for shared dependencies
 - **Build**: esbuild (backend), Vite (frontend), tsdown (packages)

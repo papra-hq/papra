@@ -22,7 +22,6 @@
     "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "script:sync-i18n-key-order": "tsx src/scripts/sync-i18n-key-order.script.ts"
   },
@@ -57,7 +56,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@iconify-json/tabler": "^1.2.19",
-    "@playwright/test": "^1.53.1",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-solid": "^0.14.5",
