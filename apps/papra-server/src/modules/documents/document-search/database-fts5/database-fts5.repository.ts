@@ -27,10 +27,10 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
     .from(documentsTable)
     .innerJoin(
       documentsFtsTable,
-      eq(documentsFtsTable.id, documentsTable.id),
+      eq(documentsFtsTable.documentId, documentsTable.id),
     )
     .where(and(
-      eq(documentsTable.organizationId, organizationId),
+      eq(documentsFtsTable.organizationId, organizationId),
       eq(documentsTable.isDeleted, false),
       eq(documentsFtsTable, formattedSearchQuery), // Match and eq works the same for FTS5 virtual tables
     ))
@@ -45,9 +45,9 @@ async function indexDocument({ document, db }: { document: DocumentSearchableDat
   await db
     .insert(documentsFtsTable)
     .values({
-      id: document.id,
+      documentId: document.id,
+      organizationId: document.organizationId,
       name: document.name,
-      originalName: document.originalName,
       content: document.content,
     });
 }
@@ -66,11 +66,11 @@ async function updateDocument({ documentId, document, db }: { documentId: string
   await db
     .update(documentsFtsTable)
     .set(dataToUpdate)
-    .where(eq(documentsFtsTable.id, documentId));
+    .where(eq(documentsFtsTable.documentId, documentId));
 }
 
 async function deleteDocument({ documentId, db }: { documentId: string; db: Database }) {
   await db
     .delete(documentsFtsTable)
-    .where(eq(documentsFtsTable.id, documentId));
+    .where(eq(documentsFtsTable.documentId, documentId));
 }
