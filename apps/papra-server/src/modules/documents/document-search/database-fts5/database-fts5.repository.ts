@@ -4,6 +4,7 @@ import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, sql } from 'drizzle-orm';
 import { omitUndefined } from '../../../shared/utils';
 import { documentsTable } from '../../documents.table';
+import { createFts5DocumentSearchQuery } from './database-fts5.repository.models';
 import { documentsFtsTable } from './database-fts5.tables';
 
 export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRepository>;
@@ -18,10 +19,7 @@ export function createDocumentSearchRepository({ db }: { db: Database }) {
 }
 
 async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {
-  // TODO: extract this logic to a tested function
-  // when searchquery is a single word, we append a wildcard to it to make it a prefix search
-  const cleanedSearchQuery = searchQuery.replace(/"/g, '').replace(/\*/g, '').trim();
-  const formattedSearchQuery = cleanedSearchQuery.includes(' ') ? cleanedSearchQuery : `${cleanedSearchQuery}*`;
+  const { query: formattedSearchQuery } = createFts5DocumentSearchQuery({ organizationId, searchQuery });
 
   const documents = await db.select(getTableColumns(documentsTable))
     .from(documentsTable)
