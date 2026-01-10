@@ -1,5 +1,5 @@
 import type { PlansRepository } from '../plans/plans.repository';
-import { createInMemoryLoggerTransport } from '@crowlog/logger';
+import { createInMemoryLoggerTransport, createLogger } from '@crowlog/logger';
 import { asc } from 'drizzle-orm';
 import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
@@ -10,7 +10,6 @@ import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { inMemoryStorageDriverFactory } from '../documents/storage/drivers/memory/memory.storage-driver';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
-import { createLogger } from '../shared/logger/logger';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
