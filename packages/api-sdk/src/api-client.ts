@@ -17,6 +17,7 @@ export function createClient({ apiKey, apiBaseUrl = PAPRA_API_URL }: { apiKey: s
       listTags,
       createTag,
       addTagToDocument,
+      getCurrentApiKey,
     },
     { apiClient },
   );
@@ -89,5 +90,17 @@ async function addTagToDocument({
   return await apiClient<void>(`/api/organizations/${organizationId}/documents/${documentId}/tags`, {
     method: 'POST',
     body: { tagId },
+  });
+}
+
+async function getCurrentApiKey({ apiClient }: { apiClient: ApiClient }) {
+  return await apiClient<{
+    apiKey: {
+      id: string;
+      name: string;
+      permissions: string[];
+    };
+  }>('/api/api-keys/current', {
+    method: 'GET',
   });
 }
