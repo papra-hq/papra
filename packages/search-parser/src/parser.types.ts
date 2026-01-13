@@ -13,7 +13,12 @@ export type Expression
     | OrExpression
     | NotExpression
     | FilterExpression
-    | TextExpression;
+    | TextExpression
+    | EmptyExpression;
+
+export type EmptyExpression = {
+  type: 'empty';
+};
 
 export type AndExpression = {
   type: 'and';

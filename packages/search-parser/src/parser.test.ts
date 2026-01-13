@@ -5,7 +5,17 @@ describe('parseSearchQuery', () => {
   describe('when parsing simple queries', () => {
     test('returns empty expression and no search terms for empty query', () => {
       expect(parseSearchQuery({ query: '' })).toEqual({
-        expression: { type: 'and', operands: [] },
+        expression: { type: 'empty' },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: '  ' })).toEqual({
+        expression: { type: 'empty' },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: ' \n \t ' })).toEqual({
+        expression: { type: 'empty' },
         issues: [],
       });
     });

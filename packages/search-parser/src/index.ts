@@ -8,6 +8,7 @@ export {
 
 export type {
   AndExpression,
+  EmptyExpression,
   Expression,
   FilterExpression,
   Issue,

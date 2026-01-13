@@ -197,7 +197,7 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
   }
 
   // Build final result
-  const finalExpression: Expression = expression ?? { type: 'and', operands: [] };
+  const finalExpression: Expression = expression ?? { type: 'empty' };
 
   return {
     expression: finalExpression,
