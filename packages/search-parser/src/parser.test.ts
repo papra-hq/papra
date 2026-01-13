@@ -6,39 +6,40 @@ describe('parseSearchQuery', () => {
     test('returns empty expression and no search terms for empty query', () => {
       expect(parseSearchQuery({ query: '' })).toEqual({
         expression: { type: 'and', operands: [] },
-        search: undefined,
         issues: [],
       });
     });
 
     test('extracts full-text search terms when no filters present', () => {
       expect(parseSearchQuery({ query: 'my invoice' })).toEqual({
-        expression: { type: 'and', operands: [] },
-        search: 'my invoice',
+        expression: {
+          type: 'and',
+          operands: [
+            { type: 'text', value: 'my' },
+            { type: 'text', value: 'invoice' },
+          ],
+        },
         issues: [],
       });
     });
 
     test('handles quoted search terms', () => {
       expect(parseSearchQuery({ query: '"my special invoice"' })).toEqual({
-        expression: { type: 'and', operands: [] },
-        search: 'my special invoice',
+        expression: { type: 'text', value: 'my special invoice' },
         issues: [],
       });
     });
 
     test('handles escaped quotes in search terms', () => {
       expect(parseSearchQuery({ query: '"my \\"special\\" invoice"' })).toEqual({
-        expression: { type: 'and', operands: [] },
-        search: 'my "special" invoice',
+        expression: { type: 'text', value: 'my "special" invoice' },
         issues: [],
       });
     });
 
     test('handles escaped colons to prevent filter parsing', () => {
       expect(parseSearchQuery({ query: 'tag\\:invoice' })).toEqual({
-        expression: { type: 'and', operands: [] },
-        search: 'tag:invoice',
+        expression: { type: 'text', value: 'tag:invoice' },
         issues: [],
       });
     });
@@ -53,7 +54,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'invoice',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -66,7 +66,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'invoice',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -79,7 +78,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'my invoices',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -92,7 +90,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'my "special" invoices',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -105,7 +102,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'my::special::tag',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -118,7 +114,6 @@ describe('parseSearchQuery', () => {
           operator: '=',
           value: 'value',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -131,7 +126,6 @@ describe('parseSearchQuery', () => {
           operator: '>',
           value: '2024-01-01',
         },
-        search: undefined,
         issues: [],
       });
 
@@ -142,7 +136,6 @@ describe('parseSearchQuery', () => {
           operator: '<',
           value: '2024-01-01',
         },
-        search: undefined,
         issues: [],
       });
 
@@ -153,7 +146,6 @@ describe('parseSearchQuery', () => {
           operator: '>=',
           value: '2024-01-01',
         },
-        search: undefined,
         issues: [],
       });
 
@@ -164,7 +156,6 @@ describe('parseSearchQuery', () => {
           operator: '<=',
           value: '2024-01-01',
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -180,7 +171,6 @@ describe('parseSearchQuery', () => {
             value: 'personal',
           },
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -190,12 +180,13 @@ describe('parseSearchQuery', () => {
     test('combines filter with search terms', () => {
       expect(parseSearchQuery({ query: 'tag:invoice my invoice' })).toEqual({
         expression: {
-          type: 'filter',
-          field: 'tag',
-          operator: '=',
-          value: 'invoice',
+          type: 'and',
+          operands: [
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'text', value: 'my' },
+            { type: 'text', value: 'invoice' },
+          ],
         },
-        search: 'my invoice',
         issues: [],
       });
     });
@@ -203,12 +194,13 @@ describe('parseSearchQuery', () => {
     test('extracts search terms before and after filters', () => {
       expect(parseSearchQuery({ query: 'foo tag:invoice bar' })).toEqual({
         expression: {
-          type: 'filter',
-          field: 'tag',
-          operator: '=',
-          value: 'invoice',
+          type: 'and',
+          operands: [
+            { type: 'text', value: 'foo' },
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'text', value: 'bar' },
+          ],
         },
-        search: 'foo bar',
         issues: [],
       });
     });
@@ -224,7 +216,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -238,7 +229,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -253,7 +243,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'status', operator: '=', value: 'active' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -269,7 +258,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -284,7 +272,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'bill' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -302,7 +289,6 @@ describe('parseSearchQuery', () => {
             value: 'personal',
           },
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -319,7 +305,6 @@ describe('parseSearchQuery', () => {
             ],
           },
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -335,7 +320,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -355,7 +339,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'createdAt', operator: '>', value: '2024-01-01' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -375,7 +358,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'status', operator: '=', value: 'active' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -397,7 +379,6 @@ describe('parseSearchQuery', () => {
             },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -414,7 +395,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -434,7 +414,6 @@ describe('parseSearchQuery', () => {
             { type: 'filter', field: 'tag', operator: '=', value: 'company' },
           ],
         },
-        search: undefined,
         issues: [],
       });
     });
@@ -443,7 +422,10 @@ describe('parseSearchQuery', () => {
   describe('when handling malformed queries', () => {
     test('handles unclosed quoted string gracefully', () => {
       const result = parseSearchQuery({ query: '"unclosed string' });
-      expect(result.search).toBe('unclosed string');
+      expect(result.expression).toEqual({
+        type: 'text',
+        value: 'unclosed string',
+      });
       expect(result.issues).toContainEqual({
         code: 'unclosed-quoted-string',
         message: 'Unclosed quoted string',
@@ -535,9 +517,10 @@ describe('parseSearchQuery', () => {
               type: 'not',
               operand: { type: 'filter', field: 'tag', operator: '=', value: 'personal' },
             },
+            { type: 'text', value: 'my' },
+            { type: 'text', value: 'document' },
           ],
         },
-        search: 'my document',
         issues: [],
       });
     });
@@ -561,7 +544,134 @@ describe('parseSearchQuery', () => {
             },
           ],
         },
-        search: undefined,
+        issues: [],
+      });
+    });
+  });
+
+  describe('when parsing text with boolean operators', () => {
+    test('parses text OR text as OR expression', () => {
+      expect(parseSearchQuery({ query: 'foo OR bar' })).toEqual({
+        expression: {
+          type: 'or',
+          operands: [
+            { type: 'text', value: 'foo' },
+            { type: 'text', value: 'bar' },
+          ],
+        },
+        issues: [],
+      });
+    });
+
+    test('parses text with implicit AND correctly', () => {
+      expect(parseSearchQuery({ query: 'foo bar baz' })).toEqual({
+        expression: {
+          type: 'and',
+          operands: [
+            { type: 'text', value: 'foo' },
+            { type: 'text', value: 'bar' },
+            { type: 'text', value: 'baz' },
+          ],
+        },
+        issues: [],
+      });
+    });
+
+    test('negated text creates NOT expression', () => {
+      expect(parseSearchQuery({ query: '-foo' })).toEqual({
+        expression: {
+          type: 'not',
+          operand: { type: 'text', value: 'foo' },
+        },
+        issues: [],
+      });
+    });
+
+    test('handles complex text with operators', () => {
+      expect(
+        parseSearchQuery({
+          query: '(tag:invoice foo) OR (tag:receipt bar)',
+        }),
+      ).toEqual({
+        expression: {
+          type: 'or',
+          operands: [
+            {
+              type: 'and',
+              operands: [
+                { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+                { type: 'text', value: 'foo' },
+              ],
+            },
+            {
+              type: 'and',
+              operands: [
+                { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
+                { type: 'text', value: 'bar' },
+              ],
+            },
+          ],
+        },
+        issues: [],
+      });
+    });
+
+    test('parses multiple ORs with text and filters', () => {
+      expect(parseSearchQuery({ query: 'foo OR bar OR baz' })).toEqual({
+        expression: {
+          type: 'or',
+          operands: [
+            { type: 'text', value: 'foo' },
+            { type: 'text', value: 'bar' },
+            { type: 'text', value: 'baz' },
+          ],
+        },
+        issues: [],
+      });
+    });
+
+    test('parses quoted text with spaces', () => {
+      expect(parseSearchQuery({ query: '"hello world"' })).toEqual({
+        expression: { type: 'text', value: 'hello world' },
+        issues: [],
+      });
+    });
+
+    test('parses negated quoted text', () => {
+      expect(parseSearchQuery({ query: '-"hello world"' })).toEqual({
+        expression: {
+          type: 'not',
+          operand: { type: 'text', value: 'hello world' },
+        },
+        issues: [],
+      });
+    });
+
+    test('parses text mixed with explicit NOT operator', () => {
+      expect(parseSearchQuery({ query: 'NOT foo' })).toEqual({
+        expression: {
+          type: 'not',
+          operand: { type: 'text', value: 'foo' },
+        },
+        issues: [],
+      });
+    });
+
+    test('respects AND precedence over OR in text expressions', () => {
+      expect(parseSearchQuery({ query: 'foo OR bar AND baz' })).toEqual({
+        expression: {
+          type: 'or',
+          operands: [
+            { type: 'text', value: 'foo' },
+            {
+              type: 'and',
+              operands: [
+                { type: 'text', value: 'bar' },
+                { type: 'text', value: 'baz' },
+              ],
+            },
+          ],
+        },
         issues: [],
       });
     });

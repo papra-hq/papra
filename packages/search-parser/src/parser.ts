@@ -16,17 +16,15 @@ export function parseSearchQuery(
 ): ParsedQuery {
   const { tokens, issues: tokenizerIssues } = tokenize({ query, maxTokens });
 
-  const { expression, issues: parserIssues, search } = parseExpression({ tokens, maxDepth });
+  const { expression, issues: parserIssues } = parseExpression({ tokens, maxDepth });
 
   return {
     expression,
-    search,
     issues: [...tokenizerIssues, ...parserIssues],
   };
 }
 
 function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: number }): ParsedQuery {
-  const searchTerms: string[] = [];
   const parserIssues: Issue[] = [];
 
   let currentTokenIndex = 0;
@@ -91,8 +89,10 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
 
     if (token.type === 'TEXT') {
       advance();
-      searchTerms.push(token.value);
-      return undefined; // Text doesn't produce an expression
+      return {
+        type: 'text',
+        value: token.value,
+      };
     }
 
     return undefined;
@@ -198,11 +198,9 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
 
   // Build final result
   const finalExpression: Expression = expression ?? { type: 'and', operands: [] };
-  const search = searchTerms.length > 0 ? searchTerms.join(' ') : undefined;
 
   return {
     expression: finalExpression,
-    search,
     issues: parserIssues,
   };
 }

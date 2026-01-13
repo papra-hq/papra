@@ -5,7 +5,6 @@ export type Issue = {
 
 export type ParsedQuery = {
   expression: Expression;
-  search: string | undefined;
   issues: Issue[];
 };
 
@@ -13,7 +12,8 @@ export type Expression
   = | AndExpression
     | OrExpression
     | NotExpression
-    | FilterExpression;
+    | FilterExpression
+    | TextExpression;
 
 export type AndExpression = {
   type: 'and';
@@ -36,5 +36,10 @@ export type FilterExpression = {
   type: 'filter';
   field: string;
   operator: Operator;
+  value: string;
+};
+
+export type TextExpression = {
+  type: 'text';
   value: string;
 };

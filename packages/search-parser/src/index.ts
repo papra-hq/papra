@@ -15,4 +15,5 @@ export type {
   Operator,
   OrExpression,
   ParsedQuery,
+  TextExpression,
 } from './parser.types';
