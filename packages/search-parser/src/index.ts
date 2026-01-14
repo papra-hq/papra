@@ -3,6 +3,10 @@ export {
 } from './errors';
 
 export {
+  simplifyExpression,
+} from './optimization';
+
+export {
   parseSearchQuery,
 } from './parser';
 

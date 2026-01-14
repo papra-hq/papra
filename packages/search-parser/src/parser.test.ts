@@ -686,4 +686,74 @@ describe('parseSearchQuery', () => {
       });
     });
   });
+
+  describe('when using optimization', () => {
+    test('applies optimization when optimize flag is true', () => {
+      // Query that creates nested AND that can be flattened
+      const result = parseSearchQuery({
+        query: 'foo foo bar',
+        optimize: true,
+      });
+
+      // Should remove duplicate 'foo' through optimization
+      expect(result.expression).toEqual({
+        type: 'and',
+        operands: [
+          { type: 'text', value: 'foo' },
+          { type: 'text', value: 'bar' },
+        ],
+      });
+      expect(result.issues).toEqual([]);
+    });
+
+    test('does not apply optimization when optimize flag is false', () => {
+      const result = parseSearchQuery({
+        query: 'foo foo bar',
+        optimize: false,
+      });
+
+      // Should keep duplicates without optimization
+      expect(result.expression).toEqual({
+        type: 'and',
+        operands: [
+          { type: 'text', value: 'foo' },
+          { type: 'text', value: 'foo' },
+          { type: 'text', value: 'bar' },
+        ],
+      });
+      expect(result.issues).toEqual([]);
+    });
+
+    test('does not apply optimization by default', () => {
+      const result = parseSearchQuery({ query: 'foo foo bar' });
+
+      // Should keep duplicates without optimization (default behavior)
+      expect(result.expression).toEqual({
+        type: 'and',
+        operands: [
+          { type: 'text', value: 'foo' },
+          { type: 'text', value: 'foo' },
+          { type: 'text', value: 'bar' },
+        ],
+      });
+      expect(result.issues).toEqual([]);
+    });
+
+    test('applies optimization to complex queries', () => {
+      // Query with double negation and duplicates
+      const result = parseSearchQuery({
+        query: '(tag:invoice OR tag:invoice) AND NOT NOT tag:receipt',
+        optimize: true,
+      });
+
+      expect(result.expression).toEqual({
+        type: 'and',
+        operands: [
+          { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+          { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
+        ],
+      });
+      expect(result.issues).toEqual([]);
+    });
+  });
 });
