@@ -30,6 +30,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 # Copy package.json files for all workspace packages
 COPY packages/lecture/package.json ./packages/lecture/package.json
 COPY packages/webhooks/package.json ./packages/webhooks/package.json
+COPY packages/search-parser/package.json ./packages/search-parser/package.json
 COPY apps/papra-server/package.json ./apps/papra-server/package.json
 
 # Install all dependencies (workspace-aware)
