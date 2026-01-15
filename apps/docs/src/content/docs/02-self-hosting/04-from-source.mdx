@@ -14,7 +14,32 @@ This guide covers building and running Papra directly from source code. This met
 - **Development ready**: Ideal for contributing or debugging
 - **No containerization required**: Runs directly on your system
 
-## Prerequisites
+## Quick Install
+
+The easiest way to install Papra from source is to use the installation script. It will guide you through the installation process and install the required dependencies if needed.
+
+<Tabs>
+  <TabItem label="curl">
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/papra-hq/papra/main/apps/scripts/from-source-install.sh | bash
+    ```
+  </TabItem>
+  <TabItem label="wget">
+    ```bash
+    wget -qO- https://raw.githubusercontent.com/papra-hq/papra/main/apps/scripts/from-source-install.sh | bash
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="note">
+  The installation script supports Debian/Ubuntu, Fedora/RHEL/CentOS, Arch Linux, and Alpine Linux.
+</Aside>
+
+## Manual Installation
+
+If you prefer to install Papra manually, follow the steps below.
+
+### Prerequisites
 
 Ensure you have the following installed on your system:
 
@@ -28,7 +53,7 @@ node --version  # Should show v24.x.x or higher
 pnpm --version  # Should show 10.x.x or higher
 ```
 
-## Building from Source
+### Building from Source
 
 <Steps>
 
