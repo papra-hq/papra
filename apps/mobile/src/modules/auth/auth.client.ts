@@ -11,7 +11,7 @@ export function createAuthClient({ baseUrl }: { baseUrl: string }) {
     baseURL: baseUrl,
     fetchOptions: {
       headers: {
-        'origin': baseUrl,
+        origin: baseUrl,
       },
     },
     plugins: [
