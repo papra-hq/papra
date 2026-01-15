@@ -1,107 +1,59 @@
+import type { SQL } from 'drizzle-orm';
+import { SQLiteSyncDialect } from 'drizzle-orm/sqlite-core';
 import { describe, expect, test } from 'vitest';
-import { createFts5DocumentSearchQuery, formatFts5SearchQuery } from './database-fts5.repository.models';
+import { createInMemoryDatabase } from '../../../app/database/database.test-utils';
+import { makeSearchWhereClause } from './database-fts5.repository.models';
 
 describe('database-fts5 repository models', () => {
-  describe('formatFts5SearchQuery', () => {
-    test('wraps single word with quotes and appends wildcard', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'documents' }),
-      ).to.eql({
-        formattedSearchQuery: '"documents"*',
-      });
+  describe('makeSearchWhereClause', async () => {
+    const { db } = await createInMemoryDatabase();
 
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'hello world' }),
-      ).to.eql({
-        formattedSearchQuery: '"hello"* "world"*',
-      });
-    });
+    const sqliteDialect = new SQLiteSyncDialect();
+    const getSqlString = (query?: SQL) => {
+      if (!query) {
+        return { sql: '', params: [] };
+      }
 
-    test('whitespaces are trimmed and reduced to single spaces', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: '   multiple    spaces   here   ' }),
-      ).to.eql({
-        formattedSearchQuery: '"multiple"* "spaces"* "here"*',
-      });
-    });
+      const { sql, params } = sqliteDialect.sqlToQuery(query);
+      return { sql, params };
+    };
 
-    test('special characters are removed except hyphens and underscores', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'special! @#characters$ %^&*()here' }),
-      ).to.eql({
-        formattedSearchQuery: '"special"* "characters"* "here"*',
-      });
+    test('a simple text query', () => {
+      const { issues, searchWhereClause } = makeSearchWhereClause({ organizationId: 'org_1', query: 'foo', db });
 
-      expect(
-        formatFts5SearchQuery({ searchQuery: '"hello world"' }),
-      ).to.eql({
-        formattedSearchQuery: '"hello"* "world"*',
-      });
-
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'hyphen-word_and_underscore' }),
-      ).to.eql({
-        formattedSearchQuery: '"hyphen-word_and_underscore"*',
+      expect(issues).to.eql([]);
+      expect(getSqlString(searchWhereClause)).to.eql({
+        sql: `(\"documents\".\"organization_id\" = ? and \"documents\".\"is_deleted\" = ? and \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
+        params: [
+          'org_1',
+          0,
+          'organization_id:"org_1" {name content}:"foo"*',
+        ],
       });
     });
 
-    test('boolean operators are removed', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'apple AND orange OR banana NOT grape' }),
-      ).to.eql({
-        formattedSearchQuery: '"apple"* "orange"* "banana"* "grape"*',
+    test('a complex query', () => {
+      const { issues, searchWhereClause } = makeSearchWhereClause({
+        organizationId: 'org_1',
+        query: '(tag:important OR tag:urgent) AND NOT confidential',
+        db,
       });
 
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'apple or orange' }),
-      ).to.eql({
-        formattedSearchQuery: '"apple"* "orange"*',
+      expect(issues).to.eql([]);
+      expect(getSqlString(searchWhereClause)).to.eql({
+        sql: `(\"documents\".\"organization_id\" = ? and \"documents\".\"is_deleted\" = ? and ((\"documents\".\"id\" in (select distinct \"documents_tags\".\"document_id\" from \"documents_tags\" inner join \"tags\" on \"documents_tags\".\"tag_id\" = \"tags\".\"id\" where (\"tags\".\"organization_id\" = ? and (\"tags\".\"name\" = ? or \"tags\".\"id\" = ?))) or \"documents\".\"id\" in (select distinct \"documents_tags\".\"document_id\" from \"documents_tags\" inner join \"tags\" on \"documents_tags\".\"tag_id\" = \"tags\".\"id\" where (\"tags\".\"organization_id\" = ? and (\"tags\".\"name\" = ? or \"tags\".\"id\" = ?)))) and not \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)))`,
+        params: [
+          'org_1',
+          0,
+          'org_1',
+          'important',
+          'important',
+          'org_1',
+          'urgent',
+          'urgent',
+          'organization_id:\"org_1\" {name content}:\"confidential\"*',
+        ],
       });
-    });
-
-    test('empty or whitespace-only queries return empty formatted query', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: '     ' }),
-      ).to.eql({
-        formattedSearchQuery: '',
-      });
-
-      expect(
-        formatFts5SearchQuery({ searchQuery: '' }),
-      ).to.eql({
-        formattedSearchQuery: '',
-      });
-    });
-
-    test('special language characters are preserved', () => {
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'café naïve jalapeño façade' }),
-      ).to.eql({
-        formattedSearchQuery: '"café"* "naïve"* "jalapeño"* "façade"*',
-      });
-
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'добрый день привет' }),
-      ).to.eql({
-        formattedSearchQuery: '"добрый"* "день"* "привет"*',
-      });
-
-      expect(
-        formatFts5SearchQuery({ searchQuery: 'こんにちは 世界' }),
-      ).to.eql({
-        formattedSearchQuery: '"こんにちは"* "世界"*',
-      });
-    });
-  });
-
-  describe('createFts5DocumentSearchQuery', () => {
-    test('combines organization filter with formatted search query', () => {
-      const { query } = createFts5DocumentSearchQuery({
-        searchQuery: 'test search',
-        organizationId: 'org123',
-      });
-
-      expect(query).toBe('organization_id:"org123" "test"* "search"*');
     });
   });
 });

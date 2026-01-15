@@ -1,6 +1,7 @@
 import type { Expression, Issue, ParsedQuery } from './parser.types';
 import type { Token } from './tokenizer';
 import { ERROR_CODES } from './errors';
+import { simplifyExpression } from './optimization';
 import { tokenize } from './tokenizer';
 
 export function parseSearchQuery(
@@ -8,19 +9,32 @@ export function parseSearchQuery(
     query,
     maxDepth = 10,
     maxTokens = 200,
+    optimize = false,
   }: {
     query: string;
     maxDepth?: number;
     maxTokens?: number;
+    optimize?: boolean;
   },
 ): ParsedQuery {
   const { tokens, issues: tokenizerIssues } = tokenize({ query, maxTokens });
 
   const { expression, issues: parserIssues } = parseExpression({ tokens, maxDepth });
 
+  const issues = [...tokenizerIssues, ...parserIssues];
+
+  if (!optimize) {
+    return {
+      expression,
+      issues,
+    };
+  }
+
+  const { expression: optimizedExpression } = simplifyExpression({ expression });
+
   return {
-    expression,
-    issues: [...tokenizerIssues, ...parserIssues],
+    expression: optimizedExpression,
+    issues,
   };
 }
 

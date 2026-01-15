@@ -1,30 +1,20 @@
-import { documentsFtsTable } from './database-fts5.tables';
+import type { Database } from '../../../app/database/database.types';
+import { parseSearchQuery } from '@papra/search-parser';
+import { and, eq } from 'drizzle-orm';
+import { documentsTable } from '../../documents.table';
+import { buildQueryFromExpression } from './query-builder/query-builder';
 
-export function formatFts5SearchQuery({ searchQuery }: { searchQuery: string }) {
-  const formattedSearchQuery = searchQuery
-    .trim()
-    .replace(/[^\p{L}\p{N}\s\-_]/gu, '') // Remove special characters except hyphens and underscores, preserve Unicode letters/numbers
-    .replace(/\b(?:AND|OR|NOT)\b/gi, ' ') // Remove boolean operators
-    .split(/\s+/)
-    .filter(token => token.length > 0)
-    .map(token => `"${token}"*`)
-    .join(' ');
+export function makeSearchWhereClause({ query, organizationId, db }: { query: string; organizationId: string; db: Database }) {
+  const { expression, issues: parsedIssues } = parseSearchQuery({ query });
 
-  return { formattedSearchQuery };
-}
+  const { sqlQuery, issues } = buildQueryFromExpression({ expression, organizationId, db });
 
-export function createFts5DocumentSearchQuery({
-  searchQuery,
-  organizationId,
-  organizationIdColumnName = documentsFtsTable.organizationId.name,
-}: {
-  searchQuery: string;
-  organizationId: string;
-  organizationIdColumnName?: string;
-}) {
-  const { formattedSearchQuery } = formatFts5SearchQuery({ searchQuery });
-
-  const query = `${organizationIdColumnName}:"${organizationId}" ${formattedSearchQuery}`;
-
-  return { query };
+  return {
+    searchWhereClause: and(
+      eq(documentsTable.organizationId, organizationId),
+      eq(documentsTable.isDeleted, false),
+      sqlQuery,
+    ),
+    issues: [...parsedIssues, ...issues],
+  };
 }

@@ -55,6 +55,7 @@
     "@owlrelay/api-sdk": "^0.0.2",
     "@owlrelay/webhook": "^0.0.3",
     "@papra/lecture": "workspace:*",
+    "@papra/search-parser": "workspace:*",
     "@papra/webhooks": "workspace:*",
     "@paralleldrive/cuid2": "^2.2.2",
     "@sindresorhus/slugify": "^3.0.0",
