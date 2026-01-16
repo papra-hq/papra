@@ -39,6 +39,7 @@ RUN pnpm install --frozen-lockfile
 # Copy source code for dependencies
 COPY packages/lecture ./packages/lecture
 COPY packages/webhooks ./packages/webhooks
+COPY packages/search-parser ./packages/search-parser
 
 # Build workspace dependencies
 RUN pnpm --filter @papra/lecture build
