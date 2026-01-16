@@ -44,6 +44,7 @@ COPY packages/search-parser ./packages/search-parser
 # Build workspace dependencies
 RUN pnpm --filter @papra/lecture build
 RUN pnpm --filter @papra/webhooks build
+RUN pnpm --filter @papra/search-parser build
 
 # Copy server application code
 COPY apps/papra-server ./apps/papra-server
