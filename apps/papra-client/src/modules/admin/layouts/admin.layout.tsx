@@ -4,7 +4,7 @@ import { Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/modules/ui/components/sheet';
-import { SideNav } from '@/modules/ui/layouts/sidenav.layout';
+import { SideNav } from '@/modules/ui/components/sidenav';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 
 const AdminLayout: ParentComponent = (props) => {

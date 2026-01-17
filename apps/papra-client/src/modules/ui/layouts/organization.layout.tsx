@@ -13,6 +13,7 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
+import { SideNav } from '@/modules/ui/components/sidenav';
 import { Button } from '../components/button';
 import {
   Select,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/select';
-import { SideNav, SidenavLayout } from './sidenav.layout';
+import { SidenavLayout } from './sidenav.layout';
 
 const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { t } = useI18n();
