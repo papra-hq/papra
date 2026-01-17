@@ -1,4 +1,4 @@
-import type { Component, ComponentProps, JSX, ParentComponent } from 'solid-js';
+import type { Component, ParentComponent } from 'solid-js';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { For, Show, Suspense } from 'solid-js';
 
@@ -10,67 +10,12 @@ import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { usePendingInvitationsCount } from '@/modules/invitations/composables/usePendingInvitationsCount';
 import { AboutDialog, useAboutDialog } from '@/modules/shared/components/about-dialog';
-import { cn } from '@/modules/shared/style/cn';
 import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
-
-type MenuItem = {
-  label: string;
-  icon: string;
-  href?: string;
-  onClick?: () => void;
-  badge?: JSX.Element;
-};
-
-const MenuItemButton: Component<MenuItem> = (props) => {
-  return (
-    <Button class="justify-start items-center gap-2 dark:text-muted-foreground truncate" variant="ghost" {...(props.onClick ? { onClick: props.onClick } : { as: A, href: props.href, activeClass: 'bg-accent/50! text-accent-foreground! truncate', end: true } as ComponentProps<typeof Button>)}>
-      <div class={cn(props.icon, 'size-5 text-muted-foreground opacity-50')} />
-      <div>{props.label}</div>
-      {props.badge && <div class="ml-auto">{props.badge}</div>}
-    </Button>
-  );
-};
-
-export const SideNav: Component<{
-  mainMenu?: MenuItem[];
-  footerMenu?: MenuItem[];
-  header?: Component;
-  footer?: Component;
-  preFooter?: Component;
-}> = (props) => {
-  return (
-    <div class="flex h-full">
-      {(props.header || props.mainMenu || props.footerMenu || props.footer || props.preFooter) && (
-        <div class="h-full flex flex-col pb-6 flex-1 min-w-0">
-          {props.header && <props.header />}
-
-          {props.mainMenu && (
-            <nav class="flex flex-col gap-0.5 mt-4 px-4">
-              <For each={props.mainMenu}>{menuItem => <MenuItemButton {...menuItem} />}</For>
-            </nav>
-          )}
-
-          <div class="flex-1" />
-
-          {props.preFooter && <props.preFooter />}
-
-          {props.footerMenu && (
-            <nav class="flex flex-col gap-0.5 px-4">
-              <For each={props.footerMenu}>{menuItem => <MenuItemButton {...menuItem} />}</For>
-            </nav>
-          )}
-
-          {props.footer && <props.footer />}
-        </div>
-      )}
-    </div>
-  );
-};
 
 export const ThemeSwitcher: Component = () => {
   const themeStore = useThemeStore();
