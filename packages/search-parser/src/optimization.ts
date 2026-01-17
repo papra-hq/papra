@@ -1,4 +1,4 @@
-import type { AndExpression, Expression, OrExpression } from './parser.types';
+import type { AndExpression, Expression, NotExpression, OrExpression } from './parser.types';
 
 /**
  * Simplifies an expression tree by applying optimization rules.
@@ -9,150 +9,130 @@ import type { AndExpression, Expression, OrExpression } from './parser.types';
  * - Empty AND/OR expressions are converted to 'empty'.
  */
 export function simplifyExpression({ expression }: { expression: Expression }): { expression: Expression } {
-  return { expression: simplify(expression) };
-}
-
-/**
- * Recursively simplifies an expression tree using post-order traversal.
- * Children are optimized before their parents.
- */
-function simplify(expression: Expression): Expression {
-  // Base cases: leaf nodes that can't be simplified further
-  if (expression.type === 'empty' || expression.type === 'text' || expression.type === 'filter') {
-    return expression;
+  if (
+    expression.type === 'empty'
+    || expression.type === 'text'
+    || expression.type === 'filter'
+  ) {
+    return { expression };
   }
 
-  // Recursive case: NOT expression
   if (expression.type === 'not') {
-    const simplifiedOperand = simplify(expression.operand);
-
-    // Double negation elimination: NOT(NOT(A)) -> A
-    if (simplifiedOperand.type === 'not') {
-      return simplifiedOperand.operand;
-    }
-
-    // Empty propagation: NOT(empty) -> empty
-    if (simplifiedOperand.type === 'empty') {
-      return { type: 'empty' };
-    }
-
-    return { type: 'not', operand: simplifiedOperand };
+    return simplifyNotExpression({ expression });
   }
 
-  // Recursive case: AND/OR expressions
   if (expression.type === 'and' || expression.type === 'or') {
-    // Step 1: Simplify all operands recursively
-    let simplifiedOperands = expression.operands.map(simplify);
+    return simplifyAndOrExpression({ expression });
+  }
 
-    // Step 2: Flatten nested expressions of the same type
-    simplifiedOperands = flattenOperands(expression.type, simplifiedOperands);
+  // This should never be reached, but hey, you never know
+  return { expression };
+}
 
-    // Step 3: Remove empty expressions
-    simplifiedOperands = simplifiedOperands.filter(op => op.type !== 'empty');
+export function simplifyOperands({ operands }: { operands: Expression[] }): { simplifiedOperands: Expression[] } {
+  const simplifiedOperands = operands.map(expression => simplifyExpression({ expression }).expression);
 
-    // Step 4: Remove duplicates (order-preserving)
-    simplifiedOperands = deduplicateOperands(simplifiedOperands);
+  return { simplifiedOperands };
+}
 
-    // Step 5: Apply identity laws
-    // Empty: AND() -> empty, OR() -> empty
-    if (simplifiedOperands.length === 0) {
-      return { type: 'empty' };
-    }
+function simplifyNotExpression({ expression }: { expression: NotExpression }): { expression: Expression } {
+  const { expression: simplifiedOperandExpression } = simplifyExpression({ expression: expression.operand });
 
-    // Single child: AND(A) -> A, OR(A) -> A
-    if (simplifiedOperands.length === 1) {
-      return simplifiedOperands[0]!;
-    }
+  // NOT(NOT(A)) -> A
+  if (simplifiedOperandExpression.type === 'not') {
+    return { expression: simplifiedOperandExpression.operand };
+  }
 
-    // Return simplified AND/OR expression
-    return {
+  // NOT(empty) -> empty
+  if (simplifiedOperandExpression.type === 'empty') {
+    return { expression: { type: 'empty' } };
+  }
+
+  return { expression: { type: 'not', operand: simplifiedOperandExpression } };
+}
+
+function simplifyAndOrExpression({ expression }: { expression: AndExpression | OrExpression }): { expression: Expression } {
+  const { simplifiedOperands } = simplifyOperands({ operands: expression.operands });
+  const filteredOperands = simplifiedOperands.filter(op => op.type !== 'empty');
+  const { flattenedOperands } = flattenOperands({ type: expression.type, operands: filteredOperands });
+  const { deduplicatedOperands } = deduplicateOperands({ operands: flattenedOperands });
+
+  if (deduplicatedOperands.length === 0) {
+    return { expression: { type: 'empty' } };
+  }
+
+  // AND(A) -> A, OR(A) -> A
+  if (deduplicatedOperands.length === 1) {
+    return { expression: deduplicatedOperands[0]! };
+  }
+
+  return {
+    expression: {
       type: expression.type,
-      operands: simplifiedOperands,
-    } as AndExpression | OrExpression;
-  }
-
-  // This should never be reached if Expression type is exhaustive
-  return expression;
+      operands: deduplicatedOperands,
+    },
+  };
 }
 
-/**
- * Flattens nested AND/OR expressions of the same type.
- * Example: AND(A, AND(B, C)) -> AND(A, B, C)
- */
-function flattenOperands(type: 'and' | 'or', operands: Expression[]): Expression[] {
-  const flattened: Expression[] = [];
+function flattenOperands({ type, operands }: { type: 'and' | 'or'; operands: Expression[] }): { flattenedOperands: Expression[] } {
+  const flattenedOperands: Expression[] = [];
 
   for (const operand of operands) {
-    // If operand is same type (AND/OR), merge its children
+    // When the operand is of the same type, inline its operands
+    // AND(A, AND(B, C)) -> AND(A, B, C)
     if (operand.type === type) {
-      flattened.push(...operand.operands);
+      flattenedOperands.push(...operand.operands);
     } else {
-      flattened.push(operand);
+      flattenedOperands.push(operand);
     }
   }
 
-  return flattened;
+  return { flattenedOperands };
 }
 
-/**
- * Removes duplicate operands while preserving order.
- * Uses deep equality comparison.
- */
-function deduplicateOperands(operands: Expression[]): Expression[] {
-  const deduplicated: Expression[] = [];
+function deduplicateOperands({ operands }: { operands: Expression[] }): { deduplicatedOperands: Expression[] } {
+  const deduplicatedOperands: Expression[] = [];
 
   for (const operand of operands) {
-    // Only add if not already present
-    const isDuplicate = deduplicated.some(existing => expressionsEqual(existing, operand));
+    const isDuplicate = deduplicatedOperands.some(existing => areExpressionsIdentical(existing, operand));
     if (!isDuplicate) {
-      deduplicated.push(operand);
+      deduplicatedOperands.push(operand);
     }
   }
 
-  return deduplicated;
+  return { deduplicatedOperands };
 }
 
-/**
- * Deep equality comparison for expressions.
- * Order-sensitive: AND(A, B) !== AND(B, A)
- */
-function expressionsEqual(a: Expression, b: Expression): boolean {
-  // Different types are not equal
+export function areExpressionsIdentical(a: Expression, b: Expression): boolean {
   if (a.type !== b.type) {
     return false;
   }
 
-  // Empty expressions are always equal
-  if (a.type === 'empty') {
+  if (a.type === 'empty' && b.type === 'empty') {
     return true;
   }
 
-  // Text expressions: compare values
   if (a.type === 'text' && b.type === 'text') {
     return a.value === b.value;
   }
 
-  // Filter expressions: compare all fields
   if (a.type === 'filter' && b.type === 'filter') {
     return a.field === b.field
       && a.operator === b.operator
       && a.value === b.value;
   }
 
-  // NOT expressions: compare operands
   if (a.type === 'not' && b.type === 'not') {
-    return expressionsEqual(a.operand, b.operand);
+    return areExpressionsIdentical(a.operand, b.operand);
   }
 
-  // AND/OR expressions: compare operands arrays (order-sensitive)
   if ((a.type === 'and' && b.type === 'and') || (a.type === 'or' && b.type === 'or')) {
     if (a.operands.length !== b.operands.length) {
       return false;
     }
 
-    // Compare each operand in order
     for (let i = 0; i < a.operands.length; i++) {
-      if (!expressionsEqual(a.operands[i]!, b.operands[i]!)) {
+      if (!areExpressionsIdentical(a.operands[i]!, b.operands[i]!)) {
         return false;
       }
     }
@@ -160,6 +140,5 @@ function expressionsEqual(a: Expression, b: Expression): boolean {
     return true;
   }
 
-  // Fallback: not equal
   return false;
 }
