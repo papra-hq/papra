@@ -1,7 +1,7 @@
 import type { Database } from '../../../app/database/database.types';
 import type { DocumentSearchableData } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import { omitUndefined } from '../../../shared/utils';
 import { documentsTable } from '../../documents.table';
 import { makeSearchWhereClause } from './database-fts5.repository.models';
@@ -21,10 +21,11 @@ export function createDocumentSearchRepository({ db }: { db: Database }) {
 async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {
   const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db });
 
-  const query = db.selectDistinct({
+  const documentsWithTotalCount = await db.selectDistinct({
     id: documentsTable.id,
     organizationId: documentsTable.organizationId,
     name: documentsTable.name,
+    totalCount: sql<number>`COUNT(*) OVER()`,
   })
     .from(documentsTable)
     .where(searchWhereClause)
@@ -32,11 +33,10 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
     .limit(pageSize)
     .offset(pageIndex * pageSize);
 
-  // console.log(query.toSQL());
+  const documents = documentsWithTotalCount.map(({ id, name }) => ({ id, name }));
+  const totalCount = documentsWithTotalCount[0]?.totalCount ?? 0;
 
-  const documents = await query;
-
-  return { documents };
+  return { documents, totalCount };
 }
 
 async function indexDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {

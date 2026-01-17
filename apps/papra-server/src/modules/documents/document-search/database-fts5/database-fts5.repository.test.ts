@@ -73,6 +73,106 @@ describe('database-fts5 repository', () => {
       expect(searchResults2.map(doc => doc.id)).to.eql(['doc_1']);
     });
 
+    test('the total count of search results is returned for pagination', async () => {
+      const documents = Array.from({ length: 15 }).map((_, index) => ({
+        id: `doc_${index + 1}`,
+        organizationId: 'org_1',
+        name: `Document ${index + 1}`,
+        originalName: `document-${index + 1}.pdf`,
+        content: 'lorem ipsum dolor sit amet',
+        originalStorageKey: '',
+        mimeType: 'application/pdf',
+        originalSha256Hash: `hash${index + 1}`,
+        isDeleted: false,
+      }));
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        documents,
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await Promise.all(
+        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+      );
+
+      const { totalCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'lorem',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(totalCount).to.equal(15);
+      expect(searchDocuments).to.have.length(10);
+    });
+
+    test('no results means total count is zero', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      const { totalCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'nonexistent',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(totalCount).to.equal(0);
+      expect(searchDocuments).to.have.length(0);
+    });
+
+    test('pagination permits retrieving subsequent pages of results', async () => {
+      const documents = Array.from({ length: 25 }).map((_, index) => ({
+        id: `doc_${index + 1}`,
+        organizationId: 'org_1',
+        name: `Document ${index + 1}`,
+        originalName: `document-${index + 1}.pdf`,
+        content: 'lorem ipsum dolor sit amet',
+        originalStorageKey: '',
+        mimeType: 'application/pdf',
+        originalSha256Hash: `hash${index + 1}`,
+        isDeleted: false,
+      }));
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        documents,
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await Promise.all(
+        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+      );
+
+      const { documents: firstPageDocuments, totalCount: firstTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'lorem',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(firstPageDocuments).to.have.length(10);
+      expect(firstTotalCount).to.equal(25);
+      expect(firstPageDocuments.map(doc => doc.id)).to.eql(['doc_1', 'doc_2', 'doc_3', 'doc_4', 'doc_5', 'doc_6', 'doc_7', 'doc_8', 'doc_9', 'doc_10']);
+
+      const { documents: secondPageDocuments, totalCount: secondTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'lorem',
+        pageIndex: 1,
+        pageSize: 5,
+      });
+
+      expect(secondPageDocuments).to.have.length(5);
+      expect(secondTotalCount).to.equal(25);
+      expect(secondPageDocuments.map(doc => doc.id)).to.eql(['doc_6', 'doc_7', 'doc_8', 'doc_9', 'doc_10']);
+    });
+
     describe('search query can have filters', async () => {
       const documents = [
         { id: 'doc_1', organizationId: 'org_1', name: 'Invoice cloudflare', originalName: 'document-1.pdf', content: 'Cloudflare invoice, hosting 5€', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
@@ -183,7 +283,6 @@ describe('database-fts5 repository', () => {
       // Should only return documents from org_1, not org_2
       expect(org1Results).to.have.length(1);
       expect(org1Results.map(doc => doc.id)).to.eql(['doc_1']);
-      expect(org1Results.every(doc => doc.organizationId === 'org_1')).to.eql(true);
 
       // Search in org_2 with the same term
       const { documents: org2Results } = await documentsSearchRepository.searchOrganizationDocuments({
@@ -196,7 +295,6 @@ describe('database-fts5 repository', () => {
       // Should only return documents from org_2, not org_1
       expect(org2Results).to.have.length(2);
       expect(org2Results.map(doc => doc.id).toSorted()).to.eql(['doc_3', 'doc_4']);
-      expect(org2Results.every(doc => doc.organizationId === 'org_2')).to.eql(true);
 
       // Search for organization-specific content should not leak across organizations
       const { documents: org1SpecificSearch } = await documentsSearchRepository.searchOrganizationDocuments({
