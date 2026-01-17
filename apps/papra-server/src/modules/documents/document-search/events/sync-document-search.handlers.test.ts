@@ -18,7 +18,7 @@ function createTestSearchServices() {
     name: 'test-search-service',
     searchDocuments: async (args) => {
       methodsArgs.searchDocuments.push(args);
-      return { searchResults: { documents: [] } };
+      return { searchResults: { documents: [], totalCount: 0 } };
     },
     indexDocument: async (args) => {
       methodsArgs.indexDocument.push(args);
