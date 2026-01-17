@@ -1,8 +1,8 @@
 import type { ParentComponent } from 'solid-js';
 import { A, useParams } from '@solidjs/router';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { SideNav } from '@/modules/ui/components/sidenav';
 import { Button } from '../components/button';
-import { SideNav } from './sidenav.layout';
 
 export const OrganizationSettingsLayout: ParentComponent = (props) => {
   const params = useParams();
