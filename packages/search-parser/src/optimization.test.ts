@@ -1,6 +1,6 @@
 import type { Expression } from './parser.types';
 import { describe, expect, test } from 'vitest';
-import { simplifyExpression } from './optimization';
+import { areExpressionsIdentical, simplifyExpression } from './optimization';
 
 describe('simplifyExpression', () => {
   describe('when handling leaf nodes', () => {
@@ -656,6 +656,193 @@ describe('simplifyExpression', () => {
             { type: 'text', value: 'b' },
           ],
         },
+      });
+    });
+  });
+
+  describe('expressionsEqual', () => {
+    describe('permit to check equality between expressions', () => {
+      test('empty expressions are equal', () => {
+        expect(
+          areExpressionsIdentical(
+            { type: 'empty' },
+            { type: 'empty' },
+          ),
+        ).to.eql(true);
+      });
+
+      test('different expression types are never equal', () => {
+        expect(
+          areExpressionsIdentical(
+            { type: 'empty' },
+            { type: 'text', value: 'hello' },
+          ),
+        ).to.eql(false);
+
+        expect(
+          areExpressionsIdentical(
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'text', value: 'invoice' },
+          ),
+        ).to.eql(false);
+      });
+
+      test('text expressions are equal when values are the same', () => {
+        expect(
+          areExpressionsIdentical(
+            { type: 'text', value: 'hello' },
+            { type: 'text', value: 'hello' },
+          ),
+        ).to.eql(true);
+
+        expect(
+          areExpressionsIdentical(
+            { type: 'text', value: 'hello' },
+            { type: 'text', value: 'world' },
+          ),
+        ).to.eql(false);
+      });
+
+      test('filter expressions are equal when field, operator and value are the same', () => {
+        expect(
+          areExpressionsIdentical(
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+          ),
+        ).to.eql(true);
+
+        expect(
+          areExpressionsIdentical(
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'filter', field: 'tag', operator: '=', value: 'receipt' }, // different value
+          ),
+        ).to.eql(false);
+
+        expect(
+          areExpressionsIdentical(
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'filter', field: 'tag', operator: '>', value: 'invoice' }, // different operator
+          ),
+        ).to.eql(false);
+
+        expect(
+          areExpressionsIdentical(
+            { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+            { type: 'filter', field: 'createdAt', operator: '=', value: 'invoice' }, // different field
+          ),
+        ).to.eql(false);
+      });
+
+      test('not expressions are equal when their operands are equal', () => {
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'not',
+              operand: { type: 'text', value: 'hello' },
+            },
+            {
+              type: 'not',
+              operand: { type: 'text', value: 'hello' },
+            },
+          ),
+        ).to.eql(true);
+
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'not',
+              operand: { type: 'text', value: 'hello' },
+            },
+            {
+              type: 'not',
+              operand: { type: 'text', value: 'world' },
+            },
+          ),
+        ).to.eql(false);
+      });
+
+      test('and/or expressions are equal when they have the same number of operands and all operands are equal in order', () => {
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'and',
+              operands: [
+                { type: 'text', value: 'a' },
+                { type: 'text', value: 'b' },
+              ],
+            },
+            {
+              type: 'and',
+              operands: [
+                { type: 'text', value: 'a' },
+                { type: 'text', value: 'b' },
+              ],
+            },
+          ),
+        ).to.eql(true);
+
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'and',
+              operands: [],
+            },
+            {
+              type: 'and',
+              operands: [],
+            },
+          ),
+        ).to.eql(true);
+
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'and',
+              operands: [],
+            },
+            {
+              type: 'or', // different type
+              operands: [],
+            },
+          ),
+        ).to.eql(false);
+
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'and',
+              operands: [
+                { type: 'text', value: 'a' },
+                { type: 'text', value: 'b' },
+              ],
+            },
+            {
+              type: 'and',
+              operands: [
+                { type: 'text', value: 'b' }, // order matters
+                { type: 'text', value: 'a' },
+              ],
+            },
+          ),
+        ).to.eql(false);
+
+        expect(
+          areExpressionsIdentical(
+            {
+              type: 'or',
+              operands: [
+                { type: 'text', value: 'a' },
+                { type: 'text', value: 'b' },
+              ],
+            },
+            {
+              type: 'or',
+              operands: [
+                { type: 'text', value: 'a' },
+              ],
+            },
+          ),
+        ).to.eql(false);
       });
     });
   });

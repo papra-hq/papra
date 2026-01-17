@@ -112,7 +112,6 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return undefined;
   }
 
-  // Parse NOT expression (highest precedence)
   function parseUnaryExpression(): Expression | undefined {
     if (peek().type === 'NOT') {
       advance(); // Consume NOT
@@ -139,7 +138,6 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return parsePrimaryExpression();
   }
 
-  // Parse AND expression (higher precedence than OR)
   function parseAndExpression(): Expression | undefined {
     const operands: Expression[] = [];
 
@@ -174,7 +172,6 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return { type: 'and', operands };
   };
 
-  // Parse OR expression (lowest precedence)
   function parseOrExpression(): Expression | undefined {
     const left = parseAndExpression();
     if (!left) {
@@ -198,7 +195,6 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return { type: 'or', operands };
   };
 
-  // Start parsing
   const expression = parseOrExpression();
 
   // Check for unmatched closing parentheses
@@ -210,11 +206,8 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     advance();
   }
 
-  // Build final result
-  const finalExpression: Expression = expression ?? { type: 'empty' };
-
   return {
-    expression: finalExpression,
+    expression: expression ?? { type: 'empty' },
     issues: parserIssues,
   };
 }
