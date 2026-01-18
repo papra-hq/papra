@@ -214,10 +214,8 @@ Search documents in the organization by name or content.
   - `pageIndex`: (optional, default: 0) The page index to start from.
   - `pageSize`: (optional, default: 100) The number of documents to return.
 - Response (JSON)
-  - `searchResults`: The search results.
-    - `documents`: The list of matching documents.
-      - `id`: The document ID.
-      - `name`: The document name.
+  - `documents`: The list of documents matching the search query.
+  - `totalCount`: The total number of documents matching the search query.
 
 ### Get organization documents statistics
 

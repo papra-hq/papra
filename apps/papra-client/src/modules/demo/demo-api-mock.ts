@@ -209,13 +209,22 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         && [document?.name, document?.content].filter(Boolean).some(content => content.toLowerCase().includes(searchQuery));
 
       const filteredDocuments = documents.filter(matchQuery);
+      const pagedDocuments = filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+      const documentsWithTags = await Promise.all(
+        pagedDocuments.map(async (document) => {
+          const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument?.documentId === document?.id);
+          const allTags = await getValues(tagStorage);
+          const tags = allTags.filter(tag => tagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
+          return {
+            ...document,
+            tags,
+          };
+        }),
+      );
 
       return {
-        searchResults: {
-          documents: filteredDocuments
-            .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
-            .map(({ id, name }) => ({ id, name })),
-        },
+        documents: documentsWithTags,
+        totalCount: filteredDocuments.length,
       };
     },
   }),

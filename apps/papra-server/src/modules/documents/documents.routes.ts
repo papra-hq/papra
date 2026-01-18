@@ -317,7 +317,7 @@ function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDef
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { searchResults } = await searchOrganizationDocuments({
+      const { documents, totalCount } = await searchOrganizationDocuments({
         organizationId,
         searchQuery,
         pageIndex,
@@ -326,7 +326,8 @@ function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDef
       });
 
       return context.json({
-        searchResults,
+        documents,
+        totalCount,
       });
     },
   );

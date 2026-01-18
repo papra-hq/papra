@@ -56,7 +56,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
     const [result] = await safely(searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
 
-    setMatchingDocuments(result?.searchResults.documents ?? []);
+    setMatchingDocuments(result?.documents ?? []);
     setIsLoading(false);
   }, 300);
 
