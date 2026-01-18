@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.2.0
+
+### Minor Changes
+
+- [#741](https://github.com/papra-hq/papra/pull/741) [`ae03c76`](https://github.com/papra-hq/papra/commit/ae03c765bf495c63db53d5b60f429f3881887f5a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added `getCurrentApiKey` method in client
+
 ## 1.1.3
 
 ### Patch Changes
