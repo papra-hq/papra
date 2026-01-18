@@ -677,6 +677,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'command-palette.no-results': 'Nessun risultato trovato',
   'command-palette.sections.documents': 'Documenti',
   'command-palette.sections.theme': 'Tema',
+  'command-palette.show-more-results': 'Mostra altri {{ count }} risultati per "{{ query }}"',
 
   // API errors
 

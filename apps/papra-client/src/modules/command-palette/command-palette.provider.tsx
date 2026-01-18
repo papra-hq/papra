@@ -2,7 +2,7 @@ import type { Accessor, ParentComponent } from 'solid-js';
 import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
-import { getDocumentIcon } from '../documents/document.models';
+import { getDocumentIcon, makeDocumentSearchPermalink } from '../documents/document.models';
 import { searchDocuments } from '../documents/documents.services';
 import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
@@ -31,6 +31,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const [getMatchingDocuments, setMatchingDocuments] = createSignal<{ id: string; name: string }[]>([]);
   const [getSearchQuery, setSearchQuery] = createSignal('');
   const [getIsLoading, setIsLoading] = createSignal(false);
+  const [getMatchingDocumentsTotalCount, setMatchingDocumentsTotalCount] = createSignal(0);
 
   const params = useParams();
   const { t } = useI18n();
@@ -57,6 +58,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     const [result] = await safely(searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
 
     setMatchingDocuments(result?.documents ?? []);
+    setMatchingDocumentsTotalCount(result?.totalCount ?? 0);
     setIsLoading(false);
   }, 300);
 
@@ -64,6 +66,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     getSearchQuery,
     (searchQuery) => {
       setMatchingDocuments([]);
+      setMatchingDocumentsTotalCount(0);
       if (searchQuery.length > 1) {
         setIsLoading(true);
         searchDocs({ searchQuery });
@@ -76,6 +79,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     (isCommandPaletteOpen) => {
       if (isCommandPaletteOpen) {
         setMatchingDocuments([]);
+        setMatchingDocumentsTotalCount(0);
       }
     },
   ));
@@ -88,12 +92,23 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     {
       label: t('command-palette.sections.documents'),
       forceMatch: true,
-      options: getMatchingDocuments().map(document => ({
-        label: document.name,
-        icon: getDocumentIcon({ document }),
-        action: () => navigate(`/organizations/${params.organizationId}/documents/${document.id}`),
-        forceMatch: true,
-      })),
+      options: [
+        ...getMatchingDocuments().map(document => ({
+          label: document.name,
+          icon: getDocumentIcon({ document }),
+          action: () => navigate(`/organizations/${params.organizationId}/documents/${document.id}`),
+          forceMatch: true,
+        })),
+
+        ...(getMatchingDocumentsTotalCount() > getMatchingDocuments().length
+          ? [{
+              label: t('command-palette.show-more-results', { count: getMatchingDocumentsTotalCount() - getMatchingDocuments().length, query: getSearchQuery() }),
+              icon: 'i-tabler-search',
+              action: () => navigate(makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { query: getSearchQuery() } })),
+              forceMatch: true,
+            }]
+          : []),
+      ],
     },
     {
       label: t('command-palette.sections.theme'),

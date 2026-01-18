@@ -677,6 +677,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'command-palette.no-results': 'Niciun rezultat gasit',
   'command-palette.sections.documents': 'Documente',
   'command-palette.sections.theme': 'Temă',
+  'command-palette.show-more-results': 'Arată încă {{ count }} rezultate pentru "{{ query }}"',
 
   // API errors
 
