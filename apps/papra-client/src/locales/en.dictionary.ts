@@ -326,6 +326,10 @@ export const translations = {
   'documents.list.table.headers.deleted': 'Deleted at',
   'documents.list.table.headers.actions': 'Actions',
   'documents.list.table.headers.tags': 'Tags',
+  'documents.list.search.placeholder': 'Search documents...',
+  'documents.list.search.no-results': 'No documents found matching this query',
+  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:document, documents }} matching this query',
+  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:document, documents }} in total',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Content',
@@ -655,7 +659,7 @@ export const translations = {
   'layout.theme.dark': 'Dark mode',
   'layout.theme.system': 'System mode',
 
-  'layout.search.placeholder': 'Search...',
+  'layout.search.placeholder': 'Quick search',
   'layout.menu.import-document': 'Import a document',
 
   'user-menu.account-settings': 'Account settings',

@@ -1,3 +1,5 @@
+import type { Document } from '../documents.types';
+
 export type DocumentSearchableData = {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export type DocumentSearchServices = {
     organizationId: string;
     pageIndex: number;
     pageSize: number;
-  }) => Promise<{ searchResults: { documents: { id: string; name: string }[]; totalCount: number } }>;
+  }) => Promise<{ searchResults: { documents: Omit<Document, 'content'>[]; totalCount: number } }>;
 
   indexDocument: (args: { document: DocumentSearchableData }) => Promise<void>;
   updateDocument: (args: { documentId: string; document: Partial<Omit<DocumentSearchableData, 'id'>> }) => Promise<void>;

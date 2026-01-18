@@ -328,6 +328,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.deleted': 'Șters la',
   'documents.list.table.headers.actions': 'Acțiuni',
   'documents.list.table.headers.tags': 'Etichete',
+  'documents.list.search.placeholder': 'Caută documente...',
+  'documents.list.search.no-results': 'Niciun document găsit pentru această căutare',
+  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:document, documente }} corespunzător acestei căutări',
+  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:document, documente }} în total',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Conținut',
@@ -657,7 +661,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Mod intunecat',
   'layout.theme.system': 'Modul sistemului',
 
-  'layout.search.placeholder': 'Căutare...',
+  'layout.search.placeholder': 'Căutare rapidă',
   'layout.menu.import-document': 'Importă un document',
 
   'user-menu.account-settings': 'Setări cont',

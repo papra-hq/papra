@@ -1,3 +1,6 @@
+import type { Accessor } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
+
 /**
  * Creates a debounced function that delays invoking func until after wait milliseconds
  * have elapsed since the last time the debounced function was invoked.
@@ -84,4 +87,16 @@ export function throttle<Args extends unknown[], Return>(
       timeoutId = undefined;
     }, waitMs - timeSinceLastCall);
   };
+}
+
+export function useDebounce<T>(signal: Accessor<T>, waitMs: number = 500): Accessor<T> {
+  const [debouncedValue, setDebouncedValue] = createSignal<T>(signal());
+
+  const debouncedSetter = debounce((value: T) => setDebouncedValue(() => value), waitMs);
+
+  createEffect(() => {
+    debouncedSetter(signal());
+  });
+
+  return debouncedValue;
 }

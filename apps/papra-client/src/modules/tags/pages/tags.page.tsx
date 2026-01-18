@@ -7,6 +7,7 @@ import { A, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
+import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -349,7 +350,7 @@ export const TagsPage: Component = () => {
                         </TableCell>
                         <TableCell class="text-wrap">{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
                         <TableCell>
-                          <A href={`/organizations/${params.organizationId}/documents?tags=${tag.id}`} class="inline-flex items-center gap-1 hover:underline">
+                          <A href={makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { tags: [tag] } })} class="inline-flex items-center gap-1 hover:underline">
                             <div class="i-tabler-file-text size-5 text-muted-foreground" />
                             {tag.documentsCount}
                           </A>

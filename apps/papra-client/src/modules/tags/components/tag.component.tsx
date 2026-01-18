@@ -1,9 +1,11 @@
 import type { Component, ComponentProps } from 'solid-js';
 import { A } from '@solidjs/router';
 import { splitProps } from 'solid-js';
+import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
 import { cn } from '@/modules/shared/style/cn';
 
 type TagProps = {
+  id?: string;
   name?: string;
   description?: string | null;
   color?: string;
@@ -12,7 +14,7 @@ type TagProps = {
 };
 
 export const Tag: Component<TagProps & ComponentProps<'span'>> = (props) => {
-  const [local, rest] = splitProps(props, ['name', 'description', 'color', 'class']);
+  const [local, rest] = splitProps(props, ['id', 'name', 'description', 'color', 'class']);
 
   return (
     <span
@@ -37,18 +39,19 @@ export const Tag: Component<TagProps & ComponentProps<'span'>> = (props) => {
 };
 
 type TagLinkProps = {
-  name?: string;
+  id?: string;
+  name: string;
   description?: string | null;
   color?: string;
   organizationId: string;
 };
 
 export const TagLink: Component<TagLinkProps & Omit<ComponentProps<typeof A>, 'href'> & { href?: string }> = (props) => {
-  const [local, rest] = splitProps(props, ['name', 'description', 'color', 'class', 'href']);
+  const [local, rest] = splitProps(props, ['id', 'name', 'description', 'color', 'class', 'href']);
 
   return (
     <A
-      href={props.href ?? `/organizations/${props.organizationId}/documents?tags=${props.id}`}
+      href={props.href ?? makeDocumentSearchPermalink({ organizationId: props.organizationId, search: { tags: [props] } })}
       class={cn(
         'inline-flex gap-2 px-2.5 py-1 leading-none rounded-lg text-sm items-center bg-muted group hover:underline',
         local.class,
