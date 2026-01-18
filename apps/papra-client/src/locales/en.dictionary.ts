@@ -675,6 +675,7 @@ export const translations = {
   'command-palette.no-results': 'No results found',
   'command-palette.sections.documents': 'Documents',
   'command-palette.sections.theme': 'Theme',
+  'command-palette.show-more-results': 'Show {{ count }} more results for "{{ query }}"',
 
   // API errors
 
