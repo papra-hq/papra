@@ -32,30 +32,73 @@ Use filters to search specific document properties. Current supported filters:
 - `name:` - Search in document names
 - `content:` - Search in document content
 - `tag:` - Search by tag name or ID
+- `created:` - Filter by document creation date
 
 ### Filter Examples
 
 ```yaml
+# Finds documents whose name contains "invoice"
 name:invoice
-```
 
-Finds documents whose name contains "invoice"
-
-```yaml
+# Finds documents with "financial report" in their content
+# use quotes for phrases with spaces
 content:"financial report"
-```
 
-Finds documents with "financial report" in their content (use quotes for phrases with spaces)
-
-```yaml
+# Finds documents tagged with "urgent"
 tag:urgent
+
+# Finds documents created after January 1st, 2024
+created:>2024
 ```
 
-Finds documents tagged with "urgent"
 
 :::note
 The `name:` and `content:` filters use **contains** matching, not exact equality. So `name:foo` will match documents named "foo", "foobar", "my-foo-document", etc.
 :::
+
+### Date Filter
+
+The `created:` filter supports date comparisons with the following operators:
+
+- `=` - Exact date match
+- `>` - After the date
+- `>=` - On or after the date
+- `<` - Before the date
+- `<=` - On or before the date
+
+#### Date Format
+
+Dates can be specified in various formats, including:
+
+- Only year: `YYYY` (interpreted as January 1st of that year)
+- Month and year: `YYYY-MM` (interpreted as the first day of that month)
+- Common formats: `YYYY/MM/DD`, `YYYY.MM.DD`, `Month DD, YYYY`, etc.
+- ISO 8601: `YYYY-MM-DD`, `YYYY-MM-DDTHH:MM:SSZ`, etc.
+
+Invalid date formats will be ignored in the search query.
+
+#### Date Filter Examples
+
+```yaml
+# Finds documents created exactly on January 15th, 2024 at 00:00:00
+created:2024-01-15
+
+# Finds documents created after January 1st, 2024
+created:>2024
+
+# Finds documents created on or after January 1st, 2024
+created:>=2024-01-01
+
+# Finds documents created before December 31st, 2024
+created:<2024-12-31
+
+# Finds documents created on or before June 30th, 2024
+created:<=2024-06-30
+
+# Finds invoices created only in 2024
+tag:invoice created:>2024 created:<2025
+```
+
 
 ## Logical Operators
 

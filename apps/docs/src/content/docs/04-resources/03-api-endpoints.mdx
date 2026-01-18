@@ -210,7 +210,7 @@ Search documents in the organization by name or content.
 
 - Required API key permissions: `documents:read`
 - Query parameters
-  - `searchQuery`: The search query.
+  - `searchQuery`: The search query. Supports advanced search syntax with filters (`name:`, `content:`, `tag:`, `created:`), logical operators (`AND`, `OR`, `NOT`), and grouping. See the [Advanced Search guide](/guides/advanced-search) for details.
   - `pageIndex`: (optional, default: 0) The page index to start from.
   - `pageSize`: (optional, default: 100) The number of documents to return.
 - Response (JSON)

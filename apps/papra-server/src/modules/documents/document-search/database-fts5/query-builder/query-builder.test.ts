@@ -2,7 +2,7 @@ import type { SQL } from 'drizzle-orm';
 import { SQLiteSyncDialect } from 'drizzle-orm/sqlite-core';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../../../app/database/database.test-utils';
-import { handleAndExpression, handleContentFilter, handleEmptyExpression, handleNameFilter, handleNotExpression, handleOrExpression, handleTextExpression, handleUnsupportedExpression } from './query-builder';
+import { handleAndExpression, handleContentFilter, handleCreatedFilter, handleEmptyExpression, handleNameFilter, handleNotExpression, handleOrExpression, handleTextExpression, handleUnsupportedExpression } from './query-builder';
 
 describe('query-builder', async () => {
   const { db } = await createInMemoryDatabase();
@@ -107,6 +107,118 @@ describe('query-builder', async () => {
       }]);
 
       expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+    });
+  });
+
+  describe('handleCreatedFilter', () => {
+    test('supports equality operator for date filtering', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '=' },
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `\"documents\".\"created_at\" = ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports greater than operator for date filtering', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '>' },
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `\"documents\".\"created_at\" > ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports greater than or equal operator for date filtering', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '>=' },
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `\"documents\".\"created_at\" >= ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports less than operator for date filtering', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '<' },
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `\"documents\".\"created_at\" < ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports less than or equal operator for date filtering', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '<=' },
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `\"documents\".\"created_at\" <= ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('returns an error for invalid date format', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: 'not-a-date', operator: '=' },
+      });
+
+      expect(issues).to.eql([{
+        message: 'Invalid date format "not-a-date" for created filter',
+        code: 'INVALID_DATE_FORMAT',
+      }]);
+
+      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+    });
+
+    test('accepts various ISO date formats', () => {
+      const dateFormats = {
+        '2024': 1704067200000,
+        '2024-01': 1704067200000,
+        '2024-01-15': 1705276800000,
+        '2024-01-15T00:00:00Z': 1705276800000,
+        '2024-01-15T00:00:00.000Z': 1705276800000,
+        '2024-01-15T02:00:00+02:00': 1705276800000,
+        '2024/01/15': 1705276800000,
+        '2024/01/15 00:00:00': 1705276800000,
+        '2024.01.15': 1705276800000,
+        '2024,01,15': 1705276800000,
+        '2024 01 15': 1705276800000,
+        'January 15, 2024': 1705276800000,
+        'Jan 15 2024': 1705276800000,
+        '15 January 2024': 1705276800000,
+        '15 Jan 2024': 1705276800000,
+      };
+
+      for (const [dateFormat, timestamp] of Object.entries(dateFormats)) {
+        const { sqlQuery, issues } = handleCreatedFilter({
+          expression: { type: 'filter', field: 'created', value: dateFormat, operator: '=' },
+        });
+
+        expect(issues).to.eql([]);
+        expect(getSqlString(sqlQuery)).to.eql({
+          sql: `\"documents\".\"created_at\" = ?`,
+          params: [timestamp],
+        });
+      }
     });
   });
 

@@ -1,3 +1,6 @@
+import type { Operator } from '@papra/search-parser';
+import type { BinaryOperator } from 'drizzle-orm';
+import { eq, gt, gte, lt, lte } from 'drizzle-orm';
 import { documentsFtsTable } from '../database-fts5.tables';
 
 function joinColumnNames(columns: string[]): string {
@@ -35,4 +38,16 @@ export function createUnsupportedOperatorIssue({ operator, field }: { operator: 
     message: `Unsupported operator "${operator}" for ${field} filter`,
     code: 'UNSUPPORTED_FILTER_OPERATOR',
   };
+}
+
+const operatorsMap: Record<Operator, BinaryOperator> = {
+  '=': eq,
+  '<': lt,
+  '<=': lte,
+  '>': gt,
+  '>=': gte,
+};
+
+export function getSqlOperator({ operator }: { operator: Operator }): BinaryOperator {
+  return operatorsMap[operator];
 }
