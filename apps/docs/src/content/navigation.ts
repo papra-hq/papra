@@ -45,11 +45,14 @@ export const sidebar = [
         label: 'Tagging Rules',
         slug: 'guides/tagging-rules',
       },
-      // Will be uncommented after release
-      // {
-      //   label: 'Roles and Administration',
-      //   slug: 'guides/roles-administration',
-      // },
+      {
+        label: 'Roles and Administration',
+        slug: 'guides/roles-administration',
+      },
+      {
+        label: 'Advanced Search',
+        slug: 'guides/advanced-search',
+      },
     ],
   },
   {
