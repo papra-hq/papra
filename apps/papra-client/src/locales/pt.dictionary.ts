@@ -328,6 +328,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.deleted': 'Eliminado em',
   'documents.list.table.headers.actions': 'Ações',
   'documents.list.table.headers.tags': 'Etiquetas',
+  'documents.list.search.placeholder': 'Procurar documentos...',
+  'documents.list.search.no-results': 'Nenhum documento encontrado para esta pesquisa',
+  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:documento, documentos }} correspondente a esta pesquisa',
+  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:documento, documentos }} no total',
 
   'documents.tabs.info': 'Informação',
   'documents.tabs.content': 'Conteúdo',
@@ -657,7 +661,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Tema escuro',
   'layout.theme.system': 'Tema do sistema',
 
-  'layout.search.placeholder': 'Procurar...',
+  'layout.search.placeholder': 'Pesquisa rápida',
   'layout.menu.import-document': 'Importar um documento',
 
   'user-menu.account-settings': 'Definições da conta',

@@ -177,3 +177,21 @@ export const documentActivityIcon: Record<DocumentActivityEvent, string> = {
 export function getDocumentActivityIcon({ event }: { event: DocumentActivityEvent }) {
   return documentActivityIcon[event] ?? 'i-tabler-file';
 }
+
+type DocumentSearchCriteria = {
+  tags?: ({ name: string; id?: string } | { id: string; name?: string })[];
+  query?: string;
+};
+
+export function makeDocumentSearchQuery({ tags = [], query }: DocumentSearchCriteria = {}) {
+  return [
+    ...tags.map(t => `tag:${t.name ?? t.id}`).toSorted(),
+    query,
+  ].filter(Boolean).join(' ');
+}
+
+export function makeDocumentSearchPermalink({ organizationId, search }: { organizationId: string; search: DocumentSearchCriteria }) {
+  const queryString = makeDocumentSearchQuery(search);
+
+  return `/organizations/${organizationId}/documents?query=${encodeURIComponent(queryString)}`;
+}

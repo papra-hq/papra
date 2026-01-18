@@ -152,7 +152,12 @@ export async function searchDocuments({
 }) {
   const {
     searchResults,
-  } = await apiClient<{ searchResults: { documents: { id: string; name: string }[] } }>({
+  } = await apiClient<{
+    searchResults: {
+      documents: Document[];
+      totalCount: number;
+    };
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/search`,
     query: {
@@ -163,7 +168,10 @@ export async function searchDocuments({
   });
 
   return {
-    searchResults,
+    searchResults: {
+      documents: searchResults.documents.map(coerceDates),
+      totalCount: searchResults.totalCount,
+    },
   };
 }
 

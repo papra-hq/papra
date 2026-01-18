@@ -328,6 +328,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.deleted': '删除时间',
   'documents.list.table.headers.actions': '操作',
   'documents.list.table.headers.tags': '标签',
+  'documents.list.search.placeholder': '搜索文档...',
+  'documents.list.search.no-results': '未找到与此搜索匹配的文档',
+  'documents.list.search.total-count-with-query': '{{ count }} 个文档与此搜索匹配',
+  'documents.list.search.total-count-no-query': '共 {{ count }} 个文档',
 
   'documents.tabs.info': '信息',
   'documents.tabs.content': '内容',
@@ -657,7 +661,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': '深色模式',
   'layout.theme.system': '跟随系统',
 
-  'layout.search.placeholder': '搜索...',
+  'layout.search.placeholder': '快速搜索',
   'layout.menu.import-document': '导入文档',
 
   'user-menu.account-settings': '账户设置',

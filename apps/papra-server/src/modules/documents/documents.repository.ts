@@ -82,7 +82,7 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
   return { document };
 }
 
-async function getOrganizationDocumentsCount({ organizationId, filters, db }: { organizationId: string; filters?: { tags?: string[] }; db: Database }) {
+async function getOrganizationDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
   const [record] = await db
     .select({
       documentsCount: count(documentsTable.id),
@@ -93,7 +93,6 @@ async function getOrganizationDocumentsCount({ organizationId, filters, db }: { 
       and(
         eq(documentsTable.organizationId, organizationId),
         eq(documentsTable.isDeleted, false),
-        ...(filters?.tags ? filters.tags.map(tag => eq(documentsTagsTable.tagId, tag)) : []),
       ),
     );
 
@@ -132,13 +131,11 @@ async function getOrganizationDocuments({
   organizationId,
   pageIndex,
   pageSize,
-  filters,
   db,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
-  filters?: { tags?: string[] };
   db: Database;
 }) {
   const query = db
@@ -153,7 +150,6 @@ async function getOrganizationDocuments({
       and(
         eq(documentsTable.organizationId, organizationId),
         eq(documentsTable.isDeleted, false),
-        ...(filters?.tags ? filters.tags.map(tag => eq(documentsTagsTable.tagId, tag)) : []),
       ),
     );
 

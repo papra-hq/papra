@@ -1,6 +1,6 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
 import { describe, expect, test } from 'vitest';
-import { fileIcons, getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from './document.models';
+import { fileIcons, getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension, makeDocumentSearchPermalink, makeDocumentSearchQuery } from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
@@ -253,6 +253,76 @@ describe('files models', () => {
       expect(getDocumentNameExtension({ name: '.document' })).to.eql(undefined);
       expect(getDocumentNameExtension({ name: '.document.txt' })).to.eql('txt');
       expect(getDocumentNameExtension({ name: 'document.test.txt' })).to.eql('txt');
+    });
+  });
+
+  describe('makeDocumentSearchQuery', () => {
+    test('with no search criteria, the search query is an empty string', () => {
+      expect(makeDocumentSearchQuery()).to.eql('');
+      expect(makeDocumentSearchQuery({})).to.eql('');
+      expect(makeDocumentSearchQuery({ tags: [] })).to.eql('');
+      expect(makeDocumentSearchQuery({ query: '' })).to.eql('');
+      expect(makeDocumentSearchQuery({ query: undefined })).to.eql('');
+      expect(makeDocumentSearchQuery({ tags: [], query: '' })).to.eql('');
+      expect(makeDocumentSearchQuery({ tags: [], query: undefined })).to.eql('');
+    });
+
+    test('the tags are prefixed with "tag:" and use preferably the name over the id', () => {
+      expect(
+        makeDocumentSearchQuery({
+          tags: [
+            { name: 'invoices', id: 'tag_1111' },
+            { name: 'receipts' },
+            { id: 'tag_2222' },
+          ],
+        }),
+      ).to.eql('tag:invoices tag:receipts tag:tag_2222');
+    });
+
+    test('the tags are sorted alphabetically in the search query for deterministic results', () => {
+      expect(
+        makeDocumentSearchQuery({
+          tags: [
+            { name: 'bbb' },
+            { name: 'ccc' },
+            { name: 'aaa' },
+          ],
+        }),
+      ).to.eql('tag:aaa tag:bbb tag:ccc');
+    });
+
+    test('the text query is included in the search query', () => {
+      expect(makeDocumentSearchQuery({ query: 'my search' })).to.eql('my search');
+    });
+
+    test('both tags and text query are included in the search query', () => {
+      expect(
+        makeDocumentSearchQuery({
+          tags: [
+            { name: 'invoices' },
+            { id: 'tag_2222' },
+          ],
+          query: 'my search',
+        }),
+      ).to.eql('tag:invoices tag:tag_2222 my search');
+    });
+  });
+
+  describe('makeDocumentSearchPermalink', () => {
+    test('constructs a url-safe permalink for document search with search query', () => {
+      const permalink = makeDocumentSearchPermalink({
+        organizationId: 'org-123',
+        search: {
+          tags: [
+            { name: 'invoices', id: 'tag_1111' },
+            { name: 'receipts' },
+            { id: 'tag_2222' },
+          ],
+          query: 'financial report',
+        },
+      });
+
+      expect(permalink).to.eql('/organizations/org-123/documents?query=tag%3Ainvoices%20tag%3Areceipts%20tag%3Atag_2222%20financial%20report');
     });
   });
 });
