@@ -13,10 +13,8 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
       const { documents, totalCount } = await documentsSearchRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
 
       return {
-        searchResults: {
-          documents,
-          totalCount,
-        },
+        documents,
+        totalCount,
       };
     },
 

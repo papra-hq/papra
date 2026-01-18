@@ -42,7 +42,7 @@ export const DocumentsPage: Component = () => {
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
       <Suspense>
-        {documentsQuery.data?.searchResults.documents?.length === 0 && debouncedSearchQuery().length === 0
+        {documentsQuery.data?.documents?.length === 0 && debouncedSearchQuery().length === 0
           ? (
               <>
                 <h2 class="text-xl font-bold ">
@@ -95,21 +95,21 @@ export const DocumentsPage: Component = () => {
                 <div class="mb-4 text-sm text-muted-foreground mt-2 ml-2">
                   <Show
                     when={debouncedSearchQuery().length > 0}
-                    fallback={t('documents.list.search.total-count-no-query', { count: documentsQuery.data?.searchResults.totalCount ?? 0 })}
+                    fallback={t('documents.list.search.total-count-no-query', { count: documentsQuery.data?.totalCount ?? 0 })}
                   >
-                    {t('documents.list.search.total-count-with-query', { count: documentsQuery.data?.searchResults.totalCount ?? 0 })}
+                    {t('documents.list.search.total-count-with-query', { count: documentsQuery.data?.totalCount ?? 0 })}
                   </Show>
                 </div>
 
-                <Show when={debouncedSearchQuery().length > 0 && documentsQuery.data?.searchResults.documents.length === 0}>
+                <Show when={debouncedSearchQuery().length > 0 && documentsQuery.data?.documents.length === 0}>
                   <p class="text-muted-foreground mt-1 mb-6">
                     {t('documents.list.no-results')}
                   </p>
                 </Show>
 
                 <DocumentsPaginatedList
-                  documents={documentsQuery.data?.searchResults.documents ?? []}
-                  documentsCount={documentsQuery.data?.searchResults.totalCount ?? 0}
+                  documents={documentsQuery.data?.documents ?? []}
+                  documentsCount={documentsQuery.data?.totalCount ?? 0}
                   getPagination={getPagination}
                   setPagination={setPagination}
                   extraColumns={[

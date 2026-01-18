@@ -151,12 +151,11 @@ export async function searchDocuments({
   pageSize: number;
 }) {
   const {
-    searchResults,
+    documents,
+    totalCount,
   } = await apiClient<{
-    searchResults: {
-      documents: Document[];
-      totalCount: number;
-    };
+    documents: Document[];
+    totalCount: number;
   }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/search`,
@@ -168,10 +167,8 @@ export async function searchDocuments({
   });
 
   return {
-    searchResults: {
-      documents: searchResults.documents.map(coerceDates),
-      totalCount: searchResults.totalCount,
-    },
+    documents: documents.map(coerceDates),
+    totalCount,
   };
 }
 

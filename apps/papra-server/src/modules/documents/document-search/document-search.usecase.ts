@@ -18,7 +18,7 @@ export async function searchOrganizationDocuments({
   logger?: Logger;
 }) {
   const startTime = Date.now();
-  const { searchResults } = await documentSearchServices.searchDocuments({
+  const { documents, totalCount } = await documentSearchServices.searchDocuments({
     searchQuery,
     organizationId,
     pageIndex,
@@ -31,10 +31,11 @@ export async function searchOrganizationDocuments({
     pageIndex,
     pageSize,
     durationMs,
-    pageDocumentCount: searchResults.documents.length,
+    pageDocumentCount: documents.length,
   }, 'Executed document search');
 
   return {
-    searchResults,
+    documents,
+    totalCount,
   };
 }
