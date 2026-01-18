@@ -1,7 +1,7 @@
 {
   "name": "@papra/search-parser",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Search query parser library",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
@@ -17,7 +17,9 @@
     "papra",
     "search",
     "parser",
-    "query"
+    "query",
+    "filter",
+    "operator"
   ],
   "exports": {
     ".": "./dist/index.js",
