@@ -259,11 +259,11 @@ describe('database-fts5 repository', () => {
 
     describe('search query can have filters', async () => {
       const documents = [
-        { id: 'doc_1', organizationId: 'org_1', name: 'Invoice cloudflare', originalName: 'document-1.pdf', content: 'Cloudflare invoice, hosting 5€', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
-        { id: 'doc_2', organizationId: 'org_1', name: 'Invoice smartphone', originalName: 'document-1.pdf', content: 'The smartphone invoice', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
-        { id: 'doc_3', organizationId: 'org_1', name: 'Car invoice', originalName: 'document-1.pdf', content: 'Your brand new car invoice, insurance attached', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
-        { id: 'doc_4', organizationId: 'org_1', name: 'Car insurance', originalName: 'document-2.pdf', content: 'Your car insurance contract', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash4', isDeleted: false },
-        { id: 'doc_5', organizationId: 'org_1', name: 'Meeting notes', originalName: 'document-3.pdf', content: 'Notes from the meeting about the new project', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash5', isDeleted: false },
+        { id: 'doc_1', organizationId: 'org_1', name: 'Invoice cloudflare', originalName: 'document-1.pdf', content: 'Cloudflare invoice, hosting 5€', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false, createdAt: new Date('2026-01-10') },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Invoice smartphone', originalName: 'document-1.pdf', content: 'The smartphone invoice', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false, createdAt: new Date('2026-01-11') },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Car invoice', originalName: 'document-1.pdf', content: 'Your brand new car invoice, insurance attached', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false, createdAt: new Date('2026-01-12') },
+        { id: 'doc_4', organizationId: 'org_1', name: 'Car insurance', originalName: 'document-2.pdf', content: 'Your car insurance contract', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash4', isDeleted: false, createdAt: new Date('2026-01-13') },
+        { id: 'doc_5', organizationId: 'org_1', name: 'Meeting notes', originalName: 'document-3.pdf', content: 'Notes from the meeting about the new project', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash5', isDeleted: false, createdAt: new Date('2026-01-14') },
       ];
 
       const { db } = await createInMemoryDatabase({
@@ -316,6 +316,14 @@ describe('database-fts5 repository', () => {
         {
           searchQuery: 'name:invoice tag:invoice smartphone',
           expectedDocumentsIds: ['doc_2'],
+        },
+        {
+          searchQuery: 'created:>=2026-01-12',
+          expectedDocumentsIds: ['doc_3', 'doc_4', 'doc_5'],
+        },
+        {
+          searchQuery: 'created:>=2026-01-12 created:<=2026-01-13',
+          expectedDocumentsIds: ['doc_3', 'doc_4'],
         },
       ];
 

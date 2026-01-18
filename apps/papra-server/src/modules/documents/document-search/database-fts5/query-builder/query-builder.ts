@@ -2,10 +2,11 @@ import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpr
 import type { Database } from '../../../../app/database/database.types';
 import type { QueryResult } from './query-builder.types';
 import { and, eq, inArray, not, or, sql } from 'drizzle-orm';
+import { isValidDate } from '../../../../shared/date';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
 import { documentsTable } from '../../../documents.table';
 import { documentsFtsTable } from '../database-fts5.tables';
-import { createUnsupportedOperatorIssue, formatFts5QueryValue } from './query-builder.models';
+import { createUnsupportedOperatorIssue, formatFts5QueryValue, getSqlOperator } from './query-builder.models';
 
 export function handleEmptyExpression(): QueryResult {
   return {
@@ -151,6 +152,31 @@ export function handleTagFilter({ expression, organizationId, db }: { expression
   };
 }
 
+export function handleCreatedFilter({ expression }: { expression: FilterExpression }): QueryResult {
+  const { value, operator } = expression;
+
+  const dateValue = new Date(value);
+
+  if (!isValidDate(dateValue)) {
+    return {
+      sqlQuery: sql`0`,
+      issues: [
+        {
+          message: `Invalid date format "${value}" for created filter`,
+          code: 'INVALID_DATE_FORMAT',
+        },
+      ],
+    };
+  }
+
+  const sqlOperator = getSqlOperator({ operator });
+
+  return {
+    sqlQuery: sqlOperator(documentsTable.createdAt, dateValue),
+    issues: [],
+  };
+}
+
 export function handleUnsupportedExpression(): QueryResult {
   return {
     sqlQuery: sql`0`,
@@ -176,6 +202,7 @@ export function buildQueryFromExpression({ expression, organizationId, db }: { e
         case 'tag': return handleTagFilter({ expression, organizationId, db });
         case 'name': return handleNameFilter({ expression, organizationId, db });
         case 'content': return handleContentFilter({ expression, organizationId, db });
+        case 'created': return handleCreatedFilter({ expression });
         default: return handleUnsupportedExpression();
       }
     default: return handleUnsupportedExpression();
