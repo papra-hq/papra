@@ -1,0 +1,143 @@
+---
+title: Advanced Search
+description: Learn how to use advanced search filters and operators to find documents quickly.
+slug: guides/advanced-search
+---
+
+Papra supports advanced search queries with **filters**, **logical operators**, and **grouping** to help you find documents efficiently.
+
+## Basic full text search
+
+A simple search query like `foobar` will search across both document names and content:
+
+```yaml
+# Search documents where name or content contains
+foobar
+
+# This is equivalent to
+name:foobar OR content:foobar
+```
+
+Full text search can be combined with filters for more precise results.
+
+```yaml
+# Search documents with tag invoice and containing foobar
+tag:invoices foobar
+```
+
+## Filters
+
+Use filters to search specific document properties. Current supported filters:
+
+- `name:` - Search in document names
+- `content:` - Search in document content
+- `tag:` - Search by tag name or ID
+
+### Filter Examples
+
+```yaml
+name:invoice
+```
+
+Finds documents whose name contains "invoice"
+
+```yaml
+content:"financial report"
+```
+
+Finds documents with "financial report" in their content (use quotes for phrases with spaces)
+
+```yaml
+tag:urgent
+```
+
+Finds documents tagged with "urgent"
+
+:::note
+The `name:` and `content:` filters use **contains** matching, not exact equality. So `name:foo` will match documents named "foo", "foobar", "my-foo-document", etc.
+:::
+
+## Logical Operators
+
+Combine filters using logical operators (case-insensitive):
+
+- `AND` - Both conditions must match
+- `OR` - Either condition must match
+- `NOT` (or `-`) - Negates the condition
+
+### Operator Examples
+
+```yaml
+name:invoice AND tag:paid
+```
+
+Finds invoices that are tagged as paid
+
+```yaml
+content:contract OR content:agreement
+```
+
+Finds documents containing "contract" or "agreement"
+
+```yaml
+tag:important NOT tag:archived
+```
+
+Finds important documents that are not archived
+
+:::tip
+Multiple filters without an explicit operator are joined with `AND` by default:
+
+```yaml
+name:report tag:2024
+```
+
+This is equivalent to: `name:report AND tag:2024`
+:::
+
+## Negation
+
+Negate filters using either `-` prefix or `NOT` operator:
+
+```yaml
+# Both equivalent
+-tag:archived
+NOT tag:archived
+```
+
+Both find documents that are not tagged with "archived"
+
+## Grouping
+
+Use parentheses `(...)` to group expressions and control precedence:
+
+```yaml
+(name:invoice OR name:receipt) AND tag:2024
+```
+
+Finds documents from 2024 that are either invoices or receipts
+
+```yaml
+tag:important AND (tag:client-a OR tag:client-b)
+```
+
+Finds important documents for client-a or client-b
+
+## Quoted Values
+
+Use double quotes to search for phrases with spaces:
+
+```yaml
+content:"quarterly financial report"
+```
+
+```yaml
+name:"Budget 2024"
+```
+
+## Implementation Notes
+
+The search functionality is built using:
+- Custom parser in the [`@papra/search-parser`](https://github.com/papra-hq/papra/tree/main/packages/search-parser) package
+- SQLite FTS5 (Full-Text Search) for efficient text matching
+- Support for additional filters coming in future updates
