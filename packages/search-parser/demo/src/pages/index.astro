@@ -1,13 +1,70 @@
 ---
 import { ParserDemo } from '../components/parser-demo';
+
+const meta = {
+  title: 'Search Parser - Advanced search query parser for TypeScript',
+  description: 'A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.',
+  keywords: 'search parser, query parser, typescript, ast parser, search syntax, logical operators, filters, search query',
+};
 ---
 
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Search Parser Demo</title>
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <meta name="keywords" content={meta.keywords} />
+    <meta name="author" content="Corentin Thomasset" />
+    <meta name="theme-color" content="#171717" />
+    <link rel="canonical" href="https://search-parser.papra.app/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://search-parser.papra.app/" />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:site_name" content="Papra Search Parser" />
+    <meta property="og:image" content="https://search-parser.papra.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Papra Search Parser - Advanced query parser for TypeScript" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://search-parser.papra.app/" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:creator" content="@cthmsst" />
+    <meta name="twitter:image" content="https://search-parser.papra.app/og-image.png" />
+    <meta name="twitter:image:alt" content="Papra Search Parser - Advanced query parser for TypeScript" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "@papra/search-parser",
+        "description": "A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.",
+        "url": "https://search-parser.papra.app/",
+        "applicationCategory": "DeveloperApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Corentin Thomasset",
+          "url": "https://corentin.tech"
+        },
+        "license": "https://opensource.org/licenses/MIT",
+        "programmingLanguage": "TypeScript",
+        "codeRepository": "https://github.com/papra-hq/papra/tree/main/packages/search-parser"
+      }
+    </script>
   </head>
   <body class="bg-background font-sans text-foreground min-h-screen pt-12 sm:pt-18 flex flex-col">
     <main class="mx-auto max-w-3xl px-6 flex-1">
@@ -29,16 +86,13 @@ import { ParserDemo } from '../components/parser-demo';
         </div>
       </div>
 
-      <p class="mt-2 mb-12 text-base max-w-lg lh-normal">
-        A typesafe, dependency-free, error-resilient fully-featured AST based search query parser, supporting logical operators, grouping, filters, and more.
-      </p>
+      <p class="mt-2 mb-12 text-base max-w-lg lh-normal">{meta.description}</p>
 
       <ParserDemo client:load />
     </main>
 
     <div class="bg-#171717 text-background mt-12 sm:mt-20">
       <div class="mx-auto max-w-3xl px-6 py-12">
-
         <p class="text-base max-w-xl lh-normal">
           Made with <span class="i-tabler-heart size-5 text-primary inline-block align-middle"></span> by <a
             class="text-primary hover:underline"
@@ -50,7 +104,7 @@ import { ParserDemo } from '../components/parser-demo';
           </a> initially for <a class="text-primary hover:underline" href="https://papra.app" target="_blank" rel="noopener noreferrer">Papra</a>.
         </p>
 
-             <p>
+        <p>
           Use it in your project, it's <a
             class="text-primary hover:underline"
             href="https://github.com/papra-hq/papra/tree/main/packages/search-parser/LICENSE"
