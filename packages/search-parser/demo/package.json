@@ -1,12 +1,12 @@
 {
   "name": "@papra/search-parser-demo",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Demo for @papra/search-parser package",
-  "author": "",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
+  "homepage": "https://search-parser.papra.app/",
   "keywords": [],
-  "main": "index.js",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
