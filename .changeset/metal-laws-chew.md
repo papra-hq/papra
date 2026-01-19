@@ -1,5 +1,5 @@
 ---
-"@papra/docker": patch
+"@papra/docker": major
 ---
 API Breaking Change:
 Document search endpoint now returns complete documents along with total count matching the search query, and no longer nests results under `searchResults`.
