@@ -1,0 +1,70 @@
+---
+import { ParserDemo } from '../components/parser-demo';
+---
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Search Parser Demo</title>
+  </head>
+  <body class="bg-background font-sans text-foreground min-h-screen pt-12 sm:pt-18 flex flex-col">
+    <main class="mx-auto max-w-3xl px-6 flex-1">
+      <div class="flex items-center gap-2 justify-between flex-wrap">
+        <h1 class="text-3xl sm:text-4xl font-light">@papra/<span class="text-primary font-semibold">search-parser</span></h1>
+
+        <div class="flex items-center gap-2">
+          <a class="transition-colors hover:text-primary" href="https://github.com/papra-hq/papra/tree/main/packages/search-parser" target="_blank" rel="noopener noreferrer" title="GitHub Repository">
+            <div class="i-tabler-brand-github size-7" aria-label="GitHub"></div>
+          </a>
+
+          <a class="transition-colors hover:text-primary" href="https://github.com/sponsors/papra-hq" target="_blank" rel="noopener noreferrer" title="Sponsor the project">
+            <div class="i-tabler-pig-money size-7" aria-label="Sponsor"></div>
+          </a>
+
+          <a class="transition-colors hover:text-primary" href="https://www.npmjs.com/package/@papra/search-parser" target="_blank" rel="noopener noreferrer" title="NPM Package">
+            <div class="i-tabler-brand-npm size-7" aria-label="NPM"></div>
+          </a>
+        </div>
+      </div>
+
+      <p class="mt-2 mb-12 text-base max-w-lg lh-normal">
+        A typesafe, dependency-free, error-resilient fully-featured AST based search query parser, supporting logical operators, grouping, filters, and more.
+      </p>
+
+      <ParserDemo client:load />
+    </main>
+
+    <div class="bg-#171717 text-background mt-12 sm:mt-20">
+      <div class="mx-auto max-w-3xl px-6 py-12">
+
+        <p class="text-base max-w-xl lh-normal">
+          Made with <span class="i-tabler-heart size-5 text-primary inline-block align-middle"></span> by <a
+            class="text-primary hover:underline"
+            href="https://corentin.tech"
+            target="_blank"
+            rel="noopener noreferrer"
+                                                                                                          >
+            Corentin Thomasset
+          </a> initially for <a class="text-primary hover:underline" href="https://papra.app" target="_blank" rel="noopener noreferrer">Papra</a>.
+        </p>
+
+             <p>
+          Use it in your project, it's <a
+            class="text-primary hover:underline"
+            href="https://github.com/papra-hq/papra/tree/main/packages/search-parser/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+                                       >MIT licensed</a
+          >: <span class="bg-background/10 font-mono px-2 py-1 rounded-md text-sm">pnpm i @papra/search-parser</span>
+        </p>
+
+        <hr class="border-muted my-6" />
+        <p>
+          © {new Date().getFullYear()} Corentin Thomasset. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
