@@ -1,5 +1,6 @@
 import type { Issue, Operator } from './parser.types';
 import { ERROR_CODES } from './errors';
+import { isWhitespace } from './string';
 
 export type Token
   = | { type: 'LPAREN' }
@@ -7,7 +8,7 @@ export type Token
     | { type: 'AND' }
     | { type: 'OR' }
     | { type: 'NOT' }
-    | { type: 'FILTER'; field: string; operator: Operator; value: string; negated: boolean }
+    | { type: 'FILTER'; field: string; operator: Operator; value: string }
     | { type: 'TEXT'; value: string }
     | { type: 'EOF' };
 
@@ -15,6 +16,16 @@ export type TokenizeResult = {
   tokens: Token[];
   issues: Issue[];
 };
+
+// Unified escape handling utilities
+const unescapeBackslashes = (str: string): string => str.replace(/\\(.)/g, '$1');
+const unescapeColons = (str: string): string => str.replace(/\\:/g, ':');
+
+type StopCondition = (char: string) => boolean;
+
+function isWhitespaceOrParen(char: string): boolean {
+  return isWhitespace(char) || char === '(' || char === ')';
+}
 
 export function tokenize({ query, maxTokens }: { query: string; maxTokens: number }): TokenizeResult {
   const tokens: Token[] = [];
@@ -27,7 +38,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
   const skipWhitespace = (): void => {
     while (pos < query.length) {
       const char = query[pos];
-      if (!char || !/\s/.test(char)) {
+      if (!char || !isWhitespace(char)) {
         break;
       }
       pos++;
@@ -73,26 +84,49 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     return value;
   };
 
-  const readUnquotedToken = (): string => {
+  // Unified function to read unquoted values with configurable stop conditions and escape handling
+  const readUnquotedValue = ({
+    stopCondition,
+    processEscapes,
+    stopAtQuote = false,
+  }: {
+    stopCondition: StopCondition;
+    processEscapes: boolean;
+    stopAtQuote?: boolean;
+  }): string => {
     let value = '';
 
     while (pos < query.length) {
       const char = peek();
 
-      if (!char || /\s/.test(char) || char === '(' || char === ')') {
+      if (!char || stopCondition(char)) {
         break;
       }
 
-      // Stop at quote
-      if (char === '"') {
+      if (stopAtQuote && char === '"') {
         break;
       }
 
-      // Keep backslashes in unquoted tokens so parseFilter can detect escaped colons
-      value += advance();
+      if (processEscapes && char === '\\') {
+        advance();
+        if (pos < query.length) {
+          value += advance();
+        }
+      } else {
+        value += advance();
+      }
     }
 
     return value;
+  };
+
+  const readUnquotedToken = (): string => {
+    // Keep backslashes in unquoted tokens so parseFilter can detect escaped colons
+    return readUnquotedValue({
+      stopCondition: isWhitespaceOrParen,
+      processEscapes: false,
+      stopAtQuote: true,
+    });
   };
 
   const readFilterValue = (): string => {
@@ -104,26 +138,13 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
       return quotedValue;
     }
 
-    // Read unquoted value (up to whitespace or special chars)
-    let value = '';
-    while (pos < query.length) {
-      const char = peek();
+    // Read unquoted value with escape processing, then unescape colons
+    const value = readUnquotedValue({
+      stopCondition: isWhitespaceOrParen,
+      processEscapes: true,
+    });
 
-      if (!char || /\s/.test(char) || char === '(' || char === ')') {
-        break;
-      }
-
-      if (char === '\\') {
-        advance();
-        if (pos < query.length) {
-          value += advance();
-        }
-      } else {
-        value += advance();
-      }
-    }
-
-    return value.replace(/\\:/g, ':');
+    return unescapeColons(value);
   };
 
   const hasUnescapedColon = (str: string): boolean => {
@@ -135,7 +156,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     return false;
   };
 
-  const parseFilter = (token: string, negated: boolean): Token | undefined => {
+  const parseFilter = (token: string): Token | undefined => {
     // Check for unescaped colons
     if (!hasUnescapedColon(token)) {
       return undefined;
@@ -154,7 +175,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
       return undefined;
     }
 
-    const field = token.slice(0, firstColonIndex).replace(/\\:/g, ':');
+    const field = unescapeColons(token.slice(0, firstColonIndex));
     const afterColon = token.slice(firstColonIndex + 1);
 
     // Check for operator at the start
@@ -179,14 +200,14 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     }
 
     // If there's nothing after the operator in the token, read the value from input
-    let value = afterColon.slice(operatorLength).replace(/\\:/g, ':');
+    let value = unescapeColons(afterColon.slice(operatorLength));
 
     // If the value is empty and we still have input, this might be a case like "tag:" followed by a quoted string
     if (!value) {
       value = readFilterValue();
     }
 
-    return { type: 'FILTER', field, operator, value, negated };
+    return { type: 'FILTER', field, operator, value };
   };
 
   while (pos < query.length) {
@@ -221,7 +242,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
 
     // Handle negation prefix
     const nextChar = query[pos + 1];
-    if (char === '-' && nextChar && !/\s/.test(nextChar)) {
+    if (char === '-' && nextChar && !isWhitespace(nextChar)) {
       advance();
       skipWhitespace();
 
@@ -230,14 +251,14 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
       const token = quotedValue !== undefined ? quotedValue : readUnquotedToken();
 
       // Try to parse as filter
-      const filter = parseFilter(token, true);
+      const filter = parseFilter(token);
       if (filter) {
+        tokens.push({ type: 'NOT' });
         tokens.push(filter);
       } else {
-        // If not a filter, treat as negated text search (which we'll handle as NOT operator)
-        const unescapedText = token.replace(/\\(.)/g, '$1');
+        // If not a filter, treat as negated text search
         tokens.push({ type: 'NOT' });
-        tokens.push({ type: 'TEXT', value: unescapedText });
+        tokens.push({ type: 'TEXT', value: unescapeBackslashes(token) });
       }
       continue;
     }
@@ -270,7 +291,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
 
     // Try to parse as filter (only if not quoted)
     if (quotedValue === undefined) {
-      const filter = parseFilter(token, false);
+      const filter = parseFilter(token);
       if (filter) {
         tokens.push(filter);
         continue;
@@ -278,8 +299,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     }
 
     // Otherwise, treat as text (unescape backslashes)
-    const unescapedText = token.replace(/\\(.)/g, '$1');
-    tokens.push({ type: 'TEXT', value: unescapedText });
+    tokens.push({ type: 'TEXT', value: unescapeBackslashes(token) });
   }
 
   tokens.push({ type: 'EOF' });

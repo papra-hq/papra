@@ -87,18 +87,12 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
 
     if (token.type === 'FILTER') {
       advance();
-      const filterExpr: Expression = {
+      return {
         type: 'filter',
         field: token.field,
         operator: token.operator,
         value: token.value,
       };
-
-      if (token.negated) {
-        return { type: 'not', operand: filterExpr };
-      }
-
-      return filterExpr;
     }
 
     if (token.type === 'TEXT') {
