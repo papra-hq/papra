@@ -8,6 +8,7 @@ export default antfu({
   ignores: [
     'example.ts',
     'README.md',
+    'demo/**/*',
   ],
 
   rules: {

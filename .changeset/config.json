@@ -9,7 +9,7 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@papra/app-client", "@papra/app-server", "@papra/docs"],
+  "ignore": ["@papra/app-client", "@papra/app-server", "@papra/docs", "@papra/search-parser-demo"],
   "privatePackages": {
     "tag": true,
     "version": true
