@@ -2,9 +2,10 @@
   "name": "@papra/search-parser",
   "type": "module",
   "version": "0.0.1",
-  "description": "Search query parser library",
+  "description": "A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
+  "homepage": "https://search-parser.papra.app/",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra",
