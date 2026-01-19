@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - apps/*
+  - packages/*/demo
 
 catalog:
   '@antfu/eslint-config': ^6.2.0
