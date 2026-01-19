@@ -73,7 +73,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     return value;
   };
 
-  const readUnquotedToken = (stopAtQuote = false): string => {
+  const readUnquotedToken = (): string => {
     let value = '';
 
     while (pos < query.length) {
@@ -83,8 +83,8 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
         break;
       }
 
-      // Stop at quote if requested (for filter field names before quoted values)
-      if (stopAtQuote && char === '"') {
+      // Stop at quote
+      if (char === '"') {
         break;
       }
 
@@ -244,7 +244,7 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
 
     // Read quoted or unquoted token
     const quotedValue = readQuotedString();
-    const token = quotedValue !== undefined ? quotedValue : readUnquotedToken(true);
+    const token = quotedValue !== undefined ? quotedValue : readUnquotedToken();
 
     if (!token) {
       advance(); // Skip invalid character
