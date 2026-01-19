@@ -9,7 +9,7 @@ export function parseSearchQuery(
     query,
     maxDepth = 10,
     maxTokens = 200,
-    optimize = false,
+    optimize = true,
   }: {
     query: string;
     maxDepth?: number;

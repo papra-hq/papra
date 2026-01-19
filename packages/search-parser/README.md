@@ -1,28 +1,22 @@
 # @papra/search-parser
 
 A search query parser library for building GitHub-style search syntax with filters, logical operators, and full-text search.
+You can play with the parser in the [demo application](https://search-parser.papra.app/).
 
 ## Features
-
-- **Full-text search**: Extract search terms from queries
-- **Filters**: Support for field:value syntax with multiple operators (=, >, <, >=, <=)
-- **Logical operators**: AND, OR, NOT with proper precedence
-- **Grouping**: Parentheses for controlling evaluation order
-- **Negation**: Both `-filter:value` and `NOT filter:value` syntax
-- **Quoted values**: Support for spaces in filter values and search terms
-- **Escape sequences**: Escape quotes and colons with backslash
-- **Configurable limits**: Max depth and token count for safety
-- **Graceful error handling**: Best-effort parsing with issue reporting
-- **Zero dependencies**: No runtime dependencies
-- **Universal**: Works in Node.js, browsers, Deno, Cloudflare Workers, etc.
-- **Type-safe**: Fully typed with TypeScript
+- **TypeScript-first**: Fully typed API and AST structures.
+- **Dependency-free**: No external dependencies, lightweight and fast.
+- **Error-resilient**: Best-effort parsing with detailed issue reporting.
+- **Rich syntax support**: Logical operators (AND, OR, NOT), grouping with parentheses, and field-based filters.
+- **Configurable limits**: Control maximum depth and token count to prevent abuse.
+- **Optimization**: Simplifies the parsed expression tree by removing redundancies, and basic boolean algebra simplifications.
 
 ## Installation
 
 ```bash
-npm install @papra/search-parser
-# or
 pnpm add @papra/search-parser
+# or
+npm install @papra/search-parser
 # or
 yarn add @papra/search-parser
 ```
@@ -32,31 +26,16 @@ yarn add @papra/search-parser
 ```typescript
 import { parseSearchQuery } from '@papra/search-parser';
 
-// Simple full-text search
-const result1 = parseSearchQuery({ query: 'my invoice' });
-// {
-//   expression: { type: 'and', operands: [] },
-//   search: 'my invoice',
-//   issues: []
-// }
+// Simple text search
+parseSearchQuery({ query: 'foobar' });
+// { expression: { type: 'text', value: 'foobar' }, issues: [] }
 
-// Filter with equality
-const result2 = parseSearchQuery({ query: 'tag:invoice' });
-// {
-//   expression: {
-//     type: 'filter',
-//     field: 'tag',
-//     operator: '=',
-//     value: 'invoice'
-//   },
-//   search: undefined,
-//   issues: []
-// }
+// Filter query
+parseSearchQuery({ query: 'tag:invoice' });
+// { expression: { type: 'filter', field: 'tag', operator: '=', value: 'invoice' }, issues: [] }
 
-// Complex query with operators and grouping
-const result3 = parseSearchQuery({
-  query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01'
-});
+// Complex query with operators
+parseSearchQuery({ query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01' });
 // {
 //   expression: {
 //     type: 'and',
@@ -65,191 +44,131 @@ const result3 = parseSearchQuery({
 //         type: 'or',
 //         operands: [
 //           { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
-//           { type: 'filter', field: 'tag', operator: '=', value: 'receipt' }
-//         ]
+//           { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
+//         ],
 //       },
-//       { type: 'filter', field: 'createdAt', operator: '>', value: '2024-01-01' }
-//     ]
+//       { type: 'filter', field: 'createdAt', operator: '>', value: '2024-01-01' },
+//     ],
 //   },
-//   search: undefined,
-//   issues: []
+//   issues: [],
 // }
 ```
 
 ## Query Syntax
 
-### Full-text Search
-
+### Text Search
 ```
 my invoice
-"my special invoice"    # Quoted for multi-word terms
-"my \"special\" invoice" # Escaped quotes
+"quoted text"
 ```
 
 ### Filters
-
 ```
-tag:invoice                # Equality (implicit)
-tag:=invoice               # Equality (explicit)
-createdAt:>2024-01-01      # Greater than
-createdAt:<2024-12-31      # Less than
-createdAt:>=2024-01-01     # Greater than or equal
-createdAt:<=2024-12-31     # Less than or equal
-```
-
-### Quoted Filter Values
-
-```
-tag:"my invoices"                  # Spaces in value
-tag:"my \"special\" invoices"      # Escaped quotes in value
-tag:my\:\:special\:\:tag          # Escaped colons in value
+tag:invoice                # Equality (same as tag:=invoice)
+createdAt:>2024-01-01      # Comparison operators: >, <, >=, <=, =
 ```
 
 ### Logical Operators
-
 ```
-tag:invoice AND status:active      # Explicit AND
-tag:invoice status:active          # Implicit AND
-tag:invoice OR tag:receipt         # OR
-NOT tag:personal                   # NOT
-tag:invoice OR tag:receipt AND status:active  # Precedence: AND > OR
-```
-
-### Negation
-
-```
--tag:personal                      # Minus prefix
-NOT tag:personal                   # NOT keyword
-NOT (tag:personal OR tag:private)  # Negated group
+tag:invoice AND status:active
+tag:invoice OR tag:receipt
+NOT tag:personal
+-tag:personal              # Negation shorthand
 ```
 
 ### Grouping
-
 ```
-(tag:invoice OR tag:receipt)
 (tag:invoice OR tag:receipt) AND status:active
 ```
 
-### Combining Filters and Search
+### Optimization
+You can enable optimization to simplify the parsed expression tree:
+
+```typescript
+// The query has redundant ANDs and double negations
+const query = 'tag:invoice AND (tag:receipt AND (tag:invoice AND NOT (NOT foo)))';
+
+parseSearchQuery({ query, optimize: false });
+// {
+//   expression: {
+//     type: 'and',
+//     operands: [
+//       { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+//       {
+//         type: 'and',
+//         operands: [
+//           { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
+//           {
+//             type: 'and',
+//             operands: [
+//               { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+//               {
+//                  type: 'not',
+//                  operand: {
+//                   type: 'not',
+//                   operand: { type: 'text', value: 'foo' },
+//                 },
+//               },
+//             ],
+//           },
+//         ],
+//       },
+//     ],
+//   },
+//   issues: [],
+// }
+
+parseSearchQuery({ query, optimize: true });
+// {
+//   expression: {
+//     type: 'and',
+//     operands: [
+//       { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+//       { type: 'filter', field: 'tag', operator: '=', value: 'receipt' },
+//       { type: 'text', value: 'foo' },
+//     ],
+//   },
+//   issues: [],
+// }
 
 ```
-tag:invoice my document            # Filter + search
-foo tag:invoice bar                # Search terms can be anywhere
-```
 
-### Escaping
-
-```
-tag\:invoice                       # Escape colon to prevent filter parsing
-                                   # Results in search text "tag:invoice"
-```
 
 ## API
-
-### parseSearchQuery
 
 ```typescript
 function parseSearchQuery(options: {
   query: string;
   maxDepth?: number;    // Default: 10
   maxTokens?: number;   // Default: 200
+  optimize?: boolean;   // Default: true
 }): ParsedQuery;
-```
 
-## Operator Precedence
-
-From highest to lowest:
-
-1. **NOT** (highest)
-2. **AND**
-3. **OR** (lowest)
-
-Use parentheses to override precedence:
-
-```
-tag:invoice OR tag:receipt AND status:active
-# Parsed as: tag:invoice OR (tag:receipt AND status:active)
-
-(tag:invoice OR tag:receipt) AND status:active
-# Parsed as: (tag:invoice OR tag:receipt) AND status:active
+type ParsedQuery = {
+  expression: Expression;
+  issues: Issue[];
+};
 ```
 
 ## Error Handling
 
-### Issue Structure
-
-All parsing issues are returned with both a machine-readable error code and a human-readable message:
-
-```typescript
-type Issue = {
-  code: string;      // Machine-readable error code
-  message: string;   // Human-readable error message
-};
-```
-
-### Error Codes
-
-The library exports an `ERROR_CODES` constant with all available error codes:
+The parser returns issues for malformed queries while doing best-effort parsing:
 
 ```typescript
 import { ERROR_CODES } from '@papra/search-parser';
 
 const result = parseSearchQuery({ query: '(tag:invoice' });
-
-// Check for specific error by code
-const hasUnmatchedParen = result.issues.some(
-  issue => issue.code === ERROR_CODES.UNMATCHED_OPENING_PARENTHESIS
-);
-```
-
-Available error codes are defined in [`src/errors.ts`](src/errors.ts).
-
-## Safety Features
-
-### Maximum Depth
-
-Prevents deeply nested expressions (e.g., excessive parentheses):
-
-```typescript
-parseSearchQuery({
-  query: '((((((((((tag:invoice))))))))))',
-  maxDepth: 5  // Will report issue if exceeded
-});
-```
-
-### Maximum Tokens
-
-Prevents excessively long queries:
-
-```typescript
-parseSearchQuery({
-  query: 'tag1:val1 tag2:val2 ... tag100:val100',
-  maxTokens: 50  // Will report issue if exceeded
-});
-```
-
-### Graceful Error Handling
-
-Malformed queries are handled gracefully with best-effort parsing:
-
-```typescript
-parseSearchQuery({ query: '(tag:invoice' });
 // {
-//   expression: { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
-//   search: undefined,
-//   issues: [
-//     {
-//       code: 'unmatched-opening-parenthesis',
-//       message: 'Unmatched opening parenthesis'
-//     }
-//   ]
+//   expression: { type: 'filter', ... },
+//   issues: [{ code: 'unmatched-opening-parenthesis', message: '...' }]
 // }
 ```
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
-## Contributing
+## Credits
 
-Contributions are welcome! Please open an issue or pull request on GitHub.
+This project is crafted with ❤️ by [Corentin Thomasset](https://corentin.tech).
+If you find this project helpful, please consider [supporting my work](https://buymeacoffee.com/cthmsst).

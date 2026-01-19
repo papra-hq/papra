@@ -724,14 +724,12 @@ describe('parseSearchQuery', () => {
       expect(result.issues).toEqual([]);
     });
 
-    test('does not apply optimization by default', () => {
+    test('does apply optimization by default', () => {
       const result = parseSearchQuery({ query: 'foo foo bar' });
 
-      // Should keep duplicates without optimization (default behavior)
       expect(result.expression).toEqual({
         type: 'and',
         operands: [
-          { type: 'text', value: 'foo' },
           { type: 'text', value: 'foo' },
           { type: 'text', value: 'bar' },
         ],
