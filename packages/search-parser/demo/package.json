@@ -2,6 +2,7 @@
   "name": "@papra/search-parser-demo",
   "type": "module",
   "version": "0.0.0",
+  "private": true,
   "description": "Demo for @papra/search-parser package",
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "MIT",
