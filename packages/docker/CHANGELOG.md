@@ -1,5 +1,80 @@
 # @papra/docker
 
+## 26.0.0
+
+### Major Changes
+
+- [#758](https://github.com/papra-hq/papra/pull/758) [`a2a2061`](https://github.com/papra-hq/papra/commit/a2a2061a63bd6c8c2b865ab9c31de2cca438a3cb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - API Breaking Change:
+  Document search endpoint now returns complete documents along with total count matching the search query, and no longer nests results under `searchResults`.
+
+  Before:
+
+  ```ts
+  // GET /api/organizations/:organizationId/documents/search?searchQuery=foobar
+  {
+    searchResults: {
+      documents: [
+        { id: 'doc_1', name: 'Document 1.pdf' },
+        { id: 'doc_2', name: 'Document 2.pdf' },
+      ],
+    },
+  }
+  ```
+
+  After:
+
+  ```ts
+  // GET /api/organizations/:organizationId/documents/search?searchQuery=foobar
+  {
+    documents: [
+      { id: 'doc_1', name: 'Document 1.pdf', mimeType: 'application/pdf' /* ...otherProps */ },
+      { id: 'doc_2', name: 'Document 2.pdf', mimeType: 'application/pdf' /* ...otherProps */ },
+    ],
+    totalCount: 42,
+  }
+  ```
+
+### Patch Changes
+
+- [#761](https://github.com/papra-hq/papra/pull/761) [`2e46c08`](https://github.com/papra-hq/papra/commit/2e46c08de330ec61fbd7f106bc39d533b87220a7) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a "Show more results" option in quick search when there is more document not displayed
+
+- [#733](https://github.com/papra-hq/papra/pull/733) [`848671b`](https://github.com/papra-hq/papra/commit/848671b982379ef6ebe26aeb7b1b8ccde89f3b8d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved search speed by using document and organization ids in index
+  The first restart after updating may take up to few minutes as the search index is rebuilt
+
+- [#758](https://github.com/papra-hq/papra/pull/758) [`a2a2061`](https://github.com/papra-hq/papra/commit/a2a2061a63bd6c8c2b865ab9c31de2cca438a3cb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - The documents page can now be used with advanced search queries
+
+- [#723](https://github.com/papra-hq/papra/pull/723) [`68d848e`](https://github.com/papra-hq/papra/commit/68d848e622f862ced34ff055819b4af7d171d727) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Auto assign admin role to the first user registering
+
+- [#726](https://github.com/papra-hq/papra/pull/726) [`e8f6217`](https://github.com/papra-hq/papra/commit/e8f6217e351a6b3c5197dae41ea0f12b3d8534b3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added about page and modal with version informations
+
+- [#707](https://github.com/papra-hq/papra/pull/707) [`a213f06`](https://github.com/papra-hq/papra/commit/a213f0683baebd6546bf38ba9e719c31b60064ed) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a dedicated increased timeout for the document upload route
+
+- [#712](https://github.com/papra-hq/papra/pull/712) [`b8c14d0`](https://github.com/papra-hq/papra/commit/b8c14d0f44628843c7a682f84f7215fecc50f426) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a feedback message upon request timeout
+
+- [#717](https://github.com/papra-hq/papra/pull/717) [`f3fb5ff`](https://github.com/papra-hq/papra/commit/f3fb5ff46a02d9ded9baaa0161d96fdb3ab5649d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for two factor authentication
+
+- [#702](https://github.com/papra-hq/papra/pull/702) [`ec34cf1`](https://github.com/papra-hq/papra/commit/ec34cf17880682369d1ecf2957c2d7e0eed9f499) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Organizations listing and details in the admin dashboard
+
+- [#746](https://github.com/papra-hq/papra/pull/746) [`685f03c`](https://github.com/papra-hq/papra/commit/685f03c2fcbba134f108fb0b536f32b0597c60c6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added advanced search syntax support
+
+- [#715](https://github.com/papra-hq/papra/pull/715) [`7448a17`](https://github.com/papra-hq/papra/commit/7448a170afc9f0038a7b8ac086d4d14aac3b0c3a) Thanks [@kirarpit](https://github.com/kirarpit)! - Properly cleanup orphan file when the same document exists in trash
+
+- [#758](https://github.com/papra-hq/papra/pull/758) [`a2a2061`](https://github.com/papra-hq/papra/commit/a2a2061a63bd6c8c2b865ab9c31de2cca438a3cb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added query params sync for the search query in the documents search page for deep linking and browser state navigation
+
+- [#758](https://github.com/papra-hq/papra/pull/758) [`a2a2061`](https://github.com/papra-hq/papra/commit/a2a2061a63bd6c8c2b865ab9c31de2cca438a3cb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed the possibility to filter by tag in the `/api/organizations/:organizationId/documents` route, use the `/api/organizations/:organizationId/documents/search` route instead.
+
+  ```bash
+  # Before:
+  GET /api/organizations/:organizationId/documents?tags=yourTagId
+
+  # After:
+  GET /api/organizations/:organizationId/documents/search?query=tag:yourTagNameOrId
+  ```
+
+- [#707](https://github.com/papra-hq/papra/pull/707) [`a213f06`](https://github.com/papra-hq/papra/commit/a213f0683baebd6546bf38ba9e719c31b60064ed) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Changed config key `config.server.routeTimeoutMs` to `config.server.defaultRouteTimeoutMs` (env variable remains the same)
+
+- [#718](https://github.com/papra-hq/papra/pull/718) [`8d70a7b`](https://github.com/papra-hq/papra/commit/8d70a7b3c36bcf3f49a27e2c4e92d3b974b552c2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added api endpoint to check current API key (GET /api/api-keys/current)
+
 ## 25.12.0
 
 ### Minor Changes
