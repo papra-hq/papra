@@ -22,61 +22,61 @@ export class DocumentConversionService {
     /**
      * Check if LibreOffice is available on the system
      */
-  async checkAvailability(): Promise<boolean> {
-    if (this.isAvailable !== null) {
-      return this.isAvailable;
-    }
+    async checkAvailability(): Promise<boolean> {
+        if (this.isAvailable !== null) {
+            return this.isAvailable;
+        }
 
-    try {
-      // Try different common LibreOffice executable names
-      // Windows paths first, then Unix paths
-      const possiblePaths = [
-        'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
-        'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
-        'soffice',
-        'libreoffice',
-        '/usr/bin/soffice',
-        '/usr/bin/libreoffice',
-      ];
-
-      for (const path of possiblePaths) {
         try {
-          // For absolute paths (Windows), just check if file exists
-          // For relative paths (Unix), check with --version
-          if (path.includes(':\\') || path.startsWith('/')) {
-            // Absolute path - just check file existence (no window popup on Windows)
-            await access(path);
-          }
-          else {
-            // Relative path - run --version silently
-            await execAsync(`"${path}" --version`, { 
-              windowsHide: true,
-              timeout: 5000,
-            });
-          }
-          
-          this.libreOfficePath = path;
-          this.isAvailable = true;
-          return true;
+            // Try different common LibreOffice executable names
+            // Windows paths first, then Unix paths
+            const possiblePaths = [
+                'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+                'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
+                'soffice',
+                'libreoffice',
+                '/usr/bin/soffice',
+                '/usr/bin/libreoffice',
+            ];
+
+            for (const path of possiblePaths) {
+                try {
+                    // For absolute paths (Windows), just check if file exists
+                    // For relative paths (Unix), check with --version
+                    if (path.includes(':\\') || path.startsWith('/')) {
+                        // Absolute path - just check file existence (no window popup on Windows)
+                        await access(path);
+                    }
+                    else {
+                        // Relative path - run --version silently
+                        await execAsync(`"${path}" --version`, {
+                            windowsHide: true,
+                            timeout: 5000,
+                        });
+                    }
+
+                    this.libreOfficePath = path;
+                    this.isAvailable = true;
+                    return true;
+                }
+                catch {
+                    // Continue to next path
+                }
+            }
+
+            this.isAvailable = false;
+            return false;
         }
         catch {
-          // Continue to next path
+            this.isAvailable = false;
+            return false;
         }
-      }
-
-      this.isAvailable = false;
-      return false;
     }
-    catch {
-      this.isAvailable = false;
-      return false;
-    }
-  }
 
-  /**
-   * Check if a mime type is supported for conversion
-   */
-  isSupportedMimeType(mimeType: string): boolean {
+    /**
+     * Check if a mime type is supported for conversion
+     */
+    isSupportedMimeType(mimeType: string): boolean {
         const supportedMimeTypes = [
             // Word documents
             'application/msword',
@@ -131,13 +131,17 @@ export class DocumentConversionService {
             // --headless: run without GUI
             // --invisible: don't show splash screen
             // --norestore: don't restore previous session
+            // --nologo: don't show logo
+            // --nodefault: don't start with empty document
+            // --nofirststartwizard: skip first start wizard
             // --convert-to pdf: convert to PDF format
             // --outdir: output directory
-            const command = `"${this.libreOfficePath}" --headless --invisible --norestore --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
+            const command = `"${this.libreOfficePath}" --headless --invisible --nologo --nodefault --nofirststartwizard --norestore --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
 
             await execAsync(command, {
-                timeout: 30000, // 30 seconds timeout
+                timeout: 120000, // 120 seconds timeout (Windows LibreOffice can be slow)
                 windowsHide: true, // Hide the window on Windows
+                env: { ...process.env, SAL_USE_VCLPLUGIN: 'svp' }, // Use headless VCL plugin
             });
 
             // Read the converted PDF
@@ -158,7 +162,22 @@ export class DocumentConversionService {
         }
         finally {
             // Clean up temporary directory
-            await rm(tempDir, { recursive: true, force: true });
+            // Retry cleanup if files are locked (EBUSY on Windows)
+            try {
+                await rm(tempDir, { recursive: true, force: true });
+            }
+            catch (cleanupError: any) {
+                if (cleanupError?.code === 'EBUSY') {
+                    // Wait a bit and retry once
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    try {
+                        await rm(tempDir, { recursive: true, force: true });
+                    }
+                    catch {
+                        // Ignore cleanup errors - temp files will be cleaned up by OS eventually
+                    }
+                }
+            }
         }
     }
 
