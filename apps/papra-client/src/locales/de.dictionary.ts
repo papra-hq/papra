@@ -381,7 +381,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.preview.unknown-file-type': 'Kein Vorschau verfügbar für diesen Dateityp',
   'documents.preview.binary-file': 'Dies scheint eine Binärdatei zu sein und kann nicht als Text angezeigt werden',
   'documents.preview.loading': 'Vorschau wird geladen...',
-  'documents.preview.converting': 'Dokument wird in PDF konvertiert...',
+  'documents.preview.converting': 'Bitte warten, {{file}} wird gerade konvertiert...',
   'documents.preview.error': 'Vorschau fehlgeschlagen',
   'documents.preview.load-error': 'Dokument-Vorschau konnte nicht geladen werden',
   'documents.preview.conversion-error': 'Dokument konnte nicht konvertiert werden. LibreOffice ist möglicherweise nicht auf dem Server installiert.',

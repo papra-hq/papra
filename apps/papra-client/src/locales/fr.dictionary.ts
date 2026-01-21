@@ -381,7 +381,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.preview.unknown-file-type': 'Aucun aperçu disponible pour ce type de fichier',
   'documents.preview.binary-file': 'Ceci semble être un fichier binaire et ne peut pas être affiché comme texte',
   'documents.preview.loading': 'Chargement de l\'aperçu...',
-  'documents.preview.converting': 'Conversion du document en PDF...',
+  'documents.preview.converting': 'Veuillez patienter, {{file}} est en cours de conversion...',
   'documents.preview.error': 'Échec de l\'aperçu',
   'documents.preview.load-error': 'Impossible de charger l\'aperçu du document',
   'documents.preview.conversion-error': 'Impossible de convertir le document. LibreOffice n\'est peut-être pas installé sur le serveur.',

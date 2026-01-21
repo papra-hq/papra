@@ -150,19 +150,21 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
   );
 
   return (
-    <Suspense fallback={(
-      <Card class="px-6 py-12 text-center">
-        <div class="flex flex-col items-center gap-4">
-          <div class="i-tabler-loader-2 size-8 animate-spin text-primary" />
-          <p class="text-sm text-muted-foreground">
-            {getIsOfficeDocument() ? t('documents.preview.converting') : t('documents.preview.loading')}
-          </p>
-        </div>
-      </Card>
-    )}
-    >
-      <Switch>
-        <Match when={query.isError}>
+    <Switch>
+      <Match when={query.isPending}>
+        <Card class="px-6 py-12 text-center">
+          <div class="flex flex-col items-center gap-4">
+            <div class="i-tabler-loader-2 size-8 animate-spin text-primary" />
+            <p class="text-sm text-muted-foreground">
+              {getIsOfficeDocument() 
+                ? t('documents.preview.converting', { file: props.document.name })
+                : t('documents.preview.loading')}
+            </p>
+          </div>
+        </Card>
+      </Match>
+
+      <Match when={query.isError}>
           <Card class="px-6 py-12 text-center">
             <div class="flex flex-col items-center gap-4">
               <div class="i-tabler-alert-circle size-12 text-destructive" />
@@ -207,7 +209,6 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
             <p>{t('documents.preview.unknown-file-type')}</p>
           </Card>
         </Match>
-      </Switch>
-    </Suspense>
+    </Switch>
   );
 };
