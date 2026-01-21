@@ -3,7 +3,7 @@ import type { Config } from '../config/config';
 import type { SsoProviderConfig } from './auth.types';
 import { genericOAuthClient, twoFactorClient } from 'better-auth/client/plugins';
 import { createAuthClient as createBetterAuthClient } from 'better-auth/solid';
-import { buildTimeConfig } from '../config/config';
+import { buildTimeConfig, isDemoMode } from '../config/config';
 import { queryClient } from '../shared/query/query-client';
 import { trackingServices } from '../tracking/tracking.services';
 import { createDemoAuthClient } from './auth.demo.services';
@@ -47,7 +47,7 @@ export const {
   resetPassword,
   sendVerificationEmail,
   twoFactor,
-} = buildTimeConfig.isDemoMode
+} = isDemoMode
   ? createDemoAuthClient()
   : createAuthClient();
 

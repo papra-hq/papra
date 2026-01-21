@@ -5,7 +5,7 @@ import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, Match, Show, Suspense, Switch } from 'solid-js';
 import * as v from 'valibot';
-import { buildTimeConfig } from '@/modules/config/config';
+import { isDemoMode } from '@/modules/config/config';
 import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -158,7 +158,7 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
           {t('organization.settings.subscription.description')}
         </div>
       </div>
-      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0" disabled={buildTimeConfig.isDemoMode}>
+      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0" disabled={isDemoMode}>
         {t('organization.settings.subscription.manage')}
       </Button>
     </Card>
