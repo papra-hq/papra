@@ -150,6 +150,7 @@ export async function fetchDocumentPreview({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}/preview`,
     responseType: 'blob',
+    timeout: 120000, // 2 minutes timeout for office document conversion
   });
 
   return blob;
