@@ -184,8 +184,10 @@ type DocumentSearchCriteria = {
 };
 
 export function makeDocumentSearchQuery({ tags = [], query }: DocumentSearchCriteria = {}) {
+  const quoteIfSpaces = (str: string) => (str.includes(' ') ? `"${str.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : str);
+
   return [
-    ...tags.map(t => `tag:${t.name ?? t.id}`).toSorted(),
+    ...tags.map(t => `tag:${quoteIfSpaces(t.name ?? t.id ?? '')}`).toSorted(),
     query,
   ].filter(Boolean).join(' ');
 }
