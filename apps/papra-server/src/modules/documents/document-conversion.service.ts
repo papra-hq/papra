@@ -22,47 +22,48 @@ export class DocumentConversionService {
     /**
      * Check if LibreOffice is available on the system
      */
-    async checkAvailability(): Promise<boolean> {
-        if (this.isAvailable !== null) {
-            return this.isAvailable;
-        }
-
-        try {
-            // Try different common LibreOffice executable names
-            const possiblePaths = [
-                'libreoffice',
-                'soffice',
-                '/usr/bin/libreoffice',
-                '/usr/bin/soffice',
-                'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
-                'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
-            ];
-
-            for (const path of possiblePaths) {
-                try {
-                    await execAsync(`"${path}" --version`);
-                    this.libreOfficePath = path;
-                    this.isAvailable = true;
-                    return true;
-                }
-                catch {
-                    // Continue to next path
-                }
-            }
-
-            this.isAvailable = false;
-            return false;
-        }
-        catch {
-            this.isAvailable = false;
-            return false;
-        }
+  async checkAvailability(): Promise<boolean> {
+    if (this.isAvailable !== null) {
+      return this.isAvailable;
     }
 
-    /**
-     * Check if a mime type is supported for conversion
-     */
-    isSupportedMimeType(mimeType: string): boolean {
+    try {
+      // Try different common LibreOffice executable names
+      // Windows paths first, then Unix paths
+      const possiblePaths = [
+        'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+        'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
+        'soffice',
+        'libreoffice',
+        '/usr/bin/soffice',
+        '/usr/bin/libreoffice',
+      ];
+
+      for (const path of possiblePaths) {
+        try {
+          await execAsync(`"${path}" --version`);
+          this.libreOfficePath = path;
+          this.isAvailable = true;
+          return true;
+        }
+        catch {
+          // Continue to next path
+        }
+      }
+
+      this.isAvailable = false;
+      return false;
+    }
+    catch {
+      this.isAvailable = false;
+      return false;
+    }
+  }
+
+  /**
+   * Check if a mime type is supported for conversion
+   */
+  isSupportedMimeType(mimeType: string): boolean {
         const supportedMimeTypes = [
             // Word documents
             'application/msword',
