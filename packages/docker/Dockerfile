@@ -37,6 +37,15 @@ ARG BUILD_DATE=unknown
 
 WORKDIR /app
 
+# Install LibreOffice for document preview conversion
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    libreoffice-common \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /prod/papra-server ./
 COPY --from=build /app/apps/papra-client/dist ./public
 

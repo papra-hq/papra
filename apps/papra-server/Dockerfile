@@ -44,10 +44,16 @@ FROM base
 ENV NODE_ENV="production"
 ENV PORT=1221
 
-# Install Tesseract OCR
+# Install Tesseract OCR and LibreOffice for document conversion
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y tesseract-ocr tesseract-ocr-all && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y \
+    tesseract-ocr \
+    tesseract-ocr-all \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    libreoffice-common \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/production /app
 
