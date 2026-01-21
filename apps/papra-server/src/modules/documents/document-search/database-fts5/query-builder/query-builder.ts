@@ -152,6 +152,28 @@ export function handleTagFilter({ expression, organizationId, db }: { expression
   };
 }
 
+export function handleHasTagsFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+  const { operator, field } = expression;
+
+  if (operator !== '=') {
+    return {
+      sqlQuery: sql`0`,
+      issues: [createUnsupportedOperatorIssue({ operator, field })],
+    };
+  }
+
+  return {
+    sqlQuery: inArray(
+      documentsTable.id,
+      db.selectDistinct({ documentId: documentsTagsTable.documentId })
+        .from(documentsTagsTable)
+        .innerJoin(tagsTable, eq(documentsTagsTable.tagId, tagsTable.id))
+        .where(eq(tagsTable.organizationId, organizationId)),
+    ),
+    issues: [],
+  };
+}
+
 export function handleCreatedFilter({ expression }: { expression: FilterExpression }): QueryResult {
   const { value, operator } = expression;
 
@@ -189,6 +211,18 @@ export function handleUnsupportedExpression(): QueryResult {
   };
 }
 
+export function handleInvalidHasValue({ expression }: { expression: FilterExpression }): QueryResult {
+  return {
+    sqlQuery: sql`0`,
+    issues: [
+      {
+        message: `Unsupported value "${expression.value}" for has filter`,
+        code: 'UNSUPPORTED_HAS_VALUE',
+      },
+    ],
+  };
+}
+
 export function buildQueryFromExpression({ expression, organizationId, db }: { expression: Expression; organizationId: string; db: Database }): QueryResult {
   // I usually prefer a LUT, but for type narrowing, switch is more convenient and avoids casting
   switch (expression.type) {
@@ -203,6 +237,11 @@ export function buildQueryFromExpression({ expression, organizationId, db }: { e
         case 'name': return handleNameFilter({ expression, organizationId, db });
         case 'content': return handleContentFilter({ expression, organizationId, db });
         case 'created': return handleCreatedFilter({ expression });
+        case 'has':
+          switch (expression.value) {
+            case 'tags': return handleHasTagsFilter({ expression, organizationId, db });
+            default: return handleInvalidHasValue({ expression });
+          }
         default: return handleUnsupportedExpression();
       }
     default: return handleUnsupportedExpression();
