@@ -1,10 +1,14 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Document } from '../documents/documents.types';
 import type { Webhook } from '../webhooks/webhooks.types';
+import type {
+  DocumentFile,
+} from './demo.storage';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { get } from '../shared/utils/get';
 import { defineHandler } from './demo-api-mock.models';
+import { createId, randomString } from './demo.models';
 import {
   apiKeyStorage,
   documentFileStorage,
@@ -16,16 +20,7 @@ import {
   webhooksStorage,
 } from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
-
-const corpus = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-function randomString({ length = 10 }: { length?: number } = {}) {
-  return Array.from({ length }, () => corpus[Math.floor(Math.random() * corpus.length)]).join('');
-}
-
-function createId({ prefix }: { prefix: string }) {
-  return `${prefix}_${randomString({ length: 24 })}`;
-}
+import { demoUser } from './seed/users.fixtures';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
   if (!condition) {
@@ -46,18 +41,27 @@ function fromBase64(base64: string) {
   return fetch(base64).then(res => res.blob());
 }
 
-async function serializeFile(file: File) {
+async function serializeFile(file: File): Promise<DocumentFile> {
   return {
     name: file.name,
     size: file.size,
     type: file.type,
     // base64
-    content: await toBase64(file),
+    base64Content: await toBase64(file),
   };
 }
 
-async function deserializeFile({ name, type, content }: Awaited<ReturnType<typeof serializeFile>>) {
-  return new File([await fromBase64(content)], name, { type });
+async function deserializeFile(storageInfo: DocumentFile): Promise<File> {
+  if ('path' in storageInfo) {
+    const { path, name } = storageInfo;
+    const response = await fetch(path);
+    const blob = await response.blob();
+    return new File([blob], name);
+  }
+
+  const { name, type, base64Content } = storageInfo;
+
+  return new File([await fromBase64(base64Content)], name, { type });
 }
 
 const inMemoryApiMock: Record<string, { handler: any }> = {
@@ -81,12 +85,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/users/me',
     method: 'GET',
     handler: () => ({
-      user: {
-        id: 'usr_1',
-        email: 'jane.doe@papra.app',
-        name: 'Jane Doe',
-        permissions: [],
-      },
+      user: demoUser,
     }),
   }),
 
@@ -119,7 +118,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       } = query ?? {};
 
       return {
-        documents: filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+        documents: filteredDocuments
+          .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
         documentsCount: filteredDocuments.length,
       };
     },
@@ -593,11 +594,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       return {
         members: [{
           id: 'mem_1',
-          user: {
-            id: 'usr_1',
-            email: 'jane.doe@papra.app',
-            name: 'Jane Doe',
-          },
+          user: demoUser,
           role: 'owner',
           organizationId,
         }],
@@ -771,6 +768,38 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await documentStorage.setItem(`${organizationId}:${documentId}`, newDocument);
 
       return { document: newDocument };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/activity',
+    method: 'GET',
+    handler: async ({ params: { organizationId, documentId }, query }) => {
+      const key = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(key);
+
+      assert(document, { status: 404 });
+
+      const {
+        pageIndex = 0,
+      } = query ?? {};
+
+      // Return mock activity for demo - just a created event
+      const activities = pageIndex === 0
+        ? [{
+            id: 'activity_1',
+            documentId,
+            event: 'created',
+            eventData: {},
+            createdAt: document.createdAt,
+            user: {
+              id: 'usr_1',
+              name: 'Sherlock Holmes',
+            },
+          }]
+        : [];
+
+      return { activities };
     },
   }),
 

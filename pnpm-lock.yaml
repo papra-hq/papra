@@ -368,6 +368,9 @@ importers:
       '@iconify-json/tabler':
         specifier: ^1.2.19
         version: 1.2.19
+      '@papra/lecture':
+        specifier: workspace:*
+        version: link:../../packages/lecture
       '@types/node':
         specifier: 'catalog:'
         version: 24.0.10

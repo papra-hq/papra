@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { A, useNavigate } from '@solidjs/router';
+import { A } from '@solidjs/router';
 import { createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { useI18n } from '../i18n/i18n.provider';
@@ -8,12 +8,12 @@ import { clearDemoStorage } from './demo.storage';
 
 export const DemoIndicator: Component = () => {
   const [getIsMinified, setIsMinified] = createSignal(false);
-  const navigate = useNavigate();
   const { t, te } = useI18n();
 
   const clearDemo = async () => {
     await clearDemoStorage();
-    navigate('/');
+    // Navigate to / forcing a full reload
+    window.location.href = '/';
   };
 
   return (
