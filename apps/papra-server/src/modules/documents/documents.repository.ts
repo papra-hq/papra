@@ -454,27 +454,27 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
   };
 }
 
-async function update({ 
-  id, 
-  previewStorageKey, 
-  previewMimeType, 
-  previewSize, 
+async function update({
+  id,
+  previewStorageKey,
+  previewMimeType,
+  previewSize,
   previewGeneratedAt,
   db,
-}: { 
-  id: string; 
-  previewStorageKey?: string; 
-  previewMimeType?: string; 
-  previewSize?: number; 
+}: {
+  id: string;
+  previewStorageKey?: string;
+  previewMimeType?: string;
+  previewSize?: number;
   previewGeneratedAt?: Date;
   db: Database;
 }) {
   const [document] = await db
     .update(documentsTable)
-    .set(omitUndefined({ 
-      previewStorageKey, 
-      previewMimeType, 
-      previewSize, 
+    .set(omitUndefined({
+      previewStorageKey,
+      previewMimeType,
+      previewSize,
       previewGeneratedAt,
     }))
     .where(eq(documentsTable.id, id))

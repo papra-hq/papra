@@ -386,7 +386,7 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
       // Store preview in storage (without encryption for now)
       const previewStorageKey = `${document.originalStorageKey}.preview.pdf`;
       const previewStream = Readable.from(pdfBuffer);
-      
+
       await documentsStorageService.saveFile({
         fileStream: previewStream,
         fileName: `${document.name}.preview.pdf`,
