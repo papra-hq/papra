@@ -132,22 +132,21 @@ export class DocumentConversionService {
             await writeFile(inputFile, buffer);
 
             // Convert using LibreOffice
-            // --headless: run without GUI
-            // --invisible: don't show splash screen
-            // --norestore: don't restore previous session
+            // IMPORTANT: Parameter order matters!
+            // -env:UserInstallation MUST come first to isolate the profile
+            // --headless: run without GUI (REQUIRED)
+            // --nolockcheck: don't check for lockfiles (prevents hangs)
             // --nologo: don't show logo
             // --nodefault: don't start with empty document
-            // --nofirststartwizard: skip first start wizard
-            // -env:UserInstallation: use temp profile to avoid printer dialogs
+            // --norestore: don't restore previous session
             // --convert-to pdf: convert to PDF format
             // --outdir: output directory
             const userProfileUrl = `file:///${userProfileDir.replace(/\\/g, '/')}`;
-            const command = `"${this.libreOfficePath}" --headless --invisible --nologo --nodefault --nofirststartwizard --norestore "-env:UserInstallation=${userProfileUrl}" --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
+            const command = `"${this.libreOfficePath}" "-env:UserInstallation=${userProfileUrl}" --headless --nolockcheck --nologo --nodefault --norestore --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
 
             await execAsync(command, {
                 timeout: 120000, // 120 seconds timeout (Windows LibreOffice can be slow)
                 windowsHide: true, // Hide the window on Windows
-                env: { ...process.env, SAL_USE_VCLPLUGIN: 'svp' }, // Use headless VCL plugin
             });
 
             // Read the converted PDF

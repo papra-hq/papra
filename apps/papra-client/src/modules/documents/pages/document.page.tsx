@@ -3,7 +3,7 @@ import type { DocumentActivity } from '../documents.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
-import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
+import { createEffect, createSignal, For, Match, Show, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -178,9 +178,8 @@ export const DocumentPage: Component = () => {
 
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
-      <Suspense>
-        <div class="md:flex-1 md:border-r">
-          <Show when={documentQuery.data?.document}>
+      <div class="md:flex-1 md:border-r">
+        <Show when={documentQuery.data?.document}>
             {getDocument => (
               <div class="flex gap-4 md:pr-6">
                 <div class="flex-1">
@@ -393,7 +392,6 @@ export const DocumentPage: Component = () => {
             )}
           </Show>
         </div>
-      </Suspense>
     </div>
   );
 };

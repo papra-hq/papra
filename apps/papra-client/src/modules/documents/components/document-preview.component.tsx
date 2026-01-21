@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createResource, lazy, Match, Suspense, Switch } from 'solid-js';
+import { createEffect, createSignal, lazy, Match, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile, fetchDocumentPreview } from '../documents.services';
@@ -112,13 +112,21 @@ async function isBlobTextSafe(blob: Blob): Promise<boolean> {
 }
 
 const TextFromBlob: Component<{ blob: Blob }> = (props) => {
-  const [txt] = createResource(() => blobToString(props.blob));
+  const [txt, setTxt] = createSignal<string>('');
+  const [isLoading, setIsLoading] = createSignal(true);
+  
+  createEffect(async () => {
+    setIsLoading(true);
+    const text = await blobToString(props.blob);
+    setTxt(text);
+    setIsLoading(false);
+  });
 
   return (
     <Card class="p-6 overflow-auto max-h-800px max-w-full text-xs">
-      <Suspense>
+      <Show when={!isLoading()} fallback={<div class="i-tabler-loader-2 size-6 animate-spin" />}>
         <pre class="break-words whitespace-pre-wrap">{txt()}</pre>
-      </Suspense>
+      </Show>
     </Card>
   );
 };
@@ -138,16 +146,18 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
       : fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
   }));
 
-  // Create a resource to check if octet-stream blob is text-safe
-  const [isOctetStreamTextSafe] = createResource(
-    () => query.data && props.document.mimeType === 'application/octet-stream' ? query.data : null,
-    async (blob) => {
-      if (!blob) {
-        return false;
-      }
-      return await isBlobTextSafe(blob);
-    },
-  );
+  // Check if octet-stream blob is text-safe (without using createResource to avoid Suspense)
+  const [isOctetStreamTextSafe, setIsOctetStreamTextSafe] = createSignal<boolean | null>(null);
+  
+  createEffect(async () => {
+    const blob = query.data;
+    if (blob && props.document.mimeType === 'application/octet-stream') {
+      const result = await isBlobTextSafe(blob);
+      setIsOctetStreamTextSafe(result);
+    } else {
+      setIsOctetStreamTextSafe(null);
+    }
+  });
 
   return (
     <Switch>
