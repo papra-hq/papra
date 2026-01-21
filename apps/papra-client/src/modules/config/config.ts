@@ -4,11 +4,13 @@ const asBoolean = (value: string | undefined, defaultValue: boolean) => value ==
 const asString = <T extends string | undefined>(value: string | undefined, defaultValue?: T): T extends undefined ? string | undefined : string => (value ?? defaultValue) as T extends undefined ? string | undefined : string;
 const asNumber = <T extends number | undefined>(value: string | undefined, defaultValue?: T): T extends undefined ? number | undefined : number => (value === undefined ? defaultValue : Number(value)) as T extends undefined ? number | undefined : number;
 
+// use the env variable directly to allow proper tree-shaking when building for non-demo mode
+export const isDemoMode = import.meta.env.VITE_IS_DEMO_MODE === 'true';
+
 export const buildTimeConfig = {
   baseUrl: asString(import.meta.env.VITE_BASE_URL, window.location.origin),
   baseApiUrl: asString(import.meta.env.VITE_BASE_API_URL, window.location.origin),
   vitrineBaseUrl: asString(import.meta.env.VITE_VITRINE_BASE_URL, 'http://localhost:3000/'),
-  isDemoMode: asBoolean(import.meta.env.VITE_IS_DEMO_MODE, false),
   version: asString(import.meta.env.VITE_APP_VERSION, 'dev'),
   gitCommitSha: asString(import.meta.env.VITE_GIT_COMMIT, 'unknown'),
   gitCommitDate: asString(import.meta.env.VITE_BUILD_DATE, 'unknown'),

@@ -5,11 +5,11 @@ import { ColorModeProvider, createLocalStorageManager } from '@kobalte/core/colo
 import { Router } from '@solidjs/router';
 import { QueryClientProvider } from '@tanstack/solid-query';
 
-import { Suspense } from 'solid-js';
+import { lazy, Suspense } from 'solid-js';
 import { render } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
+import { isDemoMode } from './modules/config/config';
 import { ConfigProvider } from './modules/config/config.provider';
-import { DemoIndicator } from './modules/demo/demo.provider';
 import { RenameDocumentDialogProvider } from './modules/documents/components/rename-document-button.component';
 import { I18nProvider } from './modules/i18n/i18n.provider';
 import { ConfirmModalProvider } from './modules/shared/confirm';
@@ -20,6 +20,10 @@ import { Toaster } from './modules/ui/components/sonner';
 import { routes } from './routes';
 import 'virtual:uno.css';
 import './app.css';
+
+const DemoIndicator = isDemoMode
+  ? lazy(() => import('./modules/demo/demo.provider').then(mod => ({ default: mod.DemoIndicator })))
+  : null;
 
 render(
   () => {
@@ -48,7 +52,7 @@ render(
                             {props.children}
                           </div>
                         </RenameDocumentDialogProvider>
-                        <DemoIndicator />
+                        {DemoIndicator && <DemoIndicator />}
                       </ConfigProvider>
 
                       <Toaster />

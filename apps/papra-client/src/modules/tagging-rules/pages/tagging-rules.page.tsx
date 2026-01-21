@@ -3,7 +3,7 @@ import type { TaggingRule } from '../tagging-rules.types';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
 import { For, Match, Show, Switch } from 'solid-js';
-import { useConfig } from '@/modules/config/config.provider';
+import { isDemoMode } from '@/modules/config/config';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { queryClient } from '@/modules/shared/query/query-client';
@@ -132,7 +132,6 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
 
 export const TaggingRulesPage: Component = () => {
   const { t } = useI18n();
-  const { config } = useConfig();
   const params = useParams();
 
   const query = useQuery(() => ({
@@ -161,7 +160,7 @@ export const TaggingRulesPage: Component = () => {
         </Show>
       </div>
 
-      <Show when={config.isDemoMode}>
+      <Show when={isDemoMode}>
         <Alert class="bg-primary text-primary-foreground mb-4">
           {t('tagging-rules.list.demo-warning')}
         </Alert>
