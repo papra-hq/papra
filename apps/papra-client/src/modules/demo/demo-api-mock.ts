@@ -20,6 +20,7 @@ import {
   webhooksStorage,
 } from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
+import { searchDemoDocuments } from './search/demo.search.services';
 import { demoUser } from './seed/users.fixtures';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
@@ -201,30 +202,31 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const organization = await organizationStorage.getItem(organizationId);
       assert(organization, { status: 403 });
 
-      const documents = await findMany(documentStorage, document => document?.organizationId === organizationId);
+      const searchQuery = rawSearchQuery.trim();
+      const [organizationDocuments, allTags, tagDocuments] = await Promise.all([
+        findMany(documentStorage, document => document?.organizationId === organizationId && !document?.deletedAt),
+        getValues(tagStorage),
+        getValues(tagDocumentStorage),
+      ]);
 
-      const searchQuery = rawSearchQuery.trim().toLowerCase();
+      const documentsWithTags = organizationDocuments.map((document) => {
+        const documentTagDocuments = tagDocuments.filter(tagDocument => tagDocument?.documentId === document?.id);
+        const tags = allTags.filter(tag => documentTagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
 
-      const matchQuery = (document: Document) =>
-        !document?.deletedAt
-        && [document?.name, document?.content].filter(Boolean).some(content => content.toLowerCase().includes(searchQuery));
+        return {
+          ...document,
+          tags,
+        };
+      });
 
-      const filteredDocuments = documents.filter(matchQuery);
-      const pagedDocuments = filteredDocuments.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-      const documentsWithTags = await Promise.all(
-        pagedDocuments.map(async (document) => {
-          const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument?.documentId === document?.id);
-          const allTags = await getValues(tagStorage);
-          const tags = allTags.filter(tag => tagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
-          return {
-            ...document,
-            tags,
-          };
-        }),
-      );
+      const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTags as Document[] });
+
+      const paginatedDocuments = filteredDocuments
+        .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
       return {
-        documents: documentsWithTags,
+        documents: paginatedDocuments,
         totalCount: filteredDocuments.length,
       };
     },

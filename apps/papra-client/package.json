@@ -33,6 +33,7 @@
     "@kobalte/core": "^0.13.10",
     "@kobalte/utils": "^0.9.1",
     "@modular-forms/solid": "^0.25.1",
+    "@papra/search-parser": "workspace:*",
     "@pdfslick/solid": "^2.3.0",
     "@solid-primitives/storage": "^4.3.2",
     "@solidjs/router": "^0.14.10",
