@@ -71,6 +71,10 @@ export const routes: RouteDefinition[] = [
                         <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
                       </Match>
 
+                      <Match when={getOrgs().length === 1}>
+                        <Navigate href={`/organizations/${getOrgs()[0]?.id ?? ''}`} />
+                      </Match>
+
                       <Match when={getOrgs().length > 0}>
                         <Navigate href="/organizations" />
                       </Match>
