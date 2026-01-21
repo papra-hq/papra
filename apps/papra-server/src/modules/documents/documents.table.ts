@@ -20,6 +20,12 @@ export const documentsTable = sqliteTable('documents', {
   mimeType: text('mime_type').notNull(),
   content: text('content').notNull().default(''),
 
+  // Preview/conversion fields for office documents
+  previewStorageKey: text('preview_storage_key'),
+  previewMimeType: text('preview_mime_type'),
+  previewSize: integer('preview_size'),
+  previewGeneratedAt: integer('preview_generated_at', { mode: 'timestamp_ms' }),
+
   fileEncryptionKeyWrapped: text('file_encryption_key_wrapped'), // The wrapped encryption key
   fileEncryptionKekVersion: text('file_encryption_kek_version'), // The key encryption key version used to encrypt the file encryption key
   fileEncryptionAlgorithm: text('file_encryption_algorithm'),

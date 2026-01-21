@@ -37,6 +37,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       getGlobalDocumentsStats,
+      update,
     },
     { db },
   );
@@ -451,4 +452,37 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
     totalDocumentsCount,
     totalDocumentsSize: Number(totalDocumentsSize ?? 0),
   };
+}
+
+async function update({ 
+  id, 
+  previewStorageKey, 
+  previewMimeType, 
+  previewSize, 
+  previewGeneratedAt,
+  db,
+}: { 
+  id: string; 
+  previewStorageKey?: string; 
+  previewMimeType?: string; 
+  previewSize?: number; 
+  previewGeneratedAt?: Date;
+  db: Database;
+}) {
+  const [document] = await db
+    .update(documentsTable)
+    .set(omitUndefined({ 
+      previewStorageKey, 
+      previewMimeType, 
+      previewSize, 
+      previewGeneratedAt,
+    }))
+    .where(eq(documentsTable.id, id))
+    .returning();
+
+  if (isNil(document)) {
+    throw createDocumentNotFoundError();
+  }
+
+  return { document };
 }

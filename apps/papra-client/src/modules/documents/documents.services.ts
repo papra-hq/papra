@@ -139,6 +139,22 @@ export async function fetchDocumentFile({
   return blob;
 }
 
+export async function fetchDocumentPreview({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
+  const blob = await apiClient({
+    method: 'GET',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/preview`,
+    responseType: 'blob',
+  });
+
+  return blob;
+}
+
 export async function searchDocuments({
   organizationId,
   searchQuery,

@@ -4,13 +4,26 @@ import { useQuery } from '@tanstack/solid-query';
 import { createResource, lazy, Match, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
-import { fetchDocumentFile } from '../documents.services';
+import { fetchDocumentFile, fetchDocumentPreview } from '../documents.services';
 
 const PdfViewer = lazy(() => import('./pdf-viewer.component').then(m => ({ default: m.PdfViewer })));
 
 const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
 const txtLikeMimeType = ['application/x-yaml', 'application/json', 'application/xml'];
+const officeDocumentMimeType = [
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.oasis.opendocument.text',
+  'application/vnd.oasis.opendocument.spreadsheet',
+  'application/vnd.oasis.opendocument.presentation',
+  'application/rtf',
+  'text/rtf',
+];
 
 function blobToString(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -114,11 +127,15 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
   const getIsImage = () => imageMimeType.includes(props.document.mimeType);
   const getIsPdf = () => pdfMimeType.includes(props.document.mimeType);
   const getIsTxtLike = () => txtLikeMimeType.includes(props.document.mimeType) || props.document.mimeType.startsWith('text/');
+  const getIsOfficeDocument = () => officeDocumentMimeType.includes(props.document.mimeType);
   const { t } = useI18n();
 
+  // For office documents, use preview endpoint; for others, use file endpoint
   const query = useQuery(() => ({
-    queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, 'file'],
-    queryFn: () => fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
+    queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, getIsOfficeDocument() ? 'preview' : 'file'],
+    queryFn: () => getIsOfficeDocument()
+      ? fetchDocumentPreview({ documentId: props.document.id, organizationId: props.document.organizationId })
+      : fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
   }));
 
   // Create a resource to check if octet-stream blob is text-safe
@@ -133,15 +150,41 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
   );
 
   return (
-    <Suspense>
+    <Suspense fallback={(
+      <Card class="px-6 py-12 text-center">
+        <div class="flex flex-col items-center gap-4">
+          <div class="i-tabler-loader-2 size-8 animate-spin text-primary" />
+          <p class="text-sm text-muted-foreground">
+            {getIsOfficeDocument() ? t('documents.preview.converting') : t('documents.preview.loading')}
+          </p>
+        </div>
+      </Card>
+    )}
+    >
       <Switch>
+        <Match when={query.isError}>
+          <Card class="px-6 py-12 text-center">
+            <div class="flex flex-col items-center gap-4">
+              <div class="i-tabler-alert-circle size-12 text-destructive" />
+              <div class="space-y-2">
+                <p class="text-sm font-semibold text-foreground">{t('documents.preview.error')}</p>
+                <p class="text-xs text-muted-foreground">
+                  {getIsOfficeDocument()
+                    ? t('documents.preview.conversion-error')
+                    : t('documents.preview.load-error')}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </Match>
+
         <Match when={getIsImage() && query.data}>
           <div>
             <img src={URL.createObjectURL(query.data!)} class="w-full h-full object-contain" />
           </div>
         </Match>
 
-        <Match when={getIsPdf() && query.data}>
+        <Match when={(getIsPdf() || getIsOfficeDocument()) && query.data}>
           <PdfViewer url={URL.createObjectURL(query.data!)} />
         </Match>
 
@@ -159,7 +202,7 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
           </Card>
         </Match>
 
-        <Match when={query.data}>
+        <Match when={query.data && !getIsImage() && !getIsPdf() && !getIsOfficeDocument() && !getIsTxtLike() && props.document.mimeType !== 'application/octet-stream'}>
           <Card class="px-6 py-12 text-center text-sm text-muted-foreground">
             <p>{t('documents.preview.unknown-file-type')}</p>
           </Card>

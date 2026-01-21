@@ -30,6 +30,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
+  setupGetDocumentPreviewRoute(context);
   setupUpdateDocumentRoute(context);
 }
 
@@ -287,6 +288,130 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
           'Content-Length': String(document.originalSize),
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'DENY',
+        },
+      );
+    },
+  );
+}
+
+function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: RouteDefinitionContext) {
+  app.get(
+    '/api/organizations/:organizationId/documents/:documentId/preview',
+    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
+    validateParams(z.object({
+      organizationId: organizationIdSchema,
+      documentId: documentIdSchema,
+    })),
+    async (context) => {
+      const { userId } = getUser({ context });
+
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const { document } = await getDocumentOrThrow({ documentId, documentsRepository, organizationId });
+
+      // Import the conversion service dynamically to avoid startup errors if LibreOffice is not installed
+      const { documentConversionService } = await import('./document-conversion.service');
+
+      // Check if document needs conversion
+      const needsConversion = documentConversionService.isSupportedMimeType(document.mimeType);
+
+      if (!needsConversion) {
+        // If no conversion needed, return the original file
+        const { fileStream } = await documentsStorageService.getFileStream({
+          storageKey: document.originalStorageKey,
+          fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+          fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+          fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
+        });
+
+        return context.body(
+          Readable.toWeb(fileStream),
+          200,
+          {
+            'Content-Type': document.mimeType,
+            'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name)}`,
+            'Content-Length': String(document.originalSize),
+            'X-Content-Type-Options': 'nosniff',
+          },
+        );
+      }
+
+      // Check if we have a cached preview
+      if (document.previewStorageKey) {
+        const { fileStream } = await documentsStorageService.getFileStream({
+          storageKey: document.previewStorageKey,
+          fileEncryptionAlgorithm: null,
+          fileEncryptionKekVersion: null,
+          fileEncryptionKeyWrapped: null,
+        });
+
+        return context.body(
+          Readable.toWeb(fileStream),
+          200,
+          {
+            'Content-Type': document.previewMimeType || 'application/pdf',
+            'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name.replace(/\.[^.]+$/, '.pdf'))}`,
+            'Content-Length': String(document.previewSize || 0),
+            'X-Content-Type-Options': 'nosniff',
+          },
+        );
+      }
+
+      // Convert document to PDF
+      const { fileStream: originalStream } = await documentsStorageService.getFileStream({
+        storageKey: document.originalStorageKey,
+        fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+        fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+        fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
+      });
+
+      // Read stream to buffer
+      const chunks: Buffer[] = [];
+      for await (const chunk of originalStream) {
+        chunks.push(Buffer.from(chunk));
+      }
+      const originalBuffer = Buffer.concat(chunks);
+
+      // Convert to PDF
+      const { buffer: pdfBuffer, mimeType: pdfMimeType } = await documentConversionService.convertToPdf(
+        originalBuffer,
+        document.mimeType,
+      );
+
+      // Store preview in storage (without encryption for now)
+      const previewStorageKey = `${document.originalStorageKey}.preview.pdf`;
+      const previewStream = Readable.from(pdfBuffer);
+      
+      await documentsStorageService.saveFile({
+        fileStream: previewStream,
+        fileName: `${document.name}.preview.pdf`,
+        mimeType: pdfMimeType,
+        storageKey: previewStorageKey,
+      });
+
+      // Update document with preview info
+      await documentsRepository.update({
+        id: documentId,
+        previewStorageKey,
+        previewMimeType: pdfMimeType,
+        previewSize: pdfBuffer.length,
+        previewGeneratedAt: new Date(),
+      });
+
+      // Return the converted PDF
+      return context.body(
+        Readable.from(pdfBuffer),
+        200,
+        {
+          'Content-Type': pdfMimeType,
+          'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name.replace(/\.[^.]+$/, '.pdf'))}`,
+          'Content-Length': String(pdfBuffer.length),
+          'X-Content-Type-Options': 'nosniff',
         },
       );
     },
