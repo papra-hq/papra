@@ -187,7 +187,16 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
         </Match>
 
         <Match when={(getIsPdf() || getIsOfficeDocument()) && query.data}>
-          <PdfViewer url={URL.createObjectURL(query.data!)} />
+          <Suspense fallback={
+            <Card class="px-6 py-12 text-center">
+              <div class="flex flex-col items-center gap-4">
+                <div class="i-tabler-loader-2 size-8 animate-spin text-primary" />
+                <p class="text-sm text-muted-foreground">{t('documents.preview.loading')}</p>
+              </div>
+            </Card>
+          }>
+            <PdfViewer url={URL.createObjectURL(query.data!)} />
+          </Suspense>
         </Match>
 
         <Match when={getIsTxtLike() && query.data}>

@@ -124,6 +124,10 @@ export class DocumentConversionService {
             // Create output directory
             await mkdir(outputDir, { recursive: true });
 
+            // Create a temporary user profile to avoid printer dialogs on Windows
+            const userProfileDir = join(tempDir, 'userprofile');
+            await mkdir(userProfileDir, { recursive: true });
+
             // Write input file
             await writeFile(inputFile, buffer);
 
@@ -134,9 +138,11 @@ export class DocumentConversionService {
             // --nologo: don't show logo
             // --nodefault: don't start with empty document
             // --nofirststartwizard: skip first start wizard
+            // -env:UserInstallation: use temp profile to avoid printer dialogs
             // --convert-to pdf: convert to PDF format
             // --outdir: output directory
-            const command = `"${this.libreOfficePath}" --headless --invisible --nologo --nodefault --nofirststartwizard --norestore --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
+            const userProfileUrl = `file:///${userProfileDir.replace(/\\/g, '/')}`;
+            const command = `"${this.libreOfficePath}" --headless --invisible --nologo --nodefault --nofirststartwizard --norestore "-env:UserInstallation=${userProfileUrl}" --convert-to pdf --outdir "${outputDir}" "${inputFile}"`;
 
             await execAsync(command, {
                 timeout: 120000, // 120 seconds timeout (Windows LibreOffice can be slow)
