@@ -1,5 +1,5 @@
 import { exec } from 'node:child_process';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
@@ -41,7 +41,20 @@ export class DocumentConversionService {
 
       for (const path of possiblePaths) {
         try {
-          await execAsync(`"${path}" --version`);
+          // For absolute paths (Windows), just check if file exists
+          // For relative paths (Unix), check with --version
+          if (path.includes(':\\') || path.startsWith('/')) {
+            // Absolute path - just check file existence (no window popup on Windows)
+            await access(path);
+          }
+          else {
+            // Relative path - run --version silently
+            await execAsync(`"${path}" --version`, { 
+              windowsHide: true,
+              timeout: 5000,
+            });
+          }
+          
           this.libreOfficePath = path;
           this.isAvailable = true;
           return true;
