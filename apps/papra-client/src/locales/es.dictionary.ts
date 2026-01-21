@@ -379,6 +379,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.deleted.deleting': 'Eliminando...',
 
   'documents.preview.unknown-file-type': 'No hay vista previa disponible para este tipo de archivo',
+  'documents.preview.binary-file': 'Este parece ser un archivo binario y no se puede mostrar como texto',
+  'documents.preview.loading': 'Cargando vista previa...',
+  'documents.preview.converting': 'Convirtiendo documento a PDF...',
+  'documents.preview.error': 'Error en la vista previa',
+  'documents.preview.load-error': 'No se pudo cargar la vista previa del documento',
+  'documents.preview.conversion-error': 'No se pudo convertir el documento. LibreOffice podría no estar instalado en el servidor.',
   'documents.preview.binary-file': 'Este parece ser un archivo binario y no puede mostrarse como texto',
 
   'trash.delete-all.button': 'Eliminar todo',

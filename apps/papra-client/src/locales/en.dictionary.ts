@@ -378,6 +378,11 @@ export const translations = {
 
   'documents.preview.unknown-file-type': 'No preview available for this file type',
   'documents.preview.binary-file': 'This appears to be a binary file and cannot be displayed as text',
+  'documents.preview.loading': 'Loading preview...',
+  'documents.preview.converting': 'Converting document to PDF...',
+  'documents.preview.error': 'Preview failed',
+  'documents.preview.load-error': 'Failed to load document preview',
+  'documents.preview.conversion-error': 'Failed to convert document. LibreOffice might not be installed on the server.',
 
   'trash.delete-all.button': 'Delete all',
   'trash.delete-all.confirm.title': 'Permanently delete all documents?',
