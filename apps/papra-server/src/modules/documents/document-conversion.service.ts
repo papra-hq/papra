@@ -1,7 +1,7 @@
 import { exec } from 'node:child_process';
 import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
@@ -47,9 +47,9 @@ export class DocumentConversionService {
 
             for (const path of possiblePaths) {
                 try {
-                    // For absolute paths (Windows), just check if file exists
-                    // For relative paths (Unix), check with --version
-                    if (path.includes(':\\') || path.startsWith('/')) {
+                    // For absolute paths, just check if file exists
+                    // For relative paths (like 'soffice'), check with --version
+                    if (isAbsolute(path)) {
                         // Absolute path - just check file existence (no window popup on Windows)
                         await access(path);
                     }
