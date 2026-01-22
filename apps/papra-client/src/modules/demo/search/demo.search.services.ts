@@ -82,6 +82,16 @@ function buildCreatedFilterCondition({ expression }: { expression: FilterExpress
   };
 }
 
+function buildHasTagsFilter({ expression }: { expression: FilterExpression }): DocumentCondition {
+  const { operator } = expression;
+
+  if (operator !== '=') {
+    return falseCondition;
+  }
+
+  return ({ document }) => document.tags.length > 0;
+}
+
 function buildExpressionCondition({ expression }: { expression: Expression }): DocumentCondition {
   switch (expression.type) {
     case 'text': return buildTextCondition({ expression });
@@ -94,10 +104,15 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
         case 'name': return buildNameFilterCondition({ expression });
         case 'content': return buildContentFilterCondition({ expression });
         case 'created': return buildCreatedFilterCondition({ expression });
-        default: return () => false;
+        case 'has':
+          switch (expression.value) {
+            case 'tags': return buildHasTagsFilter({ expression });
+            default: return falseCondition;
+          }
+        default: return falseCondition;
       }
-    case 'empty': return () => false;
-    default: return () => false;
+    case 'empty': return falseCondition;
+    default: return falseCondition;
   }
 }
 

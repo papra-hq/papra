@@ -26,6 +26,10 @@ describe('demo search services', () => {
       { query: 'tag:cooking butter', expectedIds: ['doc_4'] },
       { query: 'tag:work created:>2023-03-01', expectedIds: ['doc_5'] },
       { query: '-tag:work', expectedIds: ['doc_1', 'doc_3', 'doc_4', 'doc_6'] },
+      { query: 'has:tags', expectedIds: ['doc_1', 'doc_2', 'doc_3', 'doc_4', 'doc_5'] },
+      { query: '-has:tags', expectedIds: ['doc_6'] },
+      { query: 'NOT has:tags', expectedIds: ['doc_6'] },
+      { query: '-has:tags OR tag:personal', expectedIds: ['doc_3', 'doc_4', 'doc_6'] },
     ];
 
     for (const { query, expectedIds } of queries) {
