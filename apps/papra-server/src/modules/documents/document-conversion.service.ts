@@ -11,6 +11,12 @@ export type ConversionResult = {
     mimeType: string;
 };
 
+export type DocumentContext = {
+    documentId?: string;
+    name?: string;
+    mimeType?: string;
+};
+
 /**
  * Service to convert office documents to PDF using LibreOffice
  * Requires LibreOffice to be installed on the system
@@ -101,8 +107,11 @@ export class DocumentConversionService {
 
     /**
      * Convert an office document to PDF
+     * @param buffer - The document buffer to convert
+     * @param originalMimeType - The mime type of the original document
+     * @param documentContext - Optional context for better error messages (documentId, name, mimeType)
      */
-    async convertToPdf(buffer: Buffer, originalMimeType: string): Promise<ConversionResult> {
+    async convertToPdf(buffer: Buffer, originalMimeType: string, documentContext?: DocumentContext): Promise<ConversionResult> {
         const available = await this.checkAvailability();
         if (!available) {
             throw new Error('LibreOffice is not available on this system. Please install LibreOffice to enable document preview conversion.');
@@ -159,9 +168,27 @@ export class DocumentConversionService {
             };
         }
         catch (error) {
-            // Better error message
+            // Build context string for error messages
+            const contextParts: string[] = [];
+            if (documentContext?.documentId) {
+                contextParts.push(`documentId: ${documentContext.documentId}`);
+            }
+            if (documentContext?.name) {
+                contextParts.push(`name: ${documentContext.name}`);
+            }
+            if (documentContext?.mimeType) {
+                contextParts.push(`mimeType: ${documentContext.mimeType}`);
+            }
+            const contextStr = contextParts.length > 0 ? ` [${contextParts.join(', ')}]` : '';
+
+            // Better error message with context
             if (error && typeof error === 'object' && 'code' in error && error.code === 'ETIMEDOUT') {
-                throw new Error('Document conversion timeout. The document might be too large or complex.');
+                throw new Error(`Document conversion timeout${contextStr}. The document might be too large or complex.`);
+            }
+
+            // Re-throw with context for other errors
+            if (error instanceof Error) {
+                throw new Error(`Document conversion failed${contextStr}: ${error.message}`);
             }
             throw error;
         }

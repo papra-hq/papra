@@ -381,6 +381,11 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
       const { buffer: pdfBuffer, mimeType: pdfMimeType } = await documentConversionService.convertToPdf(
         originalBuffer,
         document.mimeType,
+        {
+          documentId: document.id,
+          name: document.name,
+          mimeType: document.mimeType,
+        },
       );
 
       // Store preview in storage (without encryption for now)
