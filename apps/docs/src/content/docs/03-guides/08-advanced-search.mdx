@@ -33,6 +33,7 @@ Use filters to search specific document properties. Current supported filters:
 - `content:` - Search in document content
 - `tag:` - Search by tag name or ID
 - `created:` - Filter by document creation date
+- `has:tags` - Check if documents have any tags, it can be negated with `-has:tags` or `NOT has:tags` to find untagged documents
 
 ### Filter Examples
 
@@ -49,12 +50,41 @@ tag:urgent
 
 # Finds documents created after January 1st, 2024
 created:>2024
+
+# Finds documents that have at least one tag
+has:tags
+
+# Finds documents without any tags
+-has:tags
 ```
 
 
 :::note
 The `name:` and `content:` filters use **contains** matching, not exact equality. So `name:foo` will match documents named "foo", "foobar", "my-foo-document", etc.
 :::
+
+### Existence Filter
+
+The `has:` filter checks whether documents have certain properties:
+
+- `has:tags` - Documents with at least one tag
+- `-has:tags` or `NOT has:tags` - Documents without any tags
+
+#### Existence Filter Examples
+
+```yaml
+# Find all untagged documents
+-has:tags
+
+# Find tagged invoices
+has:tags invoice
+
+# Find untagged documents from 2024
+-has:tags created:>=2024
+
+# Find tagged documents that are not archived
+has:tags NOT tag:archived
+```
 
 ### Date Filter
 

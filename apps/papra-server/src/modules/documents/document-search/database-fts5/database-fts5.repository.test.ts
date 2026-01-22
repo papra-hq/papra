@@ -325,6 +325,26 @@ describe('database-fts5 repository', () => {
           searchQuery: 'created:>=2026-01-12 created:<=2026-01-13',
           expectedDocumentsIds: ['doc_3', 'doc_4'],
         },
+        {
+          searchQuery: 'has:tags',
+          expectedDocumentsIds: ['doc_1', 'doc_2', 'doc_3', 'doc_4'],
+        },
+        {
+          searchQuery: '-has:tags',
+          expectedDocumentsIds: ['doc_5'],
+        },
+        {
+          searchQuery: 'NOT has:tags',
+          expectedDocumentsIds: ['doc_5'],
+        },
+        {
+          searchQuery: '-has:tags invoice',
+          expectedDocumentsIds: [],
+        },
+        {
+          searchQuery: 'has:tags created:>=2026-01-12',
+          expectedDocumentsIds: ['doc_3', 'doc_4'],
+        },
       ];
 
       for (const { searchQuery, expectedDocumentsIds } of searches) {

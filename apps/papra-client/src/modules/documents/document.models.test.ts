@@ -279,6 +279,26 @@ describe('files models', () => {
       ).to.eql('tag:invoices tag:receipts tag:tag_2222');
     });
 
+    test('tags with spaces in their name are quoted in the search query', () => {
+      expect(
+        makeDocumentSearchQuery({ tags: [{ name: 'my tag' }] }),
+      ).to.eql(
+        'tag:"my tag"',
+      );
+
+      expect(
+        makeDocumentSearchQuery({ tags: [{ name: 'tag with "quotes"' }] }),
+      ).to.eql(
+        'tag:"tag with \\"quotes\\""',
+      );
+
+      expect(
+        makeDocumentSearchQuery({ tags: [{ id: 'tag_1234', name: 'escaped \\"quote' }] }),
+      ).to.eql(
+        `tag:"escaped \\\\\\"quote"`,
+      );
+    });
+
     test('the tags are sorted alphabetically in the search query for deterministic results', () => {
       expect(
         makeDocumentSearchQuery({

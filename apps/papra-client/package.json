@@ -23,7 +23,8 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
-    "script:sync-i18n-key-order": "tsx src/scripts/sync-i18n-key-order.script.ts"
+    "script:sync-i18n-key-order": "tsx src/scripts/sync-i18n-key-order.script.ts",
+    "script:generate-demo-documents-fixtures": "tsx src/scripts/generate-demo-documents-fixtures.script.ts"
   },
   "dependencies": {
     "@branchlet/core": "^1.0.0",
@@ -32,6 +33,7 @@
     "@kobalte/core": "^0.13.10",
     "@kobalte/utils": "^0.9.1",
     "@modular-forms/solid": "^0.25.1",
+    "@papra/search-parser": "workspace:*",
     "@pdfslick/solid": "^2.3.0",
     "@solid-primitives/storage": "^4.3.2",
     "@solidjs/router": "^0.14.10",
@@ -56,6 +58,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@iconify-json/tabler": "^1.2.19",
+    "@papra/lecture": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-solid": "^0.14.5",

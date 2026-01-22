@@ -2,7 +2,18 @@ import type { SQL } from 'drizzle-orm';
 import { SQLiteSyncDialect } from 'drizzle-orm/sqlite-core';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../../../app/database/database.test-utils';
-import { handleAndExpression, handleContentFilter, handleCreatedFilter, handleEmptyExpression, handleNameFilter, handleNotExpression, handleOrExpression, handleTextExpression, handleUnsupportedExpression } from './query-builder';
+import {
+  handleAndExpression,
+  handleContentFilter,
+  handleCreatedFilter,
+  handleEmptyExpression,
+  handleHasTagsFilter,
+  handleNameFilter,
+  handleNotExpression,
+  handleOrExpression,
+  handleTextExpression,
+  handleUnsupportedExpression,
+} from './query-builder';
 
 describe('query-builder', async () => {
   const { db } = await createInMemoryDatabase();
@@ -435,6 +446,38 @@ describe('query-builder', async () => {
         sql: `not 0`,
         params: [],
       });
+    });
+  });
+
+  describe('handleHasTagsFilter', () => {
+    test('builds query to find documents with tags', () => {
+      const { sqlQuery, issues } = handleHasTagsFilter({
+        expression: { type: 'filter', field: 'has', value: 'tags', operator: '=' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where "tags"."organization_id" = ?)`,
+        params: ['org_1'],
+      });
+    });
+
+    test('just the equality operator is supported ("=") for has filters, other operators return an issue and a no-op SQL query that evaluates to false', () => {
+      const { sqlQuery, issues } = handleHasTagsFilter({
+        expression: { type: 'filter', field: 'has', value: 'tags', operator: '>' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([{
+        message: 'Unsupported operator ">" for has filter',
+        code: 'UNSUPPORTED_FILTER_OPERATOR',
+      }]);
+
+      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
     });
   });
 
