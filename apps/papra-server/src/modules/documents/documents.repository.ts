@@ -37,7 +37,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       getGlobalDocumentsStats,
-      update,
+      updatePreviewFields,
     },
     { db },
   );
@@ -454,7 +454,7 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
   };
 }
 
-async function update({
+async function updatePreviewFields({
   id,
   previewStorageKey,
   previewMimeType,

@@ -400,7 +400,7 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
       });
 
       // Update document with preview info
-      await documentsRepository.update({
+      await documentsRepository.updatePreviewFields({
         id: documentId,
         previewStorageKey,
         previewMimeType: pdfMimeType,
