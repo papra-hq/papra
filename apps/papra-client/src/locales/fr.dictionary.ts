@@ -385,7 +385,6 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.preview.error': 'Échec de l\'aperçu',
   'documents.preview.load-error': 'Impossible de charger l\'aperçu du document',
   'documents.preview.conversion-error': 'Impossible de convertir le document. LibreOffice n\'est peut-être pas installé sur le serveur.',
-  'documents.preview.binary-file': 'Cela semble être un fichier binaire et ne peut pas être affiché en texte',
 
   'trash.delete-all.button': 'Supprimer tous les documents',
   'trash.delete-all.confirm.title': 'Supprimer définitivement tous les documents ?',
