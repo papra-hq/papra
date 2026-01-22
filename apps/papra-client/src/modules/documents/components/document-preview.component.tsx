@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createEffect, createSignal, lazy, Match, Show, Suspense, Switch } from 'solid-js';
+import { createEffect, createSignal, lazy, Match, onCleanup, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile, fetchDocumentPreview } from '../documents.services';
@@ -114,12 +114,27 @@ async function isBlobTextSafe(blob: Blob): Promise<boolean> {
 const TextFromBlob: Component<{ blob: Blob }> = (props) => {
   const [txt, setTxt] = createSignal<string>('');
   const [isLoading, setIsLoading] = createSignal(true);
-  
-  createEffect(async () => {
+
+  createEffect(() => {
+    let cancelled = false;
+
     setIsLoading(true);
-    const text = await blobToString(props.blob);
-    setTxt(text);
-    setIsLoading(false);
+
+    blobToString(props.blob)
+      .then((text) => {
+        if (cancelled) return;
+        setTxt(text);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setTxt('');
+        setIsLoading(false);
+      });
+
+    onCleanup(() => {
+      cancelled = true;
+    });
   });
 
   return (

@@ -345,9 +345,9 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
       if (document.previewStorageKey) {
         const { fileStream } = await documentsStorageService.getFileStream({
           storageKey: document.previewStorageKey,
-          fileEncryptionAlgorithm: null,
-          fileEncryptionKekVersion: null,
-          fileEncryptionKeyWrapped: null,
+          fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+          fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+          fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
         });
 
         return context.body(
@@ -388,8 +388,8 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
         },
       );
 
-      // Store preview in storage (without encryption for now)
-      const previewStorageKey = `${document.originalStorageKey}.preview.pdf`;
+      // Store preview in storage with same encryption as original document
+      const previewStorageKey = `previews/${documentId}.pdf`;
       const previewStream = Readable.from(pdfBuffer);
 
       await documentsStorageService.saveFile({
@@ -397,6 +397,9 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
         fileName: `${document.name}.preview.pdf`,
         mimeType: pdfMimeType,
         storageKey: previewStorageKey,
+        fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+        fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+        fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
       });
 
       // Update document with preview info
