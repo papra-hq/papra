@@ -992,7 +992,7 @@ export const translations = {
   'about.description': 'Το Papra είναι ένα open-source σύστημα διαχείρισης εγγράφων για αρχειοθέτηση, οργάνωση, ετικετοποίηση και διαχείριση εγγράφων.',
   'about.links.title': 'Σύνδεσμοι',
   'about.links.documentation': 'Τεκμηρίωση',
-  'about.links.documentation-description': 'Οδηγοί χρήσης & API reference',
+  'about.links.documentation-description': 'Οδηγοί χρήσης & Αναφορά API',
   'about.links.github': 'GitHub',
   'about.links.github-description': 'Πηγαίος κώδικας & issues',
   'about.links.discord': 'Κοινότητα Discord',
