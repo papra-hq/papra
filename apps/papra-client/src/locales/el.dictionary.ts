@@ -825,7 +825,7 @@ export const translations = {
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} ετησίως',
   'subscriptions.upgrade-dialog.upgrade-now': 'Αναβάθμιση τώρα',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Προσφορά περιορισμένου χρόνου',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Αποκτήστε {{ percent }}% έκπτωση σε όλα τα πλάνα για πάντα ως Early Adopters! Η προσφορά λήγει σε {{ days, >1:{days} ημέρες, =1:1 ημέρα, less than 1 day }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Αποκτήστε {{ percent }}% έκπτωση σε όλα τα πλάνα για πάντα ως Early Adopters! Η προσφορά λήγει σε {{ days, >1:{days} ημέρες, =1:1 ημέρα, λιγότερο από 1 ημέρα }}.',
 
   'subscriptions.plan.free.name': 'Δωρεάν πλάνο',
   'subscriptions.plan.plus.name': 'Plus',
