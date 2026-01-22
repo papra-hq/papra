@@ -18,6 +18,50 @@ export type DocumentContext = {
 // Cache expiration time for LibreOffice availability check (5 minutes)
 const AVAILABILITY_CACHE_TTL_MS = 5 * 60 * 1000;
 
+// Maximum concurrent conversions to prevent resource exhaustion
+const MAX_CONCURRENT_CONVERSIONS = 3;
+
+/**
+ * Simple semaphore for limiting concurrent operations
+ */
+class Semaphore {
+  private permits: number;
+  private waitQueue: Array<() => void> = [];
+
+  constructor(permits: number) {
+    this.permits = permits;
+  }
+
+  async acquire(): Promise<void> {
+    if (this.permits > 0) {
+      this.permits--;
+      return;
+    }
+
+    // Wait for a permit to become available
+    await new Promise<void>((resolve) => {
+      this.waitQueue.push(resolve);
+    });
+  }
+
+  release(): void {
+    const next = this.waitQueue.shift();
+    if (next) {
+      next();
+    }
+    else {
+      this.permits++;
+    }
+  }
+
+  /**
+   * Get current queue length (for monitoring)
+   */
+  getQueueLength(): number {
+    return this.waitQueue.length;
+  }
+}
+
 /**
  * Service to convert office documents to PDF using LibreOffice
  * Requires LibreOffice to be installed on the system
@@ -26,6 +70,7 @@ export class DocumentConversionService {
   private libreOfficePath: string | null = null;
   private isAvailable: boolean | null = null;
   private lastAvailabilityCheck: number = 0;
+  private conversionSemaphore = new Semaphore(MAX_CONCURRENT_CONVERSIONS);
 
   constructor() {
     // Clean up any orphaned temp directories from previous runs on startup
@@ -185,6 +230,7 @@ export class DocumentConversionService {
 
   /**
    * Convert an office document to PDF
+   * Uses a semaphore to limit concurrent conversions and prevent resource exhaustion
    * @param buffer - The document buffer to convert
    * @param originalMimeType - The mime type of the original document
    * @param documentContext - Optional context for better error messages (documentId, name, mimeType)
@@ -199,11 +245,16 @@ export class DocumentConversionService {
       throw new Error(`Mime type ${originalMimeType} is not supported for conversion`);
     }
 
+    // Acquire semaphore to limit concurrent conversions
+    // This prevents resource exhaustion when many documents are uploaded simultaneously
+    await this.conversionSemaphore.acquire();
+
     // Create temporary directory with opaque random name for security
     const tempDir = join(tmpdir(), `papra-conv-${randomUUID()}`);
-    await mkdir(tempDir, { recursive: true });
 
     try {
+      await mkdir(tempDir, { recursive: true });
+
       // Get file extension based on mime type
       const extension = this.getExtensionFromMimeType(originalMimeType);
       const inputFile = join(tempDir, `input.${extension}`);
@@ -286,6 +337,9 @@ export class DocumentConversionService {
       throw error;
     }
     finally {
+      // Release semaphore to allow next conversion in queue
+      this.conversionSemaphore.release();
+
       // Clean up temporary directory
       // Retry cleanup if files are locked (EBUSY on Windows)
       try {
