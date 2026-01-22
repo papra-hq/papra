@@ -362,6 +362,12 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
         );
       }
 
+      // Check file size before loading into memory (limit to 50MB for conversion)
+      const MAX_CONVERSION_SIZE = 50 * 1024 * 1024; // 50MB
+      if (document.originalSize > MAX_CONVERSION_SIZE) {
+        throw createHttpError(413, 'Document too large for preview conversion. Maximum size is 50MB.');
+      }
+
       // Convert document to PDF
       const { fileStream: originalStream } = await documentsStorageService.getFileStream({
         storageKey: document.originalStorageKey,
@@ -402,9 +408,32 @@ function setupGetDocumentPreviewRoute({ app, db, documentsStorageService }: Rout
         fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
       });
 
+      // Re-check if another request already saved a preview (race condition handling)
+      const updatedDoc = await documentsRepository.getDocumentById({ documentId, organizationId, db });
+      if (updatedDoc?.document?.previewStorageKey && updatedDoc.document.previewStorageKey !== previewStorageKey) {
+        // Another request already saved a preview, use that one
+        const { fileStream } = await documentsStorageService.getFileStream({
+          storageKey: updatedDoc.document.previewStorageKey,
+          fileEncryptionAlgorithm: document.fileEncryptionAlgorithm,
+          fileEncryptionKekVersion: document.fileEncryptionKekVersion,
+          fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
+        });
+        return context.body(
+          Readable.toWeb(fileStream),
+          200,
+          {
+            'Content-Type': updatedDoc.document.previewMimeType || 'application/pdf',
+            'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(document.name.replace(/\.[^.]+$/, '.pdf'))}`,
+            'Content-Length': String(updatedDoc.document.previewSize || 0),
+            'X-Content-Type-Options': 'nosniff',
+          },
+        );
+      }
+
       // Update document with preview info
       await documentsRepository.updatePreviewFields({
         id: documentId,
+        organizationId,
         previewStorageKey,
         previewMimeType: pdfMimeType,
         previewSize: pdfBuffer.length,

@@ -456,6 +456,7 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
 
 async function updatePreviewFields({
   id,
+  organizationId,
   previewStorageKey,
   previewMimeType,
   previewSize,
@@ -463,6 +464,7 @@ async function updatePreviewFields({
   db,
 }: {
   id: string;
+  organizationId: string;
   previewStorageKey?: string;
   previewMimeType?: string;
   previewSize?: number;
@@ -477,7 +479,10 @@ async function updatePreviewFields({
       previewSize,
       previewGeneratedAt,
     }))
-    .where(eq(documentsTable.id, id))
+    .where(and(
+      eq(documentsTable.id, id),
+      eq(documentsTable.organizationId, organizationId),
+    ))
     .returning();
 
   if (isNil(document)) {

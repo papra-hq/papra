@@ -24,11 +24,10 @@ export const documentPreviewFieldsMigration = {
     },
 
     down: async ({ db }) => {
-        await db.batch([
-            db.run(sql`ALTER TABLE documents DROP COLUMN preview_storage_key`),
-            db.run(sql`ALTER TABLE documents DROP COLUMN preview_mime_type`),
-            db.run(sql`ALTER TABLE documents DROP COLUMN preview_size`),
-            db.run(sql`ALTER TABLE documents DROP COLUMN preview_generated_at`),
-        ]);
+        // SQLite requires each DROP COLUMN to be executed individually
+        await db.run(sql`ALTER TABLE documents DROP COLUMN preview_storage_key`);
+        await db.run(sql`ALTER TABLE documents DROP COLUMN preview_mime_type`);
+        await db.run(sql`ALTER TABLE documents DROP COLUMN preview_size`);
+        await db.run(sql`ALTER TABLE documents DROP COLUMN preview_generated_at`);
     },
 } satisfies Migration;
