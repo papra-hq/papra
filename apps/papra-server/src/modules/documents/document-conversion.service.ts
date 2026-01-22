@@ -160,6 +160,15 @@ export class DocumentConversionService {
 
             // Read the converted PDF
             const outputFile = join(outputDir, 'input.pdf');
+
+            // Ensure the output file was actually created by LibreOffice
+            try {
+                await access(outputFile);
+            }
+            catch {
+                throw new Error('Document conversion failed: LibreOffice did not produce an output PDF file.');
+            }
+
             const pdfBuffer = await readFile(outputFile);
 
             return {

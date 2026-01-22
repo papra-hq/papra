@@ -20,11 +20,13 @@ export const documentsTable = sqliteTable('documents', {
   mimeType: text('mime_type').notNull(),
   content: text('content').notNull().default(''),
 
-  // Preview/conversion fields for office documents
-  previewStorageKey: text('preview_storage_key'),
-  previewMimeType: text('preview_mime_type'),
-  previewSize: integer('preview_size'),
-  previewGeneratedAt: integer('preview_generated_at', { mode: 'timestamp_ms' }),
+  // Cached preview PDF metadata for office documents (Word, Excel, PowerPoint)
+  // These fields let us reuse an existing preview PDF instead of re-running
+  // the document-to-PDF conversion pipeline on every access.
+  previewStorageKey: text('preview_storage_key'), // Storage key of the cached preview PDF (e.g. in object storage)
+  previewMimeType: text('preview_mime_type'), // MIME type of the cached preview PDF
+  previewSize: integer('preview_size'), // Size (in bytes) of the cached preview PDF
+  previewGeneratedAt: integer('preview_generated_at', { mode: 'timestamp_ms' }), // Timestamp when the preview PDF was last generated
 
   fileEncryptionKeyWrapped: text('file_encryption_key_wrapped'), // The wrapped encryption key
   fileEncryptionKekVersion: text('file_encryption_kek_version'), // The key encryption key version used to encrypt the file encryption key
