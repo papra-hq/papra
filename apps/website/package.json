@@ -2,7 +2,6 @@
   "name": "@papra/website",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@9.11.0",
   "description": "Website for Papra, the document management platform",
   "scripts": {
     "dev": "astro dev",
