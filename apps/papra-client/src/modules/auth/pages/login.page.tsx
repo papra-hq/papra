@@ -345,13 +345,15 @@ export const LoginPage: Component = () => {
                 </div>
               </Show>
 
-              <p class="text-muted-foreground mt-4">
-                {t('auth.login.no-account')}
-                {' '}
-                <Button variant="link" as={A} class="inline px-0" href="/register">
-                  {t('auth.login.register')}
-                </Button>
-              </p>
+              <Show when={config.auth.isRegistrationEnabled}>
+                <p class="text-muted-foreground mt-4">
+                  {t('auth.login.no-account')}
+                  {' '}
+                  <Button variant="link" as={A} class="inline px-0" href="/register">
+                    {t('auth.login.register')}
+                  </Button>
+                </p>
+              </Show>
 
               <AuthLegalLinks />
             </Show>
