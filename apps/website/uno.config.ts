@@ -19,7 +19,7 @@ export default defineConfig({
       },
       prefix: '',
     }),
-    presetAnimations(),
+    presetAnimations() as any, // TODO: Remove temporary fix for typing issue
     presetIcons(),
     presetTypography(),
     presetWebFonts({
