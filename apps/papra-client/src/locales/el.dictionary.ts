@@ -1,4 +1,6 @@
-export const translations = {
+import type { TranslationsDictionary } from '@/modules/i18n/locales.types';
+
+export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Επαναφορά κωδικού πρόσβασης',
@@ -417,31 +419,25 @@ export const translations = {
   'tags.create': 'Δημιουργία ετικέτας',
   'tags.update': 'Ενημέρωση ετικέτας',
   'tags.delete': 'Διαγραφή ετικέτας',
-
   'tags.delete.confirm.title': 'Διαγραφή ετικέτας',
   'tags.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την ετικέτα; Θα αφαιρεθεί από όλα τα έγγραφα.',
   'tags.delete.confirm.confirm-button': 'Διαγραφή',
   'tags.delete.confirm.cancel-button': 'Ακύρωση',
-
   'tags.delete.success': 'Η ετικέτα διαγράφηκε',
   'tags.create.success': 'Η ετικέτα "{{ name }}" δημιουργήθηκε με επιτυχία.',
   'tags.update.success': 'Η ετικέτα "{{ name }}" ενημερώθηκε με επιτυχία.',
-
   'tags.form.name.label': 'Όνομα',
   'tags.form.name.placeholder': 'Π.χ. Συμβόλαια',
   'tags.form.name.required': 'Παρακαλώ εισαγάγετε όνομα ετικέτας',
   'tags.form.name.max-length': 'Το όνομα πρέπει να έχει λιγότερους από 64 χαρακτήρες',
-
   'tags.form.color.label': 'Χρώμα',
   'tags.form.color.required': 'Παρακαλώ εισαγάγετε χρώμα',
   'tags.form.color.invalid': 'Ο κωδικός χρώματος δεν είναι σωστός',
-
   'tags.form.description.label': 'Περιγραφή',
   'tags.form.description.optional': '(προαιρετικό)',
   'tags.form.description.placeholder': 'Π.χ. Όλα τα συμβόλαια της εταιρείας',
   'tags.form.description.max-length': 'Η περιγραφή πρέπει να έχει λιγότερους από 256 χαρακτήρες',
   'tags.form.no-description': 'Χωρίς περιγραφή',
-
   'tags.table.headers.tag': 'Ετικέτα',
   'tags.table.headers.description': 'Περιγραφή',
   'tags.table.headers.documents': 'Έγγραφα',
@@ -452,73 +448,57 @@ export const translations = {
 
   'tagging-rules.field.name': 'όνομα εγγράφου',
   'tagging-rules.field.content': 'περιεχόμενο εγγράφου',
-
   'tagging-rules.operator.equals': 'είναι ίσο με',
   'tagging-rules.operator.not-equals': 'δεν είναι ίσο με',
   'tagging-rules.operator.contains': 'περιέχει',
   'tagging-rules.operator.not-contains': 'δεν περιέχει',
   'tagging-rules.operator.starts-with': 'ξεκινά με',
   'tagging-rules.operator.ends-with': 'τελειώνει με',
-
   'tagging-rules.list.title': 'Κανόνες ετικετοποίησης',
   'tagging-rules.list.description': 'Διαχειριστείτε τους κανόνες ετικετοποίησης που εφαρμόζουν αυτόματα ετικέτες σε έγγραφα βάσει συνθηκών.',
   'tagging-rules.list.demo-warning': 'Σημείωση: Αυτό είναι demo περιβάλλον (χωρίς server). Οι κανόνες δεν θα εφαρμοστούν αυτόματα.',
   'tagging-rules.list.no-tagging-rules.title': 'Δεν υπάρχουν κανόνες',
   'tagging-rules.list.no-tagging-rules.description': 'Δημιουργήστε έναν κανόνα για αυτόματη ετικετοποίηση εγγράφων.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Δημιουργία κανόνα',
-
   'tagging-rules.list.card.no-conditions': 'Χωρίς συνθήκες',
   'tagging-rules.list.card.one-condition': '1 συνθήκη',
   'tagging-rules.list.card.conditions': '{{ count }} συνθήκες',
-
   'tagging-rules.list.card.delete': 'Διαγραφή κανόνα',
   'tagging-rules.list.card.edit': 'Επεξεργασία κανόνα',
-
   'tagging-rules.create.title': 'Δημιουργία κανόνα',
   'tagging-rules.create.success': 'Ο κανόνας δημιουργήθηκε με επιτυχία',
   'tagging-rules.create.error': 'Η δημιουργία του κανόνα απέτυχε',
   'tagging-rules.create.submit': 'Δημιουργία κανόνα',
-
   'tagging-rules.form.name.label': 'Όνομα',
   'tagging-rules.form.name.placeholder': 'Π.χ. Ετικετοποίηση τιμολογίων',
   'tagging-rules.form.name.min-length': 'Παρακαλώ εισαγάγετε όνομα κανόνα',
   'tagging-rules.form.name.max-length': 'Το όνομα πρέπει να έχει λιγότερους από 64 χαρακτήρες',
-
   'tagging-rules.form.description.label': 'Περιγραφή',
   'tagging-rules.form.description.placeholder': 'Π.χ. Ετικετοποίηση εγγράφων που περιέχουν "invoice" στο όνομα',
   'tagging-rules.form.description.max-length': 'Η περιγραφή πρέπει να έχει λιγότερους από 256 χαρακτήρες',
-
   'tagging-rules.form.conditions.label': 'Συνθήκες',
   'tagging-rules.form.conditions.description': 'Καθορίστε τις συνθήκες που πρέπει να πληρούνται ώστε να εφαρμοστούν οι ετικέτες.',
   'tagging-rules.form.conditions.add-condition': 'Προσθήκη συνθήκης',
-
   'tagging-rules.form.conditions.connector.when': 'Όταν',
   'tagging-rules.form.conditions.connector.and': 'και',
   'tagging-rules.form.conditions.connector.or': 'ή',
-
   'tagging-rules.condition-match-mode.all': 'Πρέπει να ισχύουν όλες οι συνθήκες',
   'tagging-rules.condition-match-mode.any': 'Πρέπει να ισχύει οποιαδήποτε συνθήκη',
-
   'tagging-rules.form.conditions.no-conditions.title': 'Χωρίς συνθήκες',
   'tagging-rules.form.conditions.no-conditions.description': 'Δεν προσθέσατε συνθήκες. Ο κανόνας θα εφαρμοστεί σε όλα τα έγγραφα.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Εφαρμογή κανόνα χωρίς συνθήκες',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Ακύρωση',
-
   'tagging-rules.form.conditions.value.placeholder': 'Π.χ. invoice',
   'tagging-rules.form.conditions.value.min-length': 'Παρακαλώ εισαγάγετε μια τιμή συνθήκης',
-
   'tagging-rules.form.tags.label': 'Ετικέτες',
   'tagging-rules.form.tags.description': 'Επιλέξτε τις ετικέτες που θα εφαρμοστούν στα έγγραφα που ταιριάζουν',
   'tagging-rules.form.tags.min-length': 'Απαιτείται τουλάχιστον μία ετικέτα',
   'tagging-rules.form.tags.add-tag': 'Δημιουργία ετικέτας',
-
   'tagging-rules.form.submit': 'Δημιουργία κανόνα',
-
   'tagging-rules.update.title': 'Ενημέρωση κανόνα',
   'tagging-rules.update.error': 'Η ενημέρωση του κανόνα απέτυχε',
   'tagging-rules.update.submit': 'Ενημέρωση κανόνα',
   'tagging-rules.update.cancel': 'Ακύρωση',
-
   'tagging-rules.apply.button': 'Εφαρμογή σε υπάρχοντα έγγραφα',
   'tagging-rules.apply.confirm.title': 'Να εφαρμοστεί ο κανόνας στα υπάρχοντα έγγραφα;',
   'tagging-rules.apply.confirm.description': 'Θα γίνει έλεγχος σε όλα τα υπάρχοντα έγγραφα και θα εφαρμοστούν οι κατάλληλες ετικέτες στο παρασκήνιο.',
@@ -534,34 +514,27 @@ export const translations = {
   'intake-emails.disabled.title': 'Τα email εισαγωγής είναι απενεργοποιημένα',
   'intake-emails.disabled.description': 'Παρακαλώ επικοινωνήστε με τον διαχειριστή. Δείτε τα {{ documentation }} για περισσότερες πληροφορίες.',
   'intake-emails.disabled.documentation': 'τεκμηρίωση',
-
   'intake-emails.info': 'Μόνο ενεργοποιημένα email από επιτρεπόμενες διευθύνσεις θα υποβληθούν σε επεξεργασία.',
   'intake-emails.empty.title': 'Δεν υπάρχουν email εισαγωγής',
   'intake-emails.empty.description': 'Δημιουργήστε μια νέα διεύθυνση εισαγωγής.',
   'intake-emails.empty.generate': 'Δημιουργία email εισαγωγής',
-
   'intake-emails.count': '{{ count }} email εισαγωγής{{ plural }} για αυτόν τον οργανισμό',
   'intake-emails.new': 'Νέο email εισαγωγής',
-
   'intake-emails.disabled-label': '(Ανενεργό)',
   'intake-emails.no-origins': 'Δεν υπάρχουν επιτρεπόμενες διευθύνσεις αποστολής',
   'intake-emails.allowed-origins': 'Επιτρέπεται από {{ count }} διεύθυνση{{ plural }}',
-
   'intake-emails.actions.enable': 'Ενεργοποίηση',
   'intake-emails.actions.disable': 'Απενεργοποίηση',
   'intake-emails.actions.manage-origins': 'Διαχείριση επιτρεπόμενων διευθύνσεων',
   'intake-emails.actions.delete': 'Διαγραφή',
-
   'intake-emails.delete.confirm.title': 'Διαγραφή email εισαγωγής;',
   'intake-emails.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
   'intake-emails.delete.confirm.confirm-button': 'Διαγραφή email εισαγωγής',
   'intake-emails.delete.confirm.cancel-button': 'Ακύρωση',
   'intake-emails.delete.success': 'Το email εισαγωγής διαγράφηκε',
-
   'intake-emails.create.success': 'Το email εισαγωγής δημιουργήθηκε',
   'intake-emails.update.success.enabled': 'Το email εισαγωγής ενεργοποιήθηκε',
   'intake-emails.update.success.disabled': 'Το email εισαγωγής απενεργοποιήθηκε',
-
   'intake-emails.allowed-origins.title': 'Επιτρεπόμενες διευθύνσεις',
   'intake-emails.allowed-origins.description': 'Μόνο email που αποστέλλονται στο {{ email }} από αυτές τις διευθύνσεις θα υποβληθούν σε επεξεργασία.',
   'intake-emails.allowed-origins.add.label': 'Προσθήκη επιτρεπόμενης διεύθυνσης',
@@ -573,52 +546,41 @@ export const translations = {
 
   'api-keys.permissions.select-all': 'Επιλογή όλων',
   'api-keys.permissions.deselect-all': 'Αποεπιλογή όλων',
-
   'api-keys.permissions.organizations.title': 'Οργανισμοί',
   'api-keys.permissions.organizations.organizations:create': 'Δημιουργία οργανισμών',
   'api-keys.permissions.organizations.organizations:read': 'Προβολή οργανισμών',
   'api-keys.permissions.organizations.organizations:update': 'Ενημέρωση οργανισμών',
   'api-keys.permissions.organizations.organizations:delete': 'Διαγραφή οργανισμών',
-
   'api-keys.permissions.documents.title': 'Έγγραφα',
   'api-keys.permissions.documents.documents:create': 'Δημιουργία εγγράφων',
   'api-keys.permissions.documents.documents:read': 'Προβολή εγγράφων',
   'api-keys.permissions.documents.documents:update': 'Ενημέρωση εγγράφων',
   'api-keys.permissions.documents.documents:delete': 'Διαγραφή εγγράφων',
-
   'api-keys.permissions.tags.title': 'Ετικέτες',
   'api-keys.permissions.tags.tags:create': 'Δημιουργία ετικετών',
   'api-keys.permissions.tags.tags:read': 'Προβολή ετικετών',
   'api-keys.permissions.tags.tags:update': 'Ενημέρωση ετικετών',
   'api-keys.permissions.tags.tags:delete': 'Διαγραφή ετικετών',
-
   'api-keys.create.title': 'Δημιουργία API key',
   'api-keys.create.description': 'Δημιουργήστε νέο API key για πρόσβαση στο Papra API.',
   'api-keys.create.success': 'Το API key δημιουργήθηκε με επιτυχία.',
   'api-keys.create.back': 'Πίσω στα API keys',
-
   'api-keys.create.form.name.label': 'Όνομα',
   'api-keys.create.form.name.placeholder': 'Π.χ. Το API κλειδί μου',
   'api-keys.create.form.name.required': 'Παρακαλώ εισαγάγετε όνομα',
-
   'api-keys.create.form.permissions.label': 'Δικαιώματα',
   'api-keys.create.form.permissions.required': 'Παρακαλώ επιλέξτε τουλάχιστον ένα δικαίωμα',
-
   'api-keys.create.form.submit': 'Δημιουργία API key',
-
   'api-keys.create.created.title': 'API key δημιουργήθηκε',
   'api-keys.create.created.description': 'Αποθηκεύστε το σε ασφαλές σημείο — δεν θα εμφανιστεί ξανά.',
-
   'api-keys.list.title': 'API keys',
   'api-keys.list.description': 'Διαχειριστείτε τα API keys σας.',
   'api-keys.list.create': 'Δημιουργία API key',
   'api-keys.list.empty.title': 'Δεν υπάρχουν API keys',
   'api-keys.list.empty.description': 'Δημιουργήστε ένα API key για πρόσβαση στο API.',
-
   'api-keys.list.card.last-used': 'Τελευταία χρήση',
   'api-keys.list.card.never': 'Ποτέ',
   'api-keys.list.card.created': 'Δημιουργήθηκε',
-
   'api-keys.delete.success': 'Το API key διαγράφηκε επιτυχώς',
   'api-keys.delete.confirm.title': 'Διαγραφή API key',
   'api-keys.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
@@ -632,42 +594,33 @@ export const translations = {
   'webhooks.list.empty.title': 'Δεν υπάρχουν webhooks',
   'webhooks.list.empty.description': 'Δημιουργήστε ένα webhook για να λαμβάνετε συμβάντα',
   'webhooks.list.create': 'Δημιουργία webhook',
-
   'webhooks.list.card.last-triggered': 'Τελευταία ενεργοποίηση',
   'webhooks.list.card.never': 'Ποτέ',
   'webhooks.list.card.created': 'Δημιουργήθηκε',
-
   'webhooks.create.title': 'Δημιουργία webhook',
   'webhooks.create.description': 'Δημιουργήστε νέο webhook για λήψη συμβάντων',
   'webhooks.create.success': 'Το webhook δημιουργήθηκε επιτυχώς',
   'webhooks.create.back': 'Πίσω',
   'webhooks.create.form.submit': 'Δημιουργία webhook',
-
   'webhooks.create.form.name.label': 'Όνομα webhook',
   'webhooks.create.form.name.placeholder': 'Εισαγάγετε όνομα',
   'webhooks.create.form.name.required': 'Το όνομα είναι υποχρεωτικό',
-
   'webhooks.create.form.url.label': 'URL Webhook',
   'webhooks.create.form.url.placeholder': 'Εισαγάγετε URL',
   'webhooks.create.form.url.required': 'Το URL είναι υποχρεωτικό',
   'webhooks.create.form.url.invalid': 'Το URL δεν είναι έγκυρο',
-
   'webhooks.create.form.secret.label': 'Μυστικό',
   'webhooks.create.form.secret.placeholder': 'Εισαγάγετε μυστικό',
-
   'webhooks.create.form.events.label': 'Συμβάντα',
   'webhooks.create.form.events.required': 'Απαιτείται τουλάχιστον ένα συμβάν',
-
   'webhooks.update.title': 'Επεξεργασία webhook',
   'webhooks.update.description': 'Ενημερώστε τις λεπτομέρειες του webhook',
   'webhooks.update.success': 'Το webhook ενημερώθηκε επιτυχώς',
   'webhooks.update.submit': 'Ενημέρωση webhook',
   'webhooks.update.cancel': 'Ακύρωση',
-
   'webhooks.update.form.secret.placeholder': 'Εισαγάγετε νέο μυστικό',
   'webhooks.update.form.secret.placeholder-redacted': '[Κρυμμένο μυστικό]',
   'webhooks.update.form.rotate-secret.button': 'Ανανέωση μυστικού',
-
   'webhooks.delete.success': 'Το webhook διαγράφηκε',
   'webhooks.delete.confirm.title': 'Διαγραφή webhook',
   'webhooks.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να το διαγράψετε;',
@@ -744,7 +697,7 @@ export const translations = {
   'api-errors.auth.invalid_origin': 'Μη έγκυρη προέλευση εφαρμογής. Βεβαιωθείτε ότι το APP_BASE_URL ταιριάζει με το τρέχον URL. Δείτε https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Φτάσατε το μέγιστο αριθμό μελών/προσκλήσεων. Αναβαθμίστε το πλάνο σας.',
   'api-errors.organization.has_active_subscription': 'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα μέσω "Διαχείριση συνδρομής".',
-
+  // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Ο χρήστης δεν βρέθηκε',
   'api-errors.FAILED_TO_CREATE_USER': 'Αποτυχία δημιουργίας χρήστη',
   'api-errors.FAILED_TO_CREATE_SESSION': 'Αποτυχία δημιουργίας συνεδρίας',
@@ -872,32 +825,27 @@ export const translations = {
   'admin.organizations.loading': 'Φόρτωση οργανισμών...',
   'admin.organizations.no-results': 'Δεν βρέθηκαν οργανισμοί που να ταιριάζουν.',
   'admin.organizations.empty': 'Δεν βρέθηκαν οργανισμοί.',
-
   'admin.organizations.table.id': 'ID',
   'admin.organizations.table.name': 'Όνομα',
   'admin.organizations.table.members': 'Μέλη',
   'admin.organizations.table.created': 'Δημιουργήθηκε',
   'admin.organizations.table.updated': 'Ενημερώθηκε',
-
   'admin.organizations.pagination.info': 'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:οργανισμό, οργανισμούς }}',
   'admin.organizations.pagination.page-info': 'Σελίδα {{ current }} από {{ total }}',
 
   'admin.organization-detail.title': 'Λεπτομέρειες οργανισμού',
   'admin.organization-detail.back': 'Πίσω στους οργανισμούς',
-
   'admin.organization-detail.loading.info': 'Φόρτωση πληροφοριών...',
   'admin.organization-detail.loading.stats': 'Φόρτωση στατιστικών...',
   'admin.organization-detail.loading.intake-emails': 'Φόρτωση email εισαγωγής...',
   'admin.organization-detail.loading.webhooks': 'Φόρτωση webhooks...',
   'admin.organization-detail.loading.members': 'Φόρτωση μελών...',
-
   'admin.organization-detail.basic-info.title': 'Πληροφορίες οργανισμού',
   'admin.organization-detail.basic-info.description': 'Βασικά στοιχεία',
   'admin.organization-detail.basic-info.id': 'ID',
   'admin.organization-detail.basic-info.name': 'Όνομα',
   'admin.organization-detail.basic-info.created': 'Δημιουργήθηκε',
   'admin.organization-detail.basic-info.updated': 'Ενημερώθηκε',
-
   'admin.organization-detail.members.title': 'Μέλη ({{ count }})',
   'admin.organization-detail.members.description': 'Χρήστες που ανήκουν στον οργανισμό',
   'admin.organization-detail.members.empty': 'Δεν υπάρχουν μέλη',
@@ -905,7 +853,6 @@ export const translations = {
   'admin.organization-detail.members.table.id': 'ID',
   'admin.organization-detail.members.table.role': 'Ρόλος',
   'admin.organization-detail.members.table.joined': 'Ημερομηνία ένταξης',
-
   'admin.organization-detail.intake-emails.title': 'Email εισαγωγής ({{ count }})',
   'admin.organization-detail.intake-emails.description': 'Email που χρησιμοποιούνται για εισαγωγή εγγράφων',
   'admin.organization-detail.intake-emails.empty': 'Δεν υπάρχουν email εισαγωγής',
@@ -913,13 +860,11 @@ export const translations = {
   'admin.organization-detail.intake-emails.status.disabled': 'Ανενεργό',
   'admin.organization-detail.intake-emails.badge.active': 'Ενεργό',
   'admin.organization-detail.intake-emails.badge.inactive': 'Ανενεργό',
-
   'admin.organization-detail.webhooks.title': 'Webhooks ({{ count }})',
   'admin.organization-detail.webhooks.description': 'Διευθύνσεις webhook',
   'admin.organization-detail.webhooks.empty': 'Δεν υπάρχουν webhooks',
   'admin.organization-detail.webhooks.badge.active': 'Ενεργό',
   'admin.organization-detail.webhooks.badge.inactive': 'Ανενεργό',
-
   'admin.organization-detail.stats.title': 'Στατιστικά χρήσης',
   'admin.organization-detail.stats.description': 'Στατιστικά εγγράφων και χώρου',
   'admin.organization-detail.stats.active-documents': 'Ενεργά έγγραφα',
@@ -935,7 +880,6 @@ export const translations = {
   'admin.users.loading': 'Φόρτωση χρηστών...',
   'admin.users.no-results': 'Δεν βρέθηκαν χρήστες που να ταιριάζουν.',
   'admin.users.empty': 'Δεν υπάρχουν χρήστες.',
-
   'admin.users.table.user': 'Χρήστης',
   'admin.users.table.id': 'ID',
   'admin.users.table.status': 'Κατάσταση',
@@ -943,14 +887,12 @@ export const translations = {
   'admin.users.table.status.unverified': 'Μη επαληθευμένο',
   'admin.users.table.orgs': 'Οργανισμοί',
   'admin.users.table.created': 'Δημιουργήθηκε',
-
   'admin.users.pagination.info': 'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:χρήστη, χρήστες }}',
   'admin.users.pagination.page-info': 'Σελίδα {{ current }} από {{ total }}',
 
   'admin.user-detail.back': 'Πίσω στους χρήστες',
   'admin.user-detail.loading': 'Φόρτωση λεπτομερειών χρήστη...',
   'admin.user-detail.unnamed': 'Χρήστης χωρίς όνομα',
-
   'admin.user-detail.basic-info.title': 'Πληροφορίες χρήστη',
   'admin.user-detail.basic-info.description': 'Βασικές λεπτομέρειες λογαριασμού',
   'admin.user-detail.basic-info.user-id': 'ID χρήστη',
@@ -964,11 +906,9 @@ export const translations = {
   'admin.user-detail.basic-info.max-organizations.unlimited': 'Απεριόριστοι',
   'admin.user-detail.basic-info.created': 'Δημιουργήθηκε',
   'admin.user-detail.basic-info.updated': 'Τελευταία ενημέρωση',
-
   'admin.user-detail.roles.title': 'Ρόλοι & Δικαιώματα',
   'admin.user-detail.roles.description': 'Ρόλοι και επίπεδα πρόσβασης',
   'admin.user-detail.roles.empty': 'Δεν έχουν ανατεθεί ρόλοι',
-
   'admin.user-detail.organizations.title': 'Οργανισμοί ({{ count }})',
   'admin.user-detail.organizations.description': 'Οργανισμοί στους οποίους ανήκει ο χρήστης',
   'admin.user-detail.organizations.empty': 'Δεν ανήκει σε κανέναν οργανισμό',
@@ -1005,4 +945,4 @@ export const translations = {
   'socials.x': 'X',
   'socials.reddit': 'Reddit',
   'socials.linkedin': 'LinkedIn',
-} as const;
+};
