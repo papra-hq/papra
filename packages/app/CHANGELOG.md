@@ -1,4 +1,4 @@
-# @papra/docker
+# @papra/app
 
 ## 26.0.0
 
