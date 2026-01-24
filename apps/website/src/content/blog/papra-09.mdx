@@ -1,0 +1,133 @@
+---
+title: Papra v0.9 - Document encryption, performance improvements, and streamlined storage
+description: Papra v0.9 introduces document encryption with DEK/KEK architecture, migrates Backblaze B2 to S3, adds streaming uploads, and brings significant performance and UX improvements.
+publishedAt: 2025-09-09
+lang: en
+ogImage: /src/content/blog/_images/papra-09/papra-09-og.png
+coverImage: /src/content/blog/_images/papra-09/papra-09-preview.png
+---
+
+I'm excited to announce the release of Papra v0.9! This release brings a major security enhancement with document encryption, significant performance improvements, and important infrastructure updates that make Papra more secure and efficient.
+
+## Document Encryption Layer
+
+The biggest feature in v0.9 is the introduction of **document encryption** at the storage level. This provides an additional layer of security for your documents, regardless of which storage driver you're using.
+
+### How It Works
+
+Papra uses a **two-layer encryption approach**:
+
+1. **Document Encryption Key (DEK)**: Papra generates a random encryption key for each document that is used to encrypt the document content
+2. **Key Encryption Key (KEK)**: The DEK is encrypted using your provided master key and stored in the database
+
+This architecture ensures that even if your storage is compromised, your documents remain encrypted and unreadable without access to both the database and your encryption keys, and it allows you to simply rotate the encryption key without having to re-encrypt all the documents.
+
+### Quick Setup
+
+Getting started with document encryption is straightforward:
+
+```bash
+# Enable document encryption
+DOCUMENT_STORAGE_ENCRYPTION_IS_ENABLED=true
+
+# Provide your encryption key (must be 32 bytes in hex format)
+DOCUMENT_STORAGE_DOCUMENT_KEY_ENCRYPTION_KEYS=<your-32-byte-encryption-key-in-hex>
+```
+
+### Storage Driver Agnostic
+
+The encryption layer works seamlessly with all storage drivers (fs, s3, azure blob storage, etc.) by wrapping the storage driver and encrypting/decrypting the document content.
+
+### Migrating Existing Documents
+
+If you have existing documents and want to enable encryption, don't worry! New documents will be automatically encrypted, and you can encrypt existing documents using:
+
+```bash
+docker compose exec papra pnpm maintenance:encrypt-all-documents
+```
+
+This command will encrypt all previously unencrypted documents without affecting their accessibility or metadata.
+
+For more technical details and advanced configuration options, check out the [document encryption guide](https://docs.papra.app/guides/document-encryption) in our documentation.
+
+## Breaking Change: Backblaze B2 Migration
+
+**Important**: We've migrated from the dedicated Backblaze B2 driver to using B2 through the S3-compatible API. This change allows us to drop a third-party, community-maintained B2 client that wasn't well-maintained and gives you access to the full S3 feature set.
+
+### Migration Guide
+
+If you're currently using Backblaze B2, you'll need to update your configuration:
+
+**Before (v0.8 and earlier):**
+```bash
+DOCUMENT_STORAGE_DRIVER=b2
+DOCUMENT_STORAGE_B2_APPLICATION_KEY_ID=<key-id>
+DOCUMENT_STORAGE_B2_APPLICATION_KEY=<secret-key>
+DOCUMENT_STORAGE_B2_BUCKET_NAME=<bucket-name>
+DOCUMENT_STORAGE_B2_BUCKET_ID=<bucket-id>
+```
+
+**After (v0.9+):**
+```bash
+DOCUMENT_STORAGE_DRIVER=s3
+DOCUMENT_STORAGE_S3_ENDPOINT=https://<region>.backblazeb2.com
+DOCUMENT_STORAGE_S3_REGION=<region>
+DOCUMENT_STORAGE_S3_BUCKET_NAME=<bucket-name>
+DOCUMENT_STORAGE_S3_ACCESS_KEY_ID=<key-id>
+DOCUMENT_STORAGE_S3_SECRET_ACCESS_KEY=<secret-key>
+```
+
+This migration provides several benefits:
+- **Better maintenance**: Using the official AWS S3 SDK instead of a third-party library
+- **More features**: Access to the full S3 API feature set
+- **Better compatibility**: Standard S3 interface works with all S3-compatible services
+
+## Performance Improvements
+
+### Streaming File Uploads
+
+We've completely reworked file upload handling to use **streaming instead of loading entire files into memory**. This brings several benefits:
+
+- **Better performance**: Uploads start processing immediately
+- **Lower memory footprint**: No more memory spikes with large files
+- **More reliable uploads**: Better handling of large files and slow connections
+- **Reduced server load**: Memory usage stays constant regardless of file size
+
+### Optimized Client Bundle
+
+Improved the client bundle size by optimizing the code splitting and lazy loading some heavy components like the PDF viewer.
+
+## User Experience Improvements
+
+### Enhanced Document Content Editor
+
+We've improved the **UX of the document content editing panel** for smoother interactions and better visual feedback.
+
+### Advanced Email Address Support
+
+The **intake email functionality** now supports more complex email address formats for origin addresses, fully compliant with **RFC 5322**. The main goal was to support Proton auto forwarding addresses that have some uncommon special characters in the email address, like `foo=bar.org+biz-buz-314=callback.email@forward.protonmail.ch`.
+
+## Bug Fixes
+
+- **Fixed tag visibility issue**: Tags assigned only to deleted documents now properly appear in the tag list
+- **Resolved search modal infinite loading**: Prevented infinite loading states when errors occur in the search modal
+- **Fixed ingestion folder paths**: Resolved a bug where absolute paths for `INGESTION_FOLDER_POST_PROCESSING_MOVE_FOLDER_PATH` and `INGESTION_FOLDER_ERROR_FOLDER_PATH` weren't working correctly
+
+## Conclusion
+
+Papra v0.9 represents a significant step forward in both security and performance and is a big step for the Cloud instance of Papra.
+
+Thank you for your continued support and valuable feedback! If you have any suggestions, you can either open an issue on [GitHub](https://github.com/papra-hq/papra/issues) or join the [Discord server](https://papra.app/discord).
+
+If you want to support the development of Papra, you can [buy me a coffee](https://buymeacoffee.com/cthmsst), or just [star the GitHub repository](https://github.com/papra-hq/papra), it'll help me a lot!
+
+I'm looking forward to hearing from you!
+
+<div class="mt-14">
+Some useful links:
+- [Discord server](https://papra.app/discord)
+- [GitHub repository](https://github.com/papra-hq/papra)
+- [Buy me a coffee](https://buymeacoffee.com/cthmsst)
+- [Bluesky account](https://bsky.app/profile/papra.app)
+- [Roadmap](https://github.com/orgs/papra-hq/projects/2)
+</div>

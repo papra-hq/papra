@@ -1,0 +1,20 @@
+---
+import type { Props as HeaddProps } from '../components/Head.astro';
+import Head from '../components/Head.astro';
+import { DEFAULT_LOCALE } from '../i18n/i18n.constants';
+import '../styles/app.css';
+
+type Props = {} & HeaddProps;
+
+const { ...headProps } = Astro.props;
+
+const locale = Astro.currentLocale ?? DEFAULT_LOCALE;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <Head {...headProps} />
+  <body class="bg-background font-sans antialiased min-h-screen text-foreground text-sm" data-kb-theme="dark">
+    <slot />
+  </body>
+</html>

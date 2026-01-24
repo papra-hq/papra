@@ -1,0 +1,27 @@
+---
+import Header from '../components/Header.astro';
+import { useI18n } from '../i18n/i18n';
+import Layout from '../layouts/Layout.astro';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+---
+
+<Layout>
+  <Header />
+
+  <div class="pt-24 md:pt-48 flex items-center justify-center gap-4 flex-col text-center">
+    <div class="i-tabler-coffee size-20"></div>
+    <div class="mt-4">
+      <h1 class="text-lg font-medium">{t('404.title')}</h1>
+      <p class="text-sm text-muted-foreground">{t('404.description')}</p>
+
+      <a
+        href={`/${Astro.currentLocale}/`}
+        class="mt-6 inline-block text-foreground border font-bold rounded py-2 px-4 rounded-lg transition inline-flex items-center gap-2 hover:bg-accent hover:text-accent-foreground"
+      >
+        <div class="i-tabler-arrow-left size-5" aria-hidden="true"></div>
+        {t('404.go-home')}
+      </a>
+    </div>
+  </div>
+</Layout>

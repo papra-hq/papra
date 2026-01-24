@@ -1,0 +1,169 @@
+:root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+  
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 3.9%;
+  
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+  
+    --primary: 16 99% 65%;
+    --primary-foreground: 0 0% 3.9%;
+  
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+  
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+  
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+  
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+  
+    --warning: 31 98% 50%;
+    --warning-foreground: 0 0% 98%;
+  
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+  
+    --radius: 0.5rem;
+  }
+  
+  [data-kb-theme="dark"] {
+    --background: 240 4% 10%;
+    --foreground: 0 0% 98%;
+  
+    --card: 240 4% 8%;
+    --card-foreground: 0 0% 98%;
+  
+    --popover: 240 4% 8%;
+    --popover-foreground: 0 0% 98%;
+  
+    --primary: 77 100% 74%;
+    --primary-foreground: 0 0% 9%;
+  
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+  
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+  
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+  
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+  
+    --warning: 31 98% 50%;
+    --warning-foreground: 0 0% 98%;
+  
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+  
+  
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+
+  /* inspired by Astro blog https://github.com/withastro/astro.build/blob/cc7df140766a6c60ec54284593ea8ea940604dd5/src/styles/prose.css */
+  @layer components {
+    .prose {
+      @apply mx-auto w-full tracking-wide lg:text-lg;
+      line-height: 1.75em;
+    }
+  
+    .prose > p,
+    .prose > blockquote > p {
+      @apply my-4;
+    }
+    .prose > blockquote {
+      padding-left: 2rem;
+      border-left: 1px solid;
+    }
+  
+    .prose > hr {
+      @apply my-8;
+    }
+  
+    .prose > img {
+      @apply my-4;
+    }
+  
+    .prose strong {
+      @apply font-medium text-white;
+    }
+  
+    .prose ul {
+      @apply my-4 pl-8;
+    }
+  
+    .prose ol {
+      @apply my-4 list-inside list-decimal pl-4;
+    }
+    .prose ol ::marker {
+      @apply font-mono inline-block font-bold text-muted-foreground;
+    }
+  
+    /* Workaround for when li first node is wrapped in a p */
+    .prose li > p:first-child {
+      @apply inline-block;
+    }
+  
+    .prose li {
+      @apply my-0.5;
+    }
+  
+    .prose :where(a) {
+      @apply text-primary! underline underline-offset-3 hover:text-foreground! transition-colors;
+    }
+  
+    .prose :where(code):not(:where(pre, h1, h2, h3, h4, h5, h6) code) {
+      @apply mx-0.5! inline-block rounded-md! bg-muted! px-2 align-baseline text-sm! leading-6!;
+    }
+
+    .prose :where(:not(pre) > code):not(:where(.not-prose,.not-prose *))::before, 
+    .prose :where(:not(pre) > code):not(:where(.not-prose,.not-prose *))::after  {
+      @apply content-['']!;
+    }
+  
+    .prose > p a > code {
+      @apply text-inherit;
+      text-decoration: inherit;
+    }
+  
+    .prose .expressive-code {
+      @apply my-6;
+    }
+  
+    .prose table {
+      @apply overflow-auto border-spacing-0 text-sm sm:text-base w-full;
+    }
+    .prose tr {
+      @apply w-full;
+    }
+    .prose :is(th, td) {
+      @apply border-b py-2 px-4 align-baseline;
+    }
+    .prose :is(th, td):first-child {
+      @apply pl-0;
+    }
+    .prose :is(th, td):last-child {
+      @apply pr-0;
+    }
+    .prose th {
+      @apply text-white font-medium;
+    }
+    .prose th:not([align]) {
+      @apply text-start;
+    }
+  }

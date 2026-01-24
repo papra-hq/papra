@@ -1,0 +1,149 @@
+---
+import { buildLocalizedPath, useI18n } from '../i18n/i18n';
+import { getSocials } from '../socials';
+import { cn } from '../utils/cn';
+import LanguagePicker from './LanguagePicker.astro';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+const socials = getSocials({ t });
+
+const sections: {
+  title: string;
+  links: { label: string; url: string; target?: string; rel?: string }[];
+}[] = [
+  {
+    title: t('footer.section.community'),
+    links: socials,
+  },
+  {
+    title: t('footer.section.papra'),
+    links: [
+      {
+        label: t('footer.link.pricing'),
+        url: buildLocalizedPath({ locale: Astro.currentLocale, path: '/pricing' }),
+      },
+      {
+        label: t('footer.link.blog'),
+        url: '/blog',
+      },
+      {
+        label: t('footer.link.demo-app'),
+        url: 'https://demo.papra.app',
+      },
+      {
+        label: t('footer.link.documentation'),
+        url: 'https://docs.papra.app',
+      },
+      {
+        label: t('footer.link.self-host'),
+        url: 'https://docs.papra.app/self-hosting/using-docker/',
+      },
+      {
+        label: t('footer.link.roadmap'),
+        url: 'https://github.com/orgs/papra-hq/projects/2',
+      },
+      {
+        label: 'LLMs.txt',
+        url: '/llms.txt',
+        target: '_blank',
+      },
+      {
+        label: 'Humans.txt',
+        url: '/humans.txt',
+        target: '_blank',
+      },
+    ],
+  },
+  {
+    title: t('footer.section.open-source'),
+    links: [
+      {
+        label: t('footer.link.repository'),
+        url: 'https://github.com/papra-hq/papra',
+      },
+      {
+        label: t('footer.link.contributing'),
+        url: 'https://github.com/papra-hq/papra/blob/main/CONTRIBUTING.md',
+      },
+      {
+        label: t('footer.link.code-of-conduct'),
+        url: 'https://github.com/papra-hq/papra/blob/main/CODE_OF_CONDUCT.md',
+      },
+      {
+        label: t('footer.link.license'),
+        url: 'https://github.com/papra-hq/papra/blob/main/LICENSE',
+      },
+      {
+        label: t('footer.link.this-website'),
+        url: 'https://github.com/papra-hq/papra-website',
+      },
+    ],
+  },
+  {
+    title: t('footer.section.legal'),
+    links: [
+      {
+        label: t('footer.link.terms-of-service'),
+        url: '/terms-of-service',
+      },
+      {
+        label: t('footer.link.privacy-policy'),
+        url: '/privacy',
+      },
+      {
+        label: t('footer.link.contact'),
+        url: buildLocalizedPath({ locale: Astro.currentLocale, path: '/contact' }),
+      },
+    ],
+  },
+];
+---
+
+<footer class="bg-card border-t border-border py-8 text-muted-foreground">
+  <div class="max-w-1200px mx-auto p-4">
+    <div class="flex justify-between flex-col md:flex-row gap-10">
+      <div class="">
+        <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-xl font-bold flex items-center group mb-2">
+          <div class="i-tabler-file-text size-7 text-primary group-hover:(rotate-25deg) transition transform rotate-12deg"></div>
+          <span class="ml-2 text-foreground group-hover:text-foreground/80 transition">Papra</span>
+        </a>
+
+        <div class="flex gap-2">
+          {
+            socials.map(social => (
+              <a href={social.url} class="hover:text-primary transition" target="_blank" rel="noopener noreferrer" aria-label={social.label}>
+                <div class={`${social.icon} text-2xl`} aria-hidden="true" />
+              </a>
+            ))
+          }
+        </div>
+
+        <p class="mt-4 text-sm max-w-250px" set:html={t('footer.made-in-europe')} />
+
+        <div class="mt-6">
+          <LanguagePicker />
+        </div>
+      </div>
+
+      <div class={cn('grid gap-6 grid-cols-1', `sm:grid-cols-${sections.length}`)}>
+        {
+          sections.map(section => (
+            <div>
+              <div class="text-foreground font-semibold">{section.title}</div>
+              <div class="mt-2">
+                {section.links.map(link => (
+                  <a href={link.url} class="block hover:text-primary transition py-0.75 font-medium" target={link.target} rel={link.rel}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-8 border-t border-border pt-4" set:html={t('footer.copyright', { year: new Date().getFullYear() })} />
+  </div>
+</footer>

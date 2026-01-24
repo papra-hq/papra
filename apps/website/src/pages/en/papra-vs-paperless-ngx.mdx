@@ -1,0 +1,151 @@
+---
+layout: ../../layouts/MdPage.astro
+title: Papra vs Paperless-NGX Comparison
+description: Feature comparison between Papra and Paperless-NGX document management systems. Compare storage, scalability, collaboration, and deployment options.
+withCta: true
+---
+
+import ComparisonTable from '../../components/ComparisonTable.astro';
+
+## Why Papra Exists
+
+Paperless-NGX is an excellent, mature project with a large community and extensive features. If it works perfectly for your needs, that's great! However, Papra was created to address specific areas where improvements could be made:
+
+- **User Experience**: Papra is built from the ground up to be intuitive and easy to use, with a focus on modern UI/UX principles
+- **Collaboration**: Designed to make sharing documents with family members and teams easier with organizations and flexible permissions
+- **Modern Architecture**: Built with horizontal scalability and cloud-native deployments in mind from day one
+- **Developer Experience**: Provides modern tooling like a JavaScript SDK and comprehensive API documentation
+
+If you're looking for something that prioritizes these aspects, Papra might be worth exploring.
+
+## Feature Comparison
+
+Here's a detailed comparison between Papra and Paperless-NGX across various dimensions:
+
+<ComparisonTable
+  rows={[
+    {
+      feature: 'File Storage',
+      paperless: 'Local filesystem only',
+      papra: 'Local filesystem, any S3-compatible storage, Azure Blob Storage, in-memory'
+    },
+    {
+      feature: 'Container Size',
+      paperless: '2 containers (App: 1.42GB + Redis: 137MB)',
+      papra: '1 container (963MB)'
+    },
+    {
+      feature: 'Scalability',
+      paperless: 'Primarily single-server, tied to local filesystem',
+      papra: 'Horizontally scalable from the start, cloud-native architecture'
+    },
+    {
+      feature: 'Deployment Options',
+      paperless: 'Self-hosted only (unofficial third-party hosting exists)',
+      papra: 'Self-hosted + official managed cloud service'
+    },
+    {
+      feature: 'Document Ingestion Methods',
+      paperless: 'Web UI, watch folder, CLI, API, email inbox lookup',
+      papra: 'Web UI, watch folder, CLI, API, email ingestion (send-to address)'
+    },
+    {
+      feature: 'Mobile Apps',
+      paperless: 'Multiple third-party mobile applications',
+      papra: 'Official mobile app (coming soon)'
+    },
+    {
+      feature: 'Desktop Apps',
+      paperless: 'Some unmaintained third-party desktop app',
+      papra: 'Official desktop app (coming soon)'
+    },
+    {
+      feature: 'Developer Tools',
+      paperless: 'API + Webhooks',
+      papra: 'API + JS/TS SDK + Webhooks'
+    },
+    {
+      feature: 'Multi-User Support',
+      paperless: 'Yes',
+      papra: 'Yes'
+    },
+    {
+      feature: 'Organizations',
+      paperless: 'No',
+      papra: 'Yes, with flexible organization management'
+    },
+    {
+      feature: 'Sharing & Collaboration',
+      paperless: 'Multi-user but limited shared collection support',
+      papra: 'Built-in organization structure makes sharing with family and teams easier'
+    },
+    {
+      feature: 'License',
+      paperless: 'GPL-3.0',
+      papra: 'AGPL-3.0'
+    },
+    {
+      feature: 'Maturity',
+      paperless: 'Very mature, established project',
+      papra: 'Newer, actively developed'
+    },
+    {
+      feature: 'Community',
+      paperless: 'Large, well-established ecosystem',
+      papra: 'Growing community'
+    },
+    {
+      feature: 'Target Audience',
+      paperless: 'Tech-savvy users comfortable with self-hosting',
+      papra: 'Users looking for modern, intuitive experience'
+    },
+    {
+      feature: 'Documentation',
+      paperless: 'Extensive and mature, many community resources and tutorials',
+      papra: 'Growing and improving'
+    }
+  ]}
+/>
+
+## Which Should You Choose?
+
+Both Papra and Paperless-NGX are excellent open-source solutions for document management. Your choice depends on your specific needs:
+
+### Choose Paperless-NGX if:
+- You want a mature, battle-tested solution with years of development
+- You're part of the existing Paperless ecosystem and community
+- You prefer a single-server setup with local filesystem storage
+- You're satisfied with the current feature set and user experience
+- You want access to multiple third-party mobile applications
+
+### Choose Papra if:
+- You prioritize modern, intuitive user experience
+- You need flexible storage options (S3, Azure Blob, etc.)
+- You want built-in organization features for easier family/team sharing
+- You're planning for horizontal scalability from the start
+- You prefer an official managed cloud option instead of self-hosting
+- You want modern developer tooling like a JavaScript SDK
+- You value a more streamlined, lightweight container setup
+
+### Try Both!
+
+Since both projects are open-source and self-hostable, you can try both to see which fits your workflow better. Many users have successfully migrated between different document management solutions.
+
+- **Paperless-NGX**:
+   - Demo: [demo.paperless-ngx.com](https://demo.paperless-ngx.com/)
+   - GitHub: [github.com/paperless-ngx/paperless-ngx](https://github.com/paperless-ngx/paperless-ngx)
+   - Documentation: [docs.paperless-ngx.com](https://docs.paperless-ngx.com/)
+- **Papra**:
+   - Demo: [demo.papra.app](https://demo.papra.app)
+   - GitHub: [github.com/papra-app/papra](https://github.com/papra-app/papra)
+   - Documentation: [docs.papra.app](https://docs.papra.app/)
+
+## Final Thoughts
+
+Both projects share the same goal: helping people manage their documents effectively. Your choice depends on your specific needs, technical comfort level, and preferences.
+
+We encourage you to try both and see what works best for your workflow. The document management space benefits from having multiple quality open-source options, and we're grateful for the foundation the Paperless-NGX team has built.
+
+---
+
+*Have questions about Papra or want to discuss features? Join our [Discord community](https://discord.gg/8UPjzsrBNF) or reach out via our [contact page](/en/contact).*

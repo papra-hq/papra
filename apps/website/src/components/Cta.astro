@@ -1,0 +1,22 @@
+---
+import { config } from '../app.config';
+import { useI18n } from '../i18n/i18n';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+---
+
+<div class="bg-card py-32 px-6">
+  <div
+    class="max-w-1200px mx-auto px-6 border rounded-xl bg-background pt-32 pb-24 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] px-6 z-20"
+  >
+
+    <h2 class="text-2xl sm:text-4xl font-bold text-center text-pretty max-w-800px mx-auto text-pretty" set:html={t('cta.heading')} />
+    <div class="flex mt-4 items-center justify-center">
+      <a href={config.getStartedLink} class="font-semibold text-background px-4 py-2 hover:bg-primary/80 rounded-lg bg-primary transition mt-8 inline-block flex items-center">
+        {t('cta.get-started')}
+
+        <div class="i-tabler-arrow-right ml-2 size-5" aria-hidden="true"></div>
+      </a>
+    </div>
+  </div>
+</div>

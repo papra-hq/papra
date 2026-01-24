@@ -1,0 +1,39 @@
+---
+import Cta from '../components/Cta.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { cn } from '../utils/cn';
+import Layout from './Layout.astro';
+---
+
+<Layout>
+<div class="bg-card">
+  <Header />
+
+  <div class="w-full bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] bg-background border-b pt-32 pb-24">
+      <div class="max-w-700px mx-auto p-4">
+        <h1 class="text-4xl mb-2 font-bold">{Astro.props.frontmatter.title}</h1>
+        <p class="text-base mb-2 text-muted-foreground lh-1.75rem">{Astro.props.frontmatter.description}</p>
+
+        {Astro.props.frontmatter.tags && (
+          <div class="flex flex-wrap mt-2">
+            {Astro.props.frontmatter.tags.map((tag: string) => (
+              <span class="text-xs bg-card border rounded-lg px-2 py-1 mr-2 mb-2 font-medium">{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+    </div>
+
+  <div class="px-6">
+  <div class={cn('prose prose-invert prose-neutral mx-auto text-base bg-card', !Astro.props.frontmatter.withCta && 'pb-32')}>
+      <slot />
+  </div>
+  </div>
+
+  {Astro.props.frontmatter.withCta && (<Cta />)}
+
+  <Footer class="bg-background" />
+</div>
+</Layout>

@@ -1,0 +1,77 @@
+---
+title: "Introducing Cadence-MQ: a backend-agnostic Node.js job queue"
+description: Introducing Cadence-MQ, a backend-agnostic Node.js job queue built for self-hosted applications and high-performance workloads.
+publishedAt: 2025-07-08
+lang: en
+ogImage: /src/content/blog/_images/introducing-cadence-mq/introducing-cadence-mq.og.png
+coverImage: /src/content/blog/_images/introducing-cadence-mq/introducing-cadence-mq.preview.png
+---
+
+I recently released [Cadence-MQ](https://github.com/papra-hq/cadence-mq), a backend-agnostic Node.js job queue built with self-hosting in mind.
+
+## Why another job queue?
+
+When developing a full-stack application, you often need to run background jobs, like sending emails, processing files, or any other task that doesn't need to be done immediately or that are too heavy to be done while holding an API request.
+
+There are a lot of quality job queue libraries for Node.js out there, like [BullMQ](https://github.com/taskforcesh/bullmq), [Bee-Queue](https://github.com/bee-queue/bee-queue), [Kue](https://github.com/Automattic/kue) or [Agenda](https://github.com/agenda/agenda), but most of them are tied to a specific server-based database, mainly Redis. It's really relevant for distributed cloud-based applications, but rather heavy for self-hosted applications as you need to run a Redis server on your own.
+
+## How is Cadence-MQ different?
+
+As Papra aims to be lightweight with a low footprint, I wanted to make a job queue that doesn't require an additional server-based database.
+
+### Backend agnostic by design
+
+Unlike many existing solutions, Cadence-MQ is built from the ground up to be backend-agnostic. It doesn't impose a specific database or server setup, allowing you to choose the backend that best fits your application's architecture and infrastructure. You can easily plug in your preferred database, whether it's SQLite, Redis (in the future), or other datastores.
+
+### LibSQL first
+
+The first backend I wanted to support was LibSQL, as it's the same database as Papra, and relatively versatile as it supports either in-memory, SQLite local files, or remote distributed LibSQL servers.
+
+### Built for scalability
+
+While SQLite/LibSQL is excellent for getting started quickly and efficiently, Cadence-MQ is designed to scale. Its modular architecture means you can easily switch or add backends as your needs evolve. For production workloads where higher throughput or distributed capabilities are required, you can seamlessly migrate or use different distributed databases such as Turso.
+
+### Open source and community-driven
+
+Cadence-MQ is obviously fully open source, under the MIT license, welcoming external contributions. Whether you find a bug, think of an improvement, or want to add support for another backend, your contributions are warmly welcomed. The repository is [papra-hq/cadence-mq](https://github.com/papra-hq/cadence-mq).
+
+## Examples of usage
+
+Here is a simple example of how to use Cadence-MQ with LibSQL.
+
+```bash
+pnpm install @cadence-mq/core @cadence-mq/driver-libsql
+```
+
+```typescript
+import { createQueue } from '@cadence-mq/core';
+import { createLibSqlDriver } from '@cadence-mq/driver-libsql';
+import { createClient } from '@libsql/client';
+
+const client = createClient({ url: 'file:./cadence-mq.db' });
+const queue = createQueue({ driver: createLibSqlDriver({ client }) });
+
+queue.registerTask({
+  name: 'send-welcome-email',
+  handler: async ({ data }) => {
+    console.log(`Sending welcome email to ${data.email}`);
+  },
+});
+
+queue.startWorker({ workerId: 'worker-1' });
+
+await queue.scheduleJob({
+  taskName: 'send-welcome-email',
+  data: { email: 'test@test.com' },
+});
+```
+
+## What's next?
+
+Cadence-MQ is still in early development, with many exciting features on the roadmap, including 
+- Job status tracking
+- UI for monitoring and managing jobs
+- Unique key for jobs
+- Drivers for additional backends (Redis, MongoDB, ...)
+
+I would love for you to try it out, provide feedback, and contribute to the development. Check out the [repository](https://github.com/papra-hq/cadence-mq) for more information, leave a star, and feel free to open an issue or a pull request.

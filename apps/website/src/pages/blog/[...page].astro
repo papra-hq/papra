@@ -1,0 +1,54 @@
+---
+import type { GetStaticPathsOptions, Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { useI18n } from '../../i18n/i18n';
+// import Pagination from '../../components/Pagination.astro';
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from './_components/BlogCard.astro';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const posts = await getCollection('blog');
+
+  const sortedPosts = posts.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+  return paginate(sortedPosts, { pageSize: 12 });
+}
+
+
+const { page } = Astro.props as { page: Page<CollectionEntry<'blog'>> };
+
+// const allPages = Array.from({ length: page.lastPage }).map((_, index) => {
+//   return `/blog${index === 0 ? '' : `/${String(index + 1)}`}`;
+// });
+
+---
+
+<Layout title="Blog" description="Stay updated with the latest news and updates from Papra." image={{ src: '/og/blog.png', alt: 'What’s new in the Papra ecosystem' }}>
+  <Header />
+
+  <div class="flex flex-col min-h-screen">
+    <div class="w-full bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] bg-background border-b pt-32 pb-24">
+      <div class="max-w-450px mx-auto p-4 text-center">
+        <h1 class="text-3xl mb-2 font-bold">{t('blog.title')}</h1>
+        <p class="text-base mb-2 leading-tight">{t('blog.subtitle')}</p>
+      </div>
+    </div>
+
+    <h2 class="sr-only">{t('blog.posts-heading')}</h2>
+    <div class="p-6 flex-1 py-20 flex flex-col gap-8">
+      {
+        page.data.map(post => (
+          <BlogCard {...{ post }} />
+        ))
+      }
+    </div>
+
+    <!-- <Pagination page={page} allPages={allPages} /> -->
+    <Footer class="bg-background" />
+  </div>
+</Layout>
