@@ -48,9 +48,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.CHANGESET_GITHUB_TOKEN }}
 
       - name: Trigger Docker build
-        if: steps.changesets.outputs.published == 'true' && contains(fromJson(steps.changesets.outputs.publishedPackages).*.name, '@papra/docker')
+        if: steps.changesets.outputs.published == 'true' && contains(fromJson(steps.changesets.outputs.publishedPackages).*.name, '@papra/app')
         run: |
-          VERSION=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | select(.name=="@papra/docker") | .version')
+          VERSION=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | select(.name=="@papra/app") | .version')
           echo "VERSION: $VERSION"
           gh workflow run release-docker.yaml -f version="$VERSION"
         env:

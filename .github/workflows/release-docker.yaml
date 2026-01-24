@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./packages/docker/Dockerfile
+          file: ./packages/app/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
@@ -66,7 +66,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./packages/docker/Dockerfile.rootless
+          file: ./packages/app/Dockerfile.rootless
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |

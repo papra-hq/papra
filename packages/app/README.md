@@ -1,6 +1,6 @@
-# Docker Package
+# Papra Application Package
 
-This package contains Docker images for Papra.
+This package contains the Papra application, distributed as Docker images.
 
 ## Versioning
 

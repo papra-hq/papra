@@ -1,5 +1,5 @@
 ---
-"@papra/docker": patch
+"@papra/app": patch
 ---
 
 Hide the "Don't have an account? Register" link on the login page when new account registration is disabled.
