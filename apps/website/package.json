@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "check": "astro check",
+    "typecheck": "pnpm run check",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
