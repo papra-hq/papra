@@ -4,10 +4,10 @@ This package contains the Papra application, distributed as Docker images.
 
 ## Versioning
 
-This package uses **CalVer** (Calendar Versioning) with the format `YY.MM.N`:
+This package uses **CalVer** (Calendar Versioning) with the format `YY.M.N`:
 
 - `YY`: Two-digit year
-- `MM`: Two-digit month (zero-padded)
+- `M`: Month number (1-12, not zero-padded, where 1 = January, 12 = December)
 - `N`: Release number for that month (starting at 0)
 
 ### Examples
