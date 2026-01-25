@@ -21,6 +21,7 @@ catalog:
   astro: 5.16.15
   '@iconify-json/tabler': ^1.2.26
   ofetch: 1.4.1
+  valibot: ^1.2.0
 
 ignoredBuiltDependencies:
   - esbuild

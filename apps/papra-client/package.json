@@ -53,7 +53,7 @@
     "unocss-preset-animations": "catalog:",
     "unstorage": "^1.16.0",
     "uqr": "^0.1.2",
-    "valibot": "1.0.0-beta.10"
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
