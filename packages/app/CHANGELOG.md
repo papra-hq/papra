@@ -1,5 +1,27 @@
 # @papra/app
 
+## 26.1.0
+
+### Minor Changes
+
+- [#796](https://github.com/papra-hq/papra/pull/796) [`aaa05a8`](https://github.com/papra-hq/papra/commit/aaa05a86076af06792965bd00dde096965bb244e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Renamed the internal distribution package from `@papra/docker` to `@papra/app`. New release tags will use the format `@papra/app@26.0.0` instead of `@papra/docker@26.0.0`.
+
+### Patch Changes
+
+- [#784](https://github.com/papra-hq/papra/pull/784) [`2c078e2`](https://github.com/papra-hq/papra/commit/2c078e20f5341dfc185f427b02c166256f3e22f8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Tag list: order tags by creation date descending (newest on top)
+
+- [#781](https://github.com/papra-hq/papra/pull/781) [`7c5e68f`](https://github.com/papra-hq/papra/commit/7c5e68fbfcf91aa75e429f44ad645fc00b96d22e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When navigating to / and having only one organization, get redirected to that organization
+
+- [#783](https://github.com/papra-hq/papra/pull/783) [`ad575bf`](https://github.com/papra-hq/papra/commit/ad575bfc62096f44dab9e25915c6a1e0f30d9ceb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix tag automatic search link issue when tags have spaces, before `tag:my tag` would not work, now generate `tag:"my tag"` to fix it.
+
+- [#795](https://github.com/papra-hq/papra/pull/795) [`3a41531`](https://github.com/papra-hq/papra/commit/3a4153116c6111f82d5cb2417f9874ebb5450d17) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Hide the "Don't have an account? Register" link on the login page when new account registration is disabled.
+
+- [#785](https://github.com/papra-hq/papra/pull/785) [`45534a0`](https://github.com/papra-hq/papra/commit/45534a0ce7292ed723d56efd4796390a62e0f3e3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the `has:tags` search filter to check for the presence or absence (`-has:tags` or `NOT has:tags`) of tags on documents.
+
+- [#777](https://github.com/papra-hq/papra/pull/777) [`42e401c`](https://github.com/papra-hq/papra/commit/42e401c7dd73b98dc575c3876d0888c98b9a0350) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly tree-shake all demo assets to reduce the size of production non-demo build. Reducing the bundle assets by ~70kB (~55kB on main chunk + removed demo chunk of ~15kB).
+
+- [#794](https://github.com/papra-hq/papra/pull/794) [`0485701`](https://github.com/papra-hq/papra/commit/0485701c6614d652dfd5b8286c92a1c0e7cf367e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Greek language support
+
 ## 26.0.0
 
 ### Major Changes
