@@ -5,7 +5,7 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
-import presetAnimations from 'unocss-preset-animations';
+import { presetAnimations } from 'unocss-preset-animations';
 
 export default defineConfig({
   presets: [
