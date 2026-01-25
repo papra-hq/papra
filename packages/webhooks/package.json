@@ -44,7 +44,7 @@
   "dependencies": {
     "@corentinth/chisels": "catalog:",
     "@paralleldrive/cuid2": "^2.2.2",
-    "ofetch": "^1.4.1",
+    "ofetch": "catalog:",
     "tsee": "^1.3.4"
   },
   "devDependencies": {

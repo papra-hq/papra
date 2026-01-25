@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@corentinth/chisels": "catalog:",
-    "ofetch": "^1.4.1"
+    "ofetch": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
