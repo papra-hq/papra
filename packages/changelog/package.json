@@ -1,0 +1,54 @@
+{
+  "name": "@papra/changelog",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Changelog stuff for Papra packages.",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papra-hq/papra",
+    "directory": "packages/changelog"
+  },
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
+  "keywords": [
+    "papra",
+    "changelog",
+    "release",
+    "version",
+    "update"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit",
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "dev": "pnpm build:watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@clack/prompts": "1.0.0-alpha.6"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "eslint": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
