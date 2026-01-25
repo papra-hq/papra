@@ -27,6 +27,6 @@
     "@antfu/eslint-config": "catalog:",
     "@iconify-json/tabler": "^1.2.26",
     "eslint": "catalog:",
-    "unocss": "^66.6.0"
+    "unocss": "catalog:"
   }
 }

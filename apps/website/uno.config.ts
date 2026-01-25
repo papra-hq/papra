@@ -7,7 +7,7 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
-import presetAnimations from 'unocss-preset-animations';
+import { presetAnimations } from 'unocss-preset-animations';
 import { getSocials } from './src/socials';
 
 export default defineConfig({
@@ -19,7 +19,7 @@ export default defineConfig({
       },
       prefix: '',
     }),
-    presetAnimations() as any, // TODO: Remove temporary fix for typing issue
+    presetAnimations(),
     presetIcons(),
     presetTypography(),
     presetWebFonts({
