@@ -20,7 +20,10 @@
 
 - [#777](https://github.com/papra-hq/papra/pull/777) [`42e401c`](https://github.com/papra-hq/papra/commit/42e401c7dd73b98dc575c3876d0888c98b9a0350) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly tree-shake all demo assets to reduce the size of production non-demo build. Reducing the bundle assets by ~70kB (~55kB on main chunk + removed demo chunk of ~15kB).
 
-- [#794](https://github.com/papra-hq/papra/pull/794) [`0485701`](https://github.com/papra-hq/papra/commit/0485701c6614d652dfd5b8286c92a1c0e7cf367e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Greek language support
+- [#794](https://github.com/papra-hq/papra/pull/794) [`0485701`](https://github.com/papra-hq/papra/commit/0485701c6614d652dfd5b8286c92a1c0e7cf367e) Thanks [@ktsourdinis](https://github.com/ktsourdinis)! - Added Greek language support
+
+- [#798](https://github.com/papra-hq/papra/pull/798) [`c27d85f`](https://github.com/papra-hq/papra/commit/c27d85fea41eaf6ba0d87890d4952e502aeec864) Thanks [@cergmin](https://github.com/cergmin)! - Added Russian language support
+
 
 ## 26.0.0
 
