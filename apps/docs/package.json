@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
-    "@iconify-json/tabler": "^1.1.120",
+    "@iconify-json/tabler": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@unocss/reset": "^0.64.0",
     "eslint": "catalog:",

@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
-    "@iconify-json/tabler": "^1.2.26",
+    "@iconify-json/tabler": "catalog:",
     "eslint": "catalog:",
     "unocss": "catalog:"
   }
