@@ -55,7 +55,7 @@
     "mime-types": "^3.0.1",
     "ofetch": "catalog:",
     "picocolors": "^1.1.1",
-    "valibot": "1.0.0-beta.10"
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",

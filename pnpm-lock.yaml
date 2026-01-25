@@ -54,6 +54,9 @@ catalogs:
     unocss-preset-animations:
       specifier: 1.3.0
       version: 1.3.0
+    valibot:
+      specifier: ^1.2.0
+      version: 1.2.0
     vitest:
       specifier: 4.0.3
       version: 4.0.3
@@ -271,8 +274,8 @@ importers:
         specifier: 0.5.1
         version: 0.5.1(@babel/core@7.28.4)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       valibot:
-        specifier: 1.0.0-beta.10
-        version: 1.0.0-beta.10(typescript@5.9.3)
+        specifier: 'catalog:'
+        version: 1.2.0(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -380,8 +383,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       valibot:
-        specifier: 1.0.0-beta.10
-        version: 1.0.0-beta.10(typescript@5.9.3)
+        specifier: 'catalog:'
+        version: 1.2.0(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -755,8 +758,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       valibot:
-        specifier: 1.0.0-beta.10
-        version: 1.0.0-beta.10(typescript@5.9.3)
+        specifier: 'catalog:'
+        version: 1.2.0(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -11886,8 +11889,8 @@ packages:
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
-  valibot@1.0.0-beta.10:
-    resolution: {integrity: sha512-nmo3nxvXRrxwDYZznK3aTgYv7ZA/SUZJ/s+pLY4Tqsex/fgwZ9XrrQ14jjozjUaeduQ9PhXHE2Xx1uMb0HePYw==}
+  valibot@1.2.0:
+    resolution: {integrity: sha512-mm1rxUsmOxzrwnX5arGS+U4T25RdvpPjPN4yR0u9pUBov9+zGVtO84tif1eY4r6zWxVxu3KzIyknJy3rxfRZZg==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -16167,7 +16170,7 @@ snapshots:
   '@modular-forms/solid@0.25.1(solid-js@1.9.9)(typescript@5.9.3)':
     dependencies:
       solid-js: 1.9.9
-      valibot: 1.0.0-beta.10(typescript@5.9.3)
+      valibot: 1.2.0(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
@@ -26587,7 +26590,7 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1: {}
 
-  valibot@1.0.0-beta.10(typescript@5.9.3):
+  valibot@1.2.0(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
 
