@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import { config } from '../../app.config';
+import Hero from '../../assets/papra-screenshot.png';
+import Cta from '../../components/Cta.astro';
+import FaqAccordion from '../../components/FaqAccordion.astro';
+import FeaturesBento from '../../components/FeaturesBento.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import ValuesSection from '../../components/ValuesSection.astro';
+import { useI18n } from '../../i18n/i18n';
+import { LOCALES } from '../../i18n/i18n.constants';
+import Layout from '../../layouts/Layout.astro';
+
+
+export async function getStaticPaths() {
+    return LOCALES.map(locale => ({ params: { locale } }));
+}
+const { t } = useI18n({ locale: Astro.currentLocale });
+---
+
+<Layout
+  rawTitle={t('site.title')}
+  description={t('site.description')}
+>
+
+  <div class="relative overflow-hidden pb-300px bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px]">
+    <div class="z-9 bg-gradient-to-b from-background to-transparent w-full h-full absolute top-0 left-0"></div>
+    <div class="z-10 bg-primary w-80% max-w-1000px h-400px rounded-xl blur-64 op-20 absolute bottom--100px left-50% -translate-x-50%"></div>
+
+    <Header />
+
+    <div class="max-w-3xl mx-auto pt-20 pb-32 px-4 mt-24 text-center z-50 relative">
+      <h1 class="text-4xl font-bold mb-4 text-pretty">{t('home.hero.title')}</h1>
+      <p class="text-lg text-muted-foreground">{t('home.hero.subtitle')}</p>
+
+      <div class="flex items-center justify-center gap-2 mt-8">
+        <a href="https://demo.papra.app" class="border text-sm font-bold rounded py-2 px-4 rounded-xl hover:border-primary hover:text-primary transition" target="_blank">{t('home.hero.live-demo')}</a>
+
+        <a href={config.getStartedLink} class="text-sm flex items-center gap-1.5 bg-primary hover:bg-primary/80 font-bold rounded py-2 px-4 rounded-xl text-primary-foreground transition">
+          {t('home.hero.get-started')}
+          <div class="i-tabler-arrow-right size-5"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-card border-t">
+    <Image src={Hero} alt="Papra Screenshot" class="mx-auto max-w-1000px w-full relative z-50 mt--300px" loading="eager" />
+  </div>
+
+  <FeaturesBento />
+
+  <ValuesSection />
+
+  <div class="bg-card py-64 border-t flex items-center justify-center gap-8 sm:gap-12 flex-col sm:flex-row relative overflow-hidden">
+    <div class="max-w-600px px-6 text-center sm:text-left">
+      <h2 class="text-2xl sm:text-4xl font-bold max-w-650px mx-auto" set:html={t('home.open-source.title')} />
+
+      <p class="text-muted-foreground mx-auto mt-4 text-lg" set:html={t('home.open-source.description')} />
+    </div>
+
+    <div class="flex items-center justify-center gap-2 mt-8">
+      <a
+        href="https://github.com/papra-hq/papra"
+        class="border text-sm font-bold rounded py-2 px-4 rounded-xl hover:border-primary hover:text-primary transition flex items-center gap-2 flex-shrink-0"
+        target="_blank"
+      >
+        {t('home.open-source.see-on-github')} <div class="i-tabler-arrow-right size-5" aria-hidden="true"></div>
+      </a>
+    </div>
+  </div>
+
+
+  <FaqAccordion
+    title={t('home.faq.title')}
+    description={t('home.faq.subtitle')}
+    items={t('home.faq.questions')}
+  />
+
+  <Cta />
+
+  <Footer />
+</Layout>

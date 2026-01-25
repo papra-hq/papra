@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { format } from 'date-fns';
+import CorentinAvatar from '../../assets/corentin.jpg';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import Layout from '../../layouts/Layout.astro';
+import { resolveImage } from '../../utils/urls';
+
+export async function getStaticPaths() {
+  const blog = await getCollection('blog');
+
+  return blog.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+export type Props = {
+  post: CollectionEntry<'blog'>;
+};
+
+const { post } = Astro.props;
+
+const { data, render } = post;
+const { Content } = await render();
+
+const ogImage = await resolveImage(data.ogImage);
+const ogImageUrl = ogImage ? new URL(ogImage.src, Astro.site).toString() : undefined;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  '@id': Astro.url,
+  'headline': data.title,
+  'description': data.description,
+  ...(ogImageUrl && { thumbnailUrl: ogImageUrl, image: [ogImageUrl] }),
+  'datePublished': data.publishedAt.toISOString(),
+  'potentialAction': [{ '@type': 'ReadAction', 'target': [Astro.url] }],
+
+};
+---
+
+<Layout title={data.title} description={data.description} image={ogImage ? { src: ogImage.src, alt: data.title } : undefined} jsonLd={structuredData}>
+  <Header />
+
+  <div class="flex flex-col min-h-screen">
+    <div class="w-full bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] bg-background border-b pt-26 pb-12">
+      <div class="max-w-800px mx-auto p-4 sm:text-center">
+
+        <h1 class="text-3xl my-4 font-bold">{data.title}</h1>
+        <p class="text-base leading-tight">{data.description}</p>
+
+        <div class="flex sm:justify-center items-center gap-1 text-muted-foreground mt-4">
+          <time class="text-muted-foreground" datetime={data.publishedAt.toISOString()}>
+            {format(data.publishedAt, 'MMMM d, yyyy')}
+          </time>
+          <span class="text-muted-foreground"> - </span>
+          By
+          <a href="https://corentin.tech" class="text-muted-foreground hover:text-primary transition flex items-center gap-1" target="_blank" rel="noreferrer">
+            <Image src={CorentinAvatar} alt="Corentin Thomasset" width={30} height={30} class="rounded-full border" aria-hidden="true" loading="eager" decoding="async" />
+            Corentin Thomasset
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <article class="prose prose-invert text-base prose-neutral max-w-700px mx-auto mt-16 mb-40 flex-1 px-6">
+      <Content />
+    </article>
+
+    <Footer class="bg-background" />
+  </div>
+
+
+</Layout>

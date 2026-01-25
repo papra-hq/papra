@@ -1,0 +1,118 @@
+---
+import type { Page } from 'astro';
+import type { HTMLAttributes } from 'astro/types';
+import { useI18n } from '../i18n/i18n';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+export type Props = Omit<HTMLAttributes<'nav'>, 'slot'> & {
+  page: Page<unknown>;
+  allPages: string[];
+};
+
+const { page, allPages, 'aria-label': ariaLabel = 'Pagination', ...attrs } = Astro.props;
+
+const pages = allPages.map((href, i) => {
+  return {
+    pageNum: i + 1,
+    text: String(i + 1),
+    href,
+  };
+});
+
+export type PageLink = {
+  pageNum: number;
+  text: string;
+  href: string;
+};
+
+export type Ellipsis = {
+  text: string;
+  pageNum?: never;
+  href?: never;
+};
+
+export function collapseRange({ page, pages }: { page: Page<unknown>; pages: PageLink[] }): (PageLink | Ellipsis)[] {
+  const total = pages.length;
+  const max = 5;
+
+  // only need ellipsis if we have more pages than we can display
+  const needEllipsis = total > max;
+
+  // show start ellipsis if the current page is further away than max - 3 from the first page
+  const hasStartEllipsis = needEllipsis && page.currentPage > max - 2;
+  // show end ellipsis if the current page is further than total - total + 2 from the last page
+  const hasEndEllipsis = needEllipsis && page.currentPage < total - 2;
+
+  if (!needEllipsis) {
+    return pages;
+  }
+
+  if (hasStartEllipsis && !hasEndEllipsis) {
+    return [pages[0], { text: '...' }, ...pages.slice(Math.min(page.currentPage - 2, total - 3))];
+  }
+
+  if (!hasStartEllipsis && hasEndEllipsis) {
+    return [...pages.slice(0, Math.max(3, page.currentPage + 1)), { text: '...' }, pages[pages.length - 1]];
+  }
+
+  // we have both start and end ellipsis
+  return [pages[0], { text: '...' }, ...pages.slice(page.currentPage - 2, page.currentPage + 1), { text: '...' }, pages[pages.length - 1]];
+}
+
+const collapsedPages = collapseRange({ page, pages });
+---
+
+<nav aria-label={ariaLabel} {...attrs}>
+  <ul class="flex items-center gap-4">
+    {
+      page.url.prev && (
+        <li class="rounded-full border">
+          <a href={page.url.prev} data-astro-prefetch class="flex h-10 w-10 items-center justify-center">
+            <span class="sr-only">
+              {t('pagination.go-to-page', { page: page.currentPage - 1, total: page.lastPage })}
+            </span>
+            <div class="i-tabler-arrow-left size-6" aria-hidden="true" />
+          </a>
+        </li>
+      )
+    }
+    {
+      collapsedPages.map(link => (
+        <li class="hidden sm:inline-block">
+          {!link.href
+? (
+            <p>{link.text}</p>
+          )
+: (
+            <a
+              href={link.href}
+              class:list={[
+                'relative flex h-10 w-10 items-center justify-center rounded-md border border-transparent transition-colors duration-150',
+                link.pageNum !== page.currentPage && 'hover:border-white focus:border-white',
+              ]}
+              aria-current={link.pageNum === page.currentPage ? 'page' : undefined}
+            >
+              {link.pageNum}
+            </a>
+          )}
+        </li>
+      ))
+    }
+    <li class="sm:hidden">
+      <p aria-current="page">{t('pagination.page', { current: page.currentPage, total: page.lastPage })}</p>
+    </li>
+    {
+      page.url.next && (
+        <li class="rounded-full border">
+          <a href={page.url.next} data-astro-prefetch class="flex h-10 w-10 items-center justify-center">
+            <span class="sr-only">
+              {t('pagination.go-to-page', { page: page.currentPage + 1, total: page.lastPage })}
+            </span>
+            <div class="i-tabler-arrow-right size-6" aria-hidden="true" />
+          </a>
+        </li>
+      )
+    }
+  </ul>
+</nav>

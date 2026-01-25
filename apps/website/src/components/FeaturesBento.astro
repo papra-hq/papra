@@ -1,0 +1,150 @@
+---
+import { Code } from 'astro:components';
+import { useI18n } from '../i18n/i18n';
+import { cn } from '../utils/cn';
+import BentoCard from './BentoCard.astro';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+const filesIcons = [
+  'i-tabler-file',
+  'i-tabler-file-text',
+  'i-tabler-file-code',
+  'i-tabler-file-code-2',
+  'i-tabler-file-invoice',
+  'i-tabler-file-euro',
+  'i-tabler-file-dollar',
+  'i-tabler-file-analytics',
+  'i-tabler-file-chart',
+  'i-tabler-file-description',
+  'i-tabler-file-music',
+  'i-tabler-file-lambda',
+  'i-tabler-file-3d',
+  'i-tabler-file-rss',
+];
+
+const getRandomIcon = () => filesIcons[Math.floor(Math.random() * filesIcons.length)];
+
+const codeSnippet = `
+curl -X POST https://api.papra.ai/v1/documents \\
+  -H "Authorization: Bearer $PAPRA_API_KEY" \\
+  -H "Content-Type: multipart/form-data" \\
+  -F "file=@/path/to/your/file.pdf"
+`.trim();
+---
+
+<div class="pt-32 pb-48 bg-card p-6 relative overflow-hidden">
+  <!-- <div class="z-10 bg-primary w-90% max-w-1000px h-60px rounded-full blur-64 op-15 absolute bottom--50px left-50% -translate-x-50% "></div> -->
+
+  <h2 class="text-3xl font-semibold text-pretty mb-2 text-center">{t('features.title')}</h2>
+  <p class="text-base text-muted-foreground text-center max-w-500px mx-auto mb-24">
+    {t('features.subtitle')}
+  </p>
+
+  <div class="max-w-1000px mx-auto flex flex-col sm:flex-row gap-4 items-start">
+    <div class="flex flex-col gap-4 w-full">
+      <BentoCard
+        title={t('features.all-in-one.title')}
+        description={t('features.all-in-one.description')}
+        icon="i-tabler-archive"
+      >
+        <div class="grid grid-cols-8 grid-rows-2 gap-4 p-6 overflow-hidden mb--150px">
+          {Array.from({ length: 24 }).map(() => <div class={cn('size-8 sm:size-10 text-muted text-center', getRandomIcon())} />)}
+        </div>
+      </BentoCard>
+
+      <BentoCard
+        title={t('features.organizations.title')}
+        description={t('features.organizations.description')}
+        icon="i-tabler-building-community"
+      >
+        <div class="flex items-center gap-2 p-6 pt-10 pb-4 justify-center">
+          <div class="border rounded-xl p-3 flex items-center justify-center">
+            <span class="i-tabler-users size-6 text-muted-foreground"></span>
+          </div>
+
+          <div class="bg-muted-foreground h-3px w-20px rounded-full"></div>
+
+          <div class="border rounded-xl p-3 flex items-center justify-center border-primary border-2">
+            <span class="i-tabler-user text-primary size-6"></span>
+          </div>
+
+          <div class="bg-muted-foreground h-3px w-20px rounded-full"></div>
+
+          <div class="border rounded-xl p-3 flex items-center justify-center">
+            <span class="i-tabler-users size-6 text-muted-foreground"></span>
+          </div>
+        </div>
+      </BentoCard>
+
+      <BentoCard
+        title={t('features.tagging.title')}
+        description={t('features.tagging.description')}
+        icon="i-tabler-tag"
+      >
+        <div class="mt-6"></div>
+      </BentoCard>
+    </div>
+
+    <div class="flex flex-col gap-4 w-full">
+      <BentoCard
+        title={t('features.search.title')}
+        description={t('features.search.description')}
+        icon="i-tabler-search"
+      >
+        <div class="mb--180px flex items-start justify-center pt-6 relative" role="img" aria-label="Search feature illustration">
+          <div class="bg-background sm:min-w-64 border rounded-lg">
+            <div class="px-4 py-2 flex items-center gap-2">
+              <span class="i-tabler-search size-4 text-primary"></span>
+              <span class="text-muted-foreground text-xs">{t('features.search.placeholder')}</span>
+            </div>
+
+            <div class="border-t p-4 text-xs text-muted-foreground">
+              <div class="flex items-center gap-2">
+                <span class="i-tabler-file-text size-4"></span>
+                {t('features.search.example-1')}
+              </div>
+
+              <div class="flex items-center gap-2 mt-2">
+                <span class="i-tabler-file-analytics size-4"></span>
+                {t('features.search.example-2')}
+              </div>
+
+              <div class="flex items-center gap-2 mt-2">
+                <span class="i-tabler-file-code size-4"></span>
+                {t('features.search.example-3')}
+              </div>
+
+              <div class="flex items-center gap-2 mt-2">
+                <span class="i-tabler-file size-4"></span>
+                {t('features.search.example-4')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </BentoCard>
+
+      <BentoCard
+        title={t('features.developer-friendly.title')}
+        description={t('features.developer-friendly.description')}
+        icon="i-tabler-code"
+      >
+        <div class="flex justify-center p-6">
+          <Code code={codeSnippet} lang="bash" theme="vitesse-dark" class="text-xs bg-transparent!" role="presentation" />
+        </div>
+      </BentoCard>
+
+      <BentoCard
+        title={t('features.email-ingestion.title')}
+        description={t('features.email-ingestion.description')}
+        icon="i-tabler-mail"
+      >
+        <div class="flex items-center gap-4 p-6 pt-10 pb-4 justify-center">
+          <span class="i-tabler-file-text size-10 text-muted-foreground"></span>
+          <span class="i-tabler-arrow-right size-6 text-muted-foreground"></span>
+          <span class="i-tabler-mailbox size-10 text-primary"></span>
+        </div>
+      </BentoCard>
+    </div>
+  </div>
+</div>

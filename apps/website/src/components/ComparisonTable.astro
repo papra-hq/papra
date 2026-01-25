@@ -1,0 +1,49 @@
+---
+import { cn } from '../utils/cn';
+
+type ComparisonRow = {
+  feature: string;
+  description?: string;
+  paperless: string;
+  papra: string;
+};
+
+type Props = {
+  rows: ComparisonRow[];
+  class?: string;
+};
+
+const { rows, class: className } = Astro.props;
+---
+
+<div class={cn('not-prose my-12 mx--6 sm:mx-0 lg:mx--48 overflow-hidden', className)}>
+  <table class="w-full border-collapse" style="table-layout: fixed;">
+    <thead>
+      <tr class="bg-card">
+        <th class="text-left px-6 py-4 w-30%"></th>
+        <th class="text-left px-6 py-4 text-sm font-bold text-muted-foreground uppercase tracking-wide w-35%">Paperless-NGX</th>
+        <th class="text-left px-6 py-4 text-sm font-bold text-muted-foreground uppercase tracking-wide rounded-tr-xl w-35%">Papra</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row, index) => (
+        <tr class="bg-card transition-colors hover:bg-muted/20 border-t">
+          <td class="px-6 py-5">
+              <div class="font-medium text-foreground">{row.feature}</div>
+              {row.description && (<div class="text-sm text-muted-foreground">{row.description}</div>)}
+          </td>
+          <td class={cn(
+            'px-6 py-5 text-muted-foreground leading-relaxed',
+            index === rows.length - 1 && 'rounded-br-xl',
+          )}
+          >{row.paperless}</td>
+          <td class={cn(
+            'px-6 py-5 text-muted-foreground leading-relaxed',
+            index === rows.length - 1 && 'rounded-br-xl',
+          )}
+          >{row.papra}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

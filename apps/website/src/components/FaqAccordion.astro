@@ -1,0 +1,80 @@
+---
+import { cn } from '../utils/cn';
+
+type Props = {
+    title: string;
+    description: string;
+    items: readonly {
+        question: string;
+        answer: string;
+    }[];
+    class?: string;
+};
+
+const { title, description, items, class: className } = Astro.props;
+---
+
+<div class={cn(`max-w-800px mx-auto px-6 py-42`, className)}>
+    <h2 class="text-3xl font-semibold text-pretty mb-4 text-center">{title}</h2>
+    <p class="text-muted-foreground text-lg text-center mb-24">{description}</p>
+
+    <div>
+        {
+            items.map((item, index) => (
+                <div class="border-x border-t first:rounded-t-lg last:border-b last:rounded-b-lg bg-background overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between" data-faq-toggle data-faq-index={index} aria-expanded="false" aria-controls={`faq-content-${index}`}>
+                        <span class="font-semibold text-sm sm:text-base">{item.question}</span>
+                        <div class="i-tabler-chevron-down size-5 text-muted-foreground transition-transform duration-200" data-faq-icon aria-hidden="true" />
+                    </button>
+
+                    <div class="px-6 pb-0 max-h-0 overflow-hidden transition-all duration-300 ease-in-out" data-faq-content data-faq-index={index} id={`faq-content-${index}`}>
+                        <div class="pb-4">
+                            <p class="text-muted-foreground leading-relaxed">{item.answer}</p>
+                        </div>
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</div>
+
+<script>
+    function expandItem(toggle: HTMLElement, content: HTMLElement, icon: HTMLElement) {
+      toggle.setAttribute('aria-expanded', 'true');
+      content.style.maxHeight = `${content.scrollHeight}px`;
+      icon.style.transform = 'rotate(180deg)';
+    }
+
+    function collapseItem(toggle: HTMLElement, content: HTMLElement, icon: HTMLElement) {
+      toggle.setAttribute('aria-expanded', 'false');
+      content.style.maxHeight = '0';
+      icon.style.transform = 'rotate(0deg)';
+    }
+
+    function handleToggleClick(e: Event) {
+      const target = e.currentTarget as HTMLElement;
+      const index = target.getAttribute('data-faq-index');
+      const content = document.querySelector(`[data-faq-content][data-faq-index="${index}"]`) as HTMLElement;
+      const icon = target.querySelector('[data-faq-icon]') as HTMLElement;
+      const isExpanded = target.getAttribute('aria-expanded') === 'true';
+
+      if (isExpanded) {
+        collapseItem(target, content, icon);
+      } else {
+        expandItem(target, content, icon);
+      }
+    }
+
+    function initFaqAccordion() {
+      const toggles = document.querySelectorAll('[data-faq-toggle]');
+      toggles.forEach((toggle) => {
+        toggle.addEventListener('click', handleToggleClick);
+      });
+    }
+
+    // Initialize FAQ accordion when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initFaqAccordion);
+
+    // Also initialize for Astro's client-side navigation
+    document.addEventListener('astro:page-load', initFaqAccordion);
+</script>

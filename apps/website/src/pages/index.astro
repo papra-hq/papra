@@ -1,0 +1,14 @@
+---
+import { DEFAULT_LOCALE, LOCALES } from '../i18n/i18n.constants';
+
+export const prerender = false;
+
+const preferredLocales = Astro.preferredLocaleList ?? [];
+
+const locale = preferredLocales.find(locale => (LOCALES as readonly string[]).includes(locale)) ?? DEFAULT_LOCALE;
+
+Astro.response.headers.set('Vary', 'Accept-Language');
+
+return Astro.redirect(`/${locale}/`, 302);
+---
+

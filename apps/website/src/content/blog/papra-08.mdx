@@ -1,0 +1,130 @@
+---
+title: Papra v0.8 - Improved webhooks, async task processing, and enhanced migration system
+description: Papra v0.8 introduces standard webhook compliance, asynchronous file processing with our new task runner, a complete migration system overhaul, and many quality of life improvements.
+publishedAt: 2025-08-08
+lang: en
+ogImage: /src/content/blog/_images/papra-08/papra-08-og.png
+coverImage: /src/content/blog/_images/papra-08/papra-08-preview.png
+---
+
+I'm thrilled to announce the release of Papra v0.8! This is a significant technical release that lays the foundation for exciting future features while improving the developer experience.
+
+## Enhanced Webhook System
+
+One of the biggest improvements in v0.8 is our completely overhauled webhook system. We've made it more powerful, reliable, and standards-compliant.
+
+### Standard Webhook Compliance
+
+**Breaking change**: We've updated our webhook format to comply with the [Standard Webhooks specification](https://www.standardwebhooks.com/). This brings several benefits, with the main benefit being ecosystem compatibility.
+
+#### Migration Guide
+
+If you're currently using webhooks, you'll need to update your webhook handlers:
+
+**Before (v0.7 and earlier):**
+```http
+# Headers
+x-signature: P8HFU+6SAJSczKQugKpx7aylbGoNH/RTyvLtgS7jzjA=
+x-event: document:created
+
+# Body
+{
+  "event": "document:created",
+  "payload": {
+    "documentId": "doc_hlrwbh2jz2gv851wwtib3ler",
+    "organizationId": "org_eda48ocnvekbcj8q0enxybty",
+    "name": "index (1).js",
+    "createdAt": "2025-08-08T18:40:15.210Z",
+    "updatedAt": "2025-08-08T18:40:15.210Z"
+  },
+  "timestampMs": 1754678415223
+}
+```
+
+**After (v0.8+):**
+```http
+# Headers
+webhook-signature: v1,hQvJ5c3gKIx6NBXLXNWfXJgpLymHE+rXjQqML0DlaIA=
+webhook-timestamp: 1754678128
+webhook-id: msg_pb568hoi1t6n3k3fkfoc4u13
+
+# Body
+{
+  "data": {
+    "documentId": "doc_tny6ix8nort5ip05s6tl2efd",
+    "organizationId": "org_eda48ocnvekbcj8q0enxybty",
+    "name": "index.js",
+    "createdAt": "2025-08-08T18:35:28.941Z",
+    "updatedAt": "2025-08-08T18:35:28.941Z"
+  },
+  "type": "document:created",
+  "timestamp": "2025-08-08T18:35:28.966Z"
+}
+```
+
+You can now use any standard webhook-compliant library, or our official [@papra/webhooks](https://www.npmjs.com/package/@papra/webhooks) package for easy webhook validation.
+
+
+### New Webhook Events
+
+We've expanded the webhook events you can subscribe to:
+
+- **`document:updated`** - Triggered when document name or content changes
+- **`document:tag:added`** - Triggered when a tag is added to a document  
+- **`document:tag:removed`** - Triggered when a tag is removed from a document
+
+### Improved Performance
+
+Webhook invocations are now **deferred**, meaning they no longer block API responses. This significantly improves the responsiveness of all document operations while ensuring reliable webhook delivery.
+
+
+## Task Processing with Cadence MQ
+
+We've introduced **Cadence MQ**, our custom-built task runner designed specifically for self-hosting environments. Unlike traditional solutions like BullMQ that require Redis, Cadence MQ is built to be self-hosting friendly.
+
+### What's Changed
+
+- **File content extraction** (OCR, text extraction) now runs asynchronously, improving upload performance and reducing the format-specific processing time (image vs text for example)
+- **Recurring maintenance tasks** (document cleanup, token expiration) are now handled by the task runner
+
+This foundation enables us to add more background processing features in future releases while keeping Papra's infrastructure requirements minimal.
+
+Learn more about [Cadence MQ on GitHub](https://github.com/papra-hq/cadence-mq).
+
+## Enhanced Migration System
+
+We've completely rewritten our database migration mechanism to be more flexible and powerful:
+
+- **JavaScript migrations** instead of SQL-only files
+- **Up and down migrations** with full business logic support
+- **Backward compatibility** with existing SQL migrations
+- **Future-proof** foundation for complex schema changes
+
+This technical improvement ensures Papra can evolve smoothly while maintaining data integrity across updates.
+
+## Quality of Life Improvements
+
+- **Better Error Handling**
+    - **Improved feedback** for invalid origin config with [some documentation](https://docs.papra.app/resources/troubleshooting/#invalid-application-origin)
+    - **Added error messages** when tag deletion fails
+    - **Fixed tag deletion** issue when tags were assigned to documents
+- **Enhanced Internationalization**: Added support for Italian and improved Romanian translation
+- **Simplified organization member list** with a cleaner, more intuitive design
+- **OCR for scanned pdfs**, finally!
+
+## Conclusion
+
+Thank you for your continued support and valuable feedback! If you have any suggestions, you can either open an issue on [GitHub](https://github.com/papra-hq/papra/issues) or join the [Discord server](https://papra.app/discord).
+
+If you want to support the development of Papra, you can [buy me a coffee](https://buymeacoffee.com/cthmsst), or just [star the GitHub repository](https://github.com/papra-hq/papra), it'll help me a lot!
+
+I'm looking forward to hearing from you!
+
+<div class="mt-14">
+Some useful links:
+- [Discord server](https://papra.app/discord)
+- [GitHub repository](https://github.com/papra-hq/papra)
+- [Buy me a coffee](https://buymeacoffee.com/cthmsst)
+- [Bluesky account](https://bsky.app/profile/papra.app)
+- [Roadmap](https://github.com/orgs/papra-hq/projects/2)
+</div> 

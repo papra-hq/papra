@@ -1,0 +1,99 @@
+---
+import { getPathWithoutLocale, getTranslations } from '../i18n/i18n';
+import { LOCALES } from '../i18n/i18n.constants';
+import { cn } from '../utils/cn';
+
+const languages = LOCALES.map((locale) => {
+  const translations = getTranslations({ locale });
+  return {
+    code: locale,
+    name: translations['language-name'],
+    url: `/${locale}${getPathWithoutLocale(Astro.url)}`,
+    isActive: locale === Astro.currentLocale,
+  };
+});
+
+const currentLanguage = languages.find(lang => lang.isActive);
+---
+
+<div class="relative language-picker">
+  <button
+    type="button"
+    class="flex items-center gap-2 bg-background border border-border rounded-md px-3 py-2 text-sm hover:border-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition cursor-pointer"
+    aria-haspopup="true"
+  >
+    <div class="i-tabler-language size-5" role="img" aria-hidden="true"></div>
+    <span>{currentLanguage?.name}</span>
+    <div class="i-tabler-chevron-down size-4 transition-transform language-picker-chevron" aria-hidden="true"></div>
+  </button>
+
+  <div class="language-picker-menu absolute bottom-full left-0 mb-2 hidden bg-background border border-border rounded-md shadow-lg overflow-hidden min-w-full">
+    {
+      languages.map(lang => (
+        <a
+          href={lang.url}
+          class={cn(
+            'block px-3 py-2 text-sm hover:bg-muted transition outline-none focus:bg-muted focus:ring-2 focus:ring-primary focus:ring-inset',
+            lang.isActive && 'bg-primary/10 text-primary font-semibold',
+          )}
+          aria-current={lang.isActive ? 'page' : undefined}
+        >
+          {lang.name}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const pickers = document.querySelectorAll('.language-picker');
+
+  pickers.forEach((picker) => {
+    const button = picker.querySelector('button');
+    const menu = picker.querySelector('.language-picker-menu');
+    const chevron = picker.querySelector('.language-picker-chevron');
+
+    if (!button || !menu || !chevron) {
+      return;
+    }
+
+    let isOpen = false;
+
+    const toggle = () => {
+      isOpen = !isOpen;
+      menu.classList.toggle('hidden', !isOpen);
+      chevron.classList.toggle('rotate-180', isOpen);
+      button.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    const close = () => {
+      if (isOpen) {
+        isOpen = false;
+        menu.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+        button.setAttribute('aria-expanded', 'false');
+      }
+    };
+
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!picker.contains(e.target as Node)) {
+        close();
+      }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        close();
+      }
+    });
+  });
+});
+</script>

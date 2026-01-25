@@ -1,0 +1,79 @@
+---
+import { config } from '../app.config';
+import { buildLocalizedPath, useI18n } from '../i18n/i18n';
+import { getSocials } from '../socials';
+import { cn } from '../utils/cn';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+const socials = getSocials({ t }).filter(social => social.inHeader);
+
+const navigation = [
+  {
+    name: t('nav.demo'),
+    url: 'https://demo.papra.app',
+  },
+  {
+    name: t('nav.docs'),
+    url: 'https://docs.papra.app',
+  },
+  {
+    name: t('nav.blog'),
+    url: '/blog',
+  },
+  {
+    name: t('nav.self-host'),
+    url: 'https://docs.papra.app/self-hosting/using-docker/',
+  },
+  {
+    name: t('nav.pricing'),
+    url: buildLocalizedPath({ locale: Astro.currentLocale, path: '/pricing' }),
+  },
+];
+
+type Props = {
+  class?: string;
+};
+
+const { class: className } = Astro.props;
+---
+
+<nav
+  class={`z-100 border-0 border-b md:max-w-4xl pl-4 pr-3 py-4 mx-auto flex items-center justify-between md:(py-2 border-1px rounded-full mt-4) fixed top-0 left-0 right-0 bg-background bg-op-40 backdrop-blur-sm shadow-lg ${className}`}
+>
+  <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-lg font-bold flex items-center group">
+    <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
+    <span class="ml-2">Papra</span>
+  </a>
+
+  <div class="items-center gap-6 hidden md:flex">
+    {
+      navigation.map(nav => (
+        <a href={nav.url} class="text-sm font-bold hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
+          {nav.name}
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
+      {
+        socials.map(social => (
+          <a href={social.url} target="_blank" rel="noopener noreferrer" class=" hover:text-primary transition" aria-label={social.name}>
+            <div class={cn('size-5', social.icon)} />
+          </a>
+        ))
+      }
+    </div>
+
+    <a
+      class="flex gap-1.5 items-center bg-primary font-bold rounded py-1 px-3 rounded-xl text-primary-foreground text-sm transition hover:bg-primary/80"
+      href={config.getStartedLink}
+      target="_blank"
+    >
+      {t('nav.sign-in')}
+      <div class="i-tabler-arrow-right size-4"></div>
+    </a>
+  </div>
+</nav>

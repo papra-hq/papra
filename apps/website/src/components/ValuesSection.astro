@@ -1,0 +1,62 @@
+---
+import { useI18n } from '../i18n/i18n';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+
+const values = [
+  {
+    icon: 'i-tabler-heart-handshake',
+    title: t('values.ethical-by-design.title'),
+    description: t('values.ethical-by-design.description'),
+  },
+  {
+    icon: 'i-tabler-building-bank',
+    title: t('values.bootstrapped-and-independent.title'),
+    description: t('values.bootstrapped-and-independent.description'),
+  },
+  {
+    icon: 'i-tabler-shield-lock',
+    title: t('values.your-data-is-yours.title'),
+    description: t('values.your-data-is-yours.description'),
+  },
+  {
+    icon: 'i-tabler-brand-open-source',
+    title: t('values.fully-open-source.title'),
+    description: t('values.fully-open-source.description'),
+  },
+  {
+    icon: 'i-tabler-trees',
+    title: t('values.environmentally-conscious.title'),
+    description: t('values.environmentally-conscious.description'),
+  },
+  {
+    icon: 'i-tabler-users',
+    title: t('values.community-driven.title'),
+    description: t('values.community-driven.description'),
+  },
+];
+---
+
+<section class="py-32 border-t bg-background relative overflow-hidden">
+  <div class="z-10 bg-primary w-80% max-w-800px h-300px rounded-full blur-96 op-10 absolute top-50% left-50% -translate-x-50% -translate-y-50%"></div>
+
+  <div class="max-w-1200px mx-auto px-6 relative z-20">
+    <div class="text-center mb-24">
+      <h2 class="text-3xl sm:text-4xl font-bold mb-4">{t('values.title')}</h2>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto" set:html={t('values.subtitle')} />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        values.map(value => (
+          <div class="border rounded-xl p-6 bg-card group">
+            <div class={`${value.icon} size-10 text-primary mb-4 group-hover:(scale-105 rotate-12) transition transform`} />
+            <h3 class="text-xl font-bold mb-1">{value.title}</h3>
+            <p class="text-muted-foreground">{value.description}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

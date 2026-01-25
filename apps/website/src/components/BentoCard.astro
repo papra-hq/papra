@@ -1,0 +1,27 @@
+---
+import { cn } from '../utils/cn';
+
+type Props = {
+  title: string;
+  description: string;
+  icon?: string;
+};
+
+const { title, description, icon } = Astro.props;
+---
+
+
+    <div class="border rounded-xl bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] overflow-hidden">
+      <div class="z-50">
+        <slot></slot>
+      </div>
+
+      <div class="relative z-60 bg-gradient-to-t from-background via-background to-card to-opacity-0 p-6 pt-24 mt--24">
+        {icon && (<div class={cn('size-9 text-muted-foreground mb-4', icon)} />)}
+        <h3 class="text-xl font-bold text-pretty">{title}</h3>
+
+        <p class="text-muted-foreground text-base mt-2 leading-tight">
+          {description}
+        </p>
+      </div>
+    </div>
