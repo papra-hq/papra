@@ -1,7 +1,8 @@
 {
   "name": "@papra/website",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.0",
+  "private": true,
   "description": "Website for Papra, the document management platform",
   "scripts": {
     "dev": "astro dev",
