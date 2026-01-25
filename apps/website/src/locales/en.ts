@@ -190,7 +190,7 @@ export const translations = {
   'pricing.enterprise.title': 'Enterprise solutions',
   'pricing.enterprise.description': 'Looking for a custom plan tailored to your organization\'s needs? <br /> We offer enterprise solutions with advanced features, dedicated support, and flexible pricing. Contact us to discuss your requirements and get a personalized quote.',
   'pricing.self-hosting.title': 'Self-hosting',
-  'pricing.self-hosting.description': 'Papra is open-source, under the <a href="https://github.com/papra-app/papra/blob/main/LICENSE" class="underline hover:text-primary transition">AGPLv3</a> and can be self-hosted on your own infrastructure at no cost. <br />Get started with our documentation.',
+  'pricing.self-hosting.description': 'Papra is open-source, under the <a href="https://github.com/papra-hq/papra/blob/main/LICENSE" class="underline hover:text-primary transition">AGPLv3</a> and can be self-hosted on your own infrastructure at no cost. <br />Get started with our documentation.',
   'pricing.self-hosting.cta': 'View self-hosting guide',
 
   // Pricing Page - FAQ
