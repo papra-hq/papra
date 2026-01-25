@@ -43,7 +43,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk-solid": "^1.1.2",
-    "ofetch": "^1.4.1",
+    "ofetch": "catalog:",
     "p-limit": "^6.2.0",
     "posthog-js-lite": "^4.1.5",
     "radix3": "^1.1.2",
