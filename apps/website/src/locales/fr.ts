@@ -191,7 +191,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'pricing.enterprise.title': 'Solutions entreprise',
   'pricing.enterprise.description': 'Besoin d\'un plan sur mesure pour votre organisation ? <br /> On propose des solutions entreprise avec fonctionnalités avancées, support dédié et tarifs flexibles. Contactez-nous pour en discuter.',
   'pricing.self-hosting.title': 'Auto-hébergement',
-  'pricing.self-hosting.description': 'Papra est open-source, sous licence <a href="https://github.com/papra-app/papra/blob/main/LICENSE" class="underline hover:text-primary transition">AGPLv3</a>, et s\'auto-héberge gratuitement sur votre propre infrastructure. <br />Démarrez avec notre doc.',
+  'pricing.self-hosting.description': 'Papra est open-source, sous licence <a href="https://github.com/papra-hq/papra/blob/main/LICENSE" class="underline hover:text-primary transition">AGPLv3</a>, et s\'auto-héberge gratuitement sur votre propre infrastructure. <br />Démarrez avec notre doc.',
   'pricing.self-hosting.cta': 'Guide d\'auto-hébergement',
 
   // Pricing Page - FAQ
