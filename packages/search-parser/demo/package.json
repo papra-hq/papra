@@ -18,7 +18,7 @@
   "dependencies": {
     "@astrojs/solid-js": "^5.1.3",
     "@papra/search-parser": "workspace:*",
-    "astro": "^5.8.0",
+    "astro": "catalog:",
     "shiki": "^3.4.2",
     "solid-js": "^1.9.10",
     "ts-pattern": "^5.9.0"

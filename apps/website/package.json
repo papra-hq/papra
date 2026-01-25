@@ -22,7 +22,7 @@
     "@astrojs/sitemap": "^3.3.0",
     "@branchlet/core": "^1.0.0",
     "@corentinth/chisels": "^2.0.2",
-    "astro": "^5.16.15",
+    "astro": "catalog:",
     "astro-capo": "^0.0.1",
     "astro-expressive-code": "^0.41.1",
     "class-variance-authority": "^0.7.1",
