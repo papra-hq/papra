@@ -1,10 +1,12 @@
 import type { Component, ParentComponent } from 'solid-js';
 import { A, useParams } from '@solidjs/router';
-import { For, Show, Suspense } from 'solid-js';
+import { launchedFiles, setLaunchedFiles } from '@/modules/files/file-launch.store';
+import { createEffect, For, Show, Suspense } from 'solid-js';
 
 import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
 
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
+
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { AboutDialog, useAboutDialog } from '@/modules/shared/components/about-dialog';
@@ -79,6 +81,14 @@ export const SidenavLayout: ParentComponent<{
   const aboutDialog = useAboutDialog();
 
   const { promptImport, uploadDocuments } = useDocumentUpload();
+
+  createEffect(() => {
+    const files = launchedFiles();
+    if (files.length > 0) {
+      uploadDocuments({ files });
+      setLaunchedFiles([]);
+    }
+  });
 
   return (
     <div class="flex flex-row h-screen min-h-0">
