@@ -1,7 +1,7 @@
 import type { BinaryLike, BinaryToTextEncoding } from 'node:crypto';
 import crypto from 'node:crypto';
 import { Transform } from 'node:stream';
-import { isNil } from 'lodash-es';
+import { isNil } from '../utils';
 
 export async function getStreamSha256Hash<Stream extends ReadableStream<Uint8Array> = ReadableStream<Uint8Array>>({ stream, digest = 'hex' }: { stream: Stream; digest?: BinaryToTextEncoding }): Promise<{ hash: string }> {
   const hash = crypto.createHash('sha256');
