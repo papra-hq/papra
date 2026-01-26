@@ -1,0 +1,74 @@
+---
+title: Versioning & Tagging
+description: Understanding Papra's versioning strategy for the monorepo packages and Docker images.
+slug: resources/versioning-and-tagging
+---
+
+Papra uses different versioning strategies depending on the type of package in the monorepo.
+
+## Monorepo Structure
+
+Papra is organized as a monorepo containing multiple packages, each with its own release lifecycle:
+
+- **Library packages** (e.g., `@papra/api-sdk`, `@papra/cli`, `@papra/webhooks`) follow **SemVer** (Semantic Versioning)
+- **Application** (`@papra/app`) follows **CalVer** (Calendar Versioning)
+
+## Semantic Versioning (SemVer)
+
+Library packages follow the standard [SemVer](https://semver.org/) format `MAJOR.MINOR.PATCH`:
+
+- **MAJOR**: Incompatible API changes
+- **MINOR**: Backward-compatible functionality additions
+- **PATCH**: Backward-compatible bug fixes
+
+**Examples:**
+- `@papra/api-sdk@1.2.3`
+- `@papra/cli@0.2.3`
+- `@papra/webhooks@0.3.2`
+
+## Calendar Versioning (CalVer)
+
+Since **v0.9.6**, the app uses CalVer with the format `YY.M.N`:
+
+- **YY**: Last 2 digits of the year
+- **M**: Month number (1-12, not zero-padded, where 1 = January, 12 = December)
+- **N**: Release number for that month (starting at 0)
+
+**Examples:**
+- `26.1.0`: First release of January 2026
+- `26.1.1`: Second release of January 2026
+- `26.5.11`: 12th release of May 2026
+
+## Git Tags
+
+All packages in the monorepo are tagged and GitHub-released using the format `package-name@version`:
+
+```
+@papra/api-sdk@1.2.3
+@papra/cli@0.2.3
+@papra/webhooks@0.3.2
+@papra/app@26.0.0
+```
+
+:::note[Historical Note]
+Up to and including **v26.0.0**, the application package was named `@papra/docker` and git tags followed the format `@papra/docker@X.Y.Z`. Starting from **>v26.0.0**, the package was renamed to `@papra/app` and tags follow the format `@papra/app@X.Y.Z`.
+:::
+
+## Docker Images
+
+Docker images follow the application package versioning and use the same version numbers. Images are automatically built and pushed to the container registry via CI/CD pipeline when a git tag is pushed.
+
+**Docker image tags:**
+```bash
+# Specific version
+docker pull ghcr.io/papra-hq/papra:26.0.0
+docker pull corentinth/papra:26.0.0
+
+# Latest versions
+docker pull ghcr.io/papra-hq/papra:latest
+docker pull corentinth/papra:latest
+```
+
+See [Self-hosting documentation](/self-hosting/using-docker) for more details on using the Docker images.
+
+The Docker image version always matches the `@papra/app` package version, ensuring consistency across distribution methods.

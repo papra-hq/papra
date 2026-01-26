@@ -94,6 +94,10 @@ export const sidebar = [
         label: 'API Endpoints',
         slug: 'resources/api-endpoints',
       },
+      {
+        label: 'Versioning & Tagging',
+        slug: 'resources/versioning-and-tagging',
+      },
     ],
   },
 ] satisfies StarlightUserConfig['sidebar'];
