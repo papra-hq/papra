@@ -1,8 +1,10 @@
 import type { Component } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { A, useNavigate } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { AppLogo } from '@/modules/ui/components/app-logo';
+import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { CreateOrganizationForm } from '../components/create-organization-form.component';
 import { useCreateOrganization } from '../organizations.composables';
@@ -40,6 +42,12 @@ export const CreateFirstOrganizationPage: Component = () => {
 
   return (
     <div>
+      <div class="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center border-b">
+        <AppLogo as={A} href="/" />
+
+        <UserSettingsDropdown />
+      </div>
+
       <div class="max-w-md mx-auto pt-12 sm:pt-24 px-6">
         <h1 class="text-xl font-bold">
           {t('organizations.create-first.title')}
