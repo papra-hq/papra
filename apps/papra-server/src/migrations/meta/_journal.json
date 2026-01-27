@@ -92,6 +92,13 @@
       "when": 1766411483931,
       "tag": "0012_two-factor-authentication",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1769523160483,
+      "tag": "0013_case-insensitive-tag-name-uniq-constraint",
+      "breakpoints": true
     }
   ]
 }

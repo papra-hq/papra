@@ -8,8 +8,8 @@ describe('tagging-rules repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1', createdAt: new Date('2023-01-01'), updatedAt: new Date('2023-02-01') },
-          { id: 'tag_2', name: 'Tag 2', color: '#111111', organizationId: 'org_1', createdAt: new Date('2023-01-02'), updatedAt: new Date('2023-02-02') },
+          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1', createdAt: new Date('2023-01-01'), updatedAt: new Date('2023-02-01') },
+          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_1', createdAt: new Date('2023-01-02'), updatedAt: new Date('2023-02-02') },
         ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Enabled Rule 1', enabled: true, createdAt: new Date('2023-03-01'), updatedAt: new Date('2023-04-01') },
@@ -48,6 +48,7 @@ describe('tagging-rules repository', () => {
               tag: {
                 id: 'tag_1',
                 name: 'Tag 1',
+                normalizedName: 'tag 1',
                 color: '#000000',
                 description: null,
                 organizationId: 'org_1',
@@ -64,6 +65,7 @@ describe('tagging-rules repository', () => {
               tag: {
                 id: 'tag_2',
                 name: 'Tag 2',
+                normalizedName: 'tag 2',
                 color: '#111111',
                 description: null,
                 organizationId: 'org_1',
@@ -102,7 +104,7 @@ describe('tagging-rules repository', () => {
     test('disabled tagging rules are excluded from the results', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Enabled Rule', enabled: true },
           { id: 'tr_2', organizationId: 'org_1', name: 'Disabled Rule', enabled: false },
@@ -133,8 +135,8 @@ describe('tagging-rules repository', () => {
           { id: 'org_2', name: 'Org 2' },
         ],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' },
-          { id: 'tag_2', name: 'Tag 2', color: '#111111', organizationId: 'org_2' },
+          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' },
+          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_2' },
         ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule Org 1', enabled: true },
@@ -158,7 +160,7 @@ describe('tagging-rules repository', () => {
     test('organizations with only disabled rules get an empty result', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Disabled Rule', enabled: false },
         ],
@@ -189,7 +191,7 @@ describe('tagging-rules repository', () => {
     test('tagging rules without conditions are properly retrieved with empty conditions array', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule Without Conditions', enabled: true },
         ],
@@ -211,8 +213,8 @@ describe('tagging-rules repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' },
-          { id: 'tag_2', name: 'Tag 2', color: '#111111', organizationId: 'org_1' },
+          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' },
+          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_1' },
         ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule 1', enabled: true },
