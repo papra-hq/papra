@@ -1,5 +1,4 @@
 import type { OrganizationInvitation } from './organizations.types';
-import { isAfter } from 'date-fns';
 import { eq, like } from 'drizzle-orm';
 import { escapeLikeWildcards } from '../shared/db/sql.helpers';
 import { isNilOrEmptyString } from '../shared/utils';
@@ -15,7 +14,7 @@ export function ensureInvitationStatus({ invitation, now = new Date() }: { invit
     return invitation;
   }
 
-  if (isAfter(invitation.expiresAt, now)) {
+  if (invitation.expiresAt > now) {
     return invitation;
   }
 
