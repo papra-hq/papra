@@ -752,6 +752,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'color-picker.lightness': 'Φωτεινότητα',
   'color-picker.select-color': 'Επιλογή χρώματος',
   'color-picker.select-a-color': 'Επιλέξτε χρώμα',
+  'color-picker.random-color': 'Τυχαίο χρώμα',
 
   // Subscriptions
 
