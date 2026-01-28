@@ -306,6 +306,10 @@ describe('database-fts5 repository', () => {
           expectedDocumentsIds: ['doc_3'],
         },
         {
+          searchQuery: 'tag:cAr tag:iNvoIce',
+          expectedDocumentsIds: ['doc_3'],
+        },
+        {
           searchQuery: 'tag:car NOT contract',
           expectedDocumentsIds: ['doc_3'],
         },

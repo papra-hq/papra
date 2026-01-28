@@ -41,15 +41,13 @@ describe('database-fts5 repository models', () => {
 
       expect(issues).to.eql([]);
       expect(getSqlString(searchWhereClause)).to.eql({
-        sql: `(\"documents\".\"organization_id\" = ? and \"documents\".\"is_deleted\" = ? and ((\"documents\".\"id\" in (select distinct \"documents_tags\".\"document_id\" from \"documents_tags\" inner join \"tags\" on \"documents_tags\".\"tag_id\" = \"tags\".\"id\" where (\"tags\".\"organization_id\" = ? and (\"tags\".\"name\" = ? or \"tags\".\"id\" = ?))) or \"documents\".\"id\" in (select distinct \"documents_tags\".\"document_id\" from \"documents_tags\" inner join \"tags\" on \"documents_tags\".\"tag_id\" = \"tags\".\"id\" where (\"tags\".\"organization_id\" = ? and (\"tags\".\"name\" = ? or \"tags\".\"id\" = ?)))) and not \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)))`,
+        sql: '("documents"."organization_id" = ? and "documents"."is_deleted" = ? and (("documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?)) or "documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))) and not "documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)))',
         params: [
           'org_1',
           0,
           'org_1',
           'important',
-          'important',
           'org_1',
-          'urgent',
           'urgent',
           'organization_id:\"org_1\" {name content}:\"confidential\"*',
         ],

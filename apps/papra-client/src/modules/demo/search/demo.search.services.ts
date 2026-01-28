@@ -37,7 +37,7 @@ function buildTagFilterCondition({ expression }: { expression: FilterExpression 
     return falseCondition;
   }
 
-  return ({ document }) => document.tags.find(tag => tag.name === value || tag.id === value) !== undefined;
+  return ({ document }) => document.tags.find(tag => tag.name.toLowerCase() === value.toLowerCase() || tag.id === value) !== undefined;
 }
 
 function buildNameFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
