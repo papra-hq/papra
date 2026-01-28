@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.2.1
+
+### Patch Changes
+
+- [#822](https://github.com/papra-hq/papra/pull/822) [`b6951ea`](https://github.com/papra-hq/papra/commit/b6951ea05a01820095a8caf83ba1c35b215eafe6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Tag names uniqueness enforced with case insensitivity per organization. Migration will ensure deduplication by appending prefixes in case of existing collisions.
+
 ## 1.2.0
 
 ### Minor Changes
