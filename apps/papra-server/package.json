@@ -26,7 +26,7 @@
     "migrate:down": "tsx --env-file-if-exists=.env src/scripts/migrate-down.script.ts | crowlog-pretty",
     "migrate:up:prod": "tsx src/scripts/migrate-up.script.ts",
     "migrate:push": "drizzle-kit push",
-    "migrate:create": "sh -c 'drizzle-kit generate --name \"$1\" && tsx --env-file-if-exists=.env src/scripts/create-migration.ts \"$1\" | crowlog-pretty' --",
+    "migrate:create": "sh -c 'tsx --env-file-if-exists=.env src/scripts/create-migration.ts \"$1\" | crowlog-pretty' --",
     "db:studio": "drizzle-kit studio",
     "clean:dist": "rm -rf dist",
     "clean:db": "rm db.sqlite",
