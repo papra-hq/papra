@@ -6,11 +6,13 @@ import { parseColor } from '@kobalte/core/colors';
 import { cva } from 'class-variance-authority';
 import { createSignal, For, splitProps } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { FFFFFF_IN_DECIMAL } from '@/modules/shared/colors/color-formats';
 import { getLuminance } from '@/modules/shared/colors/luminance';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from './button';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { TextField, TextFieldRoot } from './textfield';
+import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 const Slider: Component<{
   channel: 'hue' | 'saturation' | 'lightness';
@@ -127,6 +129,12 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
     return luminance > 0.179 ? 'black' : 'white';
   }
 
+  function handleRandomColor() {
+    const randomColorDecimal = Math.floor(Math.random() * (FFFFFF_IN_DECIMAL + 1));
+    const randomColor = `#${randomColorDecimal.toString(16).padStart(6, '0').toUpperCase()}`;
+    local.onChange?.(randomColor);
+  }
+
   return (
     <div
       class={cn(
@@ -173,6 +181,17 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
         </PopoverContent>
       </Popover>
 
+      <Tooltip>
+        <TooltipContent>
+          {t('color-picker.random-color')}
+        </TooltipContent>
+
+        <TooltipTrigger>
+          <Button variant="ghost" size="icon" onClick={handleRandomColor} aria-label={t('color-picker.random-color')} disabled={local.disabled}>
+            <div class="i-tabler-refresh size-5 text-muted-foreground" />
+          </Button>
+        </TooltipTrigger>
+      </Tooltip>
     </div>
   );
 }

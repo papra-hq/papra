@@ -750,6 +750,7 @@ export const translations = {
   'color-picker.lightness': 'Lightness',
   'color-picker.select-color': 'Select color',
   'color-picker.select-a-color': 'Select a color',
+  'color-picker.random-color': 'Random color',
 
   // Subscriptions
 

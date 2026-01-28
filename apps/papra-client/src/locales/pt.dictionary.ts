@@ -752,6 +752,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'color-picker.lightness': 'Brilho',
   'color-picker.select-color': 'Selecionar cor',
   'color-picker.select-a-color': 'Selecione uma cor',
+  'color-picker.random-color': 'Cor aleatória',
 
   // Subscriptions
 
