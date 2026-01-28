@@ -19,7 +19,7 @@ describe('tagging-rules usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1' }],
@@ -73,7 +73,7 @@ describe('tagging-rules usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1' }],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
@@ -101,7 +101,7 @@ describe('tagging-rules usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
@@ -153,7 +153,7 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "any", tags are applied when at least one condition matches', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
@@ -186,7 +186,7 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "any", tags are not applied when no conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Contract 2024', originalName: 'Contract 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
@@ -219,7 +219,7 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "all" (default), tags are applied only when all conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
@@ -252,7 +252,7 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "all" (default), tags are not applied when only some conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
         documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
@@ -287,7 +287,7 @@ describe('tagging-rules usecases', () => {
     test('applying rule to existing documents tags only matching ones', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Invoice', color: '#000000', organizationId: 'org_1' }],
+        tags: [{ id: 'tag_1', name: 'Invoice', normalizedName: 'invoice', color: '#000000', organizationId: 'org_1' }],
         documents: [
           { id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'hash_1', mimeType: 'text/plain' },
           { id: 'doc_2', organizationId: 'org_1', name: 'Invoice Q1', originalName: 'Invoice Q1', originalStorageKey: 'doc_2', originalSha256Hash: 'hash_2', mimeType: 'text/plain' },

@@ -12,12 +12,13 @@ export const tagsTable = sqliteTable(
 
     organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     name: text('name').notNull(),
+    normalizedName: text('normalized_name'),
     color: text('color').notNull(),
     description: text('description'),
   },
   table => [
     // To ensure that tags are unique per organization
-    unique('tags_organization_id_name_unique').on(table.organizationId, table.name),
+    unique('tags_organization_id_normalized_name_unique').on(table.organizationId, table.normalizedName),
   ],
 );
 

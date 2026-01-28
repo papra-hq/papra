@@ -170,8 +170,8 @@ describe('documents usecases', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
         tags: [
-          { id: 'tag-1', name: 'Tag 1', color: '#000000', organizationId: 'organization-1' },
-          { id: 'tag-2', name: 'Tag 2', color: '#000000', organizationId: 'organization-1' },
+          { id: 'tag-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'organization-1' },
+          { id: 'tag-2', name: 'Tag 2', normalizedName: 'tag 2', color: '#000000', organizationId: 'organization-1' },
         ],
         documents: [{
           id: 'document-1',

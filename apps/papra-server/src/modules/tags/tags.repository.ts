@@ -1,12 +1,12 @@
 import type { Database } from '../app/database/database.types';
-import type { DbInsertableTag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
-import { omitUndefined } from '../shared/utils';
+import { isDefined, omitUndefined } from '../shared/utils';
 import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
+import { normalizeTagName } from './tags.repository.models';
 import { documentsTagsTable, tagsTable } from './tags.table';
 
 export type TagsRepository = ReturnType<typeof createTagsRepository>;
@@ -58,8 +58,16 @@ async function getTagById({ tagId, organizationId, db }: { tagId: string; organi
   return { tag };
 }
 
-async function createTag({ tag, db }: { tag: DbInsertableTag; db: Database }) {
-  const [result, error] = await safely(db.insert(tagsTable).values(tag).returning());
+async function createTag({ tag, db }: { tag: { name: string; description?: string | null; color: string; organizationId: string }; db: Database }) {
+  const [result, error] = await safely(
+    db
+      .insert(tagsTable)
+      .values({
+        ...tag,
+        normalizedName: normalizeTagName({ name: tag.name }),
+      })
+      .returning(),
+  );
 
   if (isUniqueConstraintError({ error })) {
     throw createTagAlreadyExistsError();
@@ -86,6 +94,7 @@ async function updateTag({ tagId, name, description, color, db }: { tagId: strin
         name,
         description,
         color,
+        normalizedName: isDefined(name) ? normalizeTagName({ name }) : undefined,
       }),
     )
     .where(

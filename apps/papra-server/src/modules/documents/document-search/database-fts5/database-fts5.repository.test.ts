@@ -137,8 +137,8 @@ describe('database-fts5 repository', () => {
           organizations: [{ id: 'org_1', name: 'Organization 1' }],
           documents,
           tags: [
-            { id: 'tag_1', organizationId: 'org_1', name: 'tag1', color: '#ff0000' },
-            { id: 'tag_2', organizationId: 'org_1', name: 'tag2', color: '#00ff00' },
+            { id: 'tag_1', organizationId: 'org_1', name: 'tag1', normalizedName: 'tag1', color: '#ff0000' },
+            { id: 'tag_2', organizationId: 'org_1', name: 'tag2', normalizedName: 'tag2', color: '#00ff00' },
           ],
           documentsTags: [
             { documentId: 'doc_1', tagId: 'tag_1' },
@@ -231,8 +231,8 @@ describe('database-fts5 repository', () => {
           organizations: [{ id: 'org_1', name: 'Organization 1' }],
           documents,
           tags: [
-            { id: 'tag_1', organizationId: 'org_1', name: 'tag1', color: '#ff0000' },
-            { id: 'tag_2', organizationId: 'org_1', name: 'tag2', color: '#00ff00' },
+            { id: 'tag_1', organizationId: 'org_1', name: 'tag1', normalizedName: 'tag1', color: '#ff0000' },
+            { id: 'tag_2', organizationId: 'org_1', name: 'tag2', normalizedName: 'tag2', color: '#00ff00' },
           ],
           documentsTags: [
             { documentId: 'doc_1', tagId: 'tag_1' },
@@ -269,8 +269,8 @@ describe('database-fts5 repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Organization 1' }],
         tags: [
-          { name: 'invoice', organizationId: 'org_1', id: 'tag_1', color: '#ff0000' },
-          { name: 'car', organizationId: 'org_1', id: 'tag_2', color: '#00ff00' },
+          { name: 'invoice', organizationId: 'org_1', id: 'tag_1', normalizedName: 'invoice', color: '#ff0000' },
+          { name: 'car', organizationId: 'org_1', id: 'tag_2', normalizedName: 'car', color: '#00ff00' },
         ],
         documents,
         documentsTags: [
@@ -459,8 +459,8 @@ describe('database-fts5 repository', () => {
         organizations: [{ id: 'org_1', name: 'Organization 1' }],
         documents,
         tags: [
-          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', color: '#ff0000' },
-          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', color: '#00ff00' },
+          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', normalizedName: 'tag1', color: '#ff0000' },
+          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', normalizedName: 'tag2', color: '#00ff00' },
         ],
         documentsTags: [
           { documentId: 'doc_1', tagId: 'tag_1' },
