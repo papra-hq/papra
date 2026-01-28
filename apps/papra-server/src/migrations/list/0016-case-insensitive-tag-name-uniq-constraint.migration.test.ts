@@ -1,6 +1,7 @@
 import { asc, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { setupDatabase } from '../../modules/app/database/database';
+import { isNil } from '../../modules/shared/utils';
 import { documentsTagsTable, tagsTable } from '../../modules/tags/tags.table';
 import { initialSchemaSetupMigration } from './0001-initial-schema-setup.migration';
 import { caseInsensitiveTagNameUniqConstraintMigration, createTagNameNormalizer } from './0016-case-insensitive-tag-name-uniq-constraint.migration';
@@ -245,6 +246,35 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
       expect(tags).toHaveLength(2);
       expect(tags.at(0)).toMatchObject({ id: 'tag_1', name: 'Tag One', normalizedName: null });
       expect(tags.at(1)).toMatchObject({ id: 'tag_2', name: 'Tag One', normalizedName: null });
+    });
+
+    test('processes tags in batches correctly with pagination', async () => {
+      const { db } = setupDatabase({ url: ':memory:' });
+
+      await initialSchemaSetupMigration.up({ db });
+
+      await db.run(sql`INSERT INTO organizations(id, name, created_at, updated_at) VALUES ('org_1', 'Test Org', 1737936000000, 1737936000000)`);
+
+      for (let i = 1; i <= 500; i++) {
+        const name = `Tag ${i}`;
+        const id = `tag_${i.toString().padStart(4, '0')}`;
+
+        await db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, color, description) VALUES 
+          (${id}, 1737936000000, 1737936000000, 'org_1', ${name}, '#ff0000', NULL)
+        `);
+      }
+
+      // Verify all tags are inserted without normalized_name
+      const { rows: tagsBeforeMigration } = await db.run(sql`SELECT * FROM tags ORDER BY id`);
+      expect(tagsBeforeMigration).toHaveLength(500);
+      expect(tagsBeforeMigration.every(tag => isNil(tag.normalizedName))).toBe(true);
+
+      await caseInsensitiveTagNameUniqConstraintMigration.up({ db });
+
+      const tagsAfterMigration = await db.select().from(tagsTable).orderBy(tagsTable.id);
+      expect(tagsAfterMigration).toHaveLength(500);
+
+      expect(tagsAfterMigration.every(tag => !isNil(tag.normalizedName))).toBe(true);
     });
   });
 });

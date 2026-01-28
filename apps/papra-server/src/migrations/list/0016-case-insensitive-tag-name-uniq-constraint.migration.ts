@@ -1,7 +1,7 @@
 import type { Migration } from '../migrations.types';
 import { asc, eq, isNull, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
-import { createIterator } from '../../modules/app/database/database.usecases';
+import { createBatchedIterator } from '../../modules/app/database/database.usecases';
 import { createLogger } from '../../modules/shared/logger/logger';
 import { normalizeTagName } from '../../modules/tags/tags.repository.models';
 import { tagsTable } from '../../modules/tags/tags.table';
@@ -59,14 +59,15 @@ export const caseInsensitiveTagNameUniqConstraintMigration = {
 
       const normalizer = createTagNameNormalizer();
 
-      const iterator = createIterator({
+      const iterator = createBatchedIterator({
         batchSize: 200,
-        query: db
+        getBatch: async ({ limit }) => db
           .select()
           .from(tagsTable)
           .where(isNull(tagsTable.normalizedName))
           .orderBy(asc(tagsTable.id))
-          .$dynamic(),
+          .limit(limit), // No offset as where clause ensures we only get unprocessed rows
+
       });
 
       for await (const tag of iterator) {
