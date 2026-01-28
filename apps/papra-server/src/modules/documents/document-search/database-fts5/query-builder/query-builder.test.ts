@@ -11,6 +11,7 @@ import {
   handleNameFilter,
   handleNotExpression,
   handleOrExpression,
+  handleTagFilter,
   handleTextExpression,
   handleUnsupportedExpression,
 } from './query-builder';
@@ -503,6 +504,38 @@ describe('query-builder', async () => {
       expect(getSqlString(sqlQuery)).to.eql({
         sql: `0`,
         params: [],
+      });
+    });
+  });
+
+  describe('handleTagFilter', () => {
+    test('when the tag filter value is a proper tag id, the built query matches by id', () => {
+      const { sqlQuery, issues } = handleTagFilter({
+        expression: { type: 'filter', field: 'tag', value: 'tag_123456789123456789123456', operator: '=' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."id" = ?))',
+        params: ['org_1', 'tag_123456789123456789123456'],
+      });
+    });
+
+    test('when the tag filter value is not a proper tag id, the built query matches by name', () => {
+      const { sqlQuery, issues } = handleTagFilter({
+        expression: { type: 'filter', field: 'tag', value: 'Important THING', operator: '=' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))',
+        params: ['org_1', 'important thing'],
       });
     });
   });

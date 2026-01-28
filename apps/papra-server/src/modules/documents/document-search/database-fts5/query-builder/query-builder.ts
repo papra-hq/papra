@@ -3,6 +3,8 @@ import type { Database } from '../../../../app/database/database.types';
 import type { QueryResult } from './query-builder.types';
 import { and, eq, inArray, not, or, sql } from 'drizzle-orm';
 import { isValidDate } from '../../../../shared/date';
+import { tagIdRegex } from '../../../../tags/tags.constants';
+import { normalizeTagName } from '../../../../tags/tags.repository.models';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
 import { documentsTable } from '../../../documents.table';
 import { documentsFtsTable } from '../database-fts5.tables';
@@ -133,6 +135,10 @@ export function handleNotExpression({ expression, organizationId, db }: { expres
 export function handleTagFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
   const { value } = expression;
 
+  const query = tagIdRegex.test(value)
+    ? eq(tagsTable.id, value)
+    : eq(tagsTable.normalizedName, normalizeTagName({ name: value }));
+
   return {
     sqlQuery: inArray(
       documentsTable.id,
@@ -142,10 +148,7 @@ export function handleTagFilter({ expression, organizationId, db }: { expression
         .where(and(
           // Ensure tag belongs to the same organization + helps performance as there is an index on (organizationId + name)
           eq(tagsTable.organizationId, organizationId),
-          or(
-            eq(tagsTable.name, value),
-            eq(tagsTable.id, value),
-          ),
+          query,
         )),
     ),
     issues: [],
