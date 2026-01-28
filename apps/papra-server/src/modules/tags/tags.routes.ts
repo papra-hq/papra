@@ -37,9 +37,9 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
     })),
 
     validateJsonBody(z.object({
-      name: z.string().min(1).max(50),
+      name: z.string().trim().min(1).max(50),
       color: tagColorSchema,
-      description: z.string().max(256).optional(),
+      description: z.string().trim().max(256).optional(),
     })),
 
     async (context) => {
@@ -94,9 +94,9 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
     })),
 
     validateJsonBody(z.object({
-      name: z.string().min(1).max(64).optional(),
+      name: z.string().trim().min(1).max(64).optional(),
       color: tagColorSchema.optional(),
-      description: z.string().max(256).optional(),
+      description: z.string().trim().max(256).optional(),
     })),
 
     async (context) => {
