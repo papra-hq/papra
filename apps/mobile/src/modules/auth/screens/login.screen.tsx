@@ -19,6 +19,7 @@ import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useServerConfig } from '../../config/hooks/use-server-config';
+import { getEnabledOAuthProviders } from '../auth.models';
 import { BackToServerSelectionButton } from '../components/back-to-server-selection';
 
 const loginSchema = v.object({
@@ -34,7 +35,7 @@ export function LoginScreen() {
   const insets = useSafeAreaInsets();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: serverConfig, isLoading: isLoadingConfig } = useServerConfig();
+  const { serverConfig, isLoading: isConfigLoading } = useServerConfig();
 
   const form = useForm({
     defaultValues: {
@@ -80,15 +81,14 @@ export function LoginScreen() {
     }
   };
 
-  const authConfig = serverConfig?.config?.auth;
+  const authConfig = serverConfig?.auth;
   const isEmailEnabled = authConfig?.providers?.email?.isEnabled ?? false;
-  const isGoogleEnabled = authConfig?.providers?.google?.isEnabled ?? false;
-  const isGithubEnabled = authConfig?.providers?.github?.isEnabled ?? false;
-  const customProviders = authConfig?.providers?.customs ?? [];
+
+  const oauthProviders = getEnabledOAuthProviders({ serverConfig });
 
   const styles = createStyles({ themeColors });
 
-  if (isLoadingConfig) {
+  if (isConfigLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={themeColors.primary} />
@@ -168,7 +168,7 @@ export function LoginScreen() {
           </View>
         )}
 
-        {(isGoogleEnabled || isGithubEnabled || customProviders.length > 0) && (
+        {(oauthProviders.length > 0) && (
           <>
             {isEmailEnabled && (
               <View style={styles.divider}>
@@ -179,25 +179,7 @@ export function LoginScreen() {
             )}
 
             <View style={styles.socialButtons}>
-              {isGoogleEnabled && (
-                <TouchableOpacity
-                  style={styles.socialButton}
-                  onPress={async () => handleSocialSignIn('google')}
-                >
-                  <Text style={styles.socialButtonText}>Continue with Google</Text>
-                </TouchableOpacity>
-              )}
-
-              {isGithubEnabled && (
-                <TouchableOpacity
-                  style={styles.socialButton}
-                  onPress={async () => handleSocialSignIn('github')}
-                >
-                  <Text style={styles.socialButtonText}>Continue with GitHub</Text>
-                </TouchableOpacity>
-              )}
-
-              {customProviders.map(provider => (
+              {oauthProviders.map(provider => (
                 <TouchableOpacity
                   key={provider.providerId}
                   style={styles.socialButton}

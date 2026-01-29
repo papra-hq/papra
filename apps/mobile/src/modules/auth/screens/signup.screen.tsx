@@ -35,7 +35,7 @@ export function SignupScreen() {
   const insets = useSafeAreaInsets();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: serverConfig, isLoading: isLoadingConfig } = useServerConfig();
+  const { serverConfig, isLoading: isConfigLoading } = useServerConfig();
 
   const form = useForm({
     defaultValues: {
@@ -53,7 +53,7 @@ export function SignupScreen() {
 
         await authClient.signUp.email({ name, email, password });
 
-        const isEmailVerificationRequired = serverConfig?.config?.auth?.isEmailVerificationRequired ?? false;
+        const isEmailVerificationRequired = serverConfig?.auth?.isEmailVerificationRequired ?? false;
 
         if (isEmailVerificationRequired) {
           showAlert({
@@ -75,12 +75,12 @@ export function SignupScreen() {
     },
   });
 
-  const authConfig = serverConfig?.config?.auth;
+  const authConfig = serverConfig?.auth;
   const isRegistrationEnabled = authConfig?.isRegistrationEnabled ?? false;
 
   const styles = createStyles({ themeColors });
 
-  if (isLoadingConfig) {
+  if (isConfigLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={themeColors.primary} />

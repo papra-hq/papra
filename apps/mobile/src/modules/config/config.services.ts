@@ -1,31 +1,10 @@
 import type { ApiClient } from '../api/api.client';
+import type { ServerConfig } from './config.types';
 import { httpClient } from '../api/http.client';
 
 export async function fetchServerConfig({ apiClient}: { apiClient: ApiClient }) {
   return apiClient<{
-    config: {
-      auth: {
-        isEmailVerificationRequired: boolean;
-        isPasswordResetEnabled: boolean;
-        isRegistrationEnabled: boolean;
-        showLegalLinksOnAuthPage: boolean;
-        providers: {
-          email: {
-            isEnabled: boolean;
-          };
-          github: {
-            isEnabled: boolean;
-          };
-          google: {
-            isEnabled: boolean;
-          };
-          customs: {
-            providerId: string;
-            providerName: string;
-          }[];
-        };
-      };
-    };
+    config: ServerConfig;
   }>({
     path: '/api/config',
   });

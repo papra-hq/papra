@@ -5,8 +5,13 @@ import { fetchServerConfig } from '../config.services';
 export function useServerConfig() {
   const apiClient = useApiClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['server', 'config'],
     queryFn: async () => fetchServerConfig({ apiClient }),
   });
+
+  return {
+    ...query,
+    serverConfig: query.data?.config,
+  };
 }

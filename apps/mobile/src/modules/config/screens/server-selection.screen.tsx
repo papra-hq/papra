@@ -1,4 +1,5 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import { safelySync } from '@corentinth/chisels';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -17,6 +18,7 @@ import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { MANAGED_SERVER_URL } from '../config.constants';
 import { configLocalStorage } from '../config.local-storage';
+import { validateServerUrl } from '../config.models';
 import { pingServer } from '../config.services';
 
 function getDefaultCustomServerUrl() {
@@ -38,8 +40,20 @@ export function ServerSelectionScreen() {
   const [customUrl, setCustomUrl] = useState(getDefaultCustomServerUrl());
   const [isValidating, setIsValidating] = useState(false);
 
-  const handleValidateCustomUrl = async ({ url}: { url: string }) => {
+  const handleValidateCustomUrl = async ({ url: rawUrl }: { url: string }) => {
     setIsValidating(true);
+
+    const [url, urlValidationError] = safelySync(() => validateServerUrl({ url: rawUrl }));
+
+    if (urlValidationError) {
+      showAlert({
+        title: 'Invalid URL',
+        message: 'Please enter a valid server URL. Make sure to include the protocol (http:// or https://).',
+      });
+      setIsValidating(false);
+      return;
+    }
+
     try {
       await pingServer({ url });
       await configLocalStorage.setApiServerBaseUrl({ apiServerBaseUrl: url });
@@ -108,7 +122,7 @@ export function ServerSelectionScreen() {
           >
             {isValidating
               ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={themeColors.primaryForeground} />
                 )
               : (
                   <Text style={styles.buttonText}>Continue with Managed</Text>
@@ -137,7 +151,7 @@ export function ServerSelectionScreen() {
             >
               {isValidating
                 ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color={themeColors.primaryForeground} />
                   )
                 : (
                     <Text style={styles.buttonText}>Connect</Text>
