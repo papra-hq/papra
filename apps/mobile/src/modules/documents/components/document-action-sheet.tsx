@@ -1,6 +1,7 @@
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import { formatBytes } from '@corentinth/chisels';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
@@ -43,16 +44,6 @@ export function DocumentActionSheet({
   const isViewable
     = document.mimeType.startsWith('image/')
       || document.mimeType.startsWith('application/pdf');
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) {
-      return `${bytes} B`;
-    }
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -146,7 +137,7 @@ export function DocumentActionSheet({
                       color={themeColors.mutedForeground}
                       style={styles.detailIcon}
                     />
-                    <Text style={styles.detailText}>{formatFileSize(document.originalSize)}</Text>
+                    <Text style={styles.detailText}>{formatBytes({ bytes: document.originalSize })}</Text>
                   </View>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons

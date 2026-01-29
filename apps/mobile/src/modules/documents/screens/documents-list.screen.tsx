@@ -1,6 +1,7 @@
 import type { Document } from '../documents.types';
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import { formatBytes } from '@corentinth/chisels';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
@@ -57,16 +58,6 @@ export function DocumentsListScreen() {
     }).format(date);
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) {
-      return `${bytes} B`;
-    }
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
   const onRefresh = async () => {
     await documentsQuery.refetch();
     if (currentOrganizationId != null) {
@@ -117,7 +108,7 @@ export function DocumentsListScreen() {
                         {item.name}
                       </Text>
                       <View style={styles.documentMeta}>
-                        <Text style={styles.metaText}>{formatFileSize(item.originalSize)}</Text>
+                        <Text style={styles.metaText}>{formatBytes({ bytes: item.originalSize })}</Text>
                         <Text style={styles.metaSplitter}>-</Text>
                         <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
                         {item.localUri !== undefined && (
