@@ -3,11 +3,13 @@ import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +19,7 @@ import Pdf from 'react-native-pdf';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
+import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -24,7 +27,20 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 type DocumentFile = {
   uri: string;
   doc: CoerceDates<Document>;
+  textContent?: string;
 };
+
+const textMimeTypes = new Set([
+  'application/json',
+  'application/xml',
+  'application/javascript',
+  'application/x-yaml',
+  'application/yaml',
+]);
+
+function isTextBasedFile(mimeType: string): boolean {
+  return mimeType.startsWith('text/') || textMimeTypes.has(mimeType);
+}
 
 export default function DocumentViewScreen() {
   const router = useRouter();
@@ -35,6 +51,7 @@ export default function DocumentViewScreen() {
   const apiClient = useApiClient();
   const authClient = useAuthClient();
   const { documentId, organizationId } = params;
+  const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
 
   const documentQuery = useQuery({
     queryKey: ['organizations', organizationId, 'documents', documentId],
@@ -66,9 +83,17 @@ export default function DocumentViewScreen() {
         authClient,
       });
 
+      const doc = documentQuery.data.document;
+      let textContent: string | undefined;
+
+      if (isTextBasedFile(doc.mimeType)) {
+        textContent = await FileSystem.readAsStringAsync(fileUri);
+      }
+
       return {
         uri: fileUri,
-        doc: documentQuery.data.document,
+        doc,
+        textContent,
       } as DocumentFile;
     },
     enabled: documentQuery.isSuccess && documentQuery.data != null,
@@ -78,7 +103,7 @@ export default function DocumentViewScreen() {
     return (
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={styles.headerButton}
           onPress={() => router.back()}
         >
           <MaterialCommunityIcons
@@ -90,7 +115,16 @@ export default function DocumentViewScreen() {
         <Text style={styles.headerTitle} numberOfLines={1}>
           {documentName}
         </Text>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => setIsActionSheetVisible(true)}
+        >
+          <MaterialCommunityIcons
+            name="dots-vertical"
+            size={24}
+            color={themeColors.foreground}
+          />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -124,7 +158,31 @@ export default function DocumentViewScreen() {
         />
       );
     }
-    return <View style={styles.pdfViewer} />;
+    if (file.textContent != null) {
+      return (
+        <ScrollView
+          style={styles.textViewer}
+          contentContainerStyle={styles.textViewerContent}
+        >
+          <Text style={styles.textContent} selectable>
+            {file.textContent}
+          </Text>
+        </ScrollView>
+      );
+    }
+    return (
+      <View style={styles.unsupportedContainer}>
+        <MaterialCommunityIcons
+          name="file-question-outline"
+          size={64}
+          color={themeColors.mutedForeground}
+        />
+        <Text style={styles.unsupportedTitle}>Preview not available</Text>
+        <Text style={styles.unsupportedText}>
+          This file type cannot be previewed in the app
+        </Text>
+      </View>
+    );
   };
 
   const isLoading = documentQuery.isLoading || documentFileQuery.isLoading;
@@ -135,6 +193,12 @@ export default function DocumentViewScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeader(documentName)}
+      <DocumentActionSheet
+        visible={isActionSheetVisible}
+        document={documentFile?.doc}
+        onClose={() => setIsActionSheetVisible(false)}
+        excludedActions={['view']}
+      />
       {isLoading
         ? (
             <View style={styles.loadingContainer}>
@@ -192,7 +256,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       borderBottomWidth: 1,
       borderBottomColor: themeColors.border,
     },
-    backButton: {
+    headerButton: {
       width: 40,
       height: 40,
       borderRadius: 20,
@@ -207,9 +271,6 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       color: themeColors.foreground,
       marginHorizontal: 16,
     },
-    headerSpacer: {
-      width: 40,
-    },
     pdfContainer: {
       flex: 1,
       backgroundColor: themeColors.background,
@@ -218,6 +279,36 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flex: 1,
       width: '100%',
       height: '100%',
+    },
+    textViewer: {
+      flex: 1,
+    },
+    textViewerContent: {
+      padding: 16,
+    },
+    textContent: {
+      fontFamily: 'monospace',
+      fontSize: 14,
+      lineHeight: 20,
+      color: themeColors.foreground,
+    },
+    unsupportedContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 32,
+    },
+    unsupportedTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: themeColors.foreground,
+      marginTop: 16,
+    },
+    unsupportedText: {
+      fontSize: 14,
+      color: themeColors.mutedForeground,
+      marginTop: 8,
+      textAlign: 'center',
     },
     loadingContainer: {
       flex: 1,
