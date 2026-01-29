@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient } from '@/modules/api/providers/api.provider';
-import { DocumentActionSheet } from '@/modules/documents-actions/components/document-action-sheet';
+import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
 import { OrganizationPickerDrawer } from '@/modules/organizations/components/organization-picker-drawer';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
