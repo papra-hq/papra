@@ -3,6 +3,7 @@ import type { CoerceDates } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
 import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -98,13 +99,23 @@ export function DocumentsListScreen() {
               data={documentsQuery.data?.documents ?? []}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => setOnDocumentActionSheet(item)}>
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push({
+                      pathname: '/(app)/document/view',
+                      params: {
+                        documentId: item.id,
+                        organizationId: item.organizationId,
+                      },
+                    });
+                  }}
+                >
                   <View style={styles.documentCard}>
                     <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
                       <Icon name="file-text" size={24} color={themeColors.primary} />
                     </View>
-                    <View>
-                      <Text style={styles.documentTitle} numberOfLines={2}>
+                    <View style={styles.documentContent}>
+                      <Text style={styles.documentTitle} numberOfLines={1} ellipsizeMode="tail">
                         {item.name}
                       </Text>
                       <View style={styles.documentMeta}>
@@ -135,6 +146,16 @@ export function DocumentsListScreen() {
                         )}
                       </View>
                     </View>
+                    <TouchableOpacity
+                      style={styles.moreButton}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        setOnDocumentActionSheet(item);
+                      }}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Icon name="more-vertical" size={20} color={themeColors.mutedForeground} />
+                    </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
               )}
@@ -213,12 +234,17 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexDirection: 'row',
       alignItems: 'center',
     },
-    documentTitle: {
+    documentContent: {
       flex: 1,
+      marginRight: 8,
+    },
+    documentTitle: {
       fontSize: 16,
       fontWeight: '600',
       color: themeColors.foreground,
-      marginRight: 12,
+    },
+    moreButton: {
+      padding: 8,
     },
     documentMeta: {
       flexDirection: 'row',
