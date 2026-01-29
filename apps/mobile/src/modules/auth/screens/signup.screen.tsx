@@ -182,7 +182,7 @@ export function SignupScreen() {
           >
             {isSubmitting
               ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={themeColors.primaryForeground} />
                 )
               : (
                   <Text style={styles.buttonText}>Sign Up</Text>

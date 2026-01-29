@@ -99,7 +99,7 @@ export function OrganizationCreateScreen() {
           >
             {createMutation.isPending
               ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={themeColors.primaryForeground} />
                 )
               : (
                   <Text style={styles.buttonText}>Create Organization</Text>
