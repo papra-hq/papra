@@ -1,5 +1,6 @@
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
+import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
 import { router } from 'expo-router';
@@ -23,12 +24,16 @@ type DocumentActionSheetProps = {
   visible: boolean;
   document: CoerceDates<Document> | undefined;
   onClose: () => void;
+  excludedActions?: ActionsKey[];
 };
+
+export type ActionsKey = 'view' | 'share';
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
+  excludedActions = [],
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
@@ -104,6 +109,22 @@ export function DocumentActionSheet({
   const mimeSubtype = mimeParts[1];
   const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype.toUpperCase() : document.mimeType;
 
+  const actions: { key: ActionsKey; label: string; icon: IconName; onPress: () => void }[] = [
+    {
+      key: 'view',
+      label: 'View document',
+      icon: 'eye',
+      onPress: handleView,
+    },
+    {
+      key: 'share',
+      label: 'Share',
+      icon: 'share',
+      onPress: handleDownloadAndShare,
+    },
+  ];
+  const filteredActions = actions.filter(action => !excludedActions.includes(action.key));
+
   return (
     <Modal
       visible={visible}
@@ -136,27 +157,19 @@ export function DocumentActionSheet({
               </View>
 
               <View style={styles.actions}>
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={handleView}
-                  activeOpacity={0.6}
-                >
-                  <View style={styles.actionIconContainer}>
-                    <Icon name="eye" size={20} color={themeColors.foreground} />
-                  </View>
-                  <Text style={styles.actionText}>View document</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={handleDownloadAndShare}
-                  activeOpacity={0.6}
-                >
-                  <View style={styles.actionIconContainer}>
-                    <Icon name="share" size={20} color={themeColors.foreground} />
-                  </View>
-                  <Text style={styles.actionText}>Share</Text>
-                </TouchableOpacity>
+                {filteredActions.map(action => (
+                  <TouchableOpacity
+                    key={action.key}
+                    style={styles.actionRow}
+                    onPress={action.onPress}
+                    activeOpacity={0.6}
+                  >
+                    <View style={styles.actionIconContainer}>
+                      <Icon name={action.icon} size={20} color={themeColors.foreground} />
+                    </View>
+                    <Text style={styles.actionText}>{action.label}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
           </TouchableWithoutFeedback>
