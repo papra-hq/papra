@@ -159,7 +159,7 @@ export function LoginScreen() {
             >
               {isSubmitting
                 ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color={themeColors.primaryForeground} />
                   )
                 : (
                     <Text style={styles.buttonText}>Sign In</Text>
