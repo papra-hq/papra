@@ -3,6 +3,7 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { isHttpClientError } from '../api/http.client';
 import { useApiClient } from '../api/providers/api.provider';
 import { organizationsLocalStorage } from './organizations.local-storage';
 import { fetchOrganizations } from './organizations.services';
@@ -49,9 +50,20 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
     setCurrentOrganizationIdState(organizationId);
   };
 
-  // Redirect to organization selection if no organizations or no current org set
   useEffect(() => {
     if (!isInitialized || organizationsQuery.isLoading) {
+      return;
+    }
+
+    if (organizationsQuery.error) {
+      const error = organizationsQuery.error;
+
+      if (isHttpClientError(error) && error.status === 401) {
+        router.replace('/auth/login');
+        return;
+      }
+
+      router.replace('/config/server-selection');
       return;
     }
 
