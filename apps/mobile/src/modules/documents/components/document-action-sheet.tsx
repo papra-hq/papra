@@ -2,7 +2,6 @@ import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
@@ -16,6 +15,7 @@ import {
 import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { fetchDocumentFile } from '@/modules/documents/documents.services';
+import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
@@ -39,12 +39,6 @@ export function DocumentActionSheet({
     return null;
   }
 
-  // Check if document can be viewed in DocumentViewerScreen
-  // Supported types: images (image/*) and PDFs (application/pdf)
-  const isViewable
-    = document.mimeType.startsWith('image/')
-      || document.mimeType.startsWith('application/pdf');
-
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -66,6 +60,8 @@ export function DocumentActionSheet({
   };
 
   const handleDownloadAndShare = async () => {
+    onClose();
+
     const baseUrl = await configLocalStorage.getApiServerBaseUrl();
 
     if (baseUrl == null) {
@@ -106,7 +102,7 @@ export function DocumentActionSheet({
   // Extract MIME type subtype, fallback to full MIME type if subtype is missing
   const mimeParts = document.mimeType.split('/');
   const mimeSubtype = mimeParts[1];
-  const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype : document.mimeType;
+  const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype.toUpperCase() : document.mimeType;
 
   return (
     <Modal
@@ -119,98 +115,49 @@ export function DocumentActionSheet({
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
             <View style={styles.sheet}>
-              {/* Handle bar */}
               <View style={styles.handleBar} />
 
-              {/* Document info */}
-              <View style={styles.documentInfo}>
-                <Text style={styles.documentName} numberOfLines={2}>
-                  {document.name}
-                </Text>
-
-                {/* Document details */}
-                <View style={styles.detailsContainer}>
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons
-                      name="file"
-                      size={14}
-                      color={themeColors.mutedForeground}
-                      style={styles.detailIcon}
-                    />
-                    <Text style={styles.detailText}>{formatBytes({ bytes: document.originalSize })}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons
-                      name="calendar"
-                      size={14}
-                      color={themeColors.mutedForeground}
-                      style={styles.detailIcon}
-                    />
-                    <Text style={styles.detailText}>{formatDate(document.createdAt.toISOString())}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons
-                      name="file-document-outline"
-                      size={14}
-                      color={themeColors.mutedForeground}
-                      style={styles.detailIcon}
-                    />
-                    <Text style={styles.detailText} numberOfLines={1}>
-                      {displayMimeType}
-                    </Text>
-                  </View>
+              <View style={styles.header}>
+                <View style={styles.fileIconContainer}>
+                  <Icon name="file-text" size={24} color={themeColors.primary} />
+                </View>
+                <View style={styles.headerContent}>
+                  <Text style={styles.documentName} numberOfLines={2}>
+                    {document.name}
+                  </Text>
+                  <Text style={styles.documentMeta}>
+                    {displayMimeType}
+                    {' · '}
+                    {formatBytes({ bytes: document.originalSize })}
+                    {' · '}
+                    {formatDate(document.createdAt.toISOString())}
+                  </Text>
                 </View>
               </View>
 
-              {/* Action buttons */}
               <View style={styles.actions}>
-                {isViewable && (
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={async () => {
-                      onClose();
-                      await handleView();
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <View style={[styles.actionIcon, styles.viewIcon]}>
-                      <MaterialCommunityIcons
-                        name="eye"
-                        size={20}
-                        color={themeColors.primary}
-                      />
-                    </View>
-                    <Text style={styles.actionText}>View</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={handleView}
+                  activeOpacity={0.6}
+                >
+                  <View style={styles.actionIconContainer}>
+                    <Icon name="eye" size={20} color={themeColors.foreground} />
+                  </View>
+                  <Text style={styles.actionText}>View document</Text>
+                </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={async () => {
-                    onClose();
-                    await handleDownloadAndShare();
-                  }}
-                  activeOpacity={0.7}
+                  style={styles.actionRow}
+                  onPress={handleDownloadAndShare}
+                  activeOpacity={0.6}
                 >
-                  <View style={[styles.actionIcon, styles.downloadIcon]}>
-                    <MaterialCommunityIcons
-                      name="download"
-                      size={20}
-                      color={themeColors.primary}
-                    />
+                  <View style={styles.actionIconContainer}>
+                    <Icon name="share" size={20} color={themeColors.foreground} />
                   </View>
                   <Text style={styles.actionText}>Share</Text>
                 </TouchableOpacity>
               </View>
-
-              {/* Cancel button */}
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={onClose}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -228,98 +175,68 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
     sheet: {
       backgroundColor: themeColors.secondaryBackground,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      paddingBottom: 34, // Safe area for bottom
-      paddingTop: 16,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      paddingBottom: 34,
     },
     handleBar: {
-      width: 40,
+      width: 36,
       height: 4,
       backgroundColor: themeColors.border,
       borderRadius: 2,
       alignSelf: 'center',
+      marginTop: 8,
       marginBottom: 16,
     },
-    documentInfo: {
-      paddingHorizontal: 24,
-      paddingVertical: 16,
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingBottom: 16,
       borderBottomWidth: 1,
       borderBottomColor: themeColors.border,
+    },
+    fileIconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: 8,
+      backgroundColor: themeColors.muted,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    headerContent: {
+      flex: 1,
     },
     documentName: {
       fontSize: 16,
       fontWeight: '600',
       color: themeColors.foreground,
-      textAlign: 'center',
-      marginBottom: 12,
+      marginBottom: 4,
     },
-    detailsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
-      gap: 16,
-      marginTop: 8,
-    },
-    detailRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    detailIcon: {
-      marginRight: 2,
-    },
-    detailText: {
-      fontSize: 12,
+    documentMeta: {
+      fontSize: 13,
       color: themeColors.mutedForeground,
     },
     actions: {
+      paddingTop: 8,
+      paddingBottom: 8,
+    },
+    actionRow: {
       flexDirection: 'row',
-      paddingHorizontal: 24,
-      paddingVertical: 16,
-      gap: 16,
-    },
-    actionButton: {
-      flex: 1,
       alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 12,
-      backgroundColor: themeColors.secondaryBackground,
-      borderRadius: 12,
+      paddingVertical: 8,
+      paddingHorizontal: 32,
+      marginVertical: 4,
     },
-    actionIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+    actionIconContainer: {
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 8,
-    },
-    viewIcon: {
-      backgroundColor: `${themeColors.primary}15`,
-    },
-    downloadIcon: {
-      backgroundColor: `${themeColors.primary}15`,
+      marginRight: 12,
     },
     actionText: {
-      fontSize: 14,
-      fontWeight: '500',
-      color: themeColors.foreground,
-    },
-    cancelButton: {
-      marginHorizontal: 24,
-      marginTop: 12,
-      paddingVertical: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderColor: themeColors.border,
-      borderRadius: 12,
-    },
-    cancelButtonText: {
+      flex: 1,
       fontSize: 16,
-      fontWeight: '600',
       color: themeColors.foreground,
     },
   });
