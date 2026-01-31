@@ -87,20 +87,32 @@ async function deleteTag({ tagId, db }: { tagId: string; db: Database }) {
 }
 
 async function updateTag({ tagId, name, description, color, db }: { tagId: string; name?: string; description?: string; color?: string; db: Database }) {
-  const [tag] = await db
-    .update(tagsTable)
-    .set(
-      omitUndefined({
-        name,
-        description,
-        color,
-        normalizedName: isDefined(name) ? normalizeTagName({ name }) : undefined,
-      }),
-    )
-    .where(
-      eq(tagsTable.id, tagId),
-    )
-    .returning();
+  const [result, error] = await safely(
+    db
+      .update(tagsTable)
+      .set(
+        omitUndefined({
+          name,
+          description,
+          color,
+          normalizedName: isDefined(name) ? normalizeTagName({ name }) : undefined,
+        }),
+      )
+      .where(
+        eq(tagsTable.id, tagId),
+      )
+      .returning(),
+  );
+
+  if (isUniqueConstraintError({ error })) {
+    throw createTagAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  const [tag] = result;
 
   return { tag };
 }
