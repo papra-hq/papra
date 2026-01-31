@@ -47,7 +47,6 @@ export function DocumentsListScreen() {
         apiClient,
       });
 
-      console.log('result.remoteDocumentsCount', result.remoteDocumentsCount);
       const hasMore = pageSize <= result.remoteDocumentsCount;
       const nextPage = hasMore ? pageParam + 1 : undefined;
 
