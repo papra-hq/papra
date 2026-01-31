@@ -2,8 +2,7 @@ import type { createAuthClient } from './auth.services';
 
 export function createDemoAuthClient() {
   const baseClient = {
-    useSession: () => () => ({
-      isPending: false,
+    getSession: () => ({
       data: {
         user: {
           id: '1',
