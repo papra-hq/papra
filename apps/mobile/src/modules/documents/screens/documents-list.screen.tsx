@@ -109,7 +109,7 @@ export function DocumentsListScreen() {
         <OrganizationPickerButton onPress={() => setIsDrawerVisible(true)} />
       </View>
 
-      {documentsQuery.isLoading && documentsQuery.data == null
+      {documentsQuery.isLoading
         ? (
             <View style={styles.centerContent}>
               <ActivityIndicator size="large" color={themeColors.primary} />
@@ -200,7 +200,7 @@ export function DocumentsListScreen() {
               contentContainerStyle={documents.length === 0 ? styles.emptyList : undefined}
               refreshControl={(
                 <RefreshControl
-                  refreshing={documentsQuery.isRefetching && documentsQuery.data == null}
+                  refreshing={documentsQuery.isRefetching}
                   onRefresh={onRefresh}
                 />
               )}
