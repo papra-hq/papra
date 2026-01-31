@@ -43,7 +43,7 @@ export function DocumentsListScreen() {
       const result = await fetchOrganizationDocuments({
         organizationId: currentOrganizationId,
         pageIndex: pageParam,
-        pageSize: pageSize,
+        pageSize,
         apiClient,
       });
 
@@ -52,10 +52,10 @@ export function DocumentsListScreen() {
 
       return {
         ...result,
-        nextPage: nextPage,
+        nextPage,
       };
     },
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getNextPageParam: lastPage => lastPage.nextPage,
     enabled: currentOrganizationId !== null && currentOrganizationId !== '',
     initialPageParam: 0,
   });
@@ -122,11 +122,13 @@ export function DocumentsListScreen() {
               onEndReached={loadMore}
               onEndReachedThreshold={0.5}
               ListFooterComponent={() => (
-                documentsQuery.isFetchingNextPage ? (
-                  <View style={styles.footerLoader}>
-                    <ActivityIndicator size="small" color={themeColors.primary} />
-                  </View>
-                ) : null
+                documentsQuery.isFetchingNextPage
+                  ? (
+                      <View style={styles.footerLoader}>
+                        <ActivityIndicator size="small" color={themeColors.primary} />
+                      </View>
+                    )
+                  : null
               )}
               renderItem={({ item }) => (
                 <TouchableOpacity
