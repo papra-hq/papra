@@ -47,6 +47,7 @@ export function Button<T extends ValidComponent = 'button'>(props: PolymorphicPr
     'size',
     'isLoading',
     'children',
+    'disabled',
   ]);
 
   return (
@@ -58,6 +59,7 @@ export function Button<T extends ValidComponent = 'button'>(props: PolymorphicPr
         }),
         local.class,
       )}
+      disabled={local.isLoading || local.disabled}
       {...rest}
     >
       {local.isLoading && <div class="i-tabler-loader-2 animate-spin mr-2" />}
