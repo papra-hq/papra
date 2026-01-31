@@ -4,6 +4,7 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { isNil } from '../shared/utils';
 import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
+import { tagsTable } from './tags.table';
 
 describe('tags repository', () => {
   describe('crud operations on tags collection', () => {
@@ -196,6 +197,59 @@ describe('tags repository', () => {
       await expect(
         tagsRepository.createTag({ tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' } }),
       ).rejects.toThrow(createTagAlreadyExistsError());
+    });
+
+    test('when creating a tag, the name is normalized for uniqueness checks', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      await tagsRepository.createTag({
+        tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' },
+      });
+
+      const tags = await db.select().from(tagsTable);
+
+      expect(tags).to.have.length(1);
+      expect(tags[0]?.normalizedName).to.equal('tag 1');
+    });
+  });
+
+  describe('updateTag', () => {
+    test('when updating a tag to a name that already exists for the same organization, it throws an error', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        tags: [
+          { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+          { id: 'tag-2', organizationId: 'organization-1', name: 'Tag 2', normalizedName: 'tag 2', color: '#00aa00' },
+        ],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      await expect(
+        tagsRepository.updateTag({ tagId: 'tag-2', name: 'Tag 1' }),
+      ).rejects.toThrow(createTagAlreadyExistsError());
+    });
+
+    test('when updating a tag name, the normalized name is also updated for uniqueness checks', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        tags: [
+          { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+        ],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      await tagsRepository.updateTag({ tagId: 'tag-1', name: 'New Tag Name' });
+
+      const tags = await db.select().from(tagsTable);
+
+      expect(tags).to.have.length(1);
+      expect(tags[0]?.normalizedName).to.equal('new tag name');
     });
   });
 });
