@@ -24,8 +24,8 @@ export function createAuthClient() {
     requestPasswordReset: client.requestPasswordReset,
     resetPassword: client.resetPassword,
     sendVerificationEmail: client.sendVerificationEmail,
-    useSession: client.useSession,
     twoFactor: client.twoFactor,
+    getSession: client.getSession,
     signOut: async () => {
       trackingServices.capture({ event: 'User logged out' });
       const result = await client.signOut();
@@ -39,7 +39,7 @@ export function createAuthClient() {
 }
 
 export const {
-  useSession,
+  getSession,
   signIn,
   signUp,
   signOut,

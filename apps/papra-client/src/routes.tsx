@@ -6,7 +6,7 @@ import { adminRoutes } from './modules/admin/admin.routes';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
 import { authPagesPaths } from './modules/auth/auth.constants';
-import { createProtectedPage } from './modules/auth/middleware/protected-page.middleware';
+import { PublicOnlyPage } from './modules/auth/middleware/protected-page.middleware';
 import { EmailValidationRequiredPage } from './modules/auth/pages/email-validation-required.page';
 import { EmailVerificationPage } from './modules/auth/pages/email-verification.page';
 import { LoginPage } from './modules/auth/pages/login.page';
@@ -230,27 +230,27 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/login',
-    component: createProtectedPage({ authType: 'public-only', component: LoginPage }),
+    component: () => <PublicOnlyPage children={<LoginPage />} />,
   },
   {
     path: '/register',
-    component: createProtectedPage({ authType: 'public-only', component: RegisterPage }),
+    component: () => <PublicOnlyPage children={<RegisterPage />} />,
   },
   {
     path: '/reset-password',
-    component: createProtectedPage({ authType: 'public-only', component: ResetPasswordPage }),
+    component: () => <PublicOnlyPage children={<ResetPasswordPage />} />,
   },
   {
     path: '/request-password-reset',
-    component: createProtectedPage({ authType: 'public-only', component: RequestPasswordResetPage }),
+    component: () => <PublicOnlyPage children={<RequestPasswordResetPage />} />,
   },
   {
     path: '/email-validation-required',
-    component: createProtectedPage({ authType: 'public-only', component: EmailValidationRequiredPage }),
+    component: () => <PublicOnlyPage children={<EmailValidationRequiredPage />} />,
   },
   {
     path: authPagesPaths.emailVerification,
-    component: createProtectedPage({ authType: 'public-only', component: EmailVerificationPage }),
+    component: () => <PublicOnlyPage children={<EmailVerificationPage />} />,
   },
   {
     path: '/checkout-success',

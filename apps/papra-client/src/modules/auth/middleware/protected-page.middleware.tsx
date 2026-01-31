@@ -1,26 +1,19 @@
-import type { Component } from 'solid-js';
+import type { ParentComponent } from 'solid-js';
 import { Navigate } from '@solidjs/router';
-import { Match, Suspense, Switch } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
-import { useSession } from '../auth.services';
+import { Match, Switch } from 'solid-js';
+import { useSession } from '../composables/use-session.composable';
 
-export function createProtectedPage({ authType, component }: { authType: 'public' | 'private' | 'public-only' | 'admin'; component: Component }) {
-  return () => {
-    const session = useSession();
+export const PublicOnlyPage: ParentComponent = (props) => {
+  const { getIsAuthenticated, sessionQuery } = useSession();
 
-    const getIsAuthenticated = () => Boolean(session()?.data?.user);
-
-    return (
-      <Suspense>
-        <Switch fallback={<Dynamic component={component} />}>
-          <Match when={authType === 'private' && !getIsAuthenticated()}>
-            <Navigate href="/login" />
-          </Match>
-          <Match when={authType === 'public-only' && getIsAuthenticated()}>
-            <Navigate href="/" />
-          </Match>
-        </Switch>
-      </Suspense>
-    );
-  };
-}
+  return (
+    <Switch>
+      <Match when={!sessionQuery.isLoading && getIsAuthenticated()}>
+        <Navigate href="/" />
+      </Match>
+      <Match when={!sessionQuery.isLoading && !getIsAuthenticated()}>
+        {props.children}
+      </Match>
+    </Switch>
+  );
+};

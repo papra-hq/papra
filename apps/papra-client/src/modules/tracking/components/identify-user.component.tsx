@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import { createEffect } from 'solid-js';
-import { useSession } from '@/modules/auth/auth.services';
+import { useSession } from '@/modules/auth/composables/use-session.composable';
 import { isDemoMode } from '@/modules/config/config';
 import { trackingServices } from '../tracking.services';
 
@@ -9,10 +9,10 @@ export const IdentifyUser: Component = () => {
     return null;
   }
 
-  const session = useSession();
+  const { getUser } = useSession();
 
   createEffect(() => {
-    const user = session()?.data?.user;
+    const user = getUser();
 
     if (user) {
       trackingServices.identify({
