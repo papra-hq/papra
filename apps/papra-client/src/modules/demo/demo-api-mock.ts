@@ -353,10 +353,20 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
+      const name = get(body, ['name']) as string;
+      const existingTagsWithSameName = await findMany(tagStorage, tag => tag.organizationId === organizationId && tag.name.toLowerCase() === name.toLowerCase());
+
+      if (existingTagsWithSameName.length > 0) {
+        throw Object.assign(new FetchError('Tag already exists'), {
+          status: 400,
+          data: { error: { code: 'tags.already_exists' } },
+        });
+      }
+
       const tag = {
         id: createId({ prefix: 'tag' }),
         organizationId,
-        name: get(body, ['name']) as string,
+        name,
         color: get(body, ['color']) as string,
         description: (get(body, ['description']) ?? null) as string | null,
         createdAt: new Date(),
@@ -380,6 +390,24 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const tag = await tagStorage.getItem(tagId);
 
       assert(tag, { status: 404 });
+
+      const newName = get(body, ['name']) as string | undefined;
+      if (newName) {
+        const existingTagsWithSameName = await findMany(
+          tagStorage,
+          t =>
+            t.organizationId === organizationId
+            && t.id !== tagId
+            && t.name.toLowerCase() === newName.toLowerCase(),
+        );
+
+        if (existingTagsWithSameName.length > 0) {
+          throw Object.assign(new FetchError('Tag already exists'), {
+            status: 400,
+            data: { error: { code: 'tags.already_exists' } },
+          });
+        }
+      }
 
       await tagStorage.setItem(tagId, Object.assign(tag, body, { updatedAt: new Date() }));
 
