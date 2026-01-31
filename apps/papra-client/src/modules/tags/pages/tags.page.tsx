@@ -4,7 +4,7 @@ import type { Tag as TagType } from '../tags.types';
 import { safely } from '@corentinth/chisels';
 import { getValues, setValue } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
-import { useQuery } from '@tanstack/solid-query';
+import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
@@ -12,6 +12,7 @@ import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
+import { makeReturnVoidAsync } from '@/modules/shared/functions/void';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
@@ -46,13 +47,13 @@ const TagColorPicker: Component<{
 };
 
 const TagForm: Component<{
-  onSubmit: (values: { name: string; color: string; description: string }) => Promise<void>;
+  onSubmit: (values: { name: string; color: string; description: string }) => Promise<unknown> | unknown;
   initialValues?: { name?: string; color?: string; description?: string | null };
-  submitLabel?: string;
+  submitButton: JSX.Element;
 }> = (props) => {
   const { t } = useI18n();
   const { form, Form, Field } = createForm({
-    onSubmit: props.onSubmit,
+    onSubmit: makeReturnVoidAsync(props.onSubmit),
     schema: v.object({
       name: v.pipe(
         v.string(),
@@ -116,16 +117,12 @@ const TagForm: Component<{
       </Field>
 
       <div class="flex flex-row-reverse justify-between items-center mt-6">
-        <Button type="submit">
-          {props.submitLabel ?? t('tags.create')}
-        </Button>
+        {props.submitButton}
 
         {getFormValues().name && (
           <Tag {...getFormValues()} />
         )}
-
       </div>
-
     </Form>
   );
 };
@@ -138,34 +135,33 @@ export const CreateTagModal: Component<{
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
 
-  const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
-    const [,error] = await safely(createTag({
-      name,
-      color: color.toLowerCase(),
-      description,
+  const createTagMutation = useMutation(() => ({
+    mutationFn: (data: { name: string; color: string; description: string }) => createTag({
+      name: data.name,
+      color: data.color.toLowerCase(),
+      description: data.description,
       organizationId: props.organizationId,
-    }));
+    }),
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId],
+        refetchType: 'all',
+      });
 
-    if (error) {
+      createToast({
+        message: t('tags.create.success', { name: variables.name }),
+        type: 'success',
+      });
+
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
       createToast({
         message: getErrorMessage({ error }),
         type: 'error',
       });
-      return;
-    }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['organizations', props.organizationId],
-      refetchType: 'all',
-    });
-
-    createToast({
-      message: t('tags.create.success', { name }),
-      type: 'success',
-    });
-
-    setIsModalOpen(false);
-  };
+    },
+  }));
 
   return (
     <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
@@ -175,7 +171,19 @@ export const CreateTagModal: Component<{
           <DialogTitle>{t('tags.create')}</DialogTitle>
         </DialogHeader>
 
-        <TagForm onSubmit={onSubmit} initialValues={{ color: '#D8FF75' }} />
+        <TagForm
+          onSubmit={createTagMutation.mutateAsync}
+          initialValues={{ color: '#D8FF75' }}
+          submitButton={(
+            <Button
+              type="submit"
+              isLoading={createTagMutation.isPending}
+              disabled={!getIsModalOpen()} // As the dialog closing animation may still be running
+            >
+              { t('tags.create') }
+            </Button>
+          )}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -188,28 +196,36 @@ const UpdateTagModal: Component<{
 }> = (props) => {
   const [getIsModalOpen, setIsModalOpen] = createSignal(false);
   const { t } = useI18n();
+  const { getErrorMessage } = useI18nApiErrors({ t });
 
-  const onSubmit = async ({ name, color, description }: { name: string; color: string; description: string }) => {
-    await updateTag({
-      name,
-      color: color.toLowerCase(),
-      description,
+  const updateTagMutation = useMutation(() => ({
+    mutationFn: (data: { name: string; color: string; description: string }) => updateTag({
+      name: data.name,
+      color: data.color.toLowerCase(),
+      description: data.description,
       organizationId: props.organizationId,
       tagId: props.tag.id,
-    });
+    }),
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId],
+        refetchType: 'all',
+      });
 
-    await queryClient.invalidateQueries({
-      queryKey: ['organizations', props.organizationId],
-      refetchType: 'all',
-    });
+      createToast({
+        message: t('tags.update.success', { name: variables.name }),
+        type: 'success',
+      });
 
-    createToast({
-      message: t('tags.update.success', { name }),
-      type: 'success',
-    });
-
-    setIsModalOpen(false);
-  };
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
+      createToast({
+        message: getErrorMessage({ error }),
+        type: 'error',
+      });
+    },
+  }));
 
   return (
     <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
@@ -219,7 +235,19 @@ const UpdateTagModal: Component<{
           <DialogTitle>{t('tags.update')}</DialogTitle>
         </DialogHeader>
 
-        <TagForm onSubmit={onSubmit} initialValues={props.tag} submitLabel={t('tags.update')} />
+        <TagForm
+          onSubmit={updateTagMutation.mutate}
+          initialValues={props.tag}
+          submitButton={(
+            <Button
+              type="submit"
+              isLoading={updateTagMutation.isPending}
+              disabled={!getIsModalOpen()} // As the dialog closing animation may still be running
+            >
+              { t('tags.update') }
+            </Button>
+          )}
+        />
       </DialogContent>
     </Dialog>
   );
