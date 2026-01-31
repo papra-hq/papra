@@ -3,6 +3,7 @@ import type { TaggingRuleForCreation } from '../tagging-rules.types';
 import { useNavigate, useParams } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TaggingRuleForm } from '../components/tagging-rule-form.component';
 import { createTaggingRule } from '../tagging-rules.services';
@@ -42,7 +43,14 @@ export const CreateTaggingRulePage: Component = () => {
       <TaggingRuleForm
         onSubmit={({ taggingRule }) => createTaggingRuleMutation.mutate({ taggingRule })}
         organizationId={params.organizationId}
-        submitButtonText={t('tagging-rules.create.submit')}
+        submitButton={(
+          <Button
+            type="submit"
+            isLoading={createTaggingRuleMutation.isPending}
+          >
+            {t('tagging-rules.create.submit')}
+          </Button>
+        )}
       />
     </div>
   );

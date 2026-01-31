@@ -1,4 +1,4 @@
-import type { Component } from 'solid-js';
+import type { Component, JSX } from 'solid-js';
 import type { TaggingRule, TaggingRuleForCreation } from '../tagging-rules.types';
 import { getValue, insert, remove, setValue } from '@modular-forms/solid';
 import { A } from '@solidjs/router';
@@ -20,7 +20,7 @@ export const TaggingRuleForm: Component<{
   onSubmit: (args: { taggingRule: TaggingRuleForCreation }) => Promise<void> | void;
   organizationId: string;
   taggingRule?: TaggingRule;
-  submitButtonText?: string;
+  submitButton: JSX.Element;
 }> = (props) => {
   const { t } = useI18n();
   const { confirm } = useConfirmModal();
@@ -284,7 +284,7 @@ export const TaggingRuleForm: Component<{
           </Button>
         </Show>
 
-        <Button type="submit">{props.submitButtonText ?? t('tagging-rules.form.submit')}</Button>
+        { props.submitButton }
       </div>
     </Form>
   );
