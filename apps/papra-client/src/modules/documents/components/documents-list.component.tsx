@@ -14,7 +14,7 @@ import { For, Match, Show, Switch } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
-import { TagLink } from '@/modules/tags/components/tag.component';
+import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { Button } from '@/modules/ui/components/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
@@ -64,11 +64,14 @@ export const tagsColumn: ColumnDef<Document> = {
   },
   accessorKey: 'tags',
   cell: data => (
-    <div class="text-muted-foreground hidden sm:flex flex-wrap gap-1">
-      <For each={data.getValue<Tag[]>()}>
-        {tag => <TagLink {...tag} class="text-xs" />}
-      </For>
-    </div>
+    <DocumentTagsList
+      tags={data.getValue<Tag[]>()}
+      tagClass="text-xs text-muted-foreground"
+      triggerClass="size-6"
+      documentId={data.row.original.id}
+      organizationId={data.row.original.organizationId}
+      asLink
+    />
   ),
 };
 

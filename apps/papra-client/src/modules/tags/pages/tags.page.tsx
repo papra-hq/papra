@@ -1,5 +1,5 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
-import type { Component, JSX } from 'solid-js';
+import type { Component, JSX, ValidComponent } from 'solid-js';
 import type { Tag as TagType } from '../tags.types';
 import { safely } from '@corentinth/chisels';
 import { getValues, setValue } from '@modular-forms/solid';
@@ -23,7 +23,7 @@ import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { Tag, TagLink } from '../components/tag.component';
+import { Tag as TagComponent, TagLink } from '../components/tag.component';
 import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';
 
 // To keep, useful for generating swatches
@@ -120,7 +120,7 @@ const TagForm: Component<{
         {props.submitButton}
 
         {getFormValues().name && (
-          <Tag {...getFormValues()} />
+          <TagComponent {...getFormValues()} />
         )}
       </div>
     </Form>
@@ -128,12 +128,25 @@ const TagForm: Component<{
 };
 
 export const CreateTagModal: Component<{
-  children: (props: DialogTriggerProps) => JSX.Element;
+  children?: <T extends ValidComponent | HTMLElement>(props: DialogTriggerProps<T>) => JSX.Element;
   organizationId: string;
+  onTagCreated?: (args: { tag: TagType }) => void | Promise<void>;
+  initialName?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }> = (props) => {
-  const [getIsModalOpen, setIsModalOpen] = createSignal(false);
+  const [getInternalIsModalOpen, setInternalIsModalOpen] = createSignal(false);
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
+
+  // Use controlled state if provided, otherwise use internal state
+  const getIsModalOpen = () => props.open ?? getInternalIsModalOpen();
+  const setIsModalOpen = (value: boolean) => {
+    props.onOpenChange?.(value);
+    if (props.open === undefined) {
+      setInternalIsModalOpen(value);
+    }
+  };
 
   const createTagMutation = useMutation(() => ({
     mutationFn: (data: { name: string; color: string; description: string }) => createTag({
@@ -142,9 +155,9 @@ export const CreateTagModal: Component<{
       description: data.description,
       organizationId: props.organizationId,
     }),
-    onSuccess: async (data, variables) => {
+    onSuccess: async ({ tag }, variables) => {
       await queryClient.invalidateQueries({
-        queryKey: ['organizations', props.organizationId],
+        queryKey: ['organizations', props.organizationId, 'tags'],
         refetchType: 'all',
       });
 
@@ -154,6 +167,7 @@ export const CreateTagModal: Component<{
       });
 
       setIsModalOpen(false);
+      props.onTagCreated?.({ tag });
     },
     onError: (error) => {
       createToast({
@@ -165,7 +179,7 @@ export const CreateTagModal: Component<{
 
   return (
     <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
-      <DialogTrigger as={props.children} />
+      {props.children && <DialogTrigger as={props.children} /> }
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('tags.create')}</DialogTitle>
@@ -173,7 +187,7 @@ export const CreateTagModal: Component<{
 
         <TagForm
           onSubmit={createTagMutation.mutateAsync}
-          initialValues={{ color: '#D8FF75' }}
+          initialValues={{ color: '#D8FF75', name: props.initialName }}
           submitButton={(
             <Button
               type="submit"
