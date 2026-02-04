@@ -6,10 +6,23 @@ type DocumentCondition = (params: { document: Document }) => boolean;
 
 const falseCondition: DocumentCondition = () => false;
 
+export function someCorpusTokenStartsWith({ corpus, prefix }: { corpus: string | string []; prefix: string }): boolean {
+  const lowerPrefix = prefix.toLowerCase();
+  const corpusString = Array.isArray(corpus) ? corpus.join(' ') : corpus;
+  const prefixLength = lowerPrefix.length;
+
+  return corpusString
+    .split(/[\W_]+/)
+    .some(token =>
+      token.length >= prefixLength // early exit for faster checks
+      && token.toLowerCase().startsWith(lowerPrefix),
+    );
+}
+
 function buildTextCondition({ expression }: { expression: TextExpression }): DocumentCondition {
   const searchText = expression.value.trim().toLowerCase();
 
-  return ({ document }) => [document.name, document.content].join(' ').toLowerCase().includes(searchText);
+  return ({ document }) => someCorpusTokenStartsWith({ corpus: [document.name, document.content], prefix: searchText });
 }
 
 function buildAndCondition({ expression }: { expression: AndExpression }): DocumentCondition {
@@ -47,7 +60,7 @@ function buildNameFilterCondition({ expression }: { expression: FilterExpression
     return falseCondition;
   }
 
-  return ({ document }) => document.name.toLowerCase().includes(value.toLowerCase());
+  return ({ document }) => someCorpusTokenStartsWith({ corpus: document.name, prefix: value });
 }
 
 function buildContentFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
@@ -57,7 +70,7 @@ function buildContentFilterCondition({ expression }: { expression: FilterExpress
     return falseCondition;
   }
 
-  return ({ document }) => document.content.toLowerCase().includes(value.toLowerCase());
+  return ({ document }) => someCorpusTokenStartsWith({ corpus: document.content, prefix: value });
 }
 
 function buildCreatedFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
