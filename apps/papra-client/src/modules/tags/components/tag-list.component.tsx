@@ -2,7 +2,7 @@ import type { PopoverTriggerProps } from '@kobalte/core/popover';
 import type { Component, ComponentProps } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createEffect, createSignal, For, splitProps } from 'solid-js';
+import { createEffect, createSignal, For, splitProps, Suspense } from 'solid-js';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
@@ -196,12 +196,14 @@ export const TagList: Component<{
           )}
         />
         <PopoverContent class="p-0">
-          <TagPicker
-            selectedTags={props.tags}
-            onChange={handleTagsChange}
-            organizationId={props.organizationId}
-            isOpen={isOpen()}
-          />
+          <Suspense>
+            <TagPicker
+              selectedTags={props.tags}
+              onChange={handleTagsChange}
+              organizationId={props.organizationId}
+              isOpen={isOpen()}
+            />
+          </Suspense>
         </PopoverContent>
       </Popover>
     </div>
