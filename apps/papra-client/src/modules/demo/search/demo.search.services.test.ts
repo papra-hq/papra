@@ -1,7 +1,7 @@
 import type { Document } from '@/modules/documents/documents.types';
 import type { Tag } from '@/modules/tags/tags.types';
 import { describe, expect, test } from 'vitest';
-import { searchDemoDocuments } from './demo.search.services';
+import { searchDemoDocuments, someCorpusTokenStartsWith } from './demo.search.services';
 
 describe('demo search services', () => {
   describe('searchDemoDocuments', () => {
@@ -21,7 +21,9 @@ describe('demo search services', () => {
     ] as unknown as Document[];
 
     const queries = [
+      { query: 'panca', expectedIds: ['doc_1'] },
       { query: 'pancakes', expectedIds: ['doc_1'] },
+      { query: 'pancakes flour', expectedIds: ['doc_1'] },
       { query: 'tag:cooking', expectedIds: ['doc_1', 'doc_4'] },
       { query: 'tag:cooking butter', expectedIds: ['doc_4'] },
       { query: 'tag:work created:>2023-03-01', expectedIds: ['doc_5'] },
@@ -30,6 +32,9 @@ describe('demo search services', () => {
       { query: '-has:tags', expectedIds: ['doc_6'] },
       { query: 'NOT has:tags', expectedIds: ['doc_6'] },
       { query: '-has:tags OR tag:personal', expectedIds: ['doc_3', 'doc_4', 'doc_6'] },
+      { query: 'ncakes', expectedIds: [] },
+      { query: 'name:ncakes', expectedIds: [] },
+      { query: 'content:ncakes', expectedIds: [] },
     ];
 
     for (const { query, expectedIds } of queries) {
@@ -41,5 +46,20 @@ describe('demo search services', () => {
         );
       });
     }
+  });
+
+  describe('someCorpusTokenStartsWith', () => {
+    test('simulate FTS search behavior by checking if a word starts with the search text, like `name:"foo"*`', () => {
+      expect(someCorpusTokenStartsWith({ corpus: 'The quick brown fox', prefix: 'qu' })).toBe(true);
+      expect(someCorpusTokenStartsWith({ corpus: 'The quick brown fox', prefix: 'ick' })).toBe(false);
+    });
+
+    test('works with punctuation', () => {
+      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'wo' })).toBe(true);
+      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'is' })).toBe(true);
+      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'te' })).toBe(true);
+      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'lo' })).toBe(false);
+      expect(someCorpusTokenStartsWith({ corpus: 'Hello-world', prefix: 'worl' })).toBe(true);
+    });
   });
 });
