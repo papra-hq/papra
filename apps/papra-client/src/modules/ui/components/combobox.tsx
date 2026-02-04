@@ -91,10 +91,11 @@ export function ComboboxTrigger<T extends ValidComponent = 'button'>(props: Poly
 type comboboxContentProps<T extends ValidComponent = 'div'>
   = ComboboxContentProps<T> & {
     class?: string;
+    footer?: JSX.Element;
   };
 
 export function ComboboxContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, comboboxContentProps<T>>) {
-  const [local, rest] = splitProps(props as comboboxContentProps, ['class']);
+  const [local, rest] = splitProps(props as comboboxContentProps, ['class', 'footer']);
 
   return (
     <ComboboxPrimitive.Portal>
@@ -106,6 +107,7 @@ export function ComboboxContent<T extends ValidComponent = 'div'>(props: Polymor
         {...rest}
       >
         <ComboboxPrimitive.Listbox class="p-1" />
+        {local.footer}
       </ComboboxPrimitive.Content>
     </ComboboxPrimitive.Portal>
   );
@@ -126,7 +128,7 @@ export function ComboboxItem<T extends ValidComponent = 'li'>(props: Polymorphic
   return (
     <ComboboxPrimitive.Item
       class={cn(
-        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none data-[disabled]:(pointer-events-none opacity-50) data-[highlighted]:(bg-accent text-accent-foreground)',
+        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none data-[disabled]:(pointer-events-none opacity-50) hover:bg-accent transition-colors ',
         local.class,
       )}
       {...rest}

@@ -174,7 +174,7 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
         >
           <div class="i-tabler-plus size-4" style={{ color: getIsNotInSwatch(local.value) ? getContrastTextColor(local.value ?? '') : undefined }} />
         </PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent closable>
           <p class="text-sm font-medium mb-4">{t('color-picker.select-a-color')}</p>
 
           <ColorPicker color={local.value ?? ''} onChange={local?.onChange} />
