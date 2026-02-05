@@ -6,6 +6,7 @@ import { getDocumentIcon, makeDocumentSearchPermalink } from '../documents/docum
 import { searchDocuments } from '../documents/documents.services';
 import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
+import { toArrayIf } from '../shared/utils/array';
 import { debounce } from '../shared/utils/timing';
 import { useThemeStore } from '../theme/theme.store';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandLoading } from '../ui/components/command';
@@ -100,14 +101,15 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
           forceMatch: true,
         })),
 
-        ...(getMatchingDocumentsTotalCount() > getMatchingDocuments().length
-          ? [{
-              label: t('command-palette.show-more-results', { count: getMatchingDocumentsTotalCount() - getMatchingDocuments().length, query: getSearchQuery() }),
-              icon: 'i-tabler-search',
-              action: () => navigate(makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { query: getSearchQuery() } })),
-              forceMatch: true,
-            }]
-          : []),
+        ...toArrayIf(
+          getMatchingDocumentsTotalCount() > getMatchingDocuments().length,
+          {
+            label: t('command-palette.show-more-results', { count: getMatchingDocumentsTotalCount() - getMatchingDocuments().length, query: getSearchQuery() }),
+            icon: 'i-tabler-search',
+            action: () => navigate(makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { query: getSearchQuery() } })),
+            forceMatch: true,
+          },
+        ),
       ],
     },
     {
