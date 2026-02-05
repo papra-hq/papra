@@ -443,6 +443,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.table.headers.documents': '文档',
   'tags.table.headers.created': '创建时间',
   'tags.table.headers.actions': '操作',
+  'tags.picker.search-placeholder': '搜索标签...',
+  'tags.picker.filter-placeholder': '筛选标签...',
+  'tags.picker.create-new-with-name': '创建新标签 "{{ name }}"',
+  'tags.picker.create-new': '创建新标签',
 
   // Tagging rules
 

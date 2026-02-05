@@ -3,6 +3,7 @@ import type { Component, ComponentProps } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, splitProps, Suspense } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
@@ -20,6 +21,7 @@ export const TagPickerFilter: Component<{
   placeholder?: string;
   isOpen?: boolean;
 }> = (props) => {
+  const { t } = useI18n();
   let ref: HTMLInputElement | undefined;
 
   createEffect(() => {
@@ -33,7 +35,7 @@ export const TagPickerFilter: Component<{
     <TextFieldRoot>
       <TextField
         class="focus-visible:ring-0 rounded-none border-t-none border-x-none"
-        placeholder={props.placeholder ?? 'Filter tags...'}
+        placeholder={props.placeholder ?? t('tags.picker.filter-placeholder')}
         value={props.value}
         onInput={e => props.onInput(e.currentTarget.value)}
         ref={ref}

@@ -2,6 +2,7 @@ import type { Component } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { useQuery } from '@tanstack/solid-query';
 import { createSignal, For } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxTrigger } from '@/modules/ui/components/combobox';
 import { fetchTags } from '../tags.services';
 import { Tag as TagComponent } from './tag.component';
@@ -13,6 +14,7 @@ export const DocumentTagPicker: Component<{
   onTagAdded?: (args: { tag: Tag }) => void;
   onTagRemoved?: (args: { tag: Tag }) => void;
 }> = (props) => {
+  const { t } = useI18n();
   const [getSelectedTagIds, setSelectedTagIds] = createSignal<string[]>(props.tagIds);
 
   const query = useQuery(() => ({
@@ -28,7 +30,7 @@ export const DocumentTagPicker: Component<{
   return (
     <Combobox<Tag>
       options={options()}
-      placeholder="Search tags..."
+      placeholder={t('tags.picker.search-placeholder')}
       multiple
       value={getSelectedTags()}
       onChange={(tags: Tag[]) => {

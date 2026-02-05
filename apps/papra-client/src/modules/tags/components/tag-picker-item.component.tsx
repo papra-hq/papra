@@ -1,6 +1,7 @@
 import type { Component, ComponentProps, ParentComponent } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { splitProps } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { Checkbox, CheckboxControl } from '@/modules/ui/components/checkbox';
 
@@ -81,6 +82,8 @@ export const TagPickerItemCreateNewTag: Component<{
   onClick: () => void;
   name?: string;
 }> = (props) => {
+  const { t } = useI18n();
+
   return (
     <TagPickerItem
       selected={false}
@@ -90,7 +93,7 @@ export const TagPickerItemCreateNewTag: Component<{
       <div class="flex items-center gap-2 pl-2 py-2 text-muted-foreground">
         <div class="i-tabler-plus size-4" />
         <span class="text-sm">
-          {props.name ? `Create new tag "${props.name}"` : 'Create new tag'}
+          {props.name ? t('tags.picker.create-new-with-name', { name: props.name }) : t('tags.picker.create-new')}
         </span>
       </div>
     </TagPickerItem>
