@@ -441,6 +441,10 @@ export const translations = {
   'tags.table.headers.documents': 'Documents',
   'tags.table.headers.created': 'Created',
   'tags.table.headers.actions': 'Actions',
+  'tags.picker.search-placeholder': 'Search tags...',
+  'tags.picker.filter-placeholder': 'Filter tags...',
+  'tags.picker.create-new-with-name': 'Create new tag "{{ name }}"',
+  'tags.picker.create-new': 'Create new tag',
 
   // Tagging rules
 

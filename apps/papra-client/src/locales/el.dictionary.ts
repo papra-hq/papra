@@ -443,6 +443,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.table.headers.documents': 'Έγγραφα',
   'tags.table.headers.created': 'Δημιουργήθηκε',
   'tags.table.headers.actions': 'Ενέργειες',
+  'tags.picker.search-placeholder': 'Αναζήτηση ετικετών...',
+  'tags.picker.filter-placeholder': 'Φιλτράρισμα ετικετών...',
+  'tags.picker.create-new-with-name': 'Δημιουργία νέας ετικέτας "{{ name }}"',
+  'tags.picker.create-new': 'Δημιουργία νέας ετικέτας',
 
   // Tagging rules
 

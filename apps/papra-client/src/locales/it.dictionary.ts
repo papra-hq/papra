@@ -443,6 +443,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.table.headers.documents': 'Documenti',
   'tags.table.headers.created': 'Creato',
   'tags.table.headers.actions': 'Azioni',
+  'tags.picker.search-placeholder': 'Cerca tag...',
+  'tags.picker.filter-placeholder': 'Filtra tag...',
+  'tags.picker.create-new-with-name': 'Crea nuovo tag "{{ name }}"',
+  'tags.picker.create-new': 'Crea nuovo tag',
 
   // Tagging rules
 
