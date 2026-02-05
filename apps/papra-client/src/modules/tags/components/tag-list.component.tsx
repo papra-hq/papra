@@ -196,7 +196,20 @@ export const TagList: Component<{
           )}
         />
         <PopoverContent class="p-0">
-          <Suspense>
+          <Suspense fallback={(
+            <div>
+              <div class="p-1 border-b">
+                <div class="h-26px bg-muted rounded animate-pulse" />
+              </div>
+              <div class="p-1 flex flex-col gap-1">
+                <div class="h-26px bg-muted rounded animate-pulse" />
+                <div class="h-26px bg-muted rounded animate-pulse" />
+                <div class="h-26px bg-muted rounded animate-pulse" />
+              </div>
+            </div>
+          )}
+          >
+
             <TagPicker
               selectedTags={props.tags}
               onChange={handleTagsChange}
