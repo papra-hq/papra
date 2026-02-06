@@ -73,5 +73,12 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
         throw error;
       }
     },
+    fileExists: async ({ storageKey }) => {
+      const { storagePath } = getStoragePath({ storageKey });
+      const exists = await checkFileExists({ path: storagePath });
+
+      return exists;
+    },
+
   };
 });

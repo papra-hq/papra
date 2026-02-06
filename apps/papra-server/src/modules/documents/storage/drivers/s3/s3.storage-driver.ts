@@ -29,6 +29,23 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
     forcePathStyle,
   });
 
+  const fileExists = async ({ storageKey }: { storageKey: string }) => {
+    const [, error] = await safely(s3Client.send(new HeadObjectCommand({
+      Bucket: bucketName,
+      Key: storageKey,
+    })));
+
+    if (error && isS3NotFoundError(error)) {
+      return false;
+    }
+
+    if (error) {
+      throw error;
+    }
+
+    return true;
+  };
+
   return {
     name: S3_STORAGE_DRIVER_NAME,
     getClient: () => s3Client,
@@ -69,18 +86,10 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
       return { fileStream: Body as Readable };
     },
     deleteFile: async ({ storageKey }) => {
-      // First check if the file exists
-      const [, error] = await safely(s3Client.send(new HeadObjectCommand({
-        Bucket: bucketName,
-        Key: storageKey,
-      })));
+      const exists = await fileExists({ storageKey });
 
-      if (error && isS3NotFoundError(error)) {
+      if (!exists) {
         throw createFileNotFoundError();
-      }
-
-      if (error) {
-        throw error;
       }
 
       await s3Client.send(new DeleteObjectCommand({
@@ -88,5 +97,6 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
         Key: storageKey,
       }));
     },
+    fileExists,
   };
 });

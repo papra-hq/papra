@@ -57,5 +57,18 @@ export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorage
         throw error;
       }
     },
+    fileExists: async ({ storageKey }) => {
+      const [, error] = await safely(blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey).getProperties());
+
+      if (error && isAzureBlobNotFoundError(error)) {
+        return false;
+      }
+
+      if (error) {
+        throw error;
+      }
+
+      return true;
+    },
   };
 });

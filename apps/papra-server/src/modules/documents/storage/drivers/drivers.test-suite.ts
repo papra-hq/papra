@@ -36,7 +36,7 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
 
         const { storageServices } = resource;
 
-        // 1. Save the file
+        // Save the file
         const storageContext = await storageServices.saveFile({
           fileName: 'test.txt',
           mimeType: 'text/plain',
@@ -44,15 +44,21 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
           fileStream: createReadableStream({ content: 'Hello, world!' }),
         });
 
-        // 2. Retrieve the file
+        // Retrieve the file
         const { fileStream } = await storageServices.getFileStream({ ...storageContext, storageKey: 'files/test.txt' });
         expect(await collectReadableStreamToString({ stream: fileStream })).to.eql('Hello, world!');
 
-        // 3. Delete the file
+        // Check that the file exists
+        expect(await storageServices.fileExists({ storageKey: 'files/test.txt' })).to.eql(true);
+
+        // Delete the file
         await storageServices.deleteFile({ storageKey: 'files/test.txt' });
         await expect(storageServices.getFileStream({ storageKey: 'files/test.txt' })).rejects.toThrow(createFileNotFoundError());
 
-        // 4. Try to delete the file again
+        // Check that the file no longer exists
+        expect(await storageServices.fileExists({ storageKey: 'files/test.txt' })).to.eql(false);
+
+        // Try to delete the file again
         await expect(storageServices.deleteFile({ storageKey: 'files/test.txt' })).rejects.toThrow(createFileNotFoundError());
       });
     });
