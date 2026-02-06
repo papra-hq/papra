@@ -16,6 +16,8 @@ export type StorageDriver = {
   }>;
 
   deleteFile: (args: { storageKey: string }) => Promise<void>;
+
+  fileExists: (args: { storageKey: string }) => Promise<boolean>;
 };
 
 export type EncryptionContext = {
@@ -29,6 +31,7 @@ export type StorageServices = {
   saveFile: ExtendReturnPromise<StorageDriver['saveFile'], EncryptionContext>;
   getFileStream: ExtendNamedArguments<StorageDriver['getFileStream'], EncryptionContext>;
   deleteFile: StorageDriver['deleteFile'];
+  fileExists: StorageDriver['fileExists'];
 };
 
 export type StorageDriverFactory = (args: { documentStorageConfig: DocumentStorageConfig }) => StorageDriver;

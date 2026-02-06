@@ -8,6 +8,10 @@ export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
 export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
   const storage: Map<string, { content: Buffer; mimeType: string; fileName: string }> = new Map();
 
+  const fileExists = async ({ storageKey }: { storageKey: string }) => {
+    return storage.has(storageKey);
+  };
+
   return {
     name: IN_MEMORY_STORAGE_DRIVER_NAME,
 
@@ -32,12 +36,16 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
     },
 
     deleteFile: async ({ storageKey }) => {
-      if (!storage.has(storageKey)) {
+      const exists = await fileExists({ storageKey });
+
+      if (!exists) {
         throw createFileNotFoundError();
       }
 
       storage.delete(storageKey);
     },
+
+    fileExists,
 
     _getStorage: () => storage,
   };
