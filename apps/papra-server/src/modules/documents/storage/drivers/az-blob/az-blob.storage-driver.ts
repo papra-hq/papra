@@ -18,21 +18,18 @@ export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorage
     ? BlobServiceClient.fromConnectionString(connectionString)
     : new BlobServiceClient(`https://${accountName}.blob.core.windows.net`, new StorageSharedKeyCredential(accountName, accountKey));
 
+  const getBlockBlobClient = ({ storageKey }: { storageKey: string }) => blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey);
+
   return {
     name: AZ_BLOB_STORAGE_DRIVER_NAME,
     getClient: () => blobServiceClient,
     saveFile: async ({ fileStream, storageKey }) => {
-      await blobServiceClient
-        .getContainerClient(containerName)
-        .getBlockBlobClient(storageKey)
-        .uploadStream(fileStream);
+      await getBlockBlobClient({ storageKey }).uploadStream(fileStream);
 
       return { storageKey };
     },
     getFileStream: async ({ storageKey }) => {
-      const containerClient = blobServiceClient.getContainerClient(containerName);
-      const blockBlobClient = containerClient.getBlockBlobClient(storageKey);
-      const [response, error] = await safely(blockBlobClient.download());
+      const [response, error] = await safely(getBlockBlobClient({ storageKey }).download());
 
       if (error && isAzureBlobNotFoundError(error)) {
         throw createFileNotFoundError();
@@ -47,7 +44,7 @@ export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorage
       return { fileStream: readableStreamBody as Readable };
     },
     deleteFile: async ({ storageKey }) => {
-      const [, error] = await safely(blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey).delete());
+      const [, error] = await safely(getBlockBlobClient({ storageKey }).delete());
 
       if (error && isAzureBlobNotFoundError(error)) {
         throw createFileNotFoundError();
@@ -58,7 +55,7 @@ export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorage
       }
     },
     fileExists: async ({ storageKey }) => {
-      const [, error] = await safely(blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey).getProperties());
+      const [, error] = await safely(getBlockBlobClient({ storageKey }).getProperties());
 
       if (error && isAzureBlobNotFoundError(error)) {
         return false;
