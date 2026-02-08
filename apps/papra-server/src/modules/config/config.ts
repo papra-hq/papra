@@ -172,7 +172,7 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
     cwd: env.PAPRA_CONFIG_DIR ?? process.cwd(),
   });
 
-  const { gitCommitSha, gitCommitDate } = getCommitInfo();
+  const { gitCommitSha, gitCommitDate } = await getCommitInfo();
 
   const [configResult, configError] = safelySync(() => defineConfig(configDefinition, {
     envSource: env,

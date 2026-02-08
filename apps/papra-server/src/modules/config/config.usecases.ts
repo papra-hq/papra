@@ -1,12 +1,17 @@
-import { execSync } from 'node:child_process';
-import { safelySync } from '@corentinth/chisels';
+import { executeCommandSafely } from '../shared/exec/exec.services';
+import { isNilOrEmptyString } from '../shared/utils';
 
-export function getCommitInfo() {
-  const [gitCommitSha] = safelySync(() => execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim());
-  const [gitCommitDate] = safelySync(() => execSync('git show -s --format=%cI HEAD', { encoding: 'utf-8' }).trim());
+export async function getCommitInfo() {
+  const [
+    { stdout: gitCommitShaStdout },
+    { stdout: gitCommitDateStdout },
+  ] = await Promise.all([
+    executeCommandSafely('git rev-parse HEAD'),
+    executeCommandSafely('git show -s --format=%cI HEAD'),
+  ]);
 
   return {
-    gitCommitSha: gitCommitSha ?? undefined,
-    gitCommitDate: gitCommitDate ?? undefined,
+    gitCommitSha: isNilOrEmptyString(gitCommitShaStdout) ? undefined : gitCommitShaStdout,
+    gitCommitDate: isNilOrEmptyString(gitCommitDateStdout) ? undefined : gitCommitDateStdout,
   };
 }
