@@ -332,11 +332,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       const tags = await findMany(tagStorage, tag => tag.organizationId === organizationId);
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+      const tagDocuments = await getValues(tagDocumentStorage);
 
       const tagsWithDocumentsCount = tags.map(tag => ({
         ...tag,
-        documentsCount: documents.filter(document => document.tags.some(t => t.id === tag.id)).length,
+        documentsCount: tagDocuments.filter(tagDocument => tagDocument.tagId === tag.id).length,
       }));
 
       return {
