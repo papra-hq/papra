@@ -10,4 +10,9 @@ export const defaultIgnoredPatterns = [
   '**/.idea/**',
   '**/.vscode/**',
   '**/node_modules/**',
+
+  // Synology specific
+  '**/@eaDir/**',
+  '**/*@SynoResource',
+  '**/*@SynoEAStream',
 ];
