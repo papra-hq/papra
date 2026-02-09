@@ -1,10 +1,11 @@
 import type { Component } from 'solid-js';
-import { useParams, useSearchParams } from '@solidjs/router';
+import { useParams } from '@solidjs/router';
 import { keepPreviousData, useQuery } from '@tanstack/solid-query';
-import { createEffect, createSignal, Show, Suspense } from 'solid-js';
+import { Show, Suspense } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
+import { createParamSynchronizedSignal } from '@/modules/shared/signals/params';
 import { cn } from '@/modules/shared/style/cn';
-import { asSingleParam } from '@/modules/shared/utils/query-params';
 import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
@@ -15,19 +16,9 @@ import { searchDocuments } from '../documents.services';
 export const DocumentsPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [getSearchQuery, setSearchQuery] = createSignal<string>(asSingleParam(searchParams.query) ?? '');
+  const [getSearchQuery, setSearchQuery] = createParamSynchronizedSignal<string>({ paramKey: 'query', defaultValue: '' });
   const debouncedSearchQuery = useDebounce(getSearchQuery, 300);
-  const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 15 });
-
-  const onSearchInput = (query: string) => {
-    setSearchQuery(query);
-    setSearchParams({ query });
-  };
-
-  createEffect(() => {
-    setSearchQuery(asSingleParam(searchParams.query) ?? '');
-  });
+  const [getPagination, setPagination] = createParamSynchronizedPagination();
 
   const documentsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', getPagination(), debouncedSearchQuery()],
@@ -70,7 +61,7 @@ export const DocumentsPage: Component = () => {
                       name="search"
                       placeholder={t('documents.list.search.placeholder')}
                       value={getSearchQuery()}
-                      onInput={e => onSearchInput(e.currentTarget.value)}
+                      onInput={e => setSearchQuery(e.currentTarget.value)}
                       class="pr-9"
                       autofocus
                     />
@@ -82,7 +73,7 @@ export const DocumentsPage: Component = () => {
                       size="icon"
                       class="size-6 ml--8"
                       disabled={documentsQuery.isFetching}
-                      onClick={() => onSearchInput('')}
+                      onClick={() => setSearchQuery('')}
                       aria-label={documentsQuery.isFetching ? 'Loading' : 'Clear search'}
                     >
                       <div

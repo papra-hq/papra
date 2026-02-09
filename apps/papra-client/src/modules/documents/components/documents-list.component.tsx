@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/solid-table';
 import type { Accessor, Component, Setter } from 'solid-js';
 import type { Document } from '../documents.types';
+import type { Pagination } from '@/modules/shared/pagination/pagination.types';
 import type { Tag } from '@/modules/tags/tags.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
@@ -20,11 +21,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
-
-type Pagination = {
-  pageIndex: number;
-  pageSize: number;
-};
 
 export const createdAtColumn: ColumnDef<Document> = {
   header: () => {
