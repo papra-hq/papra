@@ -18,6 +18,7 @@ import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.page';
 import { InvitationsPage } from './modules/invitations/pages/invitations.page';
+import { useLastOrganization } from './modules/organizations/composables/use-last-organization';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
 import { CreateOrganizationPage } from './modules/organizations/pages/create-organization.page';
@@ -40,7 +41,7 @@ import { TagsPage } from './modules/tags/pages/tags.page';
 import { OrganizationSettingsLayout } from './modules/ui/layouts/organization-settings.layout';
 import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { SettingsLayout } from './modules/ui/layouts/settings.layout';
-import { CurrentUserProvider, useCurrentUser } from './modules/users/composables/useCurrentUser';
+import { CurrentUserProvider } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
 import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
@@ -54,7 +55,7 @@ export const routes: RouteDefinition[] = [
       {
         path: '/',
         component: () => {
-          const { getLatestOrganizationId } = useCurrentUser();
+          const { getLatestOrganizationId } = useLastOrganization();
 
           const query = useQuery(() => ({
             queryKey: ['organizations'],
@@ -106,7 +107,7 @@ export const routes: RouteDefinition[] = [
             path: '/:organizationId',
             component: (props) => {
               const params = useParams();
-              const { setLatestOrganizationId } = useCurrentUser();
+              const { setLatestOrganizationId } = useLastOrganization();
 
               setLatestOrganizationId(params.organizationId);
 
