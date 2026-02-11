@@ -88,14 +88,16 @@ const OrganizationLayoutSideNav: Component = () => {
   const getTagsSubMenu = () => {
     if (!tagsQuery.data?.tags) return [];
 
-    return tagsQuery.data.tags.map(tag => ({
-      label: tag.name,
-      href: makeDocumentSearchPermalink({
-        organizationId: params.organizationId,
-        search: { tags: [{ id: tag.id, name: tag.name }] },
-      }),
-      icon: <span class="size-1.5 rounded-full shrink-0" style={{ 'background-color': tag.color }} />,
-    }));
+    return tagsQuery.data.tags
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(tag => ({
+        label: tag.name,
+        href: makeDocumentSearchPermalink({
+          organizationId: params.organizationId,
+          search: { tags: [{ id: tag.id, name: tag.name }] },
+        }),
+        icon: <span class="size-1.5 rounded-full shrink-0" style={{ 'background-color': tag.color }} />,
+      }));
   };
 
   const getMainMenuItems = () => [
