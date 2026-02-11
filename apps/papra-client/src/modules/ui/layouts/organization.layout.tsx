@@ -88,7 +88,7 @@ const OrganizationLayoutSideNav: Component = () => {
   const getTagsSubMenu = () => {
     if (!tagsQuery.data?.tags) return [];
 
-    return tagsQuery.data.tags
+    return [...tagsQuery.data.tags]
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(tag => ({
         label: tag.name,
