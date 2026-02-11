@@ -4,13 +4,16 @@ import type { Organization } from '@/modules/organizations/organizations.types';
 
 import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { createEffect, on, Show } from 'solid-js';
+import { makePersisted } from '@solid-primitives/storage';
+import { createEffect, createSignal, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { getErrorStatus } from '@/modules/shared/utils/errors';
+import { fetchTags } from '@/modules/tags/tags.services';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { SideNav } from '@/modules/ui/components/sidenav';
@@ -72,6 +75,29 @@ const OrganizationLayoutSideNav: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
+  const [getTagsExpanded, setTagsExpanded] = makePersisted(
+    createSignal(true),
+    { name: 'papra_sidebar_tags_expanded', storage: localStorage }
+  );
+
+  const tagsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'tags'],
+    queryFn: () => fetchTags({ organizationId: params.organizationId }),
+  }));
+
+  const getTagsSubMenu = () => {
+    if (!tagsQuery.data?.tags) return [];
+
+    return tagsQuery.data.tags.map(tag => ({
+      label: tag.name,
+      href: makeDocumentSearchPermalink({
+        organizationId: params.organizationId,
+        search: { tags: [{ id: tag.id, name: tag.name }] },
+      }),
+      icon: <span class="size-1.5 rounded-full shrink-0" style={{ 'background-color': tag.color }} />,
+    }));
+  };
+
   const getMainMenuItems = () => [
     {
       label: t('layout.menu.home'),
@@ -83,11 +109,13 @@ const OrganizationLayoutSideNav: Component = () => {
       icon: 'i-tabler-file-text',
       href: `/organizations/${params.organizationId}/documents`,
     },
-
     {
       label: t('layout.menu.tags'),
       icon: 'i-tabler-tag',
       href: `/organizations/${params.organizationId}/tags`,
+      subMenu: getTagsSubMenu(),
+      expanded: getTagsExpanded(),
+      onToggleExpanded: () => setTagsExpanded(expanded => !expanded),
     },
     {
       label: t('layout.menu.tagging-rules'),
