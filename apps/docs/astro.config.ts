@@ -9,7 +9,7 @@ import { sidebar } from './src/content/navigation';
 import posthogRawScript from './src/scripts/posthog.script.js?raw';
 
 const posthogApiKey = env.POSTHOG_API_KEY;
-const posthogApiHost = env.POSTHOG_API_HOST ?? 'https://eu.i.posthog.com';
+const posthogApiHost = env.POSTHOG_HOST ?? 'https://eu.i.posthog.com';
 const isPosthogEnabled = Boolean(posthogApiKey);
 
 const posthogScript = posthogRawScript.replace('[POSTHOG-API-KEY]', posthogApiKey ?? '').replace('[POSTHOG-API-HOST]', posthogApiHost);

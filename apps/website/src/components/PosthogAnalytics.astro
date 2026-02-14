@@ -1,6 +1,6 @@
 ---
 const apiKey: string | undefined = import.meta.env.POSTHOG_API_KEY;
-const apiHost: string = import.meta.env.POSTHOG_API_HOST ?? 'https://eu.i.posthog.com';
+const apiHost: string = import.meta.env.POSTHOG_HOST ?? 'https://eu.i.posthog.com';
 const isEnabled: boolean = Boolean(apiKey);
 ---
 { isEnabled && (
