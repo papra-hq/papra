@@ -15,9 +15,9 @@ export const intakeEmailsConfig = {
     env: 'INTAKE_EMAILS_IS_ENABLED',
   },
   webhookSecret: {
-    doc: 'The secret to use when verifying webhooks',
-    schema: z.string(),
-    default: 'change-me',
+    doc: 'The secret to use when verifying webhooks, should be a random string between 16 and 128 characters',
+    schema: z.string().min(16).max(128),
+    default: 'please-change-me',
     env: 'INTAKE_EMAILS_WEBHOOK_SECRET',
   },
   driver: {
