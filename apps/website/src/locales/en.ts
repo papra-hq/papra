@@ -90,6 +90,7 @@ export const translations = {
   'footer.link.code-of-conduct': 'Code of Conduct',
   'footer.link.license': 'License',
   'footer.link.this-website': 'This website',
+  'footer.link.sponsor': 'Sponsor',
 
   // Footer - Legal links
   'footer.link.terms-of-service': 'Terms of Service',

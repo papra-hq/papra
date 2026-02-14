@@ -91,6 +91,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'footer.link.code-of-conduct': 'Code de conduite',
   'footer.link.license': 'Licence',
   'footer.link.this-website': 'Ce site web',
+  'footer.link.sponsor': 'Soutenir',
 
   // Footer - Legal links
   'footer.link.terms-of-service': 'Conditions d\'utilisation',
