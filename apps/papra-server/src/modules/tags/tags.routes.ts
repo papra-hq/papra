@@ -71,9 +71,14 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
     })),
 
     async (context) => {
+      const { userId } = getUser({ context });
+
       const { organizationId } = context.req.valid('param');
 
       const tagsRepository = createTagsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { tags } = await tagsRepository.getOrganizationTags({ organizationId });
 

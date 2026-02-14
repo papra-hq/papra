@@ -70,8 +70,13 @@ function setupGetWebhooksRoute({ app, db }: RouteDefinitionContext) {
       organizationId: organizationIdSchema,
     })),
     async (context) => {
+      const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
+
       const webhookRepository = createWebhookRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { webhooks } = await webhookRepository.getOrganizationWebhooks({ organizationId });
 
