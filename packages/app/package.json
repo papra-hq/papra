@@ -1,6 +1,6 @@
 {
   "name": "@papra/app",
-  "version": "26.1.0",
+  "version": "26.1.1",
   "private": true,
   "description": "Papra application package - document management system (CalVer versioned).",
   "repository": {
