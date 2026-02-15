@@ -2,10 +2,10 @@ import type {
   FsServices,
 } from '../shared/fs/fs.services';
 import { parse } from 'node:path';
-import mime from 'mime-types';
 import {
   createFsServices,
 } from '../shared/fs/fs.services';
+import { getMimeTypeFromFileName } from '../shared/mime-types/mime-types.models';
 
 export function getFile({
   filePath,
@@ -15,9 +15,7 @@ export function getFile({
   fs?: Pick<FsServices, 'createReadStream'>;
 }) {
   const fileStream = fs.createReadStream({ filePath });
-  // lookup returns false if the mime type is not found
-  const lookedUpMimeType = mime.lookup(filePath);
-  const mimeType = lookedUpMimeType === false ? 'application/octet-stream' : lookedUpMimeType;
+  const mimeType = getMimeTypeFromFileName(filePath);
 
   const { base: fileName } = parse(filePath);
 

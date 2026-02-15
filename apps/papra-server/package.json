@@ -66,6 +66,7 @@
     "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.38.4",
     "figue": "^3.1.1",
+    "file-type": "^21.3.0",
     "hono": "^4.10.7",
     "lodash-es": "^4.17.21",
     "mime-types": "^3.0.1",
