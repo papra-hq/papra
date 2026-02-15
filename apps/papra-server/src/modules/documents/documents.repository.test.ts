@@ -1,8 +1,10 @@
+import { desc } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
+import { documentsTable } from './documents.table';
 
 describe('documents repository', () => {
   describe('crud operations on document collection', () => {
@@ -36,11 +38,7 @@ describe('documents repository', () => {
         isDeleted: false,
       });
 
-      const { documents } = await documentsRepository.getOrganizationDocuments({
-        organizationId: 'organization-1',
-        pageIndex: 0,
-        pageSize: 10,
-      });
+      const documents = await db.select().from(documentsTable).orderBy(desc(documentsTable.createdAt));
 
       expect(documents).to.have.length(1);
       expect(documents[0]).to.include({
@@ -59,13 +57,10 @@ describe('documents repository', () => {
         organizationId: 'organization-1',
       });
 
-      const { documents: documentsAfterDelete } = await documentsRepository.getOrganizationDocuments({
-        organizationId: 'organization-1',
-        pageIndex: 0,
-        pageSize: 10,
-      });
+      const documentsAfterDelete = await db.select().from(documentsTable).orderBy(desc(documentsTable.createdAt));
 
-      expect(documentsAfterDelete).to.have.length(0);
+      expect(documentsAfterDelete).to.have.length(1);
+      expect(documentsAfterDelete[0]!.isDeleted).toBe(true);
     });
   });
 

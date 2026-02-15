@@ -25,31 +25,32 @@ export async function fetchOrganizationDocuments({
   organizationId,
   pageIndex,
   pageSize,
-  filters,
+  searchQuery,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
-  filters?: {
-    tags?: string[];
-  };
+  searchQuery?: string;
 }) {
   const {
     documents,
     documentsCount,
-  } = await apiClient<{ documents: AsDto<Document>[]; documentsCount: number }>({
+  } = await apiClient<{
+    documents: AsDto<Document>[];
+    documentsCount: number;
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents`,
     query: {
+      searchQuery,
       pageIndex,
       pageSize,
-      ...filters,
     },
   });
 
   return {
-    documentsCount,
     documents: documents.map(coerceDates),
+    documentsCount,
   };
 }
 
@@ -137,39 +138,6 @@ export async function fetchDocumentFile({
   });
 
   return blob;
-}
-
-export async function searchDocuments({
-  organizationId,
-  searchQuery,
-  pageIndex,
-  pageSize,
-}: {
-  organizationId: string;
-  searchQuery: string;
-  pageIndex: number;
-  pageSize: number;
-}) {
-  const {
-    documents,
-    totalCount,
-  } = await apiClient<{
-    documents: Document[];
-    totalCount: number;
-  }>({
-    method: 'GET',
-    path: `/api/organizations/${organizationId}/documents/search`,
-    query: {
-      searchQuery,
-      pageIndex,
-      pageSize,
-    },
-  });
-
-  return {
-    documents: documents.map(coerceDates),
-    totalCount,
-  };
 }
 
 export async function getOrganizationDocumentsStats({ organizationId }: { organizationId: string }) {

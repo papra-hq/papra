@@ -16,7 +16,7 @@ export type DocumentSearchServices = {
     organizationId: string;
     pageIndex: number;
     pageSize: number;
-  }) => Promise<{ documents: Omit<Document, 'content'>[]; totalCount: number }>;
+  }) => Promise<{ documents: Omit<Document, 'content'>[]; documentsCount: number }>;
 
   indexDocument: (args: { document: DocumentSearchableData }) => Promise<void>;
   updateDocument: (args: { documentId: string; document: Partial<Omit<DocumentSearchableData, 'id'>> }) => Promise<void>;

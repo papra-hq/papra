@@ -11,7 +11,7 @@ import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
-import { searchDocuments } from '../documents.services';
+import { fetchOrganizationDocuments } from '../documents.services';
 
 export const DocumentsPage: Component = () => {
   const params = useParams();
@@ -22,7 +22,7 @@ export const DocumentsPage: Component = () => {
 
   const documentsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', getPagination(), debouncedSearchQuery()],
-    queryFn: () => searchDocuments({
+    queryFn: () => fetchOrganizationDocuments({
       organizationId: params.organizationId,
       searchQuery: debouncedSearchQuery(),
       ...getPagination(),
@@ -86,9 +86,9 @@ export const DocumentsPage: Component = () => {
                 <div class="mb-4 text-sm text-muted-foreground mt-2 ml-2">
                   <Show
                     when={debouncedSearchQuery().length > 0}
-                    fallback={t('documents.list.search.total-count-no-query', { count: documentsQuery.data?.totalCount ?? 0 })}
+                    fallback={t('documents.list.search.total-count-no-query', { count: documentsQuery.data?.documentsCount ?? 0 })}
                   >
-                    {t('documents.list.search.total-count-with-query', { count: documentsQuery.data?.totalCount ?? 0 })}
+                    {t('documents.list.search.total-count-with-query', { count: documentsQuery.data?.documentsCount ?? 0 })}
                   </Show>
                 </div>
 
@@ -100,7 +100,7 @@ export const DocumentsPage: Component = () => {
 
                 <DocumentsPaginatedList
                   documents={documentsQuery.data?.documents ?? []}
-                  documentsCount={documentsQuery.data?.totalCount ?? 0}
+                  documentsCount={documentsQuery.data?.documentsCount ?? 0}
                   getPagination={getPagination}
                   setPagination={setPagination}
                   extraColumns={[

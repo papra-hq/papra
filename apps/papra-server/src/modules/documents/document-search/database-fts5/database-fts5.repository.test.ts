@@ -73,7 +73,7 @@ describe('database-fts5 repository', () => {
       expect(searchResults2.map(doc => doc.id)).to.eql(['doc_1']);
     });
 
-    describe('total count', () => {
+    describe('documents count', () => {
       test('the total count of search results is returned for pagination', async () => {
         const documents = Array.from({ length: 15 }).map((_, index) => ({
           id: `doc_${index + 1}`,
@@ -98,14 +98,14 @@ describe('database-fts5 repository', () => {
           documents.map(async document => documentsSearchRepository.indexDocument({ document })),
         );
 
-        const { totalCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documentsCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'lorem',
           pageIndex: 0,
           pageSize: 10,
         });
 
-        expect(totalCount).to.equal(15);
+        expect(documentsCount).to.equal(15);
         expect(searchDocuments).to.have.length(10);
       });
 
@@ -116,14 +116,14 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        const { totalCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documentsCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'nonexistent',
           pageIndex: 0,
           pageSize: 10,
         });
 
-        expect(totalCount).to.equal(0);
+        expect(documentsCount).to.equal(0);
         expect(searchDocuments).to.have.length(0);
       });
 
@@ -153,14 +153,14 @@ describe('database-fts5 repository', () => {
           documents.map(async document => documentsSearchRepository.indexDocument({ document })),
         );
 
-        const { totalCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documentsCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'lorem',
           pageIndex: 0,
           pageSize: 10,
         });
 
-        expect(totalCount).to.equal(2);
+        expect(documentsCount).to.equal(2);
         expect(searchDocuments).to.have.length(2);
       });
     });
@@ -191,7 +191,7 @@ describe('database-fts5 repository', () => {
           documents.map(async document => documentsSearchRepository.indexDocument({ document })),
         );
 
-        const { documents: firstPageDocuments, totalCount: firstTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documents: firstPageDocuments, documentsCount: firstTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'lorem',
           pageIndex: 0,
@@ -202,7 +202,7 @@ describe('database-fts5 repository', () => {
         expect(firstTotalCount).to.equal(25);
         expect(firstPageDocuments.map(doc => doc.id)).to.eql(['doc_25', 'doc_24', 'doc_23', 'doc_22', 'doc_21', 'doc_20', 'doc_19', 'doc_18', 'doc_17', 'doc_16']);
 
-        const { documents: secondPageDocuments, totalCount: secondTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documents: secondPageDocuments, documentsCount: secondTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'lorem',
           pageIndex: 1,
@@ -245,7 +245,7 @@ describe('database-fts5 repository', () => {
           documents.map(async document => documentsSearchRepository.indexDocument({ document })),
         );
 
-        const { documents: firstPageDocuments, totalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        const { documents: firstPageDocuments, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
           searchQuery: 'lorem',
           pageIndex: 0,
@@ -253,7 +253,7 @@ describe('database-fts5 repository', () => {
         });
 
         expect(firstPageDocuments).to.have.length(10);
-        expect(totalCount).to.equal(20);
+        expect(documentsCount).to.equal(20);
       });
     });
 
@@ -289,6 +289,10 @@ describe('database-fts5 repository', () => {
       );
 
       const searches = [
+        {
+          searchQuery: '',
+          expectedDocumentsIds: ['doc_1', 'doc_2', 'doc_3', 'doc_4', 'doc_5'],
+        },
         {
           searchQuery: 'invoice',
           expectedDocumentsIds: ['doc_1', 'doc_2', 'doc_3'],
@@ -478,7 +482,7 @@ describe('database-fts5 repository', () => {
         documents.map(async document => documentsSearchRepository.indexDocument({ document })),
       );
 
-      const { documents: searchResults, totalCount } = await documentsSearchRepository.searchOrganizationDocuments({
+      const { documents: searchResults, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
         organizationId: 'org_1',
         searchQuery: 'lorem',
         pageIndex: 0,
@@ -486,7 +490,7 @@ describe('database-fts5 repository', () => {
       });
 
       expect(searchResults).to.have.length(2);
-      expect(totalCount).to.equal(2);
+      expect(documentsCount).to.equal(2);
       expect(
         searchResults.map(doc => ({
           id: doc.id,

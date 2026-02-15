@@ -3,7 +3,7 @@ import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
 import { getDocumentIcon, makeDocumentSearchPermalink } from '../documents/document.models';
-import { searchDocuments } from '../documents/documents.services';
+import { fetchOrganizationDocuments } from '../documents/documents.services';
 import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
 import { toArrayIf } from '../shared/utils/array';
@@ -56,10 +56,10 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const { setColorMode } = useThemeStore();
 
   const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
-    const [result] = await safely(searchDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
+    const [result] = await safely(fetchOrganizationDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
 
     setMatchingDocuments(result?.documents ?? []);
-    setMatchingDocumentsTotalCount(result?.totalCount ?? 0);
+    setMatchingDocumentsTotalCount(result?.documentsCount ?? 0);
     setIsLoading(false);
   }, 300);
 
