@@ -1,3 +1,4 @@
+import type { TranslationKeys } from '../i18n/locales.types';
 import type { DocumentActivityEvent } from './documents.types';
 import { IN_MS } from '../shared/utils/units';
 import { DEFAULT_DOCUMENT_ICON } from './documents.constants';
@@ -196,4 +197,31 @@ export function makeDocumentSearchPermalink({ organizationId, search }: { organi
   const queryString = makeDocumentSearchQuery(search);
 
   return `/organizations/${organizationId}/documents?query=${encodeURIComponent(queryString)}`;
+}
+
+const pdfMimeTypes = ['application/pdf'];
+
+export type DocumentOpenWithApp = {
+  id: string;
+  labelKey: TranslationKeys;
+  icon: string;
+  href: string;
+};
+
+export function getDocumentOpenWithApps({ document }: { document: { mimeType: string; organizationId: string; id: string } }): DocumentOpenWithApp[] {
+  const openWithApps: { mimeTypes: string[]; app: DocumentOpenWithApp }[] = [
+    {
+      mimeTypes: pdfMimeTypes,
+      app: {
+        id: 'pdf-viewer',
+        labelKey: 'documents.open-with.pdf-viewer',
+        icon: 'i-tabler-file-type-pdf',
+        href: `/organizations/${document.organizationId}/documents/${document.id}/pdf-viewer`,
+      },
+    },
+  ];
+
+  return openWithApps
+    .filter(({ mimeTypes }) => mimeTypes.includes(document.mimeType))
+    .map(({ app }) => app);
 }

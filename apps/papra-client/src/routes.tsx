@@ -14,6 +14,7 @@ import { RegisterPage } from './modules/auth/pages/register.page';
 import { RequestPasswordResetPage } from './modules/auth/pages/request-password-reset.page';
 import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
+import { DocumentPdfViewerPage } from './modules/documents/pages/document-pdf-viewer.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.page';
@@ -105,63 +106,74 @@ export const routes: RouteDefinition[] = [
           },
           {
             path: '/:organizationId',
+            matchFilters: {
+              organizationId: /^org_[a-zA-Z0-9]+$/,
+            },
             component: (props) => {
               const params = useParams();
               const { setLatestOrganizationId } = useLastOrganization();
 
               setLatestOrganizationId(params.organizationId);
 
-              return <OrganizationLayout {...props} />;
-            },
-            matchFilters: {
-              organizationId: /^org_[a-zA-Z0-9]+$/,
+              return <>{props.children}</>;
             },
             children: [
               {
+                // Routes with the organization layout
                 path: '/',
-                component: OrganizationPage,
-              },
-              {
-                path: '/documents',
-                component: DocumentsPage,
-              },
-              {
-                path: '/documents/:documentId',
-                component: DocumentPage,
-              },
-              {
-                path: '/deleted',
-                component: DeletedDocumentsPage,
-              },
-              {
-                path: '/tags',
-                component: TagsPage,
-              },
-              {
-                path: '/tagging-rules',
-                component: TaggingRulesPage,
-              },
-              {
-                path: '/tagging-rules/create',
-                component: CreateTaggingRulePage,
-              },
-              {
-                path: '/tagging-rules/:taggingRuleId',
-                component: UpdateTaggingRulePage,
-              },
-              {
-                path: '/members',
-                component: MembersPage,
-              },
-              {
-                path: '/invite',
-                component: InviteMemberPage,
-              },
-              {
-                path: '/invitations',
-                component: InvitationsListPage,
-              },
+                component: OrganizationLayout,
+                children: [
+                  {
+                    path: '/',
+                    component: OrganizationPage,
+                  },
+                  {
+                    path: '/documents',
+                    component: DocumentsPage,
+                  },
+                  {
+                    path: '/documents/:documentId',
+                    component: DocumentPage,
+                  },
+                  {
+                    path: '/deleted',
+                    component: DeletedDocumentsPage,
+                  },
+                  {
+                    path: '/tags',
+                    component: TagsPage,
+                  },
+                  {
+                    path: '/tagging-rules',
+                    component: TaggingRulesPage,
+                  },
+                  {
+                    path: '/tagging-rules/create',
+                    component: CreateTaggingRulePage,
+                  },
+                  {
+                    path: '/tagging-rules/:taggingRuleId',
+                    component: UpdateTaggingRulePage,
+                  },
+                  {
+                    path: '/members',
+                    component: MembersPage,
+                  },
+                  {
+                    path: '/invite',
+                    component: InviteMemberPage,
+                  },
+                  {
+                    path: '/invitations',
+                    component: InvitationsListPage,
+                  },
 
+                ],
+              },
+              {
+                path: '/documents/:documentId/pdf-viewer',
+                component: DocumentPdfViewerPage,
+              },
             ],
           },
           {
