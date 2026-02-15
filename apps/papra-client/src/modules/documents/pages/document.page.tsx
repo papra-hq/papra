@@ -1,5 +1,6 @@
+import type { DropdownMenuTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component, JSX } from 'solid-js';
-import type { DocumentActivity } from '../documents.types';
+import type { Document, DocumentActivity } from '../documents.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
@@ -12,12 +13,14 @@ import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { TagLink } from '@/modules/tags/components/tag.component';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { Separator } from '@/modules/ui/components/separator';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { DocumentContentEditionPanel } from '../components/document-content-edition-panel.component';
 import { DocumentPreview } from '../components/document-preview.component';
+import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
-import { getDaysBeforePermanentDeletion, getDocumentActivityIcon } from '../document.models';
+import { getDaysBeforePermanentDeletion, getDocumentActivityIcon, getDocumentOpenWithApps } from '../document.models';
 import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
 import { fetchDocument, fetchDocumentActivities, fetchDocumentFile } from '../documents.services';
 
@@ -95,6 +98,30 @@ const ActivityItem: Component<{ activity: DocumentActivity }> = (props) => {
 
 const tabs = ['info', 'content', 'activity'] as const;
 type Tab = typeof tabs[number];
+
+const DocumentOpenWithDropdown: Component<{ document: Document; organizationId: string }> = (props) => {
+  const { t } = useI18n();
+  const getApps = () => getDocumentOpenWithApps({ document: props.document });
+
+  return (
+    <Show when={getApps().length > 0}>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          as={(triggerProps: DropdownMenuTriggerProps) => (
+            <Button variant="outline" size="sm" {...triggerProps}>
+              <div class="i-tabler-app-window size-4 mr-2" />
+              {t('documents.open-with.label')}
+              <div class="i-tabler-chevron-down size-3 ml-1" />
+            </Button>
+          )}
+        />
+        <DropdownMenuContent>
+          <DocumentOpenWithDropdownItems apps={getApps()} />
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Show>
+  );
+};
 
 export const DocumentPage: Component = () => {
   const { t, formatRelativeTime } = useI18n();
@@ -208,6 +235,8 @@ export const DocumentPage: Component = () => {
                       <div class="i-tabler-download size-4 mr-2" />
                       {t('documents.actions.download')}
                     </Button>
+
+                    <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />
 
                     {getDocument().isDeleted
                       ? (

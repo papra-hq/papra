@@ -6,7 +6,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
 
-const PdfViewer = lazy(() => import('./pdf-viewer.component').then(m => ({ default: m.PdfViewer })));
+const PdfViewer = lazy(() => import('./pdf-viewer/simple-pdf-viewer.component').then(m => ({ default: m.SimplePdfViewer })));
 
 const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];

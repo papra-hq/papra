@@ -2,20 +2,27 @@ import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { A } from '@solidjs/router';
+import { Show } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import { getDocumentOpenWithApps } from '../document.models';
 import { useDeleteDocument } from '../documents.composables';
+import { DocumentOpenWithDropdownItems } from './open-with.component';
 import { useRenameDocumentDialog } from './rename-document-button.component';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
   const { deleteDocument } = useDeleteDocument();
   const { openRenameDialog } = useRenameDocumentDialog();
+  const { t } = useI18n();
 
   const deleteDoc = () => deleteDocument({
     documentId: props.document.id,
     organizationId: props.document.organizationId,
     documentName: props.document.name,
   });
+
+  const getOpenWithApps = () => getDocumentOpenWithApps({ document: props.document });
 
   return (
 
@@ -36,6 +43,18 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           <div class="i-tabler-info-circle size-4 mr-2" />
           <span>Document details</span>
         </DropdownMenuItem>
+
+        <Show when={getOpenWithApps().length > 0}>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger class="cursor-pointer">
+              <div class="i-tabler-app-window size-4 mr-2" />
+              <span>{t('documents.open-with.label')}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DocumentOpenWithDropdownItems apps={getOpenWithApps()} />
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </Show>
 
         <DropdownMenuItem
           class="cursor-pointer"
