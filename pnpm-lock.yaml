@@ -155,7 +155,7 @@ importers:
     dependencies:
       '@better-auth/expo':
         specifier: 'catalog:'
-        version: 1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))
+        version: 1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.76))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))
       '@corentinth/chisels':
         specifier: 'catalog:'
         version: 2.1.0
@@ -439,7 +439,7 @@ importers:
         version: 12.27.0
       '@better-auth/expo':
         specifier: 'catalog:'
-        version: 1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.67))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))
+        version: 1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))
       '@cadence-mq/core':
         specifier: ^0.2.1
         version: 0.2.1
@@ -509,6 +509,9 @@ importers:
       figue:
         specifier: ^3.1.1
         version: 3.1.1
+      file-type:
+        specifier: ^21.3.0
+        version: 21.3.0
       hono:
         specifier: ^4.10.7
         version: 4.10.7
@@ -1882,6 +1885,9 @@ packages:
 
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
+
+  '@borewit/text-codec@0.2.1':
+    resolution: {integrity: sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw==}
 
   '@branchlet/core@1.0.0':
     resolution: {integrity: sha512-qEFl0VeaIfdtVxHzIGeTu1HW7rpt4haMCV81YYBoFYTJZUBb0YZ2BN3Z6L2klwQ/6XxGJO61Cm5J6RMOKkvFmA==}
@@ -5045,6 +5051,13 @@ packages:
   '@testcontainers/localstack@11.5.1':
     resolution: {integrity: sha512-uDlPLfRD9sG4X4Dtc1jOAMWAcl//2ISSii/W07vP3/JPseQmSb5cd7P7pGxhqL5xdbk5vjamdaMXAGdIzYZxvg==}
 
+  '@tokenizer/inflate@0.4.1':
+    resolution: {integrity: sha512-2mAv+8pkG6GIZiF1kNg1jAjh27IDxEPKwdGul3snfztFerfPGI1LjDezZp3i7BElXompqEtPmoPx6c2wgtWsOA==}
+    engines: {node: '>=18'}
+
+  '@tokenizer/token@0.3.0':
+    resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
+
   '@total-typescript/ts-reset@0.6.1':
     resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
 
@@ -7848,6 +7861,10 @@ packages:
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
+
+  file-type@21.3.0:
+    resolution: {integrity: sha512-8kPJMIGz1Yt/aPEwOsrR97ZyZaD1Iqm8PClb1nYFclUCkBi0Ma5IsYNQzvSFS9ib51lWyIw5mIT9rWzI/xjpzA==}
+    engines: {node: '>=20'}
 
   filelist@1.0.4:
     resolution: {integrity: sha512-w1cEuf3S+DrLCQL7ET6kz+gmlJdbq9J7yXCSjK/OZCPA+qEN1WyF4ZAf0YYJa4/shHJra2t/d/r8SV4Ji+x+8Q==}
@@ -11217,6 +11234,10 @@ packages:
   strnum@2.1.1:
     resolution: {integrity: sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw==}
 
+  strtok3@10.3.4:
+    resolution: {integrity: sha512-KIy5nylvC5le1OdaaoCJ07L+8iQzJHGH6pWDuzS+d07Cu7n1MZ2x26P8ZKIWfbK02+XIL8Mp4RkWeqdUCrDMfg==}
+    engines: {node: '>=18'}
+
   structured-headers@0.4.1:
     resolution: {integrity: sha512-0MP/Cxx5SzeeZ10p/bZI0S6MpgD+yxAhi1BOQ34jgnMXsCq3j1t6tQnZu+KdlL7dvJTLT3g9xN8tl10TqgFMcg==}
 
@@ -11424,6 +11445,10 @@ packages:
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+
+  token-types@6.1.2:
+    resolution: {integrity: sha512-dRXchy+C0IgK8WPC6xvCHFRIWYUbqqdEIKPaKo/AcTUNzwLTK6AH7RjdLWsEZcAN/TBdtfUw3PYEgPr5VPr6ww==}
+    engines: {node: '>=14.16'}
 
   toml-eslint-parser@1.0.3:
     resolution: {integrity: sha512-A5F0cM6+mDleacLIEUkmfpkBbnHJFV1d2rprHU2MXNk7mlxHq2zGojA+SRvQD1RoMo9gqjZPWEaKG4v1BQ48lw==}
@@ -14283,18 +14308,7 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.67))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
-    dependencies:
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.18
-      '@standard-schema/spec': 1.0.0
-      better-call: 1.1.5(zod@3.25.67)
-      jose: 6.1.0
-      kysely: 0.28.8
-      nanostores: 1.0.1
-      zod: 4.1.12
-
-  '@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
+  '@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.76))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
@@ -14305,9 +14319,20 @@ snapshots:
       nanostores: 1.0.1
       zod: 4.1.12
 
-  '@better-auth/expo@1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.67))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))':
+  '@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
     dependencies:
-      '@better-auth/core': 1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.67))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/utils': 0.3.0
+      '@better-fetch/fetch': 1.1.18
+      '@standard-schema/spec': 1.0.0
+      better-call: 1.1.5(zod@3.25.67)
+      jose: 6.1.0
+      kysely: 0.28.8
+      nanostores: 1.0.1
+      zod: 4.1.12
+
+  '@better-auth/expo@1.4.6(@better-auth/core@1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.76))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))(better-auth@1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3)))(expo-constants@18.0.10)(expo-linking@8.0.8)(expo-network@8.0.8(expo@54.0.23)(react@19.1.0))(expo-web-browser@15.0.9(expo@54.0.23)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)))':
+    dependencies:
+      '@better-auth/core': 1.4.6(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.5(zod@3.25.76))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
       '@better-fetch/fetch': 1.1.18
       better-auth: 1.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(solid-js@1.9.10)(vue@3.5.13(typescript@5.9.3))
       better-call: 1.1.5(zod@4.1.12)
@@ -14340,6 +14365,8 @@ snapshots:
   '@better-auth/utils@0.3.0': {}
 
   '@better-fetch/fetch@1.1.18': {}
+
+  '@borewit/text-codec@0.2.1': {}
 
   '@branchlet/core@1.0.0': {}
 
@@ -17863,6 +17890,15 @@ snapshots:
       - bare-buffer
       - supports-color
 
+  '@tokenizer/inflate@0.4.1':
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+      token-types: 6.1.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@tokenizer/token@0.3.0': {}
+
   '@total-typescript/ts-reset@0.6.1': {}
 
   '@tsconfig/node10@1.0.12': {}
@@ -19427,7 +19463,7 @@ snapshots:
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.1
       '@noble/hashes': 2.0.1
-      better-call: 1.1.5(zod@3.25.76)
+      better-call: 1.1.5(zod@3.25.67)
       defu: 6.1.4
       jose: 6.1.0
       kysely: 0.28.8
@@ -21546,6 +21582,15 @@ snapshots:
   file-entry-cache@8.0.0:
     dependencies:
       flat-cache: 4.0.1
+
+  file-type@21.3.0:
+    dependencies:
+      '@tokenizer/inflate': 0.4.1
+      strtok3: 10.3.4
+      token-types: 6.1.2
+      uint8array-extras: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
 
   filelist@1.0.4:
     dependencies:
@@ -25982,6 +26027,10 @@ snapshots:
 
   strnum@2.1.1: {}
 
+  strtok3@10.3.4:
+    dependencies:
+      '@tokenizer/token': 0.3.0
+
   structured-headers@0.4.1: {}
 
   stubborn-fs@1.2.5: {}
@@ -26240,6 +26289,12 @@ snapshots:
       reserved-identifiers: 1.2.0
 
   toidentifier@1.0.1: {}
+
+  token-types@6.1.2:
+    dependencies:
+      '@borewit/text-codec': 0.2.1
+      '@tokenizer/token': 0.3.0
+      ieee754: 1.2.1
 
   toml-eslint-parser@1.0.3:
     dependencies:

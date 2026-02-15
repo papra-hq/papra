@@ -8,6 +8,7 @@ import type { IntakeEmailUsernameServices } from './username-drivers/intake-emai
 import { safely } from '@corentinth/chisels';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
+import { coerceFileMimeType } from '../shared/mime-types/mime-types.usecases';
 import { fileToReadableStream } from '../shared/streams/readable-stream';
 import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } from './intake-emails.errors';
 import { getIsFromAllowedOrigin } from './intake-emails.models';
@@ -114,10 +115,12 @@ export async function ingestEmailForRecipient({
   }
 
   await Promise.all(attachments.map(async (file) => {
+    const { mimeType } = await coerceFileMimeType({ file });
+
     const [result, error] = await safely(createDocument({
       fileStream: fileToReadableStream(file),
       fileName: file.name,
-      mimeType: file.type,
+      mimeType,
       organizationId: intakeEmail.organizationId,
     }));
 
