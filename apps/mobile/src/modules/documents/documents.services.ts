@@ -72,10 +72,11 @@ export async function fetchOrganizationDocuments({
 
   try {
     const remote = apiDocuments.map(coerceDates);
-    const local = await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId);
+    const local = pageIndex === 0 ? await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId) : [];
     const documents = [...local, ...remote];
     return {
       documentsCount: documentsCount + local.length,
+      remoteDocumentsCount: remote.length,
       documents: documents.map(coerceDates),
     };
   } catch (error) {
