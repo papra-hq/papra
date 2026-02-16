@@ -92,43 +92,6 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
   ...defineHandler({
     path: '/api/organizations/:organizationId/documents',
-    method: 'GET',
-    handler: async ({ params: { organizationId }, query }) => {
-      const organization = await organizationStorage.getItem(organizationId);
-      assert(organization, { status: 403 });
-
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && !document.deletedAt);
-
-      const filteredDocuments = await Promise.all(
-        documents.map(async (document) => {
-          const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument?.documentId === document?.id);
-          const allTags = await getValues(tagStorage);
-
-          const tags = allTags.filter(tag => tagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
-
-          return {
-            ...document,
-            tags,
-          };
-        }),
-      );
-
-      const {
-        pageIndex = 0,
-        pageSize = 10,
-      } = query ?? {};
-
-      return {
-        documents: filteredDocuments
-          .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-        documentsCount: filteredDocuments.length,
-      };
-    },
-  }),
-
-  ...defineHandler({
-    path: '/api/organizations/:organizationId/documents',
     method: 'POST',
     handler: async ({ params: { organizationId }, body }) => {
       // body is a FormData instance with file field
@@ -190,7 +153,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
-    path: '/api/organizations/:organizationId/documents/search',
+    path: '/api/organizations/:organizationId/documents',
     method: 'GET',
     handler: async ({ params: { organizationId }, query }) => {
       const {
@@ -227,7 +190,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       return {
         documents: paginatedDocuments,
-        totalCount: filteredDocuments.length,
+        documentsCount: filteredDocuments.length,
       };
     },
   }),

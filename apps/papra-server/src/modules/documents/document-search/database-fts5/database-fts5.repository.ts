@@ -53,10 +53,10 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
       .orderBy(desc(paginatedIdsSubquery.createdAt)),
   ]);
 
-  const totalCount = totalCountResult[0]?.count ?? 0;
+  const documentsCount = totalCountResult[0]?.count ?? 0;
 
   if (documentsWithTags.length === 0) {
-    return { documents: [], totalCount };
+    return { documents: [], documentsCount };
   }
 
   const documentsMap = documentsWithTags.reduce(
@@ -76,7 +76,7 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
 
   const documents = Object.values(documentsMap);
 
-  return { documents, totalCount };
+  return { documents, documentsCount };
 }
 
 async function indexDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {

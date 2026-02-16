@@ -2,7 +2,6 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
-import { omit } from 'lodash-es';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { subDays } from '../shared/date';
@@ -20,11 +19,9 @@ export function createDocumentsRepository({ db }: { db: Database }) {
   return injectArguments(
     {
       saveOrganizationDocument,
-      getOrganizationDocuments,
       getOrganizationDeletedDocuments,
       getDocumentById,
       softDeleteDocument,
-      getOrganizationDocumentsCount,
       getOrganizationDeletedDocumentsCount,
       restoreDocument,
       hardDeleteDocument,
@@ -82,29 +79,6 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
   return { document };
 }
 
-async function getOrganizationDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
-  const [record] = await db
-    .select({
-      documentsCount: count(documentsTable.id),
-    })
-    .from(documentsTable)
-    .leftJoin(documentsTagsTable, eq(documentsTable.id, documentsTagsTable.documentId))
-    .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, false),
-      ),
-    );
-
-  if (isNil(record)) {
-    throw createOrganizationNotFoundError();
-  }
-
-  const { documentsCount } = record;
-
-  return { documentsCount };
-}
-
 async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
   const [record] = await db
     .select({
@@ -125,63 +99,6 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
   const { documentsCount } = record;
 
   return { documentsCount };
-}
-
-async function getOrganizationDocuments({
-  organizationId,
-  pageIndex,
-  pageSize,
-  db,
-}: {
-  organizationId: string;
-  pageIndex: number;
-  pageSize: number;
-  db: Database;
-}) {
-  const query = db
-    .select({
-      document: omit(getTableColumns(documentsTable), ['content']),
-      tag: getTableColumns(tagsTable),
-    })
-    .from(documentsTable)
-    .leftJoin(documentsTagsTable, eq(documentsTable.id, documentsTagsTable.documentId))
-    .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
-    .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, false),
-      ),
-    );
-
-  const documentsTagsQuery = withPagination(
-    query.$dynamic(),
-    {
-      orderByColumn: desc(documentsTable.createdAt),
-      pageIndex,
-      pageSize,
-    },
-  );
-
-  const documentsTags = await documentsTagsQuery;
-
-  const groupedDocuments = documentsTags.reduce((acc, { document, tag }) => {
-    if (!acc[document.id]) {
-      acc[document.id] = {
-        ...document,
-        tags: [],
-      };
-    }
-
-    if (tag) {
-      acc[document.id]!.tags.push(tag);
-    }
-
-    return acc;
-  }, {} as Record<string, Omit<typeof documentsTable.$inferSelect, 'content'> & { tags: typeof tagsTable.$inferSelect[] }>);
-
-  return {
-    documents: Object.values(groupedDocuments),
-  };
 }
 
 async function getOrganizationDeletedDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {

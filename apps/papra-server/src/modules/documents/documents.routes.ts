@@ -21,7 +21,6 @@ import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocu
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
   setupGetDocumentsRoute(context);
-  setupSearchDocumentsRoute(context);
   setupRestoreDocumentRoute(context);
   setupGetDeletedDocumentsRoute(context);
   setupGetOrganizationDocumentsStatsRoute(context);
@@ -67,46 +66,6 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
 
       return context.json({ document: formatDocumentForApi({ document }) });
-    },
-  );
-}
-
-function setupGetDocumentsRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/organizations/:organizationId/documents',
-    requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
-      organizationId: organizationIdSchema,
-    })),
-    validateQuery(
-      z.object({
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { organizationId } = context.req.valid('param');
-      const { pageIndex, pageSize } = context.req.valid('query');
-
-      const documentsRepository = createDocumentsRepository({ db });
-      const organizationsRepository = createOrganizationsRepository({ db });
-
-      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
-
-      const [
-        { documents },
-        { documentsCount },
-      ] = await Promise.all([
-        documentsRepository.getOrganizationDocuments({ organizationId, pageIndex, pageSize }),
-        documentsRepository.getOrganizationDocumentsCount({ organizationId }),
-      ]);
-
-      return context.json({
-        documents: formatDocumentsForApi({ documents }),
-        documentsCount,
-      });
     },
   );
 }
@@ -293,16 +252,16 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
   );
 }
 
-function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
+function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefinitionContext) {
   app.get(
-    '/api/organizations/:organizationId/documents/search',
+    '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
     validateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     validateQuery(
       z.object({
-        searchQuery: z.string(),
+        searchQuery: z.string().optional().default(''),
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
         pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
       }),
@@ -317,7 +276,7 @@ function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDef
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents, totalCount } = await searchOrganizationDocuments({
+      const { documents, documentsCount } = await searchOrganizationDocuments({
         organizationId,
         searchQuery,
         pageIndex,
@@ -326,8 +285,8 @@ function setupSearchDocumentsRoute({ app, db, documentSearchServices }: RouteDef
       });
 
       return context.json({
-        documents,
-        totalCount,
+        documents: formatDocumentsForApi({ documents }),
+        documentsCount,
       });
     },
   );
