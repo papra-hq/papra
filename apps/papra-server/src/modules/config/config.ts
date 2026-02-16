@@ -19,6 +19,7 @@ import { createLogger } from '../shared/logger/logger';
 import { IN_MS } from '../shared/units';
 import { isString } from '../shared/utils';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
+import { tagsConfig } from '../tags/tags.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
 import { exitProcessDueToConfigError, validateParsedConfig } from './config.models';
@@ -156,6 +157,7 @@ export const configDefinition = {
   organizations: organizationsConfig,
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
+  tags: tagsConfig,
   tracking: trackingConfig,
 } as const satisfies ConfigDefinition;
 

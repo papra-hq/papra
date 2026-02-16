@@ -17,3 +17,9 @@ export const createTagNotFoundError = createErrorFactory({
   code: 'tags.not_found',
   statusCode: 404,
 });
+
+export const createOrganizationTagLimitReachedError = createErrorFactory({
+  message: 'The maximum number of tags for this organization has been reached.',
+  code: 'tags.organization_limit_reached',
+  statusCode: 403,
+});

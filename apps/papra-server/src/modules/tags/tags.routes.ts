@@ -17,7 +17,7 @@ import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagColorSchema, tagIdSchema } from './tags.schemas';
-import { addTagToDocument } from './tags.usecases';
+import { addTagToDocument, createTag } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupCreateNewTagRoute(context);
@@ -28,7 +28,7 @@ export function registerTagsRoutes(context: RouteDefinitionContext) {
   setupRemoveTagFromDocumentRoute(context);
 }
 
-function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
+function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
@@ -53,7 +53,7 @@ function setupCreateNewTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { tag } = await tagsRepository.createTag({ tag: { organizationId, name, color, description } });
+      const { tag } = await createTag({ organizationId, name, color, description, config, tagsRepository });
 
       return context.json({
         tag,
