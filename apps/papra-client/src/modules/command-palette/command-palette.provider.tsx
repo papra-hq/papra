@@ -75,16 +75,6 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     },
   ));
 
-  createEffect(on(
-    getIsCommandPaletteOpen,
-    (isCommandPaletteOpen) => {
-      if (isCommandPaletteOpen) {
-        setMatchingDocuments([]);
-        setMatchingDocumentsTotalCount(0);
-      }
-    },
-  ));
-
   const getCommandData = (): {
     label: string;
     forceMatch?: boolean;
@@ -153,7 +143,11 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
         onOpenChange={setIsCommandPaletteOpen}
       >
 
-        <CommandInput onValueChange={setSearchQuery} placeholder={t('command-palette.search.placeholder')} />
+        <CommandInput
+          value={getSearchQuery()}
+          onValueChange={setSearchQuery}
+          placeholder={t('command-palette.search.placeholder')}
+        />
         <CommandList>
           <Show when={getIsLoading()}>
             <CommandLoading>
