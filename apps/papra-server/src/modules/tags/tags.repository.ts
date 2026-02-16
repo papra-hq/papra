@@ -1,6 +1,6 @@
 import type { Database } from '../app/database/database.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
@@ -15,6 +15,7 @@ export function createTagsRepository({ db }: { db: Database }) {
   return injectArguments(
     {
       getOrganizationTags,
+      getOrganizationTagsCount,
       getTagById,
       createTag,
       deleteTag,
@@ -42,6 +43,15 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
     .orderBy(desc(tagsTable.createdAt));
 
   return { tags };
+}
+
+async function getOrganizationTagsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+  const [result] = await db
+    .select({ tagsCount: count() })
+    .from(tagsTable)
+    .where(eq(tagsTable.organizationId, organizationId));
+
+  return { tagsCount: result?.tagsCount ?? 0 };
 }
 
 async function getTagById({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {

@@ -762,6 +762,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.user.organization_invitation_limit_reached': 'Het maximale aantal uitnodigingen voor vandaag is bereikt. Probeer het morgen opnieuw.',
   'api-errors.demo.not_available': 'Deze functie is niet beschikbaar in de demo',
   'api-errors.tags.already_exists': 'Er bestaat al een label met deze naam voor deze organisatie',
+  'api-errors.tags.organization_limit_reached': 'Het maximale aantal labels voor deze organisatie is bereikt.',
   'api-errors.internal.error': 'Er is een fout opgetreden bij het verwerken van uw verzoek. Probeer het later opnieuw.',
   'api-errors.auth.invalid_origin': 'Ongeldige applicatiebron. Als u Papra zelf host, zorg ervoor dat uw APP_BASE_URL-omgeving variabele overeenkomt met uw huidige URL. Zie https://docs.papra.app/resources/troubleshooting/#invalid-application-origin voor meer informatie.',
   'api-errors.organization.max_members_count_reached': 'Het maximale aantal leden en openstaande uitnodigingen voor deze organisatie is bereikt. Upgrade uw plan om meer leden toe te voegen.',

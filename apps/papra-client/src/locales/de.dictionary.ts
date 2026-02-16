@@ -762,6 +762,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.user.organization_invitation_limit_reached': 'Die maximale Anzahl an Einladungen für heute wurde erreicht. Bitte versuchen Sie es morgen erneut.',
   'api-errors.demo.not_available': 'Diese Funktion ist in der Demo nicht verfügbar',
   'api-errors.tags.already_exists': 'Ein Tag mit diesem Namen existiert bereits für diese Organisation',
+  'api-errors.tags.organization_limit_reached': 'Die maximale Anzahl an Tags für diese Organisation wurde erreicht.',
   'api-errors.internal.error': 'Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
   'api-errors.auth.invalid_origin': 'Ungültige Anwendungs-Ursprung. Wenn Sie Papra selbst hosten, stellen Sie sicher, dass Ihre APP_BASE_URL-Umgebungsvariable mit Ihrer aktuellen URL übereinstimmt. Weitere Details finden Sie unter https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Die maximale Anzahl an Mitgliedern und ausstehenden Einladungen für diese Organisation wurde erreicht. Bitte aktualisieren Sie Ihren Plan, um weitere Mitglieder hinzuzufügen.',

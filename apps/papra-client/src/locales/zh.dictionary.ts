@@ -762,6 +762,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.user.organization_invitation_limit_reached': '今日邀请次数已达上限，请明天再试。',
   'api-errors.demo.not_available': '此功能在演示环境中不可用',
   'api-errors.tags.already_exists': '该组织已存在同名标签',
+  'api-errors.tags.organization_limit_reached': '该组织的标签数量已达上限。',
   'api-errors.internal.error': '处理请求时发生错误。请稍后重试。',
   'api-errors.auth.invalid_origin': '应用来源无效。如果您自托管 Papra，请确保 APP_BASE_URL 环境变量与当前 URL 匹配。详情见 https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': '该组织的成员和待处理邀请数量已达上限。请升级方案以添加更多成员。',
