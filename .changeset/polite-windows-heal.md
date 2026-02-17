@@ -1,5 +1,5 @@
 ---
-"@papra/app": patch
+"@papra/app": minor
 ---
 
 Added tag creation/update button loading state

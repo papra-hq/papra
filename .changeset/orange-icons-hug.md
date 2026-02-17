@@ -1,5 +1,5 @@
 ---
-"@papra/app": patch
+"@papra/app": minor
 ---
 
 Added small header in organization creation page to quickly access the invitations when first organization is being created

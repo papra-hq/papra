@@ -1,5 +1,5 @@
 ---
-"@papra/app": patch
+"@papra/app": minor
 ---
 
 Added tagging rules creation/update loading states
