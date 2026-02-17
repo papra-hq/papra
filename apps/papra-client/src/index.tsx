@@ -12,6 +12,7 @@ import { isDemoMode } from './modules/config/config';
 import { ConfigProvider } from './modules/config/config.provider';
 import { RenameDocumentDialogProvider } from './modules/documents/components/rename-document-button.component';
 import { I18nProvider } from './modules/i18n/i18n.provider';
+import { AboutDialogProvider } from './modules/shared/components/about-dialog';
 import { ConfirmModalProvider } from './modules/shared/confirm';
 import { queryClient } from './modules/shared/query/query-client';
 import { IdentifyUser } from './modules/tracking/components/identify-user.component';
@@ -47,12 +48,14 @@ render(
                   >
                     <CommandPaletteProvider>
                       <ConfigProvider>
-                        <RenameDocumentDialogProvider>
-                          <div class="min-h-screen font-sans text-sm font-400">
-                            {props.children}
-                          </div>
-                        </RenameDocumentDialogProvider>
-                        {DemoIndicator && <DemoIndicator />}
+                        <AboutDialogProvider>
+                          <RenameDocumentDialogProvider>
+                            <div class="min-h-screen font-sans text-sm font-400">
+                              {props.children}
+                            </div>
+                          </RenameDocumentDialogProvider>
+                          {DemoIndicator && <DemoIndicator />}
+                        </AboutDialogProvider>
                       </ConfigProvider>
 
                       <Toaster />

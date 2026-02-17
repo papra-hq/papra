@@ -7,7 +7,6 @@ import { useCommandPalette } from '@/modules/command-palette/command-palette.pro
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { AboutDialog, useAboutDialog } from '@/modules/shared/components/about-dialog';
 import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { useThemeStore } from '@/modules/theme/theme.store';
 import { Button } from '@/modules/ui/components/button';
@@ -76,7 +75,6 @@ export const SidenavLayout: ParentComponent<{
   const { openCommandPalette } = useCommandPalette();
   const { t } = useI18n();
   const { hasPermission } = useCurrentUser();
-  const aboutDialog = useAboutDialog();
 
   const { promptImport, uploadDocuments } = useDocumentUpload();
 
@@ -151,7 +149,6 @@ export const SidenavLayout: ParentComponent<{
         </div>
       </div>
 
-      <AboutDialog open={aboutDialog.isOpen()} onOpenChange={aboutDialog.setIsOpen} />
     </div>
   );
 };
