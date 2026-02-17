@@ -22,10 +22,11 @@ export const DocumentsPage: Component = () => {
 
   const documentsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', getPagination(), debouncedSearchQuery()],
-    queryFn: () => fetchOrganizationDocuments({
+    queryFn: ({ signal }) => fetchOrganizationDocuments({
       organizationId: params.organizationId,
       searchQuery: debouncedSearchQuery(),
       ...getPagination(),
+      signal,
     }),
     placeholderData: keepPreviousData,
   }));

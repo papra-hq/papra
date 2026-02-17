@@ -26,11 +26,13 @@ export async function fetchOrganizationDocuments({
   pageIndex,
   pageSize,
   searchQuery,
+  signal,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
   searchQuery?: string;
+  signal?: AbortSignal;
 }) {
   const {
     documents,
@@ -46,7 +48,10 @@ export async function fetchOrganizationDocuments({
       pageIndex,
       pageSize,
     },
+    signal,
   });
+
+  await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
 
   return {
     documents: documents.map(coerceDates),

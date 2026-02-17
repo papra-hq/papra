@@ -1,13 +1,13 @@
 import type { Accessor, ParentComponent } from 'solid-js';
-import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
-import { createContext, createEffect, createSignal, For, on, onCleanup, onMount, Show, useContext } from 'solid-js';
+import { useQuery } from '@tanstack/solid-query';
+import { createContext, createSignal, For, onCleanup, onMount, Show, Suspense, useContext } from 'solid-js';
 import { getDocumentIcon, makeDocumentSearchPermalink } from '../documents/document.models';
 import { fetchOrganizationDocuments } from '../documents/documents.services';
 import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
 import { toArrayIf } from '../shared/utils/array';
-import { debounce } from '../shared/utils/timing';
+import { useDebounce } from '../shared/utils/timing';
 import { useThemeStore } from '../theme/theme.store';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandLoading } from '../ui/components/command';
 
@@ -29,18 +29,32 @@ export function useCommandPalette() {
 
 export const CommandPaletteProvider: ParentComponent = (props) => {
   const [getIsCommandPaletteOpen, setIsCommandPaletteOpen] = createSignal(false);
-  const [getMatchingDocuments, setMatchingDocuments] = createSignal<{ id: string; name: string }[]>([]);
   const [getSearchQuery, setSearchQuery] = createSignal('');
-  const [getIsLoading, setIsLoading] = createSignal(false);
-  const [getMatchingDocumentsTotalCount, setMatchingDocumentsTotalCount] = createSignal(0);
+  const debouncedSearchQuery = useDebounce(getSearchQuery, 300);
 
   const params = useParams();
   const { t } = useI18n();
 
+  const openCommandPalette = () => {
+    setIsCommandPaletteOpen(true);
+  };
+
+  const closeCommandPalette = () => {
+    setIsCommandPaletteOpen(false);
+  };
+
+  const onCommandPaletteOpenChange = (open: boolean) => {
+    if (open) {
+      openCommandPalette();
+    } else {
+      closeCommandPalette();
+    }
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
-      setIsCommandPaletteOpen(true);
+      openCommandPalette();
     }
   };
 
@@ -55,25 +69,20 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   const navigate = useNavigate();
   const { setColorMode } = useThemeStore();
 
-  const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
-    const [result] = await safely(fetchOrganizationDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
+  const searchQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'command-palette-documents', debouncedSearchQuery()],
+    queryFn: ({ signal }) => fetchOrganizationDocuments({
+      organizationId: params.organizationId,
+      searchQuery: debouncedSearchQuery(),
+      pageIndex: 0,
+      pageSize: 5,
+      signal,
+    }),
+    enabled: debouncedSearchQuery().length > 1,
+  }));
 
-    setMatchingDocuments(result?.documents ?? []);
-    setMatchingDocumentsTotalCount(result?.documentsCount ?? 0);
-    setIsLoading(false);
-  }, 300);
-
-  createEffect(on(
-    getSearchQuery,
-    (searchQuery) => {
-      setMatchingDocuments([]);
-      setMatchingDocumentsTotalCount(0);
-      if (searchQuery.length > 1) {
-        setIsLoading(true);
-        searchDocs({ searchQuery });
-      }
-    },
-  ));
+  const getMatchingDocuments = () => searchQuery.data?.documents ?? [];
+  const getMatchingDocumentsTotalCount = () => searchQuery.data?.documentsCount ?? 0;
 
   const getCommandData = (): {
     label: string;
@@ -90,7 +99,6 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
           action: () => navigate(`/organizations/${params.organizationId}/documents/${document.id}`),
           forceMatch: true,
         })),
-
         ...toArrayIf(
           getMatchingDocumentsTotalCount() > getMatchingDocuments().length,
           {
@@ -126,21 +134,21 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
 
   const onCommandSelect = ({ action }: { action: () => void }) => {
     action();
-    setIsCommandPaletteOpen(false);
+    closeCommandPalette();
   };
 
   return (
     <CommandPaletteContext.Provider value={{
       getIsCommandPaletteOpen,
-      openCommandPalette: () => setIsCommandPaletteOpen(true),
-      closeCommandPalette: () => setIsCommandPaletteOpen(false),
+      openCommandPalette,
+      closeCommandPalette,
     }}
     >
 
       <CommandDialog
         class="rounded-lg border shadow-md"
         open={getIsCommandPaletteOpen()}
-        onOpenChange={setIsCommandPaletteOpen}
+        onOpenChange={onCommandPaletteOpenChange}
       >
 
         <CommandInput
@@ -149,12 +157,13 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
           placeholder={t('command-palette.search.placeholder')}
         />
         <CommandList>
-          <Show when={getIsLoading()}>
-            <CommandLoading>
-              <div class="i-tabler-loader-2 size-6 animate-spin text-muted-foreground mx-auto" />
-            </CommandLoading>
-          </Show>
-          <Show when={!getIsLoading()}>
+          <Suspense
+            fallback={(
+              <CommandLoading>
+                <div class="i-tabler-loader-2 size-6 animate-spin text-muted-foreground mx-auto" />
+              </CommandLoading>
+            )}
+          >
             <Show when={getMatchingDocuments().length === 0}>
               <CommandEmpty>
                 {t('command-palette.no-results')}
@@ -175,7 +184,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
                 </CommandGroup>
               )}
             </For>
-          </Show>
+          </Suspense>
         </CommandList>
       </CommandDialog>
 
