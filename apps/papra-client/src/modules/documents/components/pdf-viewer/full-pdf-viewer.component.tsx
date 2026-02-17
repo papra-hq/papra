@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 import { usePDFSlick } from '@pdfslick/solid';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
-import { ThumbnailsBar } from './thumbnails-bar/thumbnails-bar.component';
+import { SideBar } from './sidebar/sidebar.component';
 import { PdfViewerToolbar } from './toolbar/pdf-viewer-toolbar.component';
 import '@pdfslick/solid/dist/pdf_viewer.css';
 
@@ -114,7 +114,7 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
           class={cn('shrink-0 h-full overflow-hidden', { 'transition-width duration-200': !isDragging() })}
           style={{ width: isSidebarOpen() ? `${sidebarWidth()}px` : '0px' }}
         >
-          <ThumbnailsBar
+          <SideBar
             store={store}
             thumbsRef={thumbsRef}
           />
