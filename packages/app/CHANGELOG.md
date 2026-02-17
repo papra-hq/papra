@@ -1,5 +1,11 @@
 # @papra/app
 
+## 26.2.1
+
+### Patch Changes
+
+- [#908](https://github.com/papra-hq/papra/pull/908) [`2143728`](https://github.com/papra-hq/papra/commit/2143728157d9070de85f35a8c68b9e13d81abae4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an issue preventing the "about Papra" dialog from opening.
+
 ## 26.2.0
 
 ### Minor Changes
