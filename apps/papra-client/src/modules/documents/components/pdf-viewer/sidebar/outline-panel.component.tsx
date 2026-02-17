@@ -6,7 +6,6 @@ import { Button } from '@/modules/ui/components/button';
 
 type OutlinePanelProps = {
   store: PDFSlickState;
-  show: boolean;
 };
 
 const OutlineItem: Component<{ title: string; dest: any; items?: TPDFDocumentOutline; store: PDFSlickState; level: number }> = (props) => {
@@ -73,7 +72,7 @@ const OutlineItems: Component<{
 
 export const OutlinePanel: Component<OutlinePanelProps> = (props) => {
   return (
-    <div class={cn('overflow-auto pt-2  text-foreground text-sm', { invisible: !props.show })}>
+    <div class="pt-2 text-foreground text-sm">
       <OutlineItems
         outline={props.store.documentOutline}
         store={props.store}

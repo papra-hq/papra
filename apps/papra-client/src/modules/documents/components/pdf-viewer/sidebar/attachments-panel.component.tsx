@@ -1,16 +1,14 @@
 import type { Component } from 'solid-js';
 import type { PDFSlickState } from '../pdf-viewer.types';
 import { For } from 'solid-js';
-import { cn } from '@/modules/shared/style/cn';
 
 type AttachmentsPanelProps = {
   store: PDFSlickState;
-  show: boolean;
 };
 
 export const AttachmentsPanel: Component<AttachmentsPanelProps> = (props) => {
   return (
-    <div class={cn('p-2 text-sm', { invisible: !props.show })}>
+    <div class="p-2 text-sm">
       <For each={Array.from(props.store.attachments.values())}>
         {({ filename, content }) => (
           <button
