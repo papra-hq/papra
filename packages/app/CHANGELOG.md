@@ -18,7 +18,7 @@
 
 - [#829](https://github.com/papra-hq/papra/pull/829) [`393a155`](https://github.com/papra-hq/papra/commit/393a15593fdc60ebd11dcf82c29ae95159122f25) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a button to generate a random color in the tag creation/edition modal.
 
-- [#815](https://github.com/papra-hq/papra/pull/815) [`46d8d2d`](https://github.com/papra-hq/papra/commit/46d8d2d45ec89aebe7e41c78a6d6cf85fce9cc0b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Significantly reduced the size of the rootless docker image by preventing file duplications due to `chown` operations, gaining ~230MB, more than 30% reduction in size.
+- [#810](https://github.com/papra-hq/papra/pull/810) [`1d5ada8`](https://github.com/papra-hq/papra/commit/1d5ada85223f4227f3e42220db85faaa943f3c11) Thanks [@What-is-water93](https://github.com/What-is-water93)! - Significantly reduced the size of the rootless docker image by preventing file duplications due to `chown` operations, gaining ~230MB, more than 30% reduction in size.
 
 - [#900](https://github.com/papra-hq/papra/pull/900) [`9058f9e`](https://github.com/papra-hq/papra/commit/9058f9e08c8321c7d03b4525fec7c2701f01bec5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to limit the number of tags that can be created in an organization, defaulting to 200. Configurable via the `MAX_TAGS_PER_ORGANIZATION` environment variable.
 
