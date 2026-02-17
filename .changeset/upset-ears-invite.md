@@ -1,5 +1,5 @@
 ---
-"@papra/app": patch
+"@papra/app": minor
 ---
 
 Api breaking change: removed the `/api/organizations/:organizationId/documents/search` endpoint in favor of the existing `/api/organizations/:organizationId/documents` with an optional `searchQuery` query parameter.
