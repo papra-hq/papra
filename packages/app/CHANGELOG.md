@@ -1,5 +1,84 @@
 # @papra/app
 
+## 26.2.0
+
+### Minor Changes
+
+- [#894](https://github.com/papra-hq/papra/pull/894) [`77186da`](https://github.com/papra-hq/papra/commit/77186da42cff7fff1d13fcb706aa96b17e2c6a23) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a "Open with..." button for documents along with a complete PDF viewer page with standard features such as thumbnails, outline, attachments, and document properties.
+
+- [#820](https://github.com/papra-hq/papra/pull/820) [`3fa398c`](https://github.com/papra-hq/papra/commit/3fa398c92851e6f0c767bd66e8cc2f0e523577ef) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Replaced `date-fns` functions with in-house implementations to avoid pulling the 30MB lib (mainly due to locale data).
+
+- [#852](https://github.com/papra-hq/papra/pull/852) [`71872db`](https://github.com/papra-hq/papra/commit/71872db3678307de6e1b15a9b63653bd949e0202) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added explicit error when trying to update a tag with a name that already exists
+
+- [#827](https://github.com/papra-hq/papra/pull/827) [`ca2ef28`](https://github.com/papra-hq/papra/commit/ca2ef2866bfb54abaed26c4c748b4ec5fadf6170) Thanks [@CorentinTh](https://github.com/CorentinTh)! - In the search queries, tag filters are now case-insensitive, so `tag:Important` and `tag:important` will match the same tag (as tags names are case-insensitive).
+
+- [#883](https://github.com/papra-hq/papra/pull/883) [`63ddecf`](https://github.com/papra-hq/papra/commit/63ddecf4899d582db1f8a2dbe623346499a5677a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Synchronized pagination state in the URL on the documents list page.
+
+- [#826](https://github.com/papra-hq/papra/pull/826) [`494aa5b`](https://github.com/papra-hq/papra/commit/494aa5b882315fb55ab84f78259d899e5e2d5355) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Trim tag names and descriptions on creation and update to avoid leading/trailing spaces.
+
+- [#829](https://github.com/papra-hq/papra/pull/829) [`393a155`](https://github.com/papra-hq/papra/commit/393a15593fdc60ebd11dcf82c29ae95159122f25) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a button to generate a random color in the tag creation/edition modal.
+
+- [#810](https://github.com/papra-hq/papra/pull/810) [`1d5ada8`](https://github.com/papra-hq/papra/commit/1d5ada85223f4227f3e42220db85faaa943f3c11) Thanks [@What-is-water93](https://github.com/What-is-water93)! - Significantly reduced the size of the rootless docker image by preventing file duplications due to `chown` operations, gaining ~230MB, more than 30% reduction in size.
+
+- [#900](https://github.com/papra-hq/papra/pull/900) [`9058f9e`](https://github.com/papra-hq/papra/commit/9058f9e08c8321c7d03b4525fec7c2701f01bec5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to limit the number of tags that can be created in an organization, defaulting to 200. Configurable via the `MAX_TAGS_PER_ORGANIZATION` environment variable.
+
+- [#884](https://github.com/papra-hq/papra/pull/884) [`4c7da4b`](https://github.com/papra-hq/papra/commit/4c7da4b6747ed1d8631812aa8aad69d0fa9a97ca) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Excluded Synology specific files for the ingestion folder
+
+- [#896](https://github.com/papra-hq/papra/pull/896) [`fdd955e`](https://github.com/papra-hq/papra/commit/fdd955e20c7bf7732ee39aad216636bc1a88fd6b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Coerce MIME type of intake email attachments when declared as `application/octet-stream` or empty, using magic bytes detection with extension-based fallback.
+
+- [#859](https://github.com/papra-hq/papra/pull/859) [`afcfcf7`](https://github.com/papra-hq/papra/commit/afcfcf75cb69661f0e9df0cbbd139b00441d92d3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed a race condition that could incorrectly show the "Email verified" page after successful login, even when email verification had not been completed or was not required.
+
+- [#870](https://github.com/papra-hq/papra/pull/870) [`69633fb`](https://github.com/papra-hq/papra/commit/69633fb9ea3c0ef82abf5b1d5903058e66895bbe) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Improved the document tag picker UI and UX, allowing tags to be managed from the document list.
+
+- [#855](https://github.com/papra-hq/papra/pull/855) [`3f4ca07`](https://github.com/papra-hq/papra/commit/3f4ca07a5d339542d80100d172f27590341f4469) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added tagging rules creation/update loading states
+
+- [#880](https://github.com/papra-hq/papra/pull/880) [`4f5b29b`](https://github.com/papra-hq/papra/commit/4f5b29b7edc108f0793b09f94bdb248fcba2ddba) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed misleading "git missing" error log on app startup when git isn't available, like in Docker env.
+
+- [#822](https://github.com/papra-hq/papra/pull/822) [`b6951ea`](https://github.com/papra-hq/papra/commit/b6951ea05a01820095a8caf83ba1c35b215eafe6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Tag names uniqueness enforced with case insensitivity per organization. Migration will ensure deduplication by appending prefixes in case of existing collisions.
+
+- [#811](https://github.com/papra-hq/papra/pull/811) [`1eeb3df`](https://github.com/papra-hq/papra/commit/1eeb3df4a282d93bb71c8f34cf086fa0babfb40e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added small header in organization creation page to quickly access the invitations when first organization is being created
+
+- [#903](https://github.com/papra-hq/papra/pull/903) [`d13c74f`](https://github.com/papra-hq/papra/commit/d13c74f0dbe564b7afe4a8da1c653ad84565ab78) Thanks [@CorentinTh](https://github.com/CorentinTh)! - The command palette state no longer resets when opening it, allowing to keep the search query and results when closing and reopening it.
+
+- [#851](https://github.com/papra-hq/papra/pull/851) [`316a8c2`](https://github.com/papra-hq/papra/commit/316a8c2f9c326695c5a943556c2b97e99a58c0a4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added tag creation/update button loading state
+
+- [#892](https://github.com/papra-hq/papra/pull/892) [`1c1d273`](https://github.com/papra-hq/papra/commit/1c1d273fbdd7dc433ff18fcb7ae546e4c2197cf9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Enforced the length of the intake email webhook secret (`INTAKE_EMAILS_WEBHOOK_SECRET`) to be between 16 and 128 characters to match the OwlRelay API validation requirements.
+
+- [#855](https://github.com/papra-hq/papra/pull/855) [`3f4ca07`](https://github.com/papra-hq/papra/commit/3f4ca07a5d339542d80100d172f27590341f4469) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevented multiple tagging-rules creation attempts when clicking the create button quickly.
+
+- [#851](https://github.com/papra-hq/papra/pull/851) [`316a8c2`](https://github.com/papra-hq/papra/commit/316a8c2f9c326695c5a943556c2b97e99a58c0a4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevented multiple tag creation attempts when clicking the create button quickly.
+
+- [#899](https://github.com/papra-hq/papra/pull/899) [`d1eae05`](https://github.com/papra-hq/papra/commit/d1eae05dd3cade1f30ec947982a21f87f0ccffb0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Api breaking change: removed the `/api/organizations/:organizationId/documents/search` endpoint in favor of the existing `/api/organizations/:organizationId/documents` with an optional `searchQuery` query parameter.
+  The new `/api/organizations/:organizationId/documents` endpoint now behave as the old `/search` endpoint, with all documents being returned when `searchQuery` is empty. Note that the response field `totalCount` of the old `/search` endpoint has been renamed to `documentsCount` in the new endpoint.
+
+  Before:
+
+  ```
+  GET /api/organizations/:organizationId/documents/search?searchQuery=invoice&pageIndex=1&pageSize=20
+  Response: {
+    documents: Document[];
+    totalCount: number;
+  }
+
+  GET /api/organizations/:organizationId/documents?pageIndex=1&pageSize=20
+  Response: {
+    documents: Document[];
+    documentsCount: number;
+  }
+  ```
+
+  After:
+
+  ```
+  GET /api/organizations/:organizationId/documents?searchQuery=invoice&pageIndex=1&pageSize=20
+  Response: {
+    documents: Document[];
+    documentsCount: number;
+  }
+  ```
+
+- [#893](https://github.com/papra-hq/papra/pull/893) [`0c62716`](https://github.com/papra-hq/papra/commit/0c62716e5d67f67e1f76ccaab6385fb932894325) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: prevented unauthorized listing to organization tags and webhooks. An authenticated user could list the tags and webhooks of an organization they are not a member of by sending requests to the corresponding endpoints by knowing the organization ID. Credit to [Sergio Cabrera](https://www.linkedin.com/in/sergio-cabrera-878766239), security researcher, for responsibly disclosing this vulnerability.
+
 ## 26.1.0
 
 ### Minor Changes
@@ -23,7 +102,6 @@
 - [#794](https://github.com/papra-hq/papra/pull/794) [`0485701`](https://github.com/papra-hq/papra/commit/0485701c6614d652dfd5b8286c92a1c0e7cf367e) Thanks [@ktsourdinis](https://github.com/ktsourdinis)! - Added Greek language support
 
 - [#798](https://github.com/papra-hq/papra/pull/798) [`c27d85f`](https://github.com/papra-hq/papra/commit/c27d85fea41eaf6ba0d87890d4952e502aeec864) Thanks [@cergmin](https://github.com/cergmin)! - Added Russian language support
-
 
 ## 26.0.0
 
