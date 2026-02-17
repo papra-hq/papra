@@ -6,7 +6,7 @@ import { OutlinePanel } from './outline-panel.component';
 import { SidebarButtonsBar } from './sidebar-buttons-bar.component';
 import { ThumbnailsPanel } from './thumbnails-panel.component';
 
-export const ThumbnailsBar: Component<ThumbnailsBarProps> = (props) => {
+export const SideBar: Component<ThumbnailsBarProps> = (props) => {
   const [activeTab, setActiveTab] = createSignal<ThumbnailsBarTab>('thumbnails');
 
   return (
