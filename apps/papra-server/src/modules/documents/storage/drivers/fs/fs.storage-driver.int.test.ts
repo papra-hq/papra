@@ -4,10 +4,9 @@ import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createReadableStream } from '../../../../shared/streams/readable-stream';
-import { createFileNotFoundError } from '../../document-storage.errors';
+import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { runDriverTestSuites } from '../drivers.test-suite';
 import { fsStorageDriverFactory } from './fs.storage-driver';
-import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
 const createTmpDirectory = async () => fs.promises.mkdtemp(join(tmpdir(), 'tests-'));
 const deleteTmpDirectory = async (tmpDirectory: string) => fs.promises.rm(tmpDirectory, { recursive: true });
@@ -75,7 +74,7 @@ describe('storage driver', () => {
             mimeType: 'text/plain',
             storageKey: 'org_1/text-file.txt',
           }),
-        ).rejects.toThrow(createFileAlreadyExistsError());
+        ).rejects.toThrow(createFileAlreadyExistsInStorageError());
       });
     });
 

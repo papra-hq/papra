@@ -2,7 +2,7 @@ import type { StorageDriver, StorageServices } from './drivers.models';
 import { Buffer } from 'node:buffer';
 import { describe, expect, test } from 'vitest';
 import { collectReadableStreamToString, createReadableStream } from '../../../shared/streams/readable-stream';
-import { createFileNotFoundError } from '../document-storage.errors';
+import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../document-storage.errors';
 import { wrapWithEncryptionLayer } from '../encryption/document-encryption.services';
 
 export function runDriverTestSuites({ createDriver: createDriverBase, timeout, retry }: { createDriver: () => Promise<{ driver: StorageDriver; [Symbol.asyncDispose]: () => Promise<void> }>; timeout?: number; retry?: number }) {
@@ -30,7 +30,7 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
       },
     },
   ].forEach(({ createStorageService, name }) => {
-    describe(name, () => {
+    describe.concurrent(name, () => {
       test('the driver should support uploading, retrieving and deleting files', { timeout, retry }, async () => {
         await using resource = await createStorageService();
 
@@ -50,6 +50,18 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
 
         // Check that the file exists
         expect(await storageServices.fileExists({ storageKey: 'files/test.txt' })).to.eql(true);
+
+        // Try to save another file with the same storage key and expect an error
+        await expect(storageServices.saveFile({
+          fileName: 'test.txt',
+          mimeType: 'text/plain',
+          storageKey: 'files/test.txt',
+          fileStream: createReadableStream({ content: 'Lorem ipsum' }),
+        })).rejects.toThrow(createFileAlreadyExistsInStorageError());
+
+        // Ensure that the original file is still intact after the failed attempt to overwrite it
+        const { fileStream: fileStreamAfterError } = await storageServices.getFileStream({ ...storageContext, storageKey: 'files/test.txt' });
+        expect(await collectReadableStreamToString({ stream: fileStreamAfterError })).to.eql('Hello, world!');
 
         // Delete the file
         await storageServices.deleteFile({ storageKey: 'files/test.txt' });

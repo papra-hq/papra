@@ -10,3 +10,19 @@ export function isCrossDeviceError({ error }: { error: Error & { code?: unknown 
     'ERROR_NOT_SAME_DEVICE', // Windows
   ].includes(error.code);
 }
+
+export function isFileAlreadyExistsError({ error }: { error: Error & { code?: unknown; errno?: unknown } }) {
+  if (
+    'code' in error
+    && isString(error.code)
+    && ['EEXIST', 'ERROR_FILE_EXISTS'].includes(error.code)
+  ) {
+    return true;
+  }
+
+  if (isNil(error.errno)) {
+    return false;
+  }
+
+  return error.errno === -17;
+}

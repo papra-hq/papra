@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import { dirname, join } from 'node:path';
 import { get } from 'lodash-es';
+import { isFileAlreadyExistsError } from '../../../../shared/fs/fs.models';
 import { checkFileExists, deleteFile, ensureDirectoryExists } from '../../../../shared/fs/fs.services';
-import { createFileNotFoundError } from '../../document-storage.errors';
+import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
-import { createFileAlreadyExistsError } from './fs.storage-driver.errors';
 
 export const FS_STORAGE_DRIVER_NAME = 'filesystem' as const;
 
@@ -18,15 +18,11 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
     saveFile: async ({ fileStream, storageKey }) => {
       const { storagePath } = getStoragePath({ storageKey });
 
-      const fileExists = await checkFileExists({ path: storagePath });
-
-      if (fileExists) {
-        throw createFileAlreadyExistsError();
-      }
-
       await ensureDirectoryExists({ path: dirname(storagePath) });
 
-      const writeStream = fs.createWriteStream(storagePath);
+      // 'wx' flag ensures that the file is created exclusively and fails if it already exists
+      const writeStream = fs.createWriteStream(storagePath, { flags: 'wx' });
+
       fileStream.pipe(writeStream);
 
       return new Promise((resolve, reject) => {
@@ -35,7 +31,11 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
         });
 
         writeStream.on('error', (error) => {
-          reject(error);
+          const rejection = isFileAlreadyExistsError({ error })
+            ? createFileAlreadyExistsInStorageError()
+            : error;
+
+          reject(rejection);
         });
 
         // Listen for errors on the input stream as well
