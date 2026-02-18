@@ -1,6 +1,6 @@
 import type { Buffer } from 'node:buffer';
 import { collectReadableStreamToBuffer, createReadableStream } from '../../../../shared/streams/readable-stream';
-import { createFileNotFoundError } from '../../document-storage.errors';
+import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
@@ -8,14 +8,16 @@ export const IN_MEMORY_STORAGE_DRIVER_NAME = 'in-memory' as const;
 export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
   const storage: Map<string, { content: Buffer; mimeType: string; fileName: string }> = new Map();
 
-  const fileExists = async ({ storageKey }: { storageKey: string }) => {
-    return storage.has(storageKey);
-  };
+  const fileExists = ({ storageKey }: { storageKey: string }) => storage.has(storageKey);
 
   return {
     name: IN_MEMORY_STORAGE_DRIVER_NAME,
 
     saveFile: async ({ fileStream, storageKey, mimeType, fileName }) => {
+      if (fileExists({ storageKey })) {
+        throw createFileAlreadyExistsInStorageError();
+      }
+
       const content = await collectReadableStreamToBuffer({ stream: fileStream });
 
       storage.set(storageKey, { content, mimeType, fileName });
@@ -36,16 +38,14 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
     },
 
     deleteFile: async ({ storageKey }) => {
-      const exists = await fileExists({ storageKey });
-
-      if (!exists) {
+      if (!fileExists({ storageKey })) {
         throw createFileNotFoundError();
       }
 
       storage.delete(storageKey);
     },
 
-    fileExists,
+    fileExists: async ({ storageKey }) => fileExists({ storageKey }),
 
     _getStorage: () => storage,
   };

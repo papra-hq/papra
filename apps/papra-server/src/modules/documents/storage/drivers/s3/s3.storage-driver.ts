@@ -4,7 +4,7 @@ import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, S3Client } fr
 import { Upload } from '@aws-sdk/lib-storage';
 import { safely } from '@corentinth/chisels';
 import { isString } from '../../../../shared/utils';
-import { createFileNotFoundError } from '../../document-storage.errors';
+import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const S3_STORAGE_DRIVER_NAME = 's3' as const;
@@ -50,12 +50,18 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
     name: S3_STORAGE_DRIVER_NAME,
     getClient: () => s3Client,
     saveFile: async ({ fileStream, storageKey }) => {
+      if (await fileExists({ storageKey })) {
+        // Not very atomic, TOCTOU issue here, but from some tests, If-None-Match header with '*' doesn't seem to work reliably with Upload
+        throw createFileAlreadyExistsInStorageError();
+      }
+
       const upload = new Upload({
         client: s3Client,
         params: {
           Bucket: bucketName,
           Key: storageKey,
           Body: fileStream,
+          IfNoneMatch: '*',
         },
       });
 
