@@ -1,5 +1,13 @@
 # @papra/app
 
+## 26.2.2
+
+### Patch Changes
+
+- [#911](https://github.com/papra-hq/papra/pull/911) [`548608b`](https://github.com/papra-hq/papra/commit/548608be39bdf9fff9d212a151552ecbf2c3f50c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - In the advanced PDF viewer, added empty placeholders for thumbnails to prevent layout shifts.
+
+- [#911](https://github.com/papra-hq/papra/pull/911) [`548608b`](https://github.com/papra-hq/papra/commit/548608be39bdf9fff9d212a151552ecbf2c3f50c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix an issue in the advanced PDF that caused the outline panel to appear empty
+
 ## 26.2.1
 
 ### Patch Changes
