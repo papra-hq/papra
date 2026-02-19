@@ -39,19 +39,18 @@ export async function encryptAllUnencryptedDocuments({
       fileEncryptionKekVersion: null,
     });
     const newStorageKey = `${originalStorageKey}.enc`;
-    const { storageKey, ...encryptionFields }
-      = await documentStorageService.saveFile({
-        fileStream,
-        fileName,
-        mimeType,
-        storageKey: newStorageKey,
-      });
+    const encryptionFields = await documentStorageService.saveFile({
+      fileStream,
+      fileName,
+      mimeType,
+      storageKey: newStorageKey,
+    });
 
     await db
       .update(documentsTable)
       .set({
         ...encryptionFields,
-        originalStorageKey: storageKey,
+        originalStorageKey: newStorageKey,
       })
       .where(eq(documentsTable.id, id));
 

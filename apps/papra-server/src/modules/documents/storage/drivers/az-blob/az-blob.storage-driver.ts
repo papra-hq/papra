@@ -28,8 +28,6 @@ export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorage
           ? createFileAlreadyExistsInStorageError()
           : error;
       }
-
-      return { storageKey };
     },
     getFileStream: async ({ storageKey }) => {
       const [response, error] = await safely(getBlockBlobClient({ storageKey }).download());

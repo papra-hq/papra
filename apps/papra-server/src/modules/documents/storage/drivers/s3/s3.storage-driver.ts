@@ -66,8 +66,6 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
       });
 
       await upload.done();
-
-      return { storageKey };
     },
     getFileStream: async ({ storageKey }) => {
       const [result, error] = await safely(s3Client.send(new GetObjectCommand({

@@ -10,7 +10,7 @@ import { createReadableStream } from '../../shared/streams/readable-stream';
 import { createInMemoryTaskServices } from '../../tasks/tasks.test-utils';
 import { documentActivityLogTable } from '../document-activity/document-activity.table';
 import { createDocumentCreationUsecase } from '../documents.usecases';
-import { inMemoryStorageDriverFactory } from '../storage/drivers/memory/memory.storage-driver';
+import { createInMemoryDocumentStorageServices } from '../storage/documents.storage.services.test-utils';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from './activity-log.document-created';
 
 describe('activity-log document-created', () => {
@@ -34,7 +34,7 @@ describe('activity-log document-created', () => {
         db,
         config,
         generateDocumentId: createDeterministicIdGenerator({ prefix: 'doc' }),
-        documentsStorageService: inMemoryStorageDriverFactory(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         taskServices,
         eventServices,
       });

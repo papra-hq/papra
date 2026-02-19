@@ -21,8 +21,6 @@ export const inMemoryStorageDriverFactory = defineStorageDriver(() => {
       const content = await collectReadableStreamToBuffer({ stream: fileStream });
 
       storage.set(storageKey, { content, mimeType, fileName });
-
-      return { storageKey };
     },
 
     getFileStream: async ({ storageKey }) => {

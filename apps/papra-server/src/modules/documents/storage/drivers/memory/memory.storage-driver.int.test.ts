@@ -23,14 +23,12 @@ describe('memory storage-driver', () => {
 
       const file = new File(['lorem ipsum'], 'text-file.txt', { type: 'text/plain' });
 
-      const { storageKey } = await inMemoryStorageDriver.saveFile({
+      await inMemoryStorageDriver.saveFile({
         fileStream: fileToReadableStream(file),
         fileName: 'text-file.txt',
         mimeType: 'text/plain',
         storageKey: 'org_1/text-file.txt',
       });
-
-      expect(storageKey).to.eql('org_1/text-file.txt');
 
       const { fileStream } = await inMemoryStorageDriver.getFileStream({
         storageKey: 'org_1/text-file.txt',
