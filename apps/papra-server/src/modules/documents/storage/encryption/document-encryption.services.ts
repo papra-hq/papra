@@ -15,7 +15,8 @@ export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { s
       const { fileStream, ...rest } = driverArgs;
 
       if (!isEncryptionEnabled) {
-        return storageDriver.saveFile(driverArgs);
+        await storageDriver.saveFile(driverArgs);
+        return {}; // No encryption metadata to return
       }
 
       // Create a random 32 bytes encryption key
@@ -23,7 +24,7 @@ export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { s
 
       const encryptedFileStream = createEncryptTransformer({ key: encryptionKey });
 
-      const driverResult = await storageDriver.saveFile({
+      await storageDriver.saveFile({
         fileStream: fileStream.pipe(encryptedFileStream),
         ...rest,
       });
@@ -32,7 +33,6 @@ export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { s
       const kek = getMostRecentDocumentKek({ documentKeyEncryptionKeys });
 
       return {
-        ...driverResult,
         fileEncryptionKeyWrapped: wrapEncryptionKey({ encryptionKey, kek }),
         fileEncryptionAlgorithm: ENCRYPTION_ALGORITHMS.AES_256_GCM,
         fileEncryptionKekVersion: kek.version,

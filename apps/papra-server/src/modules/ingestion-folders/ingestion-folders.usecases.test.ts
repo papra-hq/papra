@@ -5,7 +5,7 @@ import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
-import { inMemoryStorageDriverFactory } from '../documents/storage/drivers/memory/memory.storage-driver';
+import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { createInMemoryFsServices } from '../shared/fs/fs.in-memory';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
@@ -38,7 +38,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = inMemoryStorageDriverFactory();
+        const documentsStorageService = createInMemoryDocumentStorageServices();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -141,7 +141,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = inMemoryStorageDriverFactory();
+        const documentsStorageService = createInMemoryDocumentStorageServices();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -245,7 +245,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = inMemoryStorageDriverFactory();
+        const documentsStorageService = createInMemoryDocumentStorageServices();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -318,7 +318,7 @@ describe('ingestion-folders usecases', () => {
           },
         });
 
-        const documentsStorageService = inMemoryStorageDriverFactory();
+        const documentsStorageService = createInMemoryDocumentStorageServices();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 
@@ -450,7 +450,7 @@ describe('ingestion-folders usecases', () => {
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
-        const documentsStorageService = inMemoryStorageDriverFactory();
+        const documentsStorageService = createInMemoryDocumentStorageServices();
         let documentIdIndex = 1;
         const generateDocumentId = () => `doc_${documentIdIndex++}`;
 

@@ -8,7 +8,7 @@ import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
-import { inMemoryStorageDriverFactory } from '../documents/storage/drivers/memory/memory.storage-driver';
+import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
@@ -32,7 +32,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: inMemoryStorageDriverFactory(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -75,7 +75,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: inMemoryStorageDriverFactory(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -109,7 +109,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: inMemoryStorageDriverFactory(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -148,7 +148,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          documentsStorageService: inMemoryStorageDriverFactory(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -198,7 +198,7 @@ describe('intake-emails usecases', () => {
       const createDocument = createDocumentCreationUsecase({
         db,
         taskServices,
-        documentsStorageService: inMemoryStorageDriverFactory(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         config: overrideConfig({
           organizationPlans: { isFreePlanUnlimited: true },
         }),

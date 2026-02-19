@@ -7,7 +7,7 @@ import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { PLUS_PLAN_ID, PRO_PLAN_ID } from '../../plans/plans.constants';
 import { documentsTable } from '../documents.table';
-import { inMemoryStorageDriverFactory } from '../storage/drivers/memory/memory.storage-driver';
+import { createInMemoryDocumentStorageServices } from '../storage/documents.storage.services.test-utils';
 
 describe('documents e2e', () => {
   describe('document upload', () => {
@@ -85,7 +85,7 @@ describe('documents e2e', () => {
         organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const documentsStorageService = inMemoryStorageDriverFactory();
+      const documentsStorageService = createInMemoryDocumentStorageServices();
 
       const { app } = createServer(createTestServerDependencies({
         db,

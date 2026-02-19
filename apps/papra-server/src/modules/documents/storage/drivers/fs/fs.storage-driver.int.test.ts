@@ -41,15 +41,15 @@ describe('storage driver', () => {
     describe('saveFile', () => {
       test('persists the file to the filesystem', async () => {
         const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectory } } } as DocumentStorageConfig });
+        const storageKey = 'org_1/text-file.txt';
 
-        const { storageKey } = await fsStorageDriver.saveFile({
+        await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
           fileName: 'text-file.txt',
           mimeType: 'text/plain',
-          storageKey: 'org_1/text-file.txt',
+          storageKey,
         });
 
-        expect(storageKey).to.eql(`org_1/text-file.txt`);
         const storagePath = path.join(tmpDirectory, storageKey);
 
         const fileExists = await fs.promises.access(storagePath, fs.constants.F_OK).then(() => true).catch(() => false);

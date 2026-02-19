@@ -9,7 +9,7 @@ export type StorageDriver = {
     fileName: string;
     mimeType: string;
     storageKey: string;
-  }) => Promise<{ storageKey: string }>;
+  }) => Promise<void>;
 
   getFileStream: (args: { storageKey: string }) => Promise<{
     fileStream: Readable;

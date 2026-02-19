@@ -112,7 +112,7 @@ export async function createDocument({
   );
 
   // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
-  const [newFileStorageContext] = await Promise.all([
+  const [encryptionMetadata] = await Promise.all([
     documentsStorageService.saveFile({
       fileStream: outputStream,
       storageKey: originalDocumentStorageKey,
@@ -134,7 +134,7 @@ export async function createDocument({
         fileName,
         organizationId,
         documentsRepository,
-        newDocumentStorageKey: newFileStorageContext.storageKey,
+        newDocumentStorageKey: originalDocumentStorageKey,
         tagsRepository,
         taggingRulesRepository,
         webhookRepository,
@@ -143,7 +143,7 @@ export async function createDocument({
         logger,
       })
     : await createNewDocument({
-        newFileStorageContext,
+        newFileStorageContext: { storageKey: originalDocumentStorageKey, ...encryptionMetadata },
         fileName,
         size,
         mimeType,

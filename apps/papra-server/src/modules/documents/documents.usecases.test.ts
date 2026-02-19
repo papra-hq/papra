@@ -19,7 +19,7 @@ import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
-import { inMemoryStorageDriverFactory } from './storage/drivers/memory/memory.storage-driver';
+import { createInMemoryDocumentStorageServices } from './storage/documents.storage.services.test-utils';
 
 describe('documents usecases', () => {
   describe('createDocument', () => {
@@ -209,7 +209,7 @@ describe('documents usecases', () => {
         db,
         config,
         taskServices,
-        documentsStorageService: inMemoryStorageDriverFactory(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         eventServices: createTestEventServices(),
       });
 
@@ -258,7 +258,7 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
       const documentsRepository = createDocumentsRepository({ db });
-      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
 
       const createDocument = createDocumentCreationUsecase({
         db,
@@ -383,7 +383,7 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
 
       const plansRepository = {
         getOrganizationPlanById: async _args => ({
@@ -436,7 +436,7 @@ describe('documents usecases', () => {
 
       const { promise, resolve } = Promise.withResolvers();
 
-      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
       const documentsStorageService = {
         ...inMemoryDocumentsStorageService,
         saveFile: async (args) => {
@@ -507,7 +507,7 @@ describe('documents usecases', () => {
         organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
       });
 
-      const inMemoryDocumentsStorageService = inMemoryStorageDriverFactory();
+      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
 
       const plansRepository = {
         getOrganizationPlanById: async _args => ({
@@ -565,7 +565,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: inMemoryStorageDriverFactory(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         taskServices,
         eventServices,
       });

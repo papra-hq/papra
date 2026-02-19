@@ -13,7 +13,13 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
         const { driver, [Symbol.asyncDispose]: dispose } = await createDriverBase();
 
         return {
-          storageServices: driver as StorageServices,
+          storageServices: {
+            ...driver,
+            saveFile: async (args) => {
+              await driver.saveFile(args);
+              return {};
+            },
+          } as StorageServices,
           [Symbol.asyncDispose]: dispose,
         };
       },
@@ -24,7 +30,15 @@ export function runDriverTestSuites({ createDriver: createDriverBase, timeout, r
         const { driver, [Symbol.asyncDispose]: dispose } = await createDriverBase();
 
         return {
-          storageServices: wrapWithEncryptionLayer({ storageDriver: driver, encryptionConfig: { isEncryptionEnabled: true, documentKeyEncryptionKeys: [{ version: '1', key: Buffer.from('622b55bec85b3fca6fbad2d1c5ef1d67ed19b24eece069961cd430370735c2ff', 'hex') }] } }),
+          storageServices: wrapWithEncryptionLayer({
+            storageDriver: driver,
+            encryptionConfig: {
+              isEncryptionEnabled: true,
+              documentKeyEncryptionKeys: [
+                { version: '1', key: Buffer.from('622b55bec85b3fca6fbad2d1c5ef1d67ed19b24eece069961cd430370735c2ff', 'hex') },
+              ],
+            },
+          }),
           [Symbol.asyncDispose]: dispose,
         };
       },

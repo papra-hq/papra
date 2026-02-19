@@ -27,7 +27,7 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
 
       return new Promise((resolve, reject) => {
         writeStream.on('finish', () => {
-          resolve({ storageKey });
+          resolve();
         });
 
         writeStream.on('error', (error) => {
