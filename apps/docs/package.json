@@ -37,7 +37,7 @@
     "@unocss/reset": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-astro": "^1.3.1",
-    "figue": "^3.1.1",
+    "figue": "catalog:",
     "lodash-es": "^4.17.21",
     "marked": "^15.0.6",
     "typescript": "catalog:",
