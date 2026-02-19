@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Tag } from '../tags.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createSignal, For } from 'solid-js';
+import { createMemo, createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxTrigger } from '@/modules/ui/components/combobox';
 import { fetchTags } from '../tags.services';
@@ -22,7 +22,10 @@ export const DocumentTagPicker: Component<{
     queryFn: () => fetchTags({ organizationId: props.organizationId }),
   }));
 
-  const options = () => query.data?.tags || [];
+  const options = createMemo(() => {
+    const tags = query.data?.tags || [];
+    return [...tags].sort((a, b) => a.name.localeCompare(b.name));
+  });
 
   const getSelectedTags = () => query.data?.tags.filter(tag => getSelectedTagIds().includes(tag.id)) ?? [];
   const setSelectedTags = (tags: Tag[]) => setSelectedTagIds(tags.map(tag => tag.id));
