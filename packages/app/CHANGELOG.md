@@ -1,5 +1,11 @@
 # @papra/app
 
+## 26.2.3
+
+### Patch Changes
+
+- [#916](https://github.com/papra-hq/papra/pull/916) [`65c2bea`](https://github.com/papra-hq/papra/commit/65c2bea4c34bf2aeb65819a3ee78d8a08890d64c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added low-level safeguards in the document storage service to prevent overwriting existing files
+
 ## 26.2.2
 
 ### Patch Changes
