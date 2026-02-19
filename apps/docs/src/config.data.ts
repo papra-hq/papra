@@ -29,7 +29,7 @@ function formatDoc(doc: string | undefined): string {
 }
 
 const rows = configDetails
-  .filter(({ path }) => path[0] !== 'env')
+  .filter(({ showInDocumentation }) => showInDocumentation !== false)
   .map(({ doc, default: defaultValue, env, path }) => {
     const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
 

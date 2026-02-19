@@ -1,4 +1,4 @@
-import type { ConfigDefinition } from 'figue';
+import type { AppConfigDefinition } from './config.types';
 import process from 'node:process';
 import { memoizeOnce, safelySync } from '@corentinth/chisels';
 import { loadConfig } from 'c12';
@@ -32,21 +32,22 @@ export const configDefinition = {
     schema: z.enum(['development', 'production', 'test']),
     default: 'development',
     env: 'NODE_ENV',
+    showInDocumentation: false,
   },
   version: {
-    doc: 'The application version. Set via PAPRA_VERSION build arg in Docker.',
+    doc: 'The application version, used for display in the about page. Set by dockerfile build args during release builds.',
     schema: z.string(),
     default: 'dev',
     env: 'PAPRA_VERSION',
   },
   gitCommitSha: {
-    doc: 'The git commit hash. Set via GIT_COMMIT build arg in Docker.',
+    doc: 'The git commit hash, used for display in the about page. Set by dockerfile build args during release builds.',
     schema: z.string(),
     default: 'unknown',
     env: 'GIT_COMMIT',
   },
   gitCommitDate: {
-    doc: 'The git commit date (ISO 8601 format). Set via BUILD_DATE build arg in Docker.',
+    doc: 'The git commit date (ISO 8601 format), used for display in the about page. Set by dockerfile build args during release builds.',
     schema: z.string(),
     default: 'unknown',
     env: 'BUILD_DATE',
@@ -159,7 +160,7 @@ export const configDefinition = {
   subscriptions: subscriptionsConfig,
   tags: tagsConfig,
   tracking: trackingConfig,
-} as const satisfies ConfigDefinition;
+} as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });
 
