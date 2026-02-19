@@ -14,6 +14,7 @@ import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { DocumentStorageService } from './storage/documents.storage.services';
 import type { EncryptionContext } from './storage/drivers/drivers.models';
+import type { StoragePatternConfig } from './storage/patterns/storage-pattern.types';
 import { PassThrough } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { safely } from '@corentinth/chisels';
@@ -33,9 +34,10 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
-import { buildOriginalDocumentKey, generateDocumentId as generateDocumentIdImpl } from './documents.models';
+import { generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
+import { createStorageKey } from './storage/document-storage.usecases';
 
 type DocumentStorageContext = {
   storageKey: string;
@@ -48,6 +50,7 @@ export async function createDocument({
   userId,
   organizationId,
   ocrLanguages = [],
+  storagePatternConfig,
   documentsRepository,
   documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
@@ -67,6 +70,7 @@ export async function createDocument({
   userId?: string;
   organizationId: string;
   ocrLanguages?: string[];
+  storagePatternConfig: StoragePatternConfig;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
   generateDocumentId?: () => string;
@@ -83,7 +87,13 @@ export async function createDocument({
   const { availableDocumentStorageBytes, maxFileSize } = await getOrganizationStorageLimits({ organizationId, plansRepository, subscriptionsRepository, documentsRepository });
 
   const documentId = generateDocumentId();
-  const { originalDocumentStorageKey } = buildOriginalDocumentKey({ documentId, organizationId, fileName });
+  const { storageKey } = await createStorageKey({
+    documentId,
+    documentName: fileName,
+    organizationId,
+    documentsStorageService,
+    storagePatternConfig,
+  });
 
   const { tap: hashStream, getHash } = createSha256HashTransformer();
 
@@ -115,7 +125,7 @@ export async function createDocument({
   const [encryptionMetadata] = await Promise.all([
     documentsStorageService.saveFile({
       fileStream: outputStream,
-      storageKey: originalDocumentStorageKey,
+      storageKey,
       mimeType,
       fileName,
     }),
@@ -134,7 +144,7 @@ export async function createDocument({
         fileName,
         organizationId,
         documentsRepository,
-        newDocumentStorageKey: originalDocumentStorageKey,
+        newDocumentStorageKey: storageKey,
         tagsRepository,
         taggingRulesRepository,
         webhookRepository,
@@ -143,7 +153,7 @@ export async function createDocument({
         logger,
       })
     : await createNewDocument({
-        newFileStorageContext: { storageKey: originalDocumentStorageKey, ...encryptionMetadata },
+        newFileStorageContext: { storageKey, ...encryptionMetadata },
         fileName,
         size,
         mimeType,
@@ -194,6 +204,7 @@ export function createDocumentCreationUsecase({
     webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
+    storagePatternConfig: initialDeps.storagePatternConfig ?? config.documentsStorage.pattern,
     ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
     generateDocumentId: initialDeps.generateDocumentId,
     logger: initialDeps.logger,
