@@ -1,4 +1,4 @@
-import type { ColumnDef } from '@tanstack/solid-table';
+import type { ColumnDef, RowSelectionState } from '@tanstack/solid-table';
 import type { Accessor, Component, Setter } from 'solid-js';
 import type { Document } from '../documents.types';
 import type { Pagination } from '@/modules/shared/pagination/pagination.types';
@@ -11,12 +11,13 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
 } from '@tanstack/solid-table';
-import { For, Match, Show, Switch } from 'solid-js';
+import { createEffect, createSignal, For, Match, on, Show, Switch } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { Button } from '@/modules/ui/components/button';
+import { Checkbox, CheckboxControl } from '@/modules/ui/components/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
@@ -71,6 +72,29 @@ export const tagsColumn: ColumnDef<Document> = {
   ),
 };
 
+const selectionColumn: ColumnDef<Document> = {
+  id: 'select',
+  header: ctx => (
+    <Checkbox
+      checked={ctx.table.getIsAllPageRowsSelected()}
+      indeterminate={ctx.table.getIsSomePageRowsSelected()}
+      onChange={() => ctx.table.toggleAllPageRowsSelected()}
+    >
+      <CheckboxControl />
+    </Checkbox>
+  ),
+  cell: ctx => (
+    <Checkbox
+      checked={ctx.row.getIsSelected()}
+      onChange={() => ctx.row.toggleSelected()}
+    >
+      <CheckboxControl />
+    </Checkbox>
+  ),
+  enableSorting: false,
+  enableHiding: false,
+};
+
 export const DocumentsPaginatedList: Component<{
   documents: Document[];
   documentsCount: number;
@@ -78,63 +102,98 @@ export const DocumentsPaginatedList: Component<{
   setPagination?: Setter<Pagination>;
   extraColumns?: ColumnDef<Document>[];
   showPagination?: boolean;
+  enableSelection?: boolean;
+  onSelectionChange?: (selectedDocuments: Document[]) => void;
+  clearSelectionSignal?: Accessor<number>;
 }> = (props) => {
   const { t } = useI18n();
+  const [getRowSelection, setRowSelection] = createSignal<RowSelectionState>({});
+
   const table = createSolidTable({
     get data() {
       return props.documents ?? [];
     },
-    columns: [
-      {
-        header: () => t('documents.list.table.headers.file-name'),
-        id: 'fileName',
-        cell: data => (
-          <div class="overflow-hidden flex gap-4 items-center">
-            <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
-              <div
-                class={cn(
-                  getDocumentIcon({ document: data.row.original }),
-                  'size-6 text-primary',
-                )}
-              />
-            </div>
+    get columns() {
+      return [
+        ...(props.enableSelection ? [selectionColumn] : []),
+        {
+          header: () => t('documents.list.table.headers.file-name'),
+          id: 'fileName',
+          cell: (data: { row: { original: Document } }) => (
+            <div class="overflow-hidden flex gap-4 items-center">
+              <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
+                <div
+                  class={cn(
+                    getDocumentIcon({ document: data.row.original }),
+                    'size-6 text-primary',
+                  )}
+                />
+              </div>
 
-            <div class="flex-1 flex flex-col gap-1 truncate">
-              <A
-                href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
-                class="font-bold truncate block hover:underline"
-              >
-                {getDocumentNameWithoutExtension({
-                  name: data.row.original.name,
-                })}
-              </A>
+              <div class="flex-1 flex flex-col gap-1 truncate">
+                <A
+                  href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
+                  class="font-bold truncate block hover:underline"
+                >
+                  {getDocumentNameWithoutExtension({
+                    name: data.row.original.name,
+                  })}
+                </A>
 
-              <div class="text-xs text-muted-foreground lh-tight">
-                {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name })].filter(Boolean).join(' - ')}
-                {' '}
-                -
-                {' '}
-                <RelativeTime date={data.row.original.createdAt} />
+                <div class="text-xs text-muted-foreground lh-tight">
+                  {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name })].filter(Boolean).join(' - ')}
+                  {' '}
+                  -
+                  {' '}
+                  <RelativeTime date={data.row.original.createdAt} />
+                </div>
               </div>
             </div>
-          </div>
-        ),
-      },
-      ...(props.extraColumns ?? []),
-    ],
+          ),
+        },
+        ...(props.extraColumns ?? []),
+      ];
+    },
     get rowCount() {
       return props.documentsCount;
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: props.setPagination,
+    get enableRowSelection() {
+      return props.enableSelection ?? false;
+    },
+    onRowSelectionChange: (updater) => {
+      const newState = typeof updater === 'function' ? updater(getRowSelection()) : updater;
+      setRowSelection(newState);
+    },
     state: {
       get pagination() {
         return props.getPagination?.();
       },
+      get rowSelection() {
+        return getRowSelection();
+      },
     },
     manualPagination: true,
   });
+
+  createEffect(() => {
+    const selectedRows = table.getSelectedRowModel().rows.map(r => r.original);
+    props.onSelectionChange?.(selectedRows);
+  });
+
+  createEffect(on(
+    () => props.getPagination?.()?.pageIndex,
+    () => setRowSelection({}),
+    { defer: true },
+  ));
+
+  createEffect(on(
+    () => props.clearSelectionSignal?.(),
+    () => setRowSelection({}),
+    { defer: true },
+  ));
 
   return (
     <div>

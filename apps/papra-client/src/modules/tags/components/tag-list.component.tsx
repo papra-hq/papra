@@ -45,7 +45,7 @@ export const TagPickerFilter: Component<{
   );
 };
 
-const TagPicker: Component<{
+export const TagPicker: Component<{
   selectedTags?: Tag[];
   onChange?: (tags: Tag[]) => void;
   organizationId: string;
