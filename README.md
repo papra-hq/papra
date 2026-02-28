@@ -68,9 +68,10 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - *Coming maybe one day:* **Browser extension**: Upload documents from your browser.
 - *Coming maybe one day:* **AI**: Use AI to help you manage or tag your documents.
 
-## Sponsors
+## Support
 
-Papra is a free and open-source project, but it is not free to run and develop. If you want to support the project, you can become a sponsor on [GitHub Sponsors](https://github.com/sponsors/corentinth) or [Buy me a coffee](https://buymeacoffee.com/cthmsst). If you are a company, you can also contact me to discuss a sponsorship.
+Papra is a free and open-source project, but it is not free to run and develop. If you want to support the project, you can become a sponsor on [GitHub Sponsors](https://github.com/sponsors/corentinth) or [Buy me a coffee](https://buymeacoffee.com/cthmsst).
+If you are a company, you can also [contact me](https://papra.app/contact) to discuss a sponsorship.
 
 ## Self-hosting
 
@@ -138,6 +139,7 @@ This project would not have been possible without the inspiration and work of ot
 
 - **[Paperless-ngx](https://paperless-ngx.com/)**: A full-featured document management system.
 
-## Contact Information
+## Sponsors
 
-Please use the issue tracker on GitHub for any questions or feedback.
+Shout-out to our current sponsors:
+![GitHub Sponsors](https://cdn.jsdelivr.net/gh/papra-hq/static/assets/sponsors.svg)
