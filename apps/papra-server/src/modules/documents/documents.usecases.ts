@@ -48,6 +48,7 @@ export async function createDocument({
   userId,
   organizationId,
   ocrLanguages = [],
+  isContentExtractionEnabled = true,
   documentsRepository,
   documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
@@ -67,6 +68,7 @@ export async function createDocument({
   userId?: string;
   organizationId: string;
   ocrLanguages?: string[];
+  isContentExtractionEnabled?: boolean;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
   generateDocumentId?: () => string;
@@ -157,6 +159,7 @@ export async function createDocument({
         documentId,
         taskServices,
         ocrLanguages,
+        isContentExtractionEnabled,
         logger,
       });
 
@@ -195,6 +198,7 @@ export function createDocumentCreationUsecase({
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
     ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
+    isContentExtractionEnabled: initialDeps.isContentExtractionEnabled ?? config.documents.isContentExtractionEnabled,
     generateDocumentId: initialDeps.generateDocumentId,
     logger: initialDeps.logger,
   };
@@ -269,6 +273,7 @@ async function createNewDocument({
   documentId,
   taskServices,
   ocrLanguages = [],
+  isContentExtractionEnabled = true,
   logger,
 }: {
   fileName: string;
@@ -285,6 +290,7 @@ async function createNewDocument({
   newFileStorageContext: DocumentStorageContext;
   taskServices: TaskServices;
   ocrLanguages?: string[];
+  isContentExtractionEnabled?: boolean;
   logger: Logger;
 }) {
   // TODO: wrap in a transaction
@@ -327,10 +333,12 @@ async function createNewDocument({
 
   const { document } = result;
 
-  await taskServices.scheduleJob({
-    taskName: 'extract-document-file-content',
-    data: { documentId, organizationId, ocrLanguages },
-  });
+  if (isContentExtractionEnabled) {
+    await taskServices.scheduleJob({
+      taskName: 'extract-document-file-content',
+      data: { documentId, organizationId, ocrLanguages },
+    });
+  }
 
   logger.info({ documentId, userId, organizationId, mimeType }, 'Document created');
 

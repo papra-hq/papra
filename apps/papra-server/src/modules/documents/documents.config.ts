@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { z } from 'zod';
+import { booleanishSchema } from '../config/config.schemas';
 import { ocrLanguagesSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
 
 export const documentsConfig = {
@@ -17,5 +18,11 @@ export const documentsConfig = {
     ]),
     default: ['eng'],
     env: 'DOCUMENTS_OCR_LANGUAGES',
+  },
+  isContentExtractionEnabled: {
+    doc: 'Whether to enable content extraction (OCR and text extraction) for uploaded documents',
+    schema: booleanishSchema,
+    default: true,
+    env: 'DOCUMENTS_CONTENT_EXTRACTION_ENABLED',
   },
 } as const satisfies ConfigDefinition;
