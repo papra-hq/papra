@@ -53,6 +53,11 @@ export const sidebar = [
         label: 'Advanced Search',
         slug: 'guides/advanced-search',
       },
+      // Uncomment when the release is made
+      // {
+      //   label: 'Storage Key Patterns',
+      //   slug: 'guides/storage-key-patterns',
+      // },
     ],
   },
   {
