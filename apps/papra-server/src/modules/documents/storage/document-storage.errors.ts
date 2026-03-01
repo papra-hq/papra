@@ -11,3 +11,10 @@ export const createFileAlreadyExistsInStorageError = createErrorFactory({
   code: 'documents.storage.file_already_exists',
   statusCode: 409,
 });
+
+export const createUnableToFindAvailableStorageKeyError = createErrorFactory({
+  message: 'Unable to find available storage key',
+  code: 'documents.storage.unable_to_find_available_storage_key',
+  statusCode: 500,
+  isInternal: true,
+});

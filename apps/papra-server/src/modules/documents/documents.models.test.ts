@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildOriginalDocumentKey, formatDocumentForApi, isDocumentSizeLimitEnabled, joinStorageKeyParts } from './documents.models';
+import { buildOriginalDocumentKey, ensureSafeFileName, formatDocumentForApi, isDocumentSizeLimitEnabled, joinStorageKeyParts } from './documents.models';
 
 describe('documents models', () => {
   describe('joinStorageKeyParts', () => {
@@ -96,6 +96,76 @@ describe('documents models', () => {
         originalSize: 100,
         updatedAt: new Date('2025-01-01'),
       });
+    });
+  });
+
+  describe('ensureSafeFileName', () => {
+    test('replaces characters that are not allowed in file names with an underscore', () => {
+      expect(ensureSafeFileName('file.txt')).to.eql('file.txt');
+      expect(ensureSafeFileName('fi/le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi\\le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi:le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi*le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi?le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi"le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi<le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi>le.txt')).to.eql('fi_le.txt');
+      expect(ensureSafeFileName('fi|le.txt')).to.eql('fi_le.txt');
+    });
+
+    test('leading spaces are preserved as they are valid in file names, but trailing spaces are removed', () => {
+      expect(ensureSafeFileName(' file.txt')).to.eql(' file.txt');
+      expect(ensureSafeFileName('file.txt ')).to.eql('file.txt');
+      expect(ensureSafeFileName(' file.txt ')).to.eql(' file.txt');
+    });
+
+    test('leading dots are preserved as they are valid in file names, but trailing dots are removed', () => {
+      expect(ensureSafeFileName('.file.txt')).to.eql('.file.txt');
+      expect(ensureSafeFileName('..file.txt')).to.eql('..file.txt');
+      expect(ensureSafeFileName('file.txt.')).to.eql('file.txt');
+      expect(ensureSafeFileName('.file.txt.')).to.eql('.file.txt');
+    });
+
+    test('reserved file names on Windows are suffixed with an underscore', () => {
+      const reservedFileNames = [
+        'con',
+        'prn',
+        'aux',
+        'nul',
+        ...Array.from({ length: 9 }, (_, i) => `com${i + 1}`),
+        ...Array.from({ length: 9 }, (_, i) => `lpt${i + 1}`),
+      ];
+
+      for (const reservedFileName of reservedFileNames) {
+        const lower = reservedFileName;
+        const upper = reservedFileName.toUpperCase();
+        const title = upper[0] + lower.slice(1);
+
+        expect(ensureSafeFileName(lower)).to.eql(`${lower}_`);
+        expect(ensureSafeFileName(upper)).to.eql(`${upper}_`);
+        expect(ensureSafeFileName(title)).to.eql(`${title}_`);
+
+        // Ok with extensions
+        expect(ensureSafeFileName(`${lower}.txt`)).to.eql(`${lower}.txt`);
+        expect(ensureSafeFileName(`${upper}.txt`)).to.eql(`${upper}.txt`);
+        expect(ensureSafeFileName(`${title}.txt`)).to.eql(`${title}.txt`);
+      }
+    });
+
+    test('path separators are replaced with underscores to prevent directory traversal', () => {
+      expect(ensureSafeFileName('../file.txt')).to.eql('_file.txt');
+      expect(ensureSafeFileName('..\\file.txt')).to.eql('_file.txt');
+      expect(ensureSafeFileName('..//file.txt')).to.eql('_file.txt');
+      expect(ensureSafeFileName('..\\\\file.txt')).to.eql('_file.txt');
+      expect(ensureSafeFileName('/foo/bar/file.txt')).to.eql('_foo_bar_file.txt');
+    });
+
+    test('edge cases', () => {
+      expect(ensureSafeFileName('')).to.eql('_');
+      expect(ensureSafeFileName('../')).to.eql('_');
+      expect(ensureSafeFileName('../..')).to.eql('_');
+      expect(ensureSafeFileName('   ')).to.eql('_');
+      expect(ensureSafeFileName('...')).to.eql('_');
     });
   });
 });
