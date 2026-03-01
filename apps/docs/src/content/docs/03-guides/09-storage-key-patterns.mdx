@@ -1,0 +1,255 @@
+---
+title: Document Storage Key Patterns
+description: Guide to configuring how Papra generates storage keys (file paths) for your documents, including pattern syntax, available expressions, transformers, and conflict resolution.
+slug: guides/storage-key-patterns
+---
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note">
+**Not yet available:** Storage key patterns will be available in the next release.
+</Aside>
+
+When a document is uploaded to Papra, the system generates a **storage key** that determines where and how the file is stored in the underlying storage backend (filesystem, S3, Azure Blob Storage, etc.). By default, Papra uses a legacy system that generates opaque storage keys based on the document ID. With storage key patterns, you can define a human-readable, customizable naming scheme for your stored files.
+
+## How It Works
+
+A **storage key pattern** is a string template containing **expressions** enclosed in double curly braces (`{{ }}`). When a document is uploaded, each expression is evaluated using the document's metadata and replaced with the resulting value.
+
+For example, the default pattern:
+
+```
+{{organization.id}}/{{document.name}}
+```
+
+For a document named `invoice-2025.pdf` in organization `org_123456789012345678901234`, this produces:
+
+```
+org_123456789012345678901234/invoice-2025.pdf
+```
+
+### Storage Key Persistence
+
+The generated storage key is stored in the database alongside each document record. This means that **changing the pattern configuration does not affect existing documents**, only newly uploaded documents will use the updated pattern. Existing documents retain their original storage keys and continue to be served from their original location.
+
+<Aside type="tip">
+A migration tool to reprocess storage keys for existing documents (allowing you to move files from an old pattern to a new one, or even to a different storage backend) will be available in a future release.
+</Aside>
+
+## Enabling Storage Key Patterns
+
+At the moment, Papra uses the legacy storage key system for backward compatibility. To enable the new pattern-based system, set the following environment variable:
+
+```bash
+DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM=false
+```
+
+Then configure your desired pattern:
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
+```
+
+<Aside type="caution">
+If you switch from the legacy system to the pattern-based system on an existing instance, only new documents will use the new pattern. Existing documents will continue to use their legacy storage keys (`{{organization.id}}/originals/{{document.id}}`) and remain accessible without any changes needed.
+</Aside>
+
+### Docker Compose Example
+
+```yaml title="docker-compose.yml" ins={9-10}
+services:
+  papra:
+    container_name: papra
+    image: ghcr.io/papra-hq/papra:latest
+    restart: unless-stopped
+    environment:
+      # ... other environment variables ...
+      - DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM=false
+      - DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
+    volumes:
+      - ./app-data:/app/app-data
+    ports:
+      - "1221:1221"
+```
+
+## Pattern Syntax
+
+A pattern is a string that can contain:
+
+- **Literal text**: Any text outside of `{{ }}` is kept as-is (e.g., path separators `/`, prefixes, etc.)
+- **Expressions**: Placeholders enclosed in `{{` and `}}` that are evaluated at upload time
+- **Transformers**: Optional functions applied to expression values using the pipe `|` operator
+
+The general syntax for an expression with transformers is:
+
+```
+{{expression | transformer1 | transformer2 arg1 arg2}}
+```
+
+Multiple transformers can be chained, and each transformer receives the output of the previous one.
+
+## Available Expressions
+
+| Expression | Description | Example Output |
+|-----------|-------------|----------------|
+| `document.id` | The unique document identifier | `doc_123456789012345678901234` |
+| `document.name` | The original file name (sanitized for safe filesystem use) | `invoice-2025.pdf` |
+| `organization.id` | The organization identifier | `org_123456789012345678901234` |
+| `currentDate` | The current date and time in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
+| `currentDate.yyyy` | Current year (4 digits) | `2025` |
+| `currentDate.MM` | Current month (2 digits, zero-padded) | `06` |
+| `currentDate.dd` | Current day of month (2 digits, zero-padded) | `15` |
+| `currentDate.HH` | Current hour (2 digits, 24-hour, zero-padded) | `14` |
+| `currentDate.mm` | Current minute (2 digits, zero-padded) | `30` |
+| `currentDate.ss` | Current second (2 digits, zero-padded) | `00` |
+| `currentDate.SSS` | Current millisecond (3 digits, zero-padded) | `000` |
+| `random` | A random 8-character alphanumeric string | `k9x2m4pq` |
+
+Example:
+```
+{{organization.id}}/{{currentDate.yyyy}}/{{currentDate.MM}}/{{document.name}}
+
+# Result: org_123456789012345678901234/2025/06/invoice-2025.pdf
+```
+
+<Aside type="note">
+The `document.name` expression automatically sanitizes the file name by replacing unsafe filesystem characters with underscores (`_`).
+</Aside>
+
+## Available Transformers
+
+Transformers modify the value of an expression. They are applied using the pipe (`|`) operator after the expression name.
+
+| Transformer | Arguments | Description | Example |
+|------------|-----------|-------------|---------|
+| `uppercase` | None | Converts the value to uppercase | `{{document.name \| uppercase}}` |
+| `lowercase` | None | Converts the value to lowercase | `{{document.name \| lowercase}}` |
+| `formatDate` | Optional format string (default: `{yyyy}-{MM}-{dd}`) | Formats a date value | `{{currentDate \| formatDate {yyyy}/{MM}}}` |
+| `padStart` | Target length, optional pad character (default: space) | Pads the start of the value | `{{currentDate.MM \| padStart 2 0}}` |
+| `padEnd` | Target length, optional pad character (default: space) | Pads the end of the value | `{{document.id \| padEnd 20 _}}` |
+
+### Transformer Chaining
+
+Transformers can be chained to apply multiple transformations in sequence:
+
+```
+{{document.name | lowercase | padEnd 20 _}}
+```
+
+### Transformer Arguments
+
+Arguments are space-separated after the transformer name. If an argument contains spaces, wrap it in double quotes:
+
+```
+{{currentDate | formatDate {yyyy}-{MM}-{dd}}}
+```
+
+## Pattern Examples
+
+Here are some common patterns for different use cases:
+
+### Organize by Organization and Document Name (Default)
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
+# Result: org_abc123/invoice-2025.pdf
+```
+
+### Organize by Date
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{currentDate.yyyy}}/{{currentDate.MM}}/{{document.name}}
+# Result: 2025/06/invoice-2025.pdf
+```
+
+### Organize by Date with Unique ID
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{currentDate.yyyy}}/{{currentDate.MM}}/{{document.id}}-{{document.name}}
+# Result: org_123456789012345678901234/2025/06/doc_123456789012345678901234-invoice-2025.pdf
+```
+
+## Conflict Resolution
+
+When using patterns that don't guarantee uniqueness (e.g., patterns based on `document.name` alone), two documents could generate the same storage key. Papra handles this automatically to prevent data loss using a two-stage conflict resolution mechanism.
+
+### Stage 1: Incremental Suffix
+
+When a storage key already exists, Papra appends an incrementing numeric suffix before the file extension:
+
+```
+org_abc123/invoice.pdf       # original (already exists)
+org_abc123/invoice_1.pdf     # first conflict
+org_abc123/invoice_2.pdf     # second conflict
+org_abc123/invoice_3.pdf     # third conflict
+...
+org_abc123/invoice_9.pdf     # ninth conflict (default max)
+```
+
+The suffix is inserted before the file extension and after the file name, separated by an underscore. For files without an extension, the suffix is appended at the end (e.g., `README` becomes `README_1`).
+
+By default, up to **9 incremental suffix attempts** are made (configurable, see below). This means a total of **10 possible slots** for a given storage key: the original plus 9 suffixed variants.
+
+### Stage 2: Random Suffix Fallback
+
+If all incremental suffix attempts are exhausted (i.e., all 10 slots are taken), Papra falls back to appending a random 8-character alphanumeric string as a suffix:
+
+```
+org_abc123/invoice_k9x2m4pq.pdf   # random suffix fallback
+```
+
+This provides a very high probability of finding an available key (with 8-character random suffix, need more than 17 million files with same name and path to have a 50% chance of collision). If even this random suffix collides (extremely unlikely), the upload will fail with an error rather than overwriting existing data.
+
+<Aside type="tip">
+If you frequently encounter conflicts, consider adding `{{document.id}}` or `{{random}}` to your pattern to guarantee uniqueness.
+</Aside>
+
+### Conflict Resolution Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DOCUMENT_STORAGE_PATTERN_MAX_INCREMENTAL_SUFFIX_ATTEMPTS` | How many incremental suffixes to try (e.g., `_1`, `_2`, ...). Set to `0` to skip incremental suffixes entirely. | `9` |
+| `DOCUMENT_STORAGE_PATTERN_ENABLE_RANDOM_SUFFIX_FALLBACK` | Whether to try a random suffix if all incremental attempts are exhausted | `true` |
+
+### Disabling Conflict Resolution
+
+If you want to disable conflict resolution, and want to reject uploads that would cause a storage key collision (not sure why you would want this, but it's possible), set:
+```bash
+DOCUMENT_STORAGE_PATTERN_MAX_INCREMENTAL_SUFFIX_ATTEMPTS=0
+DOCUMENT_STORAGE_PATTERN_ENABLE_RANDOM_SUFFIX_FALLBACK=false
+```
+
+## Configuration Reference
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM` | Use the legacy storage key format (`{orgId}/originals/{docId}.{ext}`). Set to `false` to enable patterns. | `true` |
+| `DOCUMENT_STORAGE_KEY_PATTERN` | The pattern template for generating storage keys | `{{organization.id}}/{{document.name}}` |
+| `DOCUMENT_STORAGE_PATTERN_MAX_INCREMENTAL_SUFFIX_ATTEMPTS` | Maximum number of incremental suffix attempts for conflict resolution | `9` |
+| `DOCUMENT_STORAGE_PATTERN_ENABLE_RANDOM_SUFFIX_FALLBACK` | Enable random suffix fallback when all incremental suffixes are exhausted | `true` |
+
+## Legacy System
+
+The legacy storage key system generates keys in the format:
+
+```
+{{organization.id}}/originals/{{document.id}}
+```
+
+For example: `org_abc123/originals/doc_123456789012345678901234`
+
+Since the legacy system uses the unique document ID as the file name, conflicts are impossible and no suffix mechanism is needed. At the moment, this system remains the default while the new pattern-based system is being developed and tested.
+
+To keep using the legacy system, either leave the configuration unchanged or explicitly set:
+
+```bash
+DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM=true
+```
+
+## Pattern Validation
+
+Storage key patterns are validated at application startup. If a pattern contains an invalid expression or an unknown transformer, Papra will refuse to start and report the error. This prevents misconfigured patterns from causing issues at upload time.
+
+A pattern is invalid if:
+- It references an expression that does not exist (e.g., `{{unknown.field}}`)
+- It uses a transformer that does not exist (e.g., `{{document.name | nonexistent}}`)
+- It ends with a `/` (trailing slashes are not allowed)
