@@ -1,5 +1,15 @@
 # @papra/app
 
+## 26.2.3
+
+### Patch Changes
+
+- [#916](https://github.com/papra-hq/papra/pull/916) [`65c2bea`](https://github.com/papra-hq/papra/commit/65c2bea4c34bf2aeb65819a3ee78d8a08890d64c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added low-level safeguards in the document storage service to prevent overwriting existing files
+
+- [#921](https://github.com/papra-hq/papra/pull/921) [`6be6bea`](https://github.com/papra-hq/papra/commit/6be6beae905674b7a7db8f070f811c59ee28e9e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to customize the document storage path
+
+- [#930](https://github.com/papra-hq/papra/pull/930) [`41e9f33`](https://github.com/papra-hq/papra/commit/41e9f33b06de15977e4f348184c1772fd85feddb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to fully disable the content extraction feature.
+
 ## 26.2.2
 
 ### Patch Changes
