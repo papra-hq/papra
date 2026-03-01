@@ -6,6 +6,7 @@ import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
 import { S3_STORAGE_DRIVER_NAME } from './drivers/s3/s3.storage-driver';
 import { documentEncryptionConfig } from './encryption/document-encryption.config';
+import { storagePatternConfig } from './patterns/storage-pattern.config';
 
 export const documentStorageConfig = {
   maxUploadSize: {
@@ -95,4 +96,5 @@ export const documentStorageConfig = {
     },
   },
   encryption: documentEncryptionConfig,
+  pattern: storagePatternConfig,
 } as const satisfies ConfigDefinition;

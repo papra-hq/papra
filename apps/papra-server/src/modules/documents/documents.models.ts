@@ -1,5 +1,6 @@
 import type { PartialBy } from '@corentinth/chisels';
 import type { DbSelectableDocument } from './documents.types';
+import filenamify from 'filenamify';
 import { omit } from 'lodash-es';
 import { getExtension } from '../shared/files/file-names';
 import { generateId } from '../shared/random/ids';
@@ -44,4 +45,8 @@ export function formatDocumentForApi<T extends PartialBy<DbSelectableDocument, '
 
 export function formatDocumentsForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ documents }: { documents: T[] }) {
   return documents.map(document => formatDocumentForApi({ document }));
+}
+
+export function ensureSafeFileName(fileName: string) {
+  return filenamify(fileName, { replacement: '_' });
 }

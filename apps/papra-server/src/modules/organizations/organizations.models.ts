@@ -1,5 +1,6 @@
 import type { OrganizationRole } from './organizations.types';
-import { ORGANIZATION_ROLES } from './organizations.constants';
+import { generateId } from '../shared/random/ids';
+import { ORGANIZATION_ID_PREFIX, ORGANIZATION_ROLES } from './organizations.constants';
 
 export function canUserRemoveMemberFromOrganization({
   userRole,
@@ -17,4 +18,8 @@ export function canUserRemoveMemberFromOrganization({
   }
 
   return true;
+}
+
+export function generateOrganizationId() {
+  return generateId({ prefix: ORGANIZATION_ID_PREFIX });
 }

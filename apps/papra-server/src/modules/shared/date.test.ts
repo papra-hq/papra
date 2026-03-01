@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { addDays, isValidDate, startOfDay, subDays } from './date';
+import { addDays, formatDate, isValidDate, startOfDay, subDays } from './date';
 
 describe('date', () => {
   describe('isValidDate', () => {
@@ -87,6 +87,20 @@ describe('date', () => {
   describe('startOfDay', () => {
     test('sets the time to the start of the day', () => {
       expect(startOfDay(new Date('2024-05-15T10:30:45'))).to.eql(new Date('2024-05-15T00:00:00'));
+    });
+  });
+
+  describe('formatDate', () => {
+    test('formats date according to a given expression', () => {
+      const date = new Date('2024-05-15T10:30:45.123Z');
+      expect(formatDate(date, '{yyyy}-{MM}-{dd}')).toBe('2024-05-15');
+      expect(formatDate(date, '{HH}:{mm}:{ss}')).toBe('10:30:45');
+      expect(formatDate(date, '{yyyy}/{MM}/{dd} {HH}:{mm}:{ss}.{SSS}')).toBe('2024/05/15 10:30:45.123');
+      expect(formatDate(date, 'Today is {dd}/{MM}/{yyyy}')).toBe('Today is 15/05/2024');
+      expect(formatDate(date, 'Escaped \\{yyyy} should be literal')).toBe('Escaped {yyyy} should be literal');
+      expect(formatDate(date, '{timestamp}')).toBe('1715769045123');
+      expect(formatDate(date, '{unix}')).toBe('1715769045');
+      expect(formatDate(date, '{iso}')).toBe('2024-05-15T10:30:45.123Z');
     });
   });
 });
