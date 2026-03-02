@@ -2,9 +2,9 @@ import type { Document } from '../documents.types';
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -31,23 +31,38 @@ export function DocumentsListScreen() {
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
   const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDates<Document> | undefined>(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const pagination = { pageIndex: 0, pageSize: 20 };
+  const pageSize = 20;
 
-  const documentsQuery = useQuery({
-    queryKey: ['organizations', currentOrganizationId, 'documents', pagination],
-    queryFn: async () => {
+  const documentsQuery = useInfiniteQuery({
+    queryKey: ['organizations', currentOrganizationId, 'documents'],
+    queryFn: async ({ pageParam = 0 }) => {
       if (currentOrganizationId == null) {
-        return { documents: [], documentsCount: 0 };
+        return { documents: [], documentsCount: 0, nextPage: undefined };
       }
 
-      return fetchOrganizationDocuments({
+      const result = await fetchOrganizationDocuments({
         organizationId: currentOrganizationId,
-        ...pagination,
+        pageIndex: pageParam,
+        pageSize,
         apiClient,
       });
+
+      const hasMore = pageSize <= result.remoteDocumentsCount;
+      const nextPage = hasMore ? pageParam + 1 : undefined;
+
+      return {
+        ...result,
+        nextPage,
+      };
     },
+    getNextPageParam: lastPage => lastPage.nextPage,
     enabled: currentOrganizationId !== null && currentOrganizationId !== '',
+    initialPageParam: 0,
   });
+
+  const documents = useMemo(() => {
+    return documentsQuery.data?.pages.flatMap(page => page.documents) ?? [];
+  }, [documentsQuery.data]);
 
   const styles = createStyles({ themeColors });
 
@@ -63,6 +78,12 @@ export function DocumentsListScreen() {
     await documentsQuery.refetch();
     if (currentOrganizationId != null) {
       void syncUnsyncedDocuments({ organizationId: currentOrganizationId, apiClient });
+    }
+  };
+
+  const loadMore = () => {
+    if (documentsQuery.hasNextPage && !documentsQuery.isFetchingNextPage) {
+      void documentsQuery.fetchNextPage();
     }
   };
 
@@ -96,8 +117,19 @@ export function DocumentsListScreen() {
           )
         : (
             <FlatList
-              data={documentsQuery.data?.documents ?? []}
+              data={documents}
               keyExtractor={item => item.id}
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={() => (
+                documentsQuery.isFetchingNextPage
+                  ? (
+                      <View style={styles.footerLoader}>
+                        <ActivityIndicator size="small" color={themeColors.primary} />
+                      </View>
+                    )
+                  : null
+              )}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => {
@@ -167,7 +199,7 @@ export function DocumentsListScreen() {
                   </Text>
                 </View>
               )}
-              contentContainerStyle={documentsQuery.data?.documents.length === 0 ? styles.emptyList : undefined}
+              contentContainerStyle={documents.length === 0 ? styles.emptyList : undefined}
               refreshControl={(
                 <RefreshControl
                   refreshing={documentsQuery.isRefetching}
@@ -282,6 +314,10 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 12,
+    },
+    footerLoader: {
+      paddingVertical: 20,
+      alignItems: 'center',
     },
   });
 }
