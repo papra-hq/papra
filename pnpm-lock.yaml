@@ -452,6 +452,9 @@ importers:
       '@cadence-mq/driver-memory':
         specifier: ^0.2.0
         version: 0.2.0(@cadence-mq/core@0.2.1)
+      '@clack/prompts':
+        specifier: 1.0.0-alpha.6
+        version: 1.0.0-alpha.6
       '@corentinth/chisels':
         specifier: 'catalog:'
         version: 2.1.0

@@ -66,15 +66,17 @@ export async function createStorageKey({
   documentId,
   documentName,
   organizationId,
-  now = new Date(),
   documentsStorageService,
+  logger,
+  now = new Date(),
 }: {
   storagePatternConfig: StoragePatternConfig;
   documentId: string;
   documentName: string;
   organizationId: string;
-  now?: Date;
   documentsStorageService: Pick<DocumentStorageService, 'fileExists'>;
+  logger?: Logger;
+  now?: Date;
 }) {
   const {
     useLegacyStorageKeyDefinitionSystem,
@@ -96,6 +98,7 @@ export async function createStorageKey({
     maxIncrementalSuffixAttempts,
     enableRandomSuffixFallback,
     documentsStorageService,
+    logger,
   });
 
   return { storageKey };
