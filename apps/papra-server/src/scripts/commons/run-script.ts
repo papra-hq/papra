@@ -8,7 +8,8 @@ import { parseConfig } from '../../modules/config/config';
 import { createLogger, wrapWithLoggerContext } from '../../modules/shared/logger/logger';
 
 export async function runScriptWithDb(
-  { scriptName }: { scriptName: string },
+  { scriptName, silent = false }: { scriptName: string; silent?: boolean },
+
   fn: (args: { isDryRun: boolean; logger: Logger; db: Database; config: Config }) => Promise<void> | void,
 ) {
   const isDryRun = process.argv.includes('--dry-run');
@@ -25,13 +26,13 @@ export async function runScriptWithDb(
       await ensureLocalDatabaseDirectoryExists({ config });
       const { db } = setupDatabase({ ...config.database });
 
-      await executeScript({ logger, fn: async () => fn({ isDryRun, logger, db, config }) });
+      await executeScript({ logger, fn: async () => fn({ isDryRun, logger, db, config }), silent });
     },
   );
 }
 
 export async function runScript(
-  { scriptName }: { scriptName: string },
+  { scriptName, silent = false }: { scriptName: string; silent?: boolean },
   fn: (args: { isDryRun: boolean; logger: Logger }) => Promise<void> | void,
 ) {
   const isDryRun = process.argv.includes('--dry-run');
@@ -39,16 +40,20 @@ export async function runScript(
   await wrapWithLoggerContext({ scriptName, isDryRun }, async () => {
     const logger = createLogger({ namespace: 'scripts' });
 
-    await executeScript({ logger, fn: async () => fn({ isDryRun, logger }) });
+    await executeScript({ logger, fn: async () => fn({ isDryRun, logger }), silent });
   });
 }
 
-async function executeScript({ logger, fn }: { logger: Logger; fn: () => Promise<unknown> }) {
+async function executeScript({ logger, fn, silent = false }: { logger: Logger; fn: () => Promise<unknown>; silent?: boolean }) {
   try {
     await fn();
-    logger.debug('Script finished');
+    if (!silent) {
+      logger.debug('Script finished');
+    }
   } catch (error) {
-    logger.error({ error }, 'Script failed');
+    if (!silent) {
+      logger.error({ error }, 'Script failed');
+    }
     process.exit(1);
   }
 }

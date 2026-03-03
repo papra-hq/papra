@@ -1,0 +1,250 @@
+---
+title: Migrate Document Storage
+description: Move documents between storage backends or change storage settings using the storage migration maintenance script.
+slug: guides/migrate-document-storage
+---
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Aside type="note">
+**Not yet available:** This migration script will be available in the next release.
+</Aside>
+
+The storage migration script copies every document from one storage backend to another, streaming files one at a time to keep memory usage flat. Encryption is handled transparently — documents are decrypted on the way out of the source and re-encrypted (or left plain) on the way into the destination, depending on each side's configuration.
+
+## When to Use This Script
+
+- **Changing storage key pattern** — after updating `DOCUMENT_STORAGE_KEY_PATTERN` or switching off the legacy key system, existing documents keep their old storage keys; use this script to re-copy them so they land under the new pattern (see [Storage Key Patterns](/guides/storage-key-patterns))
+- **Moving to cloud storage** — migrating from a local filesystem to S3, Azure Blob Storage, or another S3-compatible provider
+- **Switching cloud providers** — moving files between S3 and Azure Blob, or between S3-compatible services
+- **Changing storage root** — relocating the filesystem storage directory to a different path or volume
+
+<Aside type="note">
+If you only want to encrypt existing documents without changing anything else, use the dedicated [`maintenance:encrypt-all-documents`](/guides/document-encryption#migrating-existing-documents-to-encrypted-format) script instead. The storage migration script will fail if source and destination resolve to the same path for the same key, because storage drivers refuse to overwrite existing files.
+</Aside>
+
+## How It Works
+
+<Steps>
+
+1. **Source and destination configs are built** from the base environment variables, with your `--from` and `--to` overrides applied on top. Database configuration always comes from the running environment — only storage settings are overridden.
+
+2. **Documents are iterated in batches** (including soft-deleted ones), so the script can handle large document collections without loading everything into memory.
+
+3. **Each document is streamed** from the source storage (decrypting if the source has encryption enabled), then written to the destination (encrypting if the destination has encryption enabled).
+
+4. **The new storage key is computed** using the destination's pattern configuration (via `DOCUMENT_STORAGE_KEY_PATTERN`), and both the storage key and encryption metadata are updated in the database. This is what allows a no-args invocation to re-key all documents after a pattern change.
+
+5. **If `--delete-source` is passed**, the original file is removed from the source backend after a successful copy.
+
+6. **Errors are per-document** — a single failed document is logged and skipped; the rest of the migration continues.
+
+</Steps>
+
+## CLI Reference
+
+```
+maintenance:migrate-document-storage [options]
+
+Options:
+  --from <KEY=VALUE>    Source storage environment variable (repeatable)
+  --to <KEY=VALUE>      Destination storage environment variable (repeatable)
+  --delete-source       Delete source files after a successful copy
+  --dry-run             Preview what would be migrated without touching any files
+  -h, --help            Show this help message
+```
+
+`--from` and `--to` accept any `DOCUMENT_STORAGE_*` environment variable. Values are merged on top of the current environment, so you only need to specify the settings that differ from your running configuration.
+
+## Running the Migration
+
+<Aside type="caution">
+Back up your documents and database before running the migration. While the script is non-destructive by default (it copies, not moves), a backup is the safest way to recover from unexpected issues.
+</Aside>
+
+<Steps>
+
+1. **Run a dry run first**
+
+   The dry run logs every document that would be migrated without reading or writing any files.
+
+   <Tabs>
+     <TabItem label="Docker Compose">
+       ```bash
+       docker compose exec papra pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+         --dry-run
+       ```
+     </TabItem>
+     <TabItem label="Docker">
+       ```bash
+       docker exec -it papra pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+         --dry-run
+       ```
+     </TabItem>
+     <TabItem label="Source Installation">
+       ```bash
+       pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+         --dry-run
+       ```
+     </TabItem>
+   </Tabs>
+
+2. **Run the actual migration**
+
+   Once you are happy with the dry run output, run without `--dry-run`. Add `--delete-source` if you want source files removed after each successful copy (USE WITH CAUTION).
+
+   <Tabs>
+     <TabItem label="Docker Compose">
+       ```bash
+       docker compose exec papra pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1
+       ```
+     </TabItem>
+     <TabItem label="Docker">
+       ```bash
+       docker exec -it papra pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1
+       ```
+     </TabItem>
+     <TabItem label="Source Installation">
+       ```bash
+       pnpm maintenance:migrate-document-storage \
+         --from DOCUMENT_STORAGE_DRIVER=filesystem \
+         --to DOCUMENT_STORAGE_DRIVER=s3 \
+         --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-bucket \
+         --to DOCUMENT_STORAGE_S3_REGION=us-east-1
+       ```
+     </TabItem>
+   </Tabs>
+
+3. **Update your Papra configuration**
+
+   Point your running Papra instance to the new storage backend and restart it.
+
+4. **Verify the migration**
+
+   Open Papra and check that documents are accessible and downloadable. If anything looks wrong, your original files are still in the source backend (unless you used `--delete-source`).
+
+</Steps>
+
+## Examples
+
+### Filesystem → S3
+
+Move documents from a local directory to an S3 bucket, using AWS credentials already in the environment:
+
+```bash
+docker compose exec papra pnpm maintenance:migrate-document-storage \
+  --from DOCUMENT_STORAGE_DRIVER=filesystem \
+  --from DOCUMENT_STORAGE_FILESYSTEM_ROOT=./app-data/documents \
+  --to DOCUMENT_STORAGE_DRIVER=s3 \
+  --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-papra-bucket \
+  --to DOCUMENT_STORAGE_S3_REGION=us-east-1
+```
+
+### S3 → Azure Blob Storage
+
+```bash
+docker compose exec papra pnpm maintenance:migrate-document-storage \
+  --from DOCUMENT_STORAGE_DRIVER=s3 \
+  --from DOCUMENT_STORAGE_S3_BUCKET_NAME=old-bucket \
+  --from DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+  --to DOCUMENT_STORAGE_DRIVER=azure-blob \
+  --to DOCUMENT_STORAGE_AZURE_BLOB_ACCOUNT_NAME=myaccount \
+  --to DOCUMENT_STORAGE_AZURE_BLOB_CONTAINER_NAME=papra-documents
+```
+
+### S3 → S3-Compatible (e.g. Cloudflare R2, MinIO)
+
+```bash
+docker compose exec papra pnpm maintenance:migrate-document-storage \
+  --from DOCUMENT_STORAGE_DRIVER=s3 \
+  --from DOCUMENT_STORAGE_S3_BUCKET_NAME=old-bucket \
+  --from DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+  --to DOCUMENT_STORAGE_DRIVER=s3 \
+  --to DOCUMENT_STORAGE_S3_BUCKET_NAME=new-bucket \
+  --to DOCUMENT_STORAGE_S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com \
+  --to DOCUMENT_STORAGE_S3_REGION=auto
+```
+
+### Add Encryption While Moving to S3
+
+Move from an unencrypted filesystem to an encrypted S3 backend in one step:
+
+```bash
+docker compose exec papra pnpm maintenance:migrate-document-storage \
+  --from DOCUMENT_STORAGE_DRIVER=filesystem \
+  --to DOCUMENT_STORAGE_DRIVER=s3 \
+  --to DOCUMENT_STORAGE_S3_BUCKET_NAME=my-papra-bucket \
+  --to DOCUMENT_STORAGE_S3_REGION=us-east-1 \
+  --to DOCUMENT_STORAGE_ENCRYPTION_IS_ENABLED=true \
+  --to DOCUMENT_STORAGE_DOCUMENT_KEY_ENCRYPTION_KEYS=<your-encryption-key>
+```
+
+After running this, update your Papra environment variables to include the encryption settings so new documents are also encrypted.
+
+### Change Storage Key Pattern
+
+Each document's storage key is saved in the database when it is uploaded, so Papra always knows where to find a file regardless of what the current pattern setting is. Changing `DOCUMENT_STORAGE_KEY_PATTERN` (or disabling the legacy key system) only affects new uploads — existing documents keep their old keys.
+
+To re-key existing documents, first update your Papra configuration to the desired pattern, then run the migration script without any arguments. The script will read each document from its stored key and write it back under the key your new pattern produces, updating the database record in the process.
+
+```bash
+# 1. Update your Papra config (e.g. in .env or docker-compose.yml):
+#    DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM=false
+#    DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
+
+# 2. Run the migration (no --from / --to needed when staying on the same backend):
+docker compose exec papra pnpm maintenance:migrate-document-storage
+```
+
+The `--from` / `--to` overrides are only necessary when you are also changing the backend driver or root path at the same time.
+
+### Change Filesystem Root Path
+
+If you are moving the storage directory to a new volume, override only the path:
+
+```bash
+docker compose exec papra pnpm maintenance:migrate-document-storage \
+  --from DOCUMENT_STORAGE_DRIVER=filesystem \
+  --from DOCUMENT_STORAGE_FILESYSTEM_ROOT=/old-volume/documents \
+  --to DOCUMENT_STORAGE_DRIVER=filesystem \
+  --to DOCUMENT_STORAGE_FILESYSTEM_ROOT=/new-volume/documents
+```
+
+## Troubleshooting
+
+**"File already exists" or overwrite error**
+
+The source and destination resolve to the same storage location. This happens when you pass the same driver and path on both sides. Use the `maintenance:encrypt-all-documents` script for in-place encryption instead.
+
+**Individual documents fail but migration continues**
+
+Failed documents are logged with their ID, name, and error message. The migration reports a final `succeeded / failed` count. After fixing the underlying issue (permissions, connectivity, missing credentials), you can re-run the script — already-migrated files will fail to overwrite, so re-run with the source pointing to the correct set of remaining files.
+
+**Migration is slow**
+
+The script streams one document at a time. Performance depends on document size and the latency between source and destination storage. For large collections, consider running the migration during a maintenance window.
+
+**Container exits before migration finishes**
+
+For long-running migrations in Docker, make sure no timeout is configured on `docker exec`.
