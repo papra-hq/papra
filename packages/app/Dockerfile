@@ -4,7 +4,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g corepack@latest
 RUN corepack enable
-RUN corepack prepare pnpm@10.19.0 --activate
+RUN corepack prepare pnpm@10.30.3 --activate
 
 # Build stage
 FROM base AS build
