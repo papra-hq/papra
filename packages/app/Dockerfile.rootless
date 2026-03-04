@@ -4,7 +4,6 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 # Set corepack home to nonroot user home to avoid permission issues
 ENV COREPACK_HOME=/home/nonroot/.corepack
-RUN npm install -g corepack@latest
 RUN corepack enable
 RUN corepack prepare pnpm@10.30.3 --activate
 
