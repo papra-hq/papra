@@ -394,8 +394,9 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
     validateJsonBody(z.object({
       name: z.string().min(1).max(255).optional(),
       content: z.string().optional(),
-    }).refine(data => data.name !== undefined || data.content !== undefined, {
-      message: 'At least one of \'name\' or \'content\' must be provided',
+      documentDate: z.coerce.date().nullable().optional(),
+    }).refine(data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined, {
+      message: 'At least one of \'name\', \'content\', or \'documentDate\' must be provided',
     })),
     async (context) => {
       const { userId } = getUser({ context });

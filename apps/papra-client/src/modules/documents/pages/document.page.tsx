@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/module
 import { Separator } from '@/modules/ui/components/separator';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { DocumentContentEditionPanel } from '../components/document-content-edition-panel.component';
+import { DocumentDatePicker } from '../components/document-date-picker.component';
 import { DocumentPreview } from '../components/document-preview.component';
 import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
@@ -324,6 +325,11 @@ export const DocumentPage: Component = () => {
                           label: t('documents.info.size'),
                           value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
                           icon: 'i-tabler-weight',
+                        },
+                        {
+                          label: t('documents.info.document-date'),
+                          value: <DocumentDatePicker document={getDocument()} organizationId={params.organizationId} />,
+                          icon: 'i-tabler-calendar-event',
                         },
                         {
                           label: t('documents.info.created-at'),

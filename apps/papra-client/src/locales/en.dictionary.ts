@@ -352,6 +352,9 @@ export const translations = {
   'documents.info.created-at': 'Created',
   'documents.info.updated-at': 'Updated',
   'documents.info.never': 'Never',
+  'documents.info.document-date': 'Date',
+  'documents.info.no-date': 'No date',
+  'documents.info.today': 'Today',
 
   'documents.rename.title': 'Rename document',
   'documents.rename.form.name.label': 'Name',

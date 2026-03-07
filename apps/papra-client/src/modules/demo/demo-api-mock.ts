@@ -749,16 +749,17 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(document, { status: 404 });
 
-      const { name, content } = body as { name?: string; content?: string };
+      const { name, content, documentDate } = body as { name?: string; content?: string; documentDate?: string };
 
       const newDocument = {
         ...document,
         ...(name !== undefined && { name }),
         ...(content !== undefined && { content }),
+        ...(documentDate !== undefined && { documentDate: documentDate === null ? null : new Date(documentDate) }),
         updatedAt: new Date(),
       };
 
-      await documentStorage.setItem(`${organizationId}:${documentId}`, newDocument);
+      await documentStorage.setItem(`${organizationId}:${documentId}`, newDocument as Document); // TODO: introduce a storage/serialized type
 
       return { document: newDocument };
     },
