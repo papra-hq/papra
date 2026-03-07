@@ -5,7 +5,7 @@ import { safely } from '@corentinth/chisels';
 import { getValues, setValue } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createSignal, For, Show, Suspense } from 'solid-js';
+import { createMemo, createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
@@ -325,7 +325,13 @@ export const TagsPage: Component = () => {
     <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
       <Suspense>
         <Show when={query.data?.tags}>
-          {getTags => (
+          {getTags => {
+            const sortedTags = createMemo(() => {
+              const tags = getTags();
+              return [...tags].sort((a, b) => a.name.localeCompare(b.name));
+            });
+
+            return (
             <Show
               when={getTags().length > 0}
               fallback={(
@@ -382,7 +388,7 @@ export const TagsPage: Component = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <For each={getTags()}>
+                  <For each={sortedTags()}>
                     {tag => (
                       <TableRow>
                         <TableCell>
@@ -424,7 +430,8 @@ export const TagsPage: Component = () => {
 
             </Show>
 
-          )}
+            );
+          }}
         </Show>
 
       </Suspense>
