@@ -354,6 +354,9 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.created-at': 'Erstellt am',
   'documents.info.updated-at': 'Aktualisiert am',
   'documents.info.never': 'Nie',
+  'documents.info.document-date': 'Datum',
+  'documents.info.no-date': 'Kein Datum',
+  'documents.info.today': 'Heute',
 
   'documents.rename.title': 'Dokument umbenennen',
   'documents.rename.form.name.label': 'Name',

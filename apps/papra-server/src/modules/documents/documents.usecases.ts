@@ -605,6 +605,7 @@ export async function updateDocument({
   changes: {
     name?: string;
     content?: string;
+    documentDate?: Date | null;
   };
 }) {
   // It throws if the document does not exist

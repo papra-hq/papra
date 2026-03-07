@@ -177,16 +177,18 @@ export async function updateDocument({
   organizationId,
   content,
   name,
+  documentDate,
 }: {
   documentId: string;
   organizationId: string;
   content?: string;
   name?: string;
+  documentDate?: Date | null;
 }) {
   const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'PATCH',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
-    body: { content, name },
+    body: { content, name, documentDate },
   });
 
   return {

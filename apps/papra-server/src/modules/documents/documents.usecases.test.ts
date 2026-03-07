@@ -932,6 +932,7 @@ describe('documents usecases', () => {
                 isDeleted: false,
                 mimeType: 'text/plain',
                 name: 'new-name.txt',
+                documentDate: null,
                 organizationId: 'organization-1',
                 originalName: 'file-1.txt',
                 originalSha256Hash: 'hash',

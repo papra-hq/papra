@@ -29,6 +29,7 @@
   "dependencies": {
     "@branchlet/core": "^1.0.0",
     "@corentinth/chisels": "catalog:",
+    "@corvu/calendar": "^0.1.2",
     "@corvu/otp-field": "^0.1.4",
     "@kobalte/core": "^0.13.10",
     "@kobalte/utils": "^0.9.1",

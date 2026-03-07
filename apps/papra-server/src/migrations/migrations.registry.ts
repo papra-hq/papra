@@ -16,6 +16,7 @@ import { dropFts5TriggersMigration } from './list/0013-drop-fts-5-triggers.migra
 import { twoFactorAuthenticationMigration } from './list/0014-two-factor-authentication.migration';
 import { indexDocumentsFtsIdsMigration } from './list/0015-index-documents-fts-ids.migration';
 import { caseInsensitiveTagNameUniqConstraintMigration } from './list/0016-case-insensitive-tag-name-uniq-constraint.migration';
+import { documentsDateMigration } from './list/0017-documents-date.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -34,4 +35,5 @@ export const migrations: Migration[] = [
   twoFactorAuthenticationMigration,
   indexDocumentsFtsIdsMigration,
   caseInsensitiveTagNameUniqConstraintMigration,
+  documentsDateMigration,
 ];

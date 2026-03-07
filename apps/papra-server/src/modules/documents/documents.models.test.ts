@@ -79,6 +79,7 @@ describe('documents models', () => {
           isDeleted: false,
           createdAt: new Date('2025-01-01'),
           updatedAt: new Date('2025-01-01'),
+          documentDate: new Date('2025-12-24'),
         },
       })).to.eql({
         content: 'Hello, world!',
@@ -95,6 +96,7 @@ describe('documents models', () => {
         originalSha256Hash: '1234567890',
         originalSize: 100,
         updatedAt: new Date('2025-01-01'),
+        documentDate: new Date('2025-12-24'),
       });
     });
   });

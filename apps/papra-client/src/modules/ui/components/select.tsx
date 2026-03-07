@@ -77,7 +77,7 @@ export function SelectContent<T extends ValidComponent = 'div'>(props: Polymorph
         )}
         {...rest}
       >
-        <SelectPrimitive.Listbox class="p-1 focus-visible:outline-none" />
+        <SelectPrimitive.Listbox class="p-1 focus-visible:outline-none max-h-60 overflow-y-auto" />
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );

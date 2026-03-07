@@ -10,6 +10,7 @@ export type Document = {
   originalSize: number;
   createdAt: Date;
   updatedAt?: Date;
+  documentDate?: Date;
   isDeleted?: boolean;
   deletedAt?: Date;
   deletedBy?: string;
