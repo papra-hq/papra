@@ -194,7 +194,7 @@ describe('query-builder', async () => {
       });
 
       expect(issues).to.eql([{
-        message: 'Invalid date format "not-a-date" for created filter',
+        message: 'Invalid date format for created filter: "not-a-date". Expected a valid date string.',
         code: 'INVALID_DATE_FORMAT',
       }]);
 

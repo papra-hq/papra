@@ -8,7 +8,13 @@ import { normalizeTagName } from '../../../../tags/tags.repository.models';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
 import { documentsTable } from '../../../documents.table';
 import { documentsFtsTable } from '../database-fts5.tables';
-import { createUnsupportedOperatorIssue, formatFts5QueryValue, getSqlOperator } from './query-builder.models';
+import {
+  createInvalidDateFormatQueryResult,
+  createInvalidQueryResult,
+  createUnsupportedOperatorQueryResult,
+  formatFts5QueryValue,
+  getSqlOperator,
+} from './query-builder.models';
 
 export function handleEmptyExpression(): QueryResult {
   return {
@@ -21,10 +27,7 @@ export function handleNameFilter({ expression, organizationId, db }: { expressio
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
-    return {
-      sqlQuery: sql`0`,
-      issues: [createUnsupportedOperatorIssue({ operator, field })],
-    };
+    return createUnsupportedOperatorQueryResult({ operator, field });
   }
 
   const { queryString } = formatFts5QueryValue({
@@ -48,10 +51,7 @@ export function handleContentFilter({ expression, organizationId, db }: { expres
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
-    return {
-      sqlQuery: sql`0`,
-      issues: [createUnsupportedOperatorIssue({ operator, field })],
-    };
+    return createUnsupportedOperatorQueryResult({ operator, field });
   }
 
   const { queryString } = formatFts5QueryValue({
@@ -159,10 +159,7 @@ export function handleHasTagsFilter({ expression, organizationId, db }: { expres
   const { operator, field } = expression;
 
   if (operator !== '=') {
-    return {
-      sqlQuery: sql`0`,
-      issues: [createUnsupportedOperatorIssue({ operator, field })],
-    };
+    return createUnsupportedOperatorQueryResult({ operator, field });
   }
 
   return {
@@ -183,15 +180,7 @@ export function handleCreatedFilter({ expression }: { expression: FilterExpressi
   const dateValue = new Date(value);
 
   if (!isValidDate(dateValue)) {
-    return {
-      sqlQuery: sql`0`,
-      issues: [
-        {
-          message: `Invalid date format "${value}" for created filter`,
-          code: 'INVALID_DATE_FORMAT',
-        },
-      ],
-    };
+    return createInvalidDateFormatQueryResult({ field: 'created', value });
   }
 
   const sqlOperator = getSqlOperator({ operator });
@@ -203,27 +192,17 @@ export function handleCreatedFilter({ expression }: { expression: FilterExpressi
 }
 
 export function handleUnsupportedExpression(): QueryResult {
-  return {
-    sqlQuery: sql`0`,
-    issues: [
-      {
-        message: 'Unsupported expression type',
-        code: 'UNSUPPORTED_EXPRESSION_TYPE',
-      },
-    ],
-  };
+  return createInvalidQueryResult({
+    message: 'Unsupported expression type',
+    code: 'UNSUPPORTED_EXPRESSION_TYPE',
+  });
 }
 
 export function handleInvalidHasValue({ expression }: { expression: FilterExpression }): QueryResult {
-  return {
-    sqlQuery: sql`0`,
-    issues: [
-      {
-        message: `Unsupported value "${expression.value}" for has filter`,
-        code: 'UNSUPPORTED_HAS_VALUE',
-      },
-    ],
-  };
+  return createInvalidQueryResult({
+    message: `Unsupported value "${expression.value}" for has filter`,
+    code: 'UNSUPPORTED_HAS_VALUE',
+  });
 }
 
 export function buildQueryFromExpression({ expression, organizationId, db }: { expression: Expression; organizationId: string; db: Database }): QueryResult {
