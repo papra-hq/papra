@@ -105,6 +105,42 @@ function buildHasTagsFilter({ expression }: { expression: FilterExpression }): D
   return ({ document }) => document.tags.length > 0;
 }
 
+function buildDateFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+  const { value, operator } = expression;
+  const dateValue = new Date(value);
+
+  if (Number.isNaN(dateValue.getTime())) {
+    return () => false;
+  }
+
+  return ({ document }) => {
+    if (!document.documentDate) {
+      return false;
+    }
+
+    const docDate = new Date(document.documentDate);
+
+    switch (operator) {
+      case '=': return docDate.toDateString() === dateValue.toDateString();
+      case '<': return docDate < dateValue;
+      case '<=': return docDate <= dateValue;
+      case '>': return docDate > dateValue;
+      case '>=': return docDate >= dateValue;
+      default: return false;
+    }
+  };
+}
+
+function buildHasDateFilter({ expression }: { expression: FilterExpression }): DocumentCondition {
+  const { operator } = expression;
+
+  if (operator !== '=') {
+    return falseCondition;
+  }
+
+  return ({ document }) => document.documentDate != null;
+}
+
 function buildExpressionCondition({ expression }: { expression: Expression }): DocumentCondition {
   switch (expression.type) {
     case 'text': return buildTextCondition({ expression });
@@ -117,9 +153,11 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
         case 'name': return buildNameFilterCondition({ expression });
         case 'content': return buildContentFilterCondition({ expression });
         case 'created': return buildCreatedFilterCondition({ expression });
+        case 'date': return buildDateFilterCondition({ expression });
         case 'has':
           switch (expression.value) {
             case 'tags': return buildHasTagsFilter({ expression });
+            case 'date': return buildHasDateFilter({ expression });
             default: return falseCondition;
           }
         default: return falseCondition;
