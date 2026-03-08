@@ -1,5 +1,23 @@
 # @papra/app
 
+## 26.2.3
+
+### Patch Changes
+
+- [#939](https://github.com/papra-hq/papra/pull/939) [`87a94ab`](https://github.com/papra-hq/papra/commit/87a94ab5671ff71760edf1851b7ea95cdf0d39bf) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed useless corepack installation in Dockerfiles
+
+- [#916](https://github.com/papra-hq/papra/pull/916) [`65c2bea`](https://github.com/papra-hq/papra/commit/65c2bea4c34bf2aeb65819a3ee78d8a08890d64c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added low-level safeguards in the document storage service to prevent overwriting existing files
+
+- [#943](https://github.com/papra-hq/papra/pull/943) [`a7b18ce`](https://github.com/papra-hq/papra/commit/a7b18cec6b0c3396b6bd9e2144dcc8f5ce9a9dfd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add the document date property.
+
+- [#921](https://github.com/papra-hq/papra/pull/921) [`6be6bea`](https://github.com/papra-hq/papra/commit/6be6beae905674b7a7db8f070f811c59ee28e9e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to customize the document storage path
+
+- [#935](https://github.com/papra-hq/papra/pull/935) [`62e9e66`](https://github.com/papra-hq/papra/commit/62e9e6663896fe249b45bb2cebc52cdba7c86606) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add a document storage migration script to migrate documents from one storage service to another or update storage key or configuration.
+
+- [#930](https://github.com/papra-hq/papra/pull/930) [`41e9f33`](https://github.com/papra-hq/papra/commit/41e9f33b06de15977e4f348184c1772fd85feddb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to fully disable the content extraction feature.
+
+- [#945](https://github.com/papra-hq/papra/pull/945) [`31e27d5`](https://github.com/papra-hq/papra/commit/31e27d5e1e00e623e02edfce7055c26c392fb6a8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the `date` search filter, allowing to filter by document dates, like `date:>2026`, and `has:date`.
+
 ## 26.2.2
 
 ### Patch Changes
