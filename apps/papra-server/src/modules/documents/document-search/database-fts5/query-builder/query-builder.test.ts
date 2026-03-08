@@ -6,6 +6,8 @@ import {
   handleAndExpression,
   handleContentFilter,
   handleCreatedFilter,
+  handleDocumentDateFilter,
+  handleDocumentHasDateFilter,
   handleEmptyExpression,
   handleHasTagsFilter,
   handleNameFilter,
@@ -126,6 +128,7 @@ describe('query-builder', async () => {
     test('supports equality operator for date filtering', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '=' },
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -139,6 +142,8 @@ describe('query-builder', async () => {
     test('supports greater than operator for date filtering', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '>' },
+        now: new Date('2025-06-15'),
+
       });
 
       expect(issues).to.eql([]);
@@ -152,6 +157,7 @@ describe('query-builder', async () => {
     test('supports greater than or equal operator for date filtering', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '>=' },
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -165,6 +171,7 @@ describe('query-builder', async () => {
     test('supports less than operator for date filtering', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '<' },
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -178,6 +185,7 @@ describe('query-builder', async () => {
     test('supports less than or equal operator for date filtering', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: '2024-01-15', operator: '<=' },
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -191,6 +199,7 @@ describe('query-builder', async () => {
     test('returns an error for invalid date format', () => {
       const { sqlQuery, issues } = handleCreatedFilter({
         expression: { type: 'filter', field: 'created', value: 'not-a-date', operator: '=' },
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([{
@@ -223,6 +232,7 @@ describe('query-builder', async () => {
       for (const [dateFormat, timestamp] of Object.entries(dateFormats)) {
         const { sqlQuery, issues } = handleCreatedFilter({
           expression: { type: 'filter', field: 'created', value: dateFormat, operator: '=' },
+          now: new Date('2025-06-15'),
         });
 
         expect(issues).to.eql([]);
@@ -231,6 +241,140 @@ describe('query-builder', async () => {
           params: [timestamp],
         });
       }
+    });
+  });
+
+  describe('handleDocumentDateFilter', () => {
+    const now = new Date('2025-06-15T00:00:00Z');
+
+    test('supports equality operator for date filtering', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: '2024-01-15', operator: '=' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" = ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports greater than operator for date filtering', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: '2024-01-15', operator: '>' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" > ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports greater than or equal operator for date filtering', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: '2024-01-15', operator: '>=' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" >= ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports less than operator for date filtering', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: '2024-01-15', operator: '<' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" < ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('supports less than or equal operator for date filtering', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: '2024-01-15', operator: '<=' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" <= ?`,
+        params: [1705276800000],
+      });
+    });
+
+    test('returns an error for invalid date format', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: 'not-a-date', operator: '=' },
+        now,
+      });
+
+      expect(issues).to.eql([{
+        message: 'Invalid date format for date filter: "not-a-date". Expected a valid date string.',
+        code: 'INVALID_DATE_FORMAT',
+      }]);
+
+      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+    });
+
+    test('supports "now" value to use the current date', () => {
+      const { sqlQuery, issues } = handleDocumentDateFilter({
+        expression: { type: 'filter', field: 'date', value: 'now', operator: '<=' },
+        now,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" <= ?`,
+        params: [now.getTime()],
+      });
+    });
+  });
+
+  describe('handleDocumentHasDateFilter', () => {
+    test('builds query to find documents with a date', () => {
+      const { sqlQuery, issues } = handleDocumentHasDateFilter({
+        expression: { type: 'filter', field: 'has', value: 'date', operator: '=' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(getSqlString(sqlQuery)).to.eql({
+        sql: `"documents"."document_date" is not null`,
+        params: [],
+      });
+    });
+
+    test('just the equality operator is supported ("=") for has filters, other operators return an issue and a no-op SQL query that evaluates to false', () => {
+      const { sqlQuery, issues } = handleDocumentHasDateFilter({
+        expression: { type: 'filter', field: 'has', value: 'date', operator: '>' },
+        organizationId: 'org_1',
+        db,
+      });
+
+      expect(issues).to.eql([{
+        message: 'Unsupported operator ">" for has filter',
+        code: 'UNSUPPORTED_FILTER_OPERATOR',
+      }]);
+
+      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
     });
   });
 
@@ -291,6 +435,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -315,6 +460,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([
@@ -347,6 +493,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -371,6 +518,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([
@@ -400,6 +548,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -418,6 +567,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([]);
@@ -436,6 +586,7 @@ describe('query-builder', async () => {
         },
         organizationId: 'org_1',
         db,
+        now: new Date('2025-06-15'),
       });
 
       expect(issues).to.eql([{

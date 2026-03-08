@@ -33,7 +33,9 @@ Use filters to search specific document properties. Current supported filters:
 - `content:` - Search in document content
 - `tag:` - Search by tag name or ID
 - `created:` - Filter by document creation date
+- `date:` - Filter by document date (the date associated with the document)
 - `has:tags` - Check if documents have any tags, it can be negated with `-has:tags` or `NOT has:tags` to find untagged documents
+- `has:date` - Check if documents have a date set, it can be negated with `-has:date` or `NOT has:date` to find documents without a date
 
 ### Filter Examples
 
@@ -69,6 +71,8 @@ The `has:` filter checks whether documents have certain properties:
 
 - `has:tags` - Documents with at least one tag
 - `-has:tags` or `NOT has:tags` - Documents without any tags
+- `has:date` - Documents with a date set
+- `-has:date` or `NOT has:date` - Documents without a date
 
 #### Existence Filter Examples
 
@@ -84,11 +88,17 @@ has:tags invoice
 
 # Find tagged documents that are not archived
 has:tags NOT tag:archived
+
+# Find documents without a date set
+-has:date
+
+# Find documents that have a date and a specific tag
+has:date tag:invoice
 ```
 
 ### Date Filter
 
-The `created:` filter supports date comparisons with the following operators:
+The `created:` and `date:` filters support date comparisons with the following operators:
 
 - `=` - Exact date match
 - `>` - After the date
@@ -127,6 +137,13 @@ created:<=2024-06-30
 
 # Finds invoices created only in 2024
 tag:invoice created:>2024 created:<2025
+
+# Finds documents with a document date after January 1st, 2024
+date:>2024
+
+# Finds documents with a document date on or before now
+date:<=now
+
 ```
 
 

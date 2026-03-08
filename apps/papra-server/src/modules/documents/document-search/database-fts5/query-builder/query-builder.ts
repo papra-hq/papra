@@ -1,7 +1,7 @@
 import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpression, TextExpression } from '@papra/search-parser';
 import type { Database } from '../../../../app/database/database.types';
 import type { QueryResult } from './query-builder.types';
-import { and, eq, inArray, not, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, not, or, sql } from 'drizzle-orm';
 import { isValidDate } from '../../../../shared/date';
 import { tagIdRegex } from '../../../../tags/tags.constants';
 import { normalizeTagName } from '../../../../tags/tags.repository.models';
@@ -91,8 +91,8 @@ export function handleTextExpression({ expression, organizationId, db }: { expre
   };
 }
 
-export function handleAndExpression({ expression, organizationId, db }: { expression: AndExpression; organizationId: string; db: Database }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db }));
+export function handleAndExpression({ expression, organizationId, db, now }: { expression: AndExpression; organizationId: string; db: Database; now: Date }): QueryResult {
+  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now }));
 
   return {
     sqlQuery: and(...subQueries.map(sq => sq.sqlQuery)),
@@ -100,8 +100,8 @@ export function handleAndExpression({ expression, organizationId, db }: { expres
   };
 }
 
-export function handleOrExpression({ expression, organizationId, db }: { expression: OrExpression; organizationId: string; db: Database }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db }));
+export function handleOrExpression({ expression, organizationId, db, now }: { expression: OrExpression; organizationId: string; db: Database; now: Date }): QueryResult {
+  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now }));
 
   return {
     sqlQuery: or(...subQueries.map(sq => sq.sqlQuery)),
@@ -109,8 +109,8 @@ export function handleOrExpression({ expression, organizationId, db }: { express
   };
 }
 
-export function handleNotExpression({ expression, organizationId, db }: { expression: NotExpression; organizationId: string; db: Database }): QueryResult {
-  const subQuery = buildQueryFromExpression({ expression: expression.operand, organizationId, db });
+export function handleNotExpression({ expression, organizationId, db, now }: { expression: NotExpression; organizationId: string; db: Database; now: Date }): QueryResult {
+  const subQuery = buildQueryFromExpression({ expression: expression.operand, organizationId, db, now });
 
   if (!subQuery.sqlQuery) {
     // Should not happen, but just for type safety
@@ -174,10 +174,47 @@ export function handleHasTagsFilter({ expression, organizationId, db }: { expres
   };
 }
 
-export function handleCreatedFilter({ expression }: { expression: FilterExpression }): QueryResult {
+function getDateValue({ value, now }: { value: string; now: Date }): Date {
+  if (value === 'now') {
+    return now;
+  }
+
+  return new Date(value);
+}
+
+export function handleDocumentDateFilter({ expression, now }: { expression: FilterExpression; now: Date }): QueryResult {
+  const { value, operator, field } = expression;
+
+  const dateValue = getDateValue({ value, now });
+  const sqlOperator = getSqlOperator({ operator });
+
+  if (!isValidDate(dateValue)) {
+    return createInvalidDateFormatQueryResult({ field, value });
+  }
+
+  return {
+    sqlQuery: sqlOperator(documentsTable.documentDate, dateValue),
+    issues: [],
+  };
+}
+
+export function handleDocumentHasDateFilter({ expression }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+  const { operator, field } = expression;
+
+  if (operator !== '=') {
+    return createUnsupportedOperatorQueryResult({ operator, field });
+  }
+
+  return {
+    sqlQuery: isNotNull(documentsTable.documentDate),
+    issues: [],
+  };
+}
+
+export function handleCreatedFilter({ expression, now }: { expression: FilterExpression; now: Date }): QueryResult {
   const { value, operator } = expression;
 
-  const dateValue = new Date(value);
+  const dateValue = getDateValue({ value, now });
 
   if (!isValidDate(dateValue)) {
     return createInvalidDateFormatQueryResult({ field: 'created', value });
@@ -205,23 +242,25 @@ export function handleInvalidHasValue({ expression }: { expression: FilterExpres
   });
 }
 
-export function buildQueryFromExpression({ expression, organizationId, db }: { expression: Expression; organizationId: string; db: Database }): QueryResult {
+export function buildQueryFromExpression({ expression, organizationId, db, now }: { expression: Expression; organizationId: string; db: Database; now: Date }): QueryResult {
   // I usually prefer a LUT, but for type narrowing, switch is more convenient and avoids casting
   switch (expression.type) {
     case 'empty': return handleEmptyExpression();
     case 'text': return handleTextExpression({ expression, organizationId, db });
-    case 'and': return handleAndExpression({ expression, organizationId, db });
-    case 'or': return handleOrExpression({ expression, organizationId, db });
-    case 'not': return handleNotExpression({ expression, organizationId, db });
+    case 'and': return handleAndExpression({ expression, organizationId, db, now });
+    case 'or': return handleOrExpression({ expression, organizationId, db, now });
+    case 'not': return handleNotExpression({ expression, organizationId, db, now });
     case 'filter':
       switch (expression.field) {
         case 'tag': return handleTagFilter({ expression, organizationId, db });
         case 'name': return handleNameFilter({ expression, organizationId, db });
         case 'content': return handleContentFilter({ expression, organizationId, db });
-        case 'created': return handleCreatedFilter({ expression });
+        case 'created': return handleCreatedFilter({ expression, now });
+        case 'date': return handleDocumentDateFilter({ expression, now });
         case 'has':
           switch (expression.value) {
             case 'tags': return handleHasTagsFilter({ expression, organizationId, db });
+            case 'date': return handleDocumentHasDateFilter({ expression, organizationId, db });
             default: return handleInvalidHasValue({ expression });
           }
         default: return handleUnsupportedExpression();

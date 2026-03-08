@@ -4,10 +4,10 @@ import { and, eq } from 'drizzle-orm';
 import { documentsTable } from '../../documents.table';
 import { buildQueryFromExpression } from './query-builder/query-builder';
 
-export function makeSearchWhereClause({ query, organizationId, db }: { query: string; organizationId: string; db: Database }) {
+export function makeSearchWhereClause({ query, organizationId, db, now = new Date() }: { query: string; organizationId: string; db: Database; now?: Date }) {
   const { expression, issues: parsedIssues } = parseSearchQuery({ query });
 
-  const { sqlQuery, issues } = buildQueryFromExpression({ expression, organizationId, db });
+  const { sqlQuery, issues } = buildQueryFromExpression({ expression, organizationId, db, now });
 
   return {
     searchWhereClause: and(

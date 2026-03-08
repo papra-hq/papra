@@ -22,8 +22,8 @@ export function createDocumentSearchRepository({ db }: { db: Database }) {
   }, { db });
 }
 
-async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database }) {
-  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db });
+async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db, now = new Date() }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database; now?: Date }) {
+  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now });
 
   const paginatedIdsSubquery = db
     .selectDistinct({ id: documentsTable.id, createdAt: documentsTable.createdAt })
