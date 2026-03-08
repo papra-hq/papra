@@ -75,7 +75,7 @@ function buildContentFilterCondition({ expression }: { expression: FilterExpress
 
 function buildCreatedFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
   const { value, operator } = expression;
-  const dateValue = new Date(value);
+  const dateValue = getDateValue({ value });
 
   if (Number.isNaN(dateValue.getTime())) {
     return () => false;
@@ -105,9 +105,17 @@ function buildHasTagsFilter({ expression }: { expression: FilterExpression }): D
   return ({ document }) => document.tags.length > 0;
 }
 
+function getDateValue({ value, now = new Date() }: { value: string; now?: Date }): Date {
+  if (value === 'now') {
+    return now;
+  }
+
+  return new Date(value);
+}
+
 function buildDateFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
   const { value, operator } = expression;
-  const dateValue = new Date(value);
+  const dateValue = getDateValue({ value });
 
   if (Number.isNaN(dateValue.getTime())) {
     return () => false;
