@@ -1,5 +1,11 @@
 # @papra/lecture
 
+## 0.5.0
+
+### Minor Changes
+
+- [#948](https://github.com/papra-hq/papra/pull/948) [`725eaff`](https://github.com/papra-hq/papra/commit/725eaff4b0339ce974b91e9eeb4482f716cfa279) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When extracting text from PDF documents, if neither text nor images suitable for OCR are found, the pages are rendered as images and processed with OCR. Adding support for vectorized text.
+
 ## 0.4.0
 
 ### Minor Changes
