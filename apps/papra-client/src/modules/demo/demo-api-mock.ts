@@ -111,6 +111,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         createdAt: new Date(),
         updatedAt: new Date(),
         tags: [],
+        propertyValues: [],
       };
 
       const key = `${organizationId}:${document.id}`;

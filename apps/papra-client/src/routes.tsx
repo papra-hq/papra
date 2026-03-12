@@ -13,6 +13,7 @@ import { LoginPage } from './modules/auth/pages/login.page';
 import { RegisterPage } from './modules/auth/pages/register.page';
 import { RequestPasswordResetPage } from './modules/auth/pages/request-password-reset.page';
 import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
+import { CustomPropertiesPage } from './modules/custom-properties/pages/custom-properties.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPdfViewerPage } from './modules/documents/pages/document-pdf-viewer.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
@@ -142,6 +143,10 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/tags',
                     component: TagsPage,
+                  },
+                  {
+                    path: '/custom-properties',
+                    component: CustomPropertiesPage,
                   },
                   {
                     path: '/tagging-rules',

@@ -2,6 +2,7 @@ import type { RouteDefinitionContext } from './server.types';
 import { registerAdminRoutes } from '../admin/admin.routes';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
+import { registerCustomPropertiesRoutes } from '../custom-properties/custom-properties.routes';
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
@@ -30,5 +31,6 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerWebhooksRoutes(context);
   registerInvitationsRoutes(context);
   registerDocumentActivityRoutes(context);
+  registerCustomPropertiesRoutes(context);
   registerAdminRoutes(context);
 }

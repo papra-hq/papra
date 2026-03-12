@@ -16,7 +16,8 @@ function setValidParams(path: string) {
     .replaceAll(':apiKeyId', 'api_key_777777777777777777777777')
     .replaceAll(':webhookId', 'wbh_888888888888888888888888')
     .replaceAll(':memberId', 'org_mem_999999999999999999999999')
-    .replaceAll(':invitationId', 'inv_101010101010101010101010');
+    .replaceAll(':invitationId', 'inv_101010101010101010101010')
+    .replaceAll(':propertyDefinitionId', 'cpd_121212121212121212121212');
 
   // throw if there are any remaining params
   if (newPath.match(/:\w+/g)) {

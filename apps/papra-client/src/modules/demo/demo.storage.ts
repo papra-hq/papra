@@ -105,6 +105,7 @@ export async function seedDemoStorage() {
       createdAt: fixture.date,
       updatedAt: fixture.date,
       tags: [],
+      propertyValues: [],
     });
 
     const documentFilePromise = documentFileStorage.setItem(`${organizationId}:${documentId}`, { path: fixture.fileUrl, name: fixture.name });

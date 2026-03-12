@@ -3,6 +3,8 @@ import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
+import { formatDocumentPropertyValuesForApi } from '../custom-properties/custom-properties.models';
+import { customPropertyDefinitionsTable, customPropertySelectOptionsTable, documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { subDays } from '../shared/date';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
@@ -149,10 +151,34 @@ async function getDocumentById({ documentId, organizationId, db }: { documentId:
     .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
     .where(eq(documentsTagsTable.documentId, documentId));
 
+  const propertyValuesRows = await db
+    .select({
+      value: documentCustomPropertyValuesTable,
+      definition: customPropertyDefinitionsTable,
+      selectOption: customPropertySelectOptionsTable,
+    })
+    .from(documentCustomPropertyValuesTable)
+    .innerJoin(
+      customPropertyDefinitionsTable,
+      eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id),
+    )
+    .leftJoin(
+      customPropertySelectOptionsTable,
+      eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id),
+    )
+    .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
+
+  const propertyValues = formatDocumentPropertyValuesForApi({
+    propertyValues: propertyValuesRows.map(r => r.value),
+    propertyDefinitions: propertyValuesRows.map(r => r.definition),
+    selectOptions: propertyValuesRows.map(r => r.selectOption),
+  });
+
   return {
     document: {
       ...document,
       tags,
+      propertyValues,
     },
   };
 }

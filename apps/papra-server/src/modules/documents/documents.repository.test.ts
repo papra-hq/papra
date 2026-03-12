@@ -99,6 +99,107 @@ describe('documents repository', () => {
     });
   });
 
+  describe('getDocumentById', () => {
+    test('a retrieved document includes an empty propertyValues array when no custom properties exist', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'organization-1' });
+
+      expect(document).toBeDefined();
+      expect(document!.propertyValues).to.eql([]);
+    });
+
+    test('a retrieved document includes its custom property values', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
+        ],
+        customPropertyDefinitions: [
+          { id: 'cpd-1', organizationId: 'organization-1', name: 'Company', type: 'text', displayOrder: 0, isRequired: false },
+          { id: 'cpd-2', organizationId: 'organization-1', name: 'Amount', type: 'number', displayOrder: 1, isRequired: false },
+        ],
+        documentCustomPropertyValues: [
+          { id: 'dcpv-1', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', textValue: 'Acme Corp', selectOptionId: null },
+          { id: 'dcpv-2', documentId: 'doc-1', propertyDefinitionId: 'cpd-2', numberValue: 42, selectOptionId: null },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'organization-1' });
+
+      expect(document).toBeDefined();
+      expect(document!.propertyValues).to.have.length(2);
+      expect(document!.propertyValues[0]).to.eql({ propertyDefinitionId: 'cpd-1', name: 'Company', value: 'Acme Corp' });
+      expect(document!.propertyValues[1]).to.eql({ propertyDefinitionId: 'cpd-2', name: 'Amount', value: 42 });
+    });
+
+    test('a retrieved document includes multi-select property values grouped into arrays of option objects', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
+        ],
+        customPropertyDefinitions: [
+          { id: 'cpd-1', organizationId: 'organization-1', name: 'Categories', type: 'multi_select', displayOrder: 0, isRequired: false },
+        ],
+        customPropertySelectOptions: [
+          { id: 'cpso-1', propertyDefinitionId: 'cpd-1', value: 'Finance', color: '#00FF00', displayOrder: 0 },
+          { id: 'cpso-2', propertyDefinitionId: 'cpd-1', value: 'Legal', color: '#FF0000', displayOrder: 1 },
+        ],
+        documentCustomPropertyValues: [
+          { id: 'dcpv-1', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', selectOptionId: 'cpso-1' },
+          { id: 'dcpv-2', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', selectOptionId: 'cpso-2' },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'organization-1' });
+
+      expect(document).toBeDefined();
+      expect(document!.propertyValues).to.have.length(1);
+      expect(document!.propertyValues[0]).to.eql({ propertyDefinitionId: 'cpd-1', name: 'Categories', value: [{ id: 'cpso-1', value: 'Finance', color: '#00FF00' }, { id: 'cpso-2', value: 'Legal', color: '#FF0000' }] });
+    });
+
+    test('property values from other documents are not included', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1' },
+          { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 2', originalName: 'document-2.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2' },
+        ],
+        customPropertyDefinitions: [
+          { id: 'cpd-1', organizationId: 'organization-1', name: 'Company', type: 'text', displayOrder: 0, isRequired: false },
+        ],
+        documentCustomPropertyValues: [
+          { id: 'dcpv-1', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', textValue: 'Acme', selectOptionId: null },
+          { id: 'dcpv-2', documentId: 'doc-2', propertyDefinitionId: 'cpd-1', textValue: 'Other Corp', selectOptionId: null },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'organization-1' });
+
+      expect(document).toBeDefined();
+      expect(document!.propertyValues).to.have.length(1);
+      expect(document!.propertyValues[0]).to.eql({ propertyDefinitionId: 'cpd-1', name: 'Company', value: 'Acme' });
+    });
+  });
+
   describe('getOrganizationStats', () => {
     test('retrieve document count and total size for an organization', async () => {
       const { db } = await createInMemoryDatabase({

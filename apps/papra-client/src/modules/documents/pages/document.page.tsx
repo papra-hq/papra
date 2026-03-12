@@ -6,6 +6,7 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { DocumentCustomProperties } from '@/modules/custom-properties/components/document-custom-properties.component';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { downloadFile } from '@/modules/shared/files/download';
@@ -342,6 +343,12 @@ export const DocumentPage: Component = () => {
                           icon: 'i-tabler-calendar',
                         },
                       ]}
+                      />
+
+                      <DocumentCustomProperties
+                        documentId={params.documentId}
+                        organizationId={params.organizationId}
+                        propertyValues={getDocument().propertyValues ?? []}
                       />
                     </TabsContent>
 

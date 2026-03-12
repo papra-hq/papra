@@ -64,7 +64,7 @@ describe('documents e2e', () => {
       expect(getDocumentResponse.status).to.eql(200);
       const { document: retrievedDocument } = (await getDocumentResponse.json()) as { document: Document };
 
-      expect(retrievedDocument).to.eql({ ...document, tags: [] });
+      expect(retrievedDocument).to.eql({ ...document, tags: [], propertyValues: [] });
 
       // Retrieve the document file
       const getDocumentFileResponse = await app.request(
@@ -245,7 +245,7 @@ describe('documents e2e', () => {
         expect(getDocumentResponse.status).to.eql(200);
         const { document: retrievedDocument } = (await getDocumentResponse.json()) as { document: Document };
 
-        expect(retrievedDocument).to.eql({ ...document, tags: [] });
+        expect(retrievedDocument).to.eql({ ...document, tags: [], propertyValues: [] });
       }
     });
 

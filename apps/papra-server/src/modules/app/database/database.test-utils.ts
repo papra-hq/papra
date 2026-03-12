@@ -3,6 +3,7 @@ import { createNoopLogger } from '@crowlog/logger';
 import { sql } from 'drizzle-orm';
 import { runMigrations } from '../../../migrations/migrations.usecases';
 import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.tables';
+import { customPropertyDefinitionsTable, customPropertySelectOptionsTable, documentCustomPropertyValuesTable } from '../../custom-properties/custom-properties.table';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
@@ -51,6 +52,9 @@ const seedTables = {
   webhookDeliveries: webhookDeliveriesTable,
   organizationInvitations: organizationInvitationsTable,
   userRoles: userRolesTable,
+  customPropertyDefinitions: customPropertyDefinitionsTable,
+  customPropertySelectOptions: customPropertySelectOptionsTable,
+  documentCustomPropertyValues: documentCustomPropertyValuesTable,
 } as const;
 
 type SeedTablesRows = {

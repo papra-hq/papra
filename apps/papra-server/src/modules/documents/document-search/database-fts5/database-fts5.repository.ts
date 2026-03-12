@@ -3,8 +3,10 @@ import type { Tag } from '../../../tags/tags.types';
 import type { Document } from '../../documents.types';
 import type { DocumentSearchableData } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
-import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
+import { desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { formatDocumentPropertyValuesForApi } from '../../../custom-properties/custom-properties.models';
+import { customPropertyDefinitionsTable, customPropertySelectOptionsTable, documentCustomPropertyValuesTable } from '../../../custom-properties/custom-properties.table';
 import { omitUndefined } from '../../../shared/utils';
 import { documentsTagsTable, tagsTable } from '../../../tags/tags.table';
 import { documentsTable } from '../../documents.table';
@@ -76,7 +78,39 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
 
   const documents = Object.values(documentsMap);
 
-  return { documents, documentsCount };
+  const documentIds = documents.map(d => d.id);
+
+  const allPropertyValuesRows = documentIds.length > 0
+    ? await db
+        .select({
+          value: documentCustomPropertyValuesTable,
+          definition: customPropertyDefinitionsTable,
+          selectOption: customPropertySelectOptionsTable,
+        })
+        .from(documentCustomPropertyValuesTable)
+        .innerJoin(
+          customPropertyDefinitionsTable,
+          eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id),
+        )
+        .leftJoin(
+          customPropertySelectOptionsTable,
+          eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id),
+        )
+        .where(inArray(documentCustomPropertyValuesTable.documentId, documentIds))
+    : [];
+
+  const documentsWithPropertyValues = documents.map((doc) => {
+    const docPropertyRows = allPropertyValuesRows.filter(r => r.value.documentId === doc.id);
+    const propertyValues = formatDocumentPropertyValuesForApi({
+      propertyValues: docPropertyRows.map(r => r.value),
+      propertyDefinitions: docPropertyRows.map(r => r.definition),
+      selectOptions: docPropertyRows.map(r => r.selectOption),
+    });
+
+    return { ...doc, propertyValues };
+  });
+
+  return { documents: documentsWithPropertyValues, documentsCount };
 }
 
 async function indexDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {

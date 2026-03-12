@@ -19,6 +19,7 @@ import { createLogger } from '../shared/logger/logger';
 import { IN_MS } from '../shared/units';
 import { isString } from '../shared/utils';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
+import { customPropertiesConfig } from '../custom-properties/custom-properties.config';
 import { tagsConfig } from '../tags/tags.config';
 import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
@@ -159,6 +160,7 @@ export const configDefinition = {
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
   tags: tagsConfig,
+  customProperties: customPropertiesConfig,
   tracking: trackingConfig,
 } as const satisfies AppConfigDefinition;
 
