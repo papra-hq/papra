@@ -69,7 +69,7 @@ describe('extractors usecases', () => {
           });
 
           expect(error).to.eql(undefined);
-          expect(extractorName).to.not.eql(undefined);
+          expect(extractorName).to.not.eql(undefined, 'No extractor found for the fixture file');
           expect(extractorType).to.not.eql(undefined);
 
           const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop().slice(0, 3);
