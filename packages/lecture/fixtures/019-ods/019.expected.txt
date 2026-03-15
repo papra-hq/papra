@@ -1,0 +1,15 @@
+ID	Name	Role
+1	Sabrina Spellman	Witch
+2	Darth Vader	Sith Lord
+3	Arya Stark	Assassin
+4	Sherlock Holmes	Detective
+5	Ahsoka	Cat / Jedi
+6	Pocky	Cat
+
+ID	Text
+a	Lorem
+b	Ipsum
+c	Dolor
+d	Sit
+e	Amet	Some text on the right (F6)
+Some text way below
