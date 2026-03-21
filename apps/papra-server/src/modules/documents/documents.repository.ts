@@ -316,10 +316,10 @@ function getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSiz
   return createIterator({ query, batchSize });
 }
 
-async function updateDocument({ documentId, organizationId, name, content, documentDate, db }: { documentId: string; organizationId: string; name?: string; content?: string; documentDate?: Date | null; db: Database }) {
+async function updateDocument({ documentId, organizationId, name, content, documentDate, notes, db }: { documentId: string; organizationId: string; name?: string; content?: string; documentDate?: Date | null; notes?: string | null; db: Database }) {
   const [document] = await db
     .update(documentsTable)
-    .set(omitUndefined({ name, content, documentDate }))
+    .set(omitUndefined({ name, content, documentDate, notes }))
     .where(
       and(
         eq(documentsTable.id, documentId),
