@@ -932,6 +932,7 @@ describe('documents usecases', () => {
                 isDeleted: false,
                 mimeType: 'text/plain',
                 name: 'new-name.txt',
+                notes: null,
                 documentDate: null,
                 organizationId: 'organization-1',
                 originalName: 'file-1.txt',
@@ -945,6 +946,73 @@ describe('documents usecases', () => {
           },
         ],
       );
+    });
+
+    test('when a document notes are updated, the notes are persisted and the event reflects the change', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      const { document } = await updateDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+        changes: { notes: 'Warranty expires 2030-01-01. Contact: John Smith.' },
+      });
+
+      expect(document).to.include({ notes: 'Warranty expires 2030-01-01. Contact: John Smith.' });
+
+      const emittedEvents = eventServices.getEmittedEvents();
+      expect(emittedEvents.length).to.eql(1);
+      expect(emittedEvents[0]!.payload.changes).to.eql({ notes: 'Warranty expires 2030-01-01. Contact: John Smith.' });
+    });
+
+    test('when a document notes are cleared (set to null), the notes are removed', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        documents: [{
+          id: 'document-1',
+          organizationId: 'organization-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'organization-1/originals/document-1.txt',
+          name: 'file-1.txt',
+          originalName: 'file-1.txt',
+          originalSha256Hash: 'hash',
+          notes: 'Existing notes',
+        }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const eventServices = createTestEventServices();
+
+      const { document } = await updateDocument({
+        documentId: 'document-1',
+        organizationId: 'organization-1',
+        userId: 'user-1',
+        documentsRepository,
+        eventServices,
+        changes: { notes: null },
+      });
+
+      expect(document).to.include({ notes: null });
     });
   });
 });
