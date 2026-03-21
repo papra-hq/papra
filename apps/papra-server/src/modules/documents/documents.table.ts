@@ -20,6 +20,7 @@ export const documentsTable = sqliteTable('documents', {
   mimeType: text('mime_type').notNull(),
   content: text('content').notNull().default(''),
   documentDate: integer('document_date', { mode: 'timestamp_ms' }),
+  notes: text('notes'),
 
   fileEncryptionKeyWrapped: text('file_encryption_key_wrapped'), // The wrapped encryption key
   fileEncryptionKekVersion: text('file_encryption_kek_version'), // The key encryption key version used to encrypt the file encryption key
