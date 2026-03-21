@@ -355,6 +355,10 @@ export const translations = {
   'documents.info.document-date': 'Date',
   'documents.info.no-date': 'No date',
   'documents.info.today': 'Today',
+  'documents.info.notes': 'Notes',
+  'documents.notes.empty-placeholder': 'No notes. Click edit to add a note.',
+  'documents.notes.updated': 'Notes updated',
+  'documents.notes.update-failed': 'Failed to update notes',
 
   'documents.rename.title': 'Rename document',
   'documents.rename.form.name.label': 'Name',

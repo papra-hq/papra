@@ -18,6 +18,7 @@ import { Separator } from '@/modules/ui/components/separator';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
 import { DocumentContentEditionPanel } from '../components/document-content-edition-panel.component';
 import { DocumentDatePicker } from '../components/document-date-picker.component';
+import { DocumentNotesEditionPanel } from '../components/document-notes-edition-panel.component';
 import { DocumentPreview } from '../components/document-preview.component';
 import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
@@ -342,6 +343,18 @@ export const DocumentPage: Component = () => {
                           icon: 'i-tabler-calendar',
                         },
                       ]}
+                      />
+
+                      <Separator class="my-4" />
+
+                      <p class="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                        <div class="i-tabler-notes size-4" />
+                        {t('documents.info.notes')}
+                      </p>
+                      <DocumentNotesEditionPanel
+                        documentId={getDocument().id}
+                        organizationId={params.organizationId}
+                        notes={getDocument().notes}
                       />
                     </TabsContent>
 
