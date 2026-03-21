@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { authConfig } from '../app/auth/auth.config';
 import { ensureAuthSecretIsNotDefaultInProduction } from '../app/auth/auth.config.models';
 import { databaseConfig } from '../app/database/database.config';
+import { customPropertiesConfig } from '../custom-properties/custom-properties.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
@@ -159,6 +160,7 @@ export const configDefinition = {
   organizationPlans: organizationPlansConfig,
   subscriptions: subscriptionsConfig,
   tags: tagsConfig,
+  customProperties: customPropertiesConfig,
   tracking: trackingConfig,
 } as const satisfies AppConfigDefinition;
 

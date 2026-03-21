@@ -6,6 +6,8 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/components/document-custom-properties-panel.component';
+import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { downloadFile } from '@/modules/shared/files/download';
@@ -33,21 +35,17 @@ type KeyValueItem = {
 
 const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
   return (
-    <div class="flex flex-col gap-2">
-      <table>
-        <For each={props.data}>
-          {item => (
-            <tr>
-              <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                {item.icon && <div class={item.icon} />}
-                {item.label}
-              </td>
-              <td class="py-1 pl-2 text-sm">{item.value}</td>
-            </tr>
-          )}
-        </For>
-      </table>
-    </div>
+    <For each={props.data}>
+      {item => (
+        <>
+          <div class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
+            {item.icon && <div class={item.icon} />}
+            {item.label}
+          </div>
+          <div class="py-1 pl-2 text-sm">{item.value}</div>
+        </>
+      )}
+    </For>
   );
 };
 
@@ -156,6 +154,11 @@ export const DocumentPage: Component = () => {
   const documentFileQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
     queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
+  }));
+
+  const customPropertyDefinitionsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'custom-properties'],
+    queryFn: () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
   }));
 
   const activityPageSize = 20;
@@ -291,58 +294,70 @@ export const DocumentPage: Component = () => {
                     </TabsList>
 
                     <TabsContent value="info">
-                      <KeyValues data={[
-                        {
-                          label: t('documents.info.id'),
-                          value: getDocument().id,
-                          icon: 'i-tabler-id',
-                        },
-                        {
-                          label: t('documents.info.name'),
-                          value: (
-                            <Button
-                              variant="ghost"
-                              class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
-                              onClick={() => openRenameDialog({
-                                documentId: getDocument().id,
-                                organizationId: params.organizationId,
-                                documentName: getDocument().name,
-                              })}
-                            >
-                              {getDocument().name}
+                      <div class="grid grid-cols-[max-content_1fr]">
+                        <KeyValues data={[
+                          {
+                            label: t('documents.info.id'),
+                            value: getDocument().id,
+                            icon: 'i-tabler-id',
+                          },
+                          {
+                            label: t('documents.info.name'),
+                            value: (
+                              <Button
+                                variant="ghost"
+                                class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
+                                onClick={() => openRenameDialog({
+                                  documentId: getDocument().id,
+                                  organizationId: params.organizationId,
+                                  documentName: getDocument().name,
+                                })}
+                              >
+                                {getDocument().name}
 
-                              <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                            </Button>
-                          ),
-                          icon: 'i-tabler-file-text',
-                        },
-                        {
-                          label: t('documents.info.type'),
-                          value: getDocument().mimeType,
-                          icon: 'i-tabler-file-unknown',
-                        },
-                        {
-                          label: t('documents.info.size'),
-                          value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
-                          icon: 'i-tabler-weight',
-                        },
-                        {
-                          label: t('documents.info.document-date'),
-                          value: <DocumentDatePicker document={getDocument()} organizationId={params.organizationId} />,
-                          icon: 'i-tabler-calendar-event',
-                        },
-                        {
-                          label: t('documents.info.created-at'),
-                          value: formatRelativeTime(getDocument().createdAt),
-                          icon: 'i-tabler-calendar',
-                        },
-                        {
-                          label: t('documents.info.updated-at'),
-                          value: getDocument().updatedAt ? formatRelativeTime(getDocument().updatedAt!) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
-                          icon: 'i-tabler-calendar',
-                        },
-                      ]}
-                      />
+                                <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                              </Button>
+                            ),
+                            icon: 'i-tabler-file-text',
+                          },
+                          {
+                            label: t('documents.info.type'),
+                            value: getDocument().mimeType,
+                            icon: 'i-tabler-file-unknown',
+                          },
+                          {
+                            label: t('documents.info.size'),
+                            value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
+                            icon: 'i-tabler-weight',
+                          },
+                          {
+                            label: t('documents.info.document-date'),
+                            value: <DocumentDatePicker document={getDocument()} organizationId={params.organizationId} />,
+                            icon: 'i-tabler-calendar-event',
+                          },
+                          {
+                            label: t('documents.info.created-at'),
+                            value: formatRelativeTime(getDocument().createdAt),
+                            icon: 'i-tabler-calendar',
+                          },
+                          {
+                            label: t('documents.info.updated-at'),
+                            value: getDocument().updatedAt ? formatRelativeTime(getDocument().updatedAt!) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
+                            icon: 'i-tabler-calendar',
+                          },
+                        ]}
+                        />
+
+                        <Show when={customPropertyDefinitionsQuery.data?.propertyDefinitions}>
+                          {getDefinitions => (
+                            <DocumentCustomPropertiesPanel
+                              document={getDocument()}
+                              organizationId={params.organizationId}
+                              propertyDefinitions={getDefinitions()}
+                            />
+                          )}
+                        </Show>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="content">
