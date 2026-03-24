@@ -14,6 +14,7 @@ import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { SideNav } from '@/modules/ui/components/sidenav';
+import { fetchViews } from '@/modules/views/views.services';
 import { Button } from '../components/button';
 import {
   Select,
@@ -72,33 +73,64 @@ const OrganizationLayoutSideNav: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
+  const viewsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'views'],
+    queryFn: () => fetchViews({ organizationId: params.organizationId }),
+  }));
+
+  const getViewsSections = () => {
+    const views = viewsQuery.data?.views ?? [];
+    if (views.length === 0) {
+      return [];
+    }
+    return [
+      {
+        label: t('layout.menu.views'),
+        items: views.map(view => ({
+          label: view.name,
+          icon: 'i-tabler-layout-list',
+          href: `/organizations/${params.organizationId}/views/${view.id}`,
+        })),
+      },
+    ];
+  };
+
   const getMainMenuItems = () => [
     {
-      label: t('layout.menu.home'),
-      icon: 'i-tabler-home',
-      href: `/organizations/${params.organizationId}`,
+      items: [
+        {
+          label: t('layout.menu.home'),
+          icon: 'i-tabler-home',
+          href: `/organizations/${params.organizationId}`,
+        },
+        {
+          label: t('layout.menu.documents'),
+          icon: 'i-tabler-file-text',
+          href: `/organizations/${params.organizationId}/documents`,
+        },
+        {
+          label: t('layout.menu.tags'),
+          icon: 'i-tabler-tag',
+          href: `/organizations/${params.organizationId}/tags`,
+        },
+        {
+          label: t('layout.menu.tagging-rules'),
+          icon: 'i-tabler-list-check',
+          href: `/organizations/${params.organizationId}/tagging-rules`,
+        },
+        {
+          label: t('layout.menu.members'),
+          icon: 'i-tabler-users',
+          href: `/organizations/${params.organizationId}/members`,
+        },
+        {
+          label: t('layout.menu.views'),
+          icon: 'i-tabler-layout-list',
+          href: `/organizations/${params.organizationId}/views`,
+        },
+      ],
     },
-    {
-      label: t('layout.menu.documents'),
-      icon: 'i-tabler-file-text',
-      href: `/organizations/${params.organizationId}/documents`,
-    },
-
-    {
-      label: t('layout.menu.tags'),
-      icon: 'i-tabler-tag',
-      href: `/organizations/${params.organizationId}/tags`,
-    },
-    {
-      label: t('layout.menu.tagging-rules'),
-      icon: 'i-tabler-list-check',
-      href: `/organizations/${params.organizationId}/tagging-rules`,
-    },
-    {
-      label: t('layout.menu.members'),
-      icon: 'i-tabler-users',
-      href: `/organizations/${params.organizationId}/members`,
-    },
+    ...getViewsSections(),
   ];
 
   const getFooterMenuItems = () => [

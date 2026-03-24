@@ -10,6 +10,7 @@ import { registerOrganizationsRoutes } from '../organizations/organizations.rout
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
+import { registerViewsRoutes } from '../views/views.routes';
 import { registerUsersRoutes } from '../users/users.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhook.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
@@ -25,6 +26,7 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerOrganizationsRoutes(context);
   registerDocumentsRoutes(context);
   registerTagsRoutes(context);
+  registerViewsRoutes(context);
   registerTaggingRulesRoutes(context);
   registerApiKeysRoutes(context);
   registerWebhooksRoutes(context);

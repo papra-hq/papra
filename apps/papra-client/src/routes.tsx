@@ -44,6 +44,8 @@ import { OrganizationLayout } from './modules/ui/layouts/organization.layout';
 import { SettingsLayout } from './modules/ui/layouts/settings.layout';
 import { CurrentUserProvider } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
+import { ViewPage } from './modules/views/pages/view.page';
+import { ViewsPage } from './modules/views/pages/views.page';
 import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
 import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
@@ -142,6 +144,14 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/tags',
                     component: TagsPage,
+                  },
+                  {
+                    path: '/views',
+                    component: ViewsPage,
+                  },
+                  {
+                    path: '/views/:viewId',
+                    component: ViewPage,
                   },
                   {
                     path: '/tagging-rules',
