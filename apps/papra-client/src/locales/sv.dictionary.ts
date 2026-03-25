@@ -901,7 +901,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.empty': 'Inga organisationer hittades.',
   'admin.organizations.table.id': 'ID',
   'admin.organizations.table.name': 'Namn',
-  'admin.organizations.table.members': 'Medlemmsar',
+  'admin.organizations.table.members': 'Medlemmar',
   'admin.organizations.table.created': 'Skapad',
   'admin.organizations.table.updated': 'Uppdaterad',
   'admin.organizations.pagination.info': 'Visar {{ start }} till {{ end }} av {{ total }} {{ total, =1:organisation, organisationer }}',
