@@ -128,6 +128,130 @@ describe('parseSearchQuery', () => {
       });
     });
 
+    test('parses filter with quoted field name containing spaces', () => {
+      expect(parseSearchQuery({ query: '"foo bar":buz' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'foo bar',
+          operator: '=',
+          value: 'buz',
+        },
+        issues: [],
+      });
+    });
+
+    test('parses filter with quoted field name and quoted value', () => {
+      expect(parseSearchQuery({ query: '"foo bar":"hello world"' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'foo bar',
+          operator: '=',
+          value: 'hello world',
+        },
+        issues: [],
+      });
+    });
+
+    test('parses filter with quoted field name and comparison operator', () => {
+      expect(parseSearchQuery({ query: '"my field":>=42' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'my field',
+          operator: '>=',
+          value: '42',
+        },
+        issues: [],
+      });
+    });
+
+    test('parses filter with quoted keyword field names without treating them as operators', () => {
+      expect(parseSearchQuery({ query: '"or":foo' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'or',
+          operator: '=',
+          value: 'foo',
+        },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: '"NOT":value' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'NOT',
+          operator: '=',
+          value: 'value',
+        },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: '"AND":>=42' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'AND',
+          operator: '>=',
+          value: '42',
+        },
+        issues: [],
+      });
+    });
+
+    test('treats quoted keyword strings as text, not operators', () => {
+      expect(parseSearchQuery({ query: '"AND"' })).toEqual({
+        expression: { type: 'text', value: 'AND' },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: '"OR"' })).toEqual({
+        expression: { type: 'text', value: 'OR' },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: '"NOT"' })).toEqual({
+        expression: { type: 'text', value: 'NOT' },
+        issues: [],
+      });
+    });
+
+    test('parses negated filter with quoted field name', () => {
+      expect(parseSearchQuery({ query: '-"foo bar":buz' })).toEqual({
+        expression: {
+          type: 'not',
+          operand: {
+            type: 'filter',
+            field: 'foo bar',
+            operator: '=',
+            value: 'buz',
+          },
+        },
+        issues: [],
+      });
+    });
+
+    test('parses filter with escaped quotes in quoted field name', () => {
+      expect(parseSearchQuery({ query: '"foo \\"bar\\"":buz' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'foo "bar"',
+          operator: '=',
+          value: 'buz',
+        },
+        issues: [],
+      });
+    });
+
+    test('parses filters with quotes containing colons', () => {
+      expect(parseSearchQuery({ query: '"field:with:colons":value' })).toEqual({
+        expression: {
+          type: 'filter',
+          field: 'field:with:colons',
+          operator: '=',
+          value: 'value',
+        },
+        issues: [],
+      });
+    });
+
     test('parses filter with comparison operators', () => {
       expect(parseSearchQuery({ query: 'createdAt:>2024-01-01' })).toEqual({
         expression: {
