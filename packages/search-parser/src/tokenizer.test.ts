@@ -63,6 +63,84 @@ describe('tokenizer', () => {
             { type: 'EOF' },
           ],
         },
+        {
+          query: `"foo bar":buz`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'foo bar', operator: '=', value: 'buz' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"foo bar":"hello world"`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'foo bar', operator: '=', value: 'hello world' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"my field":>=42`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'my field', operator: '>=', value: '42' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `-"foo bar":buz`,
+          expectedTokens: [
+            { type: 'NOT' },
+            { type: 'FILTER', field: 'foo bar', operator: '=', value: 'buz' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"foo \\"bar\\"":buz`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'foo "bar"', operator: '=', value: 'buz' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"AND"`,
+          expectedTokens: [
+            { type: 'TEXT', value: 'AND' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"OR"`,
+          expectedTokens: [
+            { type: 'TEXT', value: 'OR' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"NOT"`,
+          expectedTokens: [
+            { type: 'TEXT', value: 'NOT' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"or":foo`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'or', operator: '=', value: 'foo' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"NOT":value`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'NOT', operator: '=', value: 'value' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: `"AND":>=42`,
+          expectedTokens: [
+            { type: 'FILTER', field: 'AND', operator: '>=', value: '42' },
+            { type: 'EOF' },
+          ],
+        },
       ];
 
       for (const { query, expectedTokens, maxTokens = 100 } of queries) {
