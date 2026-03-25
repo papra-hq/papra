@@ -5,80 +5,12 @@ import { Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { Button } from '@/modules/ui/components/button';
-import { CalendarGrid, CalendarNav } from '@/modules/ui/components/calendar';
+import { CalendarGrid } from '@/modules/ui/components/calendar';
+import { CalendarMonthYearHeader } from '@/modules/ui/components/calendar-month-year-header';
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/ui/components/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { createToast } from '@/modules/ui/components/sonner';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { updateDocument } from '../documents.services';
-
-const YEAR_RANGE_OFFSET = 50;
-
-function getMonthOptions() {
-  return Array.from({ length: 12 }, (_, i) => String(i));
-}
-
-function getYearOptions() {
-  const currentYear = new Date().getFullYear();
-  return Array.from({ length: YEAR_RANGE_OFFSET * 2 + 1 }, (_, i) => String(currentYear - YEAR_RANGE_OFFSET + i));
-}
-
-function formatMonthLabel(monthIndex: string) {
-  return new Date(2024, Number(monthIndex), 1).toLocaleDateString(undefined, { month: 'long' });
-}
-
-function CalendarMonthYearHeader() {
-  const context = Calendar.useContext<'single'>();
-
-  const monthOptions = getMonthOptions();
-  const yearOptions = getYearOptions();
-
-  return (
-    <div class="flex items-center justify-between">
-      <CalendarNav action="prev-month">
-        <div class="i-tabler-chevron-left size-4" />
-      </CalendarNav>
-
-      <div class="flex items-center">
-        <Select
-          value={String(context.month().getMonth())}
-          onChange={value => value != null && context.setMonth(new Date(context.month().getFullYear(), Number(value), 1))}
-          options={monthOptions}
-          itemComponent={itemProps => (
-            <SelectItem item={itemProps.item}>
-              {formatMonthLabel(itemProps.item.rawValue)}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger class="border-none hover:bg-accent shadow-none text-sm font-medium gap-0" caretIcon={null}>
-            <SelectValue<string>>{state => formatMonthLabel(state.selectedOption())}</SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
-
-        <Select
-          value={String(context.month().getFullYear())}
-          onChange={value => value != null && context.setMonth(new Date(Number(value), context.month().getMonth(), 1))}
-          options={yearOptions}
-          itemComponent={itemProps => (
-            <SelectItem item={itemProps.item}>
-              {itemProps.item.rawValue}
-            </SelectItem>
-          )}
-        >
-          <SelectTrigger class="border-none hover:bg-accent shadow-none text-sm font-medium gap-0" caretIcon={null}>
-            <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-        </Select>
-      </div>
-
-      <CalendarNav action="next-month">
-        <div class="i-tabler-chevron-right size-4" />
-      </CalendarNav>
-    </div>
-  );
-}
 
 export function DocumentDatePicker(props: { document: Document; organizationId: string }) {
   const { t, formatDate } = useI18n();

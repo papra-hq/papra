@@ -456,54 +456,6 @@ describe('database-fts5 repository', () => {
       expect(searchResults).to.have.length(3);
       expect(searchResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
     });
-
-    test('documents are retrieved with their tags', async () => {
-      const documents = [
-        { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
-        { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
-      ];
-
-      const { db } = await createInMemoryDatabase({
-        organizations: [{ id: 'org_1', name: 'Organization 1' }],
-        documents,
-        tags: [
-          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', normalizedName: 'tag1', color: '#ff0000' },
-          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', normalizedName: 'tag2', color: '#00ff00' },
-        ],
-        documentsTags: [
-          { documentId: 'doc_1', tagId: 'tag_1' },
-          { documentId: 'doc_1', tagId: 'tag_2' },
-        ],
-      });
-
-      const documentsSearchRepository = createDocumentSearchRepository({ db });
-
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
-
-      const { documents: searchResults, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
-        organizationId: 'org_1',
-        searchQuery: 'lorem',
-        pageIndex: 0,
-        pageSize: 10,
-      });
-
-      expect(searchResults).to.have.length(2);
-      expect(documentsCount).to.equal(2);
-      expect(
-        searchResults.map(doc => ({
-          id: doc.id,
-          tags: doc.tags.map(({ id, organizationId, name, color }) => ({ id, organizationId, name, color })),
-        })).toSorted((a, b) => a.id.localeCompare(b.id)),
-      ).to.eql([
-        { id: 'doc_1', tags: [
-          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', color: '#ff0000' },
-          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', color: '#00ff00' },
-        ] },
-        { id: 'doc_2', tags: [] },
-      ]);
-    });
   });
 
   describe('indexDocument', () => {

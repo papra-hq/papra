@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { subDays } from '../shared/date';
@@ -9,7 +9,6 @@ import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
 import { isDefined, isNil, omitUndefined } from '../shared/utils';
-import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
 
@@ -34,6 +33,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       getGlobalDocumentsStats,
+      getDocumentsByIds,
     },
     { db },
   );
@@ -126,6 +126,24 @@ async function getOrganizationDeletedDocuments({ organizationId, pageIndex, page
   };
 }
 
+async function getDocumentsByIds({ documentIds, organizationId, db }: { documentIds: string[]; organizationId: string; db: Database }) {
+  if (documentIds.length === 0) {
+    return { documents: [] };
+  }
+
+  const documents = await db
+    .select({ id: documentsTable.id })
+    .from(documentsTable)
+    .where(
+      and(
+        inArray(documentsTable.id, documentIds),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
+
+  return { documents };
+}
+
 async function getDocumentById({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
   const [document] = await db
     .select()
@@ -137,24 +155,7 @@ async function getDocumentById({ documentId, organizationId, db }: { documentId:
       ),
     );
 
-  if (!document) {
-    return { document: undefined };
-  }
-
-  const tags = await db
-    .select({
-      ...getTableColumns(tagsTable),
-    })
-    .from(documentsTagsTable)
-    .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
-    .where(eq(documentsTagsTable.documentId, documentId));
-
-  return {
-    document: {
-      ...document,
-      tags,
-    },
-  };
+  return { document };
 }
 
 async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string; userId: string; db: Database; now?: Date }) {

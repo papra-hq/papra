@@ -98,7 +98,7 @@ export function NumberFieldInput<T extends ValidComponent = 'input'>(props: Poly
   return (
     <NumberFieldPrimitive.Input
       class={cn(
-        'flex h-9 w-full rounded-md border border-input bg-transparent px-10 py-1 text-sm text-center shadow-sm placeholder:text-muted-foreground disabled:(cursor-not-allowed opacity-50) focus-visible:outline-none',
+        'flex h-9 w-full rounded-md border border-input bg-transparent pl-3 pr-16 py-1 text-sm shadow-sm placeholder:text-muted-foreground disabled:(cursor-not-allowed opacity-50) focus-visible:outline-none',
         local.class,
       )}
       {...rest}
@@ -114,7 +114,7 @@ export function NumberFieldDecrementTrigger<T extends ValidComponent = 'button',
   return (
     <NumberFieldPrimitive.DecrementTrigger
       class={cn(
-        'absolute top-1/2 -translate-y-1/2 left-0 p-3 disabled:(cursor-not-allowed opacity-20)',
+        'absolute top-1/2 -translate-y-1/2 right-8 p-3 pr-1.5 disabled:(cursor-not-allowed opacity-20) hover:color-primary',
         local.class,
       )}
       {...rest}
@@ -146,7 +146,7 @@ export function NumberFieldIncrementTrigger<T extends ValidComponent = 'button',
   return (
     <NumberFieldPrimitive.IncrementTrigger
       class={cn(
-        'absolute top-1/2 -translate-y-1/2 right-0 disabled:(cursor-not-allowed opacity-20) p-3',
+        'absolute top-1/2 -translate-y-1/2 right-0 disabled:(cursor-not-allowed opacity-20) p-3 pl-1.5 hover:color-primary',
         local.class,
       )}
       {...rest}
