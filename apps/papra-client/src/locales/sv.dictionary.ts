@@ -852,7 +852,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} faktureras årsvis',
   'subscriptions.upgrade-dialog.upgrade-now': 'Uppgradera nu',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Begränsat erbjudande',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Få {{ percent }}% rabatt på alla planer för alltid per organisation som en tidig användare! Erbjudandet löper ut om {{ dagar, >1:{days} dagar, =1:1 dag, mindre än 1 dag }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description': 'Få {{ percent }}% rabatt på alla planer för alltid per organisation som en tidig användare! Erbjudandet löper ut om {{ days, >1:{days} dagar, =1:1 dag, mindre än 1 dag }}.',
 
   'subscriptions.plan.free.name': 'Gratisabonnemang',
   'subscriptions.plan.plus.name': 'Plus',
