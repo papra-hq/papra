@@ -379,7 +379,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Aktionen',
   'custom-properties.list.table.no-description': 'Keine Beschreibung',
   'custom-properties.list.delete.confirm-title': 'Benutzerdefinierte Eigenschaft löschen',
-  'custom-properties.list.delete.confirm-message': 'Möchten Sie die benutzerdefinierte Eigenschaft „{{ name }}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+  'custom-properties.list.delete.confirm-message': 'Möchten Sie die benutzerdefinierte Eigenschaft „{{ name }}” wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
   'custom-properties.list.delete.confirm-button': 'Löschen',
   'custom-properties.list.delete.success': 'Benutzerdefinierte Eigenschaft erfolgreich gelöscht',
   'custom-properties.list.delete.error': 'Benutzerdefinierte Eigenschaft konnte nicht gelöscht werden',

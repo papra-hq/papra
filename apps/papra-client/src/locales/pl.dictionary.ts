@@ -379,7 +379,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Działania',
   'custom-properties.list.table.no-description': 'Brak opisu',
   'custom-properties.list.delete.confirm-title': 'Usuń właściwość niestandardową',
-  'custom-properties.list.delete.confirm-message': 'Czy na pewno chcesz usunąć właściwość niestandardową „{{ name }}"? Tej operacji nie można cofnąć.',
+  'custom-properties.list.delete.confirm-message': 'Czy na pewno chcesz usunąć właściwość niestandardową „{{ name }}”? Tej operacji nie można cofnąć.',
   'custom-properties.list.delete.confirm-button': 'Usuń',
   'custom-properties.list.delete.success': 'Właściwość niestandardowa została pomyślnie usunięta',
   'custom-properties.list.delete.error': 'Nie udało się usunąć właściwości niestandardowej',

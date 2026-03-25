@@ -379,7 +379,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Acțiuni',
   'custom-properties.list.table.no-description': 'Fără descriere',
   'custom-properties.list.delete.confirm-title': 'Ștergere proprietate personalizată',
-  'custom-properties.list.delete.confirm-message': 'Sigur doriți să ștergeți proprietatea personalizată „{{ name }}"? Această acțiune nu poate fi anulată.',
+  'custom-properties.list.delete.confirm-message': 'Sigur doriți să ștergeți proprietatea personalizată „{{ name }}”? Această acțiune nu poate fi anulată.',
   'custom-properties.list.delete.confirm-button': 'Șterge',
   'custom-properties.list.delete.success': 'Proprietatea personalizată a fost ștearsă cu succes',
   'custom-properties.list.delete.error': 'Ștergerea proprietății personalizate a eșuat',
