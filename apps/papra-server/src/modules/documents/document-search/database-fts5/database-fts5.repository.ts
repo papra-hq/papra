@@ -3,6 +3,7 @@ import type { DocumentSearchableData } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
 import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { customPropertyDefinitionsTable } from '../../../custom-properties/custom-properties.table';
 import { omitUndefined } from '../../../shared/utils';
 import { documentsTable } from '../../documents.table';
 import { makeSearchWhereClause } from './database-fts5.repository.models';
@@ -20,7 +21,12 @@ export function createDocumentSearchRepository({ db }: { db: Database }) {
 }
 
 async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db, now = new Date() }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database; now?: Date }) {
-  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now });
+  const customPropertyDefinitions = await db
+    .select()
+    .from(customPropertyDefinitionsTable)
+    .where(eq(customPropertyDefinitionsTable.organizationId, organizationId));
+
+  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now, customPropertyDefinitions });
 
   const paginatedIdsSubquery = db
     .selectDistinct({ id: documentsTable.id, createdAt: documentsTable.createdAt })
