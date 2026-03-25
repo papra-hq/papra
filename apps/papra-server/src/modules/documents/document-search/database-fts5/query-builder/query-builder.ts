@@ -1,5 +1,6 @@
 import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpression, TextExpression } from '@papra/search-parser';
 import type { Database } from '../../../../app/database/database.types';
+import type { CustomPropertyDefinitionsByKey } from './query-builder.custom-properties';
 import type { QueryResult } from './query-builder.types';
 import { and, eq, inArray, isNotNull, not, or, sql } from 'drizzle-orm';
 import { isValidDate } from '../../../../shared/date';
@@ -8,6 +9,8 @@ import { normalizeTagName } from '../../../../tags/tags.repository.models';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
 import { documentsTable } from '../../../documents.table';
 import { documentsFtsTable } from '../database-fts5.tables';
+import { handleCustomPropertyFilter, handleHasCustomPropertyFilter } from './query-builder.custom-properties';
+import { getCustomPropertyDefinition } from './query-builder.custom-properties.models';
 import {
   createInvalidDateFormatQueryResult,
   createInvalidQueryResult,
@@ -91,8 +94,8 @@ export function handleTextExpression({ expression, organizationId, db }: { expre
   };
 }
 
-export function handleAndExpression({ expression, organizationId, db, now }: { expression: AndExpression; organizationId: string; db: Database; now: Date }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now }));
+export function handleAndExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: AndExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
+  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey }));
 
   return {
     sqlQuery: and(...subQueries.map(sq => sq.sqlQuery)),
@@ -100,8 +103,8 @@ export function handleAndExpression({ expression, organizationId, db, now }: { e
   };
 }
 
-export function handleOrExpression({ expression, organizationId, db, now }: { expression: OrExpression; organizationId: string; db: Database; now: Date }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now }));
+export function handleOrExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: OrExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
+  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey }));
 
   return {
     sqlQuery: or(...subQueries.map(sq => sq.sqlQuery)),
@@ -109,8 +112,8 @@ export function handleOrExpression({ expression, organizationId, db, now }: { ex
   };
 }
 
-export function handleNotExpression({ expression, organizationId, db, now }: { expression: NotExpression; organizationId: string; db: Database; now: Date }): QueryResult {
-  const subQuery = buildQueryFromExpression({ expression: expression.operand, organizationId, db, now });
+export function handleNotExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: NotExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
+  const subQuery = buildQueryFromExpression({ expression: expression.operand, organizationId, db, now, customPropertyDefinitionsByKey });
 
   if (!subQuery.sqlQuery) {
     // Should not happen, but just for type safety
@@ -242,14 +245,14 @@ export function handleInvalidHasValue({ expression }: { expression: FilterExpres
   });
 }
 
-export function buildQueryFromExpression({ expression, organizationId, db, now }: { expression: Expression; organizationId: string; db: Database; now: Date }): QueryResult {
+export function buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: Expression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
   // I usually prefer a LUT, but for type narrowing, switch is more convenient and avoids casting
   switch (expression.type) {
     case 'empty': return handleEmptyExpression();
     case 'text': return handleTextExpression({ expression, organizationId, db });
-    case 'and': return handleAndExpression({ expression, organizationId, db, now });
-    case 'or': return handleOrExpression({ expression, organizationId, db, now });
-    case 'not': return handleNotExpression({ expression, organizationId, db, now });
+    case 'and': return handleAndExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
+    case 'or': return handleOrExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
+    case 'not': return handleNotExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
     case 'filter':
       switch (expression.field) {
         case 'tag': return handleTagFilter({ expression, organizationId, db });
@@ -261,9 +264,25 @@ export function buildQueryFromExpression({ expression, organizationId, db, now }
           switch (expression.value) {
             case 'tags': return handleHasTagsFilter({ expression, organizationId, db });
             case 'date': return handleDocumentHasDateFilter({ expression, organizationId, db });
-            default: return handleInvalidHasValue({ expression });
+            default: {
+              const hasDefinition = getCustomPropertyDefinition({ name: expression.value, customPropertyDefinitionsByKey });
+
+              if (hasDefinition) {
+                return handleHasCustomPropertyFilter({ definition: hasDefinition, db });
+              }
+
+              return handleInvalidHasValue({ expression });
+            }
           }
-        default: return handleUnsupportedExpression();
+        default: {
+          const definition = getCustomPropertyDefinition({ name: expression.field, customPropertyDefinitionsByKey });
+
+          if (definition) {
+            return handleCustomPropertyFilter({ expression, definition, db, now });
+          }
+
+          return handleUnsupportedExpression();
+        }
       }
     default: return handleUnsupportedExpression();
   }
