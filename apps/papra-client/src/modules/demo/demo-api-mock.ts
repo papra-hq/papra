@@ -1,7 +1,9 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
+import type { CustomPropertyDefinition } from '../custom-properties/custom-properties.types';
 import type { Document } from '../documents/documents.types';
 import type { Webhook } from '../webhooks/webhooks.types';
 import type {
+  DocumentCustomPropertyValueStorage,
   DocumentFile,
 } from './demo.storage';
 import { FetchError } from 'ofetch';
@@ -11,6 +13,8 @@ import { defineHandler } from './demo-api-mock.models';
 import { createId, randomString } from './demo.models';
 import {
   apiKeyStorage,
+  customPropertyDefinitionStorage,
+  documentCustomPropertyValueStorage,
   documentFileStorage,
   documentStorage,
   organizationStorage,
@@ -63,6 +67,61 @@ async function deserializeFile(storageInfo: DocumentFile): Promise<File> {
   const { name, type, base64Content } = storageInfo;
 
   return new File([await fromBase64(base64Content)], name, { type });
+}
+
+function hydratePropertyValue({ value, definition }: { value: unknown; definition: CustomPropertyDefinition }): unknown {
+  if (value == null) {
+    return null;
+  }
+
+  if (definition.type === 'select') {
+    const optionId = String(value);
+    const option = definition.options.find(o => o.id === optionId || o.key === optionId);
+
+    if (!option) {
+      return null;
+    }
+
+    return { optionId: option.id, name: option.name };
+  }
+
+  if (definition.type === 'multi_select') {
+    const ids = Array.isArray(value) ? value.map(String) : [String(value)];
+
+    return ids
+      .map((id) => {
+        const option = definition.options.find(o => o.id === id || o.key === id);
+
+        return option ? { optionId: option.id, name: option.name } : null;
+      })
+      .filter(v => v !== null);
+  }
+
+  return value;
+}
+
+function buildCustomPropertiesResponse({
+  definitions,
+  storedValues,
+  documentId,
+}: {
+  definitions: CustomPropertyDefinition[];
+  storedValues: DocumentCustomPropertyValueStorage[];
+  documentId: string;
+}) {
+  const documentValues = storedValues.filter(v => v.documentId === documentId);
+  const valuesByDefinitionId = Object.fromEntries(documentValues.map(v => [v.propertyDefinitionId, v.value]));
+
+  return definitions
+    .toSorted((a, b) => a.displayOrder - b.displayOrder)
+    .map(def => ({
+      propertyDefinitionId: def.id,
+      key: def.key,
+      name: def.name,
+      type: def.type,
+      displayOrder: def.displayOrder,
+      value: hydratePropertyValue({ value: valuesByDefinitionId[def.id] ?? null, definition: def }),
+    }));
 }
 
 const inMemoryApiMock: Record<string, { handler: any }> = {
@@ -166,23 +225,32 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       const searchQuery = rawSearchQuery.trim();
-      const [organizationDocuments, allTags, tagDocuments] = await Promise.all([
+      const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
         findMany(documentStorage, document => document?.organizationId === organizationId && !document?.deletedAt),
         getValues(tagStorage),
         getValues(tagDocumentStorage),
+        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
+        getValues(documentCustomPropertyValueStorage),
       ]);
 
-      const documentsWithTags = organizationDocuments.map((document) => {
+      const documentsWithTagsAndProperties = organizationDocuments.map((document) => {
         const documentTagDocuments = tagDocuments.filter(tagDocument => tagDocument?.documentId === document?.id);
         const tags = allTags.filter(tag => documentTagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
+
+        const customProperties = buildCustomPropertiesResponse({
+          definitions: allDefinitions,
+          storedValues: allPropertyValues,
+          documentId: document.id,
+        });
 
         return {
           ...document,
           tags,
+          customProperties,
         };
       });
 
-      const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTags as Document[] });
+      const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTagsAndProperties as unknown as Document[] });
 
       const paginatedDocuments = filteredDocuments
         .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -223,13 +291,25 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(document, { status: 404 });
 
-      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.documentId === documentId);
+      const [tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
+        findMany(tagDocumentStorage, tagDocument => tagDocument.documentId === documentId),
+        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
+        findMany(documentCustomPropertyValueStorage, v => v.documentId === documentId),
+      ]);
+
       const tags = await findMany(tagStorage, tag => tagDocuments.some(tagDocument => tagDocument.tagId === tag.id));
+
+      const customProperties = buildCustomPropertiesResponse({
+        definitions: allDefinitions,
+        storedValues: allPropertyValues,
+        documentId,
+      });
 
       return {
         document: {
           ...document,
           tags,
+          customProperties,
         },
       };
     },
@@ -860,6 +940,173 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
           maxFileSize: 1024 * 1024 * 50, // 50 MiB
         },
       };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/custom-properties',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const propertyDefinitions = await findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId);
+
+      return { propertyDefinitions };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/custom-properties',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const existingDefinitions = await findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId);
+
+      const propertyDefinition = {
+        id: createId({ prefix: 'cpd' }),
+        organizationId,
+        name: get(body, ['name']) as string,
+        key: (get(body, ['name']) as string).toLowerCase().replace(/\s+/g, '_'),
+        description: (get(body, ['description']) ?? null) as string | null,
+        type: get(body, ['type']) as string,
+        displayOrder: existingDefinitions.length,
+        options: (get(body, ['options']) as { name: string }[] ?? []).map((option, index) => ({
+          id: createId({ prefix: 'opt' }),
+          name: option.name,
+          key: option.name.toLowerCase().replace(/\s+/g, '_'),
+          displayOrder: index,
+        })),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await customPropertyDefinitionStorage.setItem(propertyDefinition.id, propertyDefinition as any);
+
+      return { propertyDefinition };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
+    method: 'GET',
+    handler: async ({ params: { organizationId, propertyDefinitionId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const definition = await customPropertyDefinitionStorage.getItem(propertyDefinitionId);
+
+      assert(definition, { status: 404 });
+
+      return { definition };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
+    method: 'PUT',
+    handler: async ({ params: { organizationId, propertyDefinitionId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const propertyDefinition = await customPropertyDefinitionStorage.getItem(propertyDefinitionId);
+
+      assert(propertyDefinition, { status: 404 });
+
+      const updatedDefinition = Object.assign(propertyDefinition, body, { updatedAt: new Date() });
+
+      await customPropertyDefinitionStorage.setItem(propertyDefinitionId, updatedDefinition);
+
+      return { propertyDefinition: updatedDefinition };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, propertyDefinitionId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      await customPropertyDefinitionStorage.removeItem(propertyDefinitionId);
+
+      // Remove all values associated with this definition
+      const values = await findMany(documentCustomPropertyValueStorage, v => v.propertyDefinitionId === propertyDefinitionId);
+
+      await Promise.all(values.map(v => documentCustomPropertyValueStorage.removeItem(`${v.documentId}:${propertyDefinitionId}`)));
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/custom-properties',
+    method: 'GET',
+    handler: async ({ params: { organizationId, documentId } }) => {
+      const key = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(key);
+
+      assert(document, { status: 404 });
+
+      const [allDefinitions, allValues] = await Promise.all([
+        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
+        findMany(documentCustomPropertyValueStorage, v => v.documentId === documentId),
+      ]);
+
+      const customProperties = buildCustomPropertiesResponse({
+        definitions: allDefinitions,
+        storedValues: allValues,
+        documentId,
+      });
+
+      return { customProperties };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
+    method: 'PUT',
+    handler: async ({ params: { organizationId, documentId, propertyDefinitionId }, body }) => {
+      const docKey = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(docKey);
+
+      assert(document, { status: 404 });
+
+      const definition = await customPropertyDefinitionStorage.getItem(propertyDefinitionId);
+
+      assert(definition, { status: 404 });
+
+      const valueKey = `${documentId}:${propertyDefinitionId}`;
+      const existing = await documentCustomPropertyValueStorage.getItem(valueKey);
+
+      const value = get(body, ['value']);
+
+      await documentCustomPropertyValueStorage.setItem(valueKey, {
+        id: existing?.id ?? createId({ prefix: 'dcpv' }),
+        documentId,
+        propertyDefinitionId,
+        value,
+      });
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, documentId, propertyDefinitionId } }) => {
+      const docKey = `${organizationId}:${documentId}`;
+      const document = await documentStorage.getItem(docKey);
+
+      assert(document, { status: 404 });
+
+      const valueKey = `${documentId}:${propertyDefinitionId}`;
+
+      await documentCustomPropertyValueStorage.removeItem(valueKey);
     },
   }),
 };
