@@ -1,4 +1,6 @@
-export const translations = {
+import type { TranslationsDictionary } from '@/modules/i18n/locales.types';
+
+export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Återställ ditt lösenord',
@@ -1017,4 +1019,4 @@ export const translations = {
   'socials.x': 'X',
   'socials.reddit': 'Reddit',
   'socials.linkedin': 'LinkedIn',
-} as const;
+};
