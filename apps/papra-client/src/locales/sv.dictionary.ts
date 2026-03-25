@@ -464,7 +464,7 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'activity.document.created': 'Dokumentet har skapats',
   'activity.document.updated.single': '{{ field }} har uppdaterats',
-  'activity.document.updated.multiple': 'The {{ fields }} har uppdaterats',
+  'activity.document.updated.multiple': '{{ fields }} har uppdaterats',
   'activity.document.updated': 'Dokumentet har uppdaterats',
   'activity.document.deleted': 'Dokumentet har raderats',
   'activity.document.restored': 'Dokumentet har återställts',
