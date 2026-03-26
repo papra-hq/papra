@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 <Aside type="note">
-**Not yet available:** This migration script will be available in the next release.
+This migration script is available starting from Papra v26.3.0
 </Aside>
 
 The storage migration script copies every document from one storage backend to another, streaming files one at a time to keep memory usage flat. Encryption is handled transparently — documents are decrypted on the way out of the source and re-encrypted (or left plain) on the way into the destination, depending on each side's configuration.
