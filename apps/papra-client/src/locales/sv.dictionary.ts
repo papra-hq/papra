@@ -382,7 +382,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.delete.confirm-message': 'Är du säker på att du vill ta bort den anpassade egenskapen "{{ name }}"? Denna åtgärd kan inte ångras.',
   'custom-properties.list.delete.confirm-button': 'Radera',
   'custom-properties.list.delete.success': 'Anpassad egenskap raderad',
-  'custom-properties.list.delete.error': 'Kunde inte skapa anpassad egenskap',
+  'custom-properties.list.delete.error': 'Kunde inte radera anpassad egenskap',
 
   'custom-properties.create.title': 'Skapa anpassad egenskap',
   'custom-properties.create.submit': 'Skapa egenskap',
