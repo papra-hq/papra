@@ -2,6 +2,12 @@ import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpr
 import type { Document } from '../../documents/documents.types';
 import { parseSearchQuery } from '@papra/search-parser';
 
+export function generatePropertyKey({ name }: { name: string }): string {
+  return name
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .toLowerCase();
+}
+
 type DocumentCondition = (params: { document: Document }) => boolean;
 
 const falseCondition: DocumentCondition = () => false;
@@ -151,8 +157,10 @@ function buildHasDateFilter({ expression }: { expression: FilterExpression }): D
 }
 
 function buildHasCustomPropertyFilter({ propertyKey }: { propertyKey: string }): DocumentCondition {
+  const normalizedKey = generatePropertyKey({ name: propertyKey });
+
   return ({ document }) => {
-    const prop = document.customProperties?.find(p => p.key === propertyKey);
+    const prop = document.customProperties?.find(p => p.key === normalizedKey);
 
     return prop !== undefined && prop.value != null;
   };
@@ -160,9 +168,10 @@ function buildHasCustomPropertyFilter({ propertyKey }: { propertyKey: string }):
 
 function buildCustomPropertyFilterCondition({ field, expression }: { field: string; expression: FilterExpression }): DocumentCondition {
   const { value, operator } = expression;
+  const normalizedField = generatePropertyKey({ name: field });
 
   return ({ document }) => {
-    const prop = document.customProperties?.find(p => p.key === field);
+    const prop = document.customProperties?.find(p => p.key === normalizedField);
 
     if (!prop || prop.value == null) {
       return false;
