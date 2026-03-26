@@ -24,7 +24,7 @@ import {
   webhooksStorage,
 } from './demo.storage';
 import { findMany, getValues } from './demo.storage.models';
-import { searchDemoDocuments } from './search/demo.search.services';
+import { generatePropertyKey, searchDemoDocuments } from './search/demo.search.services';
 import { demoUser } from './seed/users.fixtures';
 
 function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
@@ -971,14 +971,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         id: createId({ prefix: 'cpd' }),
         organizationId,
         name: get(body, ['name']) as string,
-        key: (get(body, ['name']) as string).toLowerCase().replace(/\s+/g, '_'),
+        key: generatePropertyKey({ name: get(body, ['name']) as string }),
         description: (get(body, ['description']) ?? null) as string | null,
         type: get(body, ['type']) as string,
         displayOrder: existingDefinitions.length,
         options: (get(body, ['options']) as { name: string }[] ?? []).map((option, index) => ({
           id: createId({ prefix: 'opt' }),
           name: option.name,
-          key: option.name.toLowerCase().replace(/\s+/g, '_'),
+          key: generatePropertyKey({ name: option.name }),
           displayOrder: index,
         })),
         createdAt: new Date(),
