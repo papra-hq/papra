@@ -22,6 +22,7 @@ import { DocumentPage } from './modules/documents/pages/document.page';
 import { DocumentsPage } from './modules/documents/pages/documents.page';
 import { IntakeEmailsPage } from './modules/intake-emails/pages/intake-emails.page';
 import { InvitationsPage } from './modules/invitations/pages/invitations.page';
+import { KanbanTasksPage } from './modules/kanban-tasks/pages/kanban-tasks.page';
 import { useLastOrganization } from './modules/organizations/composables/use-last-organization';
 import { fetchOrganizations } from './modules/organizations/organizations.services';
 import { CreateFirstOrganizationPage } from './modules/organizations/pages/create-first-organization.page';
@@ -145,6 +146,10 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/tags',
                     component: TagsPage,
+                  },
+                  {
+                    path: '/kanban',
+                    component: KanbanTasksPage,
                   },
                   {
                     path: '/custom-properties',

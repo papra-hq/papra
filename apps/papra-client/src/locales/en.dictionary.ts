@@ -580,6 +580,31 @@ export const translations = {
   'tags.picker.create-new-with-name': 'Create new tag "{{ name }}"',
   'tags.picker.create-new': 'Create new tag',
 
+  // Kanban Tasks
+
+  'kanban.title': 'Task Board',
+  'kanban.description': 'Organize your tasks across columns. Drag and drop to change status.',
+  'kanban.create': 'Create task',
+  'kanban.update': 'Update task',
+  'kanban.create.success': 'Task created successfully.',
+  'kanban.update.success': 'Task updated successfully.',
+  'kanban.delete.success': 'Task deleted successfully.',
+  'kanban.delete.confirm.title': 'Delete task',
+  'kanban.delete.confirm.message': 'Are you sure you want to delete this task? This action cannot be undone.',
+  'kanban.delete.confirm.confirm-button': 'Delete',
+  'kanban.delete.confirm.cancel-button': 'Cancel',
+  'kanban.columns.todo': 'To Do',
+  'kanban.columns.in-progress': 'In Progress',
+  'kanban.columns.done': 'Done',
+  'kanban.form.title.label': 'Title',
+  'kanban.form.title.placeholder': 'Eg. Review quarterly report',
+  'kanban.form.title.required': 'Please enter a task title',
+  'kanban.form.title.max-length': 'Title must be less than 256 characters',
+  'kanban.form.description.label': 'Description',
+  'kanban.form.description.optional': '(optional)',
+  'kanban.form.description.placeholder': 'Eg. Review and approve the Q1 report before the deadline',
+  'kanban.form.description.max-length': 'Description must be less than 2048 characters',
+
   // Tagging rules
 
   'tagging-rules.field.name': 'document name',
@@ -775,6 +800,7 @@ export const translations = {
   'layout.menu.home': 'Home',
   'layout.menu.documents': 'Documents',
   'layout.menu.tags': 'Tags',
+  'layout.menu.kanban': 'Task Board',
   'layout.menu.custom-properties': 'Custom Properties',
   'layout.menu.tagging-rules': 'Tagging rules',
   'layout.menu.deleted-documents': 'Deleted documents',

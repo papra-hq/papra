@@ -90,6 +90,11 @@ const OrganizationLayoutSideNav: Component = () => {
       href: `/organizations/${params.organizationId}/tags`,
     },
     {
+      label: t('layout.menu.kanban'),
+      icon: 'i-tabler-layout-kanban',
+      href: `/organizations/${params.organizationId}/kanban`,
+    },
+    {
       label: t('layout.menu.custom-properties'),
       icon: 'i-tabler-forms',
       href: `/organizations/${params.organizationId}/custom-properties`,
