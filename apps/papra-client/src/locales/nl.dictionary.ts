@@ -807,6 +807,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'API-sleutels',
   'user-menu.invitations': 'Uitnodigingen',
   'user-menu.language': 'Taal',
+  'user-menu.theme': 'Thema',
   'user-menu.about': 'Over Papra',
   'user-menu.logout': 'Uitloggen',
 

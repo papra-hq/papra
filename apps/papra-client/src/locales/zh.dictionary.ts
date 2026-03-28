@@ -807,6 +807,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'API 密钥',
   'user-menu.invitations': '邀请',
   'user-menu.language': '语言',
+  'user-menu.theme': '主题',
   'user-menu.about': '关于 Papra',
   'user-menu.logout': '登出',
 

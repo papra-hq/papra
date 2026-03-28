@@ -805,6 +805,7 @@ export const translations = {
   'user-menu.api-keys': 'API keys',
   'user-menu.invitations': 'Invitations',
   'user-menu.language': 'Language',
+  'user-menu.theme': 'Theme',
   'user-menu.about': 'About Papra',
   'user-menu.logout': 'Logout',
 
