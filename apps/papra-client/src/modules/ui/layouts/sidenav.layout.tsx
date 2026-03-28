@@ -8,7 +8,7 @@ import { useDocumentUpload } from '@/modules/documents/components/document-impor
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
-import { useThemeStore } from '@/modules/theme/theme.store';
+import { useTheme } from '@/modules/theme/theme.provider';
 import { Button } from '@/modules/ui/components/button';
 import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
@@ -16,20 +16,20 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioG
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 
 export const ThemeSwitcher: Component = () => {
-  const themeStore = useThemeStore();
+  const { setThemePreference } = useTheme();
   const { t } = useI18n();
 
   return (
     <>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'light' })} class="flex items-center gap-2 cursor-pointer">
+      <DropdownMenuItem onClick={() => setThemePreference('light')} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-sun text-lg" />
         {t('layout.theme.light')}
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'dark' })} class="flex items-center gap-2 cursor-pointer">
+      <DropdownMenuItem onClick={() => setThemePreference('dark')} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-moon text-lg" />
         {t('layout.theme.dark')}
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => themeStore.setColorMode({ mode: 'system' })} class="flex items-center gap-2 cursor-pointer">
+      <DropdownMenuItem onClick={() => setThemePreference('system')} class="flex items-center gap-2 cursor-pointer">
         <div class="i-tabler-device-laptop text-lg" />
         {t('layout.theme.system')}
       </DropdownMenuItem>
@@ -70,7 +70,7 @@ export const SidenavLayout: ParentComponent<{
   sideNav: Component;
   showSearch?: boolean;
 }> = (props) => {
-  const themeStore = useThemeStore();
+  const { getTheme } = useTheme();
   const params = useParams();
   const { openCommandPalette } = useCommandPalette();
   const { t } = useI18n();
@@ -122,7 +122,7 @@ export const SidenavLayout: ParentComponent<{
 
             <DropdownMenu>
               <DropdownMenuTrigger as={Button} class="text-base hidden sm:flex" variant="outline" aria-label="Theme switcher">
-                <div classList={{ 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' }} />
+                <div classList={{ 'i-tabler-moon': getTheme() === 'dark', 'i-tabler-sun': getTheme() === 'light' }} />
                 <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
               </DropdownMenuTrigger>
               <DropdownMenuContent class="w-42">
