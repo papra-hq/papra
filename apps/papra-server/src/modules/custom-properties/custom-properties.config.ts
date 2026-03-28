@@ -1,10 +1,10 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
+import { coercedStrictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
 
 export const customPropertiesConfig = {
   maxCustomPropertiesPerOrganization: {
     doc: 'The maximum number of custom property definitions an organization can have',
-    schema: z.coerce.number().int().positive(),
+    schema: coercedStrictlyPositiveIntegerSchema,
     default: 100,
     env: 'MAX_CUSTOM_PROPERTIES_PER_ORGANIZATION',
   },

@@ -1,5 +1,5 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { booleanishSchema } from '../config/config.schemas';
 
 export const organizationPlansConfig = {
@@ -11,25 +11,25 @@ export const organizationPlansConfig = {
   },
   plusPlanMonthlyPriceId: {
     doc: 'The monthly price id of the plus plan (useless for self-hosting)',
-    schema: z.string(),
+    schema: v.string(),
     default: 'change-me',
     env: 'PLANS_PLUS_PLAN_MONTHLY_PRICE_ID',
   },
   plusPlanAnnualPriceId: {
     doc: 'The annual price id of the plus plan (useless for self-hosting)',
-    schema: z.string(),
+    schema: v.string(),
     default: 'change-me',
     env: 'PLANS_PLUS_PLAN_ANNUAL_PRICE_ID',
   },
   proPlanMonthlyPriceId: {
     doc: 'The monthly price id of the pro plan (useless for self-hosting)',
-    schema: z.string(),
+    schema: v.string(),
     default: 'change-me',
     env: 'PLANS_PRO_PLAN_MONTHLY_PRICE_ID',
   },
   proPlanAnnualPriceId: {
     doc: 'The annual price id of the pro plan (useless for self-hosting)',
-    schema: z.string(),
+    schema: v.string(),
     default: 'change-me',
     env: 'PLANS_PRO_PLAN_ANNUAL_PRICE_ID',
   },
