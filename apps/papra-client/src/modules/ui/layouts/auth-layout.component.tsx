@@ -1,10 +1,11 @@
 import type { ParentComponent } from 'solid-js';
 import { A } from '@solidjs/router';
 import { cn } from '@/modules/shared/style/cn';
+import { ThemeSwitcher } from '@/modules/theme/theme-switcher.component';
 import { useTheme } from '@/modules/theme/theme.provider';
 import { Button } from '../components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../components/dropdown-menu';
-import { LanguageSwitcher, ThemeSwitcher } from './sidenav.layout';
+import { LanguageSwitcher } from './sidenav.layout';
 
 export const AuthLayout: ParentComponent = (props) => {
   const { getTheme } = useTheme();

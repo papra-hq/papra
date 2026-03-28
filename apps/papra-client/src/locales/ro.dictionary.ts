@@ -807,6 +807,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'Chei API',
   'user-menu.invitations': 'Invitații',
   'user-menu.language': 'Limbă',
+  'user-menu.theme': 'Temă',
   'user-menu.about': 'Despre Papra',
   'user-menu.logout': 'Deconectare',
 

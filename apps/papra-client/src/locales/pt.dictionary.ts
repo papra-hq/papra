@@ -807,6 +807,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'Chaves API',
   'user-menu.invitations': 'Convites',
   'user-menu.language': 'Linguagem',
+  'user-menu.theme': 'Tema',
   'user-menu.about': 'Acerca do Papra',
   'user-menu.logout': 'Sair',
 
