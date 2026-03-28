@@ -1,40 +1,57 @@
 import { Buffer } from 'node:buffer';
-import { z } from 'zod';
+import * as v from 'valibot';
+import { areDocumentKeyEncryptionKeysUnique } from './document-encryption.schemas.models';
 
-export const documentKeyEncryptionKeySchema = z.object({
-  version: z.string(),
-  key: z.instanceof(Buffer).refine(x => x.length === 32, { message: 'The key must be a 32 bytes long hex string' }),
+const documentKeyEncryptionKeySchema = v.object({
+  version: v.string(),
+  key: v.pipe(
+    v.instance(Buffer),
+    v.length(32),
+  ),
 });
 
-const documentKeyEncryptionKeyArraySchema = z
-  .array(documentKeyEncryptionKeySchema)
-  .refine(x => x.length === new Set(x.map(x => x.version)).size, { message: 'The keys must have unique versions' });
+const documentKeyEncryptionKeyListSchema = v.pipe(
+  v.array(documentKeyEncryptionKeySchema),
+  v.check(
+    keys => areDocumentKeyEncryptionKeysUnique(keys),
+    'The keys must have unique versions',
+  ),
+);
 
-export const documentKeyEncryptionKeysSchema = z.union([
-  documentKeyEncryptionKeyArraySchema,
-  z.string().transform((x) => {
-    if (x.match(/^[0-9a-f]{64}$/i)) {
-      return [{
-        version: '1',
-        key: Buffer.from(x, 'hex'),
-      }];
+const versionedHexKeySchema = v.pipe(
+  v.string(),
+  v.transform((x): { version?: string; key?: string } => {
+    if (!x.includes(':')) {
+      return { version: '1', key: x };
     }
+    const [version, key] = x.split(':');
+    return { version, key };
+  }),
+  v.object({
+    version: v.string(),
+    key: v.pipe(
+      v.string(),
+      v.regex(/^[0-9a-f]{64}$/i, 'The key must be a 64 hex characters string (32 bytes)'),
+    ),
+  }),
+  v.transform(({ version, key }) => ({
+    version,
+    key: Buffer.from(key, 'hex'),
+  })),
+);
 
-    const keys = x.split(',').map(x => x.trim().split(':')).map(([version, key]) => {
-      if (version === undefined || key === undefined) {
-        return undefined;
-      }
-
-      return {
-        version,
-        key: Buffer.from(key, 'hex'),
-      };
-    });
-
-    if (keys.length === 0) {
-      return undefined;
-    }
-
-    return keys;
-  }).pipe(documentKeyEncryptionKeyArraySchema),
-]).optional();
+export const coercedDocumentKeyEncryptionKeysListSchema = v.optional(v.union(
+  [
+    documentKeyEncryptionKeyListSchema,
+    v.pipe(
+      v.string(),
+      v.transform(value => value.split(',').map(part => part.trim())),
+      v.array(versionedHexKeySchema),
+      v.check(
+        keys => areDocumentKeyEncryptionKeysUnique(keys),
+        'The keys must have unique versions',
+      ),
+    ),
+  ],
+  'The value must be either a 32 bytes long hex string, or a comma separated list of version:key pairs where the key is a 32 bytes long hex string',
+));

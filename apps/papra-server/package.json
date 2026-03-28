@@ -84,6 +84,7 @@
     "sanitize-html": "^2.17.0",
     "stripe": "^17.7.0",
     "tsx": "catalog:",
+    "valibot": "catalog:",
     "zod": "^3.25.67"
   },
   "devDependencies": {
