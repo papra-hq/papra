@@ -66,6 +66,7 @@ export async function createStorageKey({
   documentId,
   documentName,
   organizationId,
+  organizationName,
   documentsStorageService,
   logger,
   now = new Date(),
@@ -74,6 +75,7 @@ export async function createStorageKey({
   documentId: string;
   documentName: string;
   organizationId: string;
+  organizationName: string;
   documentsStorageService: Pick<DocumentStorageService, 'fileExists'>;
   logger?: Logger;
   now?: Date;
@@ -91,7 +93,7 @@ export async function createStorageKey({
     return { storageKey: originalDocumentStorageKey };
   }
 
-  const { storageKey: initialStorageKey } = buildStorageKey({ storageKeyPattern, documentId, documentName, organizationId, now });
+  const { storageKey: initialStorageKey } = buildStorageKey({ storageKeyPattern, documentId, documentName, organizationId, organizationName, now });
 
   const { storageKey } = await ensureStorageKeyIsAvailable({
     initialStorageKey,

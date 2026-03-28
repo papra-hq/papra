@@ -7,6 +7,7 @@ export const expressionsDefinitions: Record<string, (context: StoragePatternInte
   'document.id': context => context.documentId,
   'document.name': context => ensureSafeFileName(context.documentName),
   'organization.id': context => context.organizationId,
+  'organization.name': context => ensureSafeFileName(context.organizationName),
   'currentDate': context => context.now.toISOString(),
   'random': () => generateRandomString({ length: 8 }),
   ...[

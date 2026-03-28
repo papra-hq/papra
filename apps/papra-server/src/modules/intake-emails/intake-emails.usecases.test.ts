@@ -9,6 +9,7 @@ import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
+import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
@@ -28,6 +29,7 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
 
         const createDocument = createDocumentCreationUsecase({
           db,
@@ -47,6 +49,7 @@ describe('intake-emails usecases', () => {
             new File(['content2'], 'file2.txt', { type: 'text/plain' }),
           ],
           intakeEmailsRepository,
+          organizationsRepository,
           createDocument,
         });
 
@@ -71,6 +74,7 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
 
         const createDocument = createDocumentCreationUsecase({
           db,
@@ -87,6 +91,7 @@ describe('intake-emails usecases', () => {
           recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
+          organizationsRepository,
           createDocument,
           logger,
         });
@@ -105,6 +110,7 @@ describe('intake-emails usecases', () => {
         const { db } = await createInMemoryDatabase();
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
 
         const createDocument = createDocumentCreationUsecase({
           db,
@@ -121,6 +127,7 @@ describe('intake-emails usecases', () => {
           recipientAddress: 'bar@example.fr',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
+          organizationsRepository,
           createDocument,
           logger,
         });
@@ -144,6 +151,7 @@ describe('intake-emails usecases', () => {
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+        const organizationsRepository = createOrganizationsRepository({ db });
 
         const createDocument = createDocumentCreationUsecase({
           db,
@@ -160,6 +168,7 @@ describe('intake-emails usecases', () => {
           recipientAddress: 'email-1@papra.email',
           attachments: [new File(['content'], 'file.txt', { type: 'text/plain' })],
           intakeEmailsRepository,
+          organizationsRepository,
           createDocument,
           logger,
         });
@@ -194,6 +203,7 @@ describe('intake-emails usecases', () => {
       });
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
 
       const createDocument = createDocumentCreationUsecase({
         db,
@@ -212,6 +222,7 @@ describe('intake-emails usecases', () => {
           new File(['content1'], 'file1.txt', { type: 'text/plain' }),
         ],
         intakeEmailsRepository,
+        organizationsRepository,
         createDocument,
       });
 

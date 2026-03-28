@@ -4,6 +4,7 @@ export type StoragePatternInterpolationContext = {
   documentId: string;
   documentName: string;
   organizationId: string;
+  organizationName: string;
   now: Date;
 };
 

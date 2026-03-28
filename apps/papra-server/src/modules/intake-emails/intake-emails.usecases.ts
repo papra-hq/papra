@@ -1,4 +1,5 @@
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
+import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -10,6 +11,7 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
 import { coerceFileMimeType } from '../shared/mime-types/mime-types.usecases';
 import { fileToReadableStream } from '../shared/streams/readable-stream';
+import { getOrganizationByIdOrThrow } from '../organizations/organizations.usecases';
 import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } from './intake-emails.errors';
 import { getIsFromAllowedOrigin } from './intake-emails.models';
 
@@ -51,12 +53,14 @@ export async function processIntakeEmailIngestion({
   recipientsAddresses,
   attachments,
   intakeEmailsRepository,
+  organizationsRepository,
   createDocument,
 }: {
   fromAddress: string;
   recipientsAddresses: string[];
   attachments: File[];
   intakeEmailsRepository: IntakeEmailsRepository;
+  organizationsRepository: OrganizationsRepository;
   createDocument: CreateDocumentUsecase;
 }) {
   return Promise.all(
@@ -66,6 +70,7 @@ export async function processIntakeEmailIngestion({
         recipientAddress,
         attachments,
         intakeEmailsRepository,
+        organizationsRepository,
         createDocument,
       }),
     )),
@@ -77,6 +82,7 @@ export async function ingestEmailForRecipient({
   recipientAddress,
   attachments,
   intakeEmailsRepository,
+  organizationsRepository,
   logger = createLogger({ namespace: 'intake-emails.ingest' }),
   createDocument,
 }: {
@@ -84,6 +90,7 @@ export async function ingestEmailForRecipient({
   recipientAddress: string;
   attachments: File[];
   intakeEmailsRepository: IntakeEmailsRepository;
+  organizationsRepository: OrganizationsRepository;
   logger?: Logger;
   createDocument: CreateDocumentUsecase;
 }) {
@@ -114,6 +121,8 @@ export async function ingestEmailForRecipient({
     return;
   }
 
+  const { organization } = await getOrganizationByIdOrThrow({ organizationId: intakeEmail.organizationId, organizationsRepository });
+
   await Promise.all(attachments.map(async (file) => {
     const { mimeType } = await coerceFileMimeType({ file });
 
@@ -122,6 +131,7 @@ export async function ingestEmailForRecipient({
       fileName: file.name,
       mimeType,
       organizationId: intakeEmail.organizationId,
+      organizationName: organization.name,
     }));
 
     if (error) {

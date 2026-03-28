@@ -201,6 +201,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsS
       }
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
 
       const createDocument = createDocumentCreationUsecase({
         documentsStorageService,
@@ -215,6 +216,7 @@ function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsS
         recipientsAddresses,
         attachments,
         intakeEmailsRepository,
+        organizationsRepository,
         createDocument,
       });
 

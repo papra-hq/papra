@@ -123,9 +123,9 @@ export async function processFile({
 
   const { fileStream, mimeType, fileName } = getFileResult;
 
-  const { organizationId } = await getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository });
+  const { organizationId, organizationName } = await getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository });
 
-  if (isNil(organizationId)) {
+  if (isNil(organizationId) || isNil(organizationName)) {
     logger.warn({ filePath }, 'A file in the ingestion folder is not located in an organization ingestion folder, skipping');
     return;
   }
@@ -148,6 +148,7 @@ export async function processFile({
     fileName,
     mimeType,
     organizationId,
+    organizationName,
   }));
 
   const isNotInsertedBecauseAlreadyExists = isErrorWithCode({ error, code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE });
@@ -211,16 +212,16 @@ async function getFileOrganizationId({ filePath, ingestionFolderPath, organizati
   const { organizationId } = getOrganizationIdFromFilePath({ relativeFilePath });
 
   if (isNil(organizationId)) {
-    return { organizationId: undefined };
+    return { organizationId: undefined, organizationName: undefined };
   }
 
   const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
 
   if (isNil(organization)) {
-    return { organizationId: undefined };
+    return { organizationId: undefined, organizationName: undefined };
   }
 
-  return { organizationId: organization.id };
+  return { organizationId: organization.id, organizationName: organization.name };
 }
 
 async function buildPathIgnoreFunction({

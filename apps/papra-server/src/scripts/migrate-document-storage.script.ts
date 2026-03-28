@@ -10,6 +10,7 @@ import { parseConfig } from '../modules/config/config';
 import { documentsTable } from '../modules/documents/documents.table';
 import { createStorageKey } from '../modules/documents/storage/document-storage.usecases';
 import { createDocumentStorageService } from '../modules/documents/storage/documents.storage.services';
+import { organizationsTable } from '../modules/organizations/organizations.table';
 import { ensureBooleanArg } from './commons/args.utils';
 import { runScriptWithDb } from './commons/run-script';
 
@@ -58,6 +59,7 @@ export async function migrateDocumentStorage({
       id: documentsTable.id,
       originalStorageKey: documentsTable.originalStorageKey,
       organizationId: documentsTable.organizationId,
+      organizationName: organizationsTable.name,
       originalName: documentsTable.originalName,
       mimeType: documentsTable.mimeType,
       fileEncryptionKeyWrapped: documentsTable.fileEncryptionKeyWrapped,
@@ -65,6 +67,7 @@ export async function migrateDocumentStorage({
       fileEncryptionAlgorithm: documentsTable.fileEncryptionAlgorithm,
     })
     .from(documentsTable)
+    .innerJoin(organizationsTable, eq(documentsTable.organizationId, organizationsTable.id))
     .$dynamic();
 
   const documentIterator = createIterator({ query });
@@ -81,6 +84,7 @@ export async function migrateDocumentStorage({
       id,
       originalStorageKey: storageKey,
       organizationId,
+      organizationName,
       originalName,
       mimeType,
       fileEncryptionKeyWrapped,
@@ -108,6 +112,7 @@ export async function migrateDocumentStorage({
         storagePatternConfig: toConfig.documentsStorage.pattern,
         documentId: id,
         organizationId,
+        organizationName,
         documentName: originalName,
         documentsStorageService: toStorageService,
         logger: createNoopLogger(),

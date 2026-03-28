@@ -45,6 +45,7 @@ describe('activity-log document-created', () => {
         mimeType: 'text/plain',
         userId: 'user-1',
         organizationId: 'organization-1',
+        organizationName: 'Organization 1',
       });
 
       await createDocument({
@@ -52,6 +53,7 @@ describe('activity-log document-created', () => {
         fileName: 'file.txt',
         mimeType: 'text/plain',
         organizationId: 'organization-1',
+        organizationName: 'Organization 1',
       });
 
       await nextTick();

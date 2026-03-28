@@ -63,6 +63,7 @@ describe('documents usecases', () => {
         mimeType: 'text/plain',
         userId,
         organizationId,
+        organizationName: 'Organization 1',
       });
 
       expect(document).to.include({
@@ -125,6 +126,7 @@ describe('documents usecases', () => {
         mimeType: 'text/plain',
         userId,
         organizationId,
+        organizationName: 'Organization 1',
       });
 
       expect(document1).to.include({
@@ -148,6 +150,7 @@ describe('documents usecases', () => {
           mimeType: 'text/plain',
           userId,
           organizationId,
+          organizationName: 'Organization 1',
         }),
       ).rejects.toThrow(
         createDocumentAlreadyExistsError(),
@@ -227,6 +230,7 @@ describe('documents usecases', () => {
         fileName: 'file-2.txt',
         mimeType: 'text/plain',
         organizationId: 'organization-1',
+        organizationName: 'Organization 1',
       });
 
       expect(documentRestored).to.deep.include({
@@ -287,6 +291,7 @@ describe('documents usecases', () => {
         mimeType: 'application/pdf',
         userId,
         organizationId,
+        organizationName: 'Organization 1',
       });
 
       expect(document1.id).to.eql('doc_000000000000000000000001');
@@ -315,6 +320,7 @@ describe('documents usecases', () => {
         mimeType: 'application/pdf',
         userId,
         organizationId,
+        organizationName: 'Organization 1',
       });
 
       // The document should be restored (same ID)
@@ -371,6 +377,7 @@ describe('documents usecases', () => {
           mimeType: 'text/plain',
           userId,
           organizationId,
+          organizationName: 'Organization 1',
         }),
       ).rejects.toThrow(new Error('Macron, explosion!'));
 
@@ -419,6 +426,7 @@ describe('documents usecases', () => {
           mimeType: 'text/plain',
           userId: 'user-1',
           organizationId: 'organization-1',
+          organizationName: 'Organization 1',
         }),
       ).rejects.toThrow(createOrganizationDocumentStorageLimitReachedError());
 
@@ -485,6 +493,7 @@ describe('documents usecases', () => {
           mimeType: 'text/plain',
           userId: 'user-1',
           organizationId: 'organization-1',
+          organizationName: 'Organization 1',
         }),
 
         createDocument({
@@ -492,6 +501,7 @@ describe('documents usecases', () => {
           fileName: 'file-2.txt',
           mimeType: 'text/plain',
           organizationId: 'organization-1',
+          organizationName: 'Organization 1',
         }).then(resolve),
       ]);
 
@@ -544,6 +554,7 @@ describe('documents usecases', () => {
           mimeType: 'text/plain',
           userId: 'user-1',
           organizationId: 'organization-1',
+          organizationName: 'Organization 1',
         }),
       ).rejects.toThrow(createDocumentSizeTooLargeError());
 
@@ -584,6 +595,7 @@ describe('documents usecases', () => {
         mimeType: 'text/plain',
         userId: 'user-1',
         organizationId: 'organization-1',
+        organizationName: 'Organization 1',
       });
 
       const emittedEvents = eventServices.getEmittedEvents();

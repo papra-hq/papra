@@ -62,6 +62,22 @@ export async function ensureUserIsInOrganization({
   }
 }
 
+export async function getOrganizationByIdOrThrow({
+  organizationId,
+  organizationsRepository,
+}: {
+  organizationId: string;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+
+  if (!organization) {
+    throw createOrganizationNotFoundError();
+  }
+
+  return { organization };
+}
+
 export async function checkIfUserCanCreateNewOrganization({
   userId,
   config,

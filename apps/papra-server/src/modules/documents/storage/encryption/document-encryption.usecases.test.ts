@@ -42,6 +42,7 @@ describe('document-encryption usecases', () => {
         fileName: 'Doc 1.txt',
         mimeType: 'text/plain',
         organizationId: 'org-1',
+        organizationName: 'Org 1',
         fileStream: Readable.from(Buffer.from('Hello, world! - 1')),
       });
 
@@ -49,6 +50,7 @@ describe('document-encryption usecases', () => {
         fileName: 'Doc 2.txt',
         mimeType: 'text/plain',
         organizationId: 'org-1',
+        organizationName: 'Org 1',
         fileStream: Readable.from(Buffer.from('Hello, world! - 2')),
       });
 
@@ -75,6 +77,7 @@ describe('document-encryption usecases', () => {
         fileName: 'Doc 3.txt',
         mimeType: 'text/plain',
         organizationId: 'org-1',
+        organizationName: 'Org 1',
         fileStream: Readable.from(Buffer.from('Hello, world! - 3')),
       });
 

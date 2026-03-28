@@ -53,6 +53,7 @@ export async function createDocument({
   mimeType,
   userId,
   organizationId,
+  organizationName,
   ocrLanguages = [],
   isContentExtractionEnabled = true,
   storagePatternConfig,
@@ -74,6 +75,7 @@ export async function createDocument({
   mimeType: string;
   userId?: string;
   organizationId: string;
+  organizationName: string;
   ocrLanguages?: string[];
   isContentExtractionEnabled?: boolean;
   storagePatternConfig: StoragePatternConfig;
@@ -97,6 +99,7 @@ export async function createDocument({
     documentId,
     documentName: fileName,
     organizationId,
+    organizationName,
     documentsStorageService,
     storagePatternConfig,
   });
@@ -224,6 +227,7 @@ export function createDocumentCreationUsecase({
     mimeType: string;
     userId?: string;
     organizationId: string;
+    organizationName: string;
   }) => createDocument({ taskServices, documentsStorageService, eventServices, ...args, ...deps });
 }
 

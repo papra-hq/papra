@@ -6,7 +6,7 @@ import { getUser } from '../app/auth/auth.models';
 import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
-import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { ensureUserIsInOrganization, getOrganizationByIdOrThrow } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
@@ -50,6 +50,8 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
+      const { organization } = await getOrganizationByIdOrThrow({ organizationId, organizationsRepository });
+
       // Get organization's plan-specific upload limit
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
@@ -65,7 +67,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
 
       const createDocument = createDocumentCreationUsecase({ ...deps });
 
-      const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
+      const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId, organizationName: organization.name });
 
       return context.json({ document: formatDocumentForApi({ document }) });
     },

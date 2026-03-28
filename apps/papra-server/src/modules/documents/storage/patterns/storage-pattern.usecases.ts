@@ -1,7 +1,7 @@
 import type { StoragePatternInterpolationContext } from './storage-pattern.types';
 import { castError } from '@corentinth/chisels';
 import { isNil, isNilOrEmptyString } from '../../../shared/utils';
-import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID } from './storage-pattern.constants';
+import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID, DUMMY_ORGANIZATION_NAME } from './storage-pattern.constants';
 import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
 import { tokenizeStringArguments } from './storage-pattern.models';
 
@@ -73,6 +73,7 @@ export function isStoragePatternValid({ storageKeyPattern }: { storageKeyPattern
       documentId: DUMMY_DOCUMENT_ID,
       documentName: 'my-document.pdf',
       organizationId: DUMMY_ORGANIZATION_ID,
+      organizationName: DUMMY_ORGANIZATION_NAME,
       now: new Date(),
     });
 

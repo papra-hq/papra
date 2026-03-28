@@ -94,6 +94,7 @@ Multiple transformers can be chained, and each transformer receives the output o
 | `document.id` | The unique document identifier | `doc_123456789012345678901234` |
 | `document.name` | The original file name (sanitized for safe filesystem use) | `invoice-2025.pdf` |
 | `organization.id` | The organization identifier | `org_123456789012345678901234` |
+| `organization.name` | The organization name (sanitized for safe filesystem use) | `My Organization` |
 | `currentDate` | The current date and time in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `currentDate.yyyy` | Current year (4 digits) | `2025` |
 | `currentDate.MM` | Current month (2 digits, zero-padded) | `06` |
@@ -112,7 +113,7 @@ Example:
 ```
 
 <Aside type="note">
-The `document.name` expression automatically sanitizes the file name by replacing unsafe filesystem characters with underscores (`_`).
+The `document.name` and `organization.name` expressions automatically sanitize their values by replacing unsafe filesystem characters with underscores (`_`).
 </Aside>
 
 ## Available Transformers
@@ -152,6 +153,13 @@ Here are some common patterns for different use cases:
 ```bash
 DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
 # Result: org_abc123/invoice-2025.pdf
+```
+
+### Organize by Organization Name
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.name}}/{{document.name}}
+# Result: My Organization/invoice-2025.pdf
 ```
 
 ### Organize by Date

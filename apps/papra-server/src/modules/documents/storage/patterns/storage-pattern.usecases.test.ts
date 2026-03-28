@@ -8,6 +8,7 @@ describe('storage-pattern usecases', () => {
       documentId: 'doc_012345678901234567890123',
       documentName: 'My Document.pdf',
       organizationId: 'org_012345678901234567890123',
+      organizationName: 'My Organization',
       now: new Date('2025-05-15T12:34:56.789Z'),
     };
 
