@@ -1,13 +1,13 @@
 import type { ParentComponent } from 'solid-js';
 import { A } from '@solidjs/router';
 import { cn } from '@/modules/shared/style/cn';
-import { useThemeStore } from '@/modules/theme/theme.store';
+import { useTheme } from '@/modules/theme/theme.provider';
 import { Button } from '../components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../components/dropdown-menu';
 import { LanguageSwitcher, ThemeSwitcher } from './sidenav.layout';
 
 export const AuthLayout: ParentComponent = (props) => {
-  const themeStore = useThemeStore();
+  const { getTheme } = useTheme();
 
   return (
     <div class="h-screen w-full flex flex-col">
@@ -21,7 +21,7 @@ export const AuthLayout: ParentComponent = (props) => {
         <div class="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger as={Button} variant="outline" aria-label="Theme switcher">
-              <div class={cn('size-4.5', { 'i-tabler-moon': themeStore.getColorMode() === 'dark', 'i-tabler-sun': themeStore.getColorMode() === 'light' })} />
+              <div class={cn('size-4.5', { 'i-tabler-moon': getTheme() === 'dark', 'i-tabler-sun': getTheme() === 'light' })} />
               <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-42">
