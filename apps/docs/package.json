@@ -19,6 +19,7 @@
   "dependencies": {
     "@astrojs/solid-js": "^5.1.0",
     "@astrojs/starlight": "^0.34.3",
+    "@valibot/to-json-schema": "^1.6.0",
     "astro": "catalog:",
     "sharp": "^0.32.5",
     "shiki": "^3.4.2",
@@ -26,9 +27,8 @@
     "starlight-theme-rapide": "^0.5.0",
     "tailwind-merge": "^2.6.0",
     "unocss-preset-animations": "catalog:",
-    "yaml": "^2.8.0",
-    "zod": "^3.25.67",
-    "zod-to-json-schema": "^3.24.5"
+    "valibot": "catalog:",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
