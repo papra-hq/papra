@@ -58,8 +58,8 @@ catalogs:
       specifier: 1.3.0
       version: 1.3.0
     valibot:
-      specifier: ^1.2.0
-      version: 1.2.0
+      specifier: ^1.3.1
+      version: 1.3.1
     vitest:
       specifier: 4.0.3
       version: 4.0.3
@@ -86,6 +86,9 @@ importers:
       '@astrojs/starlight':
         specifier: ^0.34.3
         version: 0.34.3(astro@5.16.15(@azure/storage-blob@12.27.0)(@types/node@24.0.10)(idb-keyval@6.2.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.4)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.2))
+      '@valibot/to-json-schema':
+        specifier: ^1.6.0
+        version: 1.6.0(valibot@1.3.1(typescript@5.9.3))
       astro:
         specifier: 'catalog:'
         version: 5.16.15(@azure/storage-blob@12.27.0)(@types/node@24.0.10)(idb-keyval@6.2.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.4)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.2)
@@ -107,15 +110,12 @@ importers:
       unocss-preset-animations:
         specifier: 'catalog:'
         version: 1.3.0(@unocss/preset-wind3@66.6.0)(unocss@66.6.0(postcss@8.5.6)(vite@7.1.9(@types/node@24.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2)))
+      valibot:
+        specifier: 'catalog:'
+        version: 1.3.1(typescript@5.9.3)
       yaml:
         specifier: ^2.8.0
         version: 2.8.2
-      zod:
-        specifier: ^3.25.67
-        version: 3.25.76
-      zod-to-json-schema:
-        specifier: ^3.24.5
-        version: 3.25.1(zod@3.25.76)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -278,7 +278,7 @@ importers:
         version: 0.5.1(@babel/core@7.28.4)(react-native@0.81.5(@babel/core@7.28.4)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       valibot:
         specifier: 'catalog:'
-        version: 1.2.0(typescript@5.9.3)
+        version: 1.3.1(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -390,7 +390,7 @@ importers:
         version: 0.1.2
       valibot:
         specifier: 'catalog:'
-        version: 1.2.0(typescript@5.9.3)
+        version: 1.3.1(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -566,6 +566,9 @@ importers:
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
+      valibot:
+        specifier: 'catalog:'
+        version: 1.3.1(typescript@5.9.3)
       zod:
         specifier: ^3.25.67
         version: 3.25.76
@@ -771,7 +774,7 @@ importers:
         version: 1.1.1
       valibot:
         specifier: 'catalog:'
-        version: 1.2.0(typescript@5.9.3)
+        version: 1.3.1(typescript@5.9.3)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -5403,6 +5406,11 @@ packages:
     resolution: {integrity: sha512-TQMCz2pFJMfpNxmSfX1VSfTjwUIFx/mL+p1bnfM1xjjdla7Z+KnGMW/EhFbpckp3LyWAH4PgOsMwOMnIN+MBFg==}
     peerDependencies:
       '@urql/core': ^5.0.0
+
+  '@valibot/to-json-schema@1.6.0':
+    resolution: {integrity: sha512-d6rYyK5KVa2XdqamWgZ4/Nr+cXhxjy7lmpe6Iajw15J/jmU+gyxl2IEd1Otg1d7Rl3gOQL5reulnSypzBtYy1A==}
+    peerDependencies:
+      valibot: ^1.3.0
 
   '@vitest/coverage-v8@4.0.3':
     resolution: {integrity: sha512-I+MlLwyJRBjmJr1kFYSxoseINbIdpxIAeK10jmXgB0FUtIfdYsvM3lGAvBu5yk8WPyhefzdmbCHCc1idFbNRcg==}
@@ -11663,8 +11671,8 @@ packages:
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
-  valibot@1.2.0:
-    resolution: {integrity: sha512-mm1rxUsmOxzrwnX5arGS+U4T25RdvpPjPN4yR0u9pUBov9+zGVtO84tif1eY4r6zWxVxu3KzIyknJy3rxfRZZg==}
+  valibot@1.3.1:
+    resolution: {integrity: sha512-sfdRir/QFM0JaF22hqTroPc5xy4DimuGQVKFrzF1YfGwaS1nJot3Y8VqMdLO2Lg27fMzat2yD3pY5PbAYO39Gg==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -15685,7 +15693,7 @@ snapshots:
   '@modular-forms/solid@0.25.1(solid-js@1.9.10)(typescript@5.9.3)':
     dependencies:
       solid-js: 1.9.10
-      valibot: 1.2.0(typescript@5.9.3)
+      valibot: 1.3.1(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
@@ -17733,6 +17741,10 @@ snapshots:
     dependencies:
       '@urql/core': 5.2.0(graphql@16.8.1)
       wonka: 6.3.5
+
+  '@valibot/to-json-schema@1.6.0(valibot@1.3.1(typescript@5.9.3))':
+    dependencies:
+      valibot: 1.3.1(typescript@5.9.3)
 
   '@vitest/coverage-v8@4.0.3(vitest@4.0.3(@types/debug@4.1.12)(@types/node@24.0.10)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2))':
     dependencies:
@@ -25627,7 +25639,7 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1: {}
 
-  valibot@1.2.0(typescript@5.9.3):
+  valibot@1.3.1(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
 

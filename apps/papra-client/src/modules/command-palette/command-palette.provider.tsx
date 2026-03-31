@@ -8,7 +8,7 @@ import { useI18n } from '../i18n/i18n.provider';
 import { cn } from '../shared/style/cn';
 import { toArrayIf } from '../shared/utils/array';
 import { debounce } from '../shared/utils/timing';
-import { useThemeStore } from '../theme/theme.store';
+import { useTheme } from '../theme/theme.provider';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandLoading } from '../ui/components/command';
 
 const CommandPaletteContext = createContext<{
@@ -53,7 +53,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
   });
 
   const navigate = useNavigate();
-  const { setColorMode } = useThemeStore();
+  const { setThemePreference } = useTheme();
 
   const searchDocs = debounce(async ({ searchQuery }: { searchQuery: string }) => {
     const [result] = await safely(fetchOrganizationDocuments({ searchQuery, organizationId: params.organizationId, pageIndex: 0, pageSize: 5 }));
@@ -108,17 +108,17 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
         {
           label: t('layout.theme.light'),
           icon: 'i-tabler-sun',
-          action: () => setColorMode({ mode: 'light' }),
+          action: () => setThemePreference('light'),
         },
         {
           label: t('layout.theme.dark'),
           icon: 'i-tabler-moon',
-          action: () => setColorMode({ mode: 'dark' }),
+          action: () => setThemePreference('dark'),
         },
         {
           label: t('layout.theme.system'),
           icon: 'i-tabler-device-laptop',
-          action: () => setColorMode({ mode: 'system' }),
+          action: () => setThemePreference('system'),
         },
       ],
     },

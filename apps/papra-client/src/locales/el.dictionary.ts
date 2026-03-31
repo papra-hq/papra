@@ -807,6 +807,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'user-menu.api-keys': 'API keys',
   'user-menu.invitations': 'Προσκλήσεις',
   'user-menu.language': 'Γλώσσα',
+  'user-menu.theme': 'Θέμα',
   'user-menu.about': 'Σχετικά με το Papra',
   'user-menu.logout': 'Αποσύνδεση',
 

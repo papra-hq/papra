@@ -1,6 +1,6 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
-import { booleanishSchema } from '../config/config.schemas';
+import * as v from 'valibot';
+import { booleanishSchema, urlSchema } from '../config/config.schemas';
 
 export const trackingConfig = {
   posthog: {
@@ -12,13 +12,13 @@ export const trackingConfig = {
     },
     apiKey: {
       doc: 'The API key for PostHog',
-      schema: z.string(),
+      schema: v.string(),
       default: 'set-me',
       env: 'POSTHOG_API_KEY',
     },
     host: {
       doc: 'The host for PostHog',
-      schema: z.string().url(),
+      schema: urlSchema,
       default: 'https://eu.i.posthog.com',
       env: 'POSTHOG_HOST',
     },
