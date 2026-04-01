@@ -10,6 +10,34 @@ import { webhookEventsTable, webhooksTable } from './webhooks.tables';
 
 describe('webhook usecases', () => {
   describe('createWebhook', () => {
+    test('when SSRF protection is enabled, creating a webhook with a private IP URL throws ssrf_unsafe_url', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'org_1', name: 'Test Organization' },
+        ],
+        users: [
+          { id: 'user_1', email: 'test@example.com', name: 'Test User' },
+        ],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: 'user_1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+      const webhookRepository = createWebhookRepository({ db });
+
+      await expect(createWebhook({
+        name: 'Test Webhook',
+        url: 'https://127.0.0.1/webhook',
+        events: ['document:created'],
+        webhookRepository,
+        organizationId: 'org_1',
+        createdBy: 'user_1',
+        webhooksConfig: {
+          isSsrfProtectionEnabled: true,
+          webhookUrlAllowedHostnames: new Set<string>(),
+        },
+      })).rejects.toThrow('The provided URL is not safe to perform requests to');
+    });
+
     test('creates a new webhook and saves the events in the webhook_events table', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
@@ -32,6 +60,10 @@ describe('webhook usecases', () => {
         webhookRepository,
         organizationId: 'org_1',
         createdBy: 'user_1',
+        webhooksConfig: {
+          isSsrfProtectionEnabled: false,
+          webhookUrlAllowedHostnames: new Set<string>(),
+        },
       });
 
       expect(webhook).to.deep.include({
@@ -57,6 +89,29 @@ describe('webhook usecases', () => {
   });
 
   describe('updateWebhook', () => {
+    test('when SSRF protection is enabled, updating a webhook with a private IP URL throws ssrf_unsafe_url', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'org_1', name: 'Test Organization' },
+        ],
+        webhooks: [
+          { id: 'wbh_1', name: 'Test Webhook', url: 'https://example.com/webhook', organizationId: 'org_1' },
+        ],
+      });
+      const webhookRepository = createWebhookRepository({ db });
+
+      await expect(updateWebhook({
+        webhookId: 'wbh_1',
+        url: 'https://10.0.0.1/webhook',
+        webhookRepository,
+        organizationId: 'org_1',
+        webhooksConfig: {
+          isSsrfProtectionEnabled: true,
+          webhookUrlAllowedHostnames: new Set<string>(),
+        },
+      })).rejects.toThrow('The provided URL is not safe to perform requests to');
+    });
+
     test('updates a webhook and saves the events in the webhook_events table', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
@@ -80,6 +135,10 @@ describe('webhook usecases', () => {
         events: ['document:deleted'],
         webhookRepository,
         organizationId: 'org_1',
+        webhooksConfig: {
+          isSsrfProtectionEnabled: false,
+          webhookUrlAllowedHostnames: new Set<string>(),
+        },
       });
 
       const webhooks = await db.select().from(webhooksTable);
@@ -105,6 +164,48 @@ describe('webhook usecases', () => {
   });
 
   describe('triggerWebhooks', () => {
+    test('when SSRF protection is enabled, triggering a webhook with a private IP URL does not call the webhook service', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'org_1', name: 'Organization 1' },
+        ],
+        webhooks: [
+          { id: 'wbh_1', name: 'Test Webhook', url: 'https://192.168.1.1/webhook', organizationId: 'org_1', enabled: true },
+        ],
+        webhookEvents: [
+          { id: 'wbh_ev_1', webhookId: 'wbh_1', eventName: 'document:created' },
+        ],
+      });
+
+      const webhookRepository = createWebhookRepository({ db });
+      const { logger } = createTestLogger();
+      const triggerWebhookServiceArgs: unknown[] = [];
+
+      await expect(triggerWebhooks({
+        webhookRepository,
+        organizationId: 'org_1',
+        event: 'document:created',
+        payload: {
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          name: 'Document 1',
+          createdAt: new Date('2025-01-01'),
+          updatedAt: new Date('2025-01-01'),
+        },
+        logger,
+        triggerWebhookService: async (args) => {
+          triggerWebhookServiceArgs.push(args);
+          return { responseData: {}, responseStatus: 200, requestPayload: '{}' };
+        },
+        webhooksConfig: {
+          isSsrfProtectionEnabled: true,
+          webhookUrlAllowedHostnames: new Set<string>(),
+        },
+      })).rejects.toThrow('The provided URL is not safe to perform requests to');
+
+      expect(triggerWebhookServiceArgs).to.eql([]);
+    });
+
     test('when an organization has webhooks enabled for an event, the configured urls are called with the event payload', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
@@ -161,6 +262,10 @@ describe('webhook usecases', () => {
             responseStatus: 200,
             requestPayload: JSON.stringify({ event, payload }),
           };
+        },
+        webhooksConfig: {
+          isSsrfProtectionEnabled: false,
+          webhookUrlAllowedHostnames: new Set<string>(),
         },
       });
 

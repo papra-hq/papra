@@ -1,10 +1,12 @@
 import type { Component } from 'solid-js';
+import { safely } from '@corentinth/chisels';
 import { setValue } from '@modular-forms/solid';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
@@ -17,6 +19,7 @@ export const CreateWebhookPage: Component = () => {
   const { t } = useI18n();
   const params = useParams();
   const navigate = useNavigate();
+  const { createI18nApiError } = useI18nApiErrors();
 
   const createWebhookMutation = useMutation(() => ({
     mutationFn: createWebhook,
@@ -34,19 +37,24 @@ export const CreateWebhookPage: Component = () => {
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ name, url, secret, enabled, events }) => {
-      await createWebhookMutation.mutateAsync({
+      const [,error] = await safely(createWebhookMutation.mutateAsync({
         name,
         url,
         secret: secret === '' ? undefined : secret,
         enabled,
         events,
         organizationId: params.organizationId,
-      });
+      }));
+
+      if (error) {
+        throw createI18nApiError({ error });
+      }
     },
     schema: v.object({
       name: v.pipe(
         v.string(),
         v.nonEmpty(t('webhooks.create.form.name.required')),
+        v.maxLength(128, t('webhooks.create.form.name.max-length')),
       ),
       url: v.pipe(
         v.string(),
@@ -151,6 +159,9 @@ export const CreateWebhookPage: Component = () => {
             {t('webhooks.create.form.submit')}
           </Button>
         </div>
+
+        <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
+
       </Form>
     </div>
   );

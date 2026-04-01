@@ -1,23 +1,18 @@
-import type { Database } from '../../app/database/database.types';
 import type { EventServices } from '../../app/events/events.services';
-import { createWebhookRepository } from '../../webhooks/webhook.repository';
-import { triggerWebhooks } from '../../webhooks/webhook.usecases';
+import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
 
 export function registerTriggerWebhooksOnDocumentCreatedHandler({
   eventServices,
-  db,
+  webhookTriggerServices,
 }: {
   eventServices: EventServices;
-  db: Database;
+  webhookTriggerServices: WebhookTriggerServices;
 }) {
-  const webhookRepository = createWebhookRepository({ db });
-
   eventServices.onEvent({
     eventName: 'document.created',
     handlerName: 'trigger-webhooks',
     async handler({ document }) {
-      await triggerWebhooks({
-        webhookRepository,
+      await webhookTriggerServices.triggerWebhooks({
         organizationId: document.organizationId,
         event: 'document:created',
         payload: {

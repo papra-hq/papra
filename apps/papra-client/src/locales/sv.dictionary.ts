@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Webhook-namn',
   'webhooks.create.form.name.placeholder': 'Ange webhook-namn',
   'webhooks.create.form.name.required': 'Namn krävs',
+  'webhooks.create.form.name.max-length': 'Namnet får vara högst 128 tecken',
   'webhooks.create.form.url.label': 'Webhook-URL',
   'webhooks.create.form.url.placeholder': 'Ange webhook-URL',
   'webhooks.create.form.url.required': 'URL krävs',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Ogiltigt applikationsursprung. Om du själv tillhandahåller Papra, se till att din APP_BASE_URL-variabel matchar din nuvarande webbadress. För mer information se https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Det maximala antalet medlemmar och väntande inbjudningar för den här organisationen har uppnåtts. Uppgradera din plan för att lägga till fler medlemmar.',
   'api-errors.organization.has_active_subscription': 'Det går inte att ta bort en organisation med en aktiv prenumeration. Avsluta din prenumeration först med knappen Hantera prenumeration ovan.',
+  'api-errors.webhooks.ssrf_unsafe_url': 'Den angivna URL:en är inte tillåten. Webhook-URL:er får inte peka på privata eller reserverade IP-adresser.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Användaren hittades ej',
   'api-errors.FAILED_TO_CREATE_USER': 'Kunde inte skapa användare',

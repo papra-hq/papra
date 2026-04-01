@@ -10,7 +10,7 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TaskServices } from '../tasks/tasks.services';
-import type { WebhookRepository } from '../webhooks/webhook.repository';
+import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { DocumentActivityRepository } from './document-activity/document-activity.repository';
 import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
@@ -36,6 +36,7 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
 import { formatDocumentForApi, generateDocumentId as generateDocumentIdImpl } from './documents.models';
@@ -63,7 +64,7 @@ export async function createDocument({
   subscriptionsRepository,
   taggingRulesRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   eventServices,
   taskServices,
@@ -84,7 +85,7 @@ export async function createDocument({
   subscriptionsRepository: SubscriptionsRepository;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   eventServices: EventServices;
   taskServices: TaskServices;
@@ -153,7 +154,7 @@ export async function createDocument({
         newDocumentStorageKey: storageKey,
         tagsRepository,
         taggingRulesRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         documentsStorageService,
         logger,
@@ -208,7 +209,7 @@ export function createDocumentCreationUsecase({
     subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
     taggingRulesRepository: initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
-    webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
+    webhookTriggerServices: initialDeps.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) }),
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
     storagePatternConfig: initialDeps.storagePatternConfig ?? config.documentsStorage.pattern,
@@ -235,7 +236,7 @@ async function handleExistingDocument({
   documentsRepository,
   tagsRepository,
   taggingRulesRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   documentsStorageService,
   newDocumentStorageKey,
@@ -248,7 +249,7 @@ async function handleExistingDocument({
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   taggingRulesRepository: TaggingRulesRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   documentsStorageService: DocumentStorageService;
   newDocumentStorageKey: string;
@@ -268,7 +269,7 @@ async function handleExistingDocument({
     documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
   ]);
 
-  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
   return { document: restoredDocument };
 }
@@ -507,7 +508,7 @@ export async function extractAndSaveDocumentFileContent({
   ocrLanguages,
   taggingRulesRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   eventServices,
 }: {
@@ -518,7 +519,7 @@ export async function extractAndSaveDocumentFileContent({
   documentsStorageService: DocumentStorageService;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   eventServices: EventServices;
 }) {
@@ -546,7 +547,7 @@ export async function extractAndSaveDocumentFileContent({
     throw createDocumentNotFoundError();
   }
 
-  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
   return { document: updatedDocument };
 }

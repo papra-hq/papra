@@ -741,6 +741,7 @@ export const translations = {
   'webhooks.create.form.name.label': 'Webhook name',
   'webhooks.create.form.name.placeholder': 'Enter webhook name',
   'webhooks.create.form.name.required': 'Name is required',
+  'webhooks.create.form.name.max-length': 'Name must be at most 128 characters',
   'webhooks.create.form.url.label': 'Webhook URL',
   'webhooks.create.form.url.placeholder': 'Enter webhook URL',
   'webhooks.create.form.url.required': 'URL is required',
@@ -836,6 +837,7 @@ export const translations = {
   'api-errors.auth.invalid_origin': 'Invalid application origin. If you are self-hosting Papra, ensure your APP_BASE_URL environment variable matches your current url. For more details see https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
   'api-errors.organization.has_active_subscription': 'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
+  'api-errors.webhooks.ssrf_unsafe_url': 'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'User not found',
   'api-errors.FAILED_TO_CREATE_USER': 'Failed to create user',

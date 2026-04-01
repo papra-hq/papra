@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Όνομα webhook',
   'webhooks.create.form.name.placeholder': 'Εισαγάγετε όνομα',
   'webhooks.create.form.name.required': 'Το όνομα είναι υποχρεωτικό',
+  'webhooks.create.form.name.max-length': 'Το όνομα πρέπει να έχει το πολύ 128 χαρακτήρες',
   'webhooks.create.form.url.label': 'URL Webhook',
   'webhooks.create.form.url.placeholder': 'Εισαγάγετε URL',
   'webhooks.create.form.url.required': 'Το URL είναι υποχρεωτικό',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Μη έγκυρη προέλευση εφαρμογής. Βεβαιωθείτε ότι το APP_BASE_URL ταιριάζει με το τρέχον URL. Δείτε https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Φτάσατε το μέγιστο αριθμό μελών/προσκλήσεων. Αναβαθμίστε το πλάνο σας.',
   'api-errors.organization.has_active_subscription': 'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα μέσω "Διαχείριση συνδρομής".',
+  'api-errors.webhooks.ssrf_unsafe_url': 'Η παρεχόμενη URL δεν επιτρέπεται. Οι URL webhook δεν πρέπει να δείχνουν σε ιδιωτικές ή δεσμευμένες διευθύνσεις IP.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Ο χρήστης δεν βρέθηκε',
   'api-errors.FAILED_TO_CREATE_USER': 'Αποτυχία δημιουργίας χρήστη',
