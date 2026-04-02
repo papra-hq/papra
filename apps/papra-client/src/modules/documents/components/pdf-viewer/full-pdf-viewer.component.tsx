@@ -16,7 +16,13 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
     thumbsRef,
     pdfSlickStore: store,
     PDFSlickViewer,
-  } = usePDFSlick(props.url);
+  } = usePDFSlick(props.url, {
+    getDocumentParams: {
+      cMapUrl: 'https://unpkg.com/pdfjs-dist@5.6.205/cmaps/',
+      cMapPacked: true,
+      standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@5.6.205/standard_fonts/',
+    },
+  });
 
   const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
   const [sidebarWidth, setSidebarWidth] = createSignal(SIDEBAR_DEFAULT_WIDTH);
