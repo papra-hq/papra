@@ -55,4 +55,32 @@ describe('api-keys repository', () => {
       ]);
     });
   });
+
+  describe('getApiKeyByHash', () => {
+    test('when retrieving an api key by hash, it only returns the api key if it is not expired', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+        ],
+        apiKeys: [
+          { id: 'api-key-1', userId: 'user-1', name: 'API Key 1', prefix: 'ak', keyHash: 'hash1', createdAt: new Date('2021-03-01'), updatedAt: new Date('2021-03-02'), expiresAt: new Date('2022-03-01') },
+          { id: 'api-key-2', userId: 'user-1', name: 'API Key 2', prefix: 'ak', keyHash: 'hash2', createdAt: new Date('2021-03-01'), updatedAt: new Date('2021-03-02'), expiresAt: new Date('2020-03-01') },
+          { id: 'api-key-3', userId: 'user-1', name: 'API Key 3', prefix: 'ak', keyHash: 'hash3', createdAt: new Date('2021-03-01'), updatedAt: new Date('2021-03-02'), expiresAt: null },
+        ],
+      });
+
+      const now = new Date('2021-06-01');
+
+      const repository = createApiKeysRepository({ db });
+
+      const { apiKey } = await repository.getApiKeyByHash({ keyHash: 'hash1', now });
+      expect(apiKey?.id).to.eql('api-key-1');
+
+      const { apiKey: expiredApiKey } = await repository.getApiKeyByHash({ keyHash: 'hash2', now });
+      expect(expiredApiKey).to.eql(undefined);
+
+      const { apiKey: apiKeyWithoutExpiry } = await repository.getApiKeyByHash({ keyHash: 'hash3', now });
+      expect(apiKeyWithoutExpiry?.id).to.eql('api-key-3');
+    });
+  });
 });
