@@ -6,7 +6,7 @@ slug: guides/storage-key-patterns
 import { Aside } from '@astrojs/starlight/components';
 
 <Aside type="note">
-**Not yet available:** Storage key patterns will be available in the next release.
+This feature is available starting from Papra v26.3.0
 </Aside>
 
 When a document is uploaded to Papra, the system generates a **storage key** that determines where and how the file is stored in the underlying storage backend (filesystem, S3, Azure Blob Storage, etc.). By default, Papra uses a legacy system that generates opaque storage keys based on the document ID. With storage key patterns, you can define a human-readable, customizable naming scheme for your stored files.

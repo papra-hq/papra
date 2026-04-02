@@ -8,6 +8,11 @@ const demoDocumentFixture: DemoDocumentFixture = {
   mimeType: 'application/pdf',
   size: 51229,
   tags: ['Receipts'],
+  customProperties: [
+    { key: 'status', value: 'archived' },
+    { key: 'amount', value: 3260 },
+    { key: 'reference', value: 'SL-2025-1108' },
+  ],
   content: `
 violin receipt vendor information transaction details item description price quantity
 customized the baker 2 500 00 1 hard case with

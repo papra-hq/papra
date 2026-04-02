@@ -1,10 +1,9 @@
 import type { Config } from '../config/config.types';
 import type { DocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
-import type { WebhookRepository } from '../webhooks/webhook.repository';
+import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { TagsRepository } from './tags.repository';
 import type { Tag } from './tags.types';
 import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
-import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createOrganizationTagLimitReachedError } from './tags.errors';
 
 export async function checkIfOrganizationCanCreateNewTag({
@@ -53,7 +52,7 @@ export async function addTagToDocument({
   tag,
 
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
 }: {
   tagId: string;
@@ -63,13 +62,12 @@ export async function addTagToDocument({
   tag: Tag;
 
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
 }) {
   await tagsRepository.addTagToDocument({ tagId, documentId });
 
-  deferTriggerWebhooks({
-    webhookRepository,
+  webhookTriggerServices.deferTriggerWebhooks({
     organizationId,
     event: 'document:tag:added',
     payload: { documentId, organizationId, tagId, tagName: tag.name },

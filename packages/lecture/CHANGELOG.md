@@ -1,5 +1,17 @@
 # @papra/lecture
 
+## 0.5.0
+
+### Minor Changes
+
+- [#953](https://github.com/papra-hq/papra/pull/953) [`db6badb`](https://github.com/papra-hq/papra/commit/db6badbc3cc15d5d2b91b79602eccc3926e564eb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content extraction support for scanned PDFs images in 1-bit-per-pixel grayscale format.
+
+- [#948](https://github.com/papra-hq/papra/pull/948) [`725eaff`](https://github.com/papra-hq/papra/commit/725eaff4b0339ce974b91e9eeb4482f716cfa279) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When extracting text from PDF documents, if neither text nor images suitable for OCR are found, the pages are rendered as images and processed with OCR. Adding support for vectorized text.
+
+### Patch Changes
+
+- [#949](https://github.com/papra-hq/papra/pull/949) [`ec740ed`](https://github.com/papra-hq/papra/commit/ec740ed168496a458a3da6a9c71d31e1d8bf2746) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added document content extraction support for .xlsx and .ods files.
+
 ## 0.4.0
 
 ### Minor Changes

@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { createError } from '../shared/errors/errors';
 import { isNil } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
@@ -28,9 +27,9 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
       z.object({
         name: z.string(),
         permissions: z.array(z.enum(API_KEY_PERMISSIONS_VALUES as [ApiKeyPermissions, ...ApiKeyPermissions[]])).min(1),
-        organizationIds: z.array(z.string()).default([]),
-        allOrganizations: z.boolean().default(false),
-        expiresAt: z.date().optional(),
+        // organizationIds: z.array(z.string()).default([]),
+        // allOrganizations: z.boolean().default(false),
+        // expiresAt: z.date().optional(),
       }),
     ),
     async (context) => {
@@ -40,25 +39,25 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
       const {
         name,
         permissions,
-        organizationIds,
-        allOrganizations,
-        expiresAt,
+        // organizationIds,
+        // allOrganizations,
+        // expiresAt,
       } = context.req.valid('json');
 
-      if (allOrganizations && organizationIds.length > 0) {
-        throw createError({
-          code: 'api_keys.invalid_organization_ids',
-          message: 'No organizationIds should be provided if allOrganizations is true',
-          statusCode: 400,
-        });
-      }
+      // if (allOrganizations && organizationIds.length > 0) {
+      //   throw createError({
+      //     code: 'api_keys.invalid_organization_ids',
+      //     message: 'No organizationIds should be provided if allOrganizations is true',
+      //     statusCode: 400,
+      //   });
+      // }
 
       const { apiKey, token } = await createApiKey({
         name,
         permissions,
-        organizationIds,
-        allOrganizations,
-        expiresAt,
+        organizationIds: [],
+        allOrganizations: true,
+        expiresAt: undefined,
         userId,
         apiKeyRepository,
       });

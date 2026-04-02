@@ -1,12 +1,10 @@
 import type { Database } from '../../../app/database/database.types';
-import type { Tag } from '../../../tags/tags.types';
-import type { Document } from '../../documents.types';
 import type { DocumentSearchableData } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
 import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { omit } from 'lodash-es';
+import { customPropertyDefinitionsTable } from '../../../custom-properties/custom-properties.table';
 import { omitUndefined } from '../../../shared/utils';
-import { documentsTagsTable, tagsTable } from '../../../tags/tags.table';
 import { documentsTable } from '../../documents.table';
 import { makeSearchWhereClause } from './database-fts5.repository.models';
 import { documentsFtsTable } from './database-fts5.tables';
@@ -23,7 +21,12 @@ export function createDocumentSearchRepository({ db }: { db: Database }) {
 }
 
 async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, db, now = new Date() }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; db: Database; now?: Date }) {
-  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now });
+  const customPropertyDefinitions = await db
+    .select()
+    .from(customPropertyDefinitionsTable)
+    .where(eq(customPropertyDefinitionsTable.organizationId, organizationId));
+
+  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now, customPropertyDefinitions });
 
   const paginatedIdsSubquery = db
     .selectDistinct({ id: documentsTable.id, createdAt: documentsTable.createdAt })
@@ -34,47 +37,22 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
     .offset(pageIndex * pageSize)
     .as('paginated_docs');
 
-  const [totalCountResult, documentsWithTags] = await Promise.all([
+  const [totalCountResult, documents] = await Promise.all([
     db
       .select({ count: sql<number>`COUNT(DISTINCT ${documentsTable.id})` })
       .from(documentsTable)
       .where(searchWhereClause),
 
     db
-      .selectDistinct({
-        document: omit(getTableColumns(documentsTable), ['content']),
-        tag: getTableColumns(tagsTable),
-        _createdAt: paginatedIdsSubquery.createdAt,
+      .select({
+        ...omit(getTableColumns(documentsTable), ['content']),
       })
       .from(paginatedIdsSubquery)
       .innerJoin(documentsTable, eq(documentsTable.id, paginatedIdsSubquery.id))
-      .leftJoin(documentsTagsTable, eq(documentsTable.id, documentsTagsTable.documentId))
-      .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
       .orderBy(desc(paginatedIdsSubquery.createdAt)),
   ]);
 
   const documentsCount = totalCountResult[0]?.count ?? 0;
-
-  if (documentsWithTags.length === 0) {
-    return { documents: [], documentsCount };
-  }
-
-  const documentsMap = documentsWithTags.reduce(
-    (acc, { document, tag }) => {
-      if (!acc[document.id]) {
-        acc[document.id] = { ...document, tags: [] };
-      }
-
-      if (tag) {
-        acc[document.id]!.tags.push(tag);
-      }
-
-      return acc;
-    },
-    {} as Record<string, Omit<Document, 'content'> & { tags: Tag[] }>,
-  );
-
-  const documents = Object.values(documentsMap);
 
   return { documents, documentsCount };
 }

@@ -4,6 +4,7 @@ import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
+import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { createDeterministicIdGenerator } from '../shared/random/ids';
@@ -13,11 +14,19 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
-import { createDocumentCreationUsecase, extractAndSaveDocumentFileContent, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
+import {
+  createDocumentCreationUsecase,
+  enrichAndFormatDocumentsForApi,
+  extractAndSaveDocumentFileContent,
+  restoreDocument,
+  trashDocument,
+  updateDocument,
+} from './documents.usecases';
 import { createDocumentStorageService } from './storage/documents.storage.services';
 import { createInMemoryDocumentStorageServices } from './storage/documents.storage.services.test-utils';
 
@@ -631,7 +640,7 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await extractAndSaveDocumentFileContent({
@@ -641,7 +650,7 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         eventServices: createTestEventServices(),
       });
@@ -690,7 +699,7 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
       const eventServices = createTestEventServices();
 
@@ -701,7 +710,7 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         eventServices,
       });
@@ -873,6 +882,154 @@ describe('documents usecases', () => {
           restoredBy: 'user-1',
         },
       }]);
+    });
+  });
+
+  describe('enrichDocumentsForApi', () => {
+    const baseDocument = {
+      organizationId: 'org-1',
+      mimeType: 'text/plain',
+      originalStorageKey: 'org-1/originals/doc-1.txt',
+      name: 'file.txt',
+      originalName: 'file.txt',
+      originalSha256Hash: 'hash',
+    };
+
+    test('returns an empty array when given no documents', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+      });
+
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
+        documents: [],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocuments).to.eql([]);
+    });
+
+    test('strips sensitive storage and encryption fields', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        documents: [{ id: 'doc-1', ...baseDocument, fileEncryptionAlgorithm: 'aes-256-gcm', fileEncryptionKeyWrapped: 'wrapped-key', fileEncryptionKekVersion: 'v1' }],
+      });
+
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+
+      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+        documents: [document!],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocument).not.to.have.property('originalStorageKey');
+      expect(enrichedDocument).not.to.have.property('fileEncryptionAlgorithm');
+      expect(enrichedDocument).not.to.have.property('fileEncryptionKeyWrapped');
+      expect(enrichedDocument).not.to.have.property('fileEncryptionKekVersion');
+    });
+
+    test('a document with no tags gets an empty tags array', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        documents: [{ id: 'doc-1', ...baseDocument }],
+      });
+
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+        documents: [document!],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocument!.tags).to.eql([]);
+    });
+
+    test('tags are attached to the correct document', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', ...baseDocument },
+          { id: 'doc-2', ...baseDocument, originalSha256Hash: 'hash2' },
+        ],
+        tags: [
+          { id: 'tag-1', organizationId: 'org-1', name: 'Urgent', normalizedName: 'urgent', color: '#ff0000' },
+          { id: 'tag-2', organizationId: 'org-1', name: 'Finance', normalizedName: 'finance', color: '#00ff00' },
+        ],
+        documentsTags: [
+          { documentId: 'doc-1', tagId: 'tag-1' },
+          { documentId: 'doc-1', tagId: 'tag-2' },
+          // doc-2 has no tags
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const { document: doc1 } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+      const { document: doc2 } = await documentsRepository.getDocumentById({ documentId: 'doc-2', organizationId: 'org-1' });
+
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
+        documents: [doc1!, doc2!],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocuments[0]!.tags.map(t => t.id).toSorted()).to.eql(['tag-1', 'tag-2']);
+      expect(enrichedDocuments[1]!.tags).to.eql([]);
+    });
+
+    test('a defined custom property with no value set appears as null', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        documents: [{ id: 'doc-1', ...baseDocument }],
+        customPropertyDefinitions: [
+          { id: 'cpd-1', organizationId: 'org-1', name: 'Note', key: 'note', type: 'text' },
+        ],
+      });
+
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+        documents: [document!],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocument!.customProperties).to.eql([
+        { key: 'note', name: 'Note', type: 'text', displayOrder: 0, value: null },
+      ]);
+    });
+
+    test('custom property values are attached to the correct document', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', ...baseDocument },
+          { id: 'doc-2', ...baseDocument, originalSha256Hash: 'hash2' },
+        ],
+        customPropertyDefinitions: [
+          { id: 'cpd-1', organizationId: 'org-1', name: 'Note', key: 'note', type: 'text' },
+        ],
+        documentCustomPropertyValues: [
+          { id: 'dcpv-1', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', textValue: 'important' },
+          // doc-2 has no value for this property
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const { document: doc1 } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+      const { document: doc2 } = await documentsRepository.getDocumentById({ documentId: 'doc-2', organizationId: 'org-1' });
+
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
+        documents: [doc1!, doc2!],
+        tagsRepository: createTagsRepository({ db }),
+        customPropertiesRepository: createCustomPropertiesRepository({ db }),
+      });
+
+      expect(enrichedDocuments[0]!.customProperties).to.eql([
+        { key: 'note', name: 'Note', type: 'text', displayOrder: 0, value: 'important' },
+      ]);
+      expect(enrichedDocuments[1]!.customProperties).to.eql([
+        { key: 'note', name: 'Note', type: 'text', displayOrder: 0, value: null },
+      ]);
     });
   });
 

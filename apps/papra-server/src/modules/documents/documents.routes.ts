@@ -3,6 +3,7 @@ import { Readable } from 'node:stream';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
@@ -11,12 +12,13 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTagsRepository } from '../tags/tags.repository';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { documentIdSchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -125,14 +127,15 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const customPropertiesRepository = createCustomPropertiesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+      const { enrichedDocument } = await enrichAndFormatDocumentForApi({ document, tagsRepository, customPropertiesRepository });
 
-      return context.json({
-        document: formatDocumentForApi({ document }),
-      });
+      return context.json({ document: enrichedDocument });
     },
   );
 }
@@ -273,21 +276,15 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
       const { searchQuery, pageIndex, pageSize } = context.req.valid('query');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const customPropertiesRepository = createCustomPropertiesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents, documentsCount } = await searchOrganizationDocuments({
-        organizationId,
-        searchQuery,
-        pageIndex,
-        pageSize,
-        documentSearchServices,
-      });
+      const { documents, documentsCount } = await searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, documentSearchServices });
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents, tagsRepository, customPropertiesRepository });
 
-      return context.json({
-        documents: formatDocumentsForApi({ documents }),
-        documentsCount,
-      });
+      return context.json({ documents: enrichedDocuments, documentsCount });
     },
   );
 }

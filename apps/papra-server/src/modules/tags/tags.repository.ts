@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
+import type { Tag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq, getTableColumns, sql } from 'drizzle-orm';
-import { get } from 'lodash-es';
+import { and, count, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { isDefined, omitUndefined } from '../shared/utils';
@@ -17,6 +17,7 @@ export function createTagsRepository({ db }: { db: Database }) {
       getOrganizationTags,
       getOrganizationTagsCount,
       getTagById,
+      getTagsByDocumentIds,
       createTag,
       deleteTag,
       updateTag,
@@ -52,6 +53,29 @@ async function getOrganizationTagsCount({ organizationId, db }: { organizationId
     .where(eq(tagsTable.organizationId, organizationId));
 
   return { tagsCount: result?.tagsCount ?? 0 };
+}
+
+async function getTagsByDocumentIds({ documentIds, db }: { documentIds: string[]; db: Database }): Promise<{ tagsByDocumentId: Record<string, Tag[]> }> {
+  if (documentIds.length === 0) {
+    return { tagsByDocumentId: {} };
+  }
+
+  const rows = await db
+    .select({
+      documentId: documentsTagsTable.documentId,
+      ...getTableColumns(tagsTable),
+    })
+    .from(documentsTagsTable)
+    .innerJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
+    .where(inArray(documentsTagsTable.documentId, documentIds));
+
+  const tagsByDocumentId: Record<string, Tag[]> = {};
+
+  for (const { documentId, ...tag } of rows) {
+    (tagsByDocumentId[documentId] ??= []).push(tag);
+  }
+
+  return { tagsByDocumentId };
 }
 
 async function getTagById({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {
@@ -130,7 +154,7 @@ async function updateTag({ tagId, name, description, color, db }: { tagId: strin
 async function addTagToDocument({ tagId, documentId, db }: { tagId: string; documentId: string; db: Database }) {
   const [_, error] = await safely(db.insert(documentsTagsTable).values({ tagId, documentId }));
 
-  if (error && get(error, 'code') === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+  if (error && isUniqueConstraintError({ error })) {
     throw createDocumentAlreadyHasTagError();
   }
 

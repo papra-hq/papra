@@ -30,17 +30,15 @@ export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: n
 }
 
 export function formatDocumentForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ document }: { document: T }) {
-  return {
-    ...omit(
-      document,
-      [
-        'fileEncryptionAlgorithm',
-        'fileEncryptionKeyWrapped',
-        'fileEncryptionKekVersion',
-        'originalStorageKey',
-      ],
-    ),
-  };
+  return omit(
+    document,
+    [
+      'fileEncryptionAlgorithm',
+      'fileEncryptionKeyWrapped',
+      'fileEncryptionKekVersion',
+      'originalStorageKey',
+    ],
+  );
 }
 
 export function formatDocumentsForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ documents }: { documents: T[] }) {

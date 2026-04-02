@@ -1,13 +1,18 @@
 import type { Database } from '../../../app/database/database.types';
+import type { CustomPropertyDefinition } from './query-builder/query-builder.custom-properties';
 import { parseSearchQuery } from '@papra/search-parser';
 import { and, eq } from 'drizzle-orm';
 import { documentsTable } from '../../documents.table';
 import { buildQueryFromExpression } from './query-builder/query-builder';
 
-export function makeSearchWhereClause({ query, organizationId, db, now = new Date() }: { query: string; organizationId: string; db: Database; now?: Date }) {
+export function makeSearchWhereClause({ query, organizationId, db, now = new Date(), customPropertyDefinitions = [] }: { query: string; organizationId: string; db: Database; now?: Date; customPropertyDefinitions?: CustomPropertyDefinition[] }) {
   const { expression, issues: parsedIssues } = parseSearchQuery({ query });
 
-  const { sqlQuery, issues } = buildQueryFromExpression({ expression, organizationId, db, now });
+  const customPropertyDefinitionsByKey = Object.fromEntries(
+    customPropertyDefinitions.map(definition => [definition.key, definition]),
+  );
+
+  const { sqlQuery, issues } = buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
 
   return {
     searchWhereClause: and(

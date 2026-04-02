@@ -115,10 +115,16 @@ const OrganizationLayoutSideNav: Component = () => {
           icon: 'i-tabler-file-text',
           href: `/organizations/${params.organizationId}/documents`,
         },
+
         {
           label: t('layout.menu.tags'),
           icon: 'i-tabler-tag',
           href: `/organizations/${params.organizationId}/tags`,
+        },
+        {
+          label: t('layout.menu.custom-properties'),
+          icon: 'i-tabler-forms',
+          href: `/organizations/${params.organizationId}/custom-properties`,
         },
         {
           label: t('layout.menu.tagging-rules'),

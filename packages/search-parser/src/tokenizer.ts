@@ -147,6 +147,31 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
     return unescapeColons(value);
   };
 
+  const readFilterOperatorAndValue = (): { operator: Operator; value: string } => {
+    let operator: Operator = '=';
+
+    if (query.startsWith('>=', pos)) {
+      operator = '>=';
+      pos += 2;
+    } else if (query.startsWith('<=', pos)) {
+      operator = '<=';
+      pos += 2;
+    } else if (peek() === '>') {
+      operator = '>';
+      pos++;
+    } else if (peek() === '<') {
+      operator = '<';
+      pos++;
+    } else if (peek() === '=') {
+      operator = '=';
+      pos++;
+    }
+
+    const value = readFilterValue();
+
+    return { operator, value };
+  };
+
   const hasUnescapedColon = (str: string): boolean => {
     for (let i = 0; i < str.length; i++) {
       if (str[i] === ':' && (i === 0 || str[i - 1] !== '\\')) {
@@ -248,7 +273,22 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
 
       // Read the next token (could be quoted or unquoted)
       const quotedValue = readQuotedString();
-      const token = quotedValue !== undefined ? quotedValue : readUnquotedToken();
+
+      // If quoted, check if it's a quoted field name (followed by ':')
+      if (quotedValue !== undefined) {
+        if (peek() === ':') {
+          advance(); // Consume ':'
+          const { operator, value } = readFilterOperatorAndValue();
+          tokens.push({ type: 'NOT' });
+          tokens.push({ type: 'FILTER', field: quotedValue, operator, value });
+        } else {
+          tokens.push({ type: 'NOT' });
+          tokens.push({ type: 'TEXT', value: quotedValue });
+        }
+        continue;
+      }
+
+      const token = readUnquotedToken();
 
       // Try to parse as filter
       const filter = parseFilter(token);
@@ -265,14 +305,27 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
 
     // Read quoted or unquoted token
     const quotedValue = readQuotedString();
-    const token = quotedValue !== undefined ? quotedValue : readUnquotedToken();
+
+    // If quoted, always treat as TEXT or FILTER — never as a keyword operator
+    if (quotedValue !== undefined) {
+      if (peek() === ':') {
+        advance(); // Consume ':'
+        const { operator, value } = readFilterOperatorAndValue();
+        tokens.push({ type: 'FILTER', field: quotedValue, operator, value });
+      } else {
+        tokens.push({ type: 'TEXT', value: quotedValue });
+      }
+      continue;
+    }
+
+    const token = readUnquotedToken();
 
     if (!token) {
       advance(); // Skip invalid character
       continue;
     }
 
-    // Check for operators
+    // Check for keyword operators (only for unquoted tokens)
     const upperToken = token.toUpperCase();
     if (upperToken === 'AND') {
       tokens.push({ type: 'AND' });
@@ -289,13 +342,11 @@ export function tokenize({ query, maxTokens }: { query: string; maxTokens: numbe
       continue;
     }
 
-    // Try to parse as filter (only if not quoted)
-    if (quotedValue === undefined) {
-      const filter = parseFilter(token);
-      if (filter) {
-        tokens.push(filter);
-        continue;
-      }
+    // Try to parse as filter (unquoted token only)
+    const filter = parseFilter(token);
+    if (filter) {
+      tokens.push(filter);
+      continue;
     }
 
     // Otherwise, treat as text (unescape backslashes)

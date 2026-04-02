@@ -1,14 +1,16 @@
+import type { PartialBy } from '@corentinth/chisels';
 import type { Readable } from 'node:stream';
 import type { Database } from '../app/database/database.types';
 import type { EventServices } from '../app/events/events.services';
 import type { Config } from '../config/config.types';
+import type { CustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { TaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { TaskServices } from '../tasks/tasks.services';
-import type { WebhookRepository } from '../webhooks/webhook.repository';
+import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { DocumentActivityRepository } from './document-activity/document-activity.repository';
 import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
@@ -19,9 +21,11 @@ import { PassThrough } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { safely } from '@corentinth/chisels';
 import pLimit from 'p-limit';
+import { buildCustomPropertiesArray } from '../custom-properties/custom-properties.models';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { getOrganizationStorageLimits } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
+import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { createByteCounter } from '../shared/streams/byte-counter';
 import { createSha256HashTransformer } from '../shared/streams/stream-hash';
@@ -32,9 +36,10 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
-import { generateDocumentId as generateDocumentIdImpl } from './documents.models';
+import { formatDocumentForApi, generateDocumentId as generateDocumentIdImpl } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
 import { createStorageKey } from './storage/document-storage.usecases';
@@ -59,7 +64,7 @@ export async function createDocument({
   subscriptionsRepository,
   taggingRulesRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   eventServices,
   taskServices,
@@ -80,7 +85,7 @@ export async function createDocument({
   subscriptionsRepository: SubscriptionsRepository;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   eventServices: EventServices;
   taskServices: TaskServices;
@@ -149,7 +154,7 @@ export async function createDocument({
         newDocumentStorageKey: storageKey,
         tagsRepository,
         taggingRulesRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         documentsStorageService,
         logger,
@@ -204,7 +209,7 @@ export function createDocumentCreationUsecase({
     subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
     taggingRulesRepository: initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
-    webhookRepository: initialDeps.webhookRepository ?? createWebhookRepository({ db }),
+    webhookTriggerServices: initialDeps.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) }),
     documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
     storagePatternConfig: initialDeps.storagePatternConfig ?? config.documentsStorage.pattern,
@@ -231,7 +236,7 @@ async function handleExistingDocument({
   documentsRepository,
   tagsRepository,
   taggingRulesRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   documentsStorageService,
   newDocumentStorageKey,
@@ -244,7 +249,7 @@ async function handleExistingDocument({
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   taggingRulesRepository: TaggingRulesRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   documentsStorageService: DocumentStorageService;
   newDocumentStorageKey: string;
@@ -264,7 +269,7 @@ async function handleExistingDocument({
     documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
   ]);
 
-  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
   return { document: restoredDocument };
 }
@@ -503,7 +508,7 @@ export async function extractAndSaveDocumentFileContent({
   ocrLanguages,
   taggingRulesRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   eventServices,
 }: {
@@ -514,7 +519,7 @@ export async function extractAndSaveDocumentFileContent({
   documentsStorageService: DocumentStorageService;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   eventServices: EventServices;
 }) {
@@ -542,7 +547,7 @@ export async function extractAndSaveDocumentFileContent({
     throw createDocumentNotFoundError();
   }
 
-  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
   return { document: updatedDocument };
 }
@@ -587,6 +592,84 @@ export async function restoreDocument({
     eventName: 'document.restored',
     payload: { documentId, organizationId, restoredBy: userId },
   });
+}
+
+export async function enrichAndFormatDocumentsForApi({
+  documents,
+  tagsRepository,
+  customPropertiesRepository,
+}: {
+  documents: Array<PartialBy<Document, 'content'>>;
+  tagsRepository: TagsRepository;
+  customPropertiesRepository: CustomPropertiesRepository;
+}) {
+  if (documents.length === 0) {
+    return { enrichedDocuments: [] };
+  }
+
+  const { organizationId } = documents[0] ?? {};
+
+  if (isNil(organizationId)) {
+    throw createError({
+      message: 'Organization ID is required to enrich documents',
+      code: 'organization_id_required',
+      statusCode: 500,
+    });
+  }
+
+  const uniqueOrganizationIds = new Set(documents.map(d => d.organizationId));
+
+  if (uniqueOrganizationIds.size > 1) {
+    throw createError({
+      message: 'All documents must belong to the same organization to be enriched',
+      code: 'multiple_organization_ids',
+      statusCode: 500,
+    });
+  }
+
+  const documentIds = documents.map(d => d.id);
+
+  const [{ tagsByDocumentId }, { valuesByDocumentId }, { propertyDefinitions }] = await Promise.all([
+    tagsRepository.getTagsByDocumentIds({ documentIds }),
+    customPropertiesRepository.getCustomPropertyValuesByDocumentIds({ documentIds }),
+    customPropertiesRepository.getOrganizationPropertyDefinitions({ organizationId }),
+  ]);
+
+  return {
+    enrichedDocuments: documents.map(document => ({
+      ...formatDocumentForApi({ document }),
+      tags: tagsByDocumentId[document.id] ?? [],
+      customProperties: buildCustomPropertiesArray({
+        rawValues: valuesByDocumentId[document.id] ?? [],
+        propertyDefinitions,
+      }),
+    })),
+  };
+}
+
+export async function enrichAndFormatDocumentForApi({
+  document,
+  tagsRepository,
+  customPropertiesRepository,
+}: {
+  document: PartialBy<Document, 'content'>;
+  tagsRepository: TagsRepository;
+  customPropertiesRepository: CustomPropertiesRepository;
+}) {
+  const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents: [document], tagsRepository, customPropertiesRepository });
+
+  const [enrichedDocument] = enrichedDocuments;
+
+  if (!enrichedDocument) {
+    // This should never happen, but for type safety
+    throw createError({
+      message: 'Document enrichment failed',
+      code: 'document_enrichment_failed',
+      statusCode: 500,
+    });
+  }
+
+  return { enrichedDocument };
 }
 
 export async function updateDocument({

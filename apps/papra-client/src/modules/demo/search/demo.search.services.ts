@@ -2,9 +2,16 @@ import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpr
 import type { Document } from '../../documents/documents.types';
 import { parseSearchQuery } from '@papra/search-parser';
 
+export function generatePropertyKey({ name }: { name: string }): string {
+  return name
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .toLowerCase();
+}
+
 type DocumentCondition = (params: { document: Document }) => boolean;
 
 const falseCondition: DocumentCondition = () => false;
+const trueCondition: DocumentCondition = () => true;
 
 export function someCorpusTokenStartsWith({ corpus, prefix }: { corpus: string | string []; prefix: string }): boolean {
   const lowerPrefix = prefix.toLowerCase();
@@ -149,6 +156,116 @@ function buildHasDateFilter({ expression }: { expression: FilterExpression }): D
   return ({ document }) => document.documentDate != null;
 }
 
+function buildHasCustomPropertyFilter({ propertyKey }: { propertyKey: string }): DocumentCondition {
+  const normalizedKey = generatePropertyKey({ name: propertyKey });
+
+  return ({ document }) => {
+    const prop = document.customProperties?.find(p => p.key === normalizedKey);
+
+    return prop !== undefined && prop.value != null;
+  };
+}
+
+function buildCustomPropertyFilterCondition({ field, expression }: { field: string; expression: FilterExpression }): DocumentCondition {
+  const { value, operator } = expression;
+  const normalizedField = generatePropertyKey({ name: field });
+
+  return ({ document }) => {
+    const prop = document.customProperties?.find(p => p.key === normalizedField);
+
+    if (!prop || prop.value == null) {
+      return false;
+    }
+
+    switch (prop.type) {
+      case 'boolean': {
+        if (operator !== '=') {
+          return false;
+        }
+
+        const boolValue = ['true', 'yes', '1', 'on', 'enabled'].includes(value.toLowerCase());
+
+        return prop.value === boolValue;
+      }
+      case 'number': {
+        const numValue = Number(value);
+
+        if (Number.isNaN(numValue)) {
+          return false;
+        }
+
+        const propNum = Number(prop.value);
+
+        switch (operator) {
+          case '=': return propNum === numValue;
+          case '<': return propNum < numValue;
+          case '<=': return propNum <= numValue;
+          case '>': return propNum > numValue;
+          case '>=': return propNum >= numValue;
+          default: return false;
+        }
+      }
+      case 'date': {
+        const dateValue = getDateValue({ value });
+
+        if (Number.isNaN(dateValue.getTime())) {
+          return false;
+        }
+
+        const propDate = new Date(prop.value as string);
+
+        switch (operator) {
+          case '=': return propDate.toDateString() === dateValue.toDateString();
+          case '<': return propDate < dateValue;
+          case '<=': return propDate <= dateValue;
+          case '>': return propDate > dateValue;
+          case '>=': return propDate >= dateValue;
+          default: return false;
+        }
+      }
+      case 'text': {
+        if (operator !== '=') {
+          return false;
+        }
+
+        return someCorpusTokenStartsWith({ corpus: String(prop.value), prefix: value });
+      }
+      case 'select': {
+        if (operator !== '=') {
+          return false;
+        }
+
+        const propValue = prop.value as { key: string; name: string } | string;
+        const propKey = typeof propValue === 'object' ? propValue.key : propValue;
+
+        return propKey.toLowerCase() === value.toLowerCase();
+      }
+      case 'multi_select': {
+        if (operator !== '=') {
+          return false;
+        }
+
+        const propValues = prop.value as Array<{ key: string; name: string } | string>;
+
+        return propValues.some((v) => {
+          const optKey = typeof v === 'object' ? v.key : v;
+
+          return optKey.toLowerCase() === value.toLowerCase();
+        });
+      }
+      default: {
+        if (operator !== '=') {
+          return false;
+        }
+
+        return String(prop.value).toLowerCase() === value.toLowerCase();
+      }
+    }
+  };
+}
+
+const KNOWN_FILTER_FIELDS = new Set(['tag', 'name', 'content', 'created', 'date', 'has']);
+
 function buildExpressionCondition({ expression }: { expression: Expression }): DocumentCondition {
   switch (expression.type) {
     case 'text': return buildTextCondition({ expression });
@@ -166,11 +283,19 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
           switch (expression.value) {
             case 'tags': return buildHasTagsFilter({ expression });
             case 'date': return buildHasDateFilter({ expression });
-            default: return falseCondition;
+            default:
+              // has:<customPropertyKey> — check if document has a non-null value for this property
+              return buildHasCustomPropertyFilter({ propertyKey: expression.value });
           }
-        default: return falseCondition;
+        default:
+          // Unknown field — treat as a custom property key filter
+          if (!KNOWN_FILTER_FIELDS.has(expression.field)) {
+            return buildCustomPropertyFilterCondition({ field: expression.field, expression });
+          }
+
+          return falseCondition;
       }
-    case 'empty': return falseCondition;
+    case 'empty': return trueCondition;
     default: return falseCondition;
   }
 }

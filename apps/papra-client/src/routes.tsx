@@ -13,6 +13,9 @@ import { LoginPage } from './modules/auth/pages/login.page';
 import { RegisterPage } from './modules/auth/pages/register.page';
 import { RequestPasswordResetPage } from './modules/auth/pages/request-password-reset.page';
 import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
+import { CreateCustomPropertyPage } from './modules/custom-properties/pages/create-custom-property.page';
+import { CustomPropertiesPage } from './modules/custom-properties/pages/custom-properties-list.page';
+import { UpdateCustomPropertyPage } from './modules/custom-properties/pages/update-custom-property.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPdfViewerPage } from './modules/documents/pages/document-pdf-viewer.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
@@ -147,6 +150,18 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/views/:viewId',
                     component: ViewPage,
+                  },
+                  {
+                    path: '/custom-properties',
+                    component: CustomPropertiesPage,
+                  },
+                  {
+                    path: '/custom-properties/create',
+                    component: CreateCustomPropertyPage,
+                  },
+                  {
+                    path: '/custom-properties/:propertyDefinitionId',
+                    component: UpdateCustomPropertyPage,
                   },
                   {
                     path: '/tagging-rules',

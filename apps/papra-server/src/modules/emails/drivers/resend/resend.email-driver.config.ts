@@ -1,10 +1,10 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
+import * as v from 'valibot';
 
 export const resendEmailDriverConfig = {
   resendApiKey: {
     doc: 'The API key for the Resend email service',
-    schema: z.string(),
+    schema: v.string(),
     default: '',
     env: 'RESEND_API_KEY',
   },

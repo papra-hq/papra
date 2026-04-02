@@ -8,6 +8,10 @@ const demoDocumentFixture: DemoDocumentFixture = {
   mimeType: 'application/pdf',
   size: 37805,
   tags: ['Receipts', 'Property'],
+  customProperties: [
+    { key: 'status', value: 'archived' },
+    { key: 'amount', value: 2000 },
+  ],
   content: `
 rent receipt july 2025 221b baker street marylebone london nw1
 6xe date 1st received from mr sherlock holmes for first

@@ -20,7 +20,7 @@ export function registerWebhooksRoutes(context: RouteDefinitionContext) {
   setupDeleteWebhookRoute(context);
 }
 
-function setupCreateWebhookRoute({ app, db }: RouteDefinitionContext) {
+function setupCreateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/webhooks',
     requireAuthentication(),
@@ -28,7 +28,7 @@ function setupCreateWebhookRoute({ app, db }: RouteDefinitionContext) {
       organizationId: organizationIdSchema,
     })),
     validateJsonBody(z.object({
-      name: z.string().min(3).max(50),
+      name: z.string().min(1).max(128),
       url: z.string().url(),
       secret: z.string().min(1).optional(),
       enabled: z.boolean().optional().default(true),
@@ -53,6 +53,7 @@ function setupCreateWebhookRoute({ app, db }: RouteDefinitionContext) {
         organizationId,
         webhookRepository,
         createdBy: userId,
+        webhooksConfig: config.webhooks,
       });
 
       return context.json({
@@ -117,7 +118,7 @@ function setupGetWebhookRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupUpdateWebhookRoute({ app, db }: RouteDefinitionContext) {
+function setupUpdateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/webhooks/:webhookId',
     requireAuthentication(),
@@ -126,7 +127,7 @@ function setupUpdateWebhookRoute({ app, db }: RouteDefinitionContext) {
       webhookId: z.string().min(1),
     })),
     validateJsonBody(z.object({
-      name: z.string().min(3).max(50).optional(),
+      name: z.string().min(1).max(128).optional(),
       url: z.string().url().optional(),
       secret: z.string().min(1).optional(),
       enabled: z.boolean().optional(),
@@ -150,6 +151,7 @@ function setupUpdateWebhookRoute({ app, db }: RouteDefinitionContext) {
         events,
         webhookRepository,
         organizationId,
+        webhooksConfig: config.webhooks,
       });
 
       return context.json({

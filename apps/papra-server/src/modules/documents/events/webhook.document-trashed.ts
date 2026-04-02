@@ -1,23 +1,18 @@
-import type { Database } from '../../app/database/database.types';
 import type { EventServices } from '../../app/events/events.services';
-import { createWebhookRepository } from '../../webhooks/webhook.repository';
-import { triggerWebhooks } from '../../webhooks/webhook.usecases';
+import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
 
 export function registerTriggerWebhooksOnDocumentTrashedHandler({
   eventServices,
-  db,
+  webhookTriggerServices,
 }: {
   eventServices: EventServices;
-  db: Database;
+  webhookTriggerServices: WebhookTriggerServices;
 }) {
-  const webhookRepository = createWebhookRepository({ db });
-
   eventServices.onEvent({
     eventName: 'document.trashed',
     handlerName: 'trigger-webhooks',
     async handler({ documentId, organizationId }) {
-      await triggerWebhooks({
-        webhookRepository,
+      await webhookTriggerServices.triggerWebhooks({
         organizationId,
         event: 'document:deleted',
         payload: {

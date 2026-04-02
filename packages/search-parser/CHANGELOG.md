@@ -1,5 +1,11 @@
 # @papra/search-parser
 
+## 0.1.1
+
+### Patch Changes
+
+- [#970](https://github.com/papra-hq/papra/pull/970) [`5900674`](https://github.com/papra-hq/papra/commit/5900674083f4f55733c843b438516c8fdfff687c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for quoted search filters, like `"warranty date":>2026`
+
 ## 0.1.0
 
 ### Minor Changes

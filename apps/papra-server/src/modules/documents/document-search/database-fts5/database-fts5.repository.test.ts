@@ -456,54 +456,6 @@ describe('database-fts5 repository', () => {
       expect(searchResults).to.have.length(3);
       expect(searchResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
     });
-
-    test('documents are retrieved with their tags', async () => {
-      const documents = [
-        { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
-        { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
-      ];
-
-      const { db } = await createInMemoryDatabase({
-        organizations: [{ id: 'org_1', name: 'Organization 1' }],
-        documents,
-        tags: [
-          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', normalizedName: 'tag1', color: '#ff0000' },
-          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', normalizedName: 'tag2', color: '#00ff00' },
-        ],
-        documentsTags: [
-          { documentId: 'doc_1', tagId: 'tag_1' },
-          { documentId: 'doc_1', tagId: 'tag_2' },
-        ],
-      });
-
-      const documentsSearchRepository = createDocumentSearchRepository({ db });
-
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
-
-      const { documents: searchResults, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
-        organizationId: 'org_1',
-        searchQuery: 'lorem',
-        pageIndex: 0,
-        pageSize: 10,
-      });
-
-      expect(searchResults).to.have.length(2);
-      expect(documentsCount).to.equal(2);
-      expect(
-        searchResults.map(doc => ({
-          id: doc.id,
-          tags: doc.tags.map(({ id, organizationId, name, color }) => ({ id, organizationId, name, color })),
-        })).toSorted((a, b) => a.id.localeCompare(b.id)),
-      ).to.eql([
-        { id: 'doc_1', tags: [
-          { id: 'tag_1', organizationId: 'org_1', name: 'tag1', color: '#ff0000' },
-          { id: 'tag_2', organizationId: 'org_1', name: 'tag2', color: '#00ff00' },
-        ] },
-        { id: 'doc_2', tags: [] },
-      ]);
-    });
   });
 
   describe('indexDocument', () => {
@@ -685,6 +637,629 @@ describe('database-fts5 repository', () => {
       });
 
       expect(afterDelete.documents).to.have.length(0);
+    });
+  });
+
+  describe('custom property filters', () => {
+    describe('boolean property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Laptop', originalName: 'laptop.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Phone', originalName: 'phone.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Desk', originalName: 'desk.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const setupDb = async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_1', organizationId: 'org_1', name: 'Warranty', key: 'warranty', type: 'boolean', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_1', booleanValue: true },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_1', booleanValue: false },
+            // doc_3 has no warranty value set
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        return { documentsSearchRepository };
+      };
+
+      test('warranty:true returns only documents with warranty = true', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'warranty:true',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+
+      test('warranty:false returns only documents with warranty = false', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'warranty:false',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_2']);
+      });
+
+      test('warranty:yes is accepted as truthy alias', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'warranty:yes',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+
+      test('-warranty:true (NOT) returns documents without warranty = true', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: '-warranty:true',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id).toSorted()).to.eql(['doc_2', 'doc_3'].toSorted());
+      });
+    });
+
+    describe('text property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'File A', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'File B', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'File C', originalName: 'c.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      test('category:invoice returns only documents where category text = "invoice"', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_2', organizationId: 'org_1', name: 'Category', key: 'category', type: 'text', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_2', textValue: 'invoice' },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_2', textValue: 'contract' },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'category:invoice',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+    });
+
+    describe('number property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Small', originalName: 's.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Medium', originalName: 'm.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Large', originalName: 'l.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const setupDb = async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_3', organizationId: 'org_1', name: 'Amount', key: 'amount', type: 'number', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_3', numberValue: 50 },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_3', numberValue: 150 },
+            { id: 'dcpv_3', documentId: 'doc_3', propertyDefinitionId: 'cpd_3', numberValue: 300 },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        return { documentsSearchRepository };
+      };
+
+      test('amount:150 returns only the document with amount = 150', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'amount:150',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_2']);
+      });
+
+      test('amount:>100 returns documents with amount greater than 100', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'amount:>100',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id).toSorted()).to.eql(['doc_2', 'doc_3'].toSorted());
+      });
+
+      test('amount:>=150 amount:<=200 (AND) returns only doc_2', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'amount:>=150 amount:<=200',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_2']);
+      });
+    });
+
+    describe('date property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Old', originalName: 'old.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Recent', originalName: 'recent.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Future', originalName: 'future.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      test('expiry:>2025-06-01 returns documents with expiry date after 2025-06-01', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_4', organizationId: 'org_1', name: 'Expiry', key: 'expiry', type: 'date', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_4', dateValue: new Date('2024-01-01') },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_4', dateValue: new Date('2025-07-01') },
+            { id: 'dcpv_3', documentId: 'doc_3', propertyDefinitionId: 'cpd_4', dateValue: new Date('2026-01-01') },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'expiry:>2025-06-01',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id).toSorted()).to.eql(['doc_2', 'doc_3'].toSorted());
+      });
+    });
+
+    describe('select property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Draft', originalName: 'd.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Approved', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Rejected', originalName: 'r.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      test('status:approved returns only documents whose select option key is "approved"', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_5', organizationId: 'org_1', name: 'Status', key: 'status', type: 'select', displayOrder: 0 },
+          ],
+          customPropertySelectOptions: [
+            { id: 'cpso_1', propertyDefinitionId: 'cpd_5', name: 'Draft', key: 'draft', displayOrder: 0 },
+            { id: 'cpso_2', propertyDefinitionId: 'cpd_5', name: 'Approved', key: 'approved', displayOrder: 1 },
+            { id: 'cpso_3', propertyDefinitionId: 'cpd_5', name: 'Rejected', key: 'rejected', displayOrder: 2 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_5', selectOptionId: 'cpso_1' },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_5', selectOptionId: 'cpso_2' },
+            { id: 'dcpv_3', documentId: 'doc_3', propertyDefinitionId: 'cpd_5', selectOptionId: 'cpso_3' },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'status:approved',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_2']);
+      });
+    });
+
+    describe('multi_select property', () => {
+      test('labels:urgent returns documents that have the "urgent" option among their multi-select values', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'File A', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'File B', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_6', organizationId: 'org_1', name: 'Labels', key: 'labels', type: 'multi_select', displayOrder: 0 },
+          ],
+          customPropertySelectOptions: [
+            { id: 'cpso_1', propertyDefinitionId: 'cpd_6', name: 'Urgent', key: 'urgent', displayOrder: 0 },
+            { id: 'cpso_2', propertyDefinitionId: 'cpd_6', name: 'Low Priority', key: 'low-priority', displayOrder: 1 },
+          ],
+          documentCustomPropertyValues: [
+            // doc_1 has both "urgent" and "low-priority"
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_6', selectOptionId: 'cpso_1' },
+            { id: 'dcpv_2', documentId: 'doc_1', propertyDefinitionId: 'cpd_6', selectOptionId: 'cpso_2' },
+            // doc_2 has only "low-priority"
+            { id: 'dcpv_3', documentId: 'doc_2', propertyDefinitionId: 'cpd_6', selectOptionId: 'cpso_2' },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'labels:urgent',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+    });
+
+    describe('combined filters', () => {
+      test('warranty:true AND category:invoice returns only documents matching both conditions', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'A', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'B', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          { id: 'doc_3', organizationId: 'org_1', name: 'C', originalName: 'c.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_1', organizationId: 'org_1', name: 'Warranty', key: 'warranty', type: 'boolean', displayOrder: 0 },
+            { id: 'cpd_2', organizationId: 'org_1', name: 'Category', key: 'category', type: 'text', displayOrder: 1 },
+          ],
+          documentCustomPropertyValues: [
+            // doc_1: warranty=true, category=invoice → should match
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_1', booleanValue: true },
+            { id: 'dcpv_2', documentId: 'doc_1', propertyDefinitionId: 'cpd_2', textValue: 'invoice' },
+            // doc_2: warranty=true, category=contract → should not match
+            { id: 'dcpv_3', documentId: 'doc_2', propertyDefinitionId: 'cpd_1', booleanValue: true },
+            { id: 'dcpv_4', documentId: 'doc_2', propertyDefinitionId: 'cpd_2', textValue: 'contract' },
+            // doc_3: warranty=false, category=invoice → should not match
+            { id: 'dcpv_5', documentId: 'doc_3', propertyDefinitionId: 'cpd_1', booleanValue: false },
+            { id: 'dcpv_6', documentId: 'doc_3', propertyDefinitionId: 'cpd_2', textValue: 'invoice' },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'warranty:true AND category:invoice',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+    });
+
+    describe('unknown custom property key', () => {
+      test('a filter for an unknown key returns no results without crashing', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents: [
+            { id: 'doc_1', organizationId: 'org_1', name: 'File', originalName: 'f.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await documentsSearchRepository.indexDocument({
+          document: { id: 'doc_1', organizationId: 'org_1', name: 'File', originalName: 'f.pdf', content: '', isDeleted: false },
+        });
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'unknownprop:foo',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results).to.have.length(0);
+      });
+    });
+
+    describe('organization isolation', () => {
+      test('a custom property key from org_2 does not match documents in org_1', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [
+            { id: 'org_1', name: 'Organization 1' },
+            { id: 'org_2', name: 'Organization 2' },
+          ],
+          documents: [
+            { id: 'doc_1', organizationId: 'org_1', name: 'Org1 File', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+            { id: 'doc_2', organizationId: 'org_2', name: 'Org2 File', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          ],
+          customPropertyDefinitions: [
+            // Same key "warranty" exists in both orgs
+            { id: 'cpd_org1', organizationId: 'org_1', name: 'Warranty', key: 'warranty', type: 'boolean', displayOrder: 0 },
+            { id: 'cpd_org2', organizationId: 'org_2', name: 'Warranty', key: 'warranty', type: 'boolean', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_org1', booleanValue: true },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_org2', booleanValue: true },
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await documentsSearchRepository.indexDocument({
+          document: { id: 'doc_1', organizationId: 'org_1', name: 'Org1 File', originalName: 'a.pdf', content: '', isDeleted: false },
+        });
+        await documentsSearchRepository.indexDocument({
+          document: { id: 'doc_2', organizationId: 'org_2', name: 'Org2 File', originalName: 'b.pdf', content: '', isDeleted: false },
+        });
+
+        const { documents: org1Results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'warranty:true',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(org1Results.map(d => d.id)).to.eql(['doc_1']);
+      });
+    });
+
+    describe('user_relation property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'File A', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'File B', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'File C', originalName: 'c.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const setupDb = async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          users: [
+            { id: 'usr_1', email: 'alice@example.com' },
+            { id: 'usr_2', email: 'bob@example.com' },
+          ],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_7', organizationId: 'org_1', name: 'Assignee', key: 'assignee', type: 'user_relation', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_7', userId: 'usr_1' },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_7', userId: 'usr_2' },
+            // doc_3 has no assignee
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        return { documentsSearchRepository };
+      };
+
+      test('assignee:usr_1 returns only documents assigned to user with that id', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'assignee:usr_1',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+
+      test('assignee:alice@example.com returns the document assigned to that email', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'assignee:alice@example.com',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+
+      test('-assignee:usr_1 (NOT) returns documents not assigned to that user', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: '-assignee:usr_1',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id).toSorted()).to.eql(['doc_2', 'doc_3'].toSorted());
+      });
+    });
+
+    describe('document_relation property', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Contract', originalName: 'contract.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Amendment', originalName: 'amendment.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Standalone', originalName: 'standalone.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      test('related:doc_1 returns only documents whose relation points to doc_1', async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_8', organizationId: 'org_1', name: 'Related Document', key: 'related', type: 'document_relation', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_2', propertyDefinitionId: 'cpd_8', relatedDocumentId: 'doc_1' },
+            // doc_3 has no relation
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'related:doc_1',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_2']);
+      });
+    });
+
+    describe('has: filter for custom properties', () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'With warranty', originalName: 'a.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Also with warranty', originalName: 'b.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'No warranty', originalName: 'c.pdf', content: '', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const setupDb = async () => {
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+          customPropertyDefinitions: [
+            { id: 'cpd_1', organizationId: 'org_1', name: 'Warranty', key: 'warranty', type: 'boolean', displayOrder: 0 },
+          ],
+          documentCustomPropertyValues: [
+            { id: 'dcpv_1', documentId: 'doc_1', propertyDefinitionId: 'cpd_1', booleanValue: true },
+            { id: 'dcpv_2', documentId: 'doc_2', propertyDefinitionId: 'cpd_1', booleanValue: false },
+            // doc_3 has no warranty value at all
+          ],
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+        await Promise.all(
+          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
+        );
+
+        return { documentsSearchRepository };
+      };
+
+      test('has:warranty returns all documents that have any value set for the property', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'has:warranty',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id).toSorted()).to.eql(['doc_1', 'doc_2'].toSorted());
+      });
+
+      test('-has:warranty returns only documents with no value set for the property', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: '-has:warranty',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_3']);
+      });
+
+      test('has:warranty combined with a value filter narrows results correctly', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'has:warranty warranty:true',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results.map(d => d.id)).to.eql(['doc_1']);
+      });
+
+      test('has:unknownprop returns no results without crashing', async () => {
+        const { documentsSearchRepository } = await setupDb();
+
+        const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'has:unknownprop',
+          pageIndex: 0,
+          pageSize: 10,
+        });
+
+        expect(results).to.have.length(0);
+      });
     });
   });
 });

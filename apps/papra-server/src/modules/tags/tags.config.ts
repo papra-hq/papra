@@ -1,10 +1,10 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
+import { coercedStrictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
 
 export const tagsConfig = {
   maxTagsPerOrganization: {
     doc: 'The maximum number of tags an organization can have',
-    schema: z.coerce.number().int().positive(),
+    schema: coercedStrictlyPositiveIntegerSchema,
     default: 200,
     env: 'MAX_TAGS_PER_ORGANIZATION',
   },

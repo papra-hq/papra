@@ -155,7 +155,7 @@ List all documents in the organization.
 - Query parameters
   - `pageIndex`: (optional, default: 0) The page index to start from.
   - `pageSize`: (optional, default: 100) The number of documents to return.
-  - `tags`: (optional) The tags IDs to filter by.
+  - `searchQuery`: (optional) Search query, can reference [Filters](https://docs.papra.app/guides/advanced-search/#filters) for a more defined search
 - Response (JSON)
   - `documents`: The list of documents.
   - `documentsCount`: The total number of documents.
@@ -236,7 +236,7 @@ Get the statistics (number of documents and total size) of the documents in the 
 Change the name or content (for search purposes) of a document.
 
 - Required API key permissions: `documents:update`
-- Body (form-data)
+- Body (JSON)
   - `name`: (optional) The document name.
   - `content`: (optional) The document content.
 - Response (JSON)

@@ -1,5 +1,77 @@
 # @papra/app
 
+## 26.4.0
+
+### Minor Changes
+
+- [#993](https://github.com/papra-hq/papra/pull/993) [`17b501a`](https://github.com/papra-hq/papra/commit/17b501a9968591db5ca7f36c850c1662ee3c2fdf) Thanks [@CorentinTh](https://github.com/CorentinTh)! - **Breaking change regarding webhook URLs**
+
+  Added SSRF protection for webhook URLs. Webhook URLs are now validated to ensure they do not point to private or reserved IP addresses, preventing potential server-side request forgery attacks.
+  So webhooks pointing to private IPs (e.g. `http://192.168.0.1/some/stuff`), or with domains resolving to private IPs (e.g. `http://myservice.local/some/stuff`) will be blocked unless explicitly allowed.
+
+  Two new configuration options are available:
+  - `WEBHOOK_SSRF_PROTECTION_ENABLED` Set to `false` to fully disable SSRF protection. This is not recommended, prefer using the allowlist below instead.
+  - `WEBHOOK_URL_ALLOWED_HOSTNAMES` A comma-separated list of hostnames (IP addresses or domain names) that are explicitly trusted and exempt from SSRF checks (e.g. internal services you control).
+
+  Addressing [GHSA-cjw7-qg95-58mq](https://github.com/papra-hq/papra/security/advisories/GHSA-cjw7-qg95-58mq), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+### Patch Changes
+
+- [#986](https://github.com/papra-hq/papra/pull/986) [`884d470`](https://github.com/papra-hq/papra/commit/884d4704106b22165037a96aad471146e481fef2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed currently unused `expiresAt` placeholder fields in the internal API key creation endpoint to avoid confusions, as non-ui (so non-standard) creation of API keys can set an expiration date, which is not currently enforced by the system.
+
+  Addressing [GHSA-866c-mc22-wvv5](https://github.com/papra-hq/papra/security/advisories/GHSA-866c-mc22-wvv5), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+- [#992](https://github.com/papra-hq/papra/pull/992) [`9039b48`](https://github.com/papra-hq/papra/commit/9039b4806eba7212360e3efcb67cc4758c611798) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly return a "document already has tag" error when trying to add a tag to a document that already has it, instead of a generic 500 error when using an hosted Turso db.
+
+- [#992](https://github.com/papra-hq/papra/pull/992) [`9039b48`](https://github.com/papra-hq/papra/commit/9039b4806eba7212360e3efcb67cc4758c611798) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Api now returns a 409 status code instead of a 400 when either creating a tag that already exists or adding a tag to a document that already has it.
+
+- [#995](https://github.com/papra-hq/papra/pull/995) [`327eda0`](https://github.com/papra-hq/papra/commit/327eda00013559fc28993ea03274e6dd948e995c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly sanitize user name before including it in the email content to prevent potential XSS or html injection attacks.
+
+  Addressing [GHSA-6f8x-2rc9-vgh4](https://github.com/papra-hq/papra/security/advisories/GHSA-6f8x-2rc9-vgh4), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+- [#981](https://github.com/papra-hq/papra/pull/981) [`f336b84`](https://github.com/papra-hq/papra/commit/f336b842c645744eb95ed0cf297739c2abc98800) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Moved the theme picker to the user settings dropdown
+
+- [#984](https://github.com/papra-hq/papra/pull/984) [`8fe222b`](https://github.com/papra-hq/papra/commit/8fe222bb8f99a9f1fd0b3cb6c970b9e80e79f8e9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - App environment configuration validation is now a bit stricter, with slightly different error messages. And the following specific changes:
+  - Boolean env variables previously considered non-truthy values as `false`. Now they will throw a validation error if the value is not a valid boolean-ish value
+  - `AUTH_PROVIDERS_CUSTOMS` json parsing now accepts only valid boolean values for the `pkce` property, while before it accepted any non-true value as `false`
+  - Stricter `AUTH_FORBIDDEN_EMAIL_DOMAINS` domain validation
+
+## 26.3.0
+
+### Minor Changes
+
+- [#956](https://github.com/papra-hq/papra/pull/956) [`7c2b2d2`](https://github.com/papra-hq/papra/commit/7c2b2d27cd43bcd4f0f67bb3627cfc298cdaaaad) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Introduced custom properties! Define custom properties on your organization and set them on documents. Custom properties can be of different types, including text, number, select, multi-select and document or organization members relations.
+
+- [#948](https://github.com/papra-hq/papra/pull/948) [`725eaff`](https://github.com/papra-hq/papra/commit/725eaff4b0339ce974b91e9eeb4482f716cfa279) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When extracting text from PDF documents, if neither text nor images suitable for OCR are found, the pages are rendered as images and processed with OCR. Adding support for vectorized text.
+
+### Patch Changes
+
+- [#970](https://github.com/papra-hq/papra/pull/970) [`5900674`](https://github.com/papra-hq/papra/commit/5900674083f4f55733c843b438516c8fdfff687c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for quoted search filters, like `"warranty date":>2026`
+
+- [#969](https://github.com/papra-hq/papra/pull/969) [`812e7c3`](https://github.com/papra-hq/papra/commit/812e7c317e3a45a35c318b8c54372168a746a7b3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added sort actions in the tags list page
+
+- [#939](https://github.com/papra-hq/papra/pull/939) [`87a94ab`](https://github.com/papra-hq/papra/commit/87a94ab5671ff71760edf1851b7ea95cdf0d39bf) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed useless corepack installation in Dockerfiles
+
+- [#949](https://github.com/papra-hq/papra/pull/949) [`ec740ed`](https://github.com/papra-hq/papra/commit/ec740ed168496a458a3da6a9c71d31e1d8bf2746) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added document content extraction support for .xlsx and .ods files.
+
+- [#916](https://github.com/papra-hq/papra/pull/916) [`65c2bea`](https://github.com/papra-hq/papra/commit/65c2bea4c34bf2aeb65819a3ee78d8a08890d64c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added low-level safeguards in the document storage service to prevent overwriting existing files
+
+- [#943](https://github.com/papra-hq/papra/pull/943) [`a7b18ce`](https://github.com/papra-hq/papra/commit/a7b18cec6b0c3396b6bd9e2144dcc8f5ce9a9dfd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add the document date property.
+
+- [#921](https://github.com/papra-hq/papra/pull/921) [`6be6bea`](https://github.com/papra-hq/papra/commit/6be6beae905674b7a7db8f070f811c59ee28e9e0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to customize the document storage path
+
+- [#935](https://github.com/papra-hq/papra/pull/935) [`62e9e66`](https://github.com/papra-hq/papra/commit/62e9e6663896fe249b45bb2cebc52cdba7c86606) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add a document storage migration script to migrate documents from one storage service to another or update storage key or configuration.
+
+- [#930](https://github.com/papra-hq/papra/pull/930) [`41e9f33`](https://github.com/papra-hq/papra/commit/41e9f33b06de15977e4f348184c1772fd85feddb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an option to fully disable the content extraction feature.
+
+- [#968](https://github.com/papra-hq/papra/pull/968) [`74828e8`](https://github.com/papra-hq/papra/commit/74828e8ad671e3d05319f343e1b6e44df0baf406) Thanks [@AntonPalmqvist](https://github.com/AntonPalmqvist)! - Added Swedish language support
+
+- [#945](https://github.com/papra-hq/papra/pull/945) [`31e27d5`](https://github.com/papra-hq/papra/commit/31e27d5e1e00e623e02edfce7055c26c392fb6a8) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the `date` search filter, allowing to filter by document dates, like `date:>2026`, and `has:date`.
+
+- [#953](https://github.com/papra-hq/papra/pull/953) [`db6badb`](https://github.com/papra-hq/papra/commit/db6badbc3cc15d5d2b91b79602eccc3926e564eb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content extraction support for scanned PDFs images in 1-bit-per-pixel grayscale format.
+
+- [#965](https://github.com/papra-hq/papra/pull/965) [`87d80af`](https://github.com/papra-hq/papra/commit/87d80af2ac1ea5aeadb35a86575af55450234d1e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added support for searching by custom properties. For example, given a custom property `status` of type `select` with options `todo`, `in progress` and `done`, you could search for `status:todo` to find all documents with the status set to todo, or `has:status` to find all documents with a status set (and `-has:status` for documents without a status).
+
 ## 26.2.2
 
 ### Patch Changes

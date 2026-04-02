@@ -8,6 +8,13 @@ const demoDocumentFixture: DemoDocumentFixture = {
   mimeType: 'application/pdf',
   size: 54921,
   tags: ['Legal', 'Cases'],
+  customProperties: [
+    { key: 'status', value: 'reviewed' },
+    { key: 'priority', value: 'high' },
+    { key: 'amount', value: 5000 },
+    { key: 'confidential', value: true },
+    { key: 'reference', value: 'SH-2024-087' },
+  ],
   content: `
 contract private investigation pemberton number sh 2024 087 date 22nd
 september parties service provider sherlock holmes consulting detective 221b baker

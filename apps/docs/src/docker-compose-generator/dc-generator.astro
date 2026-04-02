@@ -112,7 +112,7 @@ const defaultCommand = `mkdir -p ./app-data/{db,documents} && docker compose up 
   <div class="flex items-center gap-2 mt-0 w-full">
     <select class="input-field mt-0" id="intake-email-driver">
       <option value="owlrelay" class="bg-background">OwlRelay</option>
-      <option value="random-username" class="bg-background">Cloudflare Email Worker</option>
+      <option value="catch-all" class="bg-background">Cloudflare Email Worker</option>
     </select>
   </div>
 </div>
@@ -294,7 +294,7 @@ function getDockerComposeYml() {
     intakeEmailEnabled && `INTAKE_EMAILS_WEBHOOK_SECRET=${webhookSecret}`,
     intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayApiKeyInput.value && `OWLRELAY_API_KEY=${owlrelayApiKeyInput.value}`,
     intakeEmailEnabled && intakeDriver === 'owlrelay' && owlrelayWebhookUrlInput.value && `OWLRELAY_WEBHOOK_URL=${owlrelayWebhookUrlInput.value}`,
-    intakeEmailEnabled && intakeDriver === 'random-username' && cfEmailDomainInput.value && `INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=${cfEmailDomainInput.value}`,
+    intakeEmailEnabled && intakeDriver === 'catch-all' && cfEmailDomainInput.value && `INTAKE_EMAILS_CATCH_ALL_DOMAIN=${cfEmailDomainInput.value}`,
   ].flat().filter(Boolean);
 
   const volumes = [
@@ -426,7 +426,7 @@ function handleIntakeDriverChange() {
     owlrelayConfig.style.display = driver === 'owlrelay' ? 'block' : 'none';
   }
   if (cfWorkerConfig) {
-    cfWorkerConfig.style.display = driver === 'random-username' ? 'block' : 'none';
+    cfWorkerConfig.style.display = driver === 'catch-all' ? 'block' : 'none';
   }
 
   updateDockerCompose();
