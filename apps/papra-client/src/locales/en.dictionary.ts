@@ -522,6 +522,7 @@ export const translations = {
   'views.title': 'Views',
   'views.description': 'Views are saved searches linked in the sidebar for quick access to filtered documents.',
   'views.create': 'Create view',
+  'views.save-as-view': 'Save as view',
   'views.update': 'Update view',
   'views.delete': 'Delete view',
   'views.delete.confirm.title': 'Delete view',

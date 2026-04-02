@@ -14,6 +14,7 @@ import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { SideNav } from '@/modules/ui/components/sidenav';
+import { CreateViewModal } from '@/modules/views/components/view-modals';
 import { fetchViews } from '@/modules/views/views.services';
 import { Button } from '../components/button';
 import {
@@ -80,12 +81,18 @@ const OrganizationLayoutSideNav: Component = () => {
 
   const getViewsSections = () => {
     const views = viewsQuery.data?.views ?? [];
-    if (views.length === 0) {
-      return [];
-    }
     return [
       {
         label: t('layout.menu.views'),
+        action: (
+          <CreateViewModal organizationId={params.organizationId}>
+            {triggerProps => (
+              <button class="text-muted-foreground/70 hover:text-foreground transition" title={t('views.create')} {...triggerProps}>
+                <div class="i-tabler-plus size-3.5" />
+              </button>
+            )}
+          </CreateViewModal>
+        ),
         items: views.map(view => ({
           label: view.name,
           icon: 'i-tabler-layout-list',
@@ -122,11 +129,6 @@ const OrganizationLayoutSideNav: Component = () => {
           label: t('layout.menu.members'),
           icon: 'i-tabler-users',
           href: `/organizations/${params.organizationId}/members`,
-        },
-        {
-          label: t('layout.menu.views'),
-          icon: 'i-tabler-layout-list',
-          href: `/organizations/${params.organizationId}/views`,
         },
       ],
     },

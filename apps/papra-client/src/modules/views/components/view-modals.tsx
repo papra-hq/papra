@@ -1,24 +1,19 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX, ValidComponent } from 'solid-js';
 import type { View } from '../views.types';
-import { safely } from '@corentinth/chisels';
-import { useParams } from '@solidjs/router';
-import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createSignal, For, Show, Suspense } from 'solid-js';
+import { useMutation } from '@tanstack/solid-query';
+import { createSignal } from 'solid-js';
 import * as v from 'valibot';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
 import { makeReturnVoidAsync } from '@/modules/shared/functions/void';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
-import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { createView, deleteView, fetchViews, updateView } from '../views.services';
+import { createView, updateView } from '../views.services';
 
 const ViewForm: Component<{
   onSubmit: (values: { name: string; query: string }) => Promise<unknown> | unknown;
@@ -75,9 +70,10 @@ const ViewForm: Component<{
   );
 };
 
-const CreateViewModal: Component<{
+export const CreateViewModal: Component<{
   children?: <T extends ValidComponent | HTMLElement>(props: DialogTriggerProps<T>) => JSX.Element;
   organizationId: string;
+  initialValues?: { name?: string; query?: string };
 }> = (props) => {
   const [getIsOpen, setIsOpen] = createSignal(false);
   const { t } = useI18n();
@@ -108,6 +104,7 @@ const CreateViewModal: Component<{
         </DialogHeader>
         <ViewForm
           onSubmit={mutation.mutateAsync}
+          initialValues={props.initialValues}
           submitButton={(
             <Button type="submit" isLoading={mutation.isPending} disabled={!getIsOpen()}>
               {t('views.create')}
@@ -119,7 +116,7 @@ const CreateViewModal: Component<{
   );
 };
 
-const UpdateViewModal: Component<{
+export const UpdateViewModal: Component<{
   children: (props: DialogTriggerProps) => JSX.Element;
   organizationId: string;
   view: View;
@@ -163,124 +160,5 @@ const UpdateViewModal: Component<{
         />
       </DialogContent>
     </Dialog>
-  );
-};
-
-export const ViewsPage: Component = () => {
-  const params = useParams();
-  const { confirm } = useConfirmModal();
-  const { t } = useI18n();
-  const { getErrorMessage } = useI18nApiErrors({ t });
-
-  const query = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'views'],
-    queryFn: () => fetchViews({ organizationId: params.organizationId }),
-  }));
-
-  const del = async ({ view }: { view: View }) => {
-    const confirmed = await confirm({
-      title: t('views.delete.confirm.title'),
-      message: t('views.delete.confirm.message'),
-      cancelButton: { text: t('views.delete.confirm.cancel-button'), variant: 'secondary' },
-      confirmButton: { text: t('views.delete.confirm.confirm-button'), variant: 'destructive' },
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    const [, error] = await safely(deleteView({ organizationId: params.organizationId, viewId: view.id }));
-
-    if (error) {
-      createToast({ message: getErrorMessage({ error }), type: 'error' });
-      return;
-    }
-
-    await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'views'], refetchType: 'all' });
-    createToast({ message: t('views.delete.success'), type: 'success' });
-  };
-
-  return (
-    <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
-      <Suspense>
-        <Show when={query.data?.views}>
-          {getViews => (
-            <Show
-              when={getViews().length > 0}
-              fallback={(
-                <EmptyState
-                  title={t('views.no-views.title')}
-                  icon="i-tabler-layout-list"
-                  description={t('views.no-views.description')}
-                  cta={(
-                    <CreateViewModal organizationId={params.organizationId}>
-                      {props => (
-                        <Button {...props}>
-                          <div class="i-tabler-plus size-4 mr-2" />
-                          {t('views.no-views.create-view')}
-                        </Button>
-                      )}
-                    </CreateViewModal>
-                  )}
-                />
-              )}
-            >
-              <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
-                <div>
-                  <h2 class="text-xl font-bold">{t('views.title')}</h2>
-                  <p class="text-muted-foreground mt-1">{t('views.description')}</p>
-                </div>
-                <div class="flex-shrink-0">
-                  <CreateViewModal organizationId={params.organizationId}>
-                    {props => (
-                      <Button class="w-full" {...props}>
-                        <div class="i-tabler-plus size-4 mr-2" />
-                        {t('views.create')}
-                      </Button>
-                    )}
-                  </CreateViewModal>
-                </div>
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('views.table.headers.name')}</TableHead>
-                    <TableHead>{t('views.table.headers.query')}</TableHead>
-                    <TableHead class="text-right">{t('views.table.headers.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <For each={getViews()}>
-                    {view => (
-                      <TableRow>
-                        <TableCell class="font-medium">{view.name}</TableCell>
-                        <TableCell>
-                          <code class="text-xs bg-muted px-1.5 py-0.5 rounded">{view.query}</code>
-                        </TableCell>
-                        <TableCell>
-                          <div class="flex gap-2 justify-end">
-                            <UpdateViewModal organizationId={params.organizationId} view={view}>
-                              {props => (
-                                <Button size="icon" variant="outline" class="size-7" {...props}>
-                                  <div class="i-tabler-edit size-4" />
-                                </Button>
-                              )}
-                            </UpdateViewModal>
-                            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ view })}>
-                              <div class="i-tabler-trash size-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </For>
-                </TableBody>
-              </Table>
-            </Show>
-          )}
-        </Show>
-      </Suspense>
-    </div>
   );
 };

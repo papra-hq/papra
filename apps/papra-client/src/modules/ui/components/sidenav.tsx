@@ -14,6 +14,7 @@ export type SideNavMenuItem = {
 
 export type SideNavSection = {
   label?: string;
+  action?: JSX.Element;
   items: SideNavMenuItem[];
 };
 
@@ -56,7 +57,12 @@ export const SideNav: Component<{
           <For each={props.mainMenu}>
             {section => (
               <div class="mt-4 px-4">
-                {section.label && <div class="text-xs font-medium text-muted-foreground/70 px-2 mb-0.5 uppercase tracking-wider">{section.label}</div> }
+                {section.label && (
+                  <div class="flex items-center justify-between px-2 mb-0.5">
+                    <div class="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">{section.label}</div>
+                    {section.action}
+                  </div>
+                )}
                 <nav class="flex flex-col gap-0.5">
                   <For each={section.items}>{menuItem => <MenuItemButton {...menuItem} />}</For>
                 </nav>
