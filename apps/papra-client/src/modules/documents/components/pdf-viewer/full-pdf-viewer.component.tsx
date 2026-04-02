@@ -18,9 +18,9 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
     PDFSlickViewer,
   } = usePDFSlick(props.url, {
     getDocumentParams: {
-      cMapUrl: 'https://unpkg.com/pdfjs-dist@5.6.205/cmaps/',
+      cMapUrl: `https://unpkg.com/pdfjs-dist@${__PDFJS_VERSION__}/cmaps/`,
       cMapPacked: true,
-      standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@5.6.205/standard_fonts/',
+      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${__PDFJS_VERSION__}/standard_fonts/`,
     },
   });
 

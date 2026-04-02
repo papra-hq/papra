@@ -2,13 +2,22 @@ import type { Plugin } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
 import { env } from 'node:process';
+import { createRequire } from 'node:module';
 import unoCssPlugin from 'unocss/vite';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 
+const require = createRequire(import.meta.url);
+const corePkgPath = require.resolve('@pdfslick/core/package.json');
+const pdfjsPkgPath = require.resolve('pdfjs-dist/package.json', { paths: [corePkgPath] });
+const pdfjsVersion = require(pdfjsPkgPath).version;
+
 const isDemoMode = env.VITE_IS_DEMO_MODE === 'true';
 
 export default defineConfig({
+  define: {
+    __PDFJS_VERSION__: JSON.stringify(pdfjsVersion),
+  },
   plugins: [
     unoCssPlugin(),
     solidPlugin(),
