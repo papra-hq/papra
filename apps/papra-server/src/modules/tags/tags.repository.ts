@@ -2,7 +2,6 @@ import type { Database } from '../app/database/database.types';
 import type { Tag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
-import { get } from 'lodash-es';
 import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { isDefined, omitUndefined } from '../shared/utils';
@@ -155,7 +154,7 @@ async function updateTag({ tagId, name, description, color, db }: { tagId: strin
 async function addTagToDocument({ tagId, documentId, db }: { tagId: string; documentId: string; db: Database }) {
   const [_, error] = await safely(db.insert(documentsTagsTable).values({ tagId, documentId }));
 
-  if (error && get(error, 'code') === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+  if (error && isUniqueConstraintError({ error })) {
     throw createDocumentAlreadyHasTagError();
   }
 
