@@ -1,5 +1,5 @@
 ---
-"@papra/app": patch
+"@papra/app": minor
 ---
 
 **Breaking change regarding webhook URLs**
