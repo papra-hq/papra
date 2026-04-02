@@ -1,5 +1,41 @@
 # @papra/app
 
+## 26.4.0
+
+### Minor Changes
+
+- [#993](https://github.com/papra-hq/papra/pull/993) [`17b501a`](https://github.com/papra-hq/papra/commit/17b501a9968591db5ca7f36c850c1662ee3c2fdf) Thanks [@CorentinTh](https://github.com/CorentinTh)! - **Breaking change regarding webhook URLs**
+
+  Added SSRF protection for webhook URLs. Webhook URLs are now validated to ensure they do not point to private or reserved IP addresses, preventing potential server-side request forgery attacks.
+  So webhooks pointing to private IPs (e.g. `http://192.168.0.1/some/stuff`), or with domains resolving to private IPs (e.g. `http://myservice.local/some/stuff`) will be blocked unless explicitly allowed.
+
+  Two new configuration options are available:
+  - `WEBHOOK_SSRF_PROTECTION_ENABLED` Set to `false` to fully disable SSRF protection. This is not recommended, prefer using the allowlist below instead.
+  - `WEBHOOK_URL_ALLOWED_HOSTNAMES` A comma-separated list of hostnames (IP addresses or domain names) that are explicitly trusted and exempt from SSRF checks (e.g. internal services you control).
+
+  Addressing [GHSA-cjw7-qg95-58mq](https://github.com/papra-hq/papra/security/advisories/GHSA-cjw7-qg95-58mq), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+### Patch Changes
+
+- [#986](https://github.com/papra-hq/papra/pull/986) [`884d470`](https://github.com/papra-hq/papra/commit/884d4704106b22165037a96aad471146e481fef2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed currently unused `expiresAt` placeholder fields in the internal API key creation endpoint to avoid confusions, as non-ui (so non-standard) creation of API keys can set an expiration date, which is not currently enforced by the system.
+
+  Addressing [GHSA-866c-mc22-wvv5](https://github.com/papra-hq/papra/security/advisories/GHSA-866c-mc22-wvv5), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+- [#992](https://github.com/papra-hq/papra/pull/992) [`9039b48`](https://github.com/papra-hq/papra/commit/9039b4806eba7212360e3efcb67cc4758c611798) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly return a "document already has tag" error when trying to add a tag to a document that already has it, instead of a generic 500 error when using an hosted Turso db.
+
+- [#992](https://github.com/papra-hq/papra/pull/992) [`9039b48`](https://github.com/papra-hq/papra/commit/9039b4806eba7212360e3efcb67cc4758c611798) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Api now returns a 409 status code instead of a 400 when either creating a tag that already exists or adding a tag to a document that already has it.
+
+- [#995](https://github.com/papra-hq/papra/pull/995) [`327eda0`](https://github.com/papra-hq/papra/commit/327eda00013559fc28993ea03274e6dd948e995c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Properly sanitize user name before including it in the email content to prevent potential XSS or html injection attacks.
+
+  Addressing [GHSA-6f8x-2rc9-vgh4](https://github.com/papra-hq/papra/security/advisories/GHSA-6f8x-2rc9-vgh4), credit to [@Toothless5143](https://github.com/Toothless5143) for the responsible disclosure.
+
+- [#981](https://github.com/papra-hq/papra/pull/981) [`f336b84`](https://github.com/papra-hq/papra/commit/f336b842c645744eb95ed0cf297739c2abc98800) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Moved the theme picker to the user settings dropdown
+
+- [#984](https://github.com/papra-hq/papra/pull/984) [`8fe222b`](https://github.com/papra-hq/papra/commit/8fe222bb8f99a9f1fd0b3cb6c970b9e80e79f8e9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - App environment configuration validation is now a bit stricter, with slightly different error messages. And the following specific changes:
+  - Boolean env variables previously considered non-truthy values as `false`. Now they will throw a validation error if the value is not a valid boolean-ish value
+  - `AUTH_PROVIDERS_CUSTOMS` json parsing now accepts only valid boolean values for the `pkce` property, while before it accepted any non-true value as `false`
+  - Stricter `AUTH_FORBIDDEN_EMAIL_DOMAINS` domain validation
+
 ## 26.3.0
 
 ### Minor Changes
