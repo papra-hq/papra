@@ -14,6 +14,7 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
@@ -639,7 +640,7 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await extractAndSaveDocumentFileContent({
@@ -649,7 +650,7 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         eventServices: createTestEventServices(),
       });
@@ -698,7 +699,7 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
       const eventServices = createTestEventServices();
 
@@ -709,7 +710,7 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
         eventServices,
       });

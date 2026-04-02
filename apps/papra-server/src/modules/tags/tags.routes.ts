@@ -12,8 +12,6 @@ import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
-import { deferTriggerWebhooks } from '../webhooks/webhook.usecases';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagColorSchema, tagIdSchema } from './tags.schemas';
@@ -150,7 +148,7 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
@@ -171,7 +169,6 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
@@ -197,7 +194,7 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
         userId,
         tag,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
       });
 
@@ -206,7 +203,7 @@ function setupAddTagToDocumentRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
+function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
@@ -223,7 +220,6 @@ function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const tagsRepository = createTagsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
       const documentActivityRepository = createDocumentActivityRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
 
@@ -244,8 +240,7 @@ function setupRemoveTagFromDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       await tagsRepository.removeTagFromDocument({ tagId, documentId });
 
-      deferTriggerWebhooks({
-        webhookRepository,
+      webhookTriggerServices.deferTriggerWebhooks({
         organizationId,
         event: 'document:tag:removed',
         payload: { documentId, organizationId, tagId, tagName: tag.name },

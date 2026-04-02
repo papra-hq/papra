@@ -7,6 +7,8 @@ import { createEmailsServices } from '../emails/emails.services';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
+import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';
 import { setupDatabase } from './database/database';
@@ -28,8 +30,9 @@ export function createTestServerDependencies(overrides: Partial<GlobalDependenci
   const auth = overrides.auth ?? getAuth({ db, config, authEmailsServices, eventServices }).auth;
   const subscriptionsServices = overrides.subscriptionsServices ?? createSubscriptionsServices({ config });
   const documentSearchServices = overrides.documentSearchServices ?? createDocumentSearchServices({ db, config });
+  const webhookTriggerServices = overrides.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) });
 
-  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config });
+  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config, webhookTriggerServices });
 
   return {
     config,
@@ -43,5 +46,6 @@ export function createTestServerDependencies(overrides: Partial<GlobalDependenci
     auth,
     subscriptionsServices,
     documentSearchServices,
+    webhookTriggerServices,
   };
 }

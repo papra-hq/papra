@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Nome do webhook',
   'webhooks.create.form.name.placeholder': 'Insira o nome do webhook',
   'webhooks.create.form.name.required': 'O nome é obrigatório',
+  'webhooks.create.form.name.max-length': 'O nome deve ter no máximo 128 caracteres',
   'webhooks.create.form.url.label': 'URL do Webhook',
   'webhooks.create.form.url.placeholder': 'Insira o URL do webhook',
   'webhooks.create.form.url.required': 'O URL é obrigatória',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Origem da aplicação inválida. Se você está hospedando o Papra, certifique-se de que a variável de ambiente APP_BASE_URL corresponde à sua URL atual. Para mais detalhes, consulte https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'O número máximo de membros e convites pendentes para esta organização foi atingido. Atualize o seu plano para adicionar mais membros.',
   'api-errors.organization.has_active_subscription': 'Não é possível eliminar a organização com uma subscrição ativa. Por favor, cancele a sua subscrição primeiro usando o botão Gerir Subscrição acima.',
+  'api-errors.webhooks.ssrf_unsafe_url': 'O URL fornecido não é permitido. Os URLs de webhook não devem apontar para endereços IP privados ou reservados.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Utilizador não encontrado',
   'api-errors.FAILED_TO_CREATE_USER': 'Falha ao criar utilizador',

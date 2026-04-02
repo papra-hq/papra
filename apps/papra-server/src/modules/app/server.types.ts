@@ -7,6 +7,7 @@ import type { EmailsServices } from '../emails/emails.services';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import type { TaskServices } from '../tasks/tasks.services';
 import type { TrackingServices } from '../tracking/tracking.services';
+import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { Auth } from './auth/auth.services';
 import type { Session } from './auth/auth.types';
 import type { Database } from './database/database.types';
@@ -38,6 +39,7 @@ export type GlobalDependencies = {
   documentSearchServices: DocumentSearchServices;
   eventServices: EventServices;
   shutdownServices: ShutdownServices;
+  webhookTriggerServices: WebhookTriggerServices;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

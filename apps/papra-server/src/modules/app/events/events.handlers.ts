@@ -1,6 +1,7 @@
 import type { Config } from '../../config/config.types';
 import type { DocumentSearchServices } from '../../documents/document-search/document-search.types';
 import type { TrackingServices } from '../../tracking/tracking.services';
+import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
 import type { Database } from '../database/database.types';
 import type { EventServices } from './events.services';
 import { registerSyncDocumentSearchEventHandlers } from '../../documents/document-search/events/sync-document-search.handlers';
@@ -15,7 +16,7 @@ import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
 
-export function registerEventHandlers(deps: { trackingServices: TrackingServices; eventServices: EventServices; db: Database; documentSearchServices: DocumentSearchServices; config: Config }) {
+export function registerEventHandlers(deps: { trackingServices: TrackingServices; eventServices: EventServices; db: Database; documentSearchServices: DocumentSearchServices; config: Config; webhookTriggerServices: WebhookTriggerServices }) {
   registerFirstUserAdminEventHandler(deps);
   registerTrackingUserCreatedEventHandler(deps);
   registerTriggerWebhooksOnDocumentCreatedHandler(deps);

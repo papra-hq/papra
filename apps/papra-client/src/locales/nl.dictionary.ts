@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Webhooknaam',
   'webhooks.create.form.name.placeholder': 'Voer een webhooknaam in',
   'webhooks.create.form.name.required': 'Naam is verplicht',
+  'webhooks.create.form.name.max-length': 'De naam mag maximaal 128 tekens bevatten',
   'webhooks.create.form.url.label': 'Webhook-URL',
   'webhooks.create.form.url.placeholder': 'Voer een webhook-URL in',
   'webhooks.create.form.url.required': 'URL is verplicht',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Ongeldige applicatiebron. Als u Papra zelf host, zorg ervoor dat uw APP_BASE_URL-omgeving variabele overeenkomt met uw huidige URL. Zie https://docs.papra.app/resources/troubleshooting/#invalid-application-origin voor meer informatie.',
   'api-errors.organization.max_members_count_reached': 'Het maximale aantal leden en openstaande uitnodigingen voor deze organisatie is bereikt. Upgrade uw plan om meer leden toe te voegen.',
   'api-errors.organization.has_active_subscription': 'Kan de organisatie niet verwijderen vanwege een actief abonnement. Annuleer eerst uw abonnement via de knop Abonnement beheren.',
+  'api-errors.webhooks.ssrf_unsafe_url': 'De opgegeven URL is niet toegestaan. Webhook-URL\'s mogen niet verwijzen naar privé- of gereserveerde IP-adressen.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Gebruiker niet gevonden',
   'api-errors.FAILED_TO_CREATE_USER': 'Kan gebruiker niet aanmaken',

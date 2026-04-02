@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Nume webhook',
   'webhooks.create.form.name.placeholder': 'Introdu numele webhook-ului',
   'webhooks.create.form.name.required': 'Numele este obligatoriu',
+  'webhooks.create.form.name.max-length': 'Numele trebuie să aibă cel mult 128 de caractere',
   'webhooks.create.form.url.label': 'URL webhook',
   'webhooks.create.form.url.placeholder': 'Introdu URL-ul webhook-ului',
   'webhooks.create.form.url.required': 'URL-ul este obligatoriu',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
   'api-errors.organization.has_active_subscription': 'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
+  'api-errors.webhooks.ssrf_unsafe_url': 'URL-ul furnizat nu este permis. URL-urile webhook nu trebuie să indice spre adrese IP private sau rezervate.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Utilizatorul nu a fost găsit',
   'api-errors.FAILED_TO_CREATE_USER': 'Eroare la crearea utilizatorului',

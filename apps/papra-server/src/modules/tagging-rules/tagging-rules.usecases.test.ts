@@ -9,6 +9,7 @@ import { isNil } from '../shared/utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
 import { applyTaggingRules, applyTaggingRuleToExistingDocuments } from './tagging-rules.usecases';
 
@@ -36,10 +37,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository, logger });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository, logger });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -87,10 +88,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -114,10 +115,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -140,10 +141,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -172,10 +173,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -205,10 +206,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -238,10 +239,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -271,10 +272,10 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookRepository, documentActivityRepository });
+      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -301,7 +302,7 @@ describe('tagging-rules usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       const result = await applyTaggingRuleToExistingDocuments({
@@ -310,7 +311,7 @@ describe('tagging-rules usecases', () => {
         taggingRulesRepository,
         documentsRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
       });
 
@@ -333,7 +334,7 @@ describe('tagging-rules usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await expect(
@@ -343,7 +344,7 @@ describe('tagging-rules usecases', () => {
           taggingRulesRepository,
           documentsRepository,
           tagsRepository,
-          webhookRepository,
+          webhookTriggerServices,
           documentActivityRepository,
         }),
       ).rejects.toThrow('Tagging rule not found');
@@ -361,7 +362,7 @@ describe('tagging-rules usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookRepository = createWebhookRepository({ db });
+      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       const result = await applyTaggingRuleToExistingDocuments({
@@ -370,7 +371,7 @@ describe('tagging-rules usecases', () => {
         taggingRulesRepository,
         documentsRepository,
         tagsRepository,
-        webhookRepository,
+        webhookTriggerServices,
         documentActivityRepository,
       });
 

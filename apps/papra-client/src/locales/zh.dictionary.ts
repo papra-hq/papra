@@ -743,6 +743,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.create.form.name.label': 'Webhook 名称',
   'webhooks.create.form.name.placeholder': '请输入 Webhook 名称',
   'webhooks.create.form.name.required': '名称为必填项',
+  'webhooks.create.form.name.max-length': '名称最多不能超过128个字符',
   'webhooks.create.form.url.label': 'Webhook URL',
   'webhooks.create.form.url.placeholder': '请输入 Webhook URL',
   'webhooks.create.form.url.required': 'URL 为必填项',
@@ -838,6 +839,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.auth.invalid_origin': '应用来源无效。如果您自托管 Papra，请确保 APP_BASE_URL 环境变量与当前 URL 匹配。详情见 https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
   'api-errors.organization.max_members_count_reached': '该组织的成员和待处理邀请数量已达上限。请升级方案以添加更多成员。',
   'api-errors.organization.has_active_subscription': '无法删除有有效订阅的组织。请先通过上方“管理订阅”取消订阅。',
+  'api-errors.webhooks.ssrf_unsafe_url': '提供的 URL 不被允许。Webhook URL 不能指向私有或保留的 IP 地址。',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': '未找到用户',
   'api-errors.FAILED_TO_CREATE_USER': '创建用户失败',

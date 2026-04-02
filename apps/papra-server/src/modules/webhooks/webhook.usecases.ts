@@ -1,12 +1,14 @@
 import type { EventName, WebhookPayloads } from '@papra/webhooks';
 import type { Logger } from '../shared/logger/logger';
 import type { WebhookRepository } from './webhook.repository';
-import type { Webhook } from './webhooks.types';
+import type { Webhook, WebhooksConfig } from './webhooks.types';
 import { triggerWebhook as triggerWebhookServiceImpl } from '@papra/webhooks';
 import pLimit from 'p-limit';
 import { createDeferable } from '../shared/async/defer';
 import { createLogger } from '../shared/logger/logger';
-import { createWebhookNotFoundError } from './webhook.errors';
+import { isUrlSsrfSafe } from '../shared/ssrf/ssrf.services';
+import { createSsrfUnsafeUrlError, createWebhookNotFoundError } from './webhook.errors';
+import { WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR } from './webhooks.constants';
 
 export async function createWebhook({
   name,
@@ -17,6 +19,7 @@ export async function createWebhook({
   organizationId,
   webhookRepository,
   createdBy,
+  webhooksConfig,
 }: {
   name: string;
   url: string;
@@ -26,7 +29,14 @@ export async function createWebhook({
   organizationId: string;
   webhookRepository: WebhookRepository;
   createdBy: string;
+  webhooksConfig: WebhooksConfig;
 }) {
+  await checkWebhookUrlIsSsrfSafe({
+    url,
+    isSsrfProtectionEnabled: webhooksConfig.isSsrfProtectionEnabled,
+    allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
+  });
+
   const { webhook } = await webhookRepository.createOrganizationWebhook({
     name,
     url,
@@ -49,6 +59,7 @@ export async function updateWebhook({
   events,
   webhookRepository,
   organizationId,
+  webhooksConfig,
 }: {
   webhookId: string;
   name?: string;
@@ -58,11 +69,20 @@ export async function updateWebhook({
   events?: EventName[];
   webhookRepository: WebhookRepository;
   organizationId: string;
+  webhooksConfig: WebhooksConfig;
 }) {
   const { webhook: existingWebhook } = await webhookRepository.getOrganizationWebhookById({ webhookId, organizationId });
 
   if (!existingWebhook) {
     throw createWebhookNotFoundError();
+  }
+
+  if (url !== undefined) {
+    await checkWebhookUrlIsSsrfSafe({
+      url,
+      isSsrfProtectionEnabled: webhooksConfig.isSsrfProtectionEnabled,
+      allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
+    });
   }
 
   const { webhook } = await webhookRepository.updateOrganizationWebhook({
@@ -84,6 +104,7 @@ export async function triggerWebhooks({
   now = new Date(),
   logger = createLogger({ namespace: 'webhook' }),
   triggerWebhookService = triggerWebhookServiceImpl,
+  webhooksConfig,
   ...webhookData
 }: {
   webhookRepository: WebhookRepository;
@@ -91,6 +112,7 @@ export async function triggerWebhooks({
   now?: Date;
   logger?: Logger;
   triggerWebhookService?: typeof triggerWebhookServiceImpl;
+  webhooksConfig: WebhooksConfig;
 } & WebhookPayloads) {
   const { event } = webhookData;
   const { webhooks } = await webhookRepository.getOrganizationEnabledWebhooksForEvent({ organizationId, event });
@@ -102,7 +124,7 @@ export async function triggerWebhooks({
   await Promise.all(
     webhooks.map(async webhook =>
       limit(async () =>
-        triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, triggerWebhookService }),
+        triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, triggerWebhookService, webhooksConfig }),
       ),
     ),
   );
@@ -116,6 +138,7 @@ export async function triggerWebhook({
   now = new Date(),
   logger = createLogger({ namespace: 'webhook' }),
   triggerWebhookService = triggerWebhookServiceImpl,
+  webhooksConfig,
   ...webhookData
 }: {
   webhook: Webhook;
@@ -123,9 +146,20 @@ export async function triggerWebhook({
   now?: Date;
   logger?: Logger;
   triggerWebhookService?: typeof triggerWebhookServiceImpl;
+  webhooksConfig: WebhooksConfig;
 } & WebhookPayloads) {
   const { url, secret, organizationId } = webhook;
   const { event } = webhookData;
+
+  // Check SSRF safety of the webhook URL before triggering the webhook
+  // still vulnerable to TOCTOU dns rebinbing attacks, but the timing window is really small
+  // and needs the attacker to have access to dns. It's currently an acceptable risk
+  await checkWebhookUrlIsSsrfSafe({
+    url,
+    isSsrfProtectionEnabled: webhooksConfig.isSsrfProtectionEnabled,
+    allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
+    logger,
+  });
 
   logger.info({ webhookId: webhook.id, event, organizationId }, 'Triggering webhook');
 
@@ -145,4 +179,36 @@ export async function triggerWebhook({
     responsePayload: JSON.stringify(responseData),
     responseStatus,
   });
+}
+
+function reportNonSsrfSafeWebhookUrl({ url, logger }: { url: string; logger: Logger }) {
+  try {
+    const { hostname } = new URL(url);
+    logger.warn({ hostname }, `Webhook URL is not SSRF safe, if the hostname (${hostname}) is expected to be SSRF safe, consider adding it to the allowed hostnames list in the configuration (${WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR}=${hostname})`);
+  } catch {
+    logger.error('Webhook URL is not SSRF safe and is also an invalid URL');
+  }
+}
+
+export async function checkWebhookUrlIsSsrfSafe({
+  url,
+  isSsrfProtectionEnabled,
+  allowedHostnames,
+  logger = createLogger({ namespace: 'webhook' }),
+}: {
+  url: string;
+  isSsrfProtectionEnabled: boolean;
+  allowedHostnames: Set<string>;
+  logger?: Logger;
+}) {
+  if (!isSsrfProtectionEnabled) {
+    return;
+  }
+
+  const isSafe = await isUrlSsrfSafe({ url, allowedHostnames });
+
+  if (!isSafe) {
+    reportNonSsrfSafeWebhookUrl({ url, logger });
+    throw createSsrfUnsafeUrlError();
+  }
 }

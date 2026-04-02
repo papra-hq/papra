@@ -21,6 +21,8 @@ import { createSubscriptionsServices } from './modules/subscriptions/subscriptio
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
 import { createTaskServices } from './modules/tasks/tasks.services';
 import { createTrackingServices } from './modules/tracking/tracking.services';
+import { createWebhookRepository } from './modules/webhooks/webhook.repository';
+import { createWebhookTriggerServices } from './modules/webhooks/webhooks.trigger.services';
 
 async function startWebMode({ logger, ...dependencies }: { logger: Logger } & GlobalDependencies) {
   const server = createServer(dependencies);
@@ -60,10 +62,12 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   const { auth } = getAuth({ db, config, authEmailsServices, eventServices });
   const subscriptionsServices = createSubscriptionsServices({ config });
   const documentSearchServices = createDocumentSearchServices({ db, config });
+  const webhookRepository = createWebhookRepository({ db });
+  const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository });
 
   // --- Services initialization
   await taskServices.initialize();
-  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config });
+  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config, webhookTriggerServices });
 
   return {
     config,
@@ -77,6 +81,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
     auth,
     subscriptionsServices,
     documentSearchServices,
+    webhookTriggerServices,
   };
 }
 
