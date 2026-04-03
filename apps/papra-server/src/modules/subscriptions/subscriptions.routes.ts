@@ -1,5 +1,5 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { get, pick } from 'lodash-es';
+import { pick } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
@@ -49,7 +49,7 @@ function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: Rou
     logger.info(
       {
         event: pick(event, ['id', 'type']),
-        customerId: get(event, 'data.object.customer'),
+        customerId: 'customer' in event.data.object ? event.data.object.customer : undefined,
       },
       'Stripe webhook received',
     );

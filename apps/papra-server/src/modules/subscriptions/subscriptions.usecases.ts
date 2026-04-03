@@ -3,7 +3,6 @@ import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from './subscriptions.repository';
 import type { SubscriptionsServices } from './subscriptions.services';
-import { get } from 'lodash-es';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
@@ -24,7 +23,7 @@ export async function handleStripeWebhookEvent({
 }) {
   if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
     const subscriptionId = event.data.object.id;
-    const organizationId = get(event, 'data.object.metadata.organizationId') as string | undefined;
+    const organizationId = event.data.object.metadata.organizationId;
 
     if (isNil(organizationId)) {
       throw createOrganizationNotFoundError();
