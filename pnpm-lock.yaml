@@ -828,8 +828,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       unpdf:
-        specifier: ^1.1.0
-        version: 1.1.0(@napi-rs/canvas@0.1.73)
+        specifier: ^1.4.0
+        version: 1.4.0(@napi-rs/canvas@0.1.73)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 'catalog:'
@@ -11518,8 +11518,8 @@ packages:
       vite:
         optional: true
 
-  unpdf@1.1.0:
-    resolution: {integrity: sha512-wxBX1QXUspcT091+yRmtxiUm0yDfnoz0NFMguT58mtJFpwWA2dk8PaLJpUO8MZqF/et56FIjrc2Z/OeEaFte0g==}
+  unpdf@1.4.0:
+    resolution: {integrity: sha512-TahIk0xdH/4jh/MxfclzU79g40OyxtP00VnEUZdEkJoYtXAHWLiir6t3FC6z3vDqQTzc2ZHcla6uEiVTNjejuA==}
     peerDependencies:
       '@napi-rs/canvas': ^0.1.69
     peerDependenciesMeta:
@@ -25539,7 +25539,7 @@ snapshots:
       - postcss
       - supports-color
 
-  unpdf@1.1.0(@napi-rs/canvas@0.1.73):
+  unpdf@1.4.0(@napi-rs/canvas@0.1.73):
     optionalDependencies:
       '@napi-rs/canvas': 0.1.73
 
