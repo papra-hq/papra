@@ -1,5 +1,4 @@
 import type { ConfigDefinition, ConfigDefinitionElement } from 'figue';
-import { castArray, isArray, isEmpty, isNil } from 'lodash-es';
 
 import { configDefinition } from '../../papra-server/src/modules/config/config';
 import { renderMarkdown } from './markdown';
@@ -28,10 +27,14 @@ function formatDoc(doc: string | undefined): string {
   return `${coerced}.`;
 }
 
+function getIsEmptyDefaultValue(defaultValue: unknown): boolean {
+  return defaultValue === undefined || defaultValue === null || defaultValue === '' || (Array.isArray(defaultValue) && defaultValue.length === 0);
+}
+
 const rows = configDetails
   .filter(({ showInDocumentation }) => showInDocumentation !== false)
   .map(({ doc, default: defaultValue, env, path }) => {
-    const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
+    const isEmptyDefaultValue = getIsEmptyDefaultValue(defaultValue);
 
     const rawDocumentation = formatDoc(doc);
 
@@ -47,7 +50,7 @@ const rows = configDetails
   });
 
 const mdSections = rows.map(({ documentation, env, path, defaultValue }) => {
-  const envs = castArray(env);
+  const envs = Array.isArray(env) ? env : [env];
   const [firstEnv, ...restEnvs] = envs;
 
   return `
@@ -84,8 +87,8 @@ function wrapText(text: string, maxLength = 75) {
 }
 
 const fullDotEnv = rows.map(({ env, defaultValue, documentation }) => {
-  const isEmptyDefaultValue = isNil(defaultValue) || (isArray(defaultValue) && isEmpty(defaultValue)) || defaultValue === '';
-  const envs = castArray(env);
+  const isEmptyDefaultValue = getIsEmptyDefaultValue(defaultValue);
+  const envs = Array.isArray(env) ? env : [env];
   const [firstEnv] = envs;
 
   return [
