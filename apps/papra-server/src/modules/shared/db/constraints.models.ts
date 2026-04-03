@@ -1,8 +1,12 @@
-import { get } from 'lodash-es';
+import { isNil } from '../utils';
 
 export function isUniqueConstraintError({ error }: { error: unknown }): boolean {
-  const message: unknown = get(error, 'message');
-  const code: unknown = get(error, 'code');
+  if (isNil(error) || typeof error !== 'object') {
+    return false;
+  }
+
+  const message: unknown = 'message' in error ? error.message : undefined;
+  const code: unknown = 'code' in error ? error.code : undefined;
 
   if (code === 'SQLITE_CONSTRAINT_UNIQUE') {
     return true;
