@@ -32,21 +32,6 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
           href: `/organizations/${params.organizationId}/settings/webhooks`,
           icon: 'i-tabler-webhook',
         },
-        {
-          label: t('layout.menu.tagging-rules'),
-          icon: 'i-tabler-list-check',
-          href: `/organizations/${params.organizationId}/tagging-rules`,
-        },
-        {
-          label: t('layout.menu.members'),
-          icon: 'i-tabler-users',
-          href: `/organizations/${params.organizationId}/members`,
-        },
-        {
-          label: t('layout.menu.views'),
-          icon: 'i-tabler-layout-list',
-          href: `/organizations/${params.organizationId}/views`,
-        },
       ],
     },
   ];

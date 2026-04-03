@@ -48,12 +48,6 @@ export const SideNav: Component<{
         <div class="h-full flex flex-col pb-6 flex-1 min-w-0">
           {props.header && <props.header />}
 
-          {/* {props.mainMenu && (
-            <nav class="flex flex-col gap-0.5 mt-4 px-4">
-              <For each={props.mainMenu}>{menuItem => <MenuItemButton {...menuItem} />}</For>
-            </nav>
-          )} */}
-
           <For each={props.mainMenu}>
             {section => (
               <div class="mt-4 px-4">

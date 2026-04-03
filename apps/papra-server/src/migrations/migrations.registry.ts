@@ -17,8 +17,8 @@ import { twoFactorAuthenticationMigration } from './list/0014-two-factor-authent
 import { indexDocumentsFtsIdsMigration } from './list/0015-index-documents-fts-ids.migration';
 import { caseInsensitiveTagNameUniqConstraintMigration } from './list/0016-case-insensitive-tag-name-uniq-constraint.migration';
 import { documentsDateMigration } from './list/0017-documents-date.migration';
-import { viewsMigration } from './list/0018-views.migration';
-import { customPropertiesMigration } from './list/0019-custom-properties.migration';
+import { customPropertiesMigration } from './list/0018-custom-properties.migration';
+import { viewsMigration } from './list/0019-views.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -38,6 +38,6 @@ export const migrations: Migration[] = [
   indexDocumentsFtsIdsMigration,
   caseInsensitiveTagNameUniqConstraintMigration,
   documentsDateMigration,
-  viewsMigration,
   customPropertiesMigration,
+  viewsMigration,
 ];
