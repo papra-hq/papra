@@ -11,4 +11,6 @@ export const DOCUMENT_ACTIVITY_EVENT_LIST = Object.values(DOCUMENT_ACTIVITY_EVEN
 
 export const MAX_CONCURRENT_DOCUMENT_UPLOADS = 3;
 
+export const MAX_CONCURRENT_BULK_OPERATIONS = 5;
+
 export const DEFAULT_DOCUMENT_ICON = 'i-tabler-file';
