@@ -1,7 +1,6 @@
 import type { PlansRepository } from '../plans/plans.repository';
 import { createInMemoryLoggerTransport, createLogger } from '@crowlog/logger';
 import { asc } from 'drizzle-orm';
-import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
@@ -10,6 +9,7 @@ import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
 import { PLUS_PLAN_ID } from '../plans/plans.constants';
+import { pick } from '../shared/objects';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
