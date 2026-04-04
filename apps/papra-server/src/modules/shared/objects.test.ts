@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { omitUndefined, pick } from './objects';
+import { omit, omitUndefined, pick } from './objects';
 
 describe('objects', () => {
   describe('pick', () => {
@@ -61,6 +61,62 @@ describe('objects', () => {
       Object.defineProperty(obj, 'b', { value: 2, enumerable: true });
 
       expect(pick(obj, ['a', 'b'] as unknown as never[])).toEqual({ b: 2 });
+    });
+  });
+
+  describe('omit', () => {
+    test('given an object and a list of keys, return a new object without the specified keys', () => {
+      expect(omit({ a: 1, b: 2, c: 3 }, ['b'])).toEqual({ a: 1, c: 3 });
+    });
+
+    test('multiple keys can be omitted at once', () => {
+      expect(omit({ a: 1, b: 2, c: 3 }, ['a', 'c'])).toEqual({ b: 2 });
+    });
+
+    test('when a key is not present in the object, it is ignored', () => {
+      expect(omit({ a: 1, b: 2 }, ['c'] as unknown as ('a' | 'b')[])).toEqual({ a: 1, b: 2 });
+    });
+
+    test('when the object is empty, the result is always an empty object', () => {
+      expect(omit({}, [])).toEqual({});
+      expect(omit({}, ['a', 'b'] as unknown as never[])).toEqual({});
+    });
+
+    test('when the list of keys is empty, the result is a copy of the original object', () => {
+      expect(omit({ a: 1, b: 2 }, [])).toEqual({ a: 1, b: 2 });
+    });
+
+    test('resulting object is a new object, not a reference to the original one', () => {
+      const obj = { a: 1, b: 2 };
+      const result = omit(obj, ['a']);
+      expect(result).toEqual({ b: 2 });
+      expect(result).not.toBe(obj);
+    });
+
+    test('properties references are preserved', () => {
+      const user = { name: 'Alice' };
+      const obj = { user, b: 2 };
+      const result = omit(obj, ['b']);
+
+      expect(result).toEqual({ user: { name: 'Alice' } });
+      expect(result.user).toBe(user);
+    });
+
+    test('when the object has properties in its prototype chain, they are ignored', () => {
+      // eslint-disable-next-line ts/no-unsafe-assignment
+      const obj = Object.create({ a: 1 });
+      // eslint-disable-next-line ts/no-unsafe-member-access
+      obj.b = 2;
+
+      expect(omit(obj, ['a'] as unknown as never[])).toEqual({ b: 2 });
+    });
+
+    test('when the object has non-enumerable properties, they are ignored', () => {
+      const obj = {};
+      Object.defineProperty(obj, 'a', { value: 1, enumerable: false });
+      Object.defineProperty(obj, 'b', { value: 2, enumerable: true });
+
+      expect(omit(obj, [] as unknown as never[])).toEqual({ b: 2 });
     });
   });
 

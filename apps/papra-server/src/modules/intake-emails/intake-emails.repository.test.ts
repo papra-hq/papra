@@ -1,6 +1,6 @@
-import { omit } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { omit } from '../shared/objects';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 
 describe('intake-emails repository', () => {
@@ -46,6 +46,8 @@ describe('intake-emails repository', () => {
         intakeEmailId: intakeEmail.id,
         organizationId: 'organization-1',
       });
+
+      expect.assert(retrievedIntakeEmail);
 
       expect(
         omit(retrievedIntakeEmail, ['id', 'createdAt', 'updatedAt']),

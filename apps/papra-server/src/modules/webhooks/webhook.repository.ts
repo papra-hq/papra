@@ -4,6 +4,8 @@ import type { Webhook, WebhookDeliveryInsert, WebhookEvent } from './webhooks.ty
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, max } from 'drizzle-orm';
 import { omitUndefined } from '../shared/objects';
+import { isNil } from '../shared/utils';
+import { createWebhookNotFoundError } from './webhook.errors';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 
 export type WebhookRepository = ReturnType<typeof createWebhookRepository>;
@@ -57,6 +59,11 @@ async function updateOrganizationWebhook({ db, webhookId, events, organizationId
       ),
     )
     .returning();
+
+  if (isNil(updatedWebhook)) {
+    // Should not happen, error will be thrown by the query, but it's for type safety
+    throw createWebhookNotFoundError();
+  }
 
   if (events) {
     // Delete existing events

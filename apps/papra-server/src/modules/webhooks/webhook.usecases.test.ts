@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { omit } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
+import { omit } from '../shared/objects';
 import { createWebhookRepository } from './webhook.repository';
 import { createWebhook, triggerWebhooks, updateWebhook } from './webhook.usecases';
 import { webhookEventsTable, webhooksTable } from './webhooks.tables';
@@ -75,7 +75,7 @@ describe('webhook usecases', () => {
 
       // Verify events were created
       const events = await db.select().from(webhookEventsTable).where(eq(webhookEventsTable.webhookId, webhook.id));
-      expect(events.map(e => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
+      expect(events.map(e => omit(e, ['createdAt', 'updatedAt', 'id']))).to.eql([
         {
           webhookId: webhook.id,
           eventName: 'document:created',
@@ -154,7 +154,7 @@ describe('webhook usecases', () => {
       });
 
       const events = await db.select().from(webhookEventsTable).where(eq(webhookEventsTable.webhookId, 'wbh_1'));
-      expect(events.map(e => omit(e, 'createdAt', 'updatedAt', 'id'))).to.eql([
+      expect(events.map(e => omit(e, ['createdAt', 'updatedAt', 'id']))).to.eql([
         {
           webhookId: 'wbh_1',
           eventName: 'document:deleted',
