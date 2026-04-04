@@ -56,7 +56,7 @@ export const SidenavLayout: ParentComponent<{
 
   return (
     <div class="flex flex-row h-screen min-h-0">
-      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
+      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden lg:block bg-card">
         <props.sideNav />
 
       </div>
@@ -69,7 +69,7 @@ export const SidenavLayout: ParentComponent<{
           <div class="flex items-center">
             <Sheet>
               <SheetTrigger>
-                <Button variant="ghost" size="icon" class="md:hidden mr-2">
+                <Button variant="ghost" size="icon" class="lg:hidden mr-2">
                   <div class="i-tabler-menu-2 size-6" />
                 </Button>
               </SheetTrigger>
