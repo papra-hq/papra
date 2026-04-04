@@ -2,18 +2,22 @@ import type { Component } from 'solid-js';
 import { formatBytes } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { keepPreviousData, useQuery } from '@tanstack/solid-query';
-import { createSignal, Show, Suspense } from 'solid-js';
+import { Show, Suspense } from 'solid-js';
 import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
 import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
+import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
 
 export const OrganizationPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
-  const [getPagination, setPagination] = createSignal({ pageIndex: 0, pageSize: 100 });
+  const [getPagination, setPagination] = createParamSynchronizedPagination({
+    defaultPageSize: 100,
+    defaultPageIndex: 0,
+  });
 
   const documentsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
