@@ -1,11 +1,11 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { omit } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { omit } from '../shared/objects';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createWebhookNotFoundError } from './webhook.errors';
 import { createWebhookRepository } from './webhook.repository';
