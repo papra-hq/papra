@@ -1,5 +1,4 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { pick } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
@@ -15,6 +14,7 @@ import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
+import { pick } from '../shared/objects';
 import { nullifyPositiveInfinity } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';

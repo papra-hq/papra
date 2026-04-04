@@ -1,10 +1,10 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { pick } from 'lodash-es';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { getPermissionsForRoles } from '../roles/roles.methods';
 import { createRolesRepository } from '../roles/roles.repository';
+import { pick } from '../shared/objects';
 import { validateJsonBody } from '../shared/validation/validation';
 import { createUsersRepository } from './users.repository';
 
@@ -35,7 +35,6 @@ function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
 
       return context.json({
         user: {
-          permissions,
           ...pick(
             user,
             [
@@ -44,10 +43,11 @@ function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
               'name',
               'createdAt',
               'updatedAt',
-              'planId',
               'twoFactorEnabled',
             ],
           ),
+
+          permissions,
         },
       });
     },
