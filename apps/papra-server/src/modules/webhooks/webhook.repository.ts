@@ -3,7 +3,7 @@ import type { Database } from '../app/database/database.types';
 import type { Webhook, WebhookDeliveryInsert, WebhookEvent } from './webhooks.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, max } from 'drizzle-orm';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 
 export type WebhookRepository = ReturnType<typeof createWebhookRepository>;

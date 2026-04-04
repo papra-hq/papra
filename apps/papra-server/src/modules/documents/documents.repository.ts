@@ -8,7 +8,8 @@ import { subDays } from '../shared/date';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
-import { isDefined, isNil, omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
+import { isDefined, isNil } from '../shared/utils';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
 

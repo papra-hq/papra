@@ -5,7 +5,7 @@ import { and, count, desc, eq, getTableColumns, gte, isNotNull, isNull, lte } fr
 import { omit } from 'lodash-es';
 import { addDays, startOfDay } from '../shared/date';
 import { withPagination } from '../shared/db/pagination';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationNotFoundError } from './organizations.errors';

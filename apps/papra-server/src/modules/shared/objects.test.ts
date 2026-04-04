@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { pick } from './objects';
+import { omitUndefined, pick } from './objects';
 
 describe('objects', () => {
   describe('pick', () => {
@@ -53,6 +53,67 @@ describe('objects', () => {
       obj.b = 2;
 
       expect(pick(obj, ['a', 'b'] as unknown as never[])).toEqual({ b: 2 });
+    });
+
+    test('when the object has non-enumerable properties, they are ignored', () => {
+      const obj = {};
+      Object.defineProperty(obj, 'a', { value: 1, enumerable: false });
+      Object.defineProperty(obj, 'b', { value: 2, enumerable: true });
+
+      expect(pick(obj, ['a', 'b'] as unknown as never[])).toEqual({ b: 2 });
+    });
+  });
+
+  describe('omitUndefined', () => {
+    test('removes root undefined values and keeps the rest', () => {
+      expect(
+        omitUndefined({
+          a: 1,
+          b: undefined,
+          c: 3,
+          d: null,
+          e: { f: undefined, g: 2 },
+          f: '',
+        }),
+      ).toEqual({
+        a: 1,
+        c: 3,
+        d: null,
+        e: { f: undefined, g: 2 },
+        f: '',
+      });
+    });
+
+    test('returns an empty object when all values are undefined', () => {
+      expect(omitUndefined({ a: undefined, b: undefined })).toEqual({});
+    });
+
+    test('returns a copy of the object when no values are undefined', () => {
+      const obj = { a: 1, b: 2 };
+      const result = omitUndefined(obj);
+      expect(result).toEqual({ a: 1, b: 2 });
+      expect(result).not.toBe(obj);
+    });
+
+    test('returns an empty object when given an empty object', () => {
+      expect(omitUndefined({})).toEqual({});
+    });
+
+    test('when the object has properties in its prototype chain, they are ignored', () => {
+      // eslint-disable-next-line ts/no-unsafe-assignment
+      const obj = Object.create({ a: 1 });
+      // eslint-disable-next-line ts/no-unsafe-member-access
+      obj.b = 2;
+
+      expect(omitUndefined(obj)).toEqual({ b: 2 });
+    });
+
+    test('when the object has non-enumerable properties, they are ignored', () => {
+      const obj = {};
+      Object.defineProperty(obj, 'a', { value: 1, enumerable: false });
+      Object.defineProperty(obj, 'b', { value: 2, enumerable: true });
+
+      expect(omitUndefined(obj)).toEqual({ b: 2 });
     });
   });
 });
