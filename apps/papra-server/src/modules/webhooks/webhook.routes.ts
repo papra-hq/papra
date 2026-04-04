@@ -10,7 +10,7 @@ import { validateJsonBody, validateParams } from '../shared/validation/validatio
 import { createWebhookNotFoundError } from './webhook.errors';
 import { createWebhookRepository } from './webhook.repository';
 import { createWebhook, updateWebhook } from './webhook.usecases';
-import { webhookEventListSchema } from './webhooks.schemas';
+import { webhookEventListSchema, webhookIdSchema, webhookNameSchema, webhookSecretSchema, webhookUrlSchema } from './webhooks.schemas';
 
 export function registerWebhooksRoutes(context: RouteDefinitionContext) {
   setupCreateWebhookRoute(context);
@@ -28,11 +28,11 @@ function setupCreateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
       organizationId: organizationIdSchema,
     })),
     validateJsonBody(z.object({
-      name: z.string().min(1).max(128),
-      url: z.string().url(),
-      secret: z.string().min(1).optional(),
+      name: webhookNameSchema,
+      url: webhookUrlSchema,
+      secret: webhookSecretSchema.optional(),
       enabled: z.boolean().optional().default(true),
-      events: webhookEventListSchema.min(1),
+      events: webhookEventListSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -94,7 +94,7 @@ function setupGetWebhookRoute({ app, db }: RouteDefinitionContext) {
     requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
-      webhookId: z.string().min(1),
+      webhookId: webhookIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -124,14 +124,14 @@ function setupUpdateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
     requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
-      webhookId: z.string().min(1),
+      webhookId: webhookIdSchema,
     })),
     validateJsonBody(z.object({
-      name: z.string().min(1).max(128).optional(),
-      url: z.string().url().optional(),
-      secret: z.string().min(1).optional(),
+      name: webhookNameSchema.optional(),
+      url: webhookUrlSchema.optional(),
+      secret: webhookSecretSchema.optional(),
       enabled: z.boolean().optional(),
-      events: webhookEventListSchema.min(1).optional(),
+      events: webhookEventListSchema.optional(),
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -167,7 +167,7 @@ function setupDeleteWebhookRoute({ app, db }: RouteDefinitionContext) {
     requireAuthentication(),
     validateParams(z.object({
       organizationId: organizationIdSchema,
-      webhookId: z.string().min(1),
+      webhookId: webhookIdSchema,
     })),
     async (context) => {
       const { userId } = getUser({ context });
