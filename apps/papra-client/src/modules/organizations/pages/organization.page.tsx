@@ -8,8 +8,8 @@ import { DocumentUploadArea } from '@/modules/documents/components/document-uplo
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
 import { fetchOrganizationDocuments, getOrganizationDocumentsStats } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { Button } from '@/modules/ui/components/button';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
+import { Button } from '@/modules/ui/components/button';
 
 export const OrganizationPage: Component = () => {
   const params = useParams();
