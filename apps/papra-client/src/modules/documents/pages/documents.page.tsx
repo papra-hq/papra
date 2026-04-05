@@ -50,7 +50,7 @@ export const DocumentsPage: Component = () => {
             )
           : (
               <>
-                <h2 class="text-lg font-semibold mb-4">
+                <h2 class="text-xl font-bold mb-4">
                   {t('documents.list.title')}
                 </h2>
 
