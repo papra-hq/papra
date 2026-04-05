@@ -188,4 +188,70 @@ describe('documents repository', () => {
       });
     });
   });
+
+  describe('areAllDocumentsInOrganization', async () => {
+    const { db } = await createInMemoryDatabase({
+      organizations: [
+        { id: 'org-1', name: 'Organization 1' },
+        { id: 'org-2', name: 'Organization 2' },
+      ],
+      documents: [
+        { id: 'doc-1', organizationId: 'org-1', mimeType: 'text/plain', originalStorageKey: 'org-1/originals/doc-1.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash1' },
+        { id: 'doc-2', organizationId: 'org-1', mimeType: 'text/plain', originalStorageKey: 'org-1/originals/doc-2.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash2' },
+        { id: 'doc-3', organizationId: 'org-2', mimeType: 'text/plain', originalStorageKey: 'org-2/originals/doc-3.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash3' },
+      ],
+    });
+
+    const documentsRepository = createDocumentsRepository({ db });
+
+    test('check if a given list of document IDs all belong to the organization', async () => {
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: ['doc-1', 'doc-2'],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(true);
+
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: ['doc-1', 'doc-3'],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(false);
+
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: ['doc-3'],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(false);
+    });
+
+    test('no document IDs provided, returns true', async () => {
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: [],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(true);
+    });
+
+    test('non existing document ID returns false', async () => {
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: ['non-existing-doc'],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(false);
+    });
+
+    test('duplicated document IDs from the organizations are accepted and return true', async () => {
+      expect(
+        await documentsRepository.areAllDocumentsInOrganization({
+          documentIds: ['doc-1', 'doc-1', 'doc-2'],
+          organizationId: 'org-1',
+        }),
+      ).to.eql(true);
+    });
+  });
 });

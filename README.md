@@ -39,7 +39,7 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 
 ## Project Status
 
-Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly. 
+Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly.
 
 Feedback and bug reports are highly appreciated to help us improve the platform.
 
@@ -61,12 +61,12 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - **CLI**: Manage your documents from the command line.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
 - **i18n**: Support for multiple languages.
-- *Coming soon:* **Document sharing**: Share documents with others.
-- *Coming soon:* **Document requests**: Generate upload links for people to add documents.
-- *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
-- *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
-- *Coming maybe one day:* **Browser extension**: Upload documents from your browser.
-- *Coming maybe one day:* **AI**: Use AI to help you manage or tag your documents.
+- _Coming soon:_ **Document sharing**: Share documents with others.
+- _Coming soon:_ **Document requests**: Generate upload links for people to add documents.
+- _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
+- _Coming maybe one day:_ **Desktop app**: Access and upload documents from your computer.
+- _Coming maybe one day:_ **Browser extension**: Upload documents from your browser.
+- _Coming maybe one day:_ **AI**: Use AI to help you manage or tag your documents.
 
 ## Support
 
