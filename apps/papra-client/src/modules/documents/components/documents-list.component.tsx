@@ -89,7 +89,7 @@ export const DocumentsPaginatedList: Component<{
         header: () => t('documents.list.table.headers.file-name'),
         id: 'fileName',
         cell: data => (
-          <div class="overflow-hidden flex gap-4 items-center">
+          <div class="overflow-hidden flex gap-4 items-center max-w-500px">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
               <div
                 class={cn(
@@ -103,6 +103,7 @@ export const DocumentsPaginatedList: Component<{
               <A
                 href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
                 class="font-bold truncate block hover:underline"
+                title={data.row.original.name}
               >
                 {getDocumentNameWithoutExtension({
                   name: data.row.original.name,
