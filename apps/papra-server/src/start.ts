@@ -21,7 +21,7 @@ import { createSubscriptionsServices } from './modules/subscriptions/subscriptio
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
 import { createTaskServices } from './modules/tasks/tasks.services';
 import { createTrackingServices } from './modules/tracking/tracking.services';
-import { createWebhookRepository } from './modules/webhooks/webhook.repository';
+import { createWebhookRepository } from './modules/webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from './modules/webhooks/webhooks.trigger.services';
 
 async function startWebMode({ logger, ...dependencies }: { logger: Logger } & GlobalDependencies) {

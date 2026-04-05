@@ -7,10 +7,10 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { omit } from '../shared/objects';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { createWebhookNotFoundError } from './webhook.errors';
-import { createWebhookRepository } from './webhook.repository';
-import { createWebhook, updateWebhook } from './webhook.usecases';
+import { createWebhookNotFoundError } from './webhooks.errors';
+import { createWebhookRepository } from './webhooks.repository';
 import { webhookEventListSchema, webhookIdSchema, webhookNameSchema, webhookSecretSchema, webhookUrlSchema } from './webhooks.schemas';
+import { createWebhook, updateWebhook } from './webhooks.usecases';
 
 export function registerWebhooksRoutes(context: RouteDefinitionContext) {
   setupCreateWebhookRoute(context);

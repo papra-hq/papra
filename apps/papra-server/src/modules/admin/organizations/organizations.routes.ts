@@ -7,7 +7,7 @@ import { createOrganizationNotFoundError } from '../../organizations/organizatio
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
 import { validateParams, validateQuery } from '../../shared/validation/validation';
-import { createWebhookRepository } from '../../webhooks/webhook.repository';
+import { createWebhookRepository } from '../../webhooks/webhooks.repository';
 
 export function registerOrganizationManagementRoutes(context: RouteDefinitionContext) {
   registerListOrganizationsRoute(context);

@@ -10,9 +10,9 @@ import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../docume
 import { registerInsertActivityLogOnDocumentTrashedHandler } from '../../documents/events/activity-log.document-trashed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
 import { registerTrackDocumentCreatedHandler } from '../../documents/events/tracking.document-created';
-import { registerTriggerWebhooksOnDocumentCreatedHandler } from '../../documents/events/webhook.document-created';
-import { registerTriggerWebhooksOnDocumentTrashedHandler } from '../../documents/events/webhook.document-trashed';
-import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents/events/webhook.document-updated';
+import { registerTriggerWebhooksOnDocumentCreatedHandler } from '../../documents/events/webhooks.document-created';
+import { registerTriggerWebhooksOnDocumentTrashedHandler } from '../../documents/events/webhooks.document-trashed';
+import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents/events/webhooks.document-updated';
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
 

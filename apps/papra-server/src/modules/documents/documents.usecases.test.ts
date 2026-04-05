@@ -13,7 +13,7 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';

@@ -4,9 +4,9 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { omit } from '../shared/objects';
-import { createWebhookRepository } from './webhook.repository';
-import { createWebhook, triggerWebhooks, updateWebhook } from './webhook.usecases';
+import { createWebhookRepository } from './webhooks.repository';
 import { webhookEventsTable, webhooksTable } from './webhooks.tables';
+import { createWebhook, triggerWebhooks, updateWebhook } from './webhooks.usecases';
 
 describe('webhook usecases', () => {
   describe('createWebhook', () => {

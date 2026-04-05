@@ -35,7 +35,7 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
 import { createTagsRepository } from '../tags/tags.repository';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
