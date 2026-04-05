@@ -5,7 +5,7 @@ import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, max } from 'drizzle-orm';
 import { omitUndefined } from '../shared/objects';
 import { isNil } from '../shared/utils';
-import { createWebhookNotFoundError } from './webhook.errors';
+import { createWebhookNotFoundError } from './webhooks.errors';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 
 export type WebhookRepository = ReturnType<typeof createWebhookRepository>;

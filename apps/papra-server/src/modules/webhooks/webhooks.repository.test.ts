@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
-import { createWebhookRepository } from './webhook.repository';
+import { createWebhookRepository } from './webhooks.repository';
 
 describe('webhook repository', () => {
   describe('getOrganizationWebhooks', () => {

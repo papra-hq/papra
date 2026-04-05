@@ -1,14 +1,14 @@
 import type { EventName, WebhookPayloads } from '@papra/webhooks';
 import type { Logger } from '../shared/logger/logger';
-import type { WebhookRepository } from './webhook.repository';
+import type { WebhookRepository } from './webhooks.repository';
 import type { Webhook, WebhooksConfig } from './webhooks.types';
 import { triggerWebhook as triggerWebhookServiceImpl } from '@papra/webhooks';
 import pLimit from 'p-limit';
 import { createDeferable } from '../shared/async/defer';
 import { createLogger } from '../shared/logger/logger';
 import { isUrlSsrfSafe } from '../shared/ssrf/ssrf.services';
-import { createSsrfUnsafeUrlError, createWebhookNotFoundError } from './webhook.errors';
 import { WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR } from './webhooks.constants';
+import { createSsrfUnsafeUrlError, createWebhookNotFoundError } from './webhooks.errors';
 
 export async function createWebhook({
   name,

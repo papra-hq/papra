@@ -12,7 +12,7 @@ import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.rout
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerUsersRoutes } from '../users/users.routes';
-import { registerWebhooksRoutes } from '../webhooks/webhook.routes';
+import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
