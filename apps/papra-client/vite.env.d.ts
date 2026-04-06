@@ -4,4 +4,3 @@ declare module '*.yml' {
   const value: Record<LocaleKeys, string>;
   export default value;
 }
-declare const __PDFJS_VERSION__: string;
