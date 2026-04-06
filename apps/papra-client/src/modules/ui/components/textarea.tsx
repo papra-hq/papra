@@ -17,7 +17,7 @@ export function TextArea<T extends ValidComponent = 'textarea'>(props: Polymorph
   return (
     <TextFieldPrimitive
       class={cn(
-        'flex min-h-[60px] w-full rounded-md border border-input bg-inherit px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:(outline-none ring-1.5 ring-ring) disabled:(cursor-not-allowed opacity-50) transition-shadow',
+        'flex min-h-[60px] w-full rounded-md border border-input bg-inherit px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:(outline-none ring-1.5 ring-ring) disabled:(cursor-not-allowed opacity-50)',
         local.class,
       )}
       {...rest}
