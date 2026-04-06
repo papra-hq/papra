@@ -98,7 +98,7 @@ export function NumberFieldInput<T extends ValidComponent = 'input'>(props: Poly
   return (
     <NumberFieldPrimitive.Input
       class={cn(
-        'flex h-9 w-full rounded-md border border-input bg-transparent pl-3 pr-16 py-1 text-sm shadow-sm placeholder:text-muted-foreground disabled:(cursor-not-allowed opacity-50) focus-visible:outline-none',
+        'flex h-9 w-full rounded-md border border-input bg-transparent pl-3 pr-16 py-1 text-sm placeholder:text-muted-foreground disabled:(cursor-not-allowed opacity-50) focus-visible:outline-none',
         local.class,
       )}
       {...rest}

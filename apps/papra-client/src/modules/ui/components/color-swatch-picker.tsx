@@ -71,7 +71,7 @@ const ColorPicker: Component<{
 };
 
 export const colorSwatchVariants = cva(
-  'rounded-lg border-2 border-background shadow-sm transition-all hover:scale-110 focus-visible:(outline-none ring-1.5 ring-ring ring-offset-1)',
+  'rounded-lg border-2 border-background transition-all hover:scale-110 focus-visible:(outline-none ring-1.5 ring-ring ring-offset-1)',
   {
     variants: {
       size: {
