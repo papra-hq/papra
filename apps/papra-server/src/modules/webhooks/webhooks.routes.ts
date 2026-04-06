@@ -5,9 +5,9 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { omit } from '../shared/objects';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createWebhookNotFoundError } from './webhooks.errors';
+import { formatWebhookForApi } from './webhooks.models';
 import { createWebhookRepository } from './webhooks.repository';
 import { webhookEventListSchema, webhookIdSchema, webhookNameSchema, webhookSecretSchema, webhookUrlSchema } from './webhooks.schemas';
 import { createWebhook, updateWebhook } from './webhooks.usecases';
@@ -57,7 +57,7 @@ function setupCreateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
       });
 
       return context.json({
-        webhook,
+        webhook: formatWebhookForApi(webhook),
       });
     },
   );
@@ -82,7 +82,7 @@ function setupGetWebhooksRoute({ app, db }: RouteDefinitionContext) {
       const { webhooks } = await webhookRepository.getOrganizationWebhooks({ organizationId });
 
       return context.json({
-        webhooks: webhooks.map(webhook => omit(webhook, ['secret'])),
+        webhooks: webhooks.map(formatWebhookForApi),
       });
     },
   );
@@ -112,7 +112,7 @@ function setupGetWebhookRoute({ app, db }: RouteDefinitionContext) {
       }
 
       return context.json({
-        webhook: omit(webhook, ['secret']),
+        webhook: formatWebhookForApi(webhook),
       });
     },
   );
@@ -155,7 +155,7 @@ function setupUpdateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
       });
 
       return context.json({
-        webhook: omit(webhook, ['secret']),
+        webhook: formatWebhookForApi(webhook),
       });
     },
   );

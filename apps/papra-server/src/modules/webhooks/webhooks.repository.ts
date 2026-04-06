@@ -105,7 +105,13 @@ async function getOrganizationWebhookById({ db, webhookId, organizationId }: { d
   }
 
   const [{ webhook } = {}] = records;
-  const events = records.map(record => record.webhookEvents?.eventName);
+
+  if (!webhook) {
+    // For type safety
+    return { webhook: undefined };
+  }
+
+  const events = records.map(record => record.webhookEvents?.eventName).filter(Boolean);
 
   return { webhook: { ...webhook, events } };
 }
