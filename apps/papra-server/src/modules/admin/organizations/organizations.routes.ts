@@ -6,7 +6,7 @@ import { organizationIdSchema } from '../../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
-import { validateParams, validateQuery } from '../../shared/validation/validation';
+import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
 import { createWebhookRepository } from '../../webhooks/webhooks.repository';
 
 export function registerOrganizationManagementRoutes(context: RouteDefinitionContext) {
@@ -27,7 +27,7 @@ function registerListOrganizationsRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateQuery(
+    legacyValidateQuery(
       z.object({
         search: z.string().optional(),
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
@@ -64,7 +64,7 @@ function registerGetOrganizationBasicInfoRoute({ app, db }: RouteDefinitionConte
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -92,7 +92,7 @@ function registerGetOrganizationMembersRoute({ app, db }: RouteDefinitionContext
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -122,7 +122,7 @@ function registerGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionCo
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -153,7 +153,7 @@ function registerGetOrganizationWebhooksRoute({ app, db }: RouteDefinitionContex
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -184,7 +184,7 @@ function registerGetOrganizationStatsRoute({ app, db }: RouteDefinitionContext) 
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {

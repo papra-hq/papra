@@ -8,7 +8,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { isNil } from '../shared/utils';
-import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { tagIdRegex } from '../tags/tags.constants';
 import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
@@ -28,7 +28,7 @@ function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -54,10 +54,10 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().min(1).max(64),
       description: z.string().max(256).optional(),
       enabled: z.boolean().optional(),
@@ -91,7 +91,7 @@ function setupDeleteTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
@@ -116,7 +116,7 @@ function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
@@ -143,11 +143,11 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().min(1).max(64),
       description: z.string().max(256).optional(),
       enabled: z.boolean().optional(),
@@ -185,7 +185,7 @@ function setupApplyTaggingRuleRoute({ app, db, taskServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),

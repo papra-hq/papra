@@ -13,7 +13,7 @@ import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { addLogContext, createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
-import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateFormData, legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
@@ -38,7 +38,7 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/intake-emails',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -61,7 +61,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.post(
     '/api/organizations/:organizationId/intake-emails',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -97,7 +97,7 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       intakeEmailId: intakeEmailIdSchema,
     })),
@@ -122,11 +122,11 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       intakeEmailId: intakeEmailIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       isEnabled: z.boolean().optional(),
       allowedOrigins: allowedOriginsSchema,
     })),
@@ -155,7 +155,7 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
 function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsStorageService, eventServices }: RouteDefinitionContext) {
   app.post(
     INTAKE_EMAILS_INGEST_ROUTE,
-    validateFormData(z.object({
+    legacyValidateFormData(z.object({
       // email field is a JSON string
       'email': z.string().transform(parseJson).pipe(intakeEmailsIngestionMetaSchema),
       'attachments[]': z.array(z.instanceof(File)).min(1, 'At least one attachment is required').optional(),

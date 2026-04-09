@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { describe, expect, test } from 'vitest';
 import { z } from 'zod';
-import { validateJsonBody, validateParams, validateQuery } from './validation';
+import { legacyValidateJsonBody, legacyValidateParams, legacyValidateQuery } from './validation.legacy';
 
 function makeJsonBodyPayload(payload: Record<string, unknown>) {
   return {
@@ -14,7 +14,7 @@ describe('validation', () => {
   describe('validateJsonBody', () => {
     describe('validateJsonBody creates a validation middleware that check the request json body against a schema', async () => {
       test('an invalid payload should trigger a 400 error', async () => {
-        const app = new Hono().post('/', validateJsonBody(z.object({ name: z.string({ required_error: 'The name is required' }) })), (context) => {
+        const app = new Hono().post('/', legacyValidateJsonBody(z.object({ name: z.string({ required_error: 'The name is required' }) })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -35,7 +35,7 @@ describe('validation', () => {
       });
 
       test('a valid request should pass through', async () => {
-        const app = new Hono().post('/', validateJsonBody(z.object({ name: z.string() })), (context) => {
+        const app = new Hono().post('/', legacyValidateJsonBody(z.object({ name: z.string() })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -47,7 +47,7 @@ describe('validation', () => {
       });
 
       test('no additional properties should be allowed', async () => {
-        const app = new Hono().post('/', validateJsonBody(z.object({ name: z.string() })), (context) => {
+        const app = new Hono().post('/', legacyValidateJsonBody(z.object({ name: z.string() })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -71,7 +71,7 @@ describe('validation', () => {
   describe('validateQuery', () => {
     describe('validateQuery creates a validation middleware that check the request query parameters against a schema', async () => {
       test('an invalid query should trigger a 400 error', async () => {
-        const app = new Hono().get('/', validateQuery(z.object({ name: z.string({ required_error: 'The name is required' }) })), (context) => {
+        const app = new Hono().get('/', legacyValidateQuery(z.object({ name: z.string({ required_error: 'The name is required' }) })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -92,7 +92,7 @@ describe('validation', () => {
       });
 
       test('a valid query should pass through', async () => {
-        const app = new Hono().get('/', validateQuery(z.object({ name: z.string() })), (context) => {
+        const app = new Hono().get('/', legacyValidateQuery(z.object({ name: z.string() })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -108,7 +108,7 @@ describe('validation', () => {
   describe('validateParams', () => {
     describe('validateParams creates a validation middleware that check the request url parameters against a schema', async () => {
       test('an invalid params should trigger a 400 error', async () => {
-        const app = new Hono().get('/:name', validateParams(z.object({ name: z.string().startsWith('foo-') })), (context) => {
+        const app = new Hono().get('/:name', legacyValidateParams(z.object({ name: z.string().startsWith('foo-') })), (context) => {
           return context.json({ ok: true });
         });
 
@@ -131,7 +131,7 @@ describe('validation', () => {
       });
 
       test('a valid params should pass through', async () => {
-        const app = new Hono().get('/:name', validateParams(z.object({ name: z.string().startsWith('foo-') })), (context) => {
+        const app = new Hono().get('/:name', legacyValidateParams(z.object({ name: z.string().startsWith('foo-') })), (context) => {
           return context.json({ ok: true });
         });
 

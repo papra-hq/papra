@@ -5,7 +5,7 @@ import { getUser } from '../app/auth/auth.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createWebhookNotFoundError } from './webhooks.errors';
 import { formatWebhookForApi } from './webhooks.models';
 import { createWebhookRepository } from './webhooks.repository';
@@ -24,10 +24,10 @@ function setupCreateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/webhooks',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: webhookNameSchema,
       url: webhookUrlSchema,
       secret: webhookSecretSchema.optional(),
@@ -67,7 +67,7 @@ function setupGetWebhooksRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/webhooks',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -92,7 +92,7 @@ function setupGetWebhookRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/webhooks/:webhookId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       webhookId: webhookIdSchema,
     })),
@@ -122,11 +122,11 @@ function setupUpdateWebhookRoute({ app, db, config }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/webhooks/:webhookId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       webhookId: webhookIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: webhookNameSchema.optional(),
       url: webhookUrlSchema.optional(),
       secret: webhookSecretSchema.optional(),
@@ -165,7 +165,7 @@ function setupDeleteWebhookRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/webhooks/:webhookId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       webhookId: webhookIdSchema,
     })),

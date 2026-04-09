@@ -4,7 +4,7 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createPlansRepository } from '../plans/plans.repository';
-import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { memberIdSchema, organizationIdSchema } from './organization.schemas';
@@ -68,7 +68,7 @@ function setupCreateOrganizationRoute({ app, db, config }: RouteDefinitionContex
   app.post(
     '/api/organizations',
     requireAuthentication({ apiKeyPermissions: ['organizations:create'] }),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
     async (context) => {
@@ -93,7 +93,7 @@ function setupGetOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId',
     requireAuthentication({ apiKeyPermissions: ['organizations:read'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -115,10 +115,10 @@ function setupUpdateOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId',
     requireAuthentication({ apiKeyPermissions: ['organizations:update'] }),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().min(3).max(50),
     })),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -143,7 +143,7 @@ function setupSoftDeleteOrganizationRoute({ app, db, config }: RouteDefinitionCo
   app.delete(
     '/api/organizations/:organizationId',
     requireAuthentication({ apiKeyPermissions: ['organizations:delete'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -166,7 +166,7 @@ function setupGetOrganizationMembersRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/members',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -188,7 +188,7 @@ function setupRemoveOrganizationMemberRoute({ app, db }: RouteDefinitionContext)
   app.delete(
     '/api/organizations/:organizationId/members/:memberId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       memberId: memberIdSchema,
     })),
@@ -211,11 +211,11 @@ function setupUpdateOrganizationMemberRoute({ app, db }: RouteDefinitionContext)
   app.patch(
     '/api/organizations/:organizationId/members/:memberId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       memberId: memberIdSchema,
     })),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       role: z.enum([ORGANIZATION_ROLES.ADMIN, ORGANIZATION_ROLES.MEMBER]),
     })),
     async (context) => {
@@ -238,7 +238,7 @@ function setupGetMembershipRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/members/me',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -262,11 +262,11 @@ function setupInviteOrganizationMemberRoute({ app, db, config, emailsServices }:
   app.post(
     '/api/organizations/:organizationId/members/invitations',
     requireAuthentication(),
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       email: z.string().email().toLowerCase(),
       role: z.enum([ORGANIZATION_ROLES.ADMIN, ORGANIZATION_ROLES.MEMBER]),
     })),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -303,7 +303,7 @@ function setupGetOrganizationInvitationsRoute({ app, db }: RouteDefinitionContex
   app.get(
     '/api/organizations/:organizationId/members/invitations',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -329,7 +329,7 @@ function setupRestoreOrganizationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/restore',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
