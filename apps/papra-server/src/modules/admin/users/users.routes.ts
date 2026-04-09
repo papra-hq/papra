@@ -4,7 +4,7 @@ import { createRoleMiddleware, requireAuthentication } from '../../app/auth/auth
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
 import { createRolesRepository } from '../../roles/roles.repository';
-import { validateParams, validateQuery } from '../../shared/validation/validation';
+import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
 import { createUsersRepository } from '../../users/users.repository';
 import { userIdSchema } from '../../users/users.schemas';
 
@@ -22,7 +22,7 @@ function registerListUsersRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateQuery(
+    legacyValidateQuery(
       z.object({
         search: z.string().optional(),
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
@@ -59,7 +59,7 @@ function registerGetUserDetailRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       userId: userIdSchema,
     })),
     async (context) => {

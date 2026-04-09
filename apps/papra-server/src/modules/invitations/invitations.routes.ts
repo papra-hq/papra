@@ -9,7 +9,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { resendOrganizationInvitation } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
-import { validateParams } from '../shared/validation/validation';
+import { legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createUsersRepository } from '../users/users.repository';
 
 const logger = createLogger({ namespace: 'invitations' });
@@ -65,7 +65,7 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/accept',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -117,7 +117,7 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/reject',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -155,7 +155,7 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/cancel',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -191,7 +191,7 @@ function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDe
   app.post(
     '/api/invitations/:invitationId/resend',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       invitationId: invitationIdSchema,
     })),
     async (context) => {

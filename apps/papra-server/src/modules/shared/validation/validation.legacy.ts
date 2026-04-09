@@ -13,7 +13,7 @@ function formatValidationError({ error }: { error: z.ZodError }) {
   return details;
 }
 
-function buildValidator<Target extends keyof ValidationTargets>({ target, error }: { target: Target; error: { message: string; code: string } }) {
+function buildLegacyValidator<Target extends keyof ValidationTargets>({ target, error }: { target: Target; error: { message: string; code: string } }) {
   return <Schema extends z.ZodTypeAny>(schema: Schema, { allowAdditionalFields = false }: { allowAdditionalFields?: boolean } = {}) => {
     return validator(target, (value, context) => {
       // @ts-expect-error try to enforce strict mode
@@ -42,7 +42,7 @@ function buildValidator<Target extends keyof ValidationTargets>({ target, error 
   };
 }
 
-export const validateJsonBody = buildValidator({ target: 'json', error: { message: 'Invalid request body', code: 'server.invalid_request.body' } });
-export const validateQuery = buildValidator({ target: 'query', error: { message: 'Invalid query parameters', code: 'server.invalid_request.query' } });
-export const validateParams = buildValidator({ target: 'param', error: { message: 'Invalid URL parameters', code: 'server.invalid_request.params' } });
-export const validateFormData = buildValidator({ target: 'form', error: { message: 'Invalid form data', code: 'server.invalid_request.form_data' } });
+export const legacyValidateJsonBody = buildLegacyValidator({ target: 'json', error: { message: 'Invalid request body', code: 'server.invalid_request.body' } });
+export const legacyValidateQuery = buildLegacyValidator({ target: 'query', error: { message: 'Invalid query parameters', code: 'server.invalid_request.query' } });
+export const legacyValidateParams = buildLegacyValidator({ target: 'param', error: { message: 'Invalid URL parameters', code: 'server.invalid_request.params' } });
+export const legacyValidateFormData = buildLegacyValidator({ target: 'form', error: { message: 'Invalid form data', code: 'server.invalid_request.form_data' } });

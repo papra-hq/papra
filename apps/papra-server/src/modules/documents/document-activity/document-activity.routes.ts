@@ -5,7 +5,7 @@ import { getUser } from '../../app/auth/auth.models';
 import { organizationIdSchema } from '../../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../../organizations/organizations.usecases';
-import { validateParams, validateQuery } from '../../shared/validation/validation';
+import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
 import { documentIdSchema } from '../documents.schemas';
 import { createDocumentActivityRepository } from './document-activity.repository';
 
@@ -17,11 +17,11 @@ function setupGetOrganizationDocumentActivitiesRoute({ app, db }: RouteDefinitio
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/activity',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
-    validateQuery(
+    legacyValidateQuery(
       z.object({
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
         pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
