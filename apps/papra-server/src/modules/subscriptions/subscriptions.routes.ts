@@ -4,7 +4,7 @@ import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createIntakeEmailsRepository } from '../intake-emails/intake-emails.repository';
-import { organizationIdSchema } from '../organizations/organization.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';

@@ -3,7 +3,7 @@ import z from 'zod';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { invitationIdSchema } from '../organizations/organization.schemas';
+import { invitationIdSchema } from '../organizations/organization.schemas.legacy';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { resendOrganizationInvitation } from '../organizations/organizations.usecases';

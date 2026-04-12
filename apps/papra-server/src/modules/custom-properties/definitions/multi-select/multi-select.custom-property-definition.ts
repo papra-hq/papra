@@ -1,8 +1,8 @@
 import z from 'zod';
-import { customPropertySelectOptionIdSchema } from '../../options/custom-properties-options.schemas';
+import { customPropertySelectOptionIdSchema } from '../../options/custom-properties-options.schemas.legacy';
 import { ensureOptionsExist } from '../../options/custom-properties-options.usecases';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
-import { selectCustomPropertyOptionNameSchema } from '../select/select.custom-property-definition.schemas';
+import { selectCustomPropertyOptionNameSchema } from '../select/select.custom-property-definition.schemas.legacy';
 
 export const multiSelectCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'multi_select',

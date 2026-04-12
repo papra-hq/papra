@@ -2,14 +2,14 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdSchema } from '../organizations/organization.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createWebhookNotFoundError } from './webhooks.errors';
 import { formatWebhookForApi } from './webhooks.models';
 import { createWebhookRepository } from './webhooks.repository';
-import { webhookEventListSchema, webhookIdSchema, webhookNameSchema, webhookSecretSchema, webhookUrlSchema } from './webhooks.schemas';
+import { webhookEventListSchema, webhookIdSchema, webhookNameSchema, webhookSecretSchema, webhookUrlSchema } from './webhooks.schemas.legacy';
 import { createWebhook, updateWebhook } from './webhooks.usecases';
 
 export function registerWebhooksRoutes(context: RouteDefinitionContext) {

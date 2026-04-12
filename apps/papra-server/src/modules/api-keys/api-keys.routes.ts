@@ -9,7 +9,7 @@ import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validati
 import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
 import { createNotApiKeyAuthError } from './api-keys.errors';
 import { createApiKeysRepository } from './api-keys.repository';
-import { apiKeyIdSchema } from './api-keys.schemas';
+import { apiKeyIdSchema } from './api-keys.schemas.legacy';
 import { createApiKey } from './api-keys.usecases';
 
 export function registerApiKeysRoutes(context: RouteDefinitionContext) {

@@ -7,14 +7,14 @@ import { createDocumentActivityRepository } from '../documents/document-activity
 import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { documentIdSchema } from '../documents/documents.schemas';
-import { organizationIdSchema } from '../organizations/organization.schemas';
+import { documentIdSchema } from '../documents/documents.schemas.legacy';
+import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { tagColorSchema, tagIdSchema } from './tags.schemas';
+import { tagColorSchema, tagIdSchema } from './tags.schemas.legacy';
 import { addTagToDocument, createTag } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
