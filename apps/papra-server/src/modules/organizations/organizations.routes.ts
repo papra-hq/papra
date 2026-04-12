@@ -7,7 +7,7 @@ import { createPlansRepository } from '../plans/plans.repository';
 import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
-import { memberIdSchema, organizationIdSchema } from './organization.schemas';
+import { memberIdSchema, organizationIdSchema } from './organization.schemas.legacy';
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
 import { checkIfUserCanCreateNewOrganization, createOrganization, ensureUserIsInOrganization, inviteMemberToOrganization, removeMemberFromOrganization, restoreOrganization, softDeleteOrganization, updateOrganizationMemberRole } from './organizations.usecases';

@@ -3,7 +3,7 @@ import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.type
 import { z } from 'zod';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdSchema } from '../organizations/organization.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
@@ -12,7 +12,7 @@ import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validati
 import { tagIdRegex } from '../tags/tags.constants';
 import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
-import { conditionMatchModeSchema, taggingRuleIdSchema } from './tagging-rules.schemas';
+import { conditionMatchModeSchema, taggingRuleIdSchema } from './tagging-rules.schemas.legacy';
 import { createTaggingRule } from './tagging-rules.usecases';
 
 export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { tagColorSchema } from './tags.schemas';
+import { tagColorSchema } from './tags.schemas.legacy';
 
 describe('tags schemas', () => {
   describe('tagColorSchema', () => {

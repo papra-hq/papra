@@ -2,11 +2,11 @@ import type { RouteDefinitionContext } from '../../app/server.types';
 import { z } from 'zod';
 import { requireAuthentication } from '../../app/auth/auth.middleware';
 import { getUser } from '../../app/auth/auth.models';
-import { organizationIdSchema } from '../../organizations/organization.schemas';
+import { organizationIdSchema } from '../../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../../organizations/organizations.usecases';
 import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
-import { documentIdSchema } from '../documents.schemas';
+import { documentIdSchema } from '../documents.schemas.legacy';
 import { createDocumentActivityRepository } from './document-activity.repository';
 
 export function registerDocumentActivityRoutes(context: RouteDefinitionContext) {

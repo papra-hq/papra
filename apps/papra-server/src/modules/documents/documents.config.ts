@@ -2,7 +2,7 @@ import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
 import { booleanishSchema } from '../config/config.schemas';
 import { coercedNumberSchema } from '../shared/schemas/number.schemas';
-import { ocrLanguagesSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
+import { ocrLanguagesSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas.legacy';
 
 export const documentsConfig = {
   deletedDocumentsRetentionDays: {

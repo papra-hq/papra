@@ -2,7 +2,7 @@ import type { RouteDefinitionContext } from '../../app/server.types';
 import { z } from 'zod';
 import { createRoleMiddleware, requireAuthentication } from '../../app/auth/auth.middleware';
 import { createIntakeEmailsRepository } from '../../intake-emails/intake-emails.repository';
-import { organizationIdSchema } from '../../organizations/organization.schemas';
+import { organizationIdSchema } from '../../organizations/organization.schemas.legacy';
 import { createOrganizationNotFoundError } from '../../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';

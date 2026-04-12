@@ -6,7 +6,7 @@ import { PERMISSIONS } from '../../roles/roles.constants';
 import { createRolesRepository } from '../../roles/roles.repository';
 import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
 import { createUsersRepository } from '../../users/users.repository';
-import { userIdSchema } from '../../users/users.schemas';
+import { userIdSchema } from '../../users/users.schemas.legacy';
 
 export function registerUserManagementRoutes(context: RouteDefinitionContext) {
   registerListUsersRoute(context);
