@@ -1,12 +1,13 @@
 import type { RouteDefinitionContext } from '../../app/server.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { createRoleMiddleware, requireAuthentication } from '../../app/auth/auth.middleware';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
 import { createRolesRepository } from '../../roles/roles.repository';
-import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
+import { createQueryPaginationSchemaKeys } from '../../shared/schemas/pagination.schemas';
+import { validateParams, validateQuery } from '../../shared/validation/validation';
 import { createUsersRepository } from '../../users/users.repository';
-import { userIdSchema } from '../../users/users.schemas.legacy';
+import { userIdSchema } from '../../users/users.schemas';
 
 export function registerUserManagementRoutes(context: RouteDefinitionContext) {
   registerListUsersRoute(context);
@@ -22,11 +23,10 @@ function registerListUsersRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    legacyValidateQuery(
-      z.object({
-        search: z.string().optional(),
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(25),
+    validateQuery(
+      v.strictObject({
+        search: v.optional(v.string()),
+        ...createQueryPaginationSchemaKeys(),
       }),
     ),
     async (context) => {
@@ -59,7 +59,7 @@ function registerGetUserDetailRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       userId: userIdSchema,
     })),
     async (context) => {
