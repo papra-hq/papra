@@ -1,18 +1,19 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { API_KEY_PERMISSIONS } from '../api-keys/api-keys.constants';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { documentIdSchema } from '../documents/documents.schemas.legacy';
-import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
+import { documentIdSchema } from '../documents/documents.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody } from '../shared/validation/validation.legacy';
 import { aggregateDocumentCustomPropertyValues } from './custom-properties.models';
 import { createCustomPropertiesRepository } from './custom-properties.repository';
-import { customPropertyDefinitionIdSchema } from './custom-properties.schemas.legacy';
+import { customPropertyDefinitionIdSchema } from './custom-properties.schemas';
 import { createPropertyDefinition, deleteDocumentCustomPropertyValue, deletePropertyDefinition, ensurePropertyDefinitionExists, setDocumentCustomPropertyValue, updatePropertyDefinition } from './custom-properties.usecases';
 import { createPropertyDefinitionBodySchema } from './definitions/custom-property-definition.registry';
 import { createCustomPropertiesOptionsRepository } from './options/custom-properties-options.repository';
@@ -33,7 +34,7 @@ function setupCreatePropertyDefinitionRoute({ app, db, config }: RouteDefinition
   app.post(
     '/api/organizations/:organizationId/custom-properties',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     legacyValidateJsonBody(createPropertyDefinitionBodySchema),
@@ -65,7 +66,7 @@ function setupGetOrganizationPropertyDefinitionsRoute({ app, db }: RouteDefiniti
   app.get(
     '/api/organizations/:organizationId/custom-properties',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -88,7 +89,7 @@ function setupGetPropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
     })),
@@ -116,7 +117,7 @@ function setupUpdatePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
   app.put(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
     })),
@@ -148,7 +149,7 @@ function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
   app.delete(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
     })),
@@ -176,13 +177,13 @@ function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionCo
   app.put(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
     })),
-    legacyValidateJsonBody(z.object({
-      value: z.unknown(), // validation happens per-type in the use case
+    validateJsonBody(v.strictObject({
+      value: v.unknown(), // validation happens per-type in the use case
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -222,7 +223,7 @@ function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitio
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
@@ -259,7 +260,7 @@ function setupGetDocumentCustomPropertyValuesRoute({ app, db }: RouteDefinitionC
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.READ] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
