@@ -3,9 +3,10 @@ import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
+import { WEBHOOK_ID_PREFIX } from './webhooks.constants';
 
 export const webhooksTable = sqliteTable('webhooks', {
-  ...createPrimaryKeyField({ prefix: 'wbh' }),
+  ...createPrimaryKeyField({ prefix: WEBHOOK_ID_PREFIX }),
   ...createTimestampColumns(),
 
   name: text('name').notNull(),

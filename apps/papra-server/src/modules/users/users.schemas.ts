@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { createRegexSchema } from '../shared/schemas/string.schemas';
 import { USER_ID_REGEX } from './users.constants';
 
-export const userIdSchema = z.string().regex(USER_ID_REGEX);
+export const userIdSchema = createRegexSchema(USER_ID_REGEX);

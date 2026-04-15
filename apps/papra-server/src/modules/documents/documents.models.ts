@@ -1,8 +1,8 @@
 import type { PartialBy } from '@corentinth/chisels';
 import type { DbSelectableDocument } from './documents.types';
 import filenamify from 'filenamify';
-import { omit } from 'lodash-es';
 import { getExtension } from '../shared/files/file-names';
+import { omit } from '../shared/objects';
 import { generateId } from '../shared/random/ids';
 import { isDefined } from '../shared/utils';
 import { ORIGINAL_DOCUMENTS_STORAGE_KEY } from './documents.constants';

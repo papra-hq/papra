@@ -2,11 +2,11 @@ import type { RouteDefinitionContext } from '../../app/server.types';
 import { z } from 'zod';
 import { requireAuthentication } from '../../app/auth/auth.middleware';
 import { getUser } from '../../app/auth/auth.models';
-import { organizationIdSchema } from '../../organizations/organization.schemas';
+import { organizationIdSchema } from '../../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../../organizations/organizations.usecases';
-import { validateParams, validateQuery } from '../../shared/validation/validation';
-import { documentIdSchema } from '../documents.schemas';
+import { legacyValidateParams, legacyValidateQuery } from '../../shared/validation/validation.legacy';
+import { documentIdSchema } from '../documents.schemas.legacy';
 import { createDocumentActivityRepository } from './document-activity.repository';
 
 export function registerDocumentActivityRoutes(context: RouteDefinitionContext) {
@@ -17,11 +17,11 @@ function setupGetOrganizationDocumentActivitiesRoute({ app, db }: RouteDefinitio
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/activity',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
-    validateQuery(
+    legacyValidateQuery(
       z.object({
         pageIndex: z.coerce.number().min(0).int().optional().default(0),
         pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),

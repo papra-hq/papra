@@ -1,6 +1,5 @@
 import type { Document } from '../../documents/documents.types';
 import { serializeEmailForWebhook, signBody } from '@owlrelay/webhook';
-import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
@@ -8,6 +7,7 @@ import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { MIME_TYPES } from '../../shared/mime-types/mime-types.constants';
+import { pick } from '../../shared/objects';
 
 describe('intake-emails e2e', () => {
   describe('ingest an intake email', () => {

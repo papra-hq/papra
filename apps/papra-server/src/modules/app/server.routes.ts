@@ -13,7 +13,7 @@ import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.route
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerViewsRoutes } from '../views/views.routes';
 import { registerUsersRoutes } from '../users/users.routes';
-import { registerWebhooksRoutes } from '../webhooks/webhook.routes';
+import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 

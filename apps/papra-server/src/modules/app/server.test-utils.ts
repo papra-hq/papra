@@ -7,7 +7,7 @@ import { createEmailsServices } from '../emails/emails.services';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createAuthEmailsServices } from './auth/auth.emails.services';
 import { getAuth } from './auth/auth.services';

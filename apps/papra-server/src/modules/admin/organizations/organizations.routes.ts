@@ -1,13 +1,14 @@
 import type { RouteDefinitionContext } from '../../app/server.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { createRoleMiddleware, requireAuthentication } from '../../app/auth/auth.middleware';
 import { createIntakeEmailsRepository } from '../../intake-emails/intake-emails.repository';
 import { organizationIdSchema } from '../../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
+import { createQueryPaginationSchemaKeys } from '../../shared/schemas/pagination.schemas';
 import { validateParams, validateQuery } from '../../shared/validation/validation';
-import { createWebhookRepository } from '../../webhooks/webhook.repository';
+import { createWebhookRepository } from '../../webhooks/webhooks.repository';
 
 export function registerOrganizationManagementRoutes(context: RouteDefinitionContext) {
   registerListOrganizationsRoute(context);
@@ -28,10 +29,9 @@ function registerListOrganizationsRoute({ app, db }: RouteDefinitionContext) {
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
     validateQuery(
-      z.object({
-        search: z.string().optional(),
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(25),
+      v.strictObject({
+        search: v.optional(v.string()),
+        ...createQueryPaginationSchemaKeys(),
       }),
     ),
     async (context) => {
@@ -64,7 +64,7 @@ function registerGetOrganizationBasicInfoRoute({ app, db }: RouteDefinitionConte
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -92,7 +92,7 @@ function registerGetOrganizationMembersRoute({ app, db }: RouteDefinitionContext
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -122,7 +122,7 @@ function registerGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionCo
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -153,7 +153,7 @@ function registerGetOrganizationWebhooksRoute({ app, db }: RouteDefinitionContex
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -184,7 +184,7 @@ function registerGetOrganizationStatsRoute({ app, db }: RouteDefinitionContext) 
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {

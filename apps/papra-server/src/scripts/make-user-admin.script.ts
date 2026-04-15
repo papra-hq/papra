@@ -1,11 +1,11 @@
 import type { UsersRepository } from '../modules/users/users.repository';
 import process from 'node:process';
 import { z } from 'zod';
-import { permissiveEmailAddressSchema } from '../modules/intake-emails/intake-emails.schemas';
+import { permissiveEmailAddressSchema } from '../modules/intake-emails/intake-emails.schemas.legacy';
 import { createRolesRepository } from '../modules/roles/roles.repository';
 import { isNil } from '../modules/shared/utils';
 import { createUsersRepository } from '../modules/users/users.repository';
-import { userIdSchema } from '../modules/users/users.schemas';
+import { userIdSchema } from '../modules/users/users.schemas.legacy';
 import { runScriptWithDb } from './commons/run-script';
 
 const userIdOrEmailSchema = z.union([

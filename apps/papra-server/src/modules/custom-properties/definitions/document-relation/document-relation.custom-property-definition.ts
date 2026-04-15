@@ -10,13 +10,13 @@ export const documentRelationCustomPropertyDefinition = defineCustomPropertyType
     inputSchema: z.array(z.string()),
 
     extendInputValidation: async ({ value: documentIds, customProperty, documentsRepository }) => {
-      const { documents } = await documentsRepository.getDocumentsByIds({ documentIds, organizationId: customProperty.organizationId });
-      const foundIds = new Set(documents.map(d => d.id));
+      const allDocumentsAreFromOrganization = await documentsRepository.areAllDocumentsInOrganization({
+        documentIds,
+        organizationId: customProperty.organizationId,
+      });
 
-      for (const documentId of documentIds) {
-        if (!foundIds.has(documentId)) {
-          throw createCustomPropertyRelatedDocumentNotFoundError();
-        }
+      if (!allDocumentsAreFromOrganization) {
+        throw createCustomPropertyRelatedDocumentNotFoundError();
       }
     },
 

@@ -2,7 +2,7 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableSubscription } from './subscriptions.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq, inArray } from 'drizzle-orm';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { organizationSubscriptionsTable } from './subscriptions.tables';
 
 export type SubscriptionsRepository = ReturnType<typeof createSubscriptionsRepository>;

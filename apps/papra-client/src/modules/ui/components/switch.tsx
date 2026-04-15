@@ -26,7 +26,7 @@ export function SwitchControl<T extends ValidComponent = 'input'>(props: Polymor
       <SwitchPrimitive.Input class="[&:focus-visible+div]:(outline-none ring-1.5 ring-ring ring-offset-2 ring-offset-background)" />
       <SwitchPrimitive.Control
         class={cn(
-          'inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-input shadow-sm transition-shadow data-[disabled]:(cursor-not-allowed opacity-50) data-[checked]:bg-primary transition-property-[box-shadow,color,background-color]',
+          'inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-input data-[disabled]:(cursor-not-allowed opacity-50) data-[checked]:bg-primary transition-property-[box-shadow,color,background-color]',
           local.class,
         )}
         {...rest}

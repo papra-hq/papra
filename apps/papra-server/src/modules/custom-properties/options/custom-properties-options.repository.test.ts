@@ -1,19 +1,21 @@
 import type { Database } from '../../app/database/database.types';
 import { getTableColumns } from 'drizzle-orm';
-import { pick } from 'lodash-es';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
+import { pick } from '../../shared/objects';
 import { CUSTOM_PROPERTY_TYPES } from '../custom-properties.constants';
 import { createCustomPropertySelectOptionUnknownIdError } from './custom-properties-options.errors';
 import { createCustomPropertiesOptionsRepository } from './custom-properties-options.repository';
 import { customPropertySelectOptionsTable } from './custom-properties-options.table';
 
 async function getOptions({ db, withId = true }: { db: Database; withId?: boolean }) {
+  const props = ['propertyDefinitionId', 'name', 'key', 'displayOrder'] as const;
+
   return db
     .select({
       ...pick(
         getTableColumns(customPropertySelectOptionsTable),
-        [...(withId ? ['id'] : []), 'propertyDefinitionId', 'name', 'key', 'displayOrder'],
+        withId ? ['id', ...props] : props,
       ),
     })
     .from(customPropertySelectOptionsTable);

@@ -8,7 +8,7 @@ import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { isNil } from '../shared/utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
-import { createWebhookRepository } from '../webhooks/webhook.repository';
+import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
 import { applyTaggingRules, applyTaggingRuleToExistingDocuments } from './tagging-rules.usecases';

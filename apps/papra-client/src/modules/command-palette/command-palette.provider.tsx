@@ -52,6 +52,17 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     document.removeEventListener('keydown', handleKeyDown);
   });
 
+  let inputRef: HTMLInputElement | undefined;
+
+  createEffect(on(
+    getIsCommandPaletteOpen,
+    (isOpen) => {
+      if (isOpen && getSearchQuery().length > 0) {
+        setTimeout(() => inputRef?.select(), 0);
+      }
+    },
+  ));
+
   const navigate = useNavigate();
   const { setThemePreference } = useTheme();
 
@@ -144,6 +155,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
       >
 
         <CommandInput
+          ref={inputRef}
           value={getSearchQuery()}
           onValueChange={setSearchQuery}
           placeholder={t('command-palette.search.placeholder')}

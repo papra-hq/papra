@@ -6,8 +6,13 @@ describe('errors', () => {
     test('type guards to check if an error is a custom error', () => {
       expect(isCustomError(new Error('foo'))).to.eql(false);
       expect(isCustomError({ isCustomError: true })).to.eql(false);
-
       expect(isCustomError(createError({ message: 'foo', code: 'bar', statusCode: 500 }))).to.eql(true);
+
+      expect(isCustomError('foo')).to.eql(false);
+      expect(isCustomError(null)).to.eql(false);
+      expect(isCustomError(undefined)).to.eql(false);
+      expect(isCustomError({})).to.eql(false);
+      expect(isCustomError({ message: 'foo', code: 'bar', statusCode: 500 })).to.eql(false);
     });
   });
 
@@ -26,8 +31,7 @@ describe('errors', () => {
       const cause = new Error('original error');
       const error = createError({ message: 'foo', code: 'bar', statusCode: 500, cause });
 
-      expect(error.cause).toBeInstanceOf(Error);
-      expect(error.cause?.message).to.eql('original error');
+      expect(error.cause).toBe(cause);
     });
   });
 

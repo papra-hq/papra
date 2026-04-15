@@ -8,7 +8,8 @@ import { subDays } from '../shared/date';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
-import { isDefined, isNil, omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
+import { isDefined, isNil, uniq } from '../shared/utils';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
 
@@ -33,7 +34,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       getGlobalDocumentsStats,
-      getDocumentsByIds,
+      areAllDocumentsInOrganization,
     },
     { db },
   );
@@ -124,24 +125,6 @@ async function getOrganizationDeletedDocuments({ organizationId, pageIndex, page
   return {
     documents,
   };
-}
-
-async function getDocumentsByIds({ documentIds, organizationId, db }: { documentIds: string[]; organizationId: string; db: Database }) {
-  if (documentIds.length === 0) {
-    return { documents: [] };
-  }
-
-  const documents = await db
-    .select({ id: documentsTable.id })
-    .from(documentsTable)
-    .where(
-      and(
-        inArray(documentsTable.id, documentIds),
-        eq(documentsTable.organizationId, organizationId),
-      ),
-    );
-
-  return { documents };
 }
 
 async function getDocumentById({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
@@ -369,4 +352,30 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
     totalDocumentsCount,
     totalDocumentsSize: Number(totalDocumentsSize ?? 0),
   };
+}
+
+export async function areAllDocumentsInOrganization({ documentIds, organizationId, db }: { documentIds: string[]; organizationId: string; db: Database }) {
+  const deduplicatedDocumentIds = uniq(documentIds);
+
+  if (deduplicatedDocumentIds.length === 0) {
+    return true;
+  }
+
+  const documents = await db
+    .select({ id: documentsTable.id })
+    .from(documentsTable)
+    .where(
+      and(
+        inArray(documentsTable.id, deduplicatedDocumentIds),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
+
+  const foundDocumentIds = new Set(documents.map(d => d.id));
+
+  if (foundDocumentIds.size !== deduplicatedDocumentIds.length) {
+    return false;
+  }
+
+  return documentIds.every(documentId => foundDocumentIds.has(documentId));
 }

@@ -1,8 +1,7 @@
 import type { Document } from '../documents/documents.types';
-import { get } from 'lodash-es';
 
 export function getDocumentFieldValue({ document, field }: { document: Document; field: string }) {
-  const fieldValue: unknown = get(document, field);
+  const fieldValue: unknown = Object.hasOwn(document, field) ? document[field as keyof Document] : undefined;
 
   return { fieldValue: String(fieldValue ?? '') };
 }

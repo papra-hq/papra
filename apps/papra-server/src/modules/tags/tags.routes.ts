@@ -7,14 +7,14 @@ import { createDocumentActivityRepository } from '../documents/document-activity
 import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { documentIdSchema } from '../documents/documents.schemas';
-import { organizationIdSchema } from '../organizations/organization.schemas';
+import { documentIdSchema } from '../documents/documents.schemas.legacy';
+import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { tagColorSchema, tagIdSchema } from './tags.schemas';
+import { tagColorSchema, tagIdSchema } from './tags.schemas.legacy';
 import { addTagToDocument, createTag } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
@@ -30,11 +30,11 @@ function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
 
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().trim().min(1).max(50),
       color: tagColorSchema,
       description: z.string().trim().max(256).optional(),
@@ -64,7 +64,7 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
     })),
 
@@ -91,12 +91,12 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
     })),
 
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       name: z.string().trim().min(1).max(64).optional(),
       color: tagColorSchema.optional(),
       description: z.string().trim().max(256).optional(),
@@ -126,7 +126,7 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
     })),
@@ -152,12 +152,12 @@ function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDe
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
 
-    validateJsonBody(z.object({
+    legacyValidateJsonBody(z.object({
       tagId: tagIdSchema,
     })),
 
@@ -207,7 +207,7 @@ function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: Ro
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
       tagId: tagIdSchema,

@@ -5,11 +5,11 @@ import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { isNil } from '../shared/utils';
-import { validateJsonBody, validateParams } from '../shared/validation/validation';
+import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
 import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
 import { createNotApiKeyAuthError } from './api-keys.errors';
 import { createApiKeysRepository } from './api-keys.repository';
-import { apiKeyIdSchema } from './api-keys.schemas';
+import { apiKeyIdSchema } from './api-keys.schemas.legacy';
 import { createApiKey } from './api-keys.usecases';
 
 export function registerApiKeysRoutes(context: RouteDefinitionContext) {
@@ -23,7 +23,7 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/api-keys',
     requireAuthentication(),
-    validateJsonBody(
+    legacyValidateJsonBody(
       z.object({
         name: z.string(),
         permissions: z.array(z.enum(API_KEY_PERMISSIONS_VALUES as [ApiKeyPermissions, ...ApiKeyPermissions[]])).min(1),
@@ -121,7 +121,7 @@ function setupDeleteApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/api-keys/:apiKeyId',
     requireAuthentication(),
-    validateParams(z.object({
+    legacyValidateParams(z.object({
       apiKeyId: apiKeyIdSchema,
     })),
     async (context) => {

@@ -3,7 +3,9 @@ import type { Database } from '../app/database/database.types';
 import type { Webhook, WebhookDeliveryInsert, WebhookEvent } from './webhooks.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, max } from 'drizzle-orm';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
+import { isNil } from '../shared/utils';
+import { createWebhookNotFoundError } from './webhooks.errors';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 
 export type WebhookRepository = ReturnType<typeof createWebhookRepository>;
@@ -58,6 +60,11 @@ async function updateOrganizationWebhook({ db, webhookId, events, organizationId
     )
     .returning();
 
+  if (isNil(updatedWebhook)) {
+    // Should not happen, error will be thrown by the query, but it's for type safety
+    throw createWebhookNotFoundError();
+  }
+
   if (events) {
     // Delete existing events
     await db
@@ -98,7 +105,13 @@ async function getOrganizationWebhookById({ db, webhookId, organizationId }: { d
   }
 
   const [{ webhook } = {}] = records;
-  const events = records.map(record => record.webhookEvents?.eventName);
+
+  if (!webhook) {
+    // For type safety
+    return { webhook: undefined };
+  }
+
+  const events = records.map(record => record.webhookEvents?.eventName).filter(Boolean);
 
   return { webhook: { ...webhook, events } };
 }

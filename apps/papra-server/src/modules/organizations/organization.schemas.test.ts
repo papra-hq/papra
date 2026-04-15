@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { organizationIdSchema } from './organization.schemas';
+import { organizationIdSchema } from './organization.schemas.legacy';
 
 describe('organization schemas', () => {
   describe('organizationIdSchema', () => {

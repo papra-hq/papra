@@ -3,10 +3,10 @@ import type { Logger } from '../shared/logger/logger';
 import type { ApiKeyPermissions } from './api-keys.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq, getTableColumns, gt, inArray, isNull, or } from 'drizzle-orm';
-import { omit, pick } from 'lodash-es';
 import { organizationMembersTable, organizationsTable } from '../organizations/organizations.table';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
+import { omit, pick } from '../shared/objects';
 import { apiKeyOrganizationsTable, apiKeysTable } from './api-keys.tables';
 
 export type ApiKeysRepository = ReturnType<typeof createApiKeysRepository>;
@@ -103,7 +103,7 @@ async function saveApiKey({
 async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) {
   const apiKeys = await db
     .select({
-      ...omit(getTableColumns(apiKeysTable), 'keyHash'),
+      ...omit(getTableColumns(apiKeysTable), ['keyHash']),
     })
     .from(apiKeysTable)
     .where(
