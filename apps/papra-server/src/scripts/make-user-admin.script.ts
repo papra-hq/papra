@@ -1,14 +1,14 @@
 import type { UsersRepository } from '../modules/users/users.repository';
 import process from 'node:process';
-import { z } from 'zod';
-import { permissiveEmailAddressSchema } from '../modules/intake-emails/intake-emails.schemas.legacy';
+import * as v from 'valibot';
+import { permissiveEmailAddressSchema } from '../modules/intake-emails/intake-emails.schemas';
 import { createRolesRepository } from '../modules/roles/roles.repository';
 import { isNil } from '../modules/shared/utils';
 import { createUsersRepository } from '../modules/users/users.repository';
-import { userIdSchema } from '../modules/users/users.schemas.legacy';
+import { userIdSchema } from '../modules/users/users.schemas';
 import { runScriptWithDb } from './commons/run-script';
 
-const userIdOrEmailSchema = z.union([
+const userIdOrEmailSchema = v.union([
   permissiveEmailAddressSchema,
   userIdSchema,
 ]);
@@ -39,8 +39,8 @@ await runScriptWithDb(
       exitWithError('Please provide a user ID or email as an argument');
     }
 
-    if (!userIdOrEmailSchema.safeParse(userIdOrEmail).success) {
-      exitWithError(`Invalid user ID or email: "${userIdOrEmail}"`);
+    if (!v.is(userIdOrEmailSchema, userIdOrEmail)) {
+      exitWithError(`Invalid user ID or email: "${userIdOrEmail as string}"`);
     }
 
     const { user } = await getUserByIdOrEmail({ usersRepository, userIdOrEmail });

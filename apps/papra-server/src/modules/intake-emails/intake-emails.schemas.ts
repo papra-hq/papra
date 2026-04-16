@@ -4,7 +4,7 @@ import { INTAKE_EMAIL_ID_REGEX, RFC_5322_EMAIL_ADDRESS_REGEX } from './intake-em
 
 export const intakeEmailIdSchema = createRegexSchema(INTAKE_EMAIL_ID_REGEX);
 
-const permissiveEmailAddressSchema = createRegexSchema(RFC_5322_EMAIL_ADDRESS_REGEX);
+export const permissiveEmailAddressSchema = createRegexSchema(RFC_5322_EMAIL_ADDRESS_REGEX);
 
 const emailInfoSchema = v.object({
   address: permissiveEmailAddressSchema,
