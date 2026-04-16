@@ -1,10 +1,10 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createIntakeEmailsRepository } from '../intake-emails/intake-emails.repository';
-import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';
@@ -16,7 +16,7 @@ import { getHeader } from '../shared/headers/headers.models';
 import { createLogger } from '../shared/logger/logger';
 import { pick } from '../shared/objects';
 import { nullifyPositiveInfinity } from '../shared/utils';
-import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';
 import { isSignatureHeaderFormatValid } from './subscriptions.models';
 import { createSubscriptionsRepository } from './subscriptions.repository';
@@ -69,12 +69,12 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
   app.post(
     '/api/organizations/:organizationId/checkout-session',
     requireAuthentication(),
-    legacyValidateJsonBody(z.object({
-      planId: z.enum([PLUS_PLAN_ID, PRO_PLAN_ID]),
-      billingInterval: z.enum(['monthly', 'annual']).default('monthly'),
-    })),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
+    })),
+    validateJsonBody(v.strictObject({
+      planId: v.picklist([PLUS_PLAN_ID, PRO_PLAN_ID]),
+      billingInterval: v.optional(v.picklist(['monthly', 'annual']), 'monthly'),
     })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -148,7 +148,7 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
   app.get(
     '/api/organizations/:organizationId/customer-portal',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -176,7 +176,7 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
   app.get(
     '/api/organizations/:organizationId/subscription',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -220,7 +220,7 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
   app.get(
     '/api/organizations/:organizationId/usage',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
