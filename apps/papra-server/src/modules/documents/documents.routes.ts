@@ -1,23 +1,24 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { Readable } from 'node:stream';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
-import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
+import { createQueryPaginationSchemaKeys } from '../shared/schemas/pagination.schemas';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
-import { legacyValidateJsonBody, legacyValidateParams, legacyValidateQuery } from '../shared/validation/validation.legacy';
+import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema } from './documents.schemas.legacy';
+import { documentIdSchema, updateDocumentBodySchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
@@ -40,7 +41,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -76,13 +77,12 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/deleted',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-    legacyValidateQuery(
-      z.object({
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+    validateQuery(
+      v.strictObject({
+        ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),
     async (context) => {
@@ -116,7 +116,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -144,7 +144,7 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -178,7 +178,7 @@ function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -215,7 +215,7 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -259,14 +259,13 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
   app.get(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-    legacyValidateQuery(
-      z.object({
-        searchQuery: z.string().optional().default(''),
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+    validateQuery(
+      v.strictObject({
+        searchQuery: v.optional(v.string(), ''),
+        ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),
     async (context) => {
@@ -293,7 +292,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   app.get(
     '/api/organizations/:organizationId/documents/statistics',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -333,7 +332,7 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, event
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -360,7 +359,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService, e
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -384,17 +383,11 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
-    legacyValidateJsonBody(z.object({
-      name: z.string().min(1).max(255).optional(),
-      content: z.string().optional(),
-      documentDate: z.coerce.date().nullable().optional(),
-    }).refine(data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined, {
-      message: 'At least one of \'name\', \'content\', or \'documentDate\' must be provided',
-    })),
+    validateJsonBody(updateDocumentBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
