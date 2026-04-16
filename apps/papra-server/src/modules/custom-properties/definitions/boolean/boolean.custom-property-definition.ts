@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as v from 'valibot';
 import { defineCustomPropertyType, ensureRow } from '../custom-property-definition.models';
 
 export const booleanCustomPropertyDefinition = defineCustomPropertyType({
@@ -6,7 +6,7 @@ export const booleanCustomPropertyDefinition = defineCustomPropertyType({
 
   value: {
 
-    inputSchema: z.boolean(),
+    inputSchema: v.boolean(),
 
     toDb: ({ value }) => ({ booleanValue: value }),
 

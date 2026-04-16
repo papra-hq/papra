@@ -1,19 +1,17 @@
-import z from 'zod';
-import { customPropertySelectOptionIdSchema } from '../../options/custom-properties-options.schemas.legacy';
+import * as v from 'valibot';
+import { customPropertySelectOptionIdSchema, selectCustomPropertyOptionNameSchema } from '../../options/custom-properties-options.schemas';
 import { ensureOptionExists } from '../../options/custom-properties-options.usecases';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
-import { selectCustomPropertyOptionNameSchema } from './select.custom-property-definition.schemas.legacy';
 
 export const selectCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'select',
 
   definition: {
-    createExtraSchema: z.object({
-      options: z
-        .array(z.object({
-          name: selectCustomPropertyOptionNameSchema,
-        }))
-        .min(1, 'At least one option must be provided'),
+    createExtraSchema: v.object({
+      options: v.pipe(
+        v.array(v.object({ name: selectCustomPropertyOptionNameSchema })),
+        v.minLength(1, 'At least one option must be provided'),
+      ),
     }),
 
     onCreate: async ({
@@ -27,11 +25,14 @@ export const selectCustomPropertyDefinition = defineCustomPropertyType({
       });
     },
 
-    updateExtraSchema: z.object({
-      options: z.array(z.object({
-        id: customPropertySelectOptionIdSchema.optional(),
-        name: selectCustomPropertyOptionNameSchema,
-      })).min(1, 'At least one option must be provided').optional(),
+    updateExtraSchema: v.object({
+      options: v.optional(v.pipe(
+        v.array(v.object({
+          id: v.optional(customPropertySelectOptionIdSchema),
+          name: selectCustomPropertyOptionNameSchema,
+        })),
+        v.minLength(1, 'At least one option must be provided'),
+      )),
     }),
 
     onUpdate: async ({
