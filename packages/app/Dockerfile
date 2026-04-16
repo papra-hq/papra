@@ -3,7 +3,7 @@ FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN corepack prepare pnpm@10.30.3 --activate
+RUN corepack prepare pnpm@10.33.0 --activate
 
 # Build stage
 FROM base AS build
