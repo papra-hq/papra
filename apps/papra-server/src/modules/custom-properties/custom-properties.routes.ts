@@ -10,7 +10,6 @@ import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { legacyValidateJsonBody } from '../shared/validation/validation.legacy';
 import { aggregateDocumentCustomPropertyValues } from './custom-properties.models';
 import { createCustomPropertiesRepository } from './custom-properties.repository';
 import { customPropertyDefinitionIdSchema } from './custom-properties.schemas';
@@ -37,7 +36,7 @@ function setupCreatePropertyDefinitionRoute({ app, db, config }: RouteDefinition
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-    legacyValidateJsonBody(createPropertyDefinitionBodySchema),
+    validateJsonBody(createPropertyDefinitionBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');

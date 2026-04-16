@@ -1,5 +1,5 @@
-import { z } from 'zod';
+import * as v from 'valibot';
 
-export const customPropertyDefinitionNameSchema = z.string().trim().min(1).max(255);
-export const customPropertyDefinitionDescriptionSchema = z.string().trim().max(1000);
-export const customPropertyDefinitionDisplayOrderSchema = z.number().int().min(0);
+export const customPropertyDefinitionNameSchema = v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(255));
+export const customPropertyDefinitionDescriptionSchema = v.pipe(v.string(), v.trim(), v.maxLength(1000));
+export const customPropertyDefinitionDisplayOrderSchema = v.pipe(v.number(), v.integer(), v.minValue(0));

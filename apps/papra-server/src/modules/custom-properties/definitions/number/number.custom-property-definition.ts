@@ -1,11 +1,11 @@
-import z from 'zod';
+import * as v from 'valibot';
 import { defineCustomPropertyType, ensureRow } from '../custom-property-definition.models';
 
 export const numberCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'number',
 
   value: {
-    inputSchema: z.number().finite(),
+    inputSchema: v.pipe(v.number(), v.finite()),
 
     toDb: ({ value }) => ({ numberValue: value }),
 

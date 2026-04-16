@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as v from 'valibot';
 import { createCustomPropertyUserNotFoundError } from '../../custom-properties.errors';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
 
@@ -6,7 +6,7 @@ export const userRelationCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'user_relation',
 
   value: {
-    inputSchema: z.array(z.string()),
+    inputSchema: v.array(v.string()),
 
     extendInputValidation: async ({ value: userIds, customProperty, organizationsRepository }) => {
       const { members } = await organizationsRepository.getOrganizationMembers({ organizationId: customProperty.organizationId });

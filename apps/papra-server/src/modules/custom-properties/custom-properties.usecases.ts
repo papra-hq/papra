@@ -2,8 +2,11 @@ import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { CustomPropertiesRepository } from './custom-properties.repository';
+import type { BaseUpdateFields } from './definitions/custom-property-definition.models';
 import type { CreatePropertyDefinition } from './definitions/custom-property-definition.registry';
 import type { CustomPropertiesOptionsRepository } from './options/custom-properties-options.repository';
+import * as v from 'valibot';
+
 import {
   createCustomPropertyDefinitionInvalidUpdateError,
   createCustomPropertyDefinitionNotFoundError,
@@ -70,13 +73,13 @@ export async function updatePropertyDefinition({
 
   const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({ type: existingDefinition.type });
 
-  const parseResult = customPropertyTypeDefinition.definition.updatePropertySchema.safeParse(rawDefinition);
+  const parseResult = v.safeParse(customPropertyTypeDefinition.definition.updatePropertySchema, rawDefinition);
 
   if (!parseResult.success) {
     throw createCustomPropertyDefinitionInvalidUpdateError();
   }
 
-  const definition = parseResult.data;
+  const definition = parseResult.output as BaseUpdateFields & Record<string, unknown>;
 
   const { propertyDefinition } = await customPropertiesRepository.updatePropertyDefinition({
     propertyDefinitionId,
@@ -133,13 +136,13 @@ export async function setDocumentCustomPropertyValue({
 
   const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({ type: customProperty.type });
 
-  const parseResult = customPropertyTypeDefinition.value.inputSchema.safeParse(value);
+  const parseResult = v.safeParse(customPropertyTypeDefinition.value.inputSchema, value);
 
   if (!parseResult.success) {
     throw createCustomPropertyValueInvalidError();
   }
 
-  const parsedValue = parseResult.data;
+  const parsedValue = parseResult.output;
 
   await customPropertyTypeDefinition.value.extendInputValidation?.({
     value: parsedValue,
