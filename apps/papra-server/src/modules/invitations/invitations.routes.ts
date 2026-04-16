@@ -1,15 +1,15 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import z from 'zod';
+import * as v from 'valibot';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { invitationIdSchema } from '../organizations/organization.schemas.legacy';
+import { invitationIdSchema } from '../organizations/organization.schemas';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { resendOrganizationInvitation } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
-import { legacyValidateParams } from '../shared/validation/validation.legacy';
+import { validateParams } from '../shared/validation/validation';
 import { createUsersRepository } from '../users/users.repository';
 
 const logger = createLogger({ namespace: 'invitations' });
@@ -65,7 +65,7 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/accept',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -117,7 +117,7 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/reject',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -155,7 +155,7 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/cancel',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -191,7 +191,7 @@ function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDe
   app.post(
     '/api/invitations/:invitationId/resend',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
