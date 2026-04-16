@@ -1,18 +1,15 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import type { TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
 import { isNil } from '../shared/utils';
-import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
-import { tagIdRegex } from '../tags/tags.constants';
-import { TAGGING_RULE_FIELDS, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createTaggingRulesRepository } from './tagging-rules.repository';
-import { conditionMatchModeSchema, taggingRuleIdSchema } from './tagging-rules.schemas.legacy';
+import { taggingRuleBodySchema, taggingRuleIdSchema } from './tagging-rules.schemas';
 import { createTaggingRule } from './tagging-rules.usecases';
 
 export function registerTaggingRulesRoutes(context: RouteDefinitionContext) {
@@ -28,7 +25,7 @@ function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -54,21 +51,10 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-    legacyValidateJsonBody(z.object({
-      name: z.string().min(1).max(64),
-      description: z.string().max(256).optional(),
-      enabled: z.boolean().optional(),
-      conditionMatchMode: conditionMatchModeSchema.optional(),
-      conditions: z.array(z.object({
-        field: z.enum(Object.values(TAGGING_RULE_FIELDS) as [TaggingRuleField, ...TaggingRuleField[]]), // casting since zod require non-empty array
-        operator: z.enum(Object.values(TAGGING_RULE_OPERATORS) as [TaggingRuleOperator, ...TaggingRuleOperator[]]), // casting since zod require non-empty array
-        value: z.string().min(1).max(256),
-      })),
-      tagIds: z.array(z.string().regex(tagIdRegex)).min(1),
-    })),
+    validateJsonBody(taggingRuleBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -91,7 +77,7 @@ function setupDeleteTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
@@ -116,7 +102,7 @@ function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
@@ -143,22 +129,11 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
-    legacyValidateJsonBody(z.object({
-      name: z.string().min(1).max(64),
-      description: z.string().max(256).optional(),
-      enabled: z.boolean().optional(),
-      conditionMatchMode: conditionMatchModeSchema.optional(),
-      conditions: z.array(z.object({
-        field: z.enum(Object.values(TAGGING_RULE_FIELDS) as [TaggingRuleField, ...TaggingRuleField[]]), // casting since zod require non-empty array
-        operator: z.enum(Object.values(TAGGING_RULE_OPERATORS) as [TaggingRuleOperator, ...TaggingRuleOperator[]]), // casting since zod require non-empty array
-        value: z.string().min(1).max(256),
-      })).max(10),
-      tagIds: z.array(z.string().regex(tagIdRegex)).min(1),
-    })),
+    validateJsonBody(taggingRuleBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -185,7 +160,7 @@ function setupApplyTaggingRuleRoute({ app, db, taskServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       taggingRuleId: taggingRuleIdSchema,
     })),
