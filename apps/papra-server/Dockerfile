@@ -53,5 +53,8 @@ COPY --from=build /app/production /app
 
 EXPOSE 1221
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+    CMD node -e "fetch('http://localhost:1221/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+
 # The command is overridden by Fly at runtime, see ./fly.toml
 CMD [ "pnpm", "--silent", "start:with-migrations" ]
