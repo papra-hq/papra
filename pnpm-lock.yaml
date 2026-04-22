@@ -652,7 +652,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@corentinth/chisels':
-        specifier: ^2.0.2
+        specifier: 'catalog:'
         version: 2.1.0
       astro:
         specifier: 'catalog:'
