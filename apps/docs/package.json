@@ -28,7 +28,8 @@
     "tailwind-merge": "^2.6.0",
     "unocss-preset-animations": "catalog:",
     "valibot": "catalog:",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
