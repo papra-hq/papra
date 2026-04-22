@@ -42,6 +42,9 @@ catalogs:
     ofetch:
       specifier: 1.4.1
       version: 1.4.1
+    p-limit:
+      specifier: ^7.3.0
+      version: 7.3.0
     tsdown:
       specifier: ^0.13.4
       version: 0.13.4
@@ -359,8 +362,8 @@ importers:
         specifier: 'catalog:'
         version: 1.4.1
       p-limit:
-        specifier: ^6.2.0
-        version: 6.2.0
+        specifier: 'catalog:'
+        version: 7.3.0
       posthog-js-lite:
         specifier: ^4.1.5
         version: 4.1.5
@@ -537,8 +540,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       p-limit:
-        specifier: ^6.2.0
-        version: 6.2.0
+        specifier: 'catalog:'
+        version: 7.3.0
       p-queue:
         specifier: ^8.1.0
         version: 8.1.1
@@ -9715,6 +9718,10 @@ packages:
   p-limit@6.2.0:
     resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
     engines: {node: '>=18'}
+
+  p-limit@7.3.0:
+    resolution: {integrity: sha512-7cIXg/Z0M5WZRblrsOla88S4wAK+zOQQWeBYfV3qJuJXMr+LnbYjaadrFaS0JILfEDPVqHyKnZ1Z/1d6J9VVUw==}
+    engines: {node: '>=20'}
 
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
@@ -23329,6 +23336,10 @@ snapshots:
       yocto-queue: 0.1.0
 
   p-limit@6.2.0:
+    dependencies:
+      yocto-queue: 1.2.1
+
+  p-limit@7.3.0:
     dependencies:
       yocto-queue: 1.2.1
 
