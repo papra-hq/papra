@@ -7,7 +7,7 @@ catalog:
   '@antfu/eslint-config': ^7.2.0
   '@better-auth/expo': 1.4.6
   '@corentinth/chisels': 2.1.0
-  '@types/node': ^24.0.0
+  '@types/node': ^25.0.0
   '@vitest/coverage-v8': ^4.0.3
   better-auth: 1.4.6
   eslint: ^9.39.2

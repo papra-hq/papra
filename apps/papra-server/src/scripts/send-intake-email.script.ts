@@ -24,7 +24,7 @@ await runScriptWithDb(
         attachments: [
           {
             filename: 'test.txt',
-            content: new TextEncoder().encode('Hello, world!').buffer as ArrayBuffer,
+            content: new TextEncoder().encode('Hello, world!').buffer,
             mimeType: 'text/plain',
           },
         ],
