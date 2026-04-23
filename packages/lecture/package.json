@@ -61,7 +61,6 @@
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
     "mime": "^4.0.6",
-    "tinyglobby": "^0.2.10",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
