@@ -1,7 +1,6 @@
-import { readFile } from 'node:fs/promises';
+import { glob, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { glob } from 'tinyglobby';
 import { describe, expect, test } from 'vitest';
 import { locales as registeredLocales } from './i18n.constants';
 
@@ -44,7 +43,10 @@ describe('locales', () => {
   }
 
   test('all keys in en.yml must be used in the app (dynamic keys are manually excluded)', async () => {
-    const srcFileNames = await glob(['src/**/*.{ts,tsx}', '!src/**/*.test.*', '!src/modules/i18n/locales.types.ts'], { cwd: packageRoot });
+    const srcFileNames = await Array.fromAsync(glob('src/**/*.{ts,tsx}', {
+      cwd: packageRoot,
+      exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts'],
+    }));
 
     // Exclude keys that are used in dynamic contexts
     const dynamicKeysMatchers = [

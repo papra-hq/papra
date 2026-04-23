@@ -416,9 +416,6 @@ importers:
       eslint-plugin-solid:
         specifier: ^0.14.5
         version: 0.14.5(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
-      tinyglobby:
-        specifier: ^0.2.14
-        version: 0.2.15
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -843,9 +840,6 @@ importers:
       mime:
         specifier: ^4.0.6
         version: 4.0.7
-      tinyglobby:
-        specifier: ^0.2.10
-        version: 0.2.15
       tsdown:
         specifier: 'catalog:'
         version: 0.13.4(typescript@5.9.3)
