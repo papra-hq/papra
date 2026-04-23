@@ -14,7 +14,7 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { getClientBaseUrl } from '../config/config.models';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addDays } from '../shared/date';
-import { sanitize } from '../shared/html/html';
+import { escapeHtml } from '../shared/html/html';
 import { createLogger } from '../shared/logger/logger';
 import { isDefined } from '../shared/utils';
 import { doesSubscriptionBlockDeletion } from '../subscriptions/subscriptions.models';
@@ -313,7 +313,7 @@ export async function sendOrganizationInvitationEmail({
     path: '/invitations',
   });
 
-  const organizationName = sanitize(organization.name);
+  const organizationName = escapeHtml(organization.name);
 
   await emailsServices.sendEmail({
     to: email,
