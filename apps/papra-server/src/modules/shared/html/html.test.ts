@@ -1,13 +1,15 @@
 import { describe, expect, test } from 'vitest';
-import { sanitize } from './html';
+import { escapeHtml } from './html';
 
 describe('html', () => {
-  describe('sanitizeHtml', () => {
-    test('all html tags and attributes should be removed from the provided string', () => {
-      expect(sanitize('<p>Hello <b>world</b>!</p>')).toBe('Hello world!');
-      expect(sanitize('<a href="https://example.com">Link</a>')).toBe('Link');
-      expect(sanitize('<img src="https://example.com/image.png" alt="Image" />')).toBe('');
-      expect(sanitize('<script>alert("Hello");</script>')).toBe('');
+  describe('escapeHtml', () => {
+    test('replace &, <, >, ", and \' with their corresponding HTML entities', () => {
+      expect(escapeHtml('<p>Hello & "world"\'s test!</p>')).toBe('&lt;p&gt;Hello &amp; &quot;world&quot;&#039;s test!&lt;/p&gt;');
+      expect(escapeHtml('&<>"\'')).toBe('&amp;&lt;&gt;&quot;&#039;');
+      expect(escapeHtml('&lt;div&gt;')).toBe('&amp;lt;div&amp;gt;');
+
+      expect(escapeHtml('No special characters')).toBe('No special characters');
+      expect(escapeHtml('')).toBe('');
     });
   });
 });
