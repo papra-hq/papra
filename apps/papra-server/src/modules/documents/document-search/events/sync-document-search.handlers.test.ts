@@ -137,7 +137,7 @@ describe('sync-document-search event handlers', () => {
       });
     });
 
-    test('when document.trashed event fires, the document is marked as deleted in the search service', async () => {
+    test('when documents.trashed event fires, the documents are marked as deleted in the search service', async () => {
       const eventServices = createEventServices({ logger: createNoopLogger() });
 
       const documentSearchServices = createTestSearchServices();
@@ -145,9 +145,9 @@ describe('sync-document-search event handlers', () => {
       registerSyncDocumentSearchEventHandlers({ eventServices, documentSearchServices });
 
       eventServices.emitEvent({
-        eventName: 'document.trashed',
+        eventName: 'documents.trashed',
         payload: {
-          documentId: 'doc-1',
+          documentIds: ['doc-1'],
           organizationId: 'organization-1',
           trashedBy: 'user-1',
         },
@@ -269,9 +269,9 @@ describe('sync-document-search event handlers', () => {
       });
 
       eventServices.emitEvent({
-        eventName: 'document.trashed',
+        eventName: 'documents.trashed',
         payload: {
-          documentId: 'doc-1',
+          documentIds: ['doc-1'],
           organizationId: 'organization-1',
           trashedBy: 'user-1',
         },

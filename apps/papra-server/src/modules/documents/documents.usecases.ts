@@ -568,8 +568,8 @@ export async function trashDocument({
   await documentsRepository.softDeleteDocument({ documentId, organizationId, userId });
 
   eventServices.emitEvent({
-    eventName: 'document.trashed',
-    payload: { documentId, organizationId, trashedBy: userId },
+    eventName: 'documents.trashed',
+    payload: { documentIds: [documentId], organizationId, trashedBy: userId },
   });
 }
 

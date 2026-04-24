@@ -25,10 +25,10 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
   });
 
   eventServices.onEvent({
-    eventName: 'document.trashed',
-    handlerName: 'mark-document-deleted-in-search-service',
-    async handler({ documentId }) {
-      await documentSearchServices.updateDocuments({ updates: [{ documentId, document: { isDeleted: true } }] });
+    eventName: 'documents.trashed',
+    handlerName: 'mark-documents-deleted-in-search-service',
+    async handler({ documentIds }) {
+      await documentSearchServices.updateDocuments({ updates: documentIds.map(documentId => ({ documentId, document: { isDeleted: true } })) });
     },
   });
 
