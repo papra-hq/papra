@@ -1,8 +1,9 @@
 import type { Database } from '../../../app/database/database.types';
-import type { DocumentSearchableData } from '../document-search.types';
+import type { DocumentSearchableData, DocumentUpdate } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
-import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
+import { desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { customPropertyDefinitionsTable } from '../../../custom-properties/custom-properties.table';
+import { isNonEmptyArray } from '../../../shared/arrays/arrays.utils';
 import { omit, omitUndefined } from '../../../shared/objects';
 import { documentsTable } from '../../documents.table';
 import { makeSearchWhereClause } from './database-fts5.repository.models';
@@ -13,9 +14,9 @@ export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRep
 export function createDocumentSearchRepository({ db }: { db: Database }) {
   return injectArguments({
     searchOrganizationDocuments,
-    indexDocument,
-    updateDocument,
-    deleteDocument,
+    indexDocuments,
+    updateDocuments,
+    deleteDocuments,
   }, { db });
 }
 
@@ -56,36 +57,57 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
   return { documents, documentsCount };
 }
 
-async function indexDocument({ document, db }: { document: DocumentSearchableData; db: Database }) {
-  await db
-    .insert(documentsFtsTable)
-    .values({
-      documentId: document.id,
-      organizationId: document.organizationId,
-      name: document.name,
-      content: document.content,
-    });
-}
-
-async function updateDocument({ documentId, document, db }: { documentId: string; document: { content?: string; name?: string; originalName?: string }; db: Database }) {
-  const dataToUpdate = omitUndefined({
-    name: document.name,
-    originalName: document.originalName,
-    content: document.content,
-  });
-
-  if (Object.keys(dataToUpdate).length === 0) {
+async function indexDocuments({ documents, db }: { documents: DocumentSearchableData[]; db: Database }) {
+  if (documents.length === 0) {
     return;
   }
 
   await db
-    .update(documentsFtsTable)
-    .set(dataToUpdate)
-    .where(eq(documentsFtsTable.documentId, documentId));
+    .insert(documentsFtsTable)
+    .values(documents.map(document => ({
+      documentId: document.id,
+      organizationId: document.organizationId,
+      name: document.name,
+      content: document.content,
+    })));
 }
 
-async function deleteDocument({ documentId, db }: { documentId: string; db: Database }) {
+async function updateDocuments({ updates, db }: { updates: DocumentUpdate[]; db: Database }) {
+  if (updates.length === 0) {
+    return;
+  }
+
+  const queries = updates
+    .map(({ documentId, document }) => {
+      const dataToUpdate = omitUndefined({
+        name: document.name,
+        content: document.content,
+      });
+
+      if (Object.keys(dataToUpdate).length === 0) {
+        return null;
+      }
+
+      return db
+        .update(documentsFtsTable)
+        .set(dataToUpdate)
+        .where(eq(documentsFtsTable.documentId, documentId));
+    })
+    .filter(query => query !== null);
+
+  if (!isNonEmptyArray(queries)) {
+    return;
+  }
+
+  await db.batch(queries);
+}
+
+async function deleteDocuments({ documentIds, db }: { documentIds: string[]; db: Database }) {
+  if (documentIds.length === 0) {
+    return;
+  }
+
   await db
     .delete(documentsFtsTable)
-    .where(eq(documentsFtsTable.documentId, documentId));
+    .where(inArray(documentsFtsTable.documentId, documentIds));
 }

@@ -12,7 +12,7 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
     eventName: 'document.created',
     handlerName: 'index-document-in-search-service',
     async handler({ document }) {
-      await documentSearchServices.indexDocument({ document });
+      await documentSearchServices.indexDocuments({ documents: [document] });
     },
   });
 
@@ -20,7 +20,7 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
     eventName: 'document.updated',
     handlerName: 'update-document-in-search-service',
     async handler({ document, changes }) {
-      await documentSearchServices.updateDocument({ document: changes, documentId: document.id });
+      await documentSearchServices.updateDocuments({ updates: [{ documentId: document.id, document: changes }] });
     },
   });
 
@@ -28,7 +28,7 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
     eventName: 'document.trashed',
     handlerName: 'mark-document-deleted-in-search-service',
     async handler({ documentId }) {
-      await documentSearchServices.updateDocument({ documentId, document: { isDeleted: true } });
+      await documentSearchServices.updateDocuments({ updates: [{ documentId, document: { isDeleted: true } }] });
     },
   });
 
@@ -36,7 +36,7 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
     eventName: 'document.restored',
     handlerName: 'restore-document-in-search-service',
     async handler({ documentId }) {
-      await documentSearchServices.updateDocument({ documentId, document: { isDeleted: false } });
+      await documentSearchServices.updateDocuments({ updates: [{ documentId, document: { isDeleted: false } }] });
     },
   });
 
@@ -44,7 +44,7 @@ export function registerSyncDocumentSearchEventHandlers({ eventServices, documen
     eventName: 'document.deleted',
     handlerName: 'remove-document-from-search-service',
     async handler({ documentId }) {
-      await documentSearchServices.deleteDocument({ documentId });
+      await documentSearchServices.deleteDocuments({ documentIds: [documentId] });
     },
   });
 }

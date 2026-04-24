@@ -18,16 +18,16 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
       };
     },
 
-    indexDocument: async ({ document }) => {
-      await documentsSearchRepository.indexDocument({ document });
+    indexDocuments: async ({ documents }) => {
+      await documentsSearchRepository.indexDocuments({ documents });
     },
 
-    updateDocument: async ({ document, documentId }) => {
-      await documentsSearchRepository.updateDocument({ documentId, document });
+    updateDocuments: async ({ updates }) => {
+      await documentsSearchRepository.updateDocuments({ updates });
     },
 
-    deleteDocument: async ({ documentId }) => {
-      await documentsSearchRepository.deleteDocument({ documentId });
+    deleteDocuments: async ({ documentIds }) => {
+      await documentsSearchRepository.deleteDocuments({ documentIds });
     },
 
   };
