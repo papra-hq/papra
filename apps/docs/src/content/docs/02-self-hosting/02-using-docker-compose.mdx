@@ -5,6 +5,8 @@ description: Self-host Papra using Docker Compose.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import SecretKeyGenerator from '../../../components/random-hex-key-generator.astro';
 
 This guide covers how to deploy Papra using Docker Compose, ideal for users who prefer declarative configurations or plan to integrate Papra into a broader service stack.
 
@@ -37,9 +39,26 @@ docker compose version
     mkdir -p papra/app-data/{db,documents} && cd papra
     ```
 
-2. Create Docker Compose file
+2. Generate an Auth Secret
 
-    Create a file named `docker-compose.yml` with the following content:
+    Papra requires an `AUTH_SECRET` to run. Generate a secure one using the generator below or the OpenSSL command:
+
+    <Tabs>
+      <TabItem label="Key generator">
+        <SecretKeyGenerator byteLength={48} />
+      </TabItem>
+      <TabItem label="OpenSSL command">
+        ```bash
+        openssl rand -hex 48
+        ```
+      </TabItem>
+    </Tabs>
+
+    Keep the value handy, you will set it as an environment variable in the next step.
+
+3. Create Docker Compose file
+
+    Create a file named `docker-compose.yml` with the following content (replacing `<your-auth-secret>` with the value generated in the previous step):
 
     ```yaml
     services:
@@ -49,12 +68,14 @@ docker compose version
         restart: unless-stopped
         ports:
           - "1221:1221"
+        environment:
+          - AUTH_SECRET=<your-auth-secret>
         volumes:
           - ./app-data:/app/app-data
         user: "${UID}:${GID}"
     ```
 
-3. Start Papra
+4. Start Papra
 
     From the directory containing your `docker-compose.yml` file, run:
 
@@ -64,7 +85,7 @@ docker compose version
 
     This command downloads the latest Papra image, sets up the container, and starts the Papra service. The `UID` and `GID` variables are used to set the user and group for the container, ensuring proper file ownership. If you don't want to use the `UID` and `GID` variables, you can replace the image with the rootful variant.
 
-4. Access Papra
+5. Access Papra
 
     Once your container is running, access Papra via your browser at:
 
@@ -74,7 +95,7 @@ docker compose version
 
     Your Papra instance is now ready for use!
 
-5. To go further
+6. To go further
 
     Check the [configuration](/self-hosting/configuration) page for more information on how to configure your Papra instance.
 

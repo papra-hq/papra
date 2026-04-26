@@ -80,8 +80,10 @@ Papra is dedicated to providing a simple yet highly configurable self-hosting ex
 For a quick start, simply run the following command:
 
 ```bash
-docker run -d --name papra -p 1221:1221 ghcr.io/papra-hq/papra:latest
+docker run -d --name papra -p 1221:1221 -e AUTH_SECRET=a-dummy-secret-for-testing-purposes-only ghcr.io/papra-hq/papra:latest
 ```
+
+> The `AUTH_SECRET` above is fine for kicking the tires, but for any real instance you should generate your own with `openssl rand -hex 48` (or similar).
 
 Please refer to the [self-hosting documentation](https://docs.papra.app/self-hosting/using-docker) for more information and configuration options.
 
