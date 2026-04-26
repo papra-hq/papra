@@ -1,9 +1,10 @@
 import type { Document } from './documents.types';
 import { createSignal } from 'solid-js';
+import { downloadFile } from '@/modules/shared/files/download';
 import { useConfirmModal } from '../shared/confirm';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
-import { deleteDocument, restoreDocument } from './documents.services';
+import { deleteDocument, fetchDocument, fetchDocumentFile, restoreDocument } from './documents.services';
 
 export function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
   return queryClient.invalidateQueries({
@@ -20,6 +21,19 @@ function getConfirmMessage(documentName: string) {
       ?
     </>
   );
+}
+
+export function useDownloadDocument() {
+  return {
+    async downloadDocument({ organizationId, documentId}: { organizationId: string; documentId: string }) {
+      const document = await fetchDocument({ documentId, organizationId });
+      const documentFile = await fetchDocumentFile({ documentId, organizationId });
+
+      const getDataUrl = () => documentFile ? URL.createObjectURL(documentFile) : undefined;
+
+      downloadFile({ url: getDataUrl()!, fileName: document.document.name });
+    },
+  };
 }
 
 export function useDeleteDocument() {
