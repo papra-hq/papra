@@ -47,7 +47,7 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 
 - **Document management**: Upload, store, and manage your documents in one place.
 - **Organizations**: Create organizations to manage documents with family, friends, or colleagues.
-- **Search**: Quickly search for documents with full-text search.
+- **Search**: Quickly search for documents with full-text search and advanced filters.
 - **Authentication**: User accounts and authentication.
 - **Dark Mode**: A dark theme for those late-night document management sessions.
 - **Responsive Design**: Works on all devices, from desktops to mobile phones.
@@ -61,6 +61,7 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - **CLI**: Manage your documents from the command line.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
 - **i18n**: Support for multiple languages.
+- **Custom properties**: Define per-organization custom properties to store additional information about documents.
 - _Coming soon:_ **Document sharing**: Share documents with others.
 - _Coming soon:_ **Document requests**: Generate upload links for people to add documents.
 - _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
