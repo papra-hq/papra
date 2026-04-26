@@ -18,8 +18,23 @@ import { IdentifyUser } from './modules/tracking/components/identify-user.compon
 import { PageViewTracker } from './modules/tracking/components/pageview-tracker.component';
 import { Toaster } from './modules/ui/components/sonner';
 import { routes } from './routes';
+import { setLaunchedFiles } from './modules/files/file-launch.store';
 import 'virtual:uno.css';
 import './app.css';
+
+if ('launchQueue' in window) {
+  (window as any).launchQueue.setConsumer(async (launchParams: { files: any[] }) => {
+    if (!launchParams.files || launchParams.files.length === 0) {
+      return;
+    }
+    const files: File[] = [];
+    for (const fileHandle of launchParams.files) {
+      const file = await fileHandle.getFile();
+      files.push(file);
+    }
+    setLaunchedFiles(files);
+  });
+}
 
 const DemoIndicator = isDemoMode
   ? lazy(() => import('./modules/demo/demo.provider').then(mod => ({ default: mod.DemoIndicator })))
