@@ -234,7 +234,7 @@ function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: Ro
       webhookTriggerServices.deferTriggerWebhooks({
         organizationId,
         event: 'document:tag:removed',
-        payload: { documentId, organizationId, tagId, tagName: tag.name },
+        payloads: [{ documentId, organizationId, tagId, tagName: tag.name }],
       });
 
       deferRegisterDocumentActivityLog({

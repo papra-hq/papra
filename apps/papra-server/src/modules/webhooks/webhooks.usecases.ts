@@ -1,12 +1,12 @@
 import type { EventName, WebhookPayloads } from '@papra/webhooks';
 import type { Logger } from '../shared/logger/logger';
 import type { WebhookRepository } from './webhooks.repository';
-import type { Webhook, WebhooksConfig } from './webhooks.types';
+import type { Webhook, WebhookMultiplePayloads, WebhooksConfig } from './webhooks.types';
 import { triggerWebhook as triggerWebhookServiceImpl } from '@papra/webhooks';
 import pLimit from 'p-limit';
 import { createDeferable } from '../shared/async/defer';
 import { createLogger } from '../shared/logger/logger';
-import { isUrlSsrfSafe } from '../shared/ssrf/ssrf.services';
+import { createCachedIsUrlSsrfSafeFunction, isUrlSsrfSafe } from '../shared/ssrf/ssrf.services';
 import { WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR } from './webhooks.constants';
 import { createSsrfUnsafeUrlError, createWebhookNotFoundError } from './webhooks.errors';
 
@@ -105,7 +105,7 @@ export async function triggerWebhooks({
   logger = createLogger({ namespace: 'webhook' }),
   triggerWebhookService = triggerWebhookServiceImpl,
   webhooksConfig,
-  ...webhookData
+  ...multiplePayloadsData
 }: {
   webhookRepository: WebhookRepository;
   organizationId: string;
@@ -113,32 +113,79 @@ export async function triggerWebhooks({
   logger?: Logger;
   triggerWebhookService?: typeof triggerWebhookServiceImpl;
   webhooksConfig: WebhooksConfig;
-} & WebhookPayloads) {
-  const { event } = webhookData;
+} & WebhookMultiplePayloads) {
+  const { event } = multiplePayloadsData;
+  const singlePayloads = splitMultiplePayloads(multiplePayloadsData);
+
   const { webhooks } = await webhookRepository.getOrganizationEnabledWebhooksForEvent({ organizationId, event });
 
-  logger.info({ webhooksCount: webhooks.length, organizationId, event }, 'Triggering webhooks');
+  logger.info({ webhooksCount: webhooks.length, organizationId, event, payloadsCount: singlePayloads.length }, 'Triggering webhooks');
+
+  const safeWebhooks = await filterOutSsrfUnsafeWebhooks({ webhooks, webhooksConfig, logger });
 
   const limit = pLimit(10);
 
   await Promise.all(
-    webhooks.map(async webhook =>
-      limit(async () =>
-        triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, triggerWebhookService, webhooksConfig }),
+    safeWebhooks.flatMap(webhook =>
+      singlePayloads.map(async webhookData =>
+        limit(async () =>
+          triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, triggerWebhookService }),
+        ),
       ),
     ),
   );
 }
 
+async function filterOutSsrfUnsafeWebhooks({
+  webhooks,
+  webhooksConfig,
+  logger,
+}: {
+  webhooks: Webhook[];
+  webhooksConfig: WebhooksConfig;
+  logger: Logger;
+}): Promise<Webhook[]> {
+  if (!webhooksConfig.isSsrfProtectionEnabled) {
+    return webhooks;
+  }
+
+  const limit = pLimit(10);
+
+  // Caching is done at the function level to limit the TOCTOU window while still avoiding redundant checks for duplicate URLs across webhooks
+  const isUrlSsrfSafeCached = createCachedIsUrlSsrfSafeFunction({
+    allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
+    logger,
+  });
+
+  const checked = await Promise.all(
+    webhooks.map(async webhook =>
+      limit(async () => {
+        const isSafe = await isUrlSsrfSafeCached({ url: webhook.url });
+
+        if (!isSafe) {
+          reportNonSsrfSafeWebhookUrl({ url: webhook.url, logger });
+        }
+
+        return { webhook, isSafe };
+      }),
+    ),
+  );
+
+  return checked.filter(({ isSafe }) => isSafe).map(({ webhook }) => webhook);
+}
+
+function splitMultiplePayloads(data: WebhookMultiplePayloads): WebhookPayloads[] {
+  return data.payloads.map(payload => ({ event: data.event, payload })) as WebhookPayloads[];
+}
+
 export const deferTriggerWebhooks = createDeferable(triggerWebhooks);
 
-export async function triggerWebhook({
+async function triggerWebhook({
   webhook,
   webhookRepository,
   now = new Date(),
   logger = createLogger({ namespace: 'webhook' }),
   triggerWebhookService = triggerWebhookServiceImpl,
-  webhooksConfig,
   ...webhookData
 }: {
   webhook: Webhook;
@@ -146,20 +193,9 @@ export async function triggerWebhook({
   now?: Date;
   logger?: Logger;
   triggerWebhookService?: typeof triggerWebhookServiceImpl;
-  webhooksConfig: WebhooksConfig;
 } & WebhookPayloads) {
   const { url, secret, organizationId } = webhook;
   const { event } = webhookData;
-
-  // Check SSRF safety of the webhook URL before triggering the webhook
-  // still vulnerable to TOCTOU dns rebinbing attacks, but the timing window is really small
-  // and needs the attacker to have access to dns. It's currently an acceptable risk
-  await checkWebhookUrlIsSsrfSafe({
-    url,
-    isSsrfProtectionEnabled: webhooksConfig.isSsrfProtectionEnabled,
-    allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
-    logger,
-  });
 
   logger.info({ webhookId: webhook.id, event, organizationId }, 'Triggering webhook');
 
