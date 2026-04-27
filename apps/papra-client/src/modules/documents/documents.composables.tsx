@@ -1,5 +1,6 @@
 import type { Document } from './documents.types';
 import { createSignal } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { downloadFile } from '@/modules/shared/files/download';
 import { useConfirmModal } from '../shared/confirm';
 import { queryClient } from '../shared/query/query-client';
@@ -24,14 +25,30 @@ function getConfirmMessage(documentName: string) {
 }
 
 export function useDownloadDocument() {
+  const { t } = useI18n();
+
   return {
     async downloadDocument({ organizationId, documentId}: { organizationId: string; documentId: string }) {
-      const document = await fetchDocument({ documentId, organizationId });
-      const documentFile = await fetchDocumentFile({ documentId, organizationId });
+      try {
+        const [document, documentFile] = await Promise.all([
+          queryClient.fetchQuery({
+            queryKey: ['organizations', organizationId, 'documents', documentId],
+            queryFn: () => fetchDocument({ documentId, organizationId }),
+          }),
+          queryClient.fetchQuery({
+            queryKey: ['organizations', organizationId, 'documents', documentId, 'file'],
+            queryFn: () => fetchDocumentFile({ documentId, organizationId }),
+          }),
+        ]);
 
-      const getDataUrl = () => documentFile ? URL.createObjectURL(documentFile) : undefined;
+        const url = URL.createObjectURL(documentFile);
 
-      downloadFile({ url: getDataUrl()!, fileName: document.document.name });
+        downloadFile({ url, fileName: document.document.name });
+
+        URL.revokeObjectURL(url);
+      } catch {
+        createToast({ type: 'error', message: t('documents.actions.download.error') });
+      }
     },
   };
 }

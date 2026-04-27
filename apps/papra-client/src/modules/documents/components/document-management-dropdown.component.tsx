@@ -65,7 +65,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           })}
         >
           <div class="i-tabler-download size-4 mr-2" />
-          <span>Download document</span>
+          <span>{t('documents.actions.download.title')}</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem
