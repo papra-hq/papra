@@ -14,6 +14,7 @@ export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRep
 export function createDocumentSearchRepository({ db }: { db: Database }) {
   return injectArguments({
     searchOrganizationDocuments,
+    getDocumentIdsMatchingQuery,
     indexDocuments,
     updateDocuments,
     deleteDocuments,
@@ -55,6 +56,22 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
   const documentsCount = totalCountResult[0]?.count ?? 0;
 
   return { documents, documentsCount };
+}
+
+async function getDocumentIdsMatchingQuery({ organizationId, searchQuery, db, now = new Date() }: { organizationId: string; searchQuery: string; db: Database; now?: Date }) {
+  const customPropertyDefinitions = await db
+    .select()
+    .from(customPropertyDefinitionsTable)
+    .where(eq(customPropertyDefinitionsTable.organizationId, organizationId));
+
+  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now, customPropertyDefinitions });
+
+  const rows = await db
+    .selectDistinct({ id: documentsTable.id })
+    .from(documentsTable)
+    .where(searchWhereClause);
+
+  return { documentIds: rows.map(row => row.id) };
 }
 
 async function indexDocuments({ documents, db }: { documents: DocumentSearchableData[]; db: Database }) {

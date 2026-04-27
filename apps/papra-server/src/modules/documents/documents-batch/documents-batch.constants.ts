@@ -1,0 +1,1 @@
+export const BATCH_MAX_DOCUMENTS = 1000;

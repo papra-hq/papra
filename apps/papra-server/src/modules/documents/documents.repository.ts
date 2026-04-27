@@ -4,6 +4,7 @@ import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, inArray, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
+import { chunkArray } from '../shared/arrays/arrays.utils';
 import { subDays } from '../shared/date';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
@@ -22,6 +23,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationDeletedDocuments,
       getDocumentById,
       softDeleteDocument,
+      softDeleteDocuments,
       getOrganizationDeletedDocumentsCount,
       restoreDocument,
       hardDeleteDocument,
@@ -155,6 +157,42 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
         eq(documentsTable.organizationId, organizationId),
       ),
     );
+}
+
+// Chunked to stay safely under SQLite's host parameter limit (default 32766)
+// when the documentIds list is large (e.g. resolved from a search query).
+const SOFT_DELETE_CHUNK_SIZE = 500;
+
+async function softDeleteDocuments({ documentIds, organizationId, userId, db, now = new Date() }: { documentIds: string[]; organizationId: string; userId: string; db: Database; now?: Date }) {
+  if (documentIds.length === 0) {
+    return { trashedDocumentIds: [] };
+  }
+
+  const trashedDocumentIds: string[] = [];
+
+  const chunks = chunkArray(documentIds, SOFT_DELETE_CHUNK_SIZE);
+
+  for (const idsChunk of chunks) {
+    const rows = await db
+      .update(documentsTable)
+      .set({
+        isDeleted: true,
+        deletedBy: userId,
+        deletedAt: now,
+      })
+      .where(
+        and(
+          inArray(documentsTable.id, idsChunk),
+          eq(documentsTable.organizationId, organizationId),
+          eq(documentsTable.isDeleted, false),
+        ),
+      )
+      .returning({ id: documentsTable.id });
+
+    trashedDocumentIds.push(...rows.map(row => row.id));
+  }
+
+  return { trashedDocumentIds };
 }
 
 async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string; organizationId: string; name?: string; userId?: string; db: Database }) {

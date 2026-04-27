@@ -27,6 +27,11 @@ export type DocumentSearchServices = {
     pageSize: number;
   }) => Promise<DocumentSearchResult>;
 
+  getDocumentIdsMatchingQuery: (args: {
+    searchQuery: string;
+    organizationId: string;
+  }) => Promise<{ documentIds: string[] }>;
+
   indexDocuments: (args: { documents: DocumentSearchableData[] }) => Promise<void>;
   updateDocuments: (args: { updates: DocumentUpdate[] }) => Promise<void>;
   deleteDocuments: (args: { documentIds: string[] }) => Promise<void>;

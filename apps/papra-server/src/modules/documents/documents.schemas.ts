@@ -22,3 +22,5 @@ export const stringCoercedOcrLanguagesSchema = v.pipe(
   v.transform(value => value.split(',').map(lang => lang.trim())),
   ocrLanguagesSchema,
 );
+
+export const searchDocumentsQuerySchema = v.pipe(v.string(), v.maxLength(1024));
