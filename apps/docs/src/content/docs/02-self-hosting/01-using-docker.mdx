@@ -4,6 +4,8 @@ description: Self-host Papra using Docker.
 slug: self-hosting/using-docker
 ---
 import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import SecretKeyGenerator from '../../../components/random-hex-key-generator.astro';
 
 Papra provides optimized Docker images for streamlined deployment. This method is recommended for users seeking a production-ready setup with minimal maintenance overhead.
 
@@ -25,13 +27,27 @@ docker --version
 
 ## Quick Deployment
 
-Launch Papra with default configuration using:
+Papra requires an `AUTH_SECRET` to run. Generate a secure one using the generator below or the OpenSSL command:
+
+<Tabs>
+  <TabItem label="Key generator">
+    <SecretKeyGenerator byteLength={48} />
+  </TabItem>
+  <TabItem label="OpenSSL command">
+    ```bash
+    openssl rand -hex 48
+    ```
+  </TabItem>
+</Tabs>
+
+Then launch Papra with default configuration using:
 
 ```bash
 docker run -d \
   --name papra \
   --restart unless-stopped \
   --env APP_BASE_URL=http://localhost:1221 \
+  --env AUTH_SECRET=<your-auth-secret> \
   -p 1221:1221 \
   ghcr.io/papra-hq/papra:latest
 ```
@@ -66,11 +82,14 @@ For production deployments, mount host directories to preserve application data 
 
 2. Launch Container with Volume Binding
 
+    Make sure you have generated an `AUTH_SECRET` (see the [Quick Deployment](#quick-deployment) section above), then run:
+
     ```bash
     docker run -d \
       --name papra \
       --restart unless-stopped \
       --env APP_BASE_URL=http://localhost:1221 \
+      --env AUTH_SECRET=<your-auth-secret> \
       -p 1221:1221 \
       -v $(pwd)/papra-data:/app/app-data \
       --user $(id -u):$(id -g) \
