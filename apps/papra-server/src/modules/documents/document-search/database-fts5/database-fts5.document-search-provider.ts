@@ -18,6 +18,10 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
       };
     },
 
+    getDocumentIdsMatchingQuery: async ({ searchQuery, organizationId }) => {
+      return documentsSearchRepository.getDocumentIdsMatchingQuery({ organizationId, searchQuery });
+    },
+
     indexDocuments: async ({ documents }) => {
       await documentsSearchRepository.indexDocuments({ documents });
     },

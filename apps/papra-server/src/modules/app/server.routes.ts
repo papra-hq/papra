@@ -4,6 +4,7 @@ import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
 import { registerCustomPropertiesRoutes } from '../custom-properties/custom-properties.routes';
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
+import { registerDocumentsBatchRoutes } from '../documents/documents-batch/documents-batch.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
@@ -25,6 +26,7 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerUsersRoutes(context);
   registerOrganizationsRoutes(context);
   registerDocumentsRoutes(context);
+  registerDocumentsBatchRoutes(context);
   registerTagsRoutes(context);
   registerTaggingRulesRoutes(context);
   registerApiKeysRoutes(context);

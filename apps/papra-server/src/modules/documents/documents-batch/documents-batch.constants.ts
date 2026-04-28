@@ -1,0 +1,2 @@
+export const BATCH_MAX_DOCUMENTS = 1000;
+export const BATCH_MAX_QUERY_LENGTH = 2000;
