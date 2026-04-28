@@ -230,7 +230,7 @@ export const DocumentPage: Component = () => {
                       size="sm"
                     >
                       <div class="i-tabler-download size-4 mr-2" />
-                      {t('documents.actions.download')}
+                      {t('documents.actions.download.title')}
                     </Button>
 
                     <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />
