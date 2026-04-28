@@ -1,9 +1,11 @@
 import type { Document } from './documents.types';
 import { createSignal } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
+import { downloadFile } from '@/modules/shared/files/download';
 import { useConfirmModal } from '../shared/confirm';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
-import { deleteDocument, restoreDocument } from './documents.services';
+import { deleteDocument, fetchDocument, fetchDocumentFile, restoreDocument } from './documents.services';
 
 export function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
   return queryClient.invalidateQueries({
@@ -20,6 +22,35 @@ function getConfirmMessage(documentName: string) {
       ?
     </>
   );
+}
+
+export function useDownloadDocument() {
+  const { t } = useI18n();
+
+  return {
+    async downloadDocument({ organizationId, documentId}: { organizationId: string; documentId: string }) {
+      try {
+        const [document, documentFile] = await Promise.all([
+          queryClient.fetchQuery({
+            queryKey: ['organizations', organizationId, 'documents', documentId],
+            queryFn: () => fetchDocument({ documentId, organizationId }),
+          }),
+          queryClient.fetchQuery({
+            queryKey: ['organizations', organizationId, 'documents', documentId, 'file'],
+            queryFn: () => fetchDocumentFile({ documentId, organizationId }),
+          }),
+        ]);
+
+        const url = URL.createObjectURL(documentFile);
+
+        downloadFile({ url, fileName: document.document.name });
+
+        URL.revokeObjectURL(url);
+      } catch {
+        createToast({ type: 'error', message: t('documents.actions.download.error') });
+      }
+    },
+  };
 }
 
 export function useDeleteDocument() {
