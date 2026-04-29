@@ -40,8 +40,7 @@
     "maintenance:migrate-document-storage": "tsx --env-file-if-exists=.env src/scripts/migrate-document-storage.script.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.835.0",
-    "@aws-sdk/lib-storage": "^3.835.0",
+    "s3mini": "^0.9.4",
     "@azure/storage-blob": "^12.27.0",
     "@better-auth/expo": "catalog:",
     "@cadence-mq/core": "^0.2.1",
