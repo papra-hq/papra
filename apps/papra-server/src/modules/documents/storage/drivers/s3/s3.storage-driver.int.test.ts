@@ -1,5 +1,5 @@
 import type { DocumentStorageConfig } from '../../documents.storage.types';
-import { CreateBucketCommand } from '@aws-sdk/client-s3';
+import type { S3mini } from 's3mini';
 import { LocalstackContainer } from '@testcontainers/localstack';
 import { describe } from 'vitest';
 import { TEST_CONTAINER_IMAGES } from '../../../../../../test/containers/images';
@@ -15,6 +15,7 @@ describe('s3 storage-driver', () => {
       createDriver: async () => {
         const localstackContainer = await new LocalstackContainer(TEST_CONTAINER_IMAGES.LOCALSTACK).start();
         const bucketName = 'test-bucket';
+        const endpoint = localstackContainer.getConnectionUri();
 
         const driver = s3StorageDriverFactory({
           documentStorageConfig: {
@@ -24,16 +25,15 @@ describe('s3 storage-driver', () => {
                 secretAccessKey: 'test',
                 bucketName,
                 region: 'us-east-1',
-                endpoint: localstackContainer.getConnectionUri(),
+                endpoint,
                 forcePathStyle: true,
               },
             },
           } as DocumentStorageConfig,
         });
 
-        const s3Client = driver.getClient();
-
-        await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+        const client = driver.getClient() as S3mini;
+        await client.createBucket();
 
         return {
           driver,
