@@ -9,6 +9,7 @@ import { createOrganizationsRepository } from '../organizations/organizations.re
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
+import { getDownloadFileName } from '../shared/files/file-names';
 import { createQueryPaginationSchemaKeys } from '../shared/schemas/pagination.schemas';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
@@ -238,6 +239,8 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
         fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
       });
 
+      const downloadFileName = getDownloadFileName({ name: document.name, mimeType: document.mimeType });
+
       return context.body(
         Readable.toWeb(fileStream),
         200,
@@ -245,7 +248,7 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
           // Prevent XSS by serving the file as an octet-stream
           'Content-Type': 'application/octet-stream',
           // Always use attachment for defense in depth - client uses blob API anyway
-          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
+          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(downloadFileName)}`,
           'Content-Length': String(document.originalSize),
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'DENY',
