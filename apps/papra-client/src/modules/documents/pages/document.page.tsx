@@ -213,6 +213,7 @@ export const DocumentPage: Component = () => {
                       documentId: getDocument().id,
                       organizationId: params.organizationId,
                       documentName: getDocument().name,
+                      documentOriginalName: getDocument().originalName,
                     })}
                   >
                     <h1 class="text-xl font-semibold lh-tight" title={getDocument().name}>
@@ -304,6 +305,7 @@ export const DocumentPage: Component = () => {
                                   documentId: getDocument().id,
                                   organizationId: params.organizationId,
                                   documentName: getDocument().name,
+                                  documentOriginalName: getDocument().originalName,
                                 })}
                               >
                                 {getDocument().name}

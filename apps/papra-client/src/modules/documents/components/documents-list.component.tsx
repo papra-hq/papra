@@ -107,11 +107,12 @@ export const DocumentsPaginatedList: Component<{
               >
                 {getDocumentNameWithoutExtension({
                   name: data.row.original.name,
+                  originalName: data.row.original.originalName,
                 })}
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
-                {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name })].filter(Boolean).join(' - ')}
+                {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name, originalName: data.row.original.originalName })].filter(Boolean).join(' - ')}
                 {' '}
                 -
                 {' '}

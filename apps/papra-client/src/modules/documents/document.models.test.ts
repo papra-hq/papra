@@ -244,6 +244,20 @@ describe('files models', () => {
       expect(getDocumentNameWithoutExtension({ name: '.document.txt' })).to.eql('.document');
       expect(getDocumentNameWithoutExtension({ name: 'document.test.txt' })).to.eql('document.test');
     });
+
+    test('does not strip suffixes that are not the original extension', () => {
+      expect(getDocumentNameWithoutExtension({ name: 'Document v1.0', originalName: 'report.pdf' })).to.eql('Document v1.0');
+      expect(getDocumentNameWithoutExtension({ name: 'My File.Apartment.Address', originalName: 'doc.pdf' })).to.eql('My File.Apartment.Address');
+    });
+
+    test('strips the extension when name still ends with the original extension', () => {
+      expect(getDocumentNameWithoutExtension({ name: 'Q1 Report.pdf', originalName: 'report.pdf' })).to.eql('Q1 Report');
+      expect(getDocumentNameWithoutExtension({ name: 'final.PDF', originalName: 'draft.pdf' })).to.eql('final');
+    });
+
+    test('does not strip anything when the original upload had no extension', () => {
+      expect(getDocumentNameWithoutExtension({ name: 'Document v1.0', originalName: 'README' })).to.eql('Document v1.0');
+    });
   });
 
   describe('getDocumentNameExtension', () => {
@@ -253,6 +267,19 @@ describe('files models', () => {
       expect(getDocumentNameExtension({ name: '.document' })).to.eql(undefined);
       expect(getDocumentNameExtension({ name: '.document.txt' })).to.eql('txt');
       expect(getDocumentNameExtension({ name: 'document.test.txt' })).to.eql('txt');
+    });
+
+    test('returns undefined when name suffix does not match original extension', () => {
+      expect(getDocumentNameExtension({ name: 'Document v1.0', originalName: 'report.pdf' })).to.eql(undefined);
+      expect(getDocumentNameExtension({ name: 'My File.Apartment.Address', originalName: 'doc.pdf' })).to.eql(undefined);
+    });
+
+    test('returns the extension when name still ends with the original extension', () => {
+      expect(getDocumentNameExtension({ name: 'Q1 Report.pdf', originalName: 'report.pdf' })).to.eql('pdf');
+    });
+
+    test('returns undefined when the original upload had no extension', () => {
+      expect(getDocumentNameExtension({ name: 'Document v1.0', originalName: 'README' })).to.eql(undefined);
     });
   });
 

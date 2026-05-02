@@ -74,6 +74,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
             documentId: props.document.id,
             organizationId: props.document.organizationId,
             documentName: props.document.name,
+            documentOriginalName: props.document.originalName,
           })}
         >
           <div class="i-tabler-pencil size-4 mr-2" />
