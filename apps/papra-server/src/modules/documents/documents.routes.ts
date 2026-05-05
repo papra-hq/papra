@@ -18,7 +18,7 @@ import { searchOrganizationDocuments } from './document-search/document-search.u
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema, updateDocumentBodySchema } from './documents.schemas';
+import { documentIdSchema, searchDocumentsQuerySchema, updateDocumentBodySchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
@@ -264,7 +264,7 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
     })),
     validateQuery(
       v.strictObject({
-        searchQuery: v.optional(v.string(), ''),
+        searchQuery: v.optional(searchDocumentsQuerySchema, ''),
         ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),

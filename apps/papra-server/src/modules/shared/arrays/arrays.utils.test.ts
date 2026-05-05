@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ensureNonEmptyArray, isNonEmptyArray } from './arrays.utils';
+import { chunkArray, ensureNonEmptyArray, isNonEmptyArray } from './arrays.utils';
 
 describe('arrays.utils', () => {
   describe('ensureNonEmptyArray', () => {
@@ -25,6 +25,20 @@ describe('arrays.utils', () => {
         expect(isNonEmptyArray(undefined)).toBe(false);
         expect(isNonEmptyArray(null)).toBe(false);
       });
+    });
+  });
+
+  describe('chunkArray', () => {
+    test('groups array elements into chunks of specified size', () => {
+      expect(chunkArray([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
+      expect(chunkArray(['a', 'b', 'c', 'd'], 3)).toEqual([['a', 'b', 'c'], ['d']]);
+      expect(chunkArray(['a', 'b', 'c', 'd'], 10)).toEqual([['a', 'b', 'c', 'd']]);
+      expect(chunkArray([], 10)).toEqual([]);
+    });
+
+    test('throws an error if chunk size is less than or equal to 0', () => {
+      expect(() => chunkArray([1, 2, 3], 0)).toThrow('Chunk size must be greater than 0');
+      expect(() => chunkArray([1, 2, 3], -1)).toThrow('Chunk size must be greater than 0');
     });
   });
 });

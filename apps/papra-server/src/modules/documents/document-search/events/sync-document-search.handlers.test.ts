@@ -9,6 +9,7 @@ import { registerSyncDocumentSearchEventHandlers } from './sync-document-search.
 function createTestSearchServices() {
   const methodsArgs = {
     searchDocuments: [] as Parameters<DocumentSearchServices['searchDocuments']>[0][],
+    getDocumentIdsMatchingQuery: [] as Parameters<DocumentSearchServices['getDocumentIdsMatchingQuery']>[0][],
     indexDocuments: [] as Parameters<DocumentSearchServices['indexDocuments']>[0][],
     updateDocuments: [] as Parameters<DocumentSearchServices['updateDocuments']>[0][],
     deleteDocuments: [] as Parameters<DocumentSearchServices['deleteDocuments']>[0][],
@@ -19,6 +20,10 @@ function createTestSearchServices() {
     searchDocuments: async (args) => {
       methodsArgs.searchDocuments.push(args);
       return { documents: [], documentsCount: 0 };
+    },
+    getDocumentIdsMatchingQuery: async (args) => {
+      methodsArgs.getDocumentIdsMatchingQuery.push(args);
+      return { documentIds: [] };
     },
     indexDocuments: async (args) => {
       methodsArgs.indexDocuments.push(args);
@@ -77,6 +82,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [{ documents: [document] }],
         updateDocuments: [],
         deleteDocuments: [],
@@ -126,6 +132,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
         updateDocuments: [{
           updates: [{
@@ -157,6 +164,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
         updateDocuments: [{
           updates: [{
@@ -188,6 +196,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
         updateDocuments: [{
           updates: [{
@@ -218,6 +227,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
         updateDocuments: [],
         deleteDocuments: [{ documentIds: ['doc-1'] }],
@@ -298,6 +308,7 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
+        getDocumentIdsMatchingQuery: [],
         indexDocuments: [{ documents: [document] }],
         updateDocuments: [
           {
