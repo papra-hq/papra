@@ -3,6 +3,7 @@ import type { Tag } from './tags.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { documentsTable } from '../documents/documents.table';
+import { chunkArray } from '../shared/arrays/arrays.utils';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { omitUndefined } from '../shared/objects';
 import { isDefined } from '../shared/utils';
@@ -18,13 +19,16 @@ export function createTagsRepository({ db }: { db: Database }) {
       getOrganizationTags,
       getOrganizationTagsCount,
       getTagById,
+      getTagsByIds,
       getTagsByDocumentIds,
       createTag,
       deleteTag,
       updateTag,
       addTagToDocument,
       addTagsToDocument,
+      addTagsToDocumentsBatch,
       removeTagFromDocument,
+      removeTagsFromDocumentsBatch,
       removeAllTagsFromDocument,
     },
     { db },
@@ -91,6 +95,24 @@ async function getTagById({ tagId, organizationId, db }: { tagId: string; organi
     );
 
   return { tag };
+}
+
+async function getTagsByIds({ tagIds, organizationId, db }: { tagIds: string[]; organizationId: string; db: Database }) {
+  if (tagIds.length === 0) {
+    return { tags: [] as Tag[] };
+  }
+
+  const tags = await db
+    .select()
+    .from(tagsTable)
+    .where(
+      and(
+        inArray(tagsTable.id, tagIds),
+        eq(tagsTable.organizationId, organizationId),
+      ),
+    );
+
+  return { tags };
 }
 
 async function createTag({ tag, db }: { tag: { name: string; description?: string | null; color: string; organizationId: string }; db: Database }) {
@@ -179,4 +201,73 @@ async function removeTagFromDocument({ tagId, documentId, db }: { tagId: string;
 
 async function removeAllTagsFromDocument({ documentId, db }: { documentId: string; db: Database }) {
   await db.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
+}
+
+// Each (documentId, tagId) row uses 2 SQLite host parameters; chunk so a single statement
+// stays well under the 32766 default host-parameter cap.
+const DOCUMENTS_TAGS_PAIR_CHUNK_SIZE = 500;
+const DOCUMENTS_TAGS_DELETE_DOC_CHUNK_SIZE = 500;
+
+async function addTagsToDocumentsBatch({
+  documentIds,
+  tagIds,
+  db,
+}: {
+  documentIds: string[];
+  tagIds: string[];
+  db: Database;
+}): Promise<{ insertedPairs: { documentId: string; tagId: string }[] }> {
+  if (documentIds.length === 0 || tagIds.length === 0) {
+    return { insertedPairs: [] };
+  }
+
+  // The max tag number per document is expected to be low (50 limited by batch api endpoint)
+  // so the cartesian product is acceptable to be stored in memory
+  const allPairs = documentIds.flatMap(documentId => tagIds.map(tagId => ({ documentId, tagId })));
+
+  const insertedPairs: { documentId: string; tagId: string }[] = [];
+
+  for (const chunk of chunkArray(allPairs, DOCUMENTS_TAGS_PAIR_CHUNK_SIZE)) {
+    const rows = await db
+      .insert(documentsTagsTable)
+      .values(chunk)
+      .onConflictDoNothing()
+      .returning({ documentId: documentsTagsTable.documentId, tagId: documentsTagsTable.tagId });
+
+    insertedPairs.push(...rows);
+  }
+
+  return { insertedPairs };
+}
+
+async function removeTagsFromDocumentsBatch({
+  documentIds,
+  tagIds,
+  db,
+}: {
+  documentIds: string[];
+  tagIds: string[];
+  db: Database;
+}): Promise<{ removedPairs: { documentId: string; tagId: string }[] }> {
+  if (documentIds.length === 0 || tagIds.length === 0) {
+    return { removedPairs: [] };
+  }
+
+  const removedPairs: { documentId: string; tagId: string }[] = [];
+
+  for (const docChunk of chunkArray(documentIds, DOCUMENTS_TAGS_DELETE_DOC_CHUNK_SIZE)) {
+    const rows = await db
+      .delete(documentsTagsTable)
+      .where(
+        and(
+          inArray(documentsTagsTable.documentId, docChunk),
+          inArray(documentsTagsTable.tagId, tagIds),
+        ),
+      )
+      .returning({ documentId: documentsTagsTable.documentId, tagId: documentsTagsTable.tagId });
+
+    removedPairs.push(...rows);
+  }
+
+  return { removedPairs };
 }
