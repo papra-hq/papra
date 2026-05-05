@@ -7,7 +7,7 @@ import { chunkArray } from '../shared/arrays/arrays.utils';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { omitUndefined } from '../shared/objects';
 import { isDefined } from '../shared/utils';
-import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
+import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError, createTagNotFoundError } from './tags.errors';
 import { normalizeTagName } from './tags.repository.models';
 import { documentsTagsTable, tagsTable } from './tags.table';
 
@@ -139,11 +139,23 @@ async function createTag({ tag, db }: { tag: { name: string; description?: strin
   return { tag: createdTag };
 }
 
-async function deleteTag({ tagId, db }: { tagId: string; db: Database }) {
-  await db.delete(tagsTable).where(eq(tagsTable.id, tagId));
+async function deleteTag({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {
+  const deleteResult = await db
+    .delete(tagsTable)
+    .where(
+      and(
+        eq(tagsTable.id, tagId),
+        eq(tagsTable.organizationId, organizationId),
+      ),
+    )
+    .returning({ id: tagsTable.id });
+
+  if (deleteResult.length === 0) {
+    throw createTagNotFoundError();
+  }
 }
 
-async function updateTag({ tagId, name, description, color, db }: { tagId: string; name?: string; description?: string; color?: string; db: Database }) {
+async function updateTag({ tagId, organizationId, name, description, color, db }: { tagId: string; organizationId: string; name?: string; description?: string; color?: string; db: Database }) {
   const [result, error] = await safely(
     db
       .update(tagsTable)
@@ -156,7 +168,10 @@ async function updateTag({ tagId, name, description, color, db }: { tagId: strin
         }),
       )
       .where(
-        eq(tagsTable.id, tagId),
+        and(
+          eq(tagsTable.id, tagId),
+          eq(tagsTable.organizationId, organizationId),
+        ),
       )
       .returning(),
   );

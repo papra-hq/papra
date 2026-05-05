@@ -108,7 +108,11 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { tag } = await tagsRepository.updateTag({ tagId, name, color, description });
+      const { tag } = await tagsRepository.updateTag({ tagId, organizationId, name, color, description });
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
 
       return context.json({
         tag,
@@ -135,9 +139,9 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await tagsRepository.deleteTag({ tagId });
+      await tagsRepository.deleteTag({ tagId, organizationId });
 
-      return context.json({});
+      return context.body(null, 204);
     },
   );
 }
