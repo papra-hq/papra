@@ -1,5 +1,52 @@
 # @papra/app
 
+## 26.4.1
+
+### Patch Changes
+
+- [#1080](https://github.com/papra-hq/papra/pull/1080) [`47d44e0`](https://github.com/papra-hq/papra/commit/47d44e0681bf59da0638b140d1c5ef5b970f6b67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an authorization issue where tag updates and deletions were not scoped to the organization in the URL. Tag mutation endpoints are now correctly scoped to the requested organization. Thanks to [@TinkAnet](https://github.com/TinkAnet) for reporting this issue!
+
+- [#1074](https://github.com/papra-hq/papra/pull/1074) [`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Limited search query to 1024 characters
+
+- [#1061](https://github.com/papra-hq/papra/pull/1061) [`93c369d`](https://github.com/papra-hq/papra/commit/93c369d3e57da9bc0a7c825320ae535cc5e18263) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Html-ish characters in email templates are now escaped instead of sanitized-out
+
+- [#1067](https://github.com/papra-hq/papra/pull/1067) [`79d4cac`](https://github.com/papra-hq/papra/commit/79d4cac11fa4c0c8a3a6b234874e42f4c6d5ee3f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Increased default max file size from 10MB to 25MB (can still be customized using `DOCUMENT_STORAGE_MAX_UPLOAD_SIZE`, disable by setting it to 0).
+
+- [#1010](https://github.com/papra-hq/papra/pull/1010) [`927c7d6`](https://github.com/papra-hq/papra/commit/927c7d6b314bf1ee998d141989a69be6b71ad927) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed logging of a polluting empty error cause (with stack trace) when an error is thrown without a cause.
+
+- [#1080](https://github.com/papra-hq/papra/pull/1080) [`47d44e0`](https://github.com/papra-hq/papra/commit/47d44e0681bf59da0638b140d1c5ef5b970f6b67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Tag deletion endpoint now returns a `204 No Content` status code instead of `200 OK` with an empty JSON object, and a `404 Not Found` status code is returned when trying to delete a tag that does not exists for the organization.
+
+- [#1015](https://github.com/papra-hq/papra/pull/1015) [`5bdf0da`](https://github.com/papra-hq/papra/commit/5bdf0dab1f90de300c2a5b86849e99bf924ffc1b) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Synchronized the document pagination of the home page in query params to permit sharing and navigation.
+
+- [#1034](https://github.com/papra-hq/papra/pull/1034) [`c5ccac5`](https://github.com/papra-hq/papra/commit/c5ccac53c2897c49024ca7d9eb38b94fa6a15310) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content preview for yaml files
+
+- [#1027](https://github.com/papra-hq/papra/pull/1027) [`b154d2f`](https://github.com/papra-hq/papra/commit/b154d2f363e8d0a421ee476ff43da3d48093f3f3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed weird shadows on ui components in light mode
+
+- [#1020](https://github.com/papra-hq/papra/pull/1020) [`015bb53`](https://github.com/papra-hq/papra/commit/015bb5349825f413d0578cd733641380b6f3fe71) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added some size limits on the webhooks creation and update API endpoints parameters.
+  - Names are limited to 128 characters.
+  - Secret keys are limited to 256 characters.
+  - URLs are limited to 2048 characters.
+
+- [#1025](https://github.com/papra-hq/papra/pull/1025) [`9c6985b`](https://github.com/papra-hq/papra/commit/9c6985b51f5961b750f7bd52eead13b05b2504c2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When reopening the quick search modal with existing query, the input content is automatically selected to allow easy replacement or editing.
+
+- [#1033](https://github.com/papra-hq/papra/pull/1033) [`5d55e41`](https://github.com/papra-hq/papra/commit/5d55e41c3be6e747f657e4f8f0c8dbe21285034b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Changed the server endpoint validation library from `zod` to `valibot`, and improved some validation schemas in the process.
+
+- [#1016](https://github.com/papra-hq/papra/pull/1016) [`07d7109`](https://github.com/papra-hq/papra/commit/07d7109a46121b792ea45a7102d7c934d3ff060c) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Removed native clear button of search bar in safari.
+
+- [#1072](https://github.com/papra-hq/papra/pull/1072) [`71d093f`](https://github.com/papra-hq/papra/commit/71d093f644a3fcaa7e4d675eac5b365acb8ba1b8) Thanks [@mvlanga](https://github.com/mvlanga)! - Added a download file option in document list action menu
+
+- [#1051](https://github.com/papra-hq/papra/pull/1051) [`7854f6b`](https://github.com/papra-hq/papra/commit/7854f6b1a103a8b10348b8286ab39cb019850194) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated pnpm to 10.33.0.
+
+- [#1074](https://github.com/papra-hq/papra/pull/1074) [`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add batch document trash endpoint
+
+- [#1003](https://github.com/papra-hq/papra/pull/1003) [`ad5e42d`](https://github.com/papra-hq/papra/commit/ad5e42d4458e4f39046cba227a47dd149410dac4) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Increased the sidebar collapsing breakpoint to improve the UX on tablets and small laptops.
+
+- [#1016](https://github.com/papra-hq/papra/pull/1016) [`07d7109`](https://github.com/papra-hq/papra/commit/07d7109a46121b792ea45a7102d7c934d3ff060c) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Removed useless close button in the small-screen sidebar sheet.
+
+- [#1003](https://github.com/papra-hq/papra/pull/1003) [`ad5e42d`](https://github.com/papra-hq/papra/commit/ad5e42d4458e4f39046cba227a47dd149410dac4) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Prevented the users and organizations tables from forcing horizontal scrolling in the admin panels.
+
+- [#1021](https://github.com/papra-hq/papra/pull/1021) [`133d235`](https://github.com/papra-hq/papra/commit/133d235ccda42c126c4ee15bde1b207b2a573a1e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevented long documents name from pushing the right columns out of the container.
+
 ## 26.4.0
 
 ### Minor Changes

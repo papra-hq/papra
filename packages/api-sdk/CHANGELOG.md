@@ -1,5 +1,11 @@
 # @papra/api-sdk
 
+## 1.3.0
+
+### Minor Changes
+
+- [#1074](https://github.com/papra-hq/papra/pull/1074) [`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add batch document trash endpoint
+
 ## 1.2.0
 
 ### Minor Changes
