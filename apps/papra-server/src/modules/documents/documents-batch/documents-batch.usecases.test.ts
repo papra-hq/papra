@@ -3,9 +3,11 @@ import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createTestEventServices } from '../../app/events/events.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
+import { pick } from '../../shared/objects';
 import { createDatabaseFts5DocumentSearchServices } from '../document-search/database-fts5/database-fts5.document-search-provider';
 import { createDocumentsRepository } from '../documents.repository';
 import { documentsTable } from '../documents.table';
+import { createDocumentIdsNotFromOrganizationError } from './documents-batch.errors';
 import { resolveBatchTargetDocumentIds, trashDocumentsBatch } from './documents-batch.usecases';
 
 function createStubSearchServices({ documentIds = [] }: { documentIds?: string[] } = {}) {
@@ -37,24 +39,82 @@ describe('documents-batch usecases', () => {
   describe('resolveBatchTargetDocumentIds', () => {
     test('returns the provided documentIds without invoking the search service', async () => {
       const { services, calls } = createStubSearchServices();
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
+          { ...baseDocument, id: 'doc-2', organizationId: 'organization-1', name: 'doc 2', originalSha256Hash: 'h2' },
+        ],
+      });
 
       const { documentIds } = await resolveBatchTargetDocumentIds({
         filter: { documentIds: ['doc-1', 'doc-2'] },
         organizationId: 'organization-1',
         documentSearchServices: services,
+        documentsRepository: createDocumentsRepository({ db }),
       });
 
       expect(documentIds).to.eql(['doc-1', 'doc-2']);
       expect(calls).to.eql([]);
     });
 
+    test('throws an error if any of the provided documentIds do not belong to the organization', async () => {
+      const { services } = createStubSearchServices();
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-2', name: 'Organization 2' },
+        ],
+        documents: [
+          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
+          { ...baseDocument, id: 'doc-2', organizationId: 'organization-2', name: 'doc 2', originalSha256Hash: 'h2' },
+        ],
+      });
+
+      await expect(resolveBatchTargetDocumentIds({
+        filter: { documentIds: ['doc-1', 'doc-2'] },
+        organizationId: 'organization-1',
+        documentSearchServices: services,
+        documentsRepository: createDocumentsRepository({ db }),
+      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+    });
+
+    test('throws an error if a document id does not exist', async () => {
+      const { services } = createStubSearchServices();
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
+        ],
+      });
+
+      await expect(resolveBatchTargetDocumentIds({
+        filter: { documentIds: ['doc-1', 'doc-2'] },
+        organizationId: 'organization-1',
+        documentSearchServices: services,
+        documentsRepository: createDocumentsRepository({ db }),
+      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+    });
+
     test('on the query path, delegates to the search service without enforcing a cap', async () => {
       const { services, calls } = createStubSearchServices({ documentIds: ['doc-1', 'doc-2'] });
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'user-1', email: 'user-1@example.com' },
+          { id: 'user-2', email: 'user-2@example.com' },
+        ],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        documents: [
+          { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1', isDeleted: true, deletedBy: 'user-1', deletedAt: new Date('2026-01-01') },
+          { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2' },
+        ],
+      });
 
       const { documentIds } = await resolveBatchTargetDocumentIds({
         filter: { query: 'tag:invoice' },
         organizationId: 'organization-1',
         documentSearchServices: services,
+        documentsRepository: createDocumentsRepository({ db }),
       });
 
       expect(documentIds).to.eql(['doc-1', 'doc-2']);
@@ -66,7 +126,7 @@ describe('documents-batch usecases', () => {
   });
 
   describe('trashDocumentsBatch', () => {
-    test('trashes documents scoped to the organization, ignoring cross-org ids', async () => {
+    test('trashes documents scoped to the organization, throws if any document does not belong to the organization', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [
@@ -84,23 +144,22 @@ describe('documents-batch usecases', () => {
       const documentsRepository = createDocumentsRepository({ db });
       const { services } = createStubSearchServices();
 
-      const { trashedDocumentIds, trashedCount } = await trashDocumentsBatch({
-        filter: { documentIds: ['doc-1', 'doc-2', 'doc-3'] },
+      await expect(trashDocumentsBatch({
+        filter: { documentIds: ['doc-1', 'doc-3'] },
         organizationId: 'organization-1',
         userId: 'user-1',
         documentsRepository,
         documentSearchServices: services,
         eventServices: createTestEventServices(),
-      });
-
-      expect(trashedDocumentIds.toSorted()).to.eql(['doc-1', 'doc-2']);
-      expect(trashedCount).to.eql(2);
+      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
 
       const records = await db.select().from(documentsTable);
-      const byId = Object.fromEntries(records.map(r => [r.id, r]));
-      expect(byId['doc-1']?.isDeleted).to.eql(true);
-      expect(byId['doc-2']?.isDeleted).to.eql(true);
-      expect(byId['doc-3']?.isDeleted).to.eql(false);
+      const byId = Object.fromEntries(records.map(r => [r.id, pick(r, ['id', 'isDeleted', 'deletedBy', 'deletedAt'])]));
+      expect(byId).to.eql({
+        'doc-1': { id: 'doc-1', isDeleted: false, deletedBy: null, deletedAt: null },
+        'doc-2': { id: 'doc-2', isDeleted: false, deletedBy: null, deletedAt: null },
+        'doc-3': { id: 'doc-3', isDeleted: false, deletedBy: null, deletedAt: null },
+      });
     });
 
     test('does not re-trash documents that are already in the trash', async () => {
