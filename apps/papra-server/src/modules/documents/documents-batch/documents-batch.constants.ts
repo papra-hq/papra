@@ -1,1 +1,2 @@
 export const BATCH_MAX_DOCUMENTS = 1000;
+export const BATCH_MAX_TAGS_PER_REQUEST = 50;

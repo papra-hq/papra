@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 import { describe, expect, test } from 'vitest';
-import { BATCH_MAX_DOCUMENTS } from './documents-batch.constants';
-import { batchTrashBodySchema } from './documents-batch.schemas';
+import { BATCH_MAX_DOCUMENTS, BATCH_MAX_TAGS_PER_REQUEST } from './documents-batch.constants';
+import { batchTagsBodySchema, batchTrashBodySchema } from './documents-batch.schemas';
 
 describe('documents-batch.schemas', () => {
   describe('batchTrashBodySchema', () => {
@@ -67,6 +67,98 @@ describe('documents-batch.schemas', () => {
     test('rejects unknown top-level keys', () => {
       expect(() => v.parse(batchTrashBodySchema, {
         filter: { documentIds: ['doc_aaaaaaaaaaaaaaaaaaaaaaaa'] },
+        unexpected: true,
+      })).toThrow();
+    });
+  });
+
+  describe('batchTagsBodySchema', () => {
+    const documentsFilter = { documentIds: ['doc_aaaaaaaaaaaaaaaaaaaaaaaa'] };
+
+    test('parses a body with addTagIds only', () => {
+      expect(v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+      })).toEqual({
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+        removeTagIds: [],
+      });
+    });
+
+    test('parses a body with removeTagIds only', () => {
+      expect(v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        removeTagIds: ['tag_bbbbbbbbbbbbbbbbbbbbbbbb'],
+      })).toEqual({
+        filter: documentsFilter,
+        addTagIds: [],
+        removeTagIds: ['tag_bbbbbbbbbbbbbbbbbbbbbbbb'],
+      });
+    });
+
+    test('parses a body with both addTagIds and removeTagIds', () => {
+      expect(v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+        removeTagIds: ['tag_bbbbbbbbbbbbbbbbbbbbbbbb'],
+      })).toEqual({
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+        removeTagIds: ['tag_bbbbbbbbbbbbbbbbbbbbbbbb'],
+      });
+    });
+
+    test('accepts a query filter', () => {
+      expect(v.parse(batchTagsBodySchema, {
+        filter: { query: 'invoice' },
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+      })).toEqual({
+        filter: { query: 'invoice' },
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+        removeTagIds: [],
+      });
+    });
+
+    test('rejects when both addTagIds and removeTagIds are omitted', () => {
+      expect(() => v.parse(batchTagsBodySchema, { filter: documentsFilter })).toThrow();
+    });
+
+    test('rejects when both addTagIds and removeTagIds are empty', () => {
+      expect(() => v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: [],
+        removeTagIds: [],
+      })).toThrow();
+    });
+
+    test('rejects when addTagIds and removeTagIds overlap', () => {
+      expect(() => v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+        removeTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
+      })).toThrow();
+    });
+
+    test('rejects an invalid tag id', () => {
+      expect(() => v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: ['not-a-tag-id'],
+      })).toThrow();
+    });
+
+    test(`rejects more than ${BATCH_MAX_TAGS_PER_REQUEST} addTagIds`, () => {
+      const tooMany = Array.from({ length: BATCH_MAX_TAGS_PER_REQUEST + 1 }).map((_, i) => `tag_${i.toString().padStart(24, '0')}`);
+      expect(() => v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: tooMany,
+      })).toThrow();
+    });
+
+    test('rejects unknown top-level keys', () => {
+      expect(() => v.parse(batchTagsBodySchema, {
+        filter: documentsFilter,
+        addTagIds: ['tag_aaaaaaaaaaaaaaaaaaaaaaaa'],
         unexpected: true,
       })).toThrow();
     });
