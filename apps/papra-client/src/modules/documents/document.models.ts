@@ -136,22 +136,7 @@ export function getDaysBeforePermanentDeletion({ document, deletedDocumentsReten
   return daysBeforeDeletion;
 }
 
-export function getDocumentNameWithoutExtension({ name }: { name: string }) {
-  const dotSplittedName = name.split('.');
-  const dotCount = dotSplittedName.length - 1;
-
-  if (dotCount === 0) {
-    return name;
-  }
-
-  if (dotCount === 1 && name.startsWith('.')) {
-    return name;
-  }
-
-  return dotSplittedName.slice(0, -1).join('.');
-}
-
-export function getDocumentNameExtension({ name }: { name: string }) {
+function getRawNameExtension(name: string): string | undefined {
   const dotSplittedName = name.split('.');
   const dotCount = dotSplittedName.length - 1;
 
@@ -164,6 +149,43 @@ export function getDocumentNameExtension({ name }: { name: string }) {
   }
 
   return dotSplittedName[dotCount];
+}
+
+// When `originalName` is provided, the extension is only recognised if `name` still ends with the
+// same extension as the original upload — this prevents stripping suffixes from user-renamed
+// documents like "Document v1.0" where ".0" is part of the name, not a file extension.
+export function getDocumentNameWithoutExtension({ name, originalName }: { name: string; originalName?: string }) {
+  const extension = getDocumentNameExtension({ name, originalName });
+
+  if (extension === undefined) {
+    return name;
+  }
+
+  return name.slice(0, -(extension.length + 1));
+}
+
+export function getDocumentNameExtension({ name, originalName }: { name: string; originalName?: string }) {
+  const rawExtension = getRawNameExtension(name);
+
+  if (rawExtension === undefined) {
+    return undefined;
+  }
+
+  if (originalName === undefined) {
+    return rawExtension;
+  }
+
+  const originalExtension = getRawNameExtension(originalName);
+
+  if (originalExtension === undefined) {
+    return undefined;
+  }
+
+  if (rawExtension.toLowerCase() !== originalExtension.toLowerCase()) {
+    return undefined;
+  }
+
+  return rawExtension;
 }
 
 export const documentActivityIcon: Record<DocumentActivityEvent, string> = {

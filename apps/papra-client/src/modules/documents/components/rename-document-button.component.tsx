@@ -17,6 +17,7 @@ export const RenameDocumentDialog: Component<{
   documentId: string;
   organizationId: string;
   documentName: string;
+  documentOriginalName?: string;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }> = (props) => {
@@ -47,10 +48,10 @@ export const RenameDocumentDialog: Component<{
       ),
     }),
     initialValues: {
-      name: getDocumentNameWithoutExtension({ name: props.documentName }),
+      name: getDocumentNameWithoutExtension({ name: props.documentName, originalName: props.documentOriginalName }),
     },
     onSubmit: async ({ name }) => {
-      const extension = getDocumentNameExtension({ name: props.documentName });
+      const extension = getDocumentNameExtension({ name: props.documentName, originalName: props.documentOriginalName });
       const newName = extension ? `${name}.${extension}` : name;
 
       await renameDocumentMutation.mutateAsync({ name: newName });
@@ -58,7 +59,7 @@ export const RenameDocumentDialog: Component<{
   });
 
   createEffect(() => {
-    setValue(form, 'name', getDocumentNameWithoutExtension({ name: props.documentName }));
+    setValue(form, 'name', getDocumentNameWithoutExtension({ name: props.documentName, originalName: props.documentOriginalName }));
   });
 
   return (
@@ -92,7 +93,7 @@ export const RenameDocumentDialog: Component<{
 };
 
 const context = createContext<{
-  openRenameDialog: (args: { documentId: string; organizationId: string; documentName: string }) => void;
+  openRenameDialog: (args: { documentId: string; organizationId: string; documentName: string; documentOriginalName?: string }) => void;
 }>();
 
 export function useRenameDocumentDialog() {
@@ -110,15 +111,17 @@ export const RenameDocumentDialogProvider: ParentComponent = (props) => {
   const [getDocumentId, setDocumentId] = createSignal<string | undefined>(undefined);
   const [getOrganizationId, setOrganizationId] = createSignal<string | undefined>(undefined);
   const [getDocumentName, setDocumentName] = createSignal<string | undefined>(undefined);
+  const [getDocumentOriginalName, setDocumentOriginalName] = createSignal<string | undefined>(undefined);
 
   return (
     <context.Provider
       value={{
-        openRenameDialog: ({ documentId, organizationId, documentName }) => {
+        openRenameDialog: ({ documentId, organizationId, documentName, documentOriginalName }) => {
           setIsRenameDialogOpen(true);
           setDocumentId(documentId);
           setOrganizationId(organizationId);
           setDocumentName(documentName);
+          setDocumentOriginalName(documentOriginalName);
         },
       }}
     >
@@ -126,6 +129,7 @@ export const RenameDocumentDialogProvider: ParentComponent = (props) => {
         documentId={getDocumentId() ?? ''}
         organizationId={getOrganizationId() ?? ''}
         documentName={getDocumentName() ?? ''}
+        documentOriginalName={getDocumentOriginalName()}
         isOpen={getIsRenameDialogOpen()}
         setIsOpen={setIsRenameDialogOpen}
       />
