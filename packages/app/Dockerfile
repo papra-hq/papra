@@ -59,4 +59,7 @@ ENV BETTER_AUTH_TELEMETRY=0
 
 RUN mkdir -p ./app-data/db ./app-data/documents ./ingestion
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+    CMD node -e "fetch('http://localhost:1221/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+
 CMD ["pnpm", "start:with-migrations"]
