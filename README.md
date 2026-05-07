@@ -90,14 +90,16 @@ Please refer to the [self-hosting documentation](https://docs.papra.app/self-hos
 
 ### Self-hosting with Docker Compose
 
-This repository ships with a ready-to-use [`docker-compose.yml`](./docker-compose.yml) plus a documented [`.env.example`](./.env.example) template. Configuration is loaded from a `.env.prod` file that you create locally and that is **not** committed to git.
+This repository ships with a ready-to-use [`docker-compose.yml`](./docker-compose.yml) plus a documented [`.env.example`](./.env.example) template. Configuration is loaded from a `.env` file that you create locally and that is **not** committed to git.
+
+> Docker Compose automatically reads a file named `.env` next to the compose file. Other names (e.g. `.env.prod`) are not picked up unless you pass `--env-file <path>` explicitly.
 
 #### 1. Prepare the environment file
 
 Copy the example file and fill in your values:
 
 ```bash
-cp .env.example .env.prod
+cp .env.example .env
 ```
 
 At minimum, generate and set a secure `AUTH_SECRET`:
@@ -112,7 +114,9 @@ openssl rand -hex 48
 -join ((1..96) | ForEach-Object { '{0:x}' -f (Get-Random -Max 16) })
 ```
 
-Open [`.env.prod`](./.env.prod) and paste the generated secret as the value of `AUTH_SECRET`. Adjust `APP_BASE_URL` and `PAPRA_HOST_PORT` if needed (e.g. when running behind a reverse proxy or on a different port).
+Open `.env` and paste the generated secret as the value of `AUTH_SECRET`. Adjust `APP_BASE_URL` and `PAPRA_HOST_PORT` if needed (e.g. when running behind a reverse proxy or on a different port).
+
+> Want multiple environments? Keep e.g. `.env.staging` / `.env.prod` files locally and start the stack with `docker compose --env-file .env.prod up -d`.
 
 #### 2. Start the stack
 
@@ -146,7 +150,7 @@ docker compose down -v         # also remove anonymous volumes (data in ./papra-
 
 Many more options (SMTP, OAuth providers, OCR languages, S3 storage, …) are described in [`.env.example`](./.env.example) and the [official configuration reference](https://docs.papra.app/self-hosting/configuration).
 
-> **Note:** [`.env.prod`](./.env.prod) contains secrets and is git-ignored. Never commit it.
+> **Note:** `.env` contains secrets and is git-ignored. Never commit it.
 
 ## Contributing
 
