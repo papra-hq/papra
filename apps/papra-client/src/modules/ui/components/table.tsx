@@ -46,7 +46,7 @@ export function TableRow(props: ComponentProps<'tr'>) {
   return (
     <tr
       class={cn(
-        'border-b transition-colors data-[state=selected]:bg-muted',
+        'border-b transition-colors data-[state=selected]:bg-muted/30',
         local.class,
       )}
       {...rest}

@@ -3,4 +3,4 @@
 "@papra/app": patch
 ---
 
-Add batch document trash endpoint
+Add batch document trash API endpoint.

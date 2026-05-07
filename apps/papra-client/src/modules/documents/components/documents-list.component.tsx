@@ -1,4 +1,4 @@
-import type { ColumnDef } from '@tanstack/solid-table';
+import type { ColumnDef, RowSelectionState } from '@tanstack/solid-table';
 import type { Accessor, Component, Setter } from 'solid-js';
 import type { Document } from '../documents.types';
 import type { Pagination } from '@/modules/shared/pagination/pagination.types';
@@ -17,10 +17,36 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { Button } from '@/modules/ui/components/button';
+import { Checkbox, CheckboxControl } from '@/modules/ui/components/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
 import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
+
+const selectionColumn: ColumnDef<Document> = {
+  id: 'select',
+  header: props => (
+    <Checkbox
+      checked={props.table.getIsAllPageRowsSelected()}
+      indeterminate={props.table.getIsSomePageRowsSelected() && !props.table.getIsAllPageRowsSelected()}
+      onChange={value => props.table.toggleAllPageRowsSelected(value)}
+      aria-label="Select all rows on this page"
+    >
+      <CheckboxControl />
+    </Checkbox>
+  ),
+  cell: props => (
+    <Checkbox
+      checked={props.row.getIsSelected()}
+      onChange={value => props.row.toggleSelected(value)}
+      aria-label="Select row"
+    >
+      <CheckboxControl />
+    </Checkbox>
+  ),
+  enableSorting: false,
+  enableHiding: false,
+};
 
 export const createdAtColumn: ColumnDef<Document> = {
   header: () => {
@@ -78,13 +104,18 @@ export const DocumentsPaginatedList: Component<{
   setPagination?: Setter<Pagination>;
   extraColumns?: ColumnDef<Document>[];
   showPagination?: boolean;
+  enableBatchSelection?: boolean;
+  getRowSelection?: Accessor<RowSelectionState>;
+  setRowSelection?: Setter<RowSelectionState>;
 }> = (props) => {
   const { t } = useI18n();
   const table = createSolidTable({
     get data() {
       return props.documents ?? [];
     },
+    getRowId: row => row.id,
     columns: [
+      ...(props.enableBatchSelection ? [selectionColumn] : []),
       {
         header: () => t('documents.list.table.headers.file-name'),
         id: 'fileName',
@@ -129,9 +160,14 @@ export const DocumentsPaginatedList: Component<{
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: props.setPagination,
+    onRowSelectionChange: props.setRowSelection,
+    enableRowSelection: props.enableBatchSelection ?? false,
     state: {
       get pagination() {
         return props.getPagination?.();
+      },
+      get rowSelection() {
+        return props.getRowSelection?.() ?? {};
       },
     },
     manualPagination: true,
