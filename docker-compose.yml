@@ -1,0 +1,16 @@
+services:
+  papra:
+    image: ghcr.io/papra-hq/papra:latest
+    container_name: papra
+    restart: unless-stopped
+    # All configuration is loaded from .env.prod (see .env.example for a documented template).
+    env_file:
+      - .env.prod
+    environment:
+      # Fail fast if AUTH_SECRET was not provided. Generate one with: openssl rand -hex 48
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET is required - set it in .env.prod}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:1221}
+    ports:
+      - "${PAPRA_HOST_PORT:-1221}:1221"
+    volumes:
+      - ./papra-data:/app/app-data
