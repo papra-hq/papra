@@ -1,6 +1,5 @@
-import type { SQL } from 'drizzle-orm';
-import { SQLiteSyncDialect } from 'drizzle-orm/sqlite-core';
 import { describe, expect, test } from 'vitest';
+import { stringifySqlQuery } from '../../../../app/database/database.models';
 import { createInMemoryDatabase } from '../../../../app/database/database.test-utils';
 import {
   handleAndExpression,
@@ -20,15 +19,6 @@ import {
 
 describe('query-builder', async () => {
   const { db } = await createInMemoryDatabase();
-  const sqliteDialect = new SQLiteSyncDialect();
-  const getSqlString = (query?: SQL) => {
-    if (!query) {
-      return { sql: '', params: [] };
-    }
-
-    const { sql, params } = sqliteDialect.sqlToQuery(query);
-    return { sql, params };
-  };
 
   describe('handleNameFilter', () => {
     test('builds a fts5 scoped on organization id and name column', () => {
@@ -40,8 +30,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {name}:"important"*'],
       });
     });
@@ -55,8 +45,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {name}:"important (draft)"*'],
       });
     });
@@ -73,7 +63,7 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
   });
 
@@ -87,8 +77,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {content}:"confidential"*'],
       });
     });
@@ -102,8 +92,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {content}:"confidential [v2]"*'],
       });
     });
@@ -120,7 +110,7 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
   });
 
@@ -133,8 +123,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"created_at\" = ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"created_at\" = ?`,
         params: [1705276800000],
       });
     });
@@ -148,8 +138,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"created_at\" > ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"created_at\" > ?`,
         params: [1705276800000],
       });
     });
@@ -162,8 +152,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"created_at\" >= ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"created_at\" >= ?`,
         params: [1705276800000],
       });
     });
@@ -176,8 +166,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"created_at\" < ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"created_at\" < ?`,
         params: [1705276800000],
       });
     });
@@ -190,8 +180,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"created_at\" <= ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"created_at\" <= ?`,
         params: [1705276800000],
       });
     });
@@ -207,7 +197,7 @@ describe('query-builder', async () => {
         code: 'INVALID_DATE_FORMAT',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
 
     test('accepts various ISO date formats', () => {
@@ -236,8 +226,8 @@ describe('query-builder', async () => {
         });
 
         expect(issues).to.eql([]);
-        expect(getSqlString(sqlQuery)).to.eql({
-          sql: `\"documents\".\"created_at\" = ?`,
+        expect(stringifySqlQuery(sqlQuery)).to.eql({
+          query: `\"documents\".\"created_at\" = ?`,
           params: [timestamp],
         });
       }
@@ -255,8 +245,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" = ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" = ?`,
         params: [1705276800000],
       });
     });
@@ -269,8 +259,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" > ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" > ?`,
         params: [1705276800000],
       });
     });
@@ -283,8 +273,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" >= ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" >= ?`,
         params: [1705276800000],
       });
     });
@@ -297,8 +287,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" < ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" < ?`,
         params: [1705276800000],
       });
     });
@@ -311,8 +301,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" <= ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" <= ?`,
         params: [1705276800000],
       });
     });
@@ -328,7 +318,7 @@ describe('query-builder', async () => {
         code: 'INVALID_DATE_FORMAT',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
 
     test('supports "now" value to use the current date', () => {
@@ -339,8 +329,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" <= ?`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" <= ?`,
         params: [now.getTime()],
       });
     });
@@ -356,8 +346,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."document_date" is not null`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."document_date" is not null`,
         params: [],
       });
     });
@@ -374,7 +364,7 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
   });
 
@@ -384,8 +374,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `1`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `1`,
         params: [],
       });
     });
@@ -401,8 +391,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {name content}:"budget report"*'],
       });
     });
@@ -416,8 +406,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {name content}:"Q3 (final)"*'],
       });
     });
@@ -440,8 +430,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `(\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?) and \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `(\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?) and \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
         params: [
           'organization_id:"org_1" {name content}:"invoice"*',
           'organization_id:"org_1" {name}:"Q3"*',
@@ -474,8 +464,8 @@ describe('query-builder', async () => {
         },
       ]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `(0 and 0)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `(0 and 0)`,
         params: [],
       });
     });
@@ -498,8 +488,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `(\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?) or \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `(\"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?) or \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
         params: [
           'organization_id:"org_1" {name content}:"invoice"*',
           'organization_id:"org_1" {name content}:"receipt"*',
@@ -532,8 +522,8 @@ describe('query-builder', async () => {
         },
       ]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `(0 or 0)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `(0 or 0)`,
         params: [],
       });
     });
@@ -553,8 +543,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `not \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `not \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?)`,
         params: ['organization_id:"org_1" {name content}:"spam"*'],
       });
     });
@@ -572,8 +562,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `not 1`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `not 1`,
         params: [],
       });
     });
@@ -594,8 +584,8 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `not 0`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `not 0`,
         params: [],
       });
     });
@@ -611,8 +601,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where "tags"."organization_id" = ?)`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where "tags"."organization_id" = ?)`,
         params: ['org_1'],
       });
     });
@@ -629,7 +619,7 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
   });
 
@@ -641,7 +631,7 @@ describe('query-builder', async () => {
         message: 'Unsupported expression type',
         code: 'UNSUPPORTED_EXPRESSION_TYPE',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: `0`, params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: `0`, params: [] });
     });
 
     test('returns a no-op SQL query that always evaluates to false', () => {
@@ -652,8 +642,8 @@ describe('query-builder', async () => {
         code: 'UNSUPPORTED_EXPRESSION_TYPE',
       }]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `0`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `0`,
         params: [],
       });
     });
@@ -669,8 +659,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."id" = ?))',
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."id" = ?))',
         params: ['org_1', 'tag_123456789123456789123456'],
       });
     });
@@ -684,8 +674,8 @@ describe('query-builder', async () => {
 
       expect(issues).to.eql([]);
 
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))',
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: '"documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))',
         params: ['org_1', 'important thing'],
       });
     });
