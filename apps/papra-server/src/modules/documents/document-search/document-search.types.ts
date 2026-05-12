@@ -1,4 +1,5 @@
 import type { Document } from '../documents.types';
+import type { DocumentSearchSort } from './document-search.constants';
 
 export type DocumentSearchableData = {
   id: string;
@@ -25,6 +26,7 @@ export type DocumentSearchServices = {
     organizationId: string;
     pageIndex: number;
     pageSize: number;
+    sort?: DocumentSearchSort;
   }) => Promise<DocumentSearchResult>;
 
   getDocumentIdsMatchingQuery: (args: {
