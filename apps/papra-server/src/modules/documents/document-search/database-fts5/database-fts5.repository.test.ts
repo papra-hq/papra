@@ -438,6 +438,141 @@ describe('database-fts5 repository', () => {
       expect(searchResults).to.have.length(3);
       expect(searchResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
     });
+
+    describe('sort', () => {
+      test('documents can be sorted by name, case-insensitively', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Banana', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'apple', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          { id: 'doc_3', organizationId: 'org_1', name: 'cherry', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: ascResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'name', order: 'asc' },
+        });
+
+        expect(ascResults.map(doc => doc.id)).to.eql(['doc_2', 'doc_1', 'doc_3']);
+
+        const { documents: descResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'name', order: 'desc' },
+        });
+
+        expect(descResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
+      });
+
+      test('documents can be sorted by document date, with null dates ordered first ascending and last descending', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false, documentDate: new Date('2026-03-01') },
+          { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false, documentDate: new Date('2026-01-01') },
+          { id: 'doc_3', organizationId: 'org_1', name: 'Document 3', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: ascResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'documentDate', order: 'asc' },
+        });
+
+        expect(ascResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_2', 'doc_1']);
+
+        const { documents: descResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'documentDate', order: 'desc' },
+        });
+
+        expect(descResults.map(doc => doc.id)).to.eql(['doc_1', 'doc_2', 'doc_3']);
+      });
+
+      test('documents can be sorted by update date', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false, updatedAt: new Date('2026-01-02T10:00:00Z') },
+          { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false, updatedAt: new Date('2026-01-03T10:00:00Z') },
+          { id: 'doc_3', organizationId: 'org_1', name: 'Document 3', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false, updatedAt: new Date('2026-01-01T10:00:00Z') },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: searchResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'updatedAt', order: 'desc' },
+        });
+
+        expect(searchResults.map(doc => doc.id)).to.eql(['doc_2', 'doc_1', 'doc_3']);
+      });
+
+      test('sort is applied across pages', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'delta', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'alpha', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          { id: 'doc_3', organizationId: 'org_1', name: 'charlie', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+          { id: 'doc_4', organizationId: 'org_1', name: 'bravo', originalName: 'document-4.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash4', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: page0 } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 2,
+          sort: { field: 'name', order: 'asc' },
+        });
+        const { documents: page1 } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 1,
+          pageSize: 2,
+          sort: { field: 'name', order: 'asc' },
+        });
+
+        expect(page0.map(doc => doc.id)).to.eql(['doc_2', 'doc_4']);
+        expect(page1.map(doc => doc.id)).to.eql(['doc_3', 'doc_1']);
+      });
+    });
   });
 
   describe('indexDocuments', () => {

@@ -9,8 +9,8 @@ export function createDatabaseFts5DocumentSearchServices({ db }: { db: Database 
   return {
     name: DATABASE_FTS5_DOCUMENT_SEARCH_PROVIDER_NAME,
 
-    searchDocuments: async ({ searchQuery, organizationId, pageIndex, pageSize }) => {
-      const { documents, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize });
+    searchDocuments: async ({ searchQuery, organizationId, pageIndex, pageSize, sort }) => {
+      const { documents, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, sort });
 
       return {
         documents,
