@@ -210,7 +210,7 @@ export const DocumentsPage: Component = () => {
   }
 
   return (
-    <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
+    <div class="p-6 mt-4 pb-32">
       <Suspense>
         {documentsQuery.data?.documents?.length === 0 && debouncedSearchQuery().length === 0
           ? (
