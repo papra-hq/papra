@@ -261,6 +261,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         pageIndex = 0,
         pageSize = 5,
         searchQuery: rawSearchQuery = '',
+        sortField = 'createdAt',
+        sortOrder = 'desc',
       } = query ?? {};
 
       const organization = await organizationStorage.getItem(organizationId);
@@ -294,8 +296,32 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTagsAndProperties as unknown as Document[] });
 
+      const getSortValue = (document: Document) => {
+        if (sortField === 'name') {
+          return document.name?.toLowerCase() ?? '';
+        }
+        if (sortField === 'documentDate') {
+          return document.documentDate ? new Date(document.documentDate).getTime() : 0;
+        }
+        if (sortField === 'updatedAt') {
+          return document.updatedAt ? new Date(document.updatedAt).getTime() : 0;
+        }
+        return document.createdAt ? new Date(document.createdAt).getTime() : 0;
+      };
+
+      const sortDirection = sortOrder === 'asc' ? 1 : -1;
       const paginatedDocuments = filteredDocuments
-        .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .toSorted((a, b) => {
+          const av = getSortValue(a);
+          const bv = getSortValue(b);
+          if (av < bv) {
+            return -1 * sortDirection;
+          }
+          if (av > bv) {
+            return 1 * sortDirection;
+          }
+          return 0;
+        })
         .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
       return {

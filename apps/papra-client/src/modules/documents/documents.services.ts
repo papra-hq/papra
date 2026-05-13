@@ -1,4 +1,5 @@
 import type { AsDto } from '../shared/http/http-client.types';
+import type { DocumentSearchSortField, DocumentSearchSortOrder } from './documents.constants';
 import type { Document, DocumentActivity } from './documents.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates, getFormData } from '../shared/http/http-client.models';
@@ -26,11 +27,15 @@ export async function fetchOrganizationDocuments({
   pageIndex,
   pageSize,
   searchQuery,
+  sortField,
+  sortOrder,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
   searchQuery?: string;
+  sortField?: DocumentSearchSortField;
+  sortOrder?: DocumentSearchSortOrder;
 }) {
   const {
     documents,
@@ -45,6 +50,8 @@ export async function fetchOrganizationDocuments({
       searchQuery,
       pageIndex,
       pageSize,
+      sortField,
+      sortOrder,
     },
   });
 

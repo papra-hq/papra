@@ -1,6 +1,7 @@
-import type { RowSelectionState } from '@tanstack/solid-table';
-import type { Component } from 'solid-js';
+import type { RowSelectionState, SortingState } from '@tanstack/solid-table';
+import type { Component, Setter } from 'solid-js';
 import type { BatchTargetFilter } from '../documents-batch.services';
+import type { DocumentSearchSortField, DocumentSearchSortOrder } from '../documents.constants';
 import { useParams } from '@solidjs/router';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createEffect, createMemo, createSignal, on, Show, Suspense } from 'solid-js';
@@ -9,6 +10,7 @@ import { useConfirmModal } from '@/modules/shared/confirm';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { createParamSynchronizedSignal } from '@/modules/shared/signals/params';
+import { resolveSetterValue } from '@/modules/shared/signals/setters';
 import { cn } from '@/modules/shared/style/cn';
 import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
@@ -18,6 +20,12 @@ import { DocumentUploadArea } from '../components/document-upload-area.component
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
 import { batchTrashDocuments, batchUpdateDocumentTags } from '../documents-batch.services';
+import {
+  DEFAULT_DOCUMENT_SEARCH_SORT_FIELD,
+  DEFAULT_DOCUMENT_SEARCH_SORT_ORDER,
+  DOCUMENT_SEARCH_SORT_FIELDS,
+  DOCUMENT_SEARCH_SORT_ORDERS,
+} from '../documents.constants';
 import { fetchOrganizationDocuments } from '../documents.services';
 
 export const DocumentsPage: Component = () => {
@@ -31,11 +39,39 @@ export const DocumentsPage: Component = () => {
   const [getSelectAllMatchingQuery, setSelectAllMatchingQuery] = createSignal(false);
   const [getTagDialogOpen, setTagDialogOpen] = createSignal(false);
 
+  const [getSortField, setSortField] = createParamSynchronizedSignal<DocumentSearchSortField>({
+    paramKey: 'sortField',
+    defaultValue: DEFAULT_DOCUMENT_SEARCH_SORT_FIELD,
+    deserialize: value => (DOCUMENT_SEARCH_SORT_FIELDS.includes(value as DocumentSearchSortField) ? (value as DocumentSearchSortField) : DEFAULT_DOCUMENT_SEARCH_SORT_FIELD),
+  });
+  const [getSortOrder, setSortOrder] = createParamSynchronizedSignal<DocumentSearchSortOrder>({
+    paramKey: 'sortOrder',
+    defaultValue: DEFAULT_DOCUMENT_SEARCH_SORT_ORDER,
+    deserialize: value => (DOCUMENT_SEARCH_SORT_ORDERS.includes(value as DocumentSearchSortOrder) ? (value as DocumentSearchSortOrder) : DEFAULT_DOCUMENT_SEARCH_SORT_ORDER),
+  });
+
+  const getSorting = (): SortingState => [{ id: getSortField(), desc: getSortOrder() === 'desc' }];
+
+  const setSorting: Setter<SortingState> = (valueOrUpdater) => {
+    const next = resolveSetterValue(valueOrUpdater, getSorting());
+    const first = next[0];
+    if (!first) {
+      setSortField(DEFAULT_DOCUMENT_SEARCH_SORT_FIELD);
+      setSortOrder(DEFAULT_DOCUMENT_SEARCH_SORT_ORDER);
+      return next;
+    }
+    setSortField(first.id as DocumentSearchSortField);
+    setSortOrder(first.desc ? 'desc' : 'asc');
+    return next;
+  };
+
   const documentsQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'documents', getPagination(), debouncedSearchQuery()],
+    queryKey: ['organizations', params.organizationId, 'documents', getPagination(), debouncedSearchQuery(), getSortField(), getSortOrder()],
     queryFn: () => fetchOrganizationDocuments({
       organizationId: params.organizationId,
       searchQuery: debouncedSearchQuery(),
+      sortField: getSortField(),
+      sortOrder: getSortOrder(),
       ...getPagination(),
     }),
     placeholderData: keepPreviousData,
@@ -324,6 +360,8 @@ export const DocumentsPage: Component = () => {
                   enableBatchSelection
                   getRowSelection={getRowSelection}
                   setRowSelection={setRowSelection}
+                  getSorting={getSorting}
+                  setSorting={setSorting}
                   extraColumns={[
                     tagsColumn,
                     createdAtColumn,
