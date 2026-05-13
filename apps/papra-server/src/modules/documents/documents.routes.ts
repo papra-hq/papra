@@ -14,11 +14,12 @@ import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTagsRepository } from '../tags/tags.repository';
+import { DEFAULT_DOCUMENT_SEARCH_SORT } from './document-search/document-search.constants';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema, searchDocumentsQuerySchema, updateDocumentBodySchema } from './documents.schemas';
+import { documentIdSchema, documentSearchSortFieldSchema, documentSearchSortOrderSchema, searchDocumentsQuerySchema, updateDocumentBodySchema } from './documents.schemas';
 import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
@@ -265,6 +266,8 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
     validateQuery(
       v.strictObject({
         searchQuery: v.optional(searchDocumentsQuerySchema, ''),
+        sortField: v.optional(documentSearchSortFieldSchema, DEFAULT_DOCUMENT_SEARCH_SORT.field),
+        sortOrder: v.optional(documentSearchSortOrderSchema, DEFAULT_DOCUMENT_SEARCH_SORT.order),
         ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),
@@ -272,7 +275,7 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
       const { userId } = getUser({ context });
 
       const { organizationId } = context.req.valid('param');
-      const { searchQuery, pageIndex, pageSize } = context.req.valid('query');
+      const { searchQuery, pageIndex, pageSize, sortField, sortOrder } = context.req.valid('query');
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -280,7 +283,7 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents, documentsCount } = await searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, documentSearchServices });
+      const { documents, documentsCount } = await searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, sort: { field: sortField, order: sortOrder }, documentSearchServices });
       const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents, tagsRepository, customPropertiesRepository });
 
       return context.json({ documents: enrichedDocuments, documentsCount });

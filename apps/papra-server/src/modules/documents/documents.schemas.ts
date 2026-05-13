@@ -1,5 +1,6 @@
 import * as v from 'valibot';
 import { createRegexSchema } from '../shared/schemas/string.schemas';
+import { documentSearchSortFields, documentSearchSortOrders } from './document-search/document-search.constants';
 import { DOCUMENT_ID_REGEX, OCR_LANGUAGES } from './documents.constants';
 
 export const documentIdSchema = createRegexSchema(DOCUMENT_ID_REGEX);
@@ -24,3 +25,6 @@ export const stringCoercedOcrLanguagesSchema = v.pipe(
 );
 
 export const searchDocumentsQuerySchema = v.pipe(v.string(), v.maxLength(1024));
+
+export const documentSearchSortFieldSchema = v.picklist(documentSearchSortFields);
+export const documentSearchSortOrderSchema = v.picklist(documentSearchSortOrders);
