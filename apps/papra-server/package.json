@@ -77,7 +77,7 @@
     "nodemailer": "^7.0.3",
     "p-limit": "catalog:",
     "p-queue": "^8.1.0",
-    "picomatch": "^4.0.2",
+    "picomatch": "^4.0.4",
     "posthog-node": "^5.20.0",
     "resend": "^4.6.0",
     "stripe": "^17.7.0",
