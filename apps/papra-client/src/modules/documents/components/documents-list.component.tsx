@@ -1,4 +1,4 @@
-import type { ColumnDef, RowSelectionState } from '@tanstack/solid-table';
+import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/solid-table';
 import type { Accessor, Component, Setter } from 'solid-js';
 import type { Document } from '../documents.types';
 import type { Pagination } from '@/modules/shared/pagination/pagination.types';
@@ -54,6 +54,7 @@ export const createdAtColumn: ColumnDef<Document> = {
     return <span class="hidden sm:block">{t('documents.list.table.headers.created')}</span>;
   },
   accessorKey: 'createdAt',
+  enableSorting: true,
   cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
 };
 
@@ -72,6 +73,7 @@ export const standardActionsColumn: ColumnDef<Document> = {
     return <span class="block text-right">{t('documents.list.table.headers.actions')}</span>;
   },
   id: 'actions',
+  enableSorting: false,
   cell: data => (
     <div class="flex items-center justify-end">
       <DocumentManagementDropdown document={data.row.original} />
@@ -85,6 +87,7 @@ export const tagsColumn: ColumnDef<Document> = {
     return <span class="hidden sm:block">{t('documents.list.table.headers.tags')}</span>;
   },
   accessorKey: 'tags',
+  enableSorting: false,
   cell: data => (
     <DocumentTagsList
       tags={data.getValue<Tag[]>()}
@@ -107,6 +110,8 @@ export const DocumentsPaginatedList: Component<{
   enableBatchSelection?: boolean;
   getRowSelection?: Accessor<RowSelectionState>;
   setRowSelection?: Setter<RowSelectionState>;
+  getSorting?: Accessor<SortingState>;
+  setSorting?: Setter<SortingState>;
 }> = (props) => {
   const { t } = useI18n();
   const table = createSolidTable({
@@ -118,7 +123,9 @@ export const DocumentsPaginatedList: Component<{
       ...(props.enableBatchSelection ? [selectionColumn] : []),
       {
         header: () => t('documents.list.table.headers.file-name'),
-        id: 'fileName',
+        id: 'name',
+        accessorFn: row => row.name,
+        enableSorting: true,
         cell: data => (
           <div class="overflow-hidden flex gap-4 items-center max-w-500px">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
@@ -161,7 +168,9 @@ export const DocumentsPaginatedList: Component<{
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: props.setPagination,
     onRowSelectionChange: props.setRowSelection,
+    onSortingChange: props.setSorting,
     enableRowSelection: props.enableBatchSelection ?? false,
+    enableSorting: Boolean(props.setSorting),
     state: {
       get pagination() {
         return props.getPagination?.();
@@ -169,8 +178,12 @@ export const DocumentsPaginatedList: Component<{
       get rowSelection() {
         return props.getRowSelection?.() ?? {};
       },
+      get sorting() {
+        return props.getSorting?.() ?? [];
+      },
     },
     manualPagination: true,
+    manualSorting: true,
   });
 
   return (
@@ -186,12 +199,31 @@ export const DocumentsPaginatedList: Component<{
                       {(header) => {
                         return (
                           <TableHead>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
+                            <Show
+                              when={!header.isPlaceholder}
+                            >
+                              <Show
+                                when={header.column.getCanSort()}
+                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                              >
+                                <button
+                                  type="button"
+                                  class="flex items-center gap-1 cursor-pointer select-none"
+                                  onClick={header.column.getToggleSortingHandler()}
+                                >
+                                  {flexRender(header.column.columnDef.header, header.getContext())}
+                                  <Show when={header.column.getIsSorted() === 'asc'}>
+                                    <div class="i-tabler-arrow-up size-3.5" />
+                                  </Show>
+                                  <Show when={header.column.getIsSorted() === 'desc'}>
+                                    <div class="i-tabler-arrow-down size-3.5" />
+                                  </Show>
+                                  <Show when={!header.column.getIsSorted()}>
+                                    <div class="i-tabler-arrows-sort size-3.5 opacity-40" />
+                                  </Show>
+                                </button>
+                              </Show>
+                            </Show>
                           </TableHead>
                         );
                       }}
