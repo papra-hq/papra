@@ -12,5 +12,14 @@ export function isUniqueConstraintError({ error }: { error: unknown }): boolean 
     return true;
   }
 
-  return typeof message === 'string' && message.toLowerCase().includes('unique constraint failed');
+  if (typeof message === 'string' && message.toLowerCase().includes('unique constraint failed')) {
+    return true;
+  }
+
+  // Since drizzle-orm 0.44, driver errors are wrapped in DrizzleQueryError; the original error is on `.cause`.
+  if ('cause' in error) {
+    return isUniqueConstraintError({ error: error.cause });
+  }
+
+  return false;
 }
