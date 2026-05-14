@@ -88,6 +88,70 @@ docker run -d --name papra -p 1221:1221 -e AUTH_SECRET=a-dummy-secret-for-testin
 
 Please refer to the [self-hosting documentation](https://docs.papra.app/self-hosting/using-docker) for more information and configuration options.
 
+### Self-hosting with Docker Compose
+
+This repository ships with a ready-to-use [`docker-compose.yml`](./docker-compose.yml) plus a documented [`.env.example`](./.env.example) template. Configuration is loaded from a `.env` file that you create locally and that is **not** committed to git.
+
+> Docker Compose automatically reads a file named `.env` next to the compose file. Other names (e.g. `.env.prod`) are not picked up unless you pass `--env-file <path>` explicitly.
+
+#### 1. Prepare the environment file
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+At minimum, generate and set a secure `AUTH_SECRET`:
+
+```bash
+# Linux / macOS / Git Bash
+openssl rand -hex 48
+```
+
+```powershell
+# PowerShell
+-join ((1..96) | ForEach-Object { '{0:x}' -f (Get-Random -Max 16) })
+```
+
+Open `.env` and paste the generated secret as the value of `AUTH_SECRET`. Adjust `APP_BASE_URL` and `PAPRA_HOST_PORT` if needed (e.g. when running behind a reverse proxy or on a different port).
+
+> Want multiple environments? Keep e.g. `.env.staging` / `.env.prod` files locally and start the stack with `docker compose --env-file .env.prod up -d`.
+
+#### 2. Start the stack
+
+```bash
+docker compose up -d
+```
+
+Papra will be available at the `APP_BASE_URL` you configured (defaults to <http://localhost:1221>). Persistent data (database + uploaded documents) is stored in `./papra-data` next to the compose file.
+
+#### 3. Update Papra
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+#### 4. Stop / remove
+
+```bash
+docker compose down            # stop and remove the container, keep data
+docker compose down -v         # also remove anonymous volumes (data in ./papra-data is preserved on the host)
+```
+
+#### Available environment variables
+
+| Variable           | Required | Default                  | Purpose                                                                           |
+| ------------------ | -------- | ------------------------ | --------------------------------------------------------------------------------- |
+| `AUTH_SECRET`      | yes      | –                        | Secret used to sign auth tokens. Generate with `openssl rand -hex 48`.            |
+| `APP_BASE_URL`     | no       | `http://localhost:1221`  | Public base URL of the application (set this when using a reverse proxy/domain). |
+| `PAPRA_HOST_PORT`  | no       | `1221`                   | Host port published by Docker. The container always listens on `1221` internally. |
+
+Many more options (SMTP, OAuth providers, OCR languages, S3 storage, …) are described in [`.env.example`](./.env.example) and the [official configuration reference](https://docs.papra.app/self-hosting/configuration).
+
+> **Note:** `.env` contains secrets and is git-ignored. Never commit it.
+
 ## Contributing
 
 Contributions are welcome! Please refer to the [`CONTRIBUTING.md`](./CONTRIBUTING.md) file for guidelines on how to get started, report issues, and submit pull requests.

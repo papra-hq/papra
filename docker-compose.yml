@@ -1,0 +1,17 @@
+services:
+  papra:
+    image: ghcr.io/papra-hq/papra:latest
+    container_name: papra
+    restart: unless-stopped
+    # Configuration is read from the `.env` file in this directory
+    # (see .env.example for a documented template). Docker Compose
+    # automatically loads .env for ${VAR} interpolation below AND injects
+    # those variables into the container.
+    environment:
+      # Fail fast if AUTH_SECRET was not provided. Generate one with: openssl rand -hex 48
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET is required - set it in .env}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:1221}
+    ports:
+      - "${PAPRA_HOST_PORT:-1221}:1221"
+    volumes:
+      - ./papra-data:/app/app-data
