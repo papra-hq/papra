@@ -2,4 +2,4 @@
 "@papra/app": patch
 ---
 
-Updated pnpm to 10.33.0.
+Updated pnpm to v11
