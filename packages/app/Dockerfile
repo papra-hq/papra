@@ -35,6 +35,7 @@ WORKDIR /app
 
 COPY --from=build /prod/papra-server ./
 COPY --from=build /app/apps/papra-client/dist ./public
+COPY pnpm-workspace.yaml ./
 
 EXPOSE 1221
 

@@ -12,16 +12,16 @@ Dockerfile
 fly.toml
 
 .wrangler
-coverage
+**/coverage
 cache
 .zed
-*.vars
-*.db
-*.db-shm
-*.db-wal
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
+**/*.vars
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite-shm
+**/*.sqlite-wal
 
 .output
 .data
@@ -33,13 +33,14 @@ dist-app
 dist-node
 dist-cloudflare
 
-local-documents
-ingestion
-.cursorrules
-*.traineddata
+**/local-documents
+**/ingestion
 *.md
+**/*.traineddata
 
-.eslintcache
+
+.cursorrules
+**/.eslintcache
 .claude
 .opencode
 AGENTS.md
