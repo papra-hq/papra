@@ -45,6 +45,7 @@ USER nonroot
 
 COPY --from=build --chown=nonroot:nonroot /prod/papra-server ./
 COPY --from=build --chown=nonroot:nonroot /app/apps/papra-client/dist ./public
+COPY --chown=nonroot:nonroot pnpm-workspace.yaml ./
 
 EXPOSE 1221
 

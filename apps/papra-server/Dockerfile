@@ -50,6 +50,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/production /app
+COPY pnpm-workspace.yaml ./
 
 EXPOSE 1221
 
