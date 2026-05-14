@@ -1,9 +1,6 @@
 # Base stage with pnpm
-FROM node:24-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack prepare pnpm@10.33.0 --activate
+FROM node:26-slim AS base
+RUN npm install -g pnpm@10.33.0
 
 # Build stage
 FROM base AS build
