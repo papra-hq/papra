@@ -27,13 +27,17 @@ catalog:
   figue: ^3.2.0
   '@paralleldrive/cuid2': ^3.3.0
 
-ignoredBuiltDependencies:
-  - esbuild
-  - tesseract.js
-
 nodeLinker: hoisted
 
-onlyBuiltDependencies:
-  - canvas
-  - core-js
-  - sharp
+allowBuilds:
+  canvas: true
+  core-js: true
+  sharp: true
+  esbuild: true
+  tesseract.js: false
+  cpu-features: false
+  dtrace-provider: false
+  protobufjs: false
+  ssh2: false
+  unrs-resolver: false
+  workerd: false

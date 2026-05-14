@@ -1,6 +1,6 @@
 # Base stage with pnpm
 FROM node:26-slim AS base
-RUN npm install -g pnpm@10.33.0
+RUN npm install -g pnpm@11.1.1
 
 # Build stage
 FROM base AS build
