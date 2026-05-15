@@ -761,7 +761,7 @@ describe('documents usecases', () => {
       });
     });
 
-    test('when a document is trashed, a "document.trashed" event is triggered', async () => {
+    test('when a document is trashed, a "documents.trashed" event is triggered', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -793,9 +793,9 @@ describe('documents usecases', () => {
       expect(emittedEvents.length).to.eql(1);
       const { eventName, payload } = emittedEvents[0]!;
 
-      expect(eventName).to.eql('document.trashed');
+      expect(eventName).to.eql('documents.trashed');
       expect(payload).to.deep.include({
-        documentId: 'document-1',
+        documentIds: ['document-1'],
         organizationId: 'organization-1',
         trashedBy: 'user-1',
       });

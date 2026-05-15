@@ -9,9 +9,10 @@ import { registerSyncDocumentSearchEventHandlers } from './sync-document-search.
 function createTestSearchServices() {
   const methodsArgs = {
     searchDocuments: [] as Parameters<DocumentSearchServices['searchDocuments']>[0][],
-    indexDocument: [] as Parameters<DocumentSearchServices['indexDocument']>[0][],
-    updateDocument: [] as Parameters<DocumentSearchServices['updateDocument']>[0][],
-    deleteDocument: [] as Parameters<DocumentSearchServices['deleteDocument']>[0][],
+    getDocumentIdsMatchingQuery: [] as Parameters<DocumentSearchServices['getDocumentIdsMatchingQuery']>[0][],
+    indexDocuments: [] as Parameters<DocumentSearchServices['indexDocuments']>[0][],
+    updateDocuments: [] as Parameters<DocumentSearchServices['updateDocuments']>[0][],
+    deleteDocuments: [] as Parameters<DocumentSearchServices['deleteDocuments']>[0][],
   };
 
   const searchServices: DocumentSearchServices = {
@@ -20,14 +21,18 @@ function createTestSearchServices() {
       methodsArgs.searchDocuments.push(args);
       return { documents: [], documentsCount: 0 };
     },
-    indexDocument: async (args) => {
-      methodsArgs.indexDocument.push(args);
+    getDocumentIdsMatchingQuery: async (args) => {
+      methodsArgs.getDocumentIdsMatchingQuery.push(args);
+      return { documentIds: [] };
     },
-    updateDocument: async (args) => {
-      methodsArgs.updateDocument.push(args);
+    indexDocuments: async (args) => {
+      methodsArgs.indexDocuments.push(args);
     },
-    deleteDocument: async (args) => {
-      methodsArgs.deleteDocument.push(args);
+    updateDocuments: async (args) => {
+      methodsArgs.updateDocuments.push(args);
+    },
+    deleteDocuments: async (args) => {
+      methodsArgs.deleteDocuments.push(args);
     },
   };
 
@@ -77,9 +82,10 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [{ document }],
-        updateDocument: [],
-        deleteDocument: [],
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [{ documents: [document] }],
+        updateDocuments: [],
+        deleteDocuments: [],
       });
     });
 
@@ -126,16 +132,19 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [],
-        updateDocument: [{
-          documentId: 'doc-1',
-          document: changes,
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [],
+        updateDocuments: [{
+          updates: [{
+            documentId: 'doc-1',
+            document: changes,
+          }],
         }],
-        deleteDocument: [],
+        deleteDocuments: [],
       });
     });
 
-    test('when document.trashed event fires, the document is marked as deleted in the search service', async () => {
+    test('when documents.trashed event fires, the documents are marked as deleted in the search service', async () => {
       const eventServices = createEventServices({ logger: createNoopLogger() });
 
       const documentSearchServices = createTestSearchServices();
@@ -143,9 +152,9 @@ describe('sync-document-search event handlers', () => {
       registerSyncDocumentSearchEventHandlers({ eventServices, documentSearchServices });
 
       eventServices.emitEvent({
-        eventName: 'document.trashed',
+        eventName: 'documents.trashed',
         payload: {
-          documentId: 'doc-1',
+          documentIds: ['doc-1'],
           organizationId: 'organization-1',
           trashedBy: 'user-1',
         },
@@ -155,12 +164,15 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [],
-        updateDocument: [{
-          documentId: 'doc-1',
-          document: { isDeleted: true },
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [],
+        updateDocuments: [{
+          updates: [{
+            documentId: 'doc-1',
+            document: { isDeleted: true },
+          }],
         }],
-        deleteDocument: [],
+        deleteDocuments: [],
       });
     });
 
@@ -184,12 +196,15 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [],
-        updateDocument: [{
-          documentId: 'doc-1',
-          document: { isDeleted: false },
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [],
+        updateDocuments: [{
+          updates: [{
+            documentId: 'doc-1',
+            document: { isDeleted: false },
+          }],
         }],
-        deleteDocument: [],
+        deleteDocuments: [],
       });
     });
 
@@ -212,9 +227,10 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [],
-        updateDocument: [],
-        deleteDocument: [{ documentId: 'doc-1' }],
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [],
+        updateDocuments: [],
+        deleteDocuments: [{ documentIds: ['doc-1'] }],
       });
     });
 
@@ -263,9 +279,9 @@ describe('sync-document-search event handlers', () => {
       });
 
       eventServices.emitEvent({
-        eventName: 'document.trashed',
+        eventName: 'documents.trashed',
         payload: {
-          documentId: 'doc-1',
+          documentIds: ['doc-1'],
           organizationId: 'organization-1',
           trashedBy: 'user-1',
         },
@@ -292,22 +308,29 @@ describe('sync-document-search event handlers', () => {
 
       expect(documentSearchServices.getMethodsArguments()).to.eql({
         searchDocuments: [],
-        indexDocument: [{ document }],
-        updateDocument: [
+        getDocumentIdsMatchingQuery: [],
+        indexDocuments: [{ documents: [document] }],
+        updateDocuments: [
           {
-            documentId: 'doc-1',
-            document: { name: 'Updated Name' },
+            updates: [{
+              documentId: 'doc-1',
+              document: { name: 'Updated Name' },
+            }],
           },
           {
-            documentId: 'doc-1',
-            document: { isDeleted: true },
+            updates: [{
+              documentId: 'doc-1',
+              document: { isDeleted: true },
+            }],
           },
           {
-            documentId: 'doc-1',
-            document: { isDeleted: false },
+            updates: [{
+              documentId: 'doc-1',
+              document: { isDeleted: false },
+            }],
           },
         ],
-        deleteDocument: [{ documentId: 'doc-1' }],
+        deleteDocuments: [{ documentIds: ['doc-1'] }],
       });
     });
   });

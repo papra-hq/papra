@@ -1,15 +1,13 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import type { ApiKeyPermissions } from './api-keys.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { isNil } from '../shared/utils';
-import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
-import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createNotApiKeyAuthError } from './api-keys.errors';
 import { createApiKeysRepository } from './api-keys.repository';
-import { apiKeyIdSchema } from './api-keys.schemas.legacy';
+import { apiKeyIdSchema, apiKeyPermissionsSchema } from './api-keys.schemas';
 import { createApiKey } from './api-keys.usecases';
 
 export function registerApiKeysRoutes(context: RouteDefinitionContext) {
@@ -23,13 +21,13 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/api-keys',
     requireAuthentication(),
-    legacyValidateJsonBody(
-      z.object({
-        name: z.string(),
-        permissions: z.array(z.enum(API_KEY_PERMISSIONS_VALUES as [ApiKeyPermissions, ...ApiKeyPermissions[]])).min(1),
-        // organizationIds: z.array(z.string()).default([]),
-        // allOrganizations: z.boolean().default(false),
-        // expiresAt: z.date().optional(),
+    validateJsonBody(
+      v.strictObject({
+        name: v.string(),
+        permissions: apiKeyPermissionsSchema,
+        // organizationIds: v.optional(v.array(v.string()), []),
+        // allOrganizations: v.optional(v.boolean(), false),
+        // expiresAt: v.optional(v.date()),
       }),
     ),
     async (context) => {
@@ -121,7 +119,7 @@ function setupDeleteApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/api-keys/:apiKeyId',
     requireAuthentication(),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       apiKeyId: apiKeyIdSchema,
     })),
     async (context) => {

@@ -21,14 +21,15 @@
     "@astrojs/starlight": "^0.34.3",
     "@valibot/to-json-schema": "^1.6.0",
     "astro": "catalog:",
-    "sharp": "^0.32.5",
+    "sharp": "catalog:",
     "shiki": "^3.4.2",
     "starlight-links-validator": "^0.16.0",
     "starlight-theme-rapide": "^0.5.0",
     "tailwind-merge": "^2.6.0",
     "unocss-preset-animations": "catalog:",
     "valibot": "catalog:",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",

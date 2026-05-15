@@ -1,5 +1,5 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { API_KEY_PERMISSIONS } from '../api-keys/api-keys.constants';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
@@ -7,14 +7,14 @@ import { createDocumentActivityRepository } from '../documents/document-activity
 import { deferRegisterDocumentActivityLog } from '../documents/document-activity/document-activity.usecases';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { documentIdSchema } from '../documents/documents.schemas.legacy';
-import { organizationIdSchema } from '../organizations/organization.schemas.legacy';
+import { documentIdSchema } from '../documents/documents.schemas';
+import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
-import { legacyValidateJsonBody, legacyValidateParams } from '../shared/validation/validation.legacy';
+import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
-import { tagColorSchema, tagIdSchema } from './tags.schemas.legacy';
+import { tagColorSchema, tagDescriptionSchema, tagIdSchema, tagNameSchema } from './tags.schemas';
 import { addTagToDocument, createTag } from './tags.usecases';
 
 export function registerTagsRoutes(context: RouteDefinitionContext) {
@@ -30,16 +30,14 @@ function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-
-    legacyValidateJsonBody(z.object({
-      name: z.string().trim().min(1).max(50),
+    validateJsonBody(v.strictObject({
+      name: tagNameSchema,
       color: tagColorSchema,
-      description: z.string().trim().max(256).optional(),
+      description: v.optional(tagDescriptionSchema),
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -64,10 +62,9 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -91,17 +88,15 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
     })),
-
-    legacyValidateJsonBody(z.object({
-      name: z.string().trim().min(1).max(64).optional(),
-      color: tagColorSchema.optional(),
-      description: z.string().trim().max(256).optional(),
+    validateJsonBody(v.strictObject({
+      name: v.optional(tagNameSchema),
+      color: v.optional(tagColorSchema),
+      description: v.optional(tagDescriptionSchema),
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -113,7 +108,11 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { tag } = await tagsRepository.updateTag({ tagId, name, color, description });
+      const { tag } = await tagsRepository.updateTag({ tagId, organizationId, name, color, description });
+
+      if (!tag) {
+        throw createTagNotFoundError();
+      }
 
       return context.json({
         tag,
@@ -126,11 +125,10 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       tagId: tagIdSchema,
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -141,9 +139,9 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await tagsRepository.deleteTag({ tagId });
+      await tagsRepository.deleteTag({ tagId, organizationId });
 
-      return context.json({});
+      return context.body(null, 204);
     },
   );
 }
@@ -152,15 +150,13 @@ function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDe
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
-
-    legacyValidateJsonBody(z.object({
+    validateJsonBody(v.strictObject({
       tagId: tagIdSchema,
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -207,12 +203,11 @@ function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: Ro
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    legacyValidateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
       tagId: tagIdSchema,
     })),
-
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -243,7 +238,7 @@ function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: Ro
       webhookTriggerServices.deferTriggerWebhooks({
         organizationId,
         event: 'document:tag:removed',
-        payload: { documentId, organizationId, tagId, tagName: tag.name },
+        payloads: [{ documentId, organizationId, tagId, tagName: tag.name }],
       });
 
       deferRegisterDocumentActivityLog({

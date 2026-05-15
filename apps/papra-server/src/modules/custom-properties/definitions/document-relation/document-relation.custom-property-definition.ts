@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as v from 'valibot';
 import { createCustomPropertyRelatedDocumentNotFoundError } from '../../custom-properties.errors';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
 
@@ -7,7 +7,7 @@ export const documentRelationCustomPropertyDefinition = defineCustomPropertyType
 
   value: {
 
-    inputSchema: z.array(z.string()),
+    inputSchema: v.array(v.string()),
 
     extendInputValidation: async ({ value: documentIds, customProperty, documentsRepository }) => {
       const allDocumentsAreFromOrganization = await documentsRepository.areAllDocumentsInOrganization({

@@ -10,7 +10,6 @@ import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/compo
 import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { downloadFile } from '@/modules/shared/files/download';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { TagLink } from '@/modules/tags/components/tag.component';
 import { Alert } from '@/modules/ui/components/alert';
@@ -24,8 +23,8 @@ import { DocumentPreview } from '../components/document-preview.component';
 import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
 import { getDaysBeforePermanentDeletion, getDocumentActivityIcon, getDocumentOpenWithApps } from '../document.models';
-import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities, fetchDocumentFile } from '../documents.services';
+import { useDeleteDocument, useDownloadDocument, useRestoreDocument } from '../documents.composables';
+import { fetchDocument, fetchDocumentActivities } from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
@@ -127,6 +126,7 @@ export const DocumentPage: Component = () => {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { deleteDocument } = useDeleteDocument();
+  const { downloadDocument } = useDownloadDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
@@ -149,11 +149,6 @@ export const DocumentPage: Component = () => {
   const documentQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
     queryFn: () => fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
-  }));
-
-  const documentFileQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
-    queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
   const customPropertyDefinitionsQuery = useQuery(() => ({
@@ -203,8 +198,6 @@ export const DocumentPage: Component = () => {
     navigate(`/organizations/${params.organizationId}/documents`);
   };
 
-  const getDataUrl = () => documentFileQuery.data ? URL.createObjectURL(documentFileQuery.data) : undefined;
-
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
@@ -232,12 +225,12 @@ export const DocumentPage: Component = () => {
 
                   <div class="flex gap-2 mb-2">
                     <Button
-                      onClick={() => downloadFile({ fileName: getDocument().name, url: getDataUrl()! })}
+                      onClick={() => downloadDocument({ organizationId: getDocument().organizationId, documentId: getDocument().id })}
                       variant="outline"
                       size="sm"
                     >
                       <div class="i-tabler-download size-4 mr-2" />
-                      {t('documents.actions.download')}
+                      {t('documents.actions.download.title')}
                     </Button>
 
                     <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />

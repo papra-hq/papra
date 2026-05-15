@@ -4,7 +4,7 @@ import type { OrganizationsRepository } from '../../organizations/organizations.
 import type { CustomPropertiesRepository } from '../custom-properties.repository';
 import type { CustomPropertyDefinition, DbInsertableDocumentCustomPropertyValue } from '../custom-properties.types';
 import type { CustomPropertiesOptionsRepository } from '../options/custom-properties-options.repository';
-import z from 'zod';
+import * as v from 'valibot';
 import { isNil } from '../../shared/utils';
 import { customPropertyDefinitionDescriptionSchema, customPropertyDefinitionDisplayOrderSchema, customPropertyDefinitionNameSchema } from './custom-property-definition.schema';
 
@@ -51,19 +51,19 @@ type BaseCreateFields<TypeName extends string> = {
   displayOrder?: number;
 };
 
-type BaseUpdateFields = {
+export type BaseUpdateFields = {
   name?: string;
   description?: string | null;
   displayOrder?: number;
 };
 
-type InferExtraFields<T> = T extends z.ZodType<infer U> ? U : Record<string, never>;
+type InferExtraFields<T> = T extends v.GenericSchema ? v.InferOutput<T> : Record<string, never>;
 
 export type CustomPropertyTypeDefinitionInput<
   TypeName extends string = string,
   ValueInput = unknown,
-  CreateExtraSchema extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined = undefined,
-  UpdateExtraSchema extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined = undefined,
+  CreateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
+  UpdateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
 > = {
   typeName: TypeName;
 
@@ -88,7 +88,7 @@ export type CustomPropertyTypeDefinitionInput<
   };
 
   value: {
-    inputSchema: z.ZodType<ValueInput, z.ZodTypeDef, unknown>;
+    inputSchema: v.BaseSchema<unknown, ValueInput, v.BaseIssue<unknown>>;
 
     extendInputValidation?: (args: {
       value: ValueInput;
@@ -112,10 +112,10 @@ export type CustomPropertyTypeDefinitionInput<
 export type CustomPropertyTypeDefinition = {
   typeName: string;
   definition: {
-    createExtraSchema?: z.ZodObject<Record<string, z.ZodTypeAny>>;
-    updateExtraSchema?: z.ZodObject<Record<string, z.ZodTypeAny>>;
-    createPropertySchema: z.ZodType<BaseCreateFields<string>>;
-    updatePropertySchema: z.ZodType<BaseUpdateFields>;
+    createExtraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>;
+    updateExtraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>;
+    createPropertySchema: v.GenericSchema;
+    updatePropertySchema: v.GenericSchema;
     onCreate?: (args: {
       apiInput: BaseCreateFields<string> & Record<string, unknown>;
       propertyDefinition: CustomPropertyDefinition;
@@ -130,7 +130,7 @@ export type CustomPropertyTypeDefinition = {
     }) => Promise<void>;
   };
   value: {
-    inputSchema: z.ZodType<unknown, z.ZodTypeDef, unknown>;
+    inputSchema: v.GenericSchema;
     extendInputValidation?: (args: {
       value: unknown;
       customProperty: CustomPropertyDefinition;
@@ -146,46 +146,46 @@ export type CustomPropertyTypeDefinition = {
 
 // Conditional types that properly resolve the schema shape based on whether extra schemas are provided.
 // This concentrates type assertions in defineCustomPropertyType so all consumer code is cast-free.
-const baseCreatePropertySchema = z.object({
+const baseCreatePropertySchema = v.object({
   name: customPropertyDefinitionNameSchema,
-  description: customPropertyDefinitionDescriptionSchema.optional(),
-  displayOrder: customPropertyDefinitionDisplayOrderSchema.optional(),
+  description: v.optional(customPropertyDefinitionDescriptionSchema),
+  displayOrder: v.optional(customPropertyDefinitionDisplayOrderSchema),
 });
 
-const baseUpdatePropertySchema = z.object({
-  name: customPropertyDefinitionNameSchema.optional(),
-  description: customPropertyDefinitionDescriptionSchema.nullable().optional(),
-  displayOrder: customPropertyDefinitionDisplayOrderSchema.optional(),
+const baseUpdatePropertySchema = v.object({
+  name: v.optional(customPropertyDefinitionNameSchema),
+  description: v.optional(v.nullable(customPropertyDefinitionDescriptionSchema)),
+  displayOrder: v.optional(customPropertyDefinitionDisplayOrderSchema),
 });
 
-type BaseCreateSchemaShape = typeof baseCreatePropertySchema.shape;
-type BaseUpdateSchemaShape = typeof baseUpdatePropertySchema.shape;
+type BaseCreateEntries = typeof baseCreatePropertySchema.entries;
+type BaseUpdateEntries = typeof baseUpdatePropertySchema.entries;
 
-type CreatePropertySchemaFor<T extends string, Extra extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined>
-  = Extra extends z.ZodObject<infer E extends z.ZodRawShape>
-    ? z.ZodObject<{ type: z.ZodLiteral<T> } & BaseCreateSchemaShape & E>
-    : z.ZodObject<{ type: z.ZodLiteral<T> } & BaseCreateSchemaShape>;
+type CreatePropertySchemaFor<T extends string, Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined>
+  = Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
+    ? v.ObjectSchema<{ type: v.LiteralSchema<T, undefined> } & BaseCreateEntries & E, undefined>
+    : v.ObjectSchema<{ type: v.LiteralSchema<T, undefined> } & BaseCreateEntries, undefined>;
 
-type UpdatePropertySchemaFor<Extra extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined>
-  = Extra extends z.ZodObject<infer E extends z.ZodRawShape>
-    ? z.ZodObject<BaseUpdateSchemaShape & E>
-    : z.ZodObject<BaseUpdateSchemaShape>;
+type UpdatePropertySchemaFor<Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined>
+  = Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
+    ? v.ObjectSchema<BaseUpdateEntries & E, undefined>
+    : v.ObjectSchema<BaseUpdateEntries, undefined>;
 
-function buildCreatePropertySchema(typeName: string, extraSchema?: z.ZodObject<z.ZodRawShape>) {
-  const schema = baseCreatePropertySchema.extend({ type: z.literal(typeName) });
+function buildCreatePropertySchema(typeName: string, extraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>) {
+  const schema = v.object({ type: v.literal(typeName), ...baseCreatePropertySchema.entries });
 
-  return extraSchema ? schema.merge(extraSchema) : schema;
+  return extraSchema ? v.object({ ...schema.entries, ...extraSchema.entries }) : schema;
 }
 
-function buildUpdatePropertySchema(extraSchema?: z.ZodObject<z.ZodRawShape>) {
-  return extraSchema ? baseUpdatePropertySchema.merge(extraSchema) : baseUpdatePropertySchema;
+function buildUpdatePropertySchema(extraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>) {
+  return extraSchema ? v.object({ ...baseUpdatePropertySchema.entries, ...extraSchema.entries }) : baseUpdatePropertySchema;
 }
 
 export function defineCustomPropertyType<
   TypeName extends string,
   ValueInput,
-  CreateExtraSchema extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined = undefined,
-  UpdateExtraSchema extends z.ZodObject<Record<string, z.ZodTypeAny>> | undefined = undefined,
+  CreateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
+  UpdateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
 >(config: CustomPropertyTypeDefinitionInput<TypeName, ValueInput, CreateExtraSchema, UpdateExtraSchema>) {
   return {
     ...config,

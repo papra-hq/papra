@@ -15,11 +15,11 @@ export function registerTriggerWebhooksOnDocumentUpdatedHandler({
       await webhookTriggerServices.triggerWebhooks({
         organizationId: document.organizationId,
         event: 'document:updated',
-        payload: {
+        payloads: [{
           documentId: document.id,
           organizationId: document.organizationId,
           ...changes,
-        },
+        }],
       });
     },
   });

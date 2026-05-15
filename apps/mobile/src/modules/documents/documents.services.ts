@@ -30,7 +30,7 @@ export async function uploadDocument({
         uri: file.uri,
         // to avoid %20 in file name it is issue in react native that upload file name replaces spaces with %20
         name: file.name.replace(/ /g, '_'),
-        type: file.type ?? 'application/json',
+        type: file.type ?? 'application/octet-stream',
       },
     }),
   });
@@ -117,7 +117,7 @@ export async function fetchDocumentFile({
   const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
   const headers = {
     'Cookie': cookies,
-    'Content-Type': 'application/json',
+    'Content-Type': document.mimeType,
   };
   // Use cacheDirectory for better app compatibility
   const fileUri = `${FileSystem.cacheDirectory}${document.name}`;

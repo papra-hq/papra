@@ -1,7 +1,7 @@
 import type { User } from 'better-auth';
 import type { EmailsServices } from '../../emails/emails.services';
 import { injectArguments } from '@corentinth/chisels';
-import { sanitize } from '../../shared/html/html';
+import { escapeHtml } from '../../shared/html/html';
 import { createLogger } from '../../shared/logger/logger';
 
 const logger = createLogger({ namespace: 'auth.emails.services' });
@@ -25,7 +25,7 @@ export async function sendVerificationEmail({ user, url, emailsServices }: { use
     to: user.email,
     subject: 'Verify your email',
     html: `
-<p>Hello ${sanitize(user.name)},</p>
+<p>Hello ${escapeHtml(user.name)},</p>
 <p>Verify your email by clicking <a href="${url}">here</a></p>
 <p>Or by pasting the following link into your browser: ${url}</p>
 <p style="color: #888;">Best regards,</p>
@@ -41,7 +41,7 @@ export async function sendPasswordResetEmail({ user, url, emailsServices }: { us
     to: user.email,
     subject: 'Reset your password',
     html: `
-<p>Hello ${sanitize(user.name)},</p>
+<p>Hello ${escapeHtml(user.name)},</p>
 <p>Reset your password by clicking <a href="${url}">here</a></p>
 <p>Or by pasting the following link into your browser: ${url}</p>
 <p style="color: #888;">Best regards,</p>

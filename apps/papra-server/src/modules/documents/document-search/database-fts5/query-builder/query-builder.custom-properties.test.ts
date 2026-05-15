@@ -1,24 +1,12 @@
-import type { SQL } from 'drizzle-orm';
 import type { CustomPropertyDefinition } from './query-builder.custom-properties';
-import { SQLiteSyncDialect } from 'drizzle-orm/sqlite-core';
 import { describe, expect, test } from 'vitest';
+import { stringifySqlQuery } from '../../../../app/database/database.models';
 import { createInMemoryDatabase } from '../../../../app/database/database.test-utils';
 import { handleCustomPropertyFilter, handleHasCustomPropertyFilter } from './query-builder.custom-properties';
 
 describe('query-builder - custom properties', async () => {
   const { db } = await createInMemoryDatabase();
-  const sqliteDialect = new SQLiteSyncDialect();
   const now = new Date('2025-06-15');
-
-  const getSqlString = (query?: SQL) => {
-    if (!query) {
-      return { sql: '', params: [] };
-    }
-
-    const { sql, params } = sqliteDialect.sqlToQuery(query);
-
-    return { sql, params };
-  };
 
   function makeDefinition(overrides: Partial<CustomPropertyDefinition> = {}): CustomPropertyDefinition {
     return {
@@ -46,8 +34,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" = ?))`,
         params: ['cpd_1', 1],
       });
     });
@@ -61,8 +49,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" = ?))`,
         params: ['cpd_1', 0],
       });
     });
@@ -91,7 +79,7 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery).params[1]).to.equal(expected);
+      expect(stringifySqlQuery(sqlQuery).params[1]).to.equal(expected);
     });
 
     test('warranty:maybe returns an INVALID_BOOLEAN_VALUE issue and a no-match query', () => {
@@ -106,7 +94,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Invalid boolean value "maybe" for warranty filter. Expected one of: true, yes, y, 1, on, enabled, false, no, n, 0, off, disabled',
         code: 'INVALID_BOOLEAN_VALUE',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
 
     test('warranty:>true returns an UNSUPPORTED_FILTER_OPERATOR issue for non-equality operators', () => {
@@ -121,7 +109,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Unsupported operator ">" for warranty filter',
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -135,8 +123,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."text_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."text_value" = ?))`,
         params: ['cpd_2', 'invoice'],
       });
     });
@@ -153,7 +141,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Unsupported operator ">" for category filter',
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -167,8 +155,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" = ?))`,
         params: ['cpd_3', 100],
       });
     });
@@ -182,8 +170,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" > ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" > ?))`,
         params: ['cpd_3', 100],
       });
     });
@@ -197,8 +185,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" >= ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" >= ?))`,
         params: ['cpd_3', 100],
       });
     });
@@ -212,8 +200,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" < ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" < ?))`,
         params: ['cpd_3', 100],
       });
     });
@@ -227,8 +215,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" <= ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."number_value" <= ?))`,
         params: ['cpd_3', 100],
       });
     });
@@ -245,7 +233,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Invalid number value "notanumber" for amount filter. Expected a numeric value.',
         code: 'INVALID_NUMBER_VALUE',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -259,8 +247,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
         params: ['cpd_4', 1735689600000],
       });
     });
@@ -274,8 +262,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" > ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" > ?))`,
         params: ['cpd_4', 1735689600000],
       });
     });
@@ -289,8 +277,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."date_value" = ?))`,
         params: ['cpd_4', now.getTime()],
       });
     });
@@ -307,7 +295,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Invalid date format for expiry filter: "not-a-date". Expected a valid date string.',
         code: 'INVALID_DATE_FORMAT',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -321,8 +309,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" inner join "custom_property_select_options" on "document_custom_property_values"."select_option_id" = "custom_property_select_options"."id" where ("document_custom_property_values"."property_definition_id" = ? and "custom_property_select_options"."key" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" inner join "custom_property_select_options" on "document_custom_property_values"."select_option_id" = "custom_property_select_options"."id" where ("document_custom_property_values"."property_definition_id" = ? and "custom_property_select_options"."key" = ?))`,
         params: ['cpd_5', 'approved'],
       });
     });
@@ -339,7 +327,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Unsupported operator ">" for status filter',
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -353,8 +341,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" inner join "custom_property_select_options" on "document_custom_property_values"."select_option_id" = "custom_property_select_options"."id" where ("document_custom_property_values"."property_definition_id" = ? and "custom_property_select_options"."key" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" inner join "custom_property_select_options" on "document_custom_property_values"."select_option_id" = "custom_property_select_options"."id" where ("document_custom_property_values"."property_definition_id" = ? and "custom_property_select_options"."key" = ?))`,
         params: ['cpd_6', 'urgent'],
       });
     });
@@ -370,8 +358,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" left join "users" on "document_custom_property_values"."user_id" = "users"."id" where ("document_custom_property_values"."property_definition_id" = ? and ("document_custom_property_values"."user_id" = ? or "users"."email" = ? or "users"."name" = ?)))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" left join "users" on "document_custom_property_values"."user_id" = "users"."id" where ("document_custom_property_values"."property_definition_id" = ? and ("document_custom_property_values"."user_id" = ? or "users"."email" = ? or "users"."name" = ?)))`,
         params: ['cpd_7', 'usr_1', 'usr_1', 'usr_1'],
       });
     });
@@ -385,8 +373,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" left join "users" on "document_custom_property_values"."user_id" = "users"."id" where ("document_custom_property_values"."property_definition_id" = ? and ("document_custom_property_values"."user_id" = ? or "users"."email" = ? or "users"."name" = ?)))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_custom_property_values"."document_id" from "document_custom_property_values" left join "users" on "document_custom_property_values"."user_id" = "users"."id" where ("document_custom_property_values"."property_definition_id" = ? and ("document_custom_property_values"."user_id" = ? or "users"."email" = ? or "users"."name" = ?)))`,
         params: ['cpd_7', 'user@example.com', 'user@example.com', 'user@example.com'],
       });
     });
@@ -403,7 +391,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Unsupported operator ">" for assignee filter',
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -417,8 +405,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."related_document_id" = ?))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."related_document_id" = ?))`,
         params: ['cpd_8', 'doc_1'],
       });
     });
@@ -435,7 +423,7 @@ describe('query-builder - custom properties', async () => {
         message: 'Unsupported operator ">" for related filter',
         code: 'UNSUPPORTED_FILTER_OPERATOR',
       }]);
-      expect(getSqlString(sqlQuery)).to.eql({ sql: '0', params: [] });
+      expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
 
@@ -447,8 +435,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" is not null))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."boolean_value" is not null))`,
         params: ['cpd_1'],
       });
     });
@@ -460,8 +448,8 @@ describe('query-builder - custom properties', async () => {
       });
 
       expect(issues).to.eql([]);
-      expect(getSqlString(sqlQuery)).to.eql({
-        sql: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."text_value" is not null))`,
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."id" in (select "document_id" from "document_custom_property_values" where ("document_custom_property_values"."property_definition_id" = ? and "document_custom_property_values"."text_value" is not null))`,
         params: ['cpd_2'],
       });
     });

@@ -13,6 +13,7 @@ export function createClient({ apiKey, apiBaseUrl = PAPRA_API_URL }: { apiKey: s
   const methods = injectArguments(
     {
       uploadDocument,
+      trashDocumentsBatch,
       listOrganizations,
       listTags,
       createTag,
@@ -40,6 +41,24 @@ async function uploadDocument({
     method: 'POST',
     body: formData,
   });
+}
+
+async function trashDocumentsBatch({
+  organizationId,
+  filter,
+  apiClient,
+}: {
+  organizationId: string;
+  filter: { documentIds: string[] } | { query: string };
+  apiClient: ApiClient;
+}) {
+  return await apiClient<{ trashedDocumentIds: string[]; trashedCount: number }>(
+    `/api/organizations/${organizationId}/documents/batch/trash`,
+    {
+      method: 'POST',
+      body: { filter },
+    },
+  );
 }
 
 async function listOrganizations({ apiClient }: { apiClient: ApiClient }) {

@@ -124,6 +124,48 @@ function buildCustomPropertiesResponse({
     }));
 }
 
+async function resolveBatchTargetDocumentIds({
+  filter,
+  organizationId,
+}: {
+  filter: { documentIds: string[] } | { query: string };
+  organizationId: string;
+}): Promise<string[]> {
+  if ('documentIds' in filter) {
+    const documents = await Promise.all(
+      filter.documentIds.map(id => documentStorage.getItem(`${organizationId}:${id}`)),
+    );
+
+    assert(documents.every(doc => doc?.organizationId === organizationId), { status: 403 });
+
+    return filter.documentIds;
+  }
+
+  const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
+    findMany(documentStorage, document => document?.organizationId === organizationId && !document?.deletedAt),
+    getValues(tagStorage),
+    getValues(tagDocumentStorage),
+    findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
+    getValues(documentCustomPropertyValueStorage),
+  ]);
+
+  const documentsWithTagsAndProperties = organizationDocuments.map((document) => {
+    const documentTagDocuments = tagDocuments.filter(tagDocument => tagDocument?.documentId === document?.id);
+    const tags = allTags.filter(tag => documentTagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
+
+    const customProperties = buildCustomPropertiesResponse({
+      definitions: allDefinitions,
+      storedValues: allPropertyValues,
+      documentId: document.id,
+    });
+
+    return { ...document, tags, customProperties };
+  });
+
+  return searchDemoDocuments({ query: filter.query, documents: documentsWithTagsAndProperties as unknown as Document[] })
+    .map(document => document.id);
+}
+
 const inMemoryApiMock: Record<string, { handler: any }> = {
   ...defineHandler({
     path: '/api/config',
@@ -219,6 +261,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         pageIndex = 0,
         pageSize = 5,
         searchQuery: rawSearchQuery = '',
+        sortField = 'createdAt',
+        sortOrder = 'desc',
       } = query ?? {};
 
       const organization = await organizationStorage.getItem(organizationId);
@@ -252,8 +296,32 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTagsAndProperties as unknown as Document[] });
 
+      const getSortValue = (document: Document) => {
+        if (sortField === 'name') {
+          return document.name?.toLowerCase() ?? '';
+        }
+        if (sortField === 'documentDate') {
+          return document.documentDate ? new Date(document.documentDate).getTime() : 0;
+        }
+        if (sortField === 'updatedAt') {
+          return document.updatedAt ? new Date(document.updatedAt).getTime() : 0;
+        }
+        return document.createdAt ? new Date(document.createdAt).getTime() : 0;
+      };
+
+      const sortDirection = sortOrder === 'asc' ? 1 : -1;
       const paginatedDocuments = filteredDocuments
-        .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .toSorted((a, b) => {
+          const av = getSortValue(a);
+          const bv = getSortValue(b);
+          if (av < bv) {
+            return -1 * sortDirection;
+          }
+          if (av > bv) {
+            return 1 * sortDirection;
+          }
+          return 0;
+        })
         .slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
       return {
@@ -637,6 +705,111 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await taggingRuleStorage.setItem(taggingRuleId, Object.assign(taggingRule, body, { updatedAt: new Date() }));
 
       return { taggingRule };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/batch/trash',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+      assert(organization, { status: 403 });
+
+      const filter = get(body, ['filter']) as { documentIds: string[] } | { query: string };
+      assert(filter, { status: 400 });
+
+      const documentIds = await resolveBatchTargetDocumentIds({ filter, organizationId });
+
+      const now = new Date();
+      const trashedDocumentIds: string[] = [];
+
+      await Promise.all(documentIds.map(async (documentId) => {
+        const key = `${organizationId}:${documentId}`;
+        const document = await documentStorage.getItem(key);
+
+        if (!document || document.deletedAt) {
+          return;
+        }
+
+        document.deletedAt = now;
+        document.updatedAt = now;
+        document.deletedBy = 'usr_1';
+
+        await documentStorage.setItem(key, document);
+        trashedDocumentIds.push(documentId);
+      }));
+
+      return { trashedDocumentIds, trashedCount: trashedDocumentIds.length };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/batch/tags',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+      assert(organization, { status: 403 });
+
+      const filter = get(body, ['filter']) as { documentIds: string[] } | { query: string };
+      const addTagIds = (get(body, ['addTagIds']) ?? []) as string[];
+      const removeTagIds = (get(body, ['removeTagIds']) ?? []) as string[];
+
+      assert(filter, { status: 400 });
+      assert(addTagIds.length + removeTagIds.length > 0, { status: 400 });
+
+      const requestedTagIds = [...new Set([...addTagIds, ...removeTagIds])];
+      const requestedTags = await Promise.all(requestedTagIds.map(id => tagStorage.getItem(id)));
+
+      assert(
+        requestedTags.every(tag => tag?.organizationId === organizationId),
+        { status: 404, message: 'Tag not found' },
+      );
+
+      const documentIds = await resolveBatchTargetDocumentIds({ filter, organizationId });
+
+      if (documentIds.length === 0) {
+        return { taggedCount: 0, untaggedCount: 0, insertedPairs: [], removedPairs: [] };
+      }
+
+      const existingTagDocuments = await getValues(tagDocumentStorage);
+      const insertedPairs: { documentId: string; tagId: string }[] = [];
+      const removedPairs: { documentId: string; tagId: string }[] = [];
+
+      for (const documentId of documentIds) {
+        for (const tagId of addTagIds) {
+          const alreadyExists = existingTagDocuments.some(td => td.documentId === documentId && td.tagId === tagId);
+          if (alreadyExists) {
+            continue;
+          }
+
+          const tagDocument = {
+            id: createId({ prefix: 'tagDoc' }),
+            tagId,
+            documentId,
+            createdAt: new Date(),
+          };
+
+          await tagDocumentStorage.setItem(tagDocument.id, tagDocument);
+          insertedPairs.push({ documentId, tagId });
+        }
+
+        for (const tagId of removeTagIds) {
+          const toRemove = existingTagDocuments.filter(td => td.documentId === documentId && td.tagId === tagId);
+
+          await Promise.all(toRemove.map(td => tagDocumentStorage.removeItem(td.id)));
+
+          if (toRemove.length > 0) {
+            removedPairs.push({ documentId, tagId });
+          }
+        }
+      }
+
+      return {
+        taggedCount: insertedPairs.length,
+        untaggedCount: removedPairs.length,
+        insertedPairs,
+        removedPairs,
+      };
     },
   }),
 

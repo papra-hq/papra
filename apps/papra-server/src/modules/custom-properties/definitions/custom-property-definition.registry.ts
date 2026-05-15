@@ -1,5 +1,5 @@
 import type { CustomPropertyTypeDefinition } from './custom-property-definition.models';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { createError } from '../../shared/errors/errors';
 import { booleanCustomPropertyDefinition } from './boolean/boolean.custom-property-definition';
 import { dateCustomPropertyDefinition } from './date/date.custom-property-definition';
@@ -39,16 +39,6 @@ export function getCustomPropertyTypeDefinition({ type }: { type: string }) {
   return definition;
 }
 
-// Build schemas as explicit tuples so TypeScript preserves individual types for the discriminated union
-export const createPropertyDefinitionBodySchema = z.discriminatedUnion('type', [
-  textCustomPropertyDefinition.definition.createPropertySchema,
-  numberCustomPropertyDefinition.definition.createPropertySchema,
-  dateCustomPropertyDefinition.definition.createPropertySchema,
-  booleanCustomPropertyDefinition.definition.createPropertySchema,
-  selectCustomPropertyDefinition.definition.createPropertySchema,
-  multiSelectCustomPropertyDefinition.definition.createPropertySchema,
-  userRelationCustomPropertyDefinition.definition.createPropertySchema,
-  documentRelationCustomPropertyDefinition.definition.createPropertySchema,
-]);
+export const createPropertyDefinitionBodySchema = v.variant('type', customPropertyDefinitions.map(def => def.definition.createPropertySchema));
 
-export type CreatePropertyDefinition = z.infer<typeof createPropertyDefinitionBodySchema>;
+export type CreatePropertyDefinition = v.InferOutput<typeof createPropertyDefinitionBodySchema>;

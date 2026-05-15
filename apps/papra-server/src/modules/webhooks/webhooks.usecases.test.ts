@@ -164,16 +164,18 @@ describe('webhook usecases', () => {
   });
 
   describe('triggerWebhooks', () => {
-    test('when SSRF protection is enabled, triggering a webhook with a private IP URL does not call the webhook service', async () => {
+    test('when SSRF protection is enabled, webhooks with unsafe URLs are filtered out and others still receive the event', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
           { id: 'org_1', name: 'Organization 1' },
         ],
         webhooks: [
-          { id: 'wbh_1', name: 'Test Webhook', url: 'https://192.168.1.1/webhook', organizationId: 'org_1', enabled: true },
+          { id: 'wbh_1', name: 'Unsafe Webhook', url: 'https://192.168.1.1/webhook', organizationId: 'org_1', enabled: true },
+          { id: 'wbh_2', name: 'Safe Webhook', url: 'https://example.com/webhook', organizationId: 'org_1', enabled: true },
         ],
         webhookEvents: [
           { id: 'wbh_ev_1', webhookId: 'wbh_1', eventName: 'document:created' },
+          { id: 'wbh_ev_2', webhookId: 'wbh_2', eventName: 'document:created' },
         ],
       });
 
@@ -181,17 +183,17 @@ describe('webhook usecases', () => {
       const { logger } = createTestLogger();
       const triggerWebhookServiceArgs: unknown[] = [];
 
-      await expect(triggerWebhooks({
+      await triggerWebhooks({
         webhookRepository,
         organizationId: 'org_1',
         event: 'document:created',
-        payload: {
+        payloads: [{
           documentId: 'doc_1',
           organizationId: 'org_1',
           name: 'Document 1',
           createdAt: new Date('2025-01-01'),
           updatedAt: new Date('2025-01-01'),
-        },
+        }],
         logger,
         triggerWebhookService: async (args) => {
           triggerWebhookServiceArgs.push(args);
@@ -201,9 +203,10 @@ describe('webhook usecases', () => {
           isSsrfProtectionEnabled: true,
           webhookUrlAllowedHostnames: new Set<string>(),
         },
-      })).rejects.toThrow('The provided URL is not safe to perform requests to');
+      });
 
-      expect(triggerWebhookServiceArgs).to.eql([]);
+      expect(triggerWebhookServiceArgs).to.have.lengthOf(1);
+      expect((triggerWebhookServiceArgs[0] as { webhookUrl: string }).webhookUrl).to.eql('https://example.com/webhook');
     });
 
     test('when an organization has webhooks enabled for an event, the configured urls are called with the event payload', async () => {
@@ -249,7 +252,7 @@ describe('webhook usecases', () => {
         webhookRepository,
         organizationId: 'org_1',
         event: 'document:created',
-        payload: eventPayload,
+        payloads: [eventPayload],
         logger,
         now: new Date('2025-05-04'),
         triggerWebhookService: async (args) => {

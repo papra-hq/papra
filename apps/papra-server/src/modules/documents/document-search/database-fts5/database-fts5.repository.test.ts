@@ -19,9 +19,7 @@ describe('database-fts5 repository', () => {
 
       const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
+      await documentsSearchRepository.indexDocuments({ documents });
 
       const { documents: searchResults } = await documentsSearchRepository.searchOrganizationDocuments({
         organizationId: 'org_1',
@@ -48,9 +46,7 @@ describe('database-fts5 repository', () => {
 
       const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
+      await documentsSearchRepository.indexDocuments({ documents });
 
       const { documents: searchResults1 } = await documentsSearchRepository.searchOrganizationDocuments({
         organizationId: 'org_1',
@@ -94,9 +90,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documentsCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -149,9 +143,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documentsCount, documents: searchDocuments } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -187,9 +179,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: firstPageDocuments, documentsCount: firstTotalCount } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -241,9 +231,7 @@ describe('database-fts5 repository', () => {
         });
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: firstPageDocuments, documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -284,9 +272,7 @@ describe('database-fts5 repository', () => {
 
       const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
+      await documentsSearchRepository.indexDocuments({ documents });
 
       const searches = [
         {
@@ -388,9 +374,7 @@ describe('database-fts5 repository', () => {
       const documentsSearchRepository = createDocumentSearchRepository({ db });
 
       // Index all documents from both organizations
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
+      await documentsSearchRepository.indexDocuments({ documents });
 
       // Search in org_1 with a term that exists in both organizations
       const { documents: org1Results } = await documentsSearchRepository.searchOrganizationDocuments({
@@ -442,9 +426,7 @@ describe('database-fts5 repository', () => {
 
       const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-      await Promise.all(
-        documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-      );
+      await documentsSearchRepository.indexDocuments({ documents });
 
       const { documents: searchResults } = await documentsSearchRepository.searchOrganizationDocuments({
         organizationId: 'org_1',
@@ -456,9 +438,144 @@ describe('database-fts5 repository', () => {
       expect(searchResults).to.have.length(3);
       expect(searchResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
     });
+
+    describe('sort', () => {
+      test('documents can be sorted by name, case-insensitively', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Banana', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'apple', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          { id: 'doc_3', organizationId: 'org_1', name: 'cherry', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: ascResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'name', order: 'asc' },
+        });
+
+        expect(ascResults.map(doc => doc.id)).to.eql(['doc_2', 'doc_1', 'doc_3']);
+
+        const { documents: descResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'name', order: 'desc' },
+        });
+
+        expect(descResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_1', 'doc_2']);
+      });
+
+      test('documents can be sorted by document date, with null dates ordered first ascending and last descending', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false, documentDate: new Date('2026-03-01') },
+          { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false, documentDate: new Date('2026-01-01') },
+          { id: 'doc_3', organizationId: 'org_1', name: 'Document 3', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: ascResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'documentDate', order: 'asc' },
+        });
+
+        expect(ascResults.map(doc => doc.id)).to.eql(['doc_3', 'doc_2', 'doc_1']);
+
+        const { documents: descResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'documentDate', order: 'desc' },
+        });
+
+        expect(descResults.map(doc => doc.id)).to.eql(['doc_1', 'doc_2', 'doc_3']);
+      });
+
+      test('documents can be sorted by update date', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false, updatedAt: new Date('2026-01-02T10:00:00Z') },
+          { id: 'doc_2', organizationId: 'org_1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false, updatedAt: new Date('2026-01-03T10:00:00Z') },
+          { id: 'doc_3', organizationId: 'org_1', name: 'Document 3', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false, updatedAt: new Date('2026-01-01T10:00:00Z') },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: searchResults } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 10,
+          sort: { field: 'updatedAt', order: 'desc' },
+        });
+
+        expect(searchResults.map(doc => doc.id)).to.eql(['doc_2', 'doc_1', 'doc_3']);
+      });
+
+      test('sort is applied across pages', async () => {
+        const documents = [
+          { id: 'doc_1', organizationId: 'org_1', name: 'delta', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+          { id: 'doc_2', organizationId: 'org_1', name: 'alpha', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+          { id: 'doc_3', organizationId: 'org_1', name: 'charlie', originalName: 'document-3.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+          { id: 'doc_4', organizationId: 'org_1', name: 'bravo', originalName: 'document-4.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash4', isDeleted: false },
+        ];
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_1', name: 'Organization 1' }],
+          documents,
+        });
+
+        const documentsSearchRepository = createDocumentSearchRepository({ db });
+        await documentsSearchRepository.indexDocuments({ documents });
+
+        const { documents: page0 } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 0,
+          pageSize: 2,
+          sort: { field: 'name', order: 'asc' },
+        });
+        const { documents: page1 } = await documentsSearchRepository.searchOrganizationDocuments({
+          organizationId: 'org_1',
+          searchQuery: 'lorem',
+          pageIndex: 1,
+          pageSize: 2,
+          sort: { field: 'name', order: 'asc' },
+        });
+
+        expect(page0.map(doc => doc.id)).to.eql(['doc_2', 'doc_4']);
+        expect(page1.map(doc => doc.id)).to.eql(['doc_3', 'doc_1']);
+      });
+    });
   });
 
-  describe('indexDocument', () => {
+  describe('indexDocuments', () => {
     test('adds a document to the FTS index and makes it searchable', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Organization 1' }],
@@ -479,15 +596,14 @@ describe('database-fts5 repository', () => {
       }).execute();
 
       // Manually index the document to FTS
-      await documentsSearchRepository.indexDocument({
-        document: {
+      await documentsSearchRepository.indexDocuments({
+        documents: [{
           id: 'doc_1',
           name: 'New Document',
           isDeleted: false,
           organizationId: 'org_1',
-          originalName: 'new-doc.pdf',
           content: 'searchable content here',
-        },
+        }],
       });
 
       // Verify document is searchable
@@ -501,9 +617,54 @@ describe('database-fts5 repository', () => {
       expect(documents).to.have.length(1);
       expect(documents[0]?.id).to.equal('doc_1');
     });
+
+    test('indexes multiple documents in a single call', async () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Alpha', originalName: 'alpha.pdf', content: 'alpha content', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Bravo', originalName: 'bravo.pdf', content: 'bravo content', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Charlie', originalName: 'charlie.pdf', content: 'charlie content', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        documents,
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.indexDocuments({ documents });
+
+      const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'content',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(results.map(d => d.id).toSorted()).to.eql(['doc_1', 'doc_2', 'doc_3']);
+    });
+
+    test('is a no-op when called with an empty list', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.indexDocuments({ documents: [] });
+
+      const { documentsCount } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: '',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(documentsCount).to.equal(0);
+    });
   });
 
-  describe('updateDocument', () => {
+  describe('updateDocuments', () => {
     test('updates document fields in the FTS index to reflect changes in search results', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Organization 1' }],
@@ -523,25 +684,25 @@ describe('database-fts5 repository', () => {
         originalSha256Hash: 'hash1',
       }).execute();
 
-      await documentsSearchRepository.indexDocument({
-        document: {
+      await documentsSearchRepository.indexDocuments({
+        documents: [{
           id: 'doc_1',
           name: 'Original Name',
-          originalName: 'original.pdf',
           content: 'original content',
           isDeleted: false,
           organizationId: 'org_1',
-        },
+        }],
       });
 
       // Update the FTS index with new content
-      await documentsSearchRepository.updateDocument({
-        documentId: 'doc_1',
-        document: {
-          name: 'Updated Name',
-          originalName: 'updated.pdf',
-          content: 'updated content with new keywords',
-        },
+      await documentsSearchRepository.updateDocuments({
+        updates: [{
+          documentId: 'doc_1',
+          document: {
+            name: 'Updated Name',
+            content: 'updated content with new keywords',
+          },
+        }],
       });
 
       const resultsWithOldKeyword = await documentsSearchRepository.searchOrganizationDocuments({
@@ -562,9 +723,59 @@ describe('database-fts5 repository', () => {
       expect(resultsWithNewKeyword.documents).to.have.length(1);
       expect(resultsWithNewKeyword.documents[0]?.id).to.equal('doc_1');
     });
+
+    test('applies heterogeneous per-row patches in a single call', async () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Alpha', originalName: 'alpha.pdf', content: 'alpha original', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Bravo', originalName: 'bravo.pdf', content: 'bravo original', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+      ];
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        documents,
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.indexDocuments({ documents });
+
+      await documentsSearchRepository.updateDocuments({
+        updates: [
+          { documentId: 'doc_1', document: { name: 'Alpha Renamed' } },
+          { documentId: 'doc_2', document: { content: 'bravo rewritten' } },
+        ],
+      });
+
+      const { documents: renameMatches } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'Renamed',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      const { documents: rewriteMatches } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'rewritten',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(renameMatches.map(d => d.id)).to.eql(['doc_1']);
+      expect(rewriteMatches.map(d => d.id)).to.eql(['doc_2']);
+    });
+
+    test('is a no-op when called with an empty list', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.updateDocuments({ updates: [] });
+    });
   });
 
-  describe('deleteDocument', () => {
+  describe('deleteDocuments', () => {
     test('removes a document from the FTS index and makes it unsearchable', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Organization 1' }],
@@ -596,26 +807,23 @@ describe('database-fts5 repository', () => {
         },
       ]).execute();
 
-      await documentsSearchRepository.indexDocument({
-        document: {
-          id: 'doc_1',
-          name: 'Document to Delete',
-          originalName: 'delete-me.pdf',
-          content: 'this will be deleted',
-          isDeleted: false,
-          organizationId: 'org_1',
-        },
-      });
-
-      await documentsSearchRepository.indexDocument({
-        document: {
-          id: 'doc_2',
-          name: 'Document to Keep',
-          originalName: 'keep-me.pdf',
-          content: 'this will stay',
-          isDeleted: false,
-          organizationId: 'org_1',
-        },
+      await documentsSearchRepository.indexDocuments({
+        documents: [
+          {
+            id: 'doc_1',
+            name: 'Document to Delete',
+            content: 'this will be deleted',
+            isDeleted: false,
+            organizationId: 'org_1',
+          },
+          {
+            id: 'doc_2',
+            name: 'Document to Keep',
+            content: 'this will stay',
+            isDeleted: false,
+            organizationId: 'org_1',
+          },
+        ],
       });
 
       const beforeDelete = await documentsSearchRepository.searchOrganizationDocuments({
@@ -627,7 +835,7 @@ describe('database-fts5 repository', () => {
 
       expect(beforeDelete.documents).to.have.length(1);
 
-      await documentsSearchRepository.deleteDocument({ documentId: 'doc_1' });
+      await documentsSearchRepository.deleteDocuments({ documentIds: ['doc_1'] });
 
       const afterDelete = await documentsSearchRepository.searchOrganizationDocuments({
         organizationId: 'org_1',
@@ -637,6 +845,44 @@ describe('database-fts5 repository', () => {
       });
 
       expect(afterDelete.documents).to.have.length(0);
+    });
+
+    test('removes multiple documents from the FTS index in a single call', async () => {
+      const documents = [
+        { id: 'doc_1', organizationId: 'org_1', name: 'Alpha', originalName: 'alpha.pdf', content: 'shared keyword', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash1', isDeleted: false },
+        { id: 'doc_2', organizationId: 'org_1', name: 'Bravo', originalName: 'bravo.pdf', content: 'shared keyword', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash2', isDeleted: false },
+        { id: 'doc_3', organizationId: 'org_1', name: 'Charlie', originalName: 'charlie.pdf', content: 'shared keyword', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash3', isDeleted: false },
+      ];
+
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        documents,
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.indexDocuments({ documents });
+
+      await documentsSearchRepository.deleteDocuments({ documentIds: ['doc_1', 'doc_3'] });
+
+      const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
+        organizationId: 'org_1',
+        searchQuery: 'shared',
+        pageIndex: 0,
+        pageSize: 10,
+      });
+
+      expect(results.map(d => d.id)).to.eql(['doc_2']);
+    });
+
+    test('is a no-op when called with an empty list', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+      });
+
+      const documentsSearchRepository = createDocumentSearchRepository({ db });
+
+      await documentsSearchRepository.deleteDocuments({ documentIds: [] });
     });
   });
 
@@ -664,9 +910,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         return { documentsSearchRepository };
       };
@@ -746,9 +990,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -784,9 +1026,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         return { documentsSearchRepository };
       };
@@ -854,9 +1094,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -897,9 +1135,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -940,9 +1176,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -985,9 +1219,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -1011,8 +1243,8 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await documentsSearchRepository.indexDocument({
-          document: { id: 'doc_1', organizationId: 'org_1', name: 'File', originalName: 'f.pdf', content: '', isDeleted: false },
+        await documentsSearchRepository.indexDocuments({
+          documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'File', content: '', isDeleted: false }],
         });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
@@ -1050,11 +1282,11 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await documentsSearchRepository.indexDocument({
-          document: { id: 'doc_1', organizationId: 'org_1', name: 'Org1 File', originalName: 'a.pdf', content: '', isDeleted: false },
-        });
-        await documentsSearchRepository.indexDocument({
-          document: { id: 'doc_2', organizationId: 'org_2', name: 'Org2 File', originalName: 'b.pdf', content: '', isDeleted: false },
+        await documentsSearchRepository.indexDocuments({
+          documents: [
+            { id: 'doc_1', organizationId: 'org_1', name: 'Org1 File', content: '', isDeleted: false },
+            { id: 'doc_2', organizationId: 'org_2', name: 'Org2 File', content: '', isDeleted: false },
+          ],
         });
 
         const { documents: org1Results } = await documentsSearchRepository.searchOrganizationDocuments({
@@ -1095,9 +1327,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         return { documentsSearchRepository };
       };
@@ -1164,9 +1394,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         const { documents: results } = await documentsSearchRepository.searchOrganizationDocuments({
           organizationId: 'org_1',
@@ -1202,9 +1430,7 @@ describe('database-fts5 repository', () => {
 
         const documentsSearchRepository = createDocumentSearchRepository({ db });
 
-        await Promise.all(
-          documents.map(async document => documentsSearchRepository.indexDocument({ document })),
-        );
+        await documentsSearchRepository.indexDocuments({ documents });
 
         return { documentsSearchRepository };
       };

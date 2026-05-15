@@ -7,12 +7,13 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { getDocumentOpenWithApps } from '../document.models';
-import { useDeleteDocument } from '../documents.composables';
+import { useDeleteDocument, useDownloadDocument } from '../documents.composables';
 import { DocumentOpenWithDropdownItems } from './open-with.component';
 import { useRenameDocumentDialog } from './rename-document-button.component';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
   const { deleteDocument } = useDeleteDocument();
+  const { downloadDocument } = useDownloadDocument();
   const { openRenameDialog } = useRenameDocumentDialog();
   const { t } = useI18n();
 
@@ -55,6 +56,17 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         </Show>
+
+        <DropdownMenuItem
+          class="cursor-pointer"
+          onClick={() => downloadDocument({
+            documentId: props.document.id,
+            organizationId: props.document.organizationId,
+          })}
+        >
+          <div class="i-tabler-download size-4 mr-2" />
+          <span>{t('documents.actions.download.title')}</span>
+        </DropdownMenuItem>
 
         <DropdownMenuItem
           class="cursor-pointer"

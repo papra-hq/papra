@@ -2,6 +2,7 @@ import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
 import { booleanishSchema } from '../../config/config.schemas';
 import { coercedPositiveIntegerSchema } from '../../shared/schemas/number.schemas';
+import { IN_BYTES } from '../../shared/units';
 import { AZ_BLOB_STORAGE_DRIVER_NAME } from './drivers/az-blob/az-blob.storage-driver';
 import { FS_STORAGE_DRIVER_NAME } from './drivers/fs/fs.storage-driver';
 import { IN_MEMORY_STORAGE_DRIVER_NAME } from './drivers/memory/memory.storage-driver';
@@ -15,7 +16,7 @@ export const documentStorageConfig = {
   maxUploadSize: {
     doc: 'The maximum size in bytes for an uploaded file. Set to 0 to disable the limit and allow uploading documents of any size.',
     schema: coercedPositiveIntegerSchema,
-    default: 10 * 1024 * 1024, // 10MB
+    default: 25 * IN_BYTES.MEGABYTE,
     env: 'DOCUMENT_STORAGE_MAX_UPLOAD_SIZE',
   },
   driver: {

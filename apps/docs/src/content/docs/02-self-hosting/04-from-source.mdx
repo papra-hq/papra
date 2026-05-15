@@ -6,7 +6,7 @@ slug: self-hosting/from-source
 import { Steps } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
-import SecretKeyGenerator from '../../../components/encryption-key-generator.astro';
+import SecretKeyGenerator from '../../../components/random-hex-key-generator.astro';
 
 This guide covers building and running Papra directly from source code. This method is an alternative to Docker for users who prefer running applications natively on their system.
 
@@ -18,14 +18,14 @@ This guide covers building and running Papra directly from source code. This met
 
 Ensure you have the following installed on your system:
 
-- **Node.js**: Version 24 or higher
-- **pnpm**: Version 10 or higher
+- **Node.js**: Version 26 or higher
+- **pnpm**: Version 11 or higher
 
 Verify your installation with:
 
 ```bash
-node --version  # Should show v24.x.x or higher
-pnpm --version  # Should show 10.x.x or higher
+node --version  # Should show v26.x.x or higher
+pnpm --version  # Should show 11.x.x or higher
 ```
 
 ## Building from Source

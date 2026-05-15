@@ -70,7 +70,7 @@ export async function addTagToDocument({
   webhookTriggerServices.deferTriggerWebhooks({
     organizationId,
     event: 'document:tag:added',
-    payload: { documentId, organizationId, tagId, tagName: tag.name },
+    payloads: [{ documentId, organizationId, tagId, tagName: tag.name }],
   });
 
   deferRegisterDocumentActivityLog({

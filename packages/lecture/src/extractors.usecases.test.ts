@@ -1,15 +1,17 @@
-import fs from 'node:fs/promises';
+import fs, { glob } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import mime from 'mime';
-import { glob } from 'tinyglobby';
 import { describe, expect, test } from 'vitest';
 import { extractText, extractTextFromBlob, extractTextFromFile } from './extractors.usecases';
 
 const currentFile = fileURLToPath(import.meta.url);
 const packageRoot = join(dirname(currentFile), '..');
 
-const fixturesDir = await glob(['fixtures/*', '!fixtures/_*'], { onlyDirectories: true, cwd: packageRoot, absolute: true });
+const fixturesDir = await Array.fromAsync(
+  glob('fixtures/*', { cwd: packageRoot, exclude: ['fixtures/_*'] }),
+  name => join(packageRoot, name),
+);
 
 describe('extractors usecases', () => {
   describe('extractText', () => {
@@ -46,7 +48,10 @@ describe('extractors usecases', () => {
 
         // use test.concurrent to run the tests in parallel -> need to use the provided expect
         test(`fixture ${fixtureName}`, { timeout: 20_000, concurrent: true }, async ({ expect }) => {
-          const fixtureFilesPaths = await glob(['*'], { cwd: fixtureDir, absolute: true });
+          const fixtureFilesPaths = await Array.fromAsync(
+            glob('*', { cwd: fixtureDir }),
+            name => join(fixtureDir, name),
+          );
 
           const inputFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.input\.\w+$/));
           const configFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.config\.ts$/));

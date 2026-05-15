@@ -7,12 +7,12 @@ import type { EventServices } from './events.services';
 import { registerSyncDocumentSearchEventHandlers } from '../../documents/document-search/events/sync-document-search.handlers';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from '../../documents/events/activity-log.document-created';
 import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../documents/events/activity-log.document-restored';
-import { registerInsertActivityLogOnDocumentTrashedHandler } from '../../documents/events/activity-log.document-trashed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
+import { registerInsertActivityLogOnDocumentsTrashedHandler } from '../../documents/events/activity-log.documents-trashed';
 import { registerTrackDocumentCreatedHandler } from '../../documents/events/tracking.document-created';
 import { registerTriggerWebhooksOnDocumentCreatedHandler } from '../../documents/events/webhooks.document-created';
-import { registerTriggerWebhooksOnDocumentTrashedHandler } from '../../documents/events/webhooks.document-trashed';
 import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents/events/webhooks.document-updated';
+import { registerTriggerWebhooksOnDocumentsTrashedHandler } from '../../documents/events/webhooks.documents-trashed';
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
 
@@ -22,8 +22,8 @@ export function registerEventHandlers(deps: { trackingServices: TrackingServices
   registerTriggerWebhooksOnDocumentCreatedHandler(deps);
   registerInsertActivityLogOnDocumentCreatedHandler(deps);
   registerTrackDocumentCreatedHandler(deps);
-  registerTriggerWebhooksOnDocumentTrashedHandler(deps);
-  registerInsertActivityLogOnDocumentTrashedHandler(deps);
+  registerTriggerWebhooksOnDocumentsTrashedHandler(deps);
+  registerInsertActivityLogOnDocumentsTrashedHandler(deps);
   registerInsertActivityLogOnDocumentRestoredHandler(deps);
   registerTriggerWebhooksOnDocumentUpdatedHandler(deps);
   registerInsertActivityLogOnDocumentUpdatedHandler(deps);
