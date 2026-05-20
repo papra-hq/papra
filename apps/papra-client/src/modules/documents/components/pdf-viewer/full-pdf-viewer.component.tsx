@@ -16,7 +16,17 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
     thumbsRef,
     pdfSlickStore: store,
     PDFSlickViewer,
-  } = usePDFSlick(props.url);
+  } = usePDFSlick(props.url, {
+    // These assets are required to render PDFs with non-embedded standard
+    // system fonts. They are automatically copied from the pdfjs-dist package
+    // to the `public/pdfjs-dist/` directory by the `copyPdfjsAssetsPlugin` in
+    // `vite.config.ts` during build.
+    getDocumentParams: {
+      cMapUrl: `/pdfjs-assets/cmaps/`,
+      cMapPacked: true,
+      standardFontDataUrl: `/pdfjs-assets/standard_fonts/`,
+    },
+  });
 
   const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
   const [sidebarWidth, setSidebarWidth] = createSignal(SIDEBAR_DEFAULT_WIDTH);
