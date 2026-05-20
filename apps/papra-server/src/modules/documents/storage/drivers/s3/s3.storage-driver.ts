@@ -1,49 +1,44 @@
-import type { Readable } from 'node:stream';
-import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
-
-import { Upload } from '@aws-sdk/lib-storage';
+import { Readable } from 'node:stream';
+import { S3mini } from 's3mini';
 import { safely } from '@corentinth/chisels';
-import { isString } from '../../../../shared/utils';
 import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const S3_STORAGE_DRIVER_NAME = 's3' as const;
 
-function isS3NotFoundError(error: Error) {
-  const codes = ['NoSuchKey', 'NotFound'];
+function buildS3Endpoint({ endpoint, region, bucketName, forcePathStyle }: {
+  endpoint?: string;
+  region: string;
+  bucketName: string;
+  forcePathStyle?: boolean;
+}): string {
+  if (endpoint) {
+    const base = endpoint.replace(/\/$/, '');
+    return forcePathStyle
+      ? `${base}/${bucketName}`
+      : base.replace('://', `://${bucketName}.`);
+  }
 
-  return codes.includes(error.name)
-    || ('Code' in error && isString(error.Code) && codes.includes(error.Code));
+  return forcePathStyle
+    ? `https://s3.${region}.amazonaws.com/${bucketName}`
+    : `https://${bucketName}.s3.${region}.amazonaws.com`;
 }
 
 export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {
   const { accessKeyId, secretAccessKey, bucketName, region, endpoint, forcePathStyle } = documentStorageConfig.drivers.s3;
 
-  const s3Client = new S3Client({
+  const s3Endpoint = buildS3Endpoint({ endpoint, region, bucketName, forcePathStyle });
+
+  const s3Client = new S3mini({
+    accessKeyId,
+    secretAccessKey,
+    endpoint: s3Endpoint,
     region,
-    endpoint,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-    forcePathStyle,
   });
 
   const fileExists = async ({ storageKey }: { storageKey: string }) => {
-    const [, error] = await safely(s3Client.send(new HeadObjectCommand({
-      Bucket: bucketName,
-      Key: storageKey,
-    })));
-
-    if (error && isS3NotFoundError(error)) {
-      return false;
-    }
-
-    if (error) {
-      throw error;
-    }
-
-    return true;
+    const exists = await s3Client.objectExists(storageKey);
+    return exists === true;
   };
 
   return {
@@ -51,43 +46,32 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
     getClient: () => s3Client,
     saveFile: async ({ fileStream, storageKey }) => {
       if (await fileExists({ storageKey })) {
-        // Not very atomic, TOCTOU issue here, but from some tests, If-None-Match header with '*' doesn't seem to work reliably with Upload
         throw createFileAlreadyExistsInStorageError();
       }
 
-      const upload = new Upload({
-        client: s3Client,
-        params: {
-          Bucket: bucketName,
-          Key: storageKey,
-          Body: fileStream,
-          IfNoneMatch: '*',
-        },
-      });
-
-      await upload.done();
+      // Convert Node.js Readable to web ReadableStream for s3mini compatibility.
+      // putAnyObject automatically selects single PUT or multipart upload based on size.
+      const webStream = Readable.toWeb(fileStream) as ReadableStream;
+      await s3Client.putAnyObject(storageKey, webStream);
     },
     getFileStream: async ({ storageKey }) => {
-      const [result, error] = await safely(s3Client.send(new GetObjectCommand({
-        Bucket: bucketName,
-        Key: storageKey,
-      })));
-
-      if (error && isS3NotFoundError(error)) {
-        throw createFileNotFoundError();
-      }
+      const [rawResponse, error] = await safely(s3Client.getObjectResponse(storageKey));
 
       if (error) {
         throw error;
       }
 
-      const { Body } = result;
+      const response = rawResponse as Response;
 
-      if (!Body) {
+      if (!response || !response.ok) {
         throw createFileNotFoundError();
       }
 
-      return { fileStream: Body as Readable };
+      if (!response.body) {
+        throw createFileNotFoundError();
+      }
+
+      return { fileStream: Readable.fromWeb(response.body as any) };
     },
     deleteFile: async ({ storageKey }) => {
       const exists = await fileExists({ storageKey });
@@ -96,10 +80,7 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
         throw createFileNotFoundError();
       }
 
-      await s3Client.send(new DeleteObjectCommand({
-        Bucket: bucketName,
-        Key: storageKey,
-      }));
+      await s3Client.deleteObject(storageKey);
     },
     fileExists,
   };
