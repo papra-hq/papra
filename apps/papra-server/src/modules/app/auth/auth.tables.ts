@@ -66,5 +66,8 @@ export const twoFactorTable = sqliteTable(
     userId: text('user_id').references(() => usersTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     secret: text('secret'),
     backupCodes: text('backup_codes'),
+    // Default to true for backfill purposes
+    // from better auth : https://github.com/better-auth/better-auth/blob/4cbc823e694c1adb10ef26cf8294263453a156d3/packages/better-auth/src/plugins/two-factor/schema.ts#L42
+    verified: integer('verified', { mode: 'boolean' }).notNull().default(true),
   },
 );
