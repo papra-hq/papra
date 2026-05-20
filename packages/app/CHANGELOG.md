@@ -1,5 +1,11 @@
 # @papra/app
 
+## 26.4.2
+
+### Patch Changes
+
+- [#1105](https://github.com/papra-hq/papra/pull/1105) [`afb5fe3`](https://github.com/papra-hq/papra/commit/afb5fe3392988265e47834fa443936287277a398) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed a regression issue breaking the two factor authentication after updating `better-auth`.
+
 ## 26.4.1
 
 ### Patch Changes
