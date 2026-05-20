@@ -12,6 +12,12 @@ export type SideNavMenuItem = {
   badge?: JSX.Element;
 };
 
+export type SideNavSection = {
+  label?: string;
+  action?: JSX.Element;
+  items: SideNavMenuItem[];
+};
+
 const MenuItemButton: Component<SideNavMenuItem> = (props) => {
   return (
     <Button
@@ -30,7 +36,7 @@ const MenuItemButton: Component<SideNavMenuItem> = (props) => {
 };
 
 export const SideNav: Component<{
-  mainMenu?: SideNavMenuItem[];
+  mainMenu: SideNavSection[];
   footerMenu?: SideNavMenuItem[];
   header?: Component;
   footer?: Component;
@@ -42,11 +48,21 @@ export const SideNav: Component<{
         <div class="h-full flex flex-col pb-6 flex-1 min-w-0">
           {props.header && <props.header />}
 
-          {props.mainMenu && (
-            <nav class="flex flex-col gap-0.5 mt-4 px-4">
-              <For each={props.mainMenu}>{menuItem => <MenuItemButton {...menuItem} />}</For>
-            </nav>
-          )}
+          <For each={props.mainMenu}>
+            {section => (
+              <div class="mt-4 px-4">
+                {section.label && (
+                  <div class="flex items-center justify-between px-2 mb-0.5">
+                    <div class="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">{section.label}</div>
+                    {section.action}
+                  </div>
+                )}
+                <nav class="flex flex-col gap-0.5">
+                  <For each={section.items}>{menuItem => <MenuItemButton {...menuItem} />}</For>
+                </nav>
+              </div>
+            )}
+          </For>
 
           <div class="flex-1" />
 

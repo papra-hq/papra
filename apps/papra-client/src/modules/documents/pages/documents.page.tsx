@@ -16,6 +16,7 @@ import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { CreateViewModal } from '@/modules/views/components/view-modals';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
@@ -233,34 +234,46 @@ export const DocumentsPage: Component = () => {
                   {t('documents.list.title')}
                 </h2>
 
-                <div class="flex items-center">
-                  <TextFieldRoot class="max-w-md flex-1">
-                    <TextField
-                      type="search"
-                      name="search"
-                      placeholder={t('documents.list.search.placeholder')}
-                      value={getSearchQuery()}
-                      onInput={e => setSearchQuery(e.currentTarget.value)}
-                      class="pr-9"
-                      autofocus
-                    />
-                  </TextFieldRoot>
+                <div class="flex items-center gap-4">
+                  <div class="flex items-center max-w-md flex-1">
+                    <TextFieldRoot class="flex-1">
+                      <TextField
+                        type="search"
+                        name="search"
+                        placeholder={t('documents.list.search.placeholder')}
+                        value={getSearchQuery()}
+                        onInput={e => setSearchQuery(e.currentTarget.value)}
+                        class="pr-9"
+                        autofocus
+                      />
+                    </TextFieldRoot>
+
+                    <Show when={getSearchQuery().length > 0}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="size-6 ml--8"
+                        disabled={documentsQuery.isFetching}
+                        onClick={() => setSearchQuery('')}
+                        aria-label={documentsQuery.isFetching ? 'Loading' : 'Clear search'}
+                      >
+                        <div
+                          class={cn('text-muted-foreground', documentsQuery.isFetching ? 'i-tabler-loader-2 animate-spin' : 'i-tabler-x')}
+                        />
+                      </Button>
+                    </Show>
+                  </div>
 
                   <Show when={getSearchQuery().length > 0}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-6 ml--8"
-                      disabled={documentsQuery.isFetching}
-                      onClick={() => setSearchQuery('')}
-                      aria-label={documentsQuery.isFetching ? 'Loading' : 'Clear search'}
-                    >
-                      <div
-                        class={cn('text-muted-foreground', documentsQuery.isFetching ? 'i-tabler-loader-2 animate-spin' : 'i-tabler-x')}
-                      />
-                    </Button>
+                    <CreateViewModal organizationId={params.organizationId} initialValues={{ query: debouncedSearchQuery() }}>
+                      {triggerProps => (
+                        <Button variant="outline" title={t('views.save-as-view')} {...triggerProps}>
+                          <div class="i-tabler-layout-list size-4 mr-1.5" />
+                          {t('views.save-as-view')}
+                        </Button>
+                      )}
+                    </CreateViewModal>
                   </Show>
-
                 </div>
 
                 <div class="mb-4 mt-2 ml-2 min-h-8 flex items-center">
