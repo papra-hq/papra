@@ -1,5 +1,76 @@
 # @papra/app
 
+## 26.4.1
+
+### Patch Changes
+
+- [#1080](https://github.com/papra-hq/papra/pull/1080) [`47d44e0`](https://github.com/papra-hq/papra/commit/47d44e0681bf59da0638b140d1c5ef5b970f6b67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an authorization issue where tag updates and deletions were not scoped to the organization in the URL. Tag mutation endpoints are now correctly scoped to the requested organization.
+
+  Addressing [GHSA-wrx4-3vff-jm94](https://github.com/papra-hq/papra/security/advisories/GHSA-wrx4-3vff-jm94), credit to [@TinkAnet](https://github.com/TinkAnet) for the responsible disclosure.
+
+- [#1074](https://github.com/papra-hq/papra/pull/1074) [`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Limited search query to 1024 characters
+
+- [#1099](https://github.com/papra-hq/papra/pull/1099) [`086dccb`](https://github.com/papra-hq/papra/commit/086dccbfda18c850bee50b94c48f5f110be6935c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks no longer follow http redirects (3xx responses) when sending requests.
+
+  Addressing [GHSA-5g86-85rp-f9hx](https://github.com/papra-hq/papra/security/advisories/GHSA-5g86-85rp-f9hx), credit to [@FredrikEV](https://github.com/FredrikEV) for the responsible disclosure.
+
+- [#1061](https://github.com/papra-hq/papra/pull/1061) [`93c369d`](https://github.com/papra-hq/papra/commit/93c369d3e57da9bc0a7c825320ae535cc5e18263) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Html-ish characters in email templates are now escaped instead of sanitized-out
+
+- [#1067](https://github.com/papra-hq/papra/pull/1067) [`79d4cac`](https://github.com/papra-hq/papra/commit/79d4cac11fa4c0c8a3a6b234874e42f4c6d5ee3f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Increased default max file size from 10MB to 25MB (can still be customized using `DOCUMENT_STORAGE_MAX_UPLOAD_SIZE`, disable by setting it to 0).
+
+- [#1010](https://github.com/papra-hq/papra/pull/1010) [`927c7d6`](https://github.com/papra-hq/papra/commit/927c7d6b314bf1ee998d141989a69be6b71ad927) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed logging of a polluting empty error cause (with stack trace) when an error is thrown without a cause.
+
+- [#1082](https://github.com/papra-hq/papra/pull/1082) [`e8d19af`](https://github.com/papra-hq/papra/commit/e8d19af79b97884157a299a7ed476e823d6d7860) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added batch selection in the document page, allowing to select multiple documents (or all matching the current search) and either manage tags or delete them in one go.
+
+- [#1080](https://github.com/papra-hq/papra/pull/1080) [`47d44e0`](https://github.com/papra-hq/papra/commit/47d44e0681bf59da0638b140d1c5ef5b970f6b67) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Tag deletion endpoint now returns a `204 No Content` status code instead of `200 OK` with an empty JSON object, and a `404 Not Found` status code is returned when trying to delete a tag that does not exists for the organization.
+
+- [#1015](https://github.com/papra-hq/papra/pull/1015) [`5bdf0da`](https://github.com/papra-hq/papra/commit/5bdf0dab1f90de300c2a5b86849e99bf924ffc1b) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Synchronized the document pagination of the home page in query params to permit sharing and navigation.
+
+- [#1096](https://github.com/papra-hq/papra/pull/1096) [`2bb75ce`](https://github.com/papra-hq/papra/commit/2bb75cea1a0c6818a1a022fd140c263714decaa0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated some critical dependencies (better-auth, drizzle-orm, hono, ...) to fix transitive vulnerabilities. Please do not hesitate to report any regression you may encounter, especially if it is related to authentication or database access. Thanks!
+
+- [#1034](https://github.com/papra-hq/papra/pull/1034) [`c5ccac5`](https://github.com/papra-hq/papra/commit/c5ccac53c2897c49024ca7d9eb38b94fa6a15310) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added content preview for yaml files
+
+- [#1027](https://github.com/papra-hq/papra/pull/1027) [`b154d2f`](https://github.com/papra-hq/papra/commit/b154d2f363e8d0a421ee476ff43da3d48093f3f3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed weird shadows on ui components in light mode
+
+- [#1091](https://github.com/papra-hq/papra/pull/1091) [`4ab0f32`](https://github.com/papra-hq/papra/commit/4ab0f3218834bff55883159276df976cf05ec803) Thanks [@CorentinTh](https://github.com/CorentinTh)! - The documents page content now uses the whole width of the page
+
+- [#1082](https://github.com/papra-hq/papra/pull/1082) [`e8d19af`](https://github.com/papra-hq/papra/commit/e8d19af79b97884157a299a7ed476e823d6d7860) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a batch document tag management API endpoint.
+
+- [#1097](https://github.com/papra-hq/papra/pull/1097) [`928ffc3`](https://github.com/papra-hq/papra/commit/928ffc37c77e7edfec1a42caed25e7557f2d7f7b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Switched docker image pnpm installation from corepack to npm global installation, as Node.js 26 image no longer ships corepack.
+
+- [#1090](https://github.com/papra-hq/papra/pull/1090) [`5ea8ca3`](https://github.com/papra-hq/papra/commit/5ea8ca3e87203aeedcc17d827c1cb5289229f9e3) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added sorting option in the documents list, allowing to sort documents by name, or creation date, in ascending or descending order.
+
+- [#1098](https://github.com/papra-hq/papra/pull/1098) [`7acca43`](https://github.com/papra-hq/papra/commit/7acca43b520d942d5544a7327888ad11852cc11e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated pnpm to v11
+
+- [#1020](https://github.com/papra-hq/papra/pull/1020) [`015bb53`](https://github.com/papra-hq/papra/commit/015bb5349825f413d0578cd733641380b6f3fe71) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added some size limits on the webhooks creation and update API endpoints parameters.
+  - Names are limited to 128 characters.
+  - Secret keys are limited to 256 characters.
+  - URLs are limited to 2048 characters.
+
+- [#1025](https://github.com/papra-hq/papra/pull/1025) [`9c6985b`](https://github.com/papra-hq/papra/commit/9c6985b51f5961b750f7bd52eead13b05b2504c2) Thanks [@CorentinTh](https://github.com/CorentinTh)! - When reopening the quick search modal with existing query, the input content is automatically selected to allow easy replacement or editing.
+
+- [#1033](https://github.com/papra-hq/papra/pull/1033) [`5d55e41`](https://github.com/papra-hq/papra/commit/5d55e41c3be6e747f657e4f8f0c8dbe21285034b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Changed the server endpoint validation library from `zod` to `valibot`, and improved some validation schemas in the process.
+
+- [#1097](https://github.com/papra-hq/papra/pull/1097) [`928ffc3`](https://github.com/papra-hq/papra/commit/928ffc37c77e7edfec1a42caed25e7557f2d7f7b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated to Node.js 26
+
+- [#1016](https://github.com/papra-hq/papra/pull/1016) [`07d7109`](https://github.com/papra-hq/papra/commit/07d7109a46121b792ea45a7102d7c934d3ff060c) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Removed native clear button of search bar in safari.
+
+- [#1072](https://github.com/papra-hq/papra/pull/1072) [`71d093f`](https://github.com/papra-hq/papra/commit/71d093f644a3fcaa7e4d675eac5b365acb8ba1b8) Thanks [@mvlanga](https://github.com/mvlanga)! - Added a download file option in document list action menu
+
+- [#1089](https://github.com/papra-hq/papra/pull/1089) [`aef3ef2`](https://github.com/papra-hq/papra/commit/aef3ef276c98a6d287f7afba97d997f61ebf1184) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added `sortField` and `sortOrder` query parameters to the document list/search endpoint (`GET /api/organizations/:organizationId/documents`), allowing documents to be sorted by `createdAt`, `updatedAt`, `name`, or `documentDate` in ascending or descending order.
+
+- [#1074](https://github.com/papra-hq/papra/pull/1074) [`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Add batch document trash API endpoint.
+
+- [#1099](https://github.com/papra-hq/papra/pull/1099) [`086dccb`](https://github.com/papra-hq/papra/commit/086dccbfda18c850bee50b94c48f5f110be6935c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Webhooks ssrf validation is now enforced when sending webhook requests, preventing potential TOCTOU dns rebinding attacks (the exploitation window was very small and only theoretical though).
+
+- [#1003](https://github.com/papra-hq/papra/pull/1003) [`ad5e42d`](https://github.com/papra-hq/papra/commit/ad5e42d4458e4f39046cba227a47dd149410dac4) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Increased the sidebar collapsing breakpoint to improve the UX on tablets and small laptops.
+
+- [#1016](https://github.com/papra-hq/papra/pull/1016) [`07d7109`](https://github.com/papra-hq/papra/commit/07d7109a46121b792ea45a7102d7c934d3ff060c) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Removed useless close button in the small-screen sidebar sheet.
+
+- [#1003](https://github.com/papra-hq/papra/pull/1003) [`ad5e42d`](https://github.com/papra-hq/papra/commit/ad5e42d4458e4f39046cba227a47dd149410dac4) Thanks [@JohnCuba](https://github.com/JohnCuba)! - Prevented the users and organizations tables from forcing horizontal scrolling in the admin panels.
+
+- [#1021](https://github.com/papra-hq/papra/pull/1021) [`133d235`](https://github.com/papra-hq/papra/commit/133d235ccda42c126c4ee15bde1b207b2a573a1e) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevented long documents name from pushing the right columns out of the container.
+
 ## 26.4.0
 
 ### Minor Changes

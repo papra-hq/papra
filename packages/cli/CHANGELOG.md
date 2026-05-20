@@ -1,5 +1,12 @@
 # @papra/cli
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`e2e7fd4`](https://github.com/papra-hq/papra/commit/e2e7fd4f1d2ca102dc4a81257834ee582fa4c412)]:
+  - @papra/api-sdk@1.3.0
+
 ## 0.2.3
 
 ### Patch Changes
