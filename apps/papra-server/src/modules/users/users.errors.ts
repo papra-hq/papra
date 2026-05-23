@@ -29,3 +29,9 @@ export const createUserStillOwnsOrganizationsError = createErrorFactory({
   code: 'users.still_owns_organizations',
   statusCode: 400,
 });
+
+export const createCannotDeleteSelfError = createErrorFactory({
+  message: 'Cannot delete your own account from the admin panel',
+  code: 'users.cannot_delete_self',
+  statusCode: 400,
+});

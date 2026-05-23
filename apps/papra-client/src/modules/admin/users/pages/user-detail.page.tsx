@@ -1,23 +1,63 @@
 import type { Component } from 'solid-js';
-import { A, useParams } from '@solidjs/router';
-import { useQuery } from '@tanstack/solid-query';
+import { safely } from '@corentinth/chisels';
+import { A, useNavigate, useParams } from '@solidjs/router';
+import { useQuery, useQueryClient } from '@tanstack/solid-query';
 import { For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { useConfirmModal } from '@/modules/shared/confirm';
+import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/modules/ui/components/card';
+import { createToast } from '@/modules/ui/components/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
-import { getUserDetail } from '../users.services';
+import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
+import { deleteUser, getUserDetail } from '../users.services';
 
 export const AdminUserDetailPage: Component = () => {
   const { t } = useI18n();
   const params = useParams<{ userId: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { confirm } = useConfirmModal();
+  const { getErrorMessage } = useI18nApiErrors({ t });
+  const { user: currentUser } = useCurrentUser();
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'users', params.userId],
     queryFn: () => getUserDetail({ userId: params.userId }),
   }));
+
+  const handleDelete = async (targetUser: { id: string; email: string }) => {
+    const confirmed = await confirm({
+      title: t('admin.user-detail.delete.confirm.title'),
+      message: t('admin.user-detail.delete.confirm.message'),
+      confirmButton: {
+        text: t('admin.user-detail.delete.confirm.confirm-button'),
+        variant: 'destructive',
+      },
+      cancelButton: {
+        text: t('admin.user-detail.delete.confirm.cancel-button'),
+      },
+      shouldType: targetUser.email,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    const [, error] = await safely(deleteUser({ userId: targetUser.id }));
+
+    if (error) {
+      createToast({ type: 'error', message: getErrorMessage({ error }) });
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    createToast({ type: 'success', message: t('admin.user-detail.delete.success') });
+    navigate('/admin/users');
+  };
 
   return (
     <div class="p-6 max-w-screen-lg mx-auto mt-4">
@@ -156,6 +196,28 @@ export const AdminUserDetailPage: Component = () => {
                     </div>
                   </Show>
                 </CardContent>
+              </Card>
+
+              <Card class="border-destructive">
+                <CardHeader>
+                  <CardTitle>{t('admin.user-detail.delete.title')}</CardTitle>
+                  <CardDescription>{t('admin.user-detail.delete.description')}</CardDescription>
+                </CardHeader>
+                <CardFooter class="gap-4 flex-col items-start sm:flex-row sm:items-center">
+                  <Button
+                    variant="destructive"
+                    class="flex-shrink-0"
+                    disabled={data().user.id === currentUser.id}
+                    onClick={() => handleDelete(data().user)}
+                  >
+                    {t('admin.user-detail.delete.button')}
+                  </Button>
+                  <Show when={data().user.id === currentUser.id}>
+                    <span class="text-xs text-muted-foreground">
+                      {t('admin.user-detail.delete.self-warning')}
+                    </span>
+                  </Show>
+                </CardFooter>
               </Card>
             </div>
           )}
