@@ -1,11 +1,11 @@
 # syntax = docker/dockerfile:1
 
-ARG NODE_VERSION=24.11.0
+ARG NODE_VERSION=26.1.0
 FROM node:${NODE_VERSION}-slim AS base
 
 LABEL fly_launch_runtime="Node.js"
 
-ARG PNPM_VERSION=10.33.0
+ARG PNPM_VERSION=11.1.1
 RUN npm install -g pnpm@${PNPM_VERSION}
 
 WORKDIR /app
@@ -50,6 +50,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/production /app
+COPY pnpm-workspace.yaml ./
 
 EXPOSE 1221
 

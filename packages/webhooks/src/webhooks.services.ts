@@ -4,15 +4,17 @@ import { ofetch } from 'ofetch';
 import { signBody } from './signature';
 import { serializeBody } from './webhooks.models';
 
-export async function webhookHttpClient({
-  url,
-  ...options
-}: {
+export type WebhookHttpClient = (args: {
   url: string;
   method: string;
   body: string;
   headers: Record<string, string>;
-}) {
+}) => Promise<{
+  responseStatus: number;
+  responseData: unknown;
+}>;
+
+export const webhookHttpClient: WebhookHttpClient = async ({ url, ...options }) => {
   const response = await ofetch.raw<unknown>(url, {
     ...options,
     ignoreResponseError: true,
@@ -22,7 +24,7 @@ export async function webhookHttpClient({
     responseStatus: response.status,
     responseData: response._data,
   };
-}
+};
 
 export async function triggerWebhook<T extends WebhookPayloads>({
   webhookUrl,
@@ -35,7 +37,7 @@ export async function triggerWebhook<T extends WebhookPayloads>({
 }: {
   webhookUrl: string;
   webhookSecret?: string | null;
-  httpClient?: typeof webhookHttpClient;
+  httpClient?: WebhookHttpClient;
   payload: T['payload'];
   now?: Date;
   event: T['event'];

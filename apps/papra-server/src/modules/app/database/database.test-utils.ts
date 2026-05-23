@@ -14,6 +14,7 @@ import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable 
 import { documentsTagsTable, tagsTable } from '../../tags/tags.table';
 import { usersTable } from '../../users/users.table';
 import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from '../../webhooks/webhooks.tables';
+import { accountsTable, sessionsTable, twoFactorTable } from '../auth/auth.tables';
 import { setupDatabase } from './database';
 
 export { createInMemoryDatabase, seedDatabase };
@@ -35,27 +36,30 @@ async function createInMemoryDatabase(seedOptions: Omit<Parameters<typeof seedDa
 }
 
 const seedTables = {
-  users: usersTable,
-  organizations: organizationsTable,
-  organizationMembers: organizationMembersTable,
-  documents: documentsTable,
-  tags: tagsTable,
-  documentsTags: documentsTagsTable,
-  intakeEmails: intakeEmailsTable,
-  organizationSubscriptions: organizationSubscriptionsTable,
-  taggingRules: taggingRulesTable,
-  taggingRuleConditions: taggingRuleConditionsTable,
-  taggingRuleActions: taggingRuleActionsTable,
-  apiKeys: apiKeysTable,
+  accounts: accountsTable,
   apiKeyOrganizations: apiKeyOrganizationsTable,
-  webhooks: webhooksTable,
-  webhookEvents: webhookEventsTable,
-  webhookDeliveries: webhookDeliveriesTable,
-  organizationInvitations: organizationInvitationsTable,
-  userRoles: userRolesTable,
+  apiKeys: apiKeysTable,
   customPropertyDefinitions: customPropertyDefinitionsTable,
   customPropertySelectOptions: customPropertySelectOptionsTable,
   documentCustomPropertyValues: documentCustomPropertyValuesTable,
+  documents: documentsTable,
+  documentsTags: documentsTagsTable,
+  intakeEmails: intakeEmailsTable,
+  organizationInvitations: organizationInvitationsTable,
+  organizationMembers: organizationMembersTable,
+  organizations: organizationsTable,
+  organizationSubscriptions: organizationSubscriptionsTable,
+  sessions: sessionsTable,
+  taggingRuleActions: taggingRuleActionsTable,
+  taggingRuleConditions: taggingRuleConditionsTable,
+  taggingRules: taggingRulesTable,
+  tags: tagsTable,
+  twoFactor: twoFactorTable,
+  userRoles: userRolesTable,
+  users: usersTable,
+  webhookDeliveries: webhookDeliveriesTable,
+  webhookEvents: webhookEventsTable,
+  webhooks: webhooksTable,
 } as const;
 
 type SeedTablesRows = {

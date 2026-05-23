@@ -21,6 +21,7 @@ function createUsersRepository({ db }: { db: Database }) {
       getUserById,
       getUserByIdOrThrow,
       updateUser,
+      deleteUser,
       getUserCount,
       listUsers,
     },
@@ -76,6 +77,10 @@ async function updateUser({ userId, name, db }: { userId: string; name: string; 
   const [user] = await db.update(usersTable).set({ name }).where(eq(usersTable.id, userId)).returning();
 
   return { user };
+}
+
+async function deleteUser({ userId, db }: { userId: string; db: Database }) {
+  await db.delete(usersTable).where(eq(usersTable.id, userId));
 }
 
 export async function getUserCount({ db }: { db: Database }) {

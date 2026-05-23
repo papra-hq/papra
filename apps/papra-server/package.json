@@ -81,6 +81,7 @@
     "resend": "^4.6.0",
     "stripe": "^17.7.0",
     "tsx": "catalog:",
+    "undici": "^8.2.0",
     "valibot": "catalog:"
   },
   "devDependencies": {

@@ -862,6 +862,8 @@ export const translations = {
   'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
   'api-errors.organization.has_active_subscription': 'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
   'api-errors.webhooks.ssrf_unsafe_url': 'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
+  'api-errors.users.still_owns_organizations': 'This user still owns one or more organizations. Delete those organizations before deleting the user.',
+  'api-errors.users.cannot_delete_self': 'You cannot delete your own account from the admin panel.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'User not found',
   'api-errors.FAILED_TO_CREATE_USER': 'Failed to create user',
@@ -1081,6 +1083,15 @@ export const translations = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Name',
   'admin.user-detail.organizations.table.created': 'Created',
+  'admin.user-detail.delete.title': 'Delete user',
+  'admin.user-detail.delete.description': 'Permanently delete this user account. This will cascade to their organization memberships, sessions, two-factor settings and other authentication data. Organizations they still own must be deleted or transferred first.',
+  'admin.user-detail.delete.button': 'Delete user',
+  'admin.user-detail.delete.self-warning': 'You cannot delete your own account from the admin panel.',
+  'admin.user-detail.delete.confirm.title': 'Delete user?',
+  'admin.user-detail.delete.confirm.message': 'This action cannot be undone. Type the user\'s email below to confirm.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Delete user',
+  'admin.user-detail.delete.confirm.cancel-button': 'Cancel',
+  'admin.user-detail.delete.success': 'User deleted successfully.',
 
   // Common / Shared
 

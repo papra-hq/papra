@@ -5,7 +5,7 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { omit } from '../shared/objects';
 import { createWebhookRepository } from './webhooks.repository';
-import { webhookEventsTable, webhooksTable } from './webhooks.tables';
+import { webhookDeliveriesTable, webhookEventsTable, webhooksTable } from './webhooks.tables';
 import { createWebhook, triggerWebhooks, updateWebhook } from './webhooks.usecases';
 
 describe('webhook usecases', () => {
@@ -164,7 +164,7 @@ describe('webhook usecases', () => {
   });
 
   describe('triggerWebhooks', () => {
-    test('when SSRF protection is enabled, webhooks with unsafe URLs are filtered out and others still receive the event', async () => {
+    test('when one webhook delivery fails (e.g. blocked by SSRF protection at connect time), sibling webhooks still complete', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [
           { id: 'org_1', name: 'Organization 1' },
@@ -181,7 +181,7 @@ describe('webhook usecases', () => {
 
       const webhookRepository = createWebhookRepository({ db });
       const { logger } = createTestLogger();
-      const triggerWebhookServiceArgs: unknown[] = [];
+      const httpClientArgs: { url: string }[] = [];
 
       await triggerWebhooks({
         webhookRepository,
@@ -195,18 +195,28 @@ describe('webhook usecases', () => {
           updatedAt: new Date('2025-01-01'),
         }],
         logger,
-        triggerWebhookService: async (args) => {
-          triggerWebhookServiceArgs.push(args);
-          return { responseData: {}, responseStatus: 200, requestPayload: '{}' };
-        },
-        webhooksConfig: {
-          isSsrfProtectionEnabled: true,
-          webhookUrlAllowedHostnames: new Set<string>(),
+        httpClient: async (args) => {
+          httpClientArgs.push(args);
+
+          if (args.url.includes('192.168')) {
+            const error = new Error('IP 192.168.1.1 is blocked by net.BlockList') as Error & { code?: string };
+            error.code = 'ERR_IP_BLOCKED';
+            throw error;
+          }
+
+          return { responseData: {}, responseStatus: 200 };
         },
       });
 
-      expect(triggerWebhookServiceArgs).to.have.lengthOf(1);
-      expect((triggerWebhookServiceArgs[0] as { webhookUrl: string }).webhookUrl).to.eql('https://example.com/webhook');
+      expect(httpClientArgs.map(a => a.url)).to.eql([
+        'https://192.168.1.1/webhook',
+        'https://example.com/webhook',
+      ]);
+
+      const deliveries = await db.select().from(webhookDeliveriesTable);
+
+      expect(deliveries.length).to.eq(1);
+      expect(deliveries[0]).to.include({ responseStatus: 200 });
     });
 
     test('when an organization has webhooks enabled for an event, the configured urls are called with the event payload', async () => {
@@ -238,7 +248,7 @@ describe('webhook usecases', () => {
 
       const webhookRepository = createWebhookRepository({ db });
       const { logger } = createTestLogger();
-      const triggerWebhookServiceArgs: unknown[] = [];
+      const httpClientArgs: { url: string; body: string; headers: Record<string, string> }[] = [];
 
       const eventPayload = {
         documentId: 'doc_1',
@@ -255,39 +265,32 @@ describe('webhook usecases', () => {
         payloads: [eventPayload],
         logger,
         now: new Date('2025-05-04'),
-        triggerWebhookService: async (args) => {
-          triggerWebhookServiceArgs.push(args);
-
-          const { event, payload } = args;
-
-          return {
-            responseData: {},
-            responseStatus: 200,
-            requestPayload: JSON.stringify({ event, payload }),
-          };
-        },
-        webhooksConfig: {
-          isSsrfProtectionEnabled: false,
-          webhookUrlAllowedHostnames: new Set<string>(),
+        httpClient: async (args) => {
+          httpClientArgs.push(args);
+          return { responseData: {}, responseStatus: 200 };
         },
       });
 
-      expect(triggerWebhookServiceArgs).to.eql([
-        {
-          webhookUrl: 'https://example.com/webhook1',
-          webhookSecret: null,
-          now: new Date('2025-05-04'),
-          event: 'document:created',
-          payload: eventPayload,
-        },
-        {
-          webhookUrl: 'https://example.com/webhook3',
-          webhookSecret: 'secret3',
-          now: new Date('2025-05-04'),
-          event: 'document:created',
-          payload: eventPayload,
-        },
+      expect(httpClientArgs.map(a => a.url)).to.eql([
+        'https://example.com/webhook1',
+        'https://example.com/webhook3',
       ]);
+
+      for (const args of httpClientArgs) {
+        expect(JSON.parse(args.body)).to.eql({
+          type: 'document:created',
+          timestamp: '2025-05-04T00:00:00.000Z',
+          data: {
+            ...eventPayload,
+            createdAt: eventPayload.createdAt.toISOString(),
+            updatedAt: eventPayload.updatedAt.toISOString(),
+          },
+        });
+      }
+
+      // Only the webhook with a configured secret should produce a signature header
+      expect(httpClientArgs[0]?.headers['webhook-signature']).toBeUndefined();
+      expect(typeof httpClientArgs[1]?.headers['webhook-signature']).to.eq('string');
     });
   });
 });

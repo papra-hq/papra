@@ -1,6 +1,6 @@
 {
   "name": "@papra/app",
-  "version": "26.4.0",
+  "version": "26.4.2",
   "private": true,
   "description": "Papra application package - document management system (CalVer versioned).",
   "repository": {
@@ -9,9 +9,9 @@
     "directory": "packages/app"
   },
   "scripts": {
-    "build:docker:root": "docker build -t papra-local-root -f ./Dockerfile ../..",
+    "build:docker:root": "docker build --no-cache -t papra-local-root -f ./Dockerfile ../..",
     "build:docker:root:amd64": "docker buildx build --platform linux/amd64 -t papra-local-root-amd64 -f ./Dockerfile --load ../..",
     "build:docker:root:arm64": "docker buildx build --platform linux/arm64 -t papra-local-root-arm64 -f ./Dockerfile --load ../..",
-    "build:docker:rootless": "docker build -t papra-local-rootless -f ./Dockerfile.rootless ../.."
+    "build:docker:rootless": "docker build --no-cache -t papra-local-rootless -f ./Dockerfile.rootless ../.."
   }
 }

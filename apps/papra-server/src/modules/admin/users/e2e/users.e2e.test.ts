@@ -1,8 +1,11 @@
+import { eq } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../../app/database/database.test-utils';
 import { createServer } from '../../../app/server';
 import { createTestServerDependencies } from '../../../app/server.test-utils';
 import { overrideConfig } from '../../../config/config.test-utils';
+import { ORGANIZATION_ROLES } from '../../../organizations/organizations.constants';
+import { usersTable } from '../../../users/users.table';
 
 describe('admin users routes - permission protection', () => {
   describe('get /api/admin/users', () => {
@@ -222,6 +225,176 @@ describe('admin users routes - permission protection', () => {
       const response = await app.request(
         '/api/admin/users/usr_target',
         { method: 'GET' },
+      );
+
+      expect(response.status).to.eql(401);
+      expect(await response.json()).to.eql({
+        error: {
+          code: 'auth.unauthorized',
+          message: 'Unauthorized',
+        },
+      });
+    });
+  });
+
+  describe('delete /api/admin/users/:userId', () => {
+    test('when the user has the DELETE_USERS permission and the target has no owned organizations, the user is deleted', async () => {
+      const targetUserId = 'usr_123456789012345678901234';
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
+          { id: targetUserId, email: 'target@example.com', name: 'Target User' },
+        ],
+        userRoles: [
+          { userId: 'usr_admin', role: 'admin' },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        `/api/admin/users/${targetUserId}`,
+        { method: 'DELETE' },
+        { loggedInUserId: 'usr_admin' },
+      );
+
+      expect(response.status).to.eql(204);
+
+      const remaining = await db.select().from(usersTable).where(eq(usersTable.id, targetUserId));
+      expect(remaining).to.eql([]);
+    });
+
+    test('when the target user still owns an organization, a 400 error is returned and the user is not deleted', async () => {
+      const targetUserId = 'usr_123456789012345678901234';
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
+          { id: targetUserId, email: 'target@example.com', name: 'Target User' },
+        ],
+        userRoles: [
+          { userId: 'usr_admin', role: 'admin' },
+        ],
+        organizations: [
+          { id: 'org_1', name: 'Organization 1' },
+        ],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: targetUserId, role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        `/api/admin/users/${targetUserId}`,
+        { method: 'DELETE' },
+        { loggedInUserId: 'usr_admin' },
+      );
+
+      expect(response.status).to.eql(400);
+      expect(await response.json()).to.eql({
+        error: {
+          code: 'users.still_owns_organizations',
+          message: 'User still owns organizations',
+        },
+      });
+
+      const remaining = await db.select().from(usersTable).where(eq(usersTable.id, targetUserId));
+      expect(remaining).to.have.length(1);
+    });
+
+    test('when the admin tries to delete their own account, a 400 error is returned', async () => {
+      const adminUserId = 'usr_aaaaaaaaaaaaaaaaaaaaaaaa';
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: adminUserId, email: 'admin@example.com', name: 'Admin User' },
+        ],
+        userRoles: [
+          { userId: adminUserId, role: 'admin' },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        `/api/admin/users/${adminUserId}`,
+        { method: 'DELETE' },
+        { loggedInUserId: adminUserId },
+      );
+
+      expect(response.status).to.eql(400);
+      expect(await response.json()).to.eql({
+        error: {
+          code: 'users.cannot_delete_self',
+          message: 'Cannot delete your own account from the admin panel',
+        },
+      });
+
+      const remaining = await db.select().from(usersTable).where(eq(usersTable.id, adminUserId));
+      expect(remaining).to.have.length(1);
+    });
+
+    test('when the target user does not exist, a 404 error is returned', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
+        ],
+        userRoles: [
+          { userId: 'usr_admin', role: 'admin' },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        '/api/admin/users/usr_999999999999999999999999',
+        { method: 'DELETE' },
+        { loggedInUserId: 'usr_admin' },
+      );
+
+      expect(response.status).to.eql(404);
+    });
+
+    test('when the user does not have the DELETE_USERS permission, a 401 error is returned', async () => {
+      const targetUserId = 'usr_123456789012345678901234';
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_regular', email: 'user@example.com' },
+          { id: targetUserId, email: 'target@example.com' },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        `/api/admin/users/${targetUserId}`,
+        { method: 'DELETE' },
+        { loggedInUserId: 'usr_regular' },
+      );
+
+      expect(response.status).to.eql(401);
+      expect(await response.json()).to.eql({
+        error: {
+          code: 'auth.unauthorized',
+          message: 'Unauthorized',
+        },
+      });
+
+      const remaining = await db.select().from(usersTable).where(eq(usersTable.id, targetUserId));
+      expect(remaining).to.have.length(1);
+    });
+
+    test('when the user is not authenticated, a 401 error is returned', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [
+          { id: 'usr_target', email: 'target@example.com' },
+        ],
+      });
+
+      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+
+      const response = await app.request(
+        '/api/admin/users/usr_target',
+        { method: 'DELETE' },
       );
 
       expect(response.status).to.eql(401);
