@@ -24,6 +24,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       deleteOrganization,
       getOrganizationById,
       getUserOwnedOrganizationCount,
+      clearUserDeletedByReferences,
       getOrganizationOwner,
       getOrganizationMembersCount,
       getAllOrganizationIds,
@@ -115,6 +116,13 @@ async function updateOrganization({ organizationId, organization: organizationTo
 
 async function deleteOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
   await db.delete(organizationsTable).where(eq(organizationsTable.id, organizationId));
+}
+
+async function clearUserDeletedByReferences({ userId, db }: { userId: string; db: Database }) {
+  await db
+    .update(organizationsTable)
+    .set({ deletedBy: null })
+    .where(eq(organizationsTable.deletedBy, userId));
 }
 
 async function getOrganizationById({ organizationId, db }: { organizationId: string; db: Database }) {
