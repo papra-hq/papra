@@ -31,3 +31,10 @@ export async function getUserDetail({ userId }: { userId: string }) {
 
   return { organizations, roles, user };
 }
+
+export async function deleteUser({ userId }: { userId: string }) {
+  await apiClient({
+    method: 'DELETE',
+    path: `/api/admin/users/${userId}`,
+  });
+}

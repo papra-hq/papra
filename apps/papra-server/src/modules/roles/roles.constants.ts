@@ -5,12 +5,14 @@ export const ROLES = {
 export const PERMISSIONS = {
   BO_ACCESS: 'bo:access',
   VIEW_USERS: 'users:view',
+  DELETE_USERS: 'users:delete',
   VIEW_ANALYTICS: 'analytics:view',
 } as const;
 
 export const PERMISSIONS_BY_ROLE = {
   [ROLES.ADMIN]: [
     PERMISSIONS.VIEW_USERS,
+    PERMISSIONS.DELETE_USERS,
     PERMISSIONS.BO_ACCESS,
     PERMISSIONS.VIEW_ANALYTICS,
   ],
