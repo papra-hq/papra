@@ -68,6 +68,7 @@
     "unocss": "catalog:",
     "vite": "^7.1.9",
     "vite-plugin-solid": "^2.11.9",
+    "vite-plugin-static-copy": "^4.1.0",
     "vitest": "catalog:"
   }
 }

@@ -1,10 +1,9 @@
 import type { Component } from 'solid-js';
-import { usePDFSlick } from '@pdfslick/solid';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 import { SideBar } from './sidebar/sidebar.component';
 import { PdfViewerToolbar } from './toolbar/pdf-viewer-toolbar.component';
-import '@pdfslick/solid/dist/pdf_viewer.css';
+import { usePdfViewer } from './use-pdf-viewer';
 
 const SIDEBAR_DEFAULT_WIDTH = 233;
 const SIDEBAR_MIN_WIDTH = 195;
@@ -16,7 +15,7 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
     thumbsRef,
     pdfSlickStore: store,
     PDFSlickViewer,
-  } = usePDFSlick(props.url);
+  } = usePdfViewer({ url: props.url });
 
   const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
   const [sidebarWidth, setSidebarWidth] = createSignal(SIDEBAR_DEFAULT_WIDTH);
