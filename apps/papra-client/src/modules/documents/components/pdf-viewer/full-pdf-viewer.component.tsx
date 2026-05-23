@@ -1,10 +1,9 @@
 import type { Component } from 'solid-js';
-import { usePDFSlick } from '@pdfslick/solid';
 import { createSignal, onCleanup, onMount } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 import { SideBar } from './sidebar/sidebar.component';
 import { PdfViewerToolbar } from './toolbar/pdf-viewer-toolbar.component';
-import '@pdfslick/solid/dist/pdf_viewer.css';
+import { usePdfViewer } from './use-pdf-viewer';
 
 const SIDEBAR_DEFAULT_WIDTH = 233;
 const SIDEBAR_MIN_WIDTH = 195;
@@ -16,17 +15,7 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
     thumbsRef,
     pdfSlickStore: store,
     PDFSlickViewer,
-  } = usePDFSlick(props.url, {
-    // These assets are required to render PDFs with non-embedded standard
-    // system fonts. They are automatically copied from the pdfjs-dist package
-    // to the `public/pdfjs-dist/` directory by the `copyPdfjsAssetsPlugin` in
-    // `vite.config.ts` during build.
-    getDocumentParams: {
-      cMapUrl: `/pdfjs-assets/cmaps/`,
-      cMapPacked: true,
-      standardFontDataUrl: `/pdfjs-assets/standard_fonts/`,
-    },
-  });
+  } = usePdfViewer({ url: props.url });
 
   const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
   const [sidebarWidth, setSidebarWidth] = createSignal(SIDEBAR_DEFAULT_WIDTH);
