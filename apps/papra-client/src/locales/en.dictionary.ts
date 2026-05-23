@@ -862,7 +862,7 @@ export const translations = {
   'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
   'api-errors.organization.has_active_subscription': 'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
   'api-errors.webhooks.ssrf_unsafe_url': 'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
-  'api-errors.users.still_owns_organizations': 'This user still owns one or more organizations. Delete or transfer those organizations before deleting the user.',
+  'api-errors.users.still_owns_organizations': 'This user still owns one or more organizations. Delete those organizations before deleting the user.',
   'api-errors.users.cannot_delete_self': 'You cannot delete your own account from the admin panel.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'User not found',
