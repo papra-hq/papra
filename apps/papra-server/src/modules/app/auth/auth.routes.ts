@@ -1,8 +1,20 @@
 import type { Context, RouteDefinitionContext } from '../server.types';
 import type { Session } from './auth.types';
-import { get } from 'lodash-es';
 import { addLogContext } from '../../shared/logger/logger';
-import { isDefined, isNil, isString } from '../../shared/utils';
+import { isDefined, isNil } from '../../shared/utils';
+
+function getOverrideUserId(context: Context): string | undefined {
+  if (
+    !isNil(context.env)
+    && typeof context.env === 'object'
+    && 'loggedInUserId' in context.env
+    && typeof context.env.loggedInUserId === 'string'
+  ) {
+    return context.env.loggedInUserId;
+  }
+
+  return undefined;
+}
 
 export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext) {
   app.on(
@@ -38,9 +50,9 @@ export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext
 
   if (config.env === 'test') {
     app.use('*', async (context: Context, next) => {
-      const overrideUserId: unknown = get(context.env, 'loggedInUserId');
+      const overrideUserId = getOverrideUserId(context);
 
-      if (isDefined(overrideUserId) && isString(overrideUserId)) {
+      if (isDefined(overrideUserId)) {
         context.set('userId', overrideUserId);
         context.set('session', {} as Session);
         context.set('authType', 'session');

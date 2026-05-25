@@ -6,6 +6,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { usePendingInvitationsCount } from '@/modules/invitations/composables/usePendingInvitationsCount';
 import { useAboutDialog } from '@/modules/shared/components/about-dialog';
 import { cn } from '@/modules/shared/style/cn';
+import { ThemeSwitcher } from '@/modules/theme/theme-switcher.component';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { LanguageSwitcher } from '@/modules/ui/layouts/sidenav.layout';
@@ -48,14 +49,22 @@ export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
         </DropdownMenuItem>
 
         <DropdownMenuSub>
-
           <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
             <div class="i-tabler-language size-4 text-muted-foreground" />
             {t('user-menu.language')}
           </DropdownMenuSubTrigger>
-
           <DropdownMenuSubContent class="min-w-48">
             <LanguageSwitcher />
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
+            <div class="i-tabler-sun-moon size-4 text-muted-foreground" />
+            {t('user-menu.theme')}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent class="min-w-48">
+            <ThemeSwitcher />
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 

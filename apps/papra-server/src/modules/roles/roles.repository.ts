@@ -2,7 +2,6 @@ import type { Database } from '../app/database/database.types';
 import type { Role } from './roles.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq } from 'drizzle-orm';
-import { map } from 'lodash-es';
 import { userRolesTable } from './roles.table';
 
 export type RolesRepository = ReturnType<typeof createRolesRepository>;
@@ -27,7 +26,7 @@ async function getUserRoles({ userId, db }: { userId: string; db: Database }) {
     );
 
   return {
-    roles: map(roles, 'role'),
+    roles: roles.map(r => r.role),
   };
 }
 

@@ -1,4 +1,5 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
+import type { CustomPropertyDefinition } from '../custom-properties/custom-properties.types';
 import type { Document } from '../documents/documents.types';
 import type { Organization } from '../organizations/organizations.types';
 import type { TaggingRule } from '../tagging-rules/tagging-rules.types';
@@ -9,6 +10,7 @@ import localStorageDriver from 'unstorage/drivers/localstorage';
 import { trackingServices } from '../tracking/tracking.services';
 import { DEMO_IS_SEEDED_KEY } from './demo.constants';
 import { createId } from './demo.models';
+import { customPropertyDefinitionsFixtures } from './seed/custom-property-definitions.fixtures';
 import { documentFixtures } from './seed/documents.fixtures';
 import { tagsFixtures } from './seed/tags.fixtures';
 
@@ -20,6 +22,13 @@ export type DocumentFileStoredFile = { name: string; size: number; type: string;
 export type DocumentFileRemoteFile = { name: string; path: string };
 export type DocumentFile = DocumentFileStoredFile | DocumentFileRemoteFile;
 
+export type DocumentCustomPropertyValueStorage = {
+  id: string;
+  documentId: string;
+  propertyDefinitionId: string;
+  value: unknown;
+};
+
 export const organizationStorage = prefixStorage<Organization>(storage, 'organizations');
 export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage<DocumentFile>(storage, 'documentFiles');
@@ -28,6 +37,8 @@ export const tagDocumentStorage = prefixStorage<{ documentId: string; tagId: str
 export const taggingRuleStorage = prefixStorage<TaggingRule>(storage, 'taggingRules');
 export const apiKeyStorage = prefixStorage<ApiKey>(storage, 'apiKeys');
 export const webhooksStorage = prefixStorage<Webhook>(storage, 'webhooks');
+export const customPropertyDefinitionStorage = prefixStorage<CustomPropertyDefinition>(storage, 'customPropertyDefinitions');
+export const documentCustomPropertyValueStorage = prefixStorage<DocumentCustomPropertyValueStorage>(storage, 'documentCustomPropertyValues');
 
 export async function clearDemoStorage() {
   await storage.clear();
@@ -90,6 +101,24 @@ export async function seedDemoStorage() {
 
   const tagsPromises = tagStorage.setItems(tags.map(tag => ({ key: tag.id, value: tag })));
 
+  // Create custom property definitions
+  const customPropertyDefinitions = customPropertyDefinitionsFixtures.map((fixture, index) => ({
+    id: createId({ prefix: 'cpd' }),
+    organizationId,
+    name: fixture.name,
+    key: fixture.key,
+    description: fixture.description ?? null,
+    type: fixture.type,
+    displayOrder: index,
+    options: fixture.options ?? [],
+    createdAt: lastMonth,
+    updatedAt: lastMonth,
+  }));
+
+  const customPropertyDefinitionsPromises = customPropertyDefinitionStorage.setItems(
+    customPropertyDefinitions.map(def => ({ key: def.id, value: def })),
+  );
+
   const documentsPromises = documentFixtures.flatMap((fixture) => {
     const documentId = createId({ prefix: 'doc' });
 
@@ -126,11 +155,30 @@ export async function seedDemoStorage() {
       };
     }));
 
-    return [documentPromise, documentFilePromise, tagDocumentPromise];
+    const customPropertyValuePromises = (fixture.customProperties ?? []).map((prop) => {
+      const definition = customPropertyDefinitions.find(def => def.key === prop.key);
+
+      if (!definition) {
+        return Promise.resolve();
+      }
+
+      const id = createId({ prefix: 'dcpv' });
+      const valueKey = `${documentId}:${definition.id}`;
+
+      return documentCustomPropertyValueStorage.setItem(valueKey, {
+        id,
+        documentId,
+        propertyDefinitionId: definition.id,
+        value: prop.value,
+      });
+    });
+
+    return [documentPromise, documentFilePromise, tagDocumentPromise, ...customPropertyValuePromises];
   });
 
   await Promise.all([
     tagsPromises,
+    customPropertyDefinitionsPromises,
     ...documentsPromises,
   ]);
 }

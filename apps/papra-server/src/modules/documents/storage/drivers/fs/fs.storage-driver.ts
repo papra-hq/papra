@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import { dirname, join } from 'node:path';
-import { get } from 'lodash-es';
+import { safely } from '@corentinth/chisels';
 import { isFileAlreadyExistsError } from '../../../../shared/fs/fs.models';
 import { checkFileExists, deleteFile, ensureDirectoryExists } from '../../../../shared/fs/fs.services';
 import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
+import { isFileNotFoundError } from './fs.storage-driver.models';
 
 export const FS_STORAGE_DRIVER_NAME = 'filesystem' as const;
 
@@ -63,13 +64,13 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
     deleteFile: async ({ storageKey }) => {
       const { storagePath } = getStoragePath({ storageKey });
 
-      try {
-        await deleteFile({ filePath: storagePath });
-      } catch (error) {
-        if (get(error, 'code') === 'ENOENT') {
-          throw createFileNotFoundError();
-        }
+      const [, error] = await safely(deleteFile({ filePath: storagePath }));
 
+      if (error && isFileNotFoundError({ error })) {
+        throw createFileNotFoundError();
+      }
+
+      if (error) {
         throw error;
       }
     },

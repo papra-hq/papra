@@ -2,10 +2,9 @@ import type { Database } from '../app/database/database.types';
 import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
-import { omit } from 'lodash-es';
 import { addDays, startOfDay } from '../shared/date';
 import { withPagination } from '../shared/db/pagination';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationNotFoundError } from './organizations.errors';
@@ -25,6 +24,7 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
       deleteOrganization,
       getOrganizationById,
       getUserOwnedOrganizationCount,
+      clearUserDeletedByReferences,
       getOrganizationOwner,
       getOrganizationMembersCount,
       getAllOrganizationIds,
@@ -116,6 +116,13 @@ async function updateOrganization({ organizationId, organization: organizationTo
 
 async function deleteOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
   await db.delete(organizationsTable).where(eq(organizationsTable.id, organizationId));
+}
+
+async function clearUserDeletedByReferences({ userId, db }: { userId: string; db: Database }) {
+  await db
+    .update(organizationsTable)
+    .set({ deletedBy: null })
+    .where(eq(organizationsTable.deletedBy, userId));
 }
 
 async function getOrganizationById({ organizationId, db }: { organizationId: string; db: Database }) {
@@ -344,7 +351,7 @@ async function getPendingOrganizationInvitationsForEmail({ email, db, now = new 
     );
 
   const invitations = rawInvitations.map(({ organization_invitations, organizations }) => ({
-    ...omit(organization_invitations, ''),
+    ...organization_invitations,
     organization: organizations,
   }));
 

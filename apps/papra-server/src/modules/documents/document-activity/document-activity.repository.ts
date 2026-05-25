@@ -10,10 +10,19 @@ import { documentActivityLogTable } from './document-activity.table';
 
 export type DocumentActivityRepository = ReturnType<typeof createDocumentActivityRepository>;
 
+export type DocumentActivityInput = {
+  documentId: string;
+  event: DocumentActivityEvent;
+  eventData?: Record<string, unknown>;
+  userId?: string | null;
+  tagId?: string;
+};
+
 export function createDocumentActivityRepository({ db }: { db: Database }) {
   return injectArguments(
     {
       saveDocumentActivity,
+      saveDocumentActivities,
       getOrganizationDocumentActivities,
     },
     { db },
@@ -27,14 +36,7 @@ async function saveDocumentActivity({
   userId,
   tagId,
   db,
-}: {
-  documentId: string;
-  event: DocumentActivityEvent;
-  eventData?: Record<string, unknown>;
-  userId?: string | null;
-  tagId?: string;
-  db: Database;
-}) {
+}: DocumentActivityInput & { db: Database }) {
   const [activity] = await db
     .insert(documentActivityLogTable)
     .values({
@@ -47,6 +49,25 @@ async function saveDocumentActivity({
     .returning();
 
   return { activity };
+}
+
+async function saveDocumentActivities({
+  activities,
+  db,
+}: {
+  activities: DocumentActivityInput[];
+  db: Database;
+}) {
+  if (activities.length === 0) {
+    return { activities: [] };
+  }
+
+  const inserted = await db
+    .insert(documentActivityLogTable)
+    .values(activities)
+    .returning();
+
+  return { activities: inserted };
 }
 
 async function getOrganizationDocumentActivities({

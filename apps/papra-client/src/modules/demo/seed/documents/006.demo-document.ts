@@ -8,6 +8,10 @@ const demoDocumentFixture: DemoDocumentFixture = {
   mimeType: 'application/pdf',
   size: 50374,
   tags: ['Receipts'],
+  customProperties: [
+    { key: 'status', value: 'archived' },
+    { key: 'amount', value: 19.56 },
+  ],
   content: `
 receipt for groceries date january 20 2026 store tesco superstore
 123 regent st london sw1e 7na order number tcgro000023 item

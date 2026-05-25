@@ -1,5 +1,4 @@
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import { get, isError, toString } from 'lodash-es';
 
 export { createError, createErrorFactory, formatPublicErrorPayload, isCustomError, isErrorWithCode };
 
@@ -13,16 +12,15 @@ type ErrorOptions = {
 
 class CustomError extends Error {
   code: string;
-  cause?: Error | null;
+  cause?: unknown;
   statusCode: ContentfulStatusCode;
-  isCustomError = true;
   isInternal: boolean = false;
 
   constructor({ message, code, cause, statusCode, isInternal = false }: ErrorOptions) {
     super(message);
 
     this.code = code;
-    this.cause = isError(cause) ? cause : new Error(toString(cause));
+    this.cause = cause;
     this.statusCode = statusCode;
     this.isInternal = isInternal;
   }
@@ -43,7 +41,7 @@ function createErrorFactory(baseOption: ErrorOptions) {
 }
 
 function isCustomError(error: unknown): error is CustomError {
-  return get(error, 'isCustomError') === true && isError(error);
+  return error instanceof CustomError;
 }
 
 function isErrorWithCode({ error, code }: { error: unknown; code: string }) {

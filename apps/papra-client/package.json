@@ -11,7 +11,7 @@
     "url": "https://github.com/papra-hq/papra"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "scripts": {
     "start": "vite",
@@ -45,7 +45,7 @@
     "clsx": "^2.1.1",
     "cmdk-solid": "^1.1.2",
     "ofetch": "catalog:",
-    "p-limit": "^6.2.0",
+    "p-limit": "catalog:",
     "posthog-js-lite": "^4.1.5",
     "radix3": "^1.1.2",
     "solid-js": "^1.9.9",
@@ -63,12 +63,12 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-solid": "^0.14.5",
-    "tinyglobby": "^0.2.14",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unocss": "catalog:",
     "vite": "^7.1.9",
     "vite-plugin-solid": "^2.11.9",
+    "vite-plugin-static-copy": "^4.1.0",
     "vitest": "catalog:"
   }
 }

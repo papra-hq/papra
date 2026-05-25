@@ -1,13 +1,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { camelCase, kebabCase } from 'lodash-es';
 import { builders, loadFile, writeFile } from 'magicast';
 import { runScript } from './commons/run-script';
 
 const currentDirectory = import.meta.dirname;
 
 const migrationsDirectory = path.join(currentDirectory, '..', 'migrations', 'list');
+
+const KEBAB_CASE_REGEX = /^[a-z]+(?:-[a-z0-9]+)*$/;
+
+function kebabToCamelCase(str: string) {
+  return str.split('-').map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
+}
 
 async function getLastMigrationFilePrefixNumber() {
   const migrations = await fs.readdir(migrationsDirectory);
@@ -31,7 +36,12 @@ await runScript(
       process.exit(1);
     }
 
-    const migrationName = kebabCase(rawMigrationName);
+    const migrationName = rawMigrationName.trim();
+
+    if (!KEBAB_CASE_REGEX.test(migrationName)) {
+      logger.error('Migration name should be in kebab-case, example: pnpm migrate:create add-users-table');
+      process.exit(1);
+    }
 
     const lastMigrationPrefixNumber = await getLastMigrationFilePrefixNumber();
     const prefixNumber = (lastMigrationPrefixNumber + 1).toString().padStart(4, '0');
@@ -40,7 +50,7 @@ await runScript(
     const fileName = `${fileNameWithoutExtension}.ts`;
 
     const migrationPath = path.join(migrationsDirectory, fileName);
-    const migrationObjectIdentifier = `${camelCase(migrationName)}Migration`;
+    const migrationObjectIdentifier = `${kebabToCamelCase(migrationName)}Migration`;
 
     await fs.writeFile(migrationPath, `
 import type { Migration } from '../migrations.types';

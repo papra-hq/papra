@@ -8,6 +8,12 @@ const demoDocumentFixture: DemoDocumentFixture = {
   mimeType: 'application/pdf',
   size: 31564,
   tags: ['Cases'],
+  customProperties: [
+    { key: 'status', value: 'reviewed' },
+    { key: 'priority', value: 'critical' },
+    { key: 'confidential', value: true },
+    { key: 'reference', value: 'CASE-2026-001' },
+  ],
   content: `
 blackmail letter from reginald thornton fiennes date january 20 2026
 reggie com to sherlock holmes sleuth subject the secrets you

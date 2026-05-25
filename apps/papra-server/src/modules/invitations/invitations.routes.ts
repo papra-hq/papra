@@ -1,5 +1,5 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import z from 'zod';
+import * as v from 'valibot';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
@@ -65,7 +65,7 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/accept',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -117,7 +117,7 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/reject',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -155,7 +155,7 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/cancel',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {
@@ -191,7 +191,7 @@ function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDe
   app.post(
     '/api/invitations/:invitationId/resend',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       invitationId: invitationIdSchema,
     })),
     async (context) => {

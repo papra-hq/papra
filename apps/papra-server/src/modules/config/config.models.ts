@@ -3,37 +3,33 @@ import type { Logger } from '@crowlog/logger';
 import type { Config } from './config.types';
 import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
-import { merge, pick } from 'lodash-es';
+import { pick } from '../shared/objects';
 
 export function getPublicConfig({ config }: { config: Config }) {
-  const publicConfig: DeepPartial<Config> = merge(
-    pick(config, [
-      'version',
-      'gitCommitSha',
-      'gitCommitDate',
-      'auth.isEmailVerificationRequired',
-      'auth.isPasswordResetEnabled',
-      'auth.isRegistrationEnabled',
-      'auth.showLegalLinksOnAuthPage',
-      'auth.providers.email.isEnabled',
-      'auth.providers.github.isEnabled',
-      'auth.providers.google.isEnabled',
-      'documents.deletedDocumentsRetentionDays',
-      'intakeEmails.isEnabled',
-      'organizations.deletedOrganizationsPurgeDaysDelay',
-    ]),
-    {
-      auth: {
-        providers: {
-          customs: config?.auth?.providers?.customs?.map(custom => pick(custom, [
-            'providerId',
-            'providerName',
-            'providerIconUrl',
-          ])) ?? [],
-        },
+  const publicConfig: DeepPartial<Config> = {
+    version: config.version,
+    gitCommitSha: config.gitCommitSha,
+    gitCommitDate: config.gitCommitDate,
+    auth: {
+      isEmailVerificationRequired: config.auth.isEmailVerificationRequired,
+      isPasswordResetEnabled: config.auth.isPasswordResetEnabled,
+      isRegistrationEnabled: config.auth.isRegistrationEnabled,
+      showLegalLinksOnAuthPage: config.auth.showLegalLinksOnAuthPage,
+      providers: {
+        email: { isEnabled: config.auth.providers.email.isEnabled },
+        github: { isEnabled: config.auth.providers.github.isEnabled },
+        google: { isEnabled: config.auth.providers.google.isEnabled },
+        customs: config.auth.providers.customs?.map(custom => pick(custom, [
+          'providerId',
+          'providerName',
+          'providerIconUrl',
+        ])) ?? [],
       },
     },
-  );
+    documents: { deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays },
+    intakeEmails: { isEnabled: config.intakeEmails.isEnabled },
+    organizations: { deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay },
+  };
 
   return {
     publicConfig,

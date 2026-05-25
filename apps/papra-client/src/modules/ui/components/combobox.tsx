@@ -56,7 +56,7 @@ export function ComboboxTrigger<T extends ValidComponent = 'button'>(props: Poly
 
           <ComboboxPrimitive.Trigger
             class={cn(
-              'flex min-h-9 w-full items-center rounded-md border border-input px-3 shadow-sm bg-inherit',
+              'flex min-h-9 w-full items-center rounded-md border border-input px-3 bg-inherit',
               local.class,
             )}
             {...rest}

@@ -1,9 +1,6 @@
 # Base stage with pnpm
-FROM node:24-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack prepare pnpm@10.30.3 --activate
+FROM node:26-slim AS base
+RUN npm install -g pnpm@11.1.1
 
 # Build stage
 FROM base AS build
@@ -38,6 +35,7 @@ WORKDIR /app
 
 COPY --from=build /prod/papra-server ./
 COPY --from=build /app/apps/papra-client/dist ./public
+COPY pnpm-workspace.yaml ./
 
 EXPOSE 1221
 

@@ -41,11 +41,10 @@ export const sidebar = [
         label: 'Document Encryption',
         slug: 'guides/document-encryption',
       },
-      // TODO: uncomment when released
-      // {
-      //   label: 'Migrate Document Storage',
-      //   slug: 'guides/migrate-document-storage',
-      // },
+      {
+        label: 'Migrate Document Storage',
+        slug: 'guides/migrate-document-storage',
+      },
       {
         label: 'Tagging Rules',
         slug: 'guides/tagging-rules',
@@ -58,11 +57,10 @@ export const sidebar = [
         label: 'Advanced Search',
         slug: 'guides/advanced-search',
       },
-      // TODO: uncomment when released
-      // {
-      //   label: 'Storage Key Patterns',
-      //   slug: 'guides/storage-key-patterns',
-      // },
+      {
+        label: 'Storage Key Patterns',
+        slug: 'guides/storage-key-patterns',
+      },
     ],
   },
   {

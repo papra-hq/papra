@@ -1,45 +1,34 @@
 import type { ValidationTargets } from 'hono';
-import type z from 'zod';
 import { validator } from 'hono/validator';
+import * as v from 'valibot';
 
-function formatValidationError({ error }: { error: z.ZodError }) {
-  const details = (error.errors ?? []).map((e) => {
+function formatValidationIssues(issues: v.GenericIssue[]) {
+  return issues.map((issue) => {
     return {
-      ...(e.path.length === 0 ? {} : { path: e.path.join('.') }),
-      message: e.message,
+      path: v.getDotPath(issue),
+      message: issue.message,
     };
   });
-
-  return details;
 }
 
 function buildValidator<Target extends keyof ValidationTargets>({ target, error }: { target: Target; error: { message: string; code: string } }) {
-  return <Schema extends z.ZodTypeAny>(schema: Schema, { allowAdditionalFields = false }: { allowAdditionalFields?: boolean } = {}) => {
-    return validator(target, (value, context) => {
-      // @ts-expect-error try to enforce strict mode
-      // eslint-disable-next-line ts/no-unsafe-assignment, ts/no-unsafe-call
-      const refinedSchema: Schema = allowAdditionalFields ? schema : (schema.strict?.() ?? schema);
+  return <Schema extends v.GenericSchema>(schema: Schema) => validator(target, (value, context) => {
+    const result = v.safeParse(schema, value);
 
-      const result = refinedSchema.safeParse(value);
+    if (result.success) {
+      return result.output;
+    }
 
-      if (result.success) {
-        // eslint-disable-next-line ts/no-unsafe-return
-        return result.data as z.infer<Schema>;
-      }
-
-      const details = formatValidationError({ error: result.error });
-
-      return context.json(
-        {
-          error: {
-            ...error,
-            details,
-          },
+    return context.json(
+      {
+        error: {
+          ...error,
+          details: formatValidationIssues(result.issues),
         },
-        400,
-      );
-    });
-  };
+      },
+      400,
+    );
+  });
 }
 
 export const validateJsonBody = buildValidator({ target: 'json', error: { message: 'Invalid request body', code: 'server.invalid_request.body' } });

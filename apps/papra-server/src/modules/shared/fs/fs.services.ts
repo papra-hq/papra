@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer';
 import fsSyncNative from 'node:fs';
 import fsPromisesNative from 'node:fs/promises';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { pick } from 'lodash-es';
+import { pick } from '../objects';
 import { isCrossDeviceError } from './fs.models';
 
 // what we use from the native fs module
@@ -20,7 +20,7 @@ export type FsNative = {
 };
 
 const fsNative = {
-  ...pick(fsPromisesNative, 'mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat', 'copyFile'),
+  ...pick(fsPromisesNative, ['mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat', 'copyFile']),
   createReadStream: fsSyncNative.createReadStream.bind(fsSyncNative) as (filePath: string) => Readable,
 } as FsNative;
 

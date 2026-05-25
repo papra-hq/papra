@@ -66,14 +66,16 @@
 
     <style>.sr-only {position: absolute;width: 1px;height: 1px;padding: 0;margin: -1px;overflow: hidden;clip: rect(0, 0, 0, 0);white-space: nowrap;border-width: 0;}</style>
 
-    <!-- Prevent flash of wrong theme on load -->
+    <!-- Prevent FOUC, default to dark theme -->
     <script>
       (function () {
-        const stored = localStorage?.getItem('papra_color_mode') ?? 'dark';
+        try{
+          const stored = localStorage?.getItem('papra_color_mode');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isLight = stored === 'light' || (stored === 'system' && !systemPrefersDark);
 
-        if (stored === 'dark') {
-          document.documentElement.setAttribute('data-kb-theme', 'dark');
-        }
+          document.documentElement.setAttribute('data-kb-theme', isLight ? 'light' : 'dark');
+        } catch {}
       })();
     </script>
   </head>

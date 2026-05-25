@@ -4,7 +4,7 @@ import type { Document } from '../documents/documents.types';
 import type { Logger } from '../shared/logger/logger';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { Tag } from '../tags/tags.types';
-import type { WebhookRepository } from '../webhooks/webhook.repository';
+import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import type { TaggingRulesRepository } from './tagging-rules.repository';
 import type { ConditionMatchMode, TaggingRuleField, TaggingRuleOperator } from './tagging-rules.types';
@@ -69,7 +69,7 @@ export async function applyTaggingRule({
   document,
   taggingRule,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
   logger = createLogger({ namespace: 'tagging-rules' }),
@@ -89,7 +89,7 @@ export async function applyTaggingRule({
     }>;
   };
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   logger?: Logger;
@@ -137,7 +137,7 @@ export async function applyTaggingRule({
       organizationId: document.organizationId,
       tag,
       tagsRepository,
-      webhookRepository,
+      webhookTriggerServices,
       documentActivityRepository,
     }));
 
@@ -170,7 +170,7 @@ export async function applyTaggingRules({
 
   taggingRulesRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
   logger = createLogger({ namespace: 'tagging-rules' }),
@@ -180,7 +180,7 @@ export async function applyTaggingRules({
   taggingRulesRepository: TaggingRulesRepository;
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;
 }) {
@@ -192,7 +192,7 @@ export async function applyTaggingRules({
       document,
       taggingRule,
       tagsRepository,
-      webhookRepository,
+      webhookTriggerServices,
       documentActivityRepository,
       taggingRuleOperatorValidatorRegistry,
       logger,
@@ -217,7 +217,7 @@ async function processDocumentWithTaggingRule({
   document,
   taggingRule,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   logger,
 }: {
@@ -235,7 +235,7 @@ async function processDocumentWithTaggingRule({
     }>;
   };
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   logger: Logger;
 }) {
@@ -244,7 +244,7 @@ async function processDocumentWithTaggingRule({
       document,
       taggingRule,
       tagsRepository,
-      webhookRepository,
+      webhookTriggerServices,
       documentActivityRepository,
       logger,
     });
@@ -264,7 +264,7 @@ export async function applyTaggingRuleToExistingDocuments({
   taggingRulesRepository,
   documentsRepository,
   tagsRepository,
-  webhookRepository,
+  webhookTriggerServices,
   documentActivityRepository,
   logger = createLogger({ namespace: 'tagging-rules' }),
 }: {
@@ -273,7 +273,7 @@ export async function applyTaggingRuleToExistingDocuments({
   taggingRulesRepository: TaggingRulesRepository;
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
-  webhookRepository: WebhookRepository;
+  webhookTriggerServices: WebhookTriggerServices;
   documentActivityRepository: DocumentActivityRepository;
   logger?: Logger;
 }) {
@@ -302,7 +302,7 @@ export async function applyTaggingRuleToExistingDocuments({
       document,
       taggingRule,
       tagsRepository,
-      webhookRepository,
+      webhookTriggerServices,
       documentActivityRepository,
       logger,
     });

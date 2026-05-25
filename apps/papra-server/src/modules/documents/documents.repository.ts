@@ -1,15 +1,16 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
+import { chunkArray } from '../shared/arrays/arrays.utils';
 import { subDays } from '../shared/date';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
-import { isDefined, isNil, omitUndefined } from '../shared/utils';
-import { documentsTagsTable, tagsTable } from '../tags/tags.table';
+import { omitUndefined } from '../shared/objects';
+import { isDefined, isNil, uniq } from '../shared/utils';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
 
@@ -22,6 +23,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getOrganizationDeletedDocuments,
       getDocumentById,
       softDeleteDocument,
+      softDeleteDocuments,
       getOrganizationDeletedDocumentsCount,
       restoreDocument,
       hardDeleteDocument,
@@ -34,6 +36,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
       getGlobalDocumentsStats,
+      areAllDocumentsInOrganization,
     },
     { db },
   );
@@ -137,24 +140,7 @@ async function getDocumentById({ documentId, organizationId, db }: { documentId:
       ),
     );
 
-  if (!document) {
-    return { document: undefined };
-  }
-
-  const tags = await db
-    .select({
-      ...getTableColumns(tagsTable),
-    })
-    .from(documentsTagsTable)
-    .leftJoin(tagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
-    .where(eq(documentsTagsTable.documentId, documentId));
-
-  return {
-    document: {
-      ...document,
-      tags,
-    },
-  };
+  return { document };
 }
 
 async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string; userId: string; db: Database; now?: Date }) {
@@ -171,6 +157,42 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
         eq(documentsTable.organizationId, organizationId),
       ),
     );
+}
+
+// Chunked to stay safely under SQLite's host parameter limit (default 32766)
+// when the documentIds list is large (e.g. resolved from a search query).
+const SOFT_DELETE_CHUNK_SIZE = 500;
+
+async function softDeleteDocuments({ documentIds, organizationId, userId, db, now = new Date() }: { documentIds: string[]; organizationId: string; userId: string; db: Database; now?: Date }) {
+  if (documentIds.length === 0) {
+    return { trashedDocumentIds: [] };
+  }
+
+  const trashedDocumentIds: string[] = [];
+
+  const chunks = chunkArray(documentIds, SOFT_DELETE_CHUNK_SIZE);
+
+  for (const idsChunk of chunks) {
+    const rows = await db
+      .update(documentsTable)
+      .set({
+        isDeleted: true,
+        deletedBy: userId,
+        deletedAt: now,
+      })
+      .where(
+        and(
+          inArray(documentsTable.id, idsChunk),
+          eq(documentsTable.organizationId, organizationId),
+          eq(documentsTable.isDeleted, false),
+        ),
+      )
+      .returning({ id: documentsTable.id });
+
+    trashedDocumentIds.push(...rows.map(row => row.id));
+  }
+
+  return { trashedDocumentIds };
 }
 
 async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string; organizationId: string; name?: string; userId?: string; db: Database }) {
@@ -368,4 +390,30 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
     totalDocumentsCount,
     totalDocumentsSize: Number(totalDocumentsSize ?? 0),
   };
+}
+
+export async function areAllDocumentsInOrganization({ documentIds, organizationId, db }: { documentIds: string[]; organizationId: string; db: Database }) {
+  const deduplicatedDocumentIds = uniq(documentIds);
+
+  if (deduplicatedDocumentIds.length === 0) {
+    return true;
+  }
+
+  const documents = await db
+    .select({ id: documentsTable.id })
+    .from(documentsTable)
+    .where(
+      and(
+        inArray(documentsTable.id, deduplicatedDocumentIds),
+        eq(documentsTable.organizationId, organizationId),
+      ),
+    );
+
+  const foundDocumentIds = new Set(documents.map(d => d.id));
+
+  if (foundDocumentIds.size !== deduplicatedDocumentIds.length) {
+    return false;
+  }
+
+  return documentIds.every(documentId => foundDocumentIds.has(documentId));
 }

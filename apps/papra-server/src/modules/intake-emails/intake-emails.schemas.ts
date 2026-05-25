@@ -1,32 +1,28 @@
-import { z } from 'zod';
+import * as v from 'valibot';
+import { createRegexSchema } from '../shared/schemas/string.schemas';
 import { INTAKE_EMAIL_ID_REGEX, RFC_5322_EMAIL_ADDRESS_REGEX } from './intake-emails.constants';
 
-export const permissiveEmailAddressSchema = z.string().regex(RFC_5322_EMAIL_ADDRESS_REGEX);
+export const intakeEmailIdSchema = createRegexSchema(INTAKE_EMAIL_ID_REGEX);
 
-export const emailInfoSchema = z.object({
+export const permissiveEmailAddressSchema = createRegexSchema(RFC_5322_EMAIL_ADDRESS_REGEX);
+
+const emailInfoSchema = v.object({
   address: permissiveEmailAddressSchema,
-  name: z.string().optional(),
+  name: v.optional(v.string()),
 });
 
-export const intakeEmailsIngestionMetaSchema = z.object({
+export const intakeEmailsIngestionMetaSchema = v.object({
   from: emailInfoSchema,
-  to: z.array(emailInfoSchema),
-  originalTo: z.array(emailInfoSchema).optional().default([]),
-  // cc: z.array(emailInfoSchema).optional(),
-  // subject: z.string(),
-  // text: z.string().optional(),
-  // html: z.string().optional(),
+  to: v.array(emailInfoSchema),
+  originalTo: v.optional(v.array(emailInfoSchema), []),
 });
 
-export function parseJson(content: string, ctx: z.RefinementCtx) {
-  try {
-    return JSON.parse(content);
-  } catch (_error) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Invalid json' });
-    return z.never;
-  }
-}
+export const intakeEmailIngestionEmailFieldSchema = v.pipe(
+  v.string(),
+  v.parseJson(),
+  intakeEmailsIngestionMetaSchema,
+);
 
-export const intakeEmailIdSchema = z.string().regex(INTAKE_EMAIL_ID_REGEX);
-
-export const allowedOriginsSchema = z.array(permissiveEmailAddressSchema.toLowerCase()).optional();
+export const allowedOriginsSchema = v.optional(
+  v.array(v.pipe(permissiveEmailAddressSchema, v.toLowerCase())),
+);

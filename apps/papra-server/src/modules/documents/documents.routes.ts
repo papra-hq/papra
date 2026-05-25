@@ -1,22 +1,26 @@
 import type { RouteDefinitionContext } from '../app/server.types';
 import { Readable } from 'node:stream';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
+import { createQueryPaginationSchemaKeys } from '../shared/schemas/pagination.schemas';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
+import { createTagsRepository } from '../tags/tags.repository';
+import { DEFAULT_DOCUMENT_SEARCH_SORT } from './document-search/document-search.constants';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
 import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
+import { documentIdSchema, documentSearchSortFieldSchema, documentSearchSortOrderSchema, searchDocumentsQuerySchema, updateDocumentBodySchema } from './documents.schemas';
+import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -38,7 +42,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -74,13 +78,12 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/deleted',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     validateQuery(
-      z.object({
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+      v.strictObject({
+        ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),
     async (context) => {
@@ -114,7 +117,7 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -125,14 +128,15 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
+      const customPropertiesRepository = createCustomPropertiesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+      const { enrichedDocument } = await enrichAndFormatDocumentForApi({ document, tagsRepository, customPropertiesRepository });
 
-      return context.json({
-        document: formatDocumentForApi({ document }),
-      });
+      return context.json({ document: enrichedDocument });
     },
   );
 }
@@ -141,7 +145,7 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -175,7 +179,7 @@ function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -212,7 +216,7 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -256,38 +260,33 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
   app.get(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     validateQuery(
-      z.object({
-        searchQuery: z.string().optional().default(''),
-        pageIndex: z.coerce.number().min(0).int().optional().default(0),
-        pageSize: z.coerce.number().min(1).max(100).int().optional().default(100),
+      v.strictObject({
+        searchQuery: v.optional(searchDocumentsQuerySchema, ''),
+        sortField: v.optional(documentSearchSortFieldSchema, DEFAULT_DOCUMENT_SEARCH_SORT.field),
+        sortOrder: v.optional(documentSearchSortOrderSchema, DEFAULT_DOCUMENT_SEARCH_SORT.order),
+        ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
       }),
     ),
     async (context) => {
       const { userId } = getUser({ context });
 
       const { organizationId } = context.req.valid('param');
-      const { searchQuery, pageIndex, pageSize } = context.req.valid('query');
+      const { searchQuery, pageIndex, pageSize, sortField, sortOrder } = context.req.valid('query');
 
       const organizationsRepository = createOrganizationsRepository({ db });
+      const customPropertiesRepository = createCustomPropertiesRepository({ db });
+      const tagsRepository = createTagsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents, documentsCount } = await searchOrganizationDocuments({
-        organizationId,
-        searchQuery,
-        pageIndex,
-        pageSize,
-        documentSearchServices,
-      });
+      const { documents, documentsCount } = await searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, sort: { field: sortField, order: sortOrder }, documentSearchServices });
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents, tagsRepository, customPropertiesRepository });
 
-      return context.json({
-        documents: formatDocumentsForApi({ documents }),
-        documentsCount,
-      });
+      return context.json({ documents: enrichedDocuments, documentsCount });
     },
   );
 }
@@ -296,7 +295,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   app.get(
     '/api/organizations/:organizationId/documents/statistics',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -336,7 +335,7 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, event
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -363,7 +362,7 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService, e
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
     async (context) => {
@@ -387,7 +386,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
     })),
@@ -399,6 +398,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
     }).refine(data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined || data.notes !== undefined, {
       message: 'At least one of \'name\', \'content\', \'documentDate\', or \'notes\' must be provided',
     })),
+    validateJsonBody(updateDocumentBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');

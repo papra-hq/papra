@@ -2,7 +2,9 @@ import type { RouteDefinitionContext } from './server.types';
 import { registerAdminRoutes } from '../admin/admin.routes';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
+import { registerCustomPropertiesRoutes } from '../custom-properties/custom-properties.routes';
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
+import { registerDocumentsBatchRoutes } from '../documents/documents-batch/documents-batch.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
@@ -11,7 +13,7 @@ import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.rout
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
 import { registerUsersRoutes } from '../users/users.routes';
-import { registerWebhooksRoutes } from '../webhooks/webhook.routes';
+import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
 
@@ -24,11 +26,13 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerUsersRoutes(context);
   registerOrganizationsRoutes(context);
   registerDocumentsRoutes(context);
+  registerDocumentsBatchRoutes(context);
   registerTagsRoutes(context);
   registerTaggingRulesRoutes(context);
   registerApiKeysRoutes(context);
   registerWebhooksRoutes(context);
   registerInvitationsRoutes(context);
   registerDocumentActivityRoutes(context);
+  registerCustomPropertiesRoutes(context);
   registerAdminRoutes(context);
 }

@@ -1,5 +1,5 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { booleanishSchema } from '../config/config.schemas';
 import { CATCH_ALL_INTAKE_EMAIL_DRIVER_NAME } from './drivers/catch-all/catch-all.intake-email-driver';
 import { catchAllIntakeEmailDriverConfig } from './drivers/catch-all/catch-all.intake-email-driver.config';
@@ -16,13 +16,13 @@ export const intakeEmailsConfig = {
   },
   webhookSecret: {
     doc: 'The secret to use when verifying webhooks, should be a random string between 16 and 128 characters',
-    schema: z.string().min(16).max(128),
+    schema: v.pipe(v.string(), v.minLength(16), v.maxLength(128)),
     default: 'please-change-me',
     env: 'INTAKE_EMAILS_WEBHOOK_SECRET',
   },
   driver: {
     doc: `The driver to use when generating email addresses for intake emails, value can be one of: ${Object.keys(intakeEmailDrivers).map(x => `\`${x}\``).join(', ')}.`,
-    schema: z.enum(Object.keys(intakeEmailDrivers) as [string, ...string[]]),
+    schema: v.picklist(Object.keys(intakeEmailDrivers)),
     default: CATCH_ALL_INTAKE_EMAIL_DRIVER_NAME,
     env: 'INTAKE_EMAILS_DRIVER',
   },

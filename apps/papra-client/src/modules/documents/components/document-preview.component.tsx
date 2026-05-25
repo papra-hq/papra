@@ -10,7 +10,7 @@ const PdfViewer = lazy(() => import('./pdf-viewer/simple-pdf-viewer.component').
 
 const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
-const txtLikeMimeType = ['application/x-yaml', 'application/json', 'application/xml'];
+const txtLikeMimeType = ['application/yaml', 'application/json', 'application/xml'];
 
 function blobToString(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {

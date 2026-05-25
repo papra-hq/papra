@@ -5,15 +5,15 @@ import { coerceDates } from '../shared/http/http-client.models';
 export async function createApiKey({
   name,
   permissions,
-  organizationIds,
-  allOrganizations,
-  expiresAt,
+  // organizationIds,
+  // allOrganizations,
+  // expiresAt,
 }: {
   name: string;
   permissions: string[];
-  organizationIds: string[];
-  allOrganizations: boolean;
-  expiresAt?: Date;
+  // organizationIds: string[];
+  // allOrganizations: boolean;
+  // expiresAt?: Date;
 }) {
   const { apiKey, token } = await apiClient<{
     apiKey: ApiKey;
@@ -24,9 +24,9 @@ export async function createApiKey({
     body: {
       name,
       permissions,
-      organizationIds,
-      allOrganizations,
-      expiresAt,
+      // organizationIds,
+      // allOrganizations,
+      // expiresAt,
     },
   });
 

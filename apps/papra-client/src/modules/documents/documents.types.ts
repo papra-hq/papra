@@ -1,3 +1,4 @@
+import type { DocumentCustomProperty } from '../custom-properties/custom-properties.types';
 import type { Tag } from '../tags/tags.types';
 import type { User } from '../users/users.types';
 import type { DOCUMENT_ACTIVITY_EVENTS } from './documents.constants';
@@ -17,6 +18,7 @@ export type Document = {
   content: string;
   notes?: string | null;
   tags: Tag[];
+  customProperties?: DocumentCustomProperty[];
 };
 
 export type DocumentActivityEvent = (typeof DOCUMENT_ACTIVITY_EVENTS)[keyof typeof DOCUMENT_ACTIVITY_EVENTS];

@@ -23,8 +23,8 @@ export const CreateApiKeyPage: Component = () => {
       const { token } = await createApiKey({
         name,
         permissions,
-        organizationIds: [],
-        allOrganizations: false,
+        // organizationIds: [],
+        // allOrganizations: false,
       });
 
       await queryClient.invalidateQueries({ queryKey: ['api-keys'] });

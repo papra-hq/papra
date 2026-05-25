@@ -39,7 +39,7 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 
 ## Project Status
 
-Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly. 
+Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly.
 
 Feedback and bug reports are highly appreciated to help us improve the platform.
 
@@ -47,7 +47,7 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 
 - **Document management**: Upload, store, and manage your documents in one place.
 - **Organizations**: Create organizations to manage documents with family, friends, or colleagues.
-- **Search**: Quickly search for documents with full-text search.
+- **Search**: Quickly search for documents with full-text search and advanced filters.
 - **Authentication**: User accounts and authentication.
 - **Dark Mode**: A dark theme for those late-night document management sessions.
 - **Responsive Design**: Works on all devices, from desktops to mobile phones.
@@ -61,12 +61,13 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - **CLI**: Manage your documents from the command line.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
 - **i18n**: Support for multiple languages.
-- *Coming soon:* **Document sharing**: Share documents with others.
-- *Coming soon:* **Document requests**: Generate upload links for people to add documents.
-- *Coming maybe one day:* **Mobile app**: Access and upload documents on the go.
-- *Coming maybe one day:* **Desktop app**: Access and upload documents from your computer.
-- *Coming maybe one day:* **Browser extension**: Upload documents from your browser.
-- *Coming maybe one day:* **AI**: Use AI to help you manage or tag your documents.
+- **Custom properties**: Define per-organization custom properties to store additional information about documents.
+- _Coming soon:_ **Document sharing**: Share documents with others.
+- _Coming soon:_ **Document requests**: Generate upload links for people to add documents.
+- _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
+- _Coming maybe one day:_ **Desktop app**: Access and upload documents from your computer.
+- _Coming maybe one day:_ **Browser extension**: Upload documents from your browser.
+- _Coming maybe one day:_ **AI**: Use AI to help you manage or tag your documents.
 
 ## Support
 
@@ -80,8 +81,10 @@ Papra is dedicated to providing a simple yet highly configurable self-hosting ex
 For a quick start, simply run the following command:
 
 ```bash
-docker run -d --name papra -p 1221:1221 ghcr.io/papra-hq/papra:latest
+docker run -d --name papra -p 1221:1221 -e AUTH_SECRET=a-dummy-secret-for-testing-purposes-only ghcr.io/papra-hq/papra:latest
 ```
+
+> The `AUTH_SECRET` above is fine for kicking the tires, but for any real instance you should generate your own with `openssl rand -hex 48` (or similar).
 
 Please refer to the [self-hosting documentation](https://docs.papra.app/self-hosting/using-docker) for more information and configuration options.
 

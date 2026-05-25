@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { isNil } from '../shared/utils';
-import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError } from './tags.errors';
+import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError, createTagNotFoundError } from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagsTable } from './tags.table';
 
@@ -43,6 +43,7 @@ describe('tags repository', () => {
 
       const { tag: updatedTag1 } = await tagsRepository.updateTag({
         tagId: tag1.id,
+        organizationId: 'organization-1',
         name: 'Tag 1 Updated',
         description: 'Tag 1 Description',
         color: '#00aa00',
@@ -65,11 +66,35 @@ describe('tags repository', () => {
         color: '#00aa00',
       });
 
-      await tagsRepository.deleteTag({ tagId: tag1.id });
+      await tagsRepository.deleteTag({ tagId: tag1.id, organizationId: 'organization-1' });
 
       const { tags: tagsAfterDelete } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
 
       expect(tagsAfterDelete).to.have.length(0);
+    });
+  });
+
+  describe('deleteTag', () => {
+    test('deleteTag scoped by organizationId does not delete tags belonging to another organization', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-2', name: 'Organization 2' },
+        ],
+        tags: [
+          { id: 'tag-1', organizationId: 'organization-2', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+        ],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      await expect(
+        tagsRepository.deleteTag({ tagId: 'tag-1', organizationId: 'organization-1' }),
+      ).rejects.toThrow(createTagNotFoundError());
+
+      const tags = await db.select().from(tagsTable);
+      expect(tags).to.have.length(1);
+      expect(tags[0]).to.include({ id: 'tag-1', organizationId: 'organization-2' });
     });
   });
 
@@ -230,8 +255,29 @@ describe('tags repository', () => {
       const tagsRepository = createTagsRepository({ db });
 
       await expect(
-        tagsRepository.updateTag({ tagId: 'tag-2', name: 'Tag 1' }),
+        tagsRepository.updateTag({ tagId: 'tag-2', organizationId: 'organization-1', name: 'Tag 1' }),
       ).rejects.toThrow(createTagAlreadyExistsError());
+    });
+
+    test('updateTag scoped by organizationId does not modify tags belonging to another organization', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [
+          { id: 'organization-1', name: 'Organization 1' },
+          { id: 'organization-2', name: 'Organization 2' },
+        ],
+        tags: [
+          { id: 'tag-1', organizationId: 'organization-2', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+        ],
+      });
+
+      const tagsRepository = createTagsRepository({ db });
+
+      const { tag } = await tagsRepository.updateTag({ tagId: 'tag-1', organizationId: 'organization-1', name: 'Hijacked' });
+
+      expect(tag).to.equal(undefined);
+
+      const [storedTag] = await db.select().from(tagsTable);
+      expect(storedTag).to.include({ id: 'tag-1', name: 'Tag 1', organizationId: 'organization-2' });
     });
 
     test('when updating a tag name, the normalized name is also updated for uniqueness checks', async () => {
@@ -244,7 +290,7 @@ describe('tags repository', () => {
 
       const tagsRepository = createTagsRepository({ db });
 
-      await tagsRepository.updateTag({ tagId: 'tag-1', name: 'New Tag Name' });
+      await tagsRepository.updateTag({ tagId: 'tag-1', organizationId: 'organization-1', name: 'New Tag Name' });
 
       const tags = await db.select().from(tagsTable);
 

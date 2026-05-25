@@ -1,6 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import { booleanishSchema } from '../../../config/config.schemas';
-import { documentKeyEncryptionKeysSchema } from './document-encryption.schemas';
+import { coercedDocumentKeyEncryptionKeysListSchema } from './document-encryption.schemas';
 
 export const documentEncryptionConfig = {
   isEncryptionEnabled: {
@@ -20,7 +20,7 @@ Formats:
    - Versions must be unique and can be any alphabetically sortable string
    - The order of the version:key pair is not important
 `.trim(),
-    schema: documentKeyEncryptionKeysSchema,
+    schema: coercedDocumentKeyEncryptionKeysListSchema,
     default: undefined,
     env: 'DOCUMENT_STORAGE_DOCUMENT_KEY_ENCRYPTION_KEYS',
   },

@@ -3,7 +3,7 @@ import { injectArguments, safely } from '@corentinth/chisels';
 import { and, count, eq } from 'drizzle-orm';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { createError } from '../shared/errors/errors';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { createIntakeEmailAlreadyExistsError, createIntakeEmailNotFoundError } from './intake-emails.errors';
 import { intakeEmailsTable } from './intake-emails.tables';
 

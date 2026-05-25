@@ -1,46 +1,32 @@
 import type { APIRoute } from 'astro';
 import type { ConfigDefinition } from 'figue';
-import { mapValues } from 'lodash-es';
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toJsonSchema } from '@valibot/to-json-schema';
+import * as v from 'valibot';
 import { configDefinition } from '../../../papra-server/src/modules/config/config';
 
-function buildConfigSchema({ configDefinition }: { configDefinition: ConfigDefinition }) {
-  const schema: any = mapValues(configDefinition, (config) => {
-    if (typeof config === 'object' && config !== null && 'schema' in config && 'doc' in config) {
-      return config.schema;
+function buildConfigSchema({ configDefinition }: { configDefinition: ConfigDefinition }): v.GenericSchema {
+  const entries: Record<string, v.GenericSchema> = {};
+
+  for (const [key, value] of Object.entries(configDefinition)) {
+    if ('schema' in value) {
+      entries[key] = v.optional(value.schema as v.GenericSchema);
     } else {
-      return buildConfigSchema({
-        configDefinition: config as ConfigDefinition,
-      });
-    }
-  });
-
-  return z.object(schema);
-}
-
-function stripRequired(schema: any) {
-  if (schema.type === 'object') {
-    schema.required = [];
-    for (const key in schema.properties) {
-      stripRequired(schema.properties[key]);
+      entries[key] = v.optional(buildConfigSchema({ configDefinition: value }));
     }
   }
-}
 
-function addSchema(schema: any) {
-  schema.properties.$schema = {
-    type: 'string',
-    description: 'The schema of the configuration file, to be used by IDEs to provide autocompletion and validation',
-  };
+  return v.object(entries);
 }
 
 function getConfigSchema() {
   const schema = buildConfigSchema({ configDefinition });
-  const jsonSchema = zodToJsonSchema(schema, { pipeStrategy: 'output' });
+  const jsonSchema = toJsonSchema(schema, { typeMode: 'input', errorMode: 'ignore' });
 
-  stripRequired(jsonSchema);
-  addSchema(jsonSchema);
+  (jsonSchema.properties ??= {}).$schema = {
+    type: 'string',
+    description: 'The schema of the configuration file, to be used by IDEs to provide autocompletion and validation',
+  };
+
   return jsonSchema;
 }
 

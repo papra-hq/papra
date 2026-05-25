@@ -31,6 +31,16 @@ export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof us
       }
     }
 
+    const responseMessage = get(
+      error,
+      ['data', 'error', 'message'], // From fetch errors
+      ['details', 'message'], // From custom errors throw in better auth hooks, must be before ['message'] as they have both
+    );
+
+    if (responseMessage && typeof responseMessage === 'string') {
+      return responseMessage;
+    }
+
     // Fetch error messages without codes are not helpful
     if (error instanceof FetchError) {
       return defaultMessage;
@@ -38,8 +48,6 @@ export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof us
 
     const message = get(
       error,
-      ['data', 'error', 'message'], // From fetch errors
-      ['details', 'message'], // From custom errors throw in better auth hooks, must be before ['message'] as they have both
       ['message'], // From generic errors
     );
 

@@ -1,34 +1,37 @@
 import type { ConfigDefinition } from 'figue';
-import { z } from 'zod';
-import { booleanishSchema } from '../../config/config.schemas';
-import { parseJson } from '../../intake-emails/intake-emails.schemas';
+import * as v from 'valibot';
+import { booleanishSchema, urlSchema } from '../../config/config.schemas';
+import { forbiddenEmailDomainsSchema } from './auth.config.schemas';
 import { DEFAULT_AUTH_SECRET } from './auth.constants';
 
-const customOAuthProviderSchema = z.object({
-  providerId: z.string(),
-  providerName: z.string(),
-  providerIconUrl: z.string().url().optional(),
+const customOAuthProviderSchema = v.object({
+  providerId: v.string(),
+  providerName: v.string(),
+  providerIconUrl: v.optional(urlSchema),
 
-  clientId: z.string(),
-  clientSecret: z.string(),
+  clientId: v.string(),
+  clientSecret: v.string(),
 
-  scopes: z.array(z.string()).optional(),
-  redirectURI: z.string().optional(),
-  tokenUrl: z.string().optional(),
-  userInfoUrl: z.string().optional(),
-  responseType: z.string().optional(),
-  prompt: z.enum(['select_account', 'consent', 'login', 'none']).optional(),
-  pkce: booleanishSchema.optional(),
-  accessType: z.string().optional(),
-  discoveryUrl: z.string().optional(),
-  type: z.enum(['oauth2', 'oidc']).optional(),
-  authorizationUrl: z.string().optional(),
+  scopes: v.optional(v.array(v.string())),
+  redirectURI: v.optional(v.string()),
+  tokenUrl: v.optional(v.string()),
+  userInfoUrl: v.optional(v.string()),
+  responseType: v.optional(v.string()),
+  prompt: v.optional(v.picklist(['select_account', 'consent', 'login', 'none'])),
+  pkce: v.optional(v.boolean()),
+  accessType: v.optional(v.string()),
+  discoveryUrl: v.optional(v.string()),
+  type: v.optional(v.picklist(['oauth2', 'oidc'])),
+  authorizationUrl: v.optional(v.string()),
 });
 
 export const authConfig = {
   secret: {
     doc: 'The secret for the auth, it should be at least 32 characters long, you can generate a secure one using `openssl rand -hex 48`',
-    schema: z.string({ required_error: 'Please provide an auth secret using the AUTH_SECRET environment variable, you can use `openssl rand -hex 48` to generate a secure one' }).min(32),
+    schema: v.pipe(
+      v.string('Please provide an auth secret using the AUTH_SECRET environment variable, you can use `openssl rand -hex 48` to generate a secure one'),
+      v.minLength(32),
+    ),
     default: DEFAULT_AUTH_SECRET,
     env: 'AUTH_SECRET',
   },
@@ -66,23 +69,16 @@ export const authConfig = {
     doc: `The header, or comma separated list of headers, to use to get the real IP address of the user, use for rate limiting. Make sur to use a non-spoofable header, one set by your proxy.
 - If behind a standard proxy, you might want to set this to "x-forwarded-for".
 - If behind Cloudflare, you might want to set this to "cf-connecting-ip".`,
-    schema: z.union([
-      z.string(),
-      z.array(z.string()),
-    ]).transform(value => (typeof value === 'string' ? value.split(',').map(v => v.trim()) : value)),
+    schema: v.union([
+      v.pipe(v.string(), v.transform(value => value.split(',').map(v => v.trim()))),
+      v.array(v.string()),
+    ]),
     default: ['x-forwarded-for'],
     env: 'AUTH_IP_ADDRESS_HEADERS',
   },
   forbiddenEmailDomains: {
     doc: 'A comma separated list of email domains that are forbidden for registration (e.g. "foo.com,bar.com"), if set, it will override the default forbidden domains.',
-    schema: z.union([
-      z.string(),
-      z.array(z.string()),
-    ]).transform((value) => {
-      const asArray = typeof value === 'string' ? value.split(',') : value;
-      const cleaned = asArray.map(v => v.trim().toLowerCase()).filter(v => v.length > 0);
-      return new Set(cleaned);
-    }),
+    schema: forbiddenEmailDomainsSchema,
     default: ['papra.app', 'papra.email', 'owlrelay.email', 'callback.email', 'clb.email'],
     env: 'AUTH_FORBIDDEN_EMAIL_DOMAINS',
   },
@@ -104,13 +100,13 @@ export const authConfig = {
       },
       clientId: {
         doc: 'The client id for Github OAuth',
-        schema: z.string(),
+        schema: v.string(),
         default: 'set-me',
         env: 'AUTH_PROVIDERS_GITHUB_CLIENT_ID',
       },
       clientSecret: {
         doc: 'The client secret for Github OAuth',
-        schema: z.string(),
+        schema: v.string(),
         default: 'set-me',
         env: 'AUTH_PROVIDERS_GITHUB_CLIENT_SECRET',
       },
@@ -124,22 +120,22 @@ export const authConfig = {
       },
       clientId: {
         doc: 'The client id for Google OAuth',
-        schema: z.string(),
+        schema: v.string(),
         default: 'set-me',
         env: 'AUTH_PROVIDERS_GOOGLE_CLIENT_ID',
       },
       clientSecret: {
         doc: 'The client secret for Google OAuth',
-        schema: z.string(),
+        schema: v.string(),
         default: 'set-me',
         env: 'AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET',
       },
     },
     customs: {
       doc: 'The list of custom OAuth providers, as a JSON string, see https://www.better-auth.com/docs/plugins/generic-oauth#configuration for more details',
-      schema: z.union([
-        z.string().transform(parseJson).pipe(z.array(customOAuthProviderSchema)),
-        z.array(customOAuthProviderSchema),
+      schema: v.union([
+        v.pipe(v.string(), v.parseJson(), v.array(customOAuthProviderSchema)),
+        v.array(customOAuthProviderSchema),
       ]),
       default: [],
       env: 'AUTH_PROVIDERS_CUSTOMS',

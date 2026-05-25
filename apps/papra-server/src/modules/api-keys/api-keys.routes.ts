@@ -1,16 +1,13 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import type { ApiKeyPermissions } from './api-keys.types';
-import { z } from 'zod';
+import * as v from 'valibot';
 import { createUnauthorizedError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
-import { createError } from '../shared/errors/errors';
 import { isNil } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { API_KEY_PERMISSIONS_VALUES } from './api-keys.constants';
 import { createNotApiKeyAuthError } from './api-keys.errors';
 import { createApiKeysRepository } from './api-keys.repository';
-import { apiKeyIdSchema } from './api-keys.schemas';
+import { apiKeyIdSchema, apiKeyPermissionsSchema } from './api-keys.schemas';
 import { createApiKey } from './api-keys.usecases';
 
 export function registerApiKeysRoutes(context: RouteDefinitionContext) {
@@ -25,12 +22,12 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
     '/api/api-keys',
     requireAuthentication(),
     validateJsonBody(
-      z.object({
-        name: z.string(),
-        permissions: z.array(z.enum(API_KEY_PERMISSIONS_VALUES as [ApiKeyPermissions, ...ApiKeyPermissions[]])).min(1),
-        organizationIds: z.array(z.string()).default([]),
-        allOrganizations: z.boolean().default(false),
-        expiresAt: z.date().optional(),
+      v.strictObject({
+        name: v.string(),
+        permissions: apiKeyPermissionsSchema,
+        // organizationIds: v.optional(v.array(v.string()), []),
+        // allOrganizations: v.optional(v.boolean(), false),
+        // expiresAt: v.optional(v.date()),
       }),
     ),
     async (context) => {
@@ -40,25 +37,25 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
       const {
         name,
         permissions,
-        organizationIds,
-        allOrganizations,
-        expiresAt,
+        // organizationIds,
+        // allOrganizations,
+        // expiresAt,
       } = context.req.valid('json');
 
-      if (allOrganizations && organizationIds.length > 0) {
-        throw createError({
-          code: 'api_keys.invalid_organization_ids',
-          message: 'No organizationIds should be provided if allOrganizations is true',
-          statusCode: 400,
-        });
-      }
+      // if (allOrganizations && organizationIds.length > 0) {
+      //   throw createError({
+      //     code: 'api_keys.invalid_organization_ids',
+      //     message: 'No organizationIds should be provided if allOrganizations is true',
+      //     statusCode: 400,
+      //   });
+      // }
 
       const { apiKey, token } = await createApiKey({
         name,
         permissions,
-        organizationIds,
-        allOrganizations,
-        expiresAt,
+        organizationIds: [],
+        allOrganizations: true,
+        expiresAt: undefined,
         userId,
         apiKeyRepository,
       });
@@ -122,7 +119,7 @@ function setupDeleteApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/api-keys/:apiKeyId',
     requireAuthentication(),
-    validateParams(z.object({
+    validateParams(v.strictObject({
       apiKeyId: apiKeyIdSchema,
     })),
     async (context) => {

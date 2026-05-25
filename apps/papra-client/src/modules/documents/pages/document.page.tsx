@@ -6,9 +6,10 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
 import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/components/document-custom-properties-panel.component';
+import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { downloadFile } from '@/modules/shared/files/download';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { TagLink } from '@/modules/tags/components/tag.component';
 import { Alert } from '@/modules/ui/components/alert';
@@ -23,8 +24,8 @@ import { DocumentPreview } from '../components/document-preview.component';
 import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
 import { getDaysBeforePermanentDeletion, getDocumentActivityIcon, getDocumentOpenWithApps } from '../document.models';
-import { useDeleteDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities, fetchDocumentFile } from '../documents.services';
+import { useDeleteDocument, useDownloadDocument, useRestoreDocument } from '../documents.composables';
+import { fetchDocument, fetchDocumentActivities } from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
@@ -34,21 +35,17 @@ type KeyValueItem = {
 
 const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
   return (
-    <div class="flex flex-col gap-2">
-      <table>
-        <For each={props.data}>
-          {item => (
-            <tr>
-              <td class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                {item.icon && <div class={item.icon} />}
-                {item.label}
-              </td>
-              <td class="py-1 pl-2 text-sm">{item.value}</td>
-            </tr>
-          )}
-        </For>
-      </table>
-    </div>
+    <For each={props.data}>
+      {item => (
+        <>
+          <div class="py-1 pr-2 text-sm text-muted-foreground flex items-center gap-2 whitespace-nowrap">
+            {item.icon && <div class={item.icon} />}
+            {item.label}
+          </div>
+          <div class="py-1 pl-2 text-sm">{item.value}</div>
+        </>
+      )}
+    </For>
   );
 };
 
@@ -130,6 +127,7 @@ export const DocumentPage: Component = () => {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { deleteDocument } = useDeleteDocument();
+  const { downloadDocument } = useDownloadDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
   const navigate = useNavigate();
   const { config } = useConfig();
@@ -154,9 +152,9 @@ export const DocumentPage: Component = () => {
     queryFn: () => fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
-  const documentFileQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
-    queryFn: () => fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
+  const customPropertyDefinitionsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'custom-properties'],
+    queryFn: () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
   }));
 
   const activityPageSize = 20;
@@ -201,8 +199,6 @@ export const DocumentPage: Component = () => {
     navigate(`/organizations/${params.organizationId}/documents`);
   };
 
-  const getDataUrl = () => documentFileQuery.data ? URL.createObjectURL(documentFileQuery.data) : undefined;
-
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
@@ -230,12 +226,12 @@ export const DocumentPage: Component = () => {
 
                   <div class="flex gap-2 mb-2">
                     <Button
-                      onClick={() => downloadFile({ fileName: getDocument().name, url: getDataUrl()! })}
+                      onClick={() => downloadDocument({ organizationId: getDocument().organizationId, documentId: getDocument().id })}
                       variant="outline"
                       size="sm"
                     >
                       <div class="i-tabler-download size-4 mr-2" />
-                      {t('documents.actions.download')}
+                      {t('documents.actions.download.title')}
                     </Button>
 
                     <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />
@@ -356,6 +352,70 @@ export const DocumentPage: Component = () => {
                         organizationId={params.organizationId}
                         notes={getDocument().notes}
                       />
+                      <div class="grid grid-cols-[max-content_1fr]">
+                        <KeyValues data={[
+                          {
+                            label: t('documents.info.id'),
+                            value: getDocument().id,
+                            icon: 'i-tabler-id',
+                          },
+                          {
+                            label: t('documents.info.name'),
+                            value: (
+                              <Button
+                                variant="ghost"
+                                class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
+                                onClick={() => openRenameDialog({
+                                  documentId: getDocument().id,
+                                  organizationId: params.organizationId,
+                                  documentName: getDocument().name,
+                                })}
+                              >
+                                {getDocument().name}
+
+                                <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                              </Button>
+                            ),
+                            icon: 'i-tabler-file-text',
+                          },
+                          {
+                            label: t('documents.info.type'),
+                            value: getDocument().mimeType,
+                            icon: 'i-tabler-file-unknown',
+                          },
+                          {
+                            label: t('documents.info.size'),
+                            value: formatBytes({ bytes: getDocument().originalSize, base: 1000 }),
+                            icon: 'i-tabler-weight',
+                          },
+                          {
+                            label: t('documents.info.document-date'),
+                            value: <DocumentDatePicker document={getDocument()} organizationId={params.organizationId} />,
+                            icon: 'i-tabler-calendar-event',
+                          },
+                          {
+                            label: t('documents.info.created-at'),
+                            value: formatRelativeTime(getDocument().createdAt),
+                            icon: 'i-tabler-calendar',
+                          },
+                          {
+                            label: t('documents.info.updated-at'),
+                            value: getDocument().updatedAt ? formatRelativeTime(getDocument().updatedAt!) : <span class="text-muted-foreground">{t('documents.info.never')}</span>,
+                            icon: 'i-tabler-calendar',
+                          },
+                        ]}
+                        />
+
+                        <Show when={customPropertyDefinitionsQuery.data?.propertyDefinitions}>
+                          {getDefinitions => (
+                            <DocumentCustomPropertiesPanel
+                              document={getDocument()}
+                              organizationId={params.organizationId}
+                              propertyDefinitions={getDefinitions()}
+                            />
+                          )}
+                        </Show>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="content">

@@ -159,7 +159,7 @@ export const AdminListOrganizationsPage: Component = () => {
             </Table>
           </div>
 
-          <div class="flex items-center justify-between mt-4">
+          <div class="flex flex-col items-center justify-between mt-4 md:flex-row">
             <div class="text-sm text-muted-foreground">
               {t('admin.organizations.pagination.info', {
                 start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,

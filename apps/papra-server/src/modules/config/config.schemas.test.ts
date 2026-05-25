@@ -1,38 +1,38 @@
+import * as v from 'valibot';
 import { describe, expect, test } from 'vitest';
-import { booleanishSchema, trustedAppSchemeSchema, trustedOriginsSchema } from './config.schemas';
+import { appSchemeSchema, booleanishSchema, coercedUrlListSchema } from './config.schemas';
 
 describe('config schemas', () => {
   describe('booleanishSchema', () => {
-    test('a zod schema that validates and coerces a string to a boolean, used in the config where we accept env variables and pojo values', () => {
-      expect(booleanishSchema.parse(true)).toBe(true);
-      expect(booleanishSchema.parse('true')).toBe(true);
-      expect(booleanishSchema.parse('TRUE')).toBe(true);
-      expect(booleanishSchema.parse('True')).toBe(true);
-      expect(booleanishSchema.parse(' True ')).toBe(true);
-      expect(booleanishSchema.parse('1')).toBe(true);
-      expect(booleanishSchema.parse(1)).toBe(true);
+    test('validates and coerces a string to a boolean, used in the config where we accept env variables or js values', () => {
+      expect(v.parse(booleanishSchema, true)).toBe(true);
+      expect(v.parse(booleanishSchema, 'true')).toBe(true);
+      expect(v.parse(booleanishSchema, 'TRUE')).toBe(true);
+      expect(v.parse(booleanishSchema, 'True')).toBe(true);
+      expect(v.parse(booleanishSchema, ' True ')).toBe(true);
+      expect(v.parse(booleanishSchema, '1')).toBe(true);
 
-      expect(booleanishSchema.parse('false')).toBe(false);
-      expect(booleanishSchema.parse('FALSE')).toBe(false);
-      expect(booleanishSchema.parse('False')).toBe(false);
-      expect(booleanishSchema.parse(' False ')).toBe(false);
-      expect(booleanishSchema.parse(false)).toBe(false);
-      expect(booleanishSchema.parse('foo')).toBe(false);
-      expect(booleanishSchema.parse('0')).toBe(false);
-      expect(booleanishSchema.parse(-1)).toBe(false);
-      expect(booleanishSchema.parse(0)).toBe(false);
-      expect(booleanishSchema.parse(2)).toBe(false);
+      expect(v.parse(booleanishSchema, 'false')).toBe(false);
+      expect(v.parse(booleanishSchema, 'FALSE')).toBe(false);
+      expect(v.parse(booleanishSchema, 'False')).toBe(false);
+      expect(v.parse(booleanishSchema, ' False ')).toBe(false);
+      expect(v.parse(booleanishSchema, false)).toBe(false);
+      expect(v.parse(booleanishSchema, '0')).toBe(false);
+
+      expect(() => v.parse(booleanishSchema, 'foo')).toThrow('Expected a boolean or a string that can be parsed as a boolean');
+      expect(() => v.parse(booleanishSchema, 1)).toThrow('Expected a boolean or a string that can be parsed as a boolean');
+      expect(() => v.parse(booleanishSchema, 2)).toThrow('Expected a boolean or a string that can be parsed as a boolean');
     });
   });
 
-  describe('trustedOriginsSchema', () => {
+  describe('coercedUrlListSchema', () => {
     test('this schema validates and coerces a comma separated string to an array of urls', () => {
-      expect(trustedOriginsSchema.parse('http://localhost:3000')).toEqual(['http://localhost:3000']);
-      expect(trustedOriginsSchema.parse('http://localhost:3000,http://localhost:3001')).toEqual([
+      expect(v.parse(coercedUrlListSchema, 'http://localhost:3000')).toEqual(['http://localhost:3000']);
+      expect(v.parse(coercedUrlListSchema, 'http://localhost:3000,http://localhost:3001')).toEqual([
         'http://localhost:3000',
         'http://localhost:3001',
       ]);
-      expect(trustedOriginsSchema.parse([
+      expect(v.parse(coercedUrlListSchema, [
         'http://localhost:3000',
         'http://localhost:3001',
       ])).toEqual([
@@ -42,22 +42,14 @@ describe('config schemas', () => {
     });
 
     test('otherwise it throws an error', () => {
-      expect(() => trustedOriginsSchema.parse('non-url')).toThrow();
+      expect(() => v.parse(coercedUrlListSchema, 'non-url')).toThrow();
     });
   });
 
-  describe('trustedAppSchemeSchema', () => {
-    test('validates app schemes ending with ://', () => {
-      expect(trustedAppSchemeSchema.parse('papra://')).toBe('papra://');
-      expect(trustedAppSchemeSchema.parse('exp://')).toBe('exp://');
-      expect(trustedAppSchemeSchema.parse('my-app+test://')).toBe('my-app+test://');
-
-      expect(() => trustedAppSchemeSchema.parse('invalid-scheme')).toThrow();
-      expect(() => trustedAppSchemeSchema.parse('http:/')).toThrow();
-      expect(() => trustedAppSchemeSchema.parse('papra://foo')).toThrow();
-      expect(() => trustedAppSchemeSchema.parse('papra-://')).toThrow();
-      expect(() => trustedAppSchemeSchema.parse('papra+://')).toThrow();
-      expect(() => trustedAppSchemeSchema.parse('://')).toThrow();
+  describe('appSchemeSchema', () => {
+    test('the app scheme can either be a comma separated string or an array of strings', () => {
+      expect(v.parse(appSchemeSchema, 'papra://,exp://')).toEqual(['papra://', 'exp://']);
+      expect(v.parse(appSchemeSchema, ['papra://', 'exp://'])).toEqual(['papra://', 'exp://']);
     });
   });
 });

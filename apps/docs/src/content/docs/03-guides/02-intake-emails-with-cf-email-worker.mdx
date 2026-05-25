@@ -87,11 +87,11 @@ The code for the Email Worker proxy is available in the [papra-hq/email-proxy](h
 
    # Tell your Papra instance that it can generate any email address from the
    # domain you setup in the Email Worker as it's a wildcard redirection
-   INTAKE_EMAILS_DRIVER=random-username
+   INTAKE_EMAILS_DRIVER=catch-all
 
    # This is the domain from which the intake email will be generated 
    # eg. `domain.com`
-   INTAKE_EMAILS_EMAIL_GENERATION_DOMAIN=papra.email
+   INTAKE_EMAILS_CATCH_ALL_DOMAIN=papra.email
 
    # This is the secret key to authenticate the webhook requests
    # set the same as the `WEBHOOK_SECRET` variable in the Email Worker

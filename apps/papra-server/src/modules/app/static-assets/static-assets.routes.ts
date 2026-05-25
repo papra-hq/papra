@@ -2,15 +2,12 @@ import type { Context } from 'hono';
 import type { Config } from '../../config/config.types';
 import type { ServerInstance } from '../server.types';
 import { readFile } from 'node:fs/promises';
+import { safely } from '@corentinth/chisels';
 import { serveStatic } from '@hono/node-server/serve-static';
-import { memoize } from 'lodash-es';
+import { createLogger } from '../../shared/logger/logger';
 import { isApiRoute } from './static-assets.models';
 
-const getIndexContent = memoize(async () => {
-  const index = await readFile('public/index.html', 'utf-8');
-
-  return index;
-});
+const logger = createLogger({ namespace: 'static-assets.routes' });
 
 export function registerStaticAssetsRoutes({ app, config }: { app: ServerInstance; config: Config }) {
   if (!config.server.servePublicDir) {
@@ -37,7 +34,12 @@ export function registerStaticAssetsRoutes({ app, config }: { app: ServerInstanc
           return next();
         }
 
-        const indexHtmlContent = await getIndexContent();
+        const [indexHtmlContent, error] = await safely(readFile('public/index.html', 'utf-8'));
+
+        if (error) {
+          logger.error({ error }, 'Error reading index.html file');
+          return next(); // let the 404 handler take care of it
+        }
 
         return context.html(indexHtmlContent);
       },

@@ -3,7 +3,7 @@ import type { ConditionMatchMode, DbInsertableTaggingRule, TaggingRuleField, Tag
 import { injectArguments } from '@corentinth/chisels';
 import { and, eq } from 'drizzle-orm';
 import { createError } from '../shared/errors/errors';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { tagsTable } from '../tags/tags.table';
 import { aggregateTaggingRules } from './tagging-rules.repository.models';
 import { taggingRuleActionsTable, taggingRuleConditionsTable, taggingRulesTable } from './tagging-rules.tables';

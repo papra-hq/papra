@@ -5,6 +5,7 @@ import { safely } from '@corentinth/chisels';
 import { getValues, setValue } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
+import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
@@ -321,6 +322,73 @@ export const TagsPage: Component = () => {
     });
   };
 
+  const table = createSolidTable({
+    get data() {
+      return query.data?.tags ?? [];
+    },
+    columns: [
+      {
+        header: () => t('tags.table.headers.tag'),
+        accessorKey: 'name',
+        sortingFn: 'alphanumeric',
+        cell: data => <TagLink {...data.row.original} />,
+      },
+      {
+        header: () => t('tags.table.headers.description'),
+        accessorKey: 'description',
+        sortingFn: 'alphanumeric',
+        cell: data => (
+          <span class="text-wrap">
+            {data.getValue<string | null>() || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}
+          </span>
+        ),
+      },
+      {
+        header: () => t('tags.table.headers.documents'),
+        accessorKey: 'documentsCount',
+        sortingFn: 'basic',
+        cell: data => (
+          <A href={makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { tags: [data.row.original] } })} class="inline-flex items-center gap-1 hover:underline">
+            <div class="i-tabler-file-text size-5 text-muted-foreground" />
+            {data.getValue<number>()}
+          </A>
+        ),
+      },
+      {
+        header: () => t('tags.table.headers.created'),
+        accessorKey: 'createdAt',
+        sortingFn: 'datetime',
+        cell: data => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
+
+      },
+      {
+        id: 'actions',
+        header: () => <div class="text-right">{t('tags.table.headers.actions')}</div>,
+        enableSorting: false,
+        cell: data => (
+          <div class="flex gap-2 justify-end">
+            <UpdateTagModal organizationId={params.organizationId} tag={data.row.original}>
+              {props => (
+                <Button size="icon" variant="outline" class="size-7" {...props}>
+                  <div class="i-tabler-edit size-4" />
+                </Button>
+              )}
+            </UpdateTagModal>
+
+            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ tag: data.row.original })}>
+              <div class="i-tabler-trash size-4" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    initialState: {
+      sorting: [{ id: 'name', desc: false }],
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
   return (
     <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
       <Suspense>
@@ -371,51 +439,50 @@ export const TagsPage: Component = () => {
 
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('tags.table.headers.tag')}</TableHead>
-                    <TableHead>{t('tags.table.headers.description')}</TableHead>
-                    <TableHead>{t('tags.table.headers.documents')}</TableHead>
-                    <TableHead>{t('tags.table.headers.created')}</TableHead>
-                    <TableHead class="text-right">
-                      {t('tags.table.headers.actions')}
-                    </TableHead>
-                  </TableRow>
+                  <For each={table.getHeaderGroups()}>
+                    {headerGroup => (
+                      <TableRow>
+                        <For each={headerGroup.headers}>
+                          {header => (
+                            <TableHead>
+                              <Show
+                                when={header.column.getCanSort()}
+                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                              >
+                                <button
+                                  class="flex items-center gap-1 cursor-pointer select-none"
+                                  onClick={header.column.getToggleSortingHandler()}
+                                >
+                                  {flexRender(header.column.columnDef.header, header.getContext())}
+                                  <Show when={header.column.getIsSorted() === 'asc'}>
+                                    <div class="i-tabler-arrow-down size-3.5" />
+                                  </Show>
+                                  <Show when={header.column.getIsSorted() === 'desc'}>
+                                    <div class="i-tabler-arrow-up size-3.5" />
+                                  </Show>
+                                  <Show when={!header.column.getIsSorted()}>
+                                    <div class="i-tabler-arrows-sort size-3.5 opacity-40" />
+                                  </Show>
+                                </button>
+                              </Show>
+                            </TableHead>
+                          )}
+                        </For>
+                      </TableRow>
+                    )}
+                  </For>
                 </TableHeader>
                 <TableBody>
-                  <For each={getTags()}>
-                    {tag => (
+                  <For each={table.getRowModel().rows}>
+                    {row => (
                       <TableRow>
-                        <TableCell>
-                          <div>
-                            <TagLink {...tag} />
-                          </div>
-                        </TableCell>
-                        <TableCell class="text-wrap">{tag.description || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}</TableCell>
-                        <TableCell>
-                          <A href={makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { tags: [tag] } })} class="inline-flex items-center gap-1 hover:underline">
-                            <div class="i-tabler-file-text size-5 text-muted-foreground" />
-                            {tag.documentsCount}
-                          </A>
-                        </TableCell>
-                        <TableCell class="text-muted-foreground" title={tag.createdAt.toLocaleString()}>
-                          <RelativeTime date={tag.createdAt} />
-                        </TableCell>
-                        <TableCell>
-                          <div class="flex gap-2 justify-end">
-
-                            <UpdateTagModal organizationId={params.organizationId} tag={tag}>
-                              {props => (
-                                <Button size="icon" variant="outline" class="size-7" {...props}>
-                                  <div class="i-tabler-edit size-4" />
-                                </Button>
-                              )}
-                            </UpdateTagModal>
-
-                            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ tag })}>
-                              <div class="i-tabler-trash size-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                        <For each={row.getVisibleCells()}>
+                          {cell => (
+                            <TableCell>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                          )}
+                        </For>
                       </TableRow>
                     )}
                   </For>
