@@ -45,7 +45,7 @@ describe('locales', () => {
   test('all keys in en.yml must be used in the app (dynamic keys are manually excluded)', async () => {
     const srcFileNames = await Array.fromAsync(glob('src/**/*.{ts,tsx}', {
       cwd: packageRoot,
-      exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts'],
+      exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts', 'src/locales/*.ts'],
     }));
 
     // Exclude keys that are used in dynamic contexts
@@ -58,6 +58,7 @@ describe('locales', () => {
       /^organizations\.members\.roles\.[a-z0-9]+$/, // organizations.members.roles.admin
       /^activity\.document\.[a-z0-9:]+$/, // activity.document.created
       /^organizations\.invitations\.status\.[a-z0-9:]+$/, // organizations.invitations.status.pending
+      /^socials\.[a-z0-9]+$/, // socials.bluesky
     ];
 
     const keys = new Set(
