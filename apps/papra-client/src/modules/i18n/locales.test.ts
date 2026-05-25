@@ -42,7 +42,7 @@ describe('locales', () => {
     });
   }
 
-  test('all keys in en.yml must be used in the app (dynamic keys are manually excluded)', async () => {
+  test('all keys in en dictionary must be used in the app (dynamic keys are manually excluded)', async () => {
     const srcFileNames = await Array.fromAsync(glob('src/**/*.{ts,tsx}', {
       cwd: packageRoot,
       exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts', 'src/locales/*.ts'],
@@ -81,6 +81,6 @@ describe('locales', () => {
       }
     }
 
-    expect([...keys]).to.eql([], 'Unused keys found in en.yml, please remove them (or add them to the dynamic keys matchers in locales.test.ts if they are used in dynamic contexts)');
+    expect([...keys]).to.eql([], 'Unused keys found in en dictionary, please remove them (or add them to the dynamic keys matchers in locales.test.ts if they are used in dynamic contexts)');
   });
 });
