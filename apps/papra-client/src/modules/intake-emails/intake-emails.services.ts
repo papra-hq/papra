@@ -14,10 +14,11 @@ export async function fetchIntakeEmails({ organizationId }: { organizationId: st
   };
 }
 
-export async function createIntakeEmail({ organizationId }: { organizationId: string }) {
+export async function createIntakeEmail({ organizationId, username }: { organizationId: string; username?: string }) {
   const { intakeEmail } = await apiClient<{ intakeEmail: AsDto<IntakeEmail> }>({
     path: `/api/organizations/${organizationId}/intake-emails`,
     method: 'POST',
+    body: { username },
   });
 
   return {

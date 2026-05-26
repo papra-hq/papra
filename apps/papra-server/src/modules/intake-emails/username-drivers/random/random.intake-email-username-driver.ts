@@ -7,6 +7,7 @@ export const RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME = 'random';
 export const randomIntakeEmailUsernameDriverFactory = defineIntakeEmailUsernameDriverFactory(({ logger = createLogger({ namespace: 'intake-emails.addresses-drivers.random' }) }) => {
   return {
     name: RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME,
+    acceptsUsername: false,
     generateIntakeEmailUsername: async () => {
       const username = generateHumanReadableId();
 

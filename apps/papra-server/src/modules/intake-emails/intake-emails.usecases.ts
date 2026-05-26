@@ -10,12 +10,19 @@ import { getOrganizationPlan } from '../plans/plans.usecases';
 import { addLogContext, createLogger } from '../shared/logger/logger';
 import { coerceFileMimeType } from '../shared/mime-types/mime-types.usecases';
 import { fileToReadableStream } from '../shared/streams/readable-stream';
-import { createIntakeEmailLimitReachedError, createIntakeEmailNotFoundError } from './intake-emails.errors';
+import {
+  createIntakeEmailLimitReachedError,
+  createIntakeEmailNotFoundError,
+  createIntakeEmailUsernameNotAcceptedByStrategyError,
+  createIntakeEmailUsernameRequiredByStrategyError,
+  createIntakeEmailUsernameUpdateNotSupportedError,
+} from './intake-emails.errors';
 import { getIsFromAllowedOrigin } from './intake-emails.models';
 
 export async function createIntakeEmail({
   userId,
   organizationId,
+  username: requestedUsername,
   intakeEmailsRepository,
   intakeEmailsServices,
   plansRepository,
@@ -24,6 +31,7 @@ export async function createIntakeEmail({
 }: {
   userId: string;
   organizationId: string;
+  username?: string;
   intakeEmailsRepository: IntakeEmailsRepository;
   intakeEmailsServices: IntakeEmailsServices;
   plansRepository: PlansRepository;
@@ -37,13 +45,95 @@ export async function createIntakeEmail({
     intakeEmailsRepository,
   });
 
-  const { username } = await intakeEmailUsernameServices.generateIntakeEmailUsername({ userId, organizationId });
+  const { username } = await generateIntakeEmailUsername({
+    userId,
+    organizationId,
+    requestedUsername,
+    intakeEmailUsernameServices,
+  });
 
   const { emailAddress } = await intakeEmailsServices.createEmailAddress({ username });
 
   const { intakeEmail } = await intakeEmailsRepository.createIntakeEmail({ organizationId, emailAddress });
 
   return { intakeEmail };
+}
+
+async function generateIntakeEmailUsername({
+  userId,
+  organizationId,
+  requestedUsername,
+  intakeEmailUsernameServices,
+}: {
+  userId: string;
+  organizationId: string;
+  requestedUsername: string | undefined;
+  intakeEmailUsernameServices: IntakeEmailUsernameServices;
+}) {
+  if (intakeEmailUsernameServices.acceptsUsername) {
+    if (requestedUsername === undefined) {
+      throw createIntakeEmailUsernameRequiredByStrategyError();
+    }
+
+    return intakeEmailUsernameServices.generateIntakeEmailUsername({ userId, organizationId, username: requestedUsername });
+  }
+
+  if (requestedUsername !== undefined) {
+    throw createIntakeEmailUsernameNotAcceptedByStrategyError();
+  }
+
+  return intakeEmailUsernameServices.generateIntakeEmailUsername({ userId, organizationId });
+}
+
+export async function updateIntakeEmail({
+  userId,
+  intakeEmailId,
+  organizationId,
+  isEnabled,
+  allowedOrigins,
+  username: requestedUsername,
+  intakeEmailsRepository,
+  intakeEmailsServices,
+  intakeEmailUsernameServices,
+}: {
+  userId: string;
+  intakeEmailId: string;
+  organizationId: string;
+  isEnabled?: boolean;
+  allowedOrigins?: string[];
+  username?: string;
+  intakeEmailsRepository: IntakeEmailsRepository;
+  intakeEmailsServices: IntakeEmailsServices;
+  intakeEmailUsernameServices: IntakeEmailUsernameServices;
+}) {
+  const { intakeEmail } = await intakeEmailsRepository.getIntakeEmail({ intakeEmailId, organizationId });
+
+  if (!intakeEmail) {
+    throw createIntakeEmailNotFoundError();
+  }
+
+  if (requestedUsername !== undefined && !intakeEmailUsernameServices.acceptsUsername) {
+    throw createIntakeEmailUsernameUpdateNotSupportedError();
+  }
+
+  const { username } = await generateIntakeEmailUsername({
+    userId,
+    organizationId,
+    requestedUsername,
+    intakeEmailUsernameServices,
+  });
+
+  const { emailAddress } = await intakeEmailsServices.updateEmailAddress({ currentEmailAddress: intakeEmail.emailAddress, newUsername: username });
+
+  const { intakeEmail: updatedIntakeEmail } = await intakeEmailsRepository.updateIntakeEmail({
+    intakeEmailId,
+    organizationId,
+    isEnabled,
+    allowedOrigins,
+    emailAddress,
+  });
+
+  return { intakeEmail: updatedIntakeEmail };
 }
 
 export async function processIntakeEmailIngestion({

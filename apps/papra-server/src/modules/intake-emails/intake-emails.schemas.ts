@@ -26,3 +26,12 @@ export const intakeEmailIngestionEmailFieldSchema = v.pipe(
 export const allowedOriginsSchema = v.optional(
   v.array(v.pipe(permissiveEmailAddressSchema, v.toLowerCase())),
 );
+
+export const intakeEmailUsernameSchema = v.pipe(
+  v.string(),
+  v.toLowerCase(),
+  v.trim(),
+  v.minLength(3),
+  v.maxLength(64),
+  v.regex(/^[a-z0-9]([\w\-.]*[a-z0-9])?$/i),
+);

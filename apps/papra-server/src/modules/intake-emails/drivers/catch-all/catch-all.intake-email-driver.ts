@@ -15,6 +15,11 @@ export const catchAllIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
 
       return { emailAddress };
     },
+    updateEmailAddress: async ({ newUsername }) => {
+      const emailAddress = buildEmailAddress({ username: newUsername, domain });
+
+      return { emailAddress };
+    },
     deleteEmailAddress: async () => {},
   };
 });

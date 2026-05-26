@@ -3,10 +3,13 @@ import type { Logger } from '@crowlog/logger';
 import type { Config } from './config.types';
 import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
+import { USER_PROVIDED_USERNAME_STRATEGY_NAME } from '../intake-emails/username-drivers/intake-email-username.constants';
 import { pick } from '../shared/objects';
 
 export function getPublicConfig({ config }: { config: Config }) {
-  const publicConfig: DeepPartial<Config> = {
+  const allowsUserDefinedUsernames = config.intakeEmails.username.driver === USER_PROVIDED_USERNAME_STRATEGY_NAME;
+
+  const publicConfig: DeepPartial<Config> & { intakeEmails: { isEnabled: boolean; allowsUserDefinedUsernames: boolean } } = {
     version: config.version,
     gitCommitSha: config.gitCommitSha,
     gitCommitDate: config.gitCommitDate,
@@ -27,7 +30,10 @@ export function getPublicConfig({ config }: { config: Config }) {
       },
     },
     documents: { deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays },
-    intakeEmails: { isEnabled: config.intakeEmails.isEnabled },
+    intakeEmails: {
+      isEnabled: config.intakeEmails.isEnabled,
+      allowsUserDefinedUsernames,
+    },
     organizations: { deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay },
   };
 

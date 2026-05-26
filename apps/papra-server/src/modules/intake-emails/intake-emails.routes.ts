@@ -19,9 +19,9 @@ import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { getRecipientAddresses } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
-import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailIngestionEmailFieldSchema } from './intake-emails.schemas';
+import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailIngestionEmailFieldSchema, intakeEmailUsernameSchema } from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
-import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
+import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion, updateIntakeEmail } from './intake-emails.usecases';
 import { createIntakeEmailUsernameServices } from './username-drivers/intake-email-username.services';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
@@ -64,9 +64,13 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
+    validateJsonBody(v.strictObject({
+      username: v.optional(intakeEmailUsernameSchema),
+    })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
+      const { username } = context.req.valid('json');
 
       const usersRepository = createUsersRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -81,6 +85,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const { intakeEmail } = await createIntakeEmail({
         userId,
         organizationId,
+        username,
         intakeEmailsRepository,
         intakeEmailsServices,
         plansRepository,
@@ -118,7 +123,7 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   );
 }
 
-function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
+function setupUpdateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     requireAuthentication(),
@@ -129,22 +134,31 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
     validateJsonBody(v.strictObject({
       isEnabled: v.optional(v.boolean()),
       allowedOrigins: allowedOriginsSchema,
+      username: v.optional(intakeEmailUsernameSchema),
     })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, intakeEmailId } = context.req.valid('param');
-      const { isEnabled, allowedOrigins } = context.req.valid('json');
+      const { isEnabled, allowedOrigins, username } = context.req.valid('json');
 
+      const usersRepository = createUsersRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = createIntakeEmailsServices({ config });
+      const intakeEmailUsernameServices = createIntakeEmailUsernameServices({ config, usersRepository, organizationsRepository });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { intakeEmail } = await intakeEmailsRepository.updateIntakeEmail({
+      const { intakeEmail } = await updateIntakeEmail({
+        userId,
         intakeEmailId,
         organizationId,
         isEnabled,
         allowedOrigins,
+        username,
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        intakeEmailUsernameServices,
       });
 
       return context.json({ intakeEmail });

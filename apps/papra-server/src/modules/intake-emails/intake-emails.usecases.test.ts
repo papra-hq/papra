@@ -1,7 +1,8 @@
 import type { PlansRepository } from '../plans/plans.repository';
+import type { IntakeEmailsServices } from './drivers/intake-emails.drivers.models';
 import { createInMemoryLoggerTransport, createLogger } from '@crowlog/logger';
-import { asc } from 'drizzle-orm';
-import { describe, expect, test } from 'vitest';
+import { asc, eq } from 'drizzle-orm';
+import { describe, expect, test, vi } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
@@ -12,10 +13,24 @@ import { PLUS_PLAN_ID } from '../plans/plans.constants';
 import { pick } from '../shared/objects';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
-import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
+import {
+  createIntakeEmailLimitReachedError,
+  createIntakeEmailUsernameDeniedError,
+  createIntakeEmailUsernameNotAcceptedByStrategyError,
+  createIntakeEmailUsernameRequiredByStrategyError,
+  createIntakeEmailUsernameUpdateNotSupportedError,
+} from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsTable } from './intake-emails.tables';
-import { checkIfOrganizationCanCreateNewIntakeEmail, ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
+import {
+  checkIfOrganizationCanCreateNewIntakeEmail,
+  createIntakeEmail,
+  ingestEmailForRecipient,
+  processIntakeEmailIngestion,
+  updateIntakeEmail,
+} from './intake-emails.usecases';
+import { randomIntakeEmailUsernameDriverFactory } from './username-drivers/random/random.intake-email-username-driver';
+import { userDefinedIntakeEmailUsernameDriverFactory } from './username-drivers/user-defined/user-defined.intake-email-username-driver';
 
 describe('intake-emails usecases', () => {
   describe('ingestEmailForRecipient', () => {
@@ -281,6 +296,229 @@ describe('intake-emails usecases', () => {
           intakeEmailsRepository,
         }),
       ).rejects.toThrow(createIntakeEmailLimitReachedError());
+    });
+  });
+
+  describe('createIntakeEmail (with username strategies)', () => {
+    const buildPlansRepository = (maxIntakeEmailsCount = 10) => ({
+      getOrganizationPlanById: async () => ({
+        organizationPlan: {
+          id: PLUS_PLAN_ID,
+          name: 'Plus',
+          limits: {
+            maxIntakeEmailsCount,
+            maxDocumentStorageBytes: 1024,
+            maxOrganizationsMembersCount: 100,
+          },
+        },
+      }),
+    } as unknown as PlansRepository);
+
+    const buildIntakeEmailsServices = (overrides: Partial<IntakeEmailsServices> = {}): IntakeEmailsServices => ({
+      name: 'test',
+      createEmailAddress: async ({ username }) => ({ emailAddress: `${username}@papra.email` }),
+      updateEmailAddress: async ({ newUsername }) => ({ emailAddress: `${newUsername}@papra.email` }),
+      deleteEmailAddress: async () => {},
+      ...overrides,
+    });
+
+    test('the random strategy generates a username and rejects user-provided usernames', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        users: [{ id: 'user-1', email: 'user@example.com', name: 'User' }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = buildIntakeEmailsServices();
+      const intakeEmailUsernameServices = randomIntakeEmailUsernameDriverFactory({
+        config: overrideConfig(),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      await expect(
+        createIntakeEmail({
+          userId: 'user-1',
+          organizationId: 'org-1',
+          username: 'custom',
+          intakeEmailsRepository,
+          intakeEmailsServices,
+          plansRepository: buildPlansRepository(),
+          subscriptionsRepository: createSubscriptionsRepository({ db }),
+          intakeEmailUsernameServices,
+        }),
+      ).rejects.toThrow(createIntakeEmailUsernameNotAcceptedByStrategyError());
+
+      const { intakeEmail } = await createIntakeEmail({
+        userId: 'user-1',
+        organizationId: 'org-1',
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        plansRepository: buildPlansRepository(),
+        subscriptionsRepository: createSubscriptionsRepository({ db }),
+        intakeEmailUsernameServices,
+      });
+
+      expect(intakeEmail.emailAddress).to.match(/@papra\.email$/);
+    });
+
+    test('the user-defined strategy accepts a valid username and stores the resulting address', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        users: [{ id: 'user-1', email: 'user@example.com', name: 'User' }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = buildIntakeEmailsServices();
+      const intakeEmailUsernameServices = userDefinedIntakeEmailUsernameDriverFactory({
+        config: overrideConfig({ intakeEmails: { username: { drivers: { userDefined: { disableDenyList: false } } } } }),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      const { intakeEmail } = await createIntakeEmail({
+        userId: 'user-1',
+        organizationId: 'org-1',
+        username: 'My-Mailbox',
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        plansRepository: buildPlansRepository(),
+        subscriptionsRepository: createSubscriptionsRepository({ db }),
+        intakeEmailUsernameServices,
+      });
+
+      expect(intakeEmail.emailAddress).to.equal('my-mailbox@papra.email');
+    });
+
+    test('the user-defined strategy requires a username, rejects denied names', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        users: [{ id: 'user-1', email: 'user@example.com', name: 'User' }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = buildIntakeEmailsServices();
+      const intakeEmailUsernameServices = userDefinedIntakeEmailUsernameDriverFactory({
+        config: overrideConfig(),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      const baseArgs = {
+        userId: 'user-1',
+        organizationId: 'org-1',
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        plansRepository: buildPlansRepository(),
+        subscriptionsRepository: createSubscriptionsRepository({ db }),
+        intakeEmailUsernameServices,
+      };
+
+      await expect(createIntakeEmail(baseArgs)).rejects.toThrow(createIntakeEmailUsernameRequiredByStrategyError());
+      await expect(createIntakeEmail({ ...baseArgs, username: 'admin' })).rejects.toThrow(createIntakeEmailUsernameDeniedError());
+    });
+
+    test('the deny list can be disabled via configuration', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        users: [{ id: 'user-1', email: 'user@example.com', name: 'User' }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices = buildIntakeEmailsServices();
+      const intakeEmailUsernameServices = userDefinedIntakeEmailUsernameDriverFactory({
+        config: overrideConfig({ intakeEmails: { username: { drivers: { userDefined: { disableDenyList: true } } } } }),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      const { intakeEmail } = await createIntakeEmail({
+        userId: 'user-1',
+        organizationId: 'org-1',
+        username: 'admin',
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        plansRepository: buildPlansRepository(),
+        subscriptionsRepository: createSubscriptionsRepository({ db }),
+        intakeEmailUsernameServices,
+      });
+
+      expect(intakeEmail.emailAddress).to.equal('admin@papra.email');
+    });
+  });
+
+  describe('updateIntakeEmail', () => {
+    test('updating the username calls the email driver, persists the new address and uses the validated username', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', emailAddress: 'old@papra.email' }],
+        users: [{ id: 'user-1', email: 'user@example.com', name: 'User' }],
+      });
+
+      const updateEmailAddress = vi.fn(async ({ newUsername }: { currentEmailAddress: string; newUsername: string }) => ({
+        emailAddress: `${newUsername}@papra.email`,
+      }));
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices: IntakeEmailsServices = {
+        name: 'test',
+        createEmailAddress: async () => ({ emailAddress: '' }),
+        updateEmailAddress,
+        deleteEmailAddress: async () => {},
+      };
+      const intakeEmailUsernameServices = userDefinedIntakeEmailUsernameDriverFactory({
+        config: overrideConfig(),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      const { intakeEmail } = await updateIntakeEmail({
+        userId: 'user-1',
+        intakeEmailId: 'ie-1',
+        organizationId: 'org-1',
+        username: 'New-Name',
+        intakeEmailsRepository,
+        intakeEmailsServices,
+        intakeEmailUsernameServices,
+      });
+
+      expect(updateEmailAddress).toHaveBeenCalledWith({ currentEmailAddress: 'old@papra.email', newUsername: 'new-name' });
+      expect(intakeEmail.emailAddress).to.equal('new-name@papra.email');
+
+      const [persisted] = await db.select().from(intakeEmailsTable).where(eq(intakeEmailsTable.id, 'ie-1'));
+      expect(persisted?.emailAddress).to.equal('new-name@papra.email');
+    });
+
+    test('updating the username is rejected when the configured strategy does not accept user-defined usernames', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'org-1', name: 'Organization 1' }],
+        intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', emailAddress: 'old@papra.email' }],
+      });
+
+      const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const intakeEmailsServices: IntakeEmailsServices = {
+        name: 'test',
+        createEmailAddress: async () => ({ emailAddress: '' }),
+        updateEmailAddress: async () => ({ emailAddress: '' }),
+        deleteEmailAddress: async () => {},
+      };
+      const intakeEmailUsernameServices = randomIntakeEmailUsernameDriverFactory({
+        config: overrideConfig(),
+        usersRepository: {} as never,
+        organizationsRepository: {} as never,
+      });
+
+      await expect(
+        updateIntakeEmail({
+          userId: 'user-1',
+          intakeEmailId: 'ie-1',
+          organizationId: 'org-1',
+          username: 'something',
+          intakeEmailsRepository,
+          intakeEmailsServices,
+          intakeEmailUsernameServices,
+        }),
+      ).rejects.toThrow(createIntakeEmailUsernameUpdateNotSupportedError());
     });
   });
 });

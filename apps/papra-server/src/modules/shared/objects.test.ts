@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { omit, omitUndefined, pick } from './objects';
+import { objectKeys, omit, omitUndefined, pick } from './objects';
 
 describe('objects', () => {
   describe('pick', () => {
@@ -170,6 +170,13 @@ describe('objects', () => {
       Object.defineProperty(obj, 'b', { value: 2, enumerable: true });
 
       expect(omitUndefined(obj)).toEqual({ b: 2 });
+    });
+  });
+
+  describe('objectKeys', () => {
+    test('returns the keys of the object as an array of strings', () => {
+      expect(objectKeys({ a: 1, b: 2 })).toEqual(['a', 'b']);
+      expect(objectKeys({ a: undefined, b: null })).toEqual(['a', 'b']);
     });
   });
 });

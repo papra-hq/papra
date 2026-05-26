@@ -41,3 +41,8 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[] | re
 
   return result;
 }
+
+// Typed object keys
+export function objectKeys<T extends object>(obj: T): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
+}

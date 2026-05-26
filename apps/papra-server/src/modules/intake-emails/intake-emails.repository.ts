@@ -50,22 +50,35 @@ async function createIntakeEmail({ organizationId, emailAddress, db }: { organiz
   return { intakeEmail };
 }
 
-async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, allowedOrigins, db }: { intakeEmailId: string; organizationId: string; isEnabled?: boolean; allowedOrigins?: string[]; db: Database }) {
-  const [intakeEmail] = await db
-    .update(intakeEmailsTable)
-    .set(
-      omitUndefined({
-        isEnabled,
-        allowedOrigins,
-      }),
-    )
-    .where(
-      and(
-        eq(intakeEmailsTable.id, intakeEmailId),
-        eq(intakeEmailsTable.organizationId, organizationId),
-      ),
-    )
-    .returning();
+async function updateIntakeEmail({ intakeEmailId, organizationId, isEnabled, allowedOrigins, emailAddress, db }: { intakeEmailId: string; organizationId: string; isEnabled?: boolean; allowedOrigins?: string[]; emailAddress?: string; db: Database }) {
+  const [result, error] = await safely(
+    db
+      .update(intakeEmailsTable)
+      .set(
+        omitUndefined({
+          isEnabled,
+          allowedOrigins,
+          emailAddress,
+        }),
+      )
+      .where(
+        and(
+          eq(intakeEmailsTable.id, intakeEmailId),
+          eq(intakeEmailsTable.organizationId, organizationId),
+        ),
+      )
+      .returning(),
+  );
+
+  if (isUniqueConstraintError({ error })) {
+    throw createIntakeEmailAlreadyExistsError();
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  const [intakeEmail] = result;
 
   if (!intakeEmail) {
     throw createIntakeEmailNotFoundError();

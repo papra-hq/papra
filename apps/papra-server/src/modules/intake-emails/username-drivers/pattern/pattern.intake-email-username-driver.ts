@@ -3,7 +3,7 @@ import { createError } from '../../../shared/errors/errors';
 import { createLogger } from '../../../shared/logger/logger';
 import { isNil } from '../../../shared/utils';
 import { parseEmailAddress } from '../../intake-emails.models';
-import { defineIntakeEmailUsernameDriverFactory } from '../intake-email-username.models';
+import { defineIntakeEmailUsernameDriverFactory, validateUsername } from '../intake-email-username.models';
 import { PATTERN_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME } from './pattern.intake-email-username-driver.config';
 import { PATTERNS_PLACEHOLDERS } from './pattern.intake-email-username-driver.constants';
 
@@ -13,7 +13,7 @@ export const patternIntakeEmailUsernameDriverFactory = defineIntakeEmailUsername
   usersRepository,
   organizationsRepository,
 }) => {
-  const { pattern } = config.intakeEmails.username.drivers.pattern;
+  const { isDenyListEnabled, drivers: { pattern: { pattern } } } = config.intakeEmails.username;
 
   return {
     name: PATTERN_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME,
@@ -42,7 +42,7 @@ export const patternIntakeEmailUsernameDriverFactory = defineIntakeEmailUsername
         .replaceAll(PATTERNS_PLACEHOLDERS.ORGANIZATION_NAME, organization.name)
         .replaceAll(PATTERNS_PLACEHOLDERS.RANDOM_DIGITS, () => Math.floor(Math.random() * 10000).toString());
 
-      const username = slugify(rawUsername);
+      const { username } = validateUsername({ username: slugify(rawUsername), isDenyListEnabled });
 
       logger.debug({ rawUsername, username, pattern, userId, organizationId }, 'Generated email address');
 

@@ -4,6 +4,7 @@ import { getServerBaseUrl } from '../../../config/config.models';
 import { createError } from '../../../shared/errors/errors';
 import { createLogger } from '../../../shared/logger/logger';
 import { INTAKE_EMAILS_INGEST_ROUTE } from '../../intake-emails.constants';
+import { createIntakeEmailUpdateFailedError } from '../../intake-emails.errors';
 import { buildEmailAddress } from '../../intake-emails.models';
 import { defineIntakeEmailDriver } from '../intake-emails.drivers.models';
 
@@ -49,6 +50,25 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
       return {
         emailAddress,
       };
+    },
+    updateEmailAddress: async ({ currentEmailAddress, newUsername }) => {
+      const [result, error] = await safely(client.updateEmail(
+        { emailAddress: currentEmailAddress },
+        { username: newUsername },
+      ));
+
+      if (error) {
+        logger.error({ error, currentEmailAddress, newUsername }, 'Failed to update email address in OwlRelay');
+
+        throw createIntakeEmailUpdateFailedError();
+      }
+
+      const { username: updatedUsername, domain: updatedDomain } = result;
+      const emailAddress = buildEmailAddress({ username: updatedUsername, domain: updatedDomain });
+
+      logger.info({ previousEmailAddress: currentEmailAddress, emailAddress }, 'Updated email address in OwlRelay');
+
+      return { emailAddress };
     },
     deleteEmailAddress: async ({ emailAddress }) => {
       const [, error] = await safely(client.deleteEmail({ emailAddress }));

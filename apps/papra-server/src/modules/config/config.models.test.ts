@@ -14,9 +14,10 @@ describe('config models', () => {
         - auth.providers.*.isEnabled Wether a oauth provider is enabled
         - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
         - intakeEmails.isEnabled Whether intake emails are enabled
+        - intakeEmails.allowsUserDefinedUsernames Whether the active username strategy lets users pick or rename their intake email
         - auth.providers.email.isEnabled Whether email/password authentication is enabled
         - organizations.deletedOrganizationsPurgeDaysDelay The delay in days before a soft-deleted organization is permanently purged
-        
+
         Any other config should not be exposed.`, () => {
       const config = overrideConfig({
         foo: 'bar',
@@ -41,6 +42,9 @@ describe('config models', () => {
         },
         intakeEmails: {
           isEnabled: true,
+          username: {
+            driver: 'user-defined',
+          },
         },
         organizations: {
           deletedOrganizationsPurgeDaysDelay: 30,
@@ -75,6 +79,7 @@ describe('config models', () => {
           },
           intakeEmails: {
             isEnabled: true,
+            allowsUserDefinedUsernames: true,
           },
           organizations: {
             deletedOrganizationsPurgeDaysDelay: 30,
