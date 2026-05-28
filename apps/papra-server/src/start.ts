@@ -65,7 +65,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   const documentSearchServices = createDocumentSearchServices({ db, config });
   const webhookRepository = createWebhookRepository({ db });
   const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository });
-  const kvStore = buildKvStore({ config });
+  const kvStore = buildKvStore({ config, db });
 
   // --- Services initialization
   await taskServices.initialize();
