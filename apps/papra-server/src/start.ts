@@ -16,6 +16,7 @@ import { createDocumentSearchServices } from './modules/documents/document-searc
 import { createDocumentStorageService } from './modules/documents/storage/documents.storage.services';
 import { createEmailsServices } from './modules/emails/emails.services';
 import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
+import { buildKvStore } from './modules/kv-store/kv-store';
 import { addToGlobalLogContext, createLogger } from './modules/shared/logger/logger';
 import { createSubscriptionsServices } from './modules/subscriptions/subscriptions.services';
 import { registerTaskDefinitions } from './modules/tasks/tasks.definitions';
@@ -64,6 +65,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   const documentSearchServices = createDocumentSearchServices({ db, config });
   const webhookRepository = createWebhookRepository({ db });
   const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository });
+  const kvStore = buildKvStore({ config });
 
   // --- Services initialization
   await taskServices.initialize();
@@ -82,6 +84,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
     subscriptionsServices,
     documentSearchServices,
     webhookTriggerServices,
+    kvStore,
   };
 }
 

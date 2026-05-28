@@ -4,6 +4,7 @@ import type { Config } from '../config/config.types';
 import type { DocumentSearchServices } from '../documents/document-search/document-search.types';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { EmailsServices } from '../emails/emails.services';
+import type { KvStore } from '../kv-store/kv-store.types';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import type { TaskServices } from '../tasks/tasks.services';
 import type { TrackingServices } from '../tracking/tracking.services';
@@ -40,6 +41,7 @@ export type GlobalDependencies = {
   eventServices: EventServices;
   shutdownServices: ShutdownServices;
   webhookTriggerServices: WebhookTriggerServices;
+  kvStore: KvStore;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

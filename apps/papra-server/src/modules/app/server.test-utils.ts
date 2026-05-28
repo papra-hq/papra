@@ -4,6 +4,8 @@ import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentSearchServices } from '../documents/document-search/document-search.registry';
 import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
 import { createEmailsServices } from '../emails/emails.services';
+import { createInMemoryKvStoreDriver } from '../kv-store/drivers/in-memory/in-memory.kv-store-driver';
+import { createKvStore } from '../kv-store/kv-store';
 import { createSubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createDummyTrackingServices } from '../tracking/tracking.services';
@@ -31,6 +33,7 @@ export function createTestServerDependencies(overrides: Partial<GlobalDependenci
   const subscriptionsServices = overrides.subscriptionsServices ?? createSubscriptionsServices({ config });
   const documentSearchServices = overrides.documentSearchServices ?? createDocumentSearchServices({ db, config });
   const webhookTriggerServices = overrides.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) });
+  const kvStore = overrides.kvStore ?? createKvStore({ driver: createInMemoryKvStoreDriver() });
 
   registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config, webhookTriggerServices });
 
@@ -47,5 +50,6 @@ export function createTestServerDependencies(overrides: Partial<GlobalDependenci
     subscriptionsServices,
     documentSearchServices,
     webhookTriggerServices,
+    kvStore,
   };
 }
