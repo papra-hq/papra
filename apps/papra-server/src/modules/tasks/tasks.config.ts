@@ -95,7 +95,7 @@ export const tasksConfig = {
     cron: {
       doc: 'The cron schedule for the task to purge expired key-value store entries (only runs when the configured kv-store driver requires it, e.g. libsql)',
       schema: v.string(),
-      default: '0 * * * *',
+      default: '0 2 * * *',
       env: 'KV_STORE_PURGE_EXPIRED_ENTRIES_CRON',
     },
     runOnStartup: {
