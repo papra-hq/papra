@@ -17,6 +17,8 @@ export function createKvStore({
   logger?: Logger;
 }): KvStore {
   return {
+    ...(driver.deleteExpired ? { purgeExpired: driver.deleteExpired } : {}),
+
     defineScope: ({ prefix, schema, defaultTtlMs }) => {
       const buildKey = (key: string) => joinKeyParts([prefix, key]);
 

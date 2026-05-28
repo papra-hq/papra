@@ -13,6 +13,7 @@ export function createKvStoreRepository({ db }: { db: Database }) {
       upsertEntry,
       deleteEntry,
       deleteExpiredEntry,
+      deleteAllExpiredEntries,
     },
     { db },
   );
@@ -45,4 +46,18 @@ async function deleteExpiredEntry({ key, db, now = new Date() }: { key: string; 
         lte(kvStoreTable.expiresAt, now),
       ),
     );
+}
+
+async function deleteAllExpiredEntries({ db, now = new Date() }: { db: Database; now?: Date }) {
+  const deleted = await db
+    .delete(kvStoreTable)
+    .where(
+      and(
+        isNotNull(kvStoreTable.expiresAt),
+        lte(kvStoreTable.expiresAt, now),
+      ),
+    )
+    .returning({ key: kvStoreTable.key });
+
+  return { deletedCount: deleted.length };
 }
