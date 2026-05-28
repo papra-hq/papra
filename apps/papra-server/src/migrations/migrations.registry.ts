@@ -19,6 +19,7 @@ import { caseInsensitiveTagNameUniqConstraintMigration } from './list/0016-case-
 import { documentsDateMigration } from './list/0017-documents-date.migration';
 import { customPropertiesMigration } from './list/0018-custom-properties.migration';
 import { twoFactorVerifiedMigration } from './list/0019-two-factor-verified.migration';
+import { kvStoreMigration } from './list/0020-kv-store.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -40,4 +41,5 @@ export const migrations: Migration[] = [
   documentsDateMigration,
   customPropertiesMigration,
   twoFactorVerifiedMigration,
+  kvStoreMigration,
 ];

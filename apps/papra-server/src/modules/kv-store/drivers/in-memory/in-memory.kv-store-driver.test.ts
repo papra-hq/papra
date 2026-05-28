@@ -3,7 +3,7 @@ import { runKvStoreDriverTestSuite } from '../kv-store-drivers.test-suite';
 import { createInMemoryKvStoreDriver } from './in-memory.kv-store-driver';
 
 describe('in-memory.kv-store-driver', () => {
-  describe('inMemoryKvStoreDriverFactory', () => {
+  describe('createInMemoryKvStoreDriver', () => {
     runKvStoreDriverTestSuite(async () => ({ driver: createInMemoryKvStoreDriver() }));
 
     test('if the event loop is delayed/blocked (or timers are paused), expired keys are properly removed', async () => {

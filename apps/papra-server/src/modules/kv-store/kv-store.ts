@@ -1,3 +1,4 @@
+import type { Database } from '../app/database/database.types';
 import type { Config } from '../config/config.types';
 import type { Logger } from '../shared/logger/logger';
 import type { KvStoreDriver } from './drivers/kv-store-drivers.types';
@@ -60,12 +61,12 @@ export function createKvStore({
   };
 }
 
-export function buildKvStore({ config}: { config: Config }): KvStore {
+export function buildKvStore({ config, db }: { config: Config; db: Database }): KvStore {
   const { driverName } = config.kvStore;
 
   const driverFactory = getKvStoreDriverFactory({ driverName });
 
-  const driver = driverFactory({ config });
+  const driver = driverFactory({ config, db });
 
   return createKvStore({ driver });
 }
