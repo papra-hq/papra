@@ -16,4 +16,6 @@ export type KvStore = {
     schema: TSchema;
     defaultTtlMs?: number;
   }) => KvStoreScope<TSchema>;
+  // Only present for lazy-delete drivers (e.g. libsql) that accumulate expired entries; eager drivers (e.g. in-memory) omit it.
+  purgeExpired?: () => Promise<{ deletedCount: number }>;
 };

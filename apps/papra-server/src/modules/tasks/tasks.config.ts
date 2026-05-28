@@ -91,4 +91,18 @@ export const tasksConfig = {
       env: 'ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP',
     },
   },
+  purgeExpiredKvEntries: {
+    cron: {
+      doc: 'The cron schedule for the task to purge expired key-value store entries (only runs when the configured kv-store driver requires it, e.g. libsql)',
+      schema: v.string(),
+      default: '0 * * * *',
+      env: 'KV_STORE_PURGE_EXPIRED_ENTRIES_CRON',
+    },
+    runOnStartup: {
+      doc: 'Whether the task to purge expired key-value store entries should run on startup',
+      schema: booleanishSchema,
+      default: true,
+      env: 'KV_STORE_PURGE_EXPIRED_ENTRIES_RUN_ON_STARTUP',
+    },
+  },
 } as const satisfies ConfigDefinition;

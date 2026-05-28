@@ -42,5 +42,9 @@ export function createLibsqlKvStoreDriver({ db }: { db: Database }): KvStoreDriv
       await repository.deleteEntry({ key });
     },
 
+    deleteExpired: async (now = new Date()) => {
+      return repository.deleteAllExpiredEntries({ now });
+    },
+
   };
 }
