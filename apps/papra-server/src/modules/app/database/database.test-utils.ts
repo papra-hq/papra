@@ -5,6 +5,7 @@ import { runMigrations } from '../../../migrations/migrations.usecases';
 import { apiKeyOrganizationsTable, apiKeysTable } from '../../api-keys/api-keys.tables';
 import { customPropertyDefinitionsTable, documentCustomPropertyValuesTable } from '../../custom-properties/custom-properties.table';
 import { customPropertySelectOptionsTable } from '../../custom-properties/options/custom-properties-options.table';
+import { documentShareLinksTable } from '../../document-share-links/document-share-links.table';
 import { documentsTable } from '../../documents/documents.table';
 import { intakeEmailsTable } from '../../intake-emails/intake-emails.tables';
 import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from '../../organizations/organizations.table';
@@ -43,6 +44,7 @@ const seedTables = {
   customPropertySelectOptions: customPropertySelectOptionsTable,
   documentCustomPropertyValues: documentCustomPropertyValuesTable,
   documents: documentsTable,
+  documentShareLinks: documentShareLinksTable,
   documentsTags: documentsTagsTable,
   intakeEmails: intakeEmailsTable,
   organizationInvitations: organizationInvitationsTable,
