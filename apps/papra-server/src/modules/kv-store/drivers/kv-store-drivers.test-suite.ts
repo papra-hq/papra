@@ -11,7 +11,7 @@ export function runKvStoreDriverTestSuite(createKvStoreDriver: () => Promise<{ d
   const withKvStore = (fn: (args: {
     kvStore: KvStore;
     getLogs: GetLogsFn;
-    scopedKvStore: KvStoreScope<v.StringSchema<undefined>>;
+    scopedKvStore: KvStoreScope<string>;
   }) => Promise<void>) => async () => {
     const { driver, clear } = await createKvStoreDriver();
     const { logger, getLogs } = createTestLogger();
