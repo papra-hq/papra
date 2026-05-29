@@ -6,7 +6,7 @@ import { createLibsqlKvStoreDriver, LIBSQL_KV_STORE_DRIVER_NAME } from './libsql
 
 export const kvStoreDriverFactories = {
   [IN_MEMORY_KV_STORE_DRIVER_NAME]: createInMemoryKvStoreDriver,
-  [LIBSQL_KV_STORE_DRIVER_NAME]: ({ db }) => createLibsqlKvStoreDriver({ db }),
+  [LIBSQL_KV_STORE_DRIVER_NAME]: createLibsqlKvStoreDriver,
 } satisfies Record<string, KvStoreDriverFactory>;
 
 export const kvStoreDriverNames = Object.keys(kvStoreDriverFactories) as (keyof typeof kvStoreDriverFactories)[];

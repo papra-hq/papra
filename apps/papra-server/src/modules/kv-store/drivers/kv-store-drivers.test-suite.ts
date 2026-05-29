@@ -1,19 +1,23 @@
+import type { Clock, TestClock } from '../../shared/clock/clock.types';
 import type { KvStore, KvStoreScope } from '../kv-store.types';
 import type { KvStoreDriver } from './kv-store-drivers.types';
 import * as v from 'valibot';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
+import { createTestClock } from '../../shared/clock/clock.test-utils';
 import { createTestLogger } from '../../shared/logger/logger.test-utils';
 import { createKvStore } from '../kv-store';
 
 type GetLogsFn = ReturnType<typeof createTestLogger>['getLogs'];
 
-export function runKvStoreDriverTestSuite(createKvStoreDriver: () => Promise<{ driver: KvStoreDriver; clear?: () => Promise<void> }>) {
+export function runKvStoreDriverTestSuite(createKvStoreDriver: (args: { clock: Clock }) => Promise<{ driver: KvStoreDriver; clear?: () => Promise<void> }>) {
   const withKvStore = (fn: (args: {
     kvStore: KvStore;
     getLogs: GetLogsFn;
     scopedKvStore: KvStoreScope<string>;
+    clock: TestClock;
   }) => Promise<void>) => async () => {
-    const { driver, clear } = await createKvStoreDriver();
+    const { clock } = createTestClock();
+    const { driver, clear } = await createKvStoreDriver({ clock });
     const { logger, getLogs } = createTestLogger();
 
     const kvStore = createKvStore({ driver, logger });
@@ -22,7 +26,7 @@ export function runKvStoreDriverTestSuite(createKvStoreDriver: () => Promise<{ d
       schema: v.string(),
     });
 
-    await fn({ kvStore, getLogs, scopedKvStore });
+    await fn({ kvStore, getLogs, scopedKvStore, clock });
 
     await clear?.();
   };
@@ -55,123 +59,104 @@ export function runKvStoreDriverTestSuite(createKvStoreDriver: () => Promise<{ d
       expect(await scopedKvStore.get('key1')).to.eql('value2');
     }));
 
-    describe('TTL', () => {
-      test('expire a value after TTL', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+    describe('expiration', () => {
+      test('a value is no longer returned once its expiry instant has passed', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        vi.advanceTimersByTime(1_001);
+        clock.advanceBy({ milliseconds: 1_001 });
 
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
-
-        vi.useRealTimers();
       }));
 
-      test('reset TTL on set', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+      test('setting a value again pushes back its expiry instant', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        vi.advanceTimersByTime(500);
-
+        clock.advanceBy({ milliseconds: 500 });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+        // Re-set relative to the new "now", moving the expiry another second out.
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
 
-        vi.advanceTimersByTime(500);
-
+        clock.advanceBy({ milliseconds: 500 });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        vi.advanceTimersByTime(500);
-
+        clock.advanceBy({ milliseconds: 501 });
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
-
-        vi.useRealTimers();
       }));
 
-      test('overwrite a value without TTL should remove the previous TTL', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+      test('overwriting a value without an expiry clears the previous expiry', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
         await scopedKvStore.set('key1', 'value1');
-        vi.advanceTimersByTime(1_001);
+        clock.advanceBy({ milliseconds: 1_001 });
 
         expect(await scopedKvStore.get('key1')).to.eql('value1');
-
-        vi.useRealTimers();
       }));
 
-      test('overwrite a value with a shorter TTL should update the TTL', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+      test('overwriting a value with an earlier expiry updates the expiry', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 500 });
-        vi.advanceTimersByTime(501);
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 500 }) });
+        clock.advanceBy({ milliseconds: 501 });
 
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
-
-        vi.useRealTimers();
       }));
 
-      test('ttl does not affect other keys', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+      test('expiry of one key does not affect other keys', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         await scopedKvStore.set('key2', 'value2');
         expect(await scopedKvStore.get('key1')).to.eql('value1');
         expect(await scopedKvStore.get('key2')).to.eql('value2');
 
-        vi.advanceTimersByTime(1_001);
+        clock.advanceBy({ milliseconds: 1_001 });
 
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
         expect(await scopedKvStore.get('key2')).to.eql('value2');
-
-        vi.useRealTimers();
       }));
 
-      test('a negative or zero TTL is considered as expiring immediatly, so the value should not be set', withKvStore(async ({ scopedKvStore }) => {
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 0 });
+      test('an expiry at or before now means the value is not stored', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now() });
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
 
-        await scopedKvStore.set('key2', 'value2', { ttlMs: -1 });
+        await scopedKvStore.set('key2', 'value2', { expiresAt: clock.now().subtract({ milliseconds: 1 }) });
         expect(await scopedKvStore.get('key2')).to.eql(undefined);
       }));
 
-      test('when a negative or zero TTL is set when overwriting an existing value, the value should be deleted', withKvStore(async ({ scopedKvStore }) => {
+      test('overwriting an existing value with a past expiry deletes it', withKvStore(async ({ scopedKvStore, clock }) => {
         await scopedKvStore.set('key1', 'value1');
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 0 });
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now() });
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
-
-        await scopedKvStore.set('key2', 'value2', { ttlMs: 1_000 });
-        expect(await scopedKvStore.get('key2')).to.eql('value2');
-
-        await scopedKvStore.set('key2', 'value2', { ttlMs: -1 });
-        expect(await scopedKvStore.get('key2')).to.eql(undefined);
       }));
 
-      test('setting a value with TTL and then deleting it should not cause issues', withKvStore(async ({ scopedKvStore }) => {
-        vi.useFakeTimers();
-
-        await scopedKvStore.set('key1', 'value1', { ttlMs: 1_000 });
+      test('setting a value with an expiry and then deleting it does not resurrect it', withKvStore(async ({ scopedKvStore, clock }) => {
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ milliseconds: 1_000 }) });
         expect(await scopedKvStore.get('key1')).to.eql('value1');
 
         await scopedKvStore.delete('key1');
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
 
-        vi.advanceTimersByTime(1_001);
+        clock.advanceBy({ milliseconds: 1_001 });
 
         expect(await scopedKvStore.get('key1')).to.eql(undefined);
+      }));
 
-        vi.useRealTimers();
+      test('the expiration duration can exceed the maximum timer delay of the environment (e.g. ~24.8 days for setTimeout in Node)', withKvStore(async ({ scopedKvStore, clock }) => {
+        const tenYearsInHours = 10 * 365 * 24;
+
+        await scopedKvStore.set('key1', 'value1', { expiresAt: clock.now().add({ hours: tenYearsInHours }) });
+        expect(await scopedKvStore.get('key1')).to.eql('value1');
+
+        clock.advanceBy({ hours: tenYearsInHours - 1 });
+        expect(await scopedKvStore.get('key1')).to.eql('value1');
+
+        clock.advanceBy({ hours: 1, milliseconds: 1 });
+        expect(await scopedKvStore.get('key1')).to.eql(undefined);
       }));
     });
   });
