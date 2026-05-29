@@ -4,9 +4,9 @@ export type JsonSerializableValue = string | number | boolean | null | JsonSeria
 
 export type JsonSchema = GenericSchema<JsonSerializableValue, JsonSerializableValue>;
 
-export type KvStoreScope<TSchema extends JsonSchema> = {
-  get: (key: string) => Promise<InferOutput<TSchema> | undefined>;
-  set: (key: string, value: InferInput<TSchema>, options?: { ttlMs?: number }) => Promise<void>;
+export type KvStoreScope<TInput, TOutput = TInput> = {
+  get: (key: string) => Promise<TOutput | undefined>;
+  set: (key: string, value: TInput, options?: { ttlMs?: number }) => Promise<void>;
   delete: (key: string) => Promise<void>;
 };
 
@@ -15,7 +15,7 @@ export type KvStore = {
     prefix: string;
     schema: TSchema;
     defaultTtlMs?: number;
-  }) => KvStoreScope<TSchema>;
+  }) => KvStoreScope<InferInput<TSchema>, InferOutput<TSchema>>;
   // Only present for lazy-delete drivers (e.g. libsql) that accumulate expired entries; eager drivers (e.g. in-memory) omit it.
   purgeExpired?: () => Promise<{ deletedCount: number }>;
 };
