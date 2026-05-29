@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createInMemoryKvStoreDriver } from './drivers/in-memory/in-memory.kv-store-driver';
 import { createKvStore } from './kv-store';
@@ -57,7 +57,7 @@ describe('kv-store', () => {
         expect(await readScope.get('key')).to.eql(undefined);
 
         // Underlying entry was actually deleted, not just hidden by the parse failure.
-        expect(await driver.get('shape:key')).to.eql(undefined);
+        expect(await driver.get({ key: 'shape:key' })).to.eql(undefined);
 
         const logs = getLogs({ excludeTimestampMs: true });
         expect(logs).to.have.length(1);
@@ -79,7 +79,7 @@ describe('kv-store', () => {
           code: 'kv_store.invalid_value',
         });
 
-        expect(await driver.get('shape:key')).to.eql(undefined);
+        expect(await driver.get({ key: 'shape:key' })).to.eql(undefined);
 
         const logs = getLogs({ excludeTimestampMs: true });
         expect(logs).to.have.length(1);
@@ -88,39 +88,6 @@ describe('kv-store', () => {
           message: 'Failed to set kv entry because value fails schema validation',
           namespace: 'kv-store',
         });
-      });
-    });
-
-    describe('defaultTtlMs', () => {
-      test('the scope default TTL applies when no per-call TTL is given', async () => {
-        vi.useFakeTimers();
-        const { kvStore } = setup();
-
-        const scope = kvStore.defineScope({ prefix: 'ttl', schema: v.string(), defaultTtlMs: 1_000 });
-
-        await scope.set('key', 'value');
-        expect(await scope.get('key')).to.eql('value');
-
-        vi.advanceTimersByTime(1_001);
-
-        expect(await scope.get('key')).to.eql(undefined);
-
-        vi.useRealTimers();
-      });
-
-      test('a per-call TTL overrides the scope default TTL', async () => {
-        vi.useFakeTimers();
-        const { kvStore } = setup();
-
-        const scope = kvStore.defineScope({ prefix: 'ttl', schema: v.string(), defaultTtlMs: 10_000 });
-
-        await scope.set('key', 'value', { ttlMs: 500 });
-
-        vi.advanceTimersByTime(501);
-
-        expect(await scope.get('key')).to.eql(undefined);
-
-        vi.useRealTimers();
       });
     });
   });

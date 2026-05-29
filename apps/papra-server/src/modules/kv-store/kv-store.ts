@@ -19,13 +19,13 @@ export function createKvStore({
   return {
     ...(driver.deleteExpired ? { purgeExpired: driver.deleteExpired } : {}),
 
-    defineScope: ({ prefix, schema, defaultTtlMs }) => {
+    defineScope: ({ prefix, schema }) => {
       const buildKey = (key: string) => joinKeyParts([prefix, key]);
 
       return {
         get: async (key) => {
           const fullKey = buildKey(key);
-          const raw = await driver.get(fullKey);
+          const raw = await driver.get({ key: fullKey });
 
           if (raw === undefined) {
             return undefined;
@@ -36,14 +36,14 @@ export function createKvStore({
           if (!parsed.success) {
             // Drop entries that no longer match the schema (e.g. shape changed between deploys) so they don't poison every future read.
             logger.warn({ prefix, key, issues: parsed.issues }, 'Dropping kv entry that fails schema validation');
-            await driver.delete(fullKey);
+            await driver.delete({ key: fullKey });
             return undefined;
           }
 
           return parsed.output;
         },
 
-        set: async (key, value, { ttlMs = defaultTtlMs } = {}) => {
+        set: async (key, value, { expiresAt } = {}) => {
           const parsed = v.safeParse(schema, value);
 
           if (!parsed.success) {
@@ -51,11 +51,11 @@ export function createKvStore({
             throw createInvalidKvStoreValueError();
           }
 
-          await driver.set(buildKey(key), parsed.output, { ttlMs });
+          await driver.set({ key: buildKey(key), value: parsed.output, expiresAt });
         },
 
         delete: async (key) => {
-          await driver.delete(buildKey(key));
+          await driver.delete({ key: buildKey(key) });
         },
 
       };
