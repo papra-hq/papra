@@ -20,13 +20,13 @@ export async function isTesseractCliAvailable({ binary = 'tesseract' }: { binary
   }
 }
 
-export const isTesseractCliAvailableMemoized = memoize(isTesseractCliAvailable, ({ binary }) => binary);
+export const isTesseractCliAvailableMemoized = memoize(isTesseractCliAvailable, ({ binary } = {}) => binary ?? 'tesseract');
 
 export function createTesseractCliExtractor({ binary = 'tesseract', languages: factoryLanguages = ['eng'] }: { binary?: string; languages?: string[] } = {}) {
   return async (maybeArrayBuffer: ArrayBuffer | Buffer, { languages = factoryLanguages }: { languages?: string[] } = {}): Promise<string> => {
     try {
       const proc = exec(binary, ['stdin', 'stdout', '-l', languages.join('+')], { throwOnError: true });
-      proc.process.stdin.end(castToBuffer(maybeArrayBuffer));
+      proc.process?.stdin?.end(castToBuffer(maybeArrayBuffer));
 
       const { stdout } = await proc;
 

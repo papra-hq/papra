@@ -58,8 +58,8 @@ describe('extractors usecases', () => {
 
           const config = configFilePath ? (await import(configFilePath)).config : undefined;
 
-          const arrayBuffer = (await fs.readFile(inputFilePath)).buffer as ArrayBuffer;
-          const mimeType = mime.getType(inputFilePath);
+          const arrayBuffer = (await fs.readFile(inputFilePath!)).buffer as ArrayBuffer;
+          const mimeType = mime.getType(inputFilePath!)!;
 
           const { textContent, error, extractorName, extractorType } = await extractText({
             arrayBuffer,
@@ -77,7 +77,7 @@ describe('extractors usecases', () => {
           expect(extractorName).to.not.eql(undefined, 'No extractor found for the fixture file');
           expect(extractorType).to.not.eql(undefined);
 
-          const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop().slice(0, 3);
+          const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop()!.slice(0, 3);
           const expectedFilePath = join(fixtureDir, `${fixtureNumber}.expected.txt`);
 
           await expect(textContent).toMatchFileSnapshot(expectedFilePath, 'Fixture does not match snapshot');
