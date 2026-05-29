@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "moduleDetection": "force",
-    "module": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowJs": true,
     "strict": true,
@@ -15,6 +16,5 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
-  },
-  "exclude": ["demo"]
+  }
 }

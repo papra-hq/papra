@@ -2,9 +2,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "moduleDetection": "force",
-    "module": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["node"],
     "allowJs": true,
     "strict": true,
     "noImplicitOverride": true,
