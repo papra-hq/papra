@@ -15,7 +15,7 @@ import {
   createShareLinkNotPasswordProtectedError,
   createShareLinkPasswordRequiredError,
 } from './document-share-links.errors';
-import { generateShareToken } from './document-share-links.models';
+import { generateShareToken, shouldTouchShareLinkLastAccessedAt } from './document-share-links.models';
 import { hashPassword, verifyPassword } from './document-share-links.password';
 
 function isShareLinkExpired({ shareLink, clock }: { shareLink: DbSelectableShareLink; clock: Clock }) {
@@ -111,17 +111,36 @@ export async function updateShareLink({
   return { shareLink };
 }
 
+// Resolves the document backing a share link for public access. A trashed (soft-deleted)
+// document is treated as gone (410): the link is not removed on trash so it resumes on restore,
+// but public access must stop immediately.
+export async function getShareLinkDocumentOrThrow({
+  shareLink,
+  documentsRepository,
+}: {
+  shareLink: DbSelectableShareLink;
+  documentsRepository: DocumentsRepository;
+}) {
+  const { document } = await getDocumentOrThrow({ documentId: shareLink.documentId, organizationId: shareLink.organizationId, documentsRepository });
+
+  if (document.isDeleted) {
+    throw createShareLinkGoneError();
+  }
+
+  return { document };
+}
+
 // Resolves a share link by its public token, throwing 404 if unknown and 410 if disabled/expired.
 export async function resolveUsableShareLinkByToken({
-  token,
+  shareLinkToken,
   shareLinksRepository,
   clock = systemClock,
 }: {
-  token: string;
+  shareLinkToken: string;
   shareLinksRepository: ShareLinksRepository;
   clock?: Clock;
 }) {
-  const { shareLink } = await shareLinksRepository.getShareLinkByToken({ token });
+  const { shareLink } = await shareLinksRepository.getShareLinkByToken({ token: shareLinkToken });
 
   if (!shareLink) {
     throw createShareLinkNotFoundError();
@@ -146,11 +165,12 @@ export async function ensureShareLinkAccessGranted({
   config: Config;
   clock?: Clock;
 }) {
-  if (shareLink.passwordHash === null) {
+  if (isNil(shareLink.passwordHash)) {
+    // Link is not password protected
     return;
   }
 
-  const { isValid } = await isShareLinkAccessTokenValid({ accessToken, shareLinkId: shareLink.id, authSecret: config.auth.secret, clock });
+  const { isValid } = await isShareLinkAccessTokenValid({ accessToken, shareLinkId: shareLink.id, passwordHash: shareLink.passwordHash, authSecret: config.auth.secret, clock });
 
   if (!isValid) {
     throw createShareLinkPasswordRequiredError();
@@ -158,19 +178,19 @@ export async function ensureShareLinkAccessGranted({
 }
 
 export async function verifySharePassword({
-  token,
+  shareLinkToken,
   password,
   shareLinksRepository,
   config,
   clock = systemClock,
 }: {
-  token: string;
+  shareLinkToken: string;
   password: string;
   shareLinksRepository: ShareLinksRepository;
   config: Config;
   clock?: Clock;
 }) {
-  const { shareLink } = await resolveUsableShareLinkByToken({ token, shareLinksRepository, clock });
+  const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository, clock });
 
   if (shareLink.passwordHash === null) {
     throw createShareLinkNotPasswordProtectedError();
@@ -184,6 +204,7 @@ export async function verifySharePassword({
 
   const { accessToken } = await issueShareLinkAccessToken({
     shareLinkId: shareLink.id,
+    passwordHash: shareLink.passwordHash,
     authSecret: config.auth.secret,
     ttlMinutes: config.documentShareLinks.accessTokenTtlMinutes,
     clock,
@@ -192,29 +213,39 @@ export async function verifySharePassword({
   return { accessToken };
 }
 
+export async function touchShareLinkLastAccessedAt({
+  shareLink,
+  shareLinksRepository,
+  clock = systemClock,
+}: { shareLink: DbSelectableShareLink; shareLinksRepository: ShareLinksRepository; clock?: Clock }) {
+  if (shouldTouchShareLinkLastAccessedAt({ lastAccessedAt: shareLink.lastAccessedAt?.toTemporalInstant(), clock })) {
+    await shareLinksRepository.touchLastAccessedAt({ shareLinkId: shareLink.id, lastAccessedAt: new Date(clock.now().epochMilliseconds) });
+  }
+}
+
 // Resolves a share link for public document access: validates usability, enforces password, returns the document.
 export async function getSharedDocument({
-  token,
+  shareLinkToken,
   accessToken,
   shareLinksRepository,
   documentsRepository,
   config,
   clock = systemClock,
 }: {
-  token: string;
+  shareLinkToken: string;
   accessToken: string | undefined;
   shareLinksRepository: ShareLinksRepository;
   documentsRepository: DocumentsRepository;
   config: Config;
   clock?: Clock;
 }) {
-  const { shareLink } = await resolveUsableShareLinkByToken({ token, shareLinksRepository, clock });
+  const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository, clock });
 
   await ensureShareLinkAccessGranted({ shareLink, accessToken, config, clock });
 
-  const { document } = await getDocumentOrThrow({ documentId: shareLink.documentId, organizationId: shareLink.organizationId, documentsRepository });
+  const { document } = await getShareLinkDocumentOrThrow({ shareLink, documentsRepository });
 
-  await shareLinksRepository.touchLastAccessedAt({ shareLinkId: shareLink.id, lastAccessedAt: new Date(clock.now().epochMilliseconds) });
+  await touchShareLinkLastAccessedAt({ shareLink, shareLinksRepository, clock });
 
   return { shareLink, document };
 }

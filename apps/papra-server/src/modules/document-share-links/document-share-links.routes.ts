@@ -1,13 +1,14 @@
-import type { RateLimitKvStore } from '../app/rate-limit/rate-limit.types';
 import type { Context, RouteDefinitionContext } from '../app/server.types';
 import { Readable } from 'node:stream';
 import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { scopeKvStoreForRateLimit } from '../app/rate-limit/rate-limit.kv-store';
 import { checkRateLimit } from '../app/rate-limit/rate-limit.usecases';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { documentIdSchema } from '../documents/documents.schemas';
 import { getDocumentOrThrow } from '../documents/documents.usecases';
+import { joinKeyParts } from '../kv-store/kv-store.models';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
@@ -19,7 +20,9 @@ import {
   createShareLink,
   ensureShareLinkAccessGranted,
   getSharedDocument,
+  getShareLinkDocumentOrThrow,
   resolveUsableShareLinkByToken,
+  touchShareLinkLastAccessedAt,
   updateShareLink,
   verifySharePassword,
 } from './document-share-links.usecases';
@@ -38,7 +41,6 @@ export function registerDocumentShareLinksRoutes(context: RouteDefinitionContext
   setupGetSharedDocumentFileRoute(context);
 }
 
-// The visitor's access token (issued after password verification) can be sent either as a Bearer header or, for direct file links, a query param.
 function getAccessToken({ context }: { context: Context }) {
   const authorization = context.req.header('Authorization');
 
@@ -46,7 +48,7 @@ function getAccessToken({ context }: { context: Context }) {
     return { accessToken: authorization.slice('Bearer '.length) };
   }
 
-  return { accessToken: context.req.query('accessToken') };
+  return { accessToken: undefined };
 }
 
 function setupCreateShareLinkRoute({ app, db, config }: RouteDefinitionContext) {
@@ -167,18 +169,24 @@ function setupDeleteShareLinkRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupGetSharedDocumentRoute({ app, db, config }: RouteDefinitionContext) {
+function setupGetSharedDocumentRoute({ app, db, config, kvStore }: RouteDefinitionContext) {
   app.get(
-    '/api/share-links/:token/document',
-    validateParams(v.strictObject({ token: shareLinkTokenSchema })),
+    '/api/share-links/:shareLinkToken/document',
+    validateParams(v.strictObject({ shareLinkToken: shareLinkTokenSchema })),
     async (context) => {
-      const { token } = context.req.valid('param');
+      const { shareLinkToken } = context.req.valid('param');
       const { accessToken } = getAccessToken({ context });
+
+      await checkRateLimit({
+        ...config.documentShareLinks.documentAccessRateLimit,
+        key: joinKeyParts(['public-share-link-document-access', shareLinkToken]),
+        kvStore: scopeKvStoreForRateLimit({ kvStore }),
+      });
 
       const shareLinksRepository = createShareLinksRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
 
-      const { document } = await getSharedDocument({ token, accessToken, shareLinksRepository, documentsRepository, config });
+      const { document } = await getSharedDocument({ shareLinkToken, accessToken, shareLinksRepository, documentsRepository, config });
 
       return context.json({ document: formatPublicSharedDocument({ document }) });
     },
@@ -186,29 +194,23 @@ function setupGetSharedDocumentRoute({ app, db, config }: RouteDefinitionContext
 }
 
 function setupVerifySharePasswordRoute({ app, db, config, kvStore }: RouteDefinitionContext) {
-  const rateLimitScope: RateLimitKvStore = kvStore.defineScope({
-    prefix: 'share-link-password-verify',
-    schema: v.object({ hitCount: v.number(), resetAtEpochMs: v.number() }),
-  });
-
   app.post(
-    '/api/share-links/:token/verify',
-    validateParams(v.strictObject({ token: shareLinkTokenSchema })),
+    '/api/share-links/:shareLinkToken/verify',
+    validateParams(v.strictObject({ shareLinkToken: shareLinkTokenSchema })),
     validateJsonBody(verifySharePasswordBodySchema),
     async (context) => {
-      const { token } = context.req.valid('param');
+      const { shareLinkToken } = context.req.valid('param');
       const { password } = context.req.valid('json');
 
-      // Strong rate limit per token to prevent brute-forcing the password.
+      // Strong rate limit per token to prevent distributed brute-force
       await checkRateLimit({
-        maxHits: config.documentShareLinks.passwordVerifyMaxAttempts,
-        window: { minutes: config.documentShareLinks.passwordVerifyWindowMinutes },
-        key: token,
-        kvStore: rateLimitScope,
+        ...config.documentShareLinks.passwordVerificationRateLimit,
+        key: joinKeyParts(['public-share-link-password-verification', shareLinkToken]),
+        kvStore: scopeKvStoreForRateLimit({ kvStore }),
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { accessToken } = await verifySharePassword({ token, password, shareLinksRepository, config });
+      const { accessToken } = await verifySharePassword({ shareLinkToken, password, shareLinksRepository, config });
 
       return context.json({ accessToken });
     },
@@ -216,33 +218,27 @@ function setupVerifySharePasswordRoute({ app, db, config, kvStore }: RouteDefini
 }
 
 function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageService, kvStore }: RouteDefinitionContext) {
-  const rateLimitScope: RateLimitKvStore = kvStore.defineScope({
-    prefix: 'share-link-file-access',
-    schema: v.object({ hitCount: v.number(), resetAtEpochMs: v.number() }),
-  });
-
   app.get(
-    '/api/share-links/:token/document/file',
-    validateParams(v.strictObject({ token: shareLinkTokenSchema })),
+    '/api/share-links/:shareLinkToken/document/file',
+    validateParams(v.strictObject({ shareLinkToken: shareLinkTokenSchema })),
     async (context) => {
-      const { token } = context.req.valid('param');
+      const { shareLinkToken } = context.req.valid('param');
       const { accessToken } = getAccessToken({ context });
 
       // Prevent abuse of the share system as a file host.
       await checkRateLimit({
-        maxHits: config.documentShareLinks.fileAccessMaxRequestsPerMinute,
-        window: { minutes: 1 },
-        key: token,
-        kvStore: rateLimitScope,
+        ...config.documentShareLinks.fileAccessRateLimit,
+        key: joinKeyParts(['public-share-link-file-access', shareLinkToken]),
+        kvStore: scopeKvStoreForRateLimit({ kvStore }),
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { shareLink } = await resolveUsableShareLinkByToken({ token, shareLinksRepository });
+      const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository });
 
       await ensureShareLinkAccessGranted({ shareLink, accessToken, config });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const { document } = await getDocumentOrThrow({ documentId: shareLink.documentId, organizationId: shareLink.organizationId, documentsRepository });
+      const { document } = await getShareLinkDocumentOrThrow({ shareLink, documentsRepository });
 
       const { fileStream } = await documentsStorageService.getFileStream({
         storageKey: document.originalStorageKey,
@@ -251,7 +247,7 @@ function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageServ
         fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
       });
 
-      await shareLinksRepository.touchLastAccessedAt({ shareLinkId: shareLink.id, lastAccessedAt: new Date() });
+      await touchShareLinkLastAccessedAt({ shareLink, shareLinksRepository });
 
       return context.body(
         Readable.toWeb(fileStream),
@@ -263,6 +259,8 @@ function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageServ
           'Content-Length': String(document.originalSize),
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'DENY',
+          'X-Robots-Tag': 'noindex, nofollow',
+          'Referrer-Policy': 'no-referrer',
         },
       );
     },

@@ -8,6 +8,7 @@ import { render } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { isDemoMode } from './modules/config/config';
 import { ConfigProvider } from './modules/config/config.provider';
+import { ShareDocumentDialogProvider } from './modules/document-share-links/components/share-document-dialog.component';
 import { RenameDocumentDialogProvider } from './modules/documents/components/rename-document-button.component';
 import { I18nProvider } from './modules/i18n/i18n.provider';
 import { AboutDialogProvider } from './modules/shared/components/about-dialog';
@@ -42,9 +43,11 @@ render(
                       <ConfigProvider>
                         <AboutDialogProvider>
                           <RenameDocumentDialogProvider>
-                            <div class="min-h-screen font-sans text-sm font-400">
-                              {props.children}
-                            </div>
+                            <ShareDocumentDialogProvider>
+                              <div class="min-h-screen font-sans text-sm font-400">
+                                {props.children}
+                              </div>
+                            </ShareDocumentDialogProvider>
                           </RenameDocumentDialogProvider>
                           {DemoIndicator && <DemoIndicator />}
                         </AboutDialogProvider>

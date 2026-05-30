@@ -1,11 +1,13 @@
 import type { Config } from '../config/config.types';
+import type { Clock } from '../shared/clock/clock.types';
 import type { DbSelectableShareLink } from './document-share-links.types';
 import { buildUrl } from '@corentinth/chisels';
 import { getClientBaseUrl } from '../config/config.models';
 import { omit } from '../shared/objects';
 import { generateId } from '../shared/random/ids';
 import { generateRandomString } from '../shared/random/random.services';
-import { SHARE_LINK_ID_PREFIX, SHARE_LINK_TOKEN_LENGTH } from './document-share-links.constants';
+import { isNil } from '../shared/utils';
+import { SHARE_LINK_ID_PREFIX, SHARE_LINK_LAST_ACCESSED_TOUCH_DELAY_SECONDS, SHARE_LINK_TOKEN_LENGTH } from './document-share-links.constants';
 
 export function generateShareLinkId() {
   return generateId({ prefix: SHARE_LINK_ID_PREFIX });
@@ -15,10 +17,22 @@ export function generateShareToken() {
   return { token: generateRandomString({ length: SHARE_LINK_TOKEN_LENGTH }) };
 }
 
-export function buildShareLinkUrl({ token, config }: { token: string; config: Config }) {
+export function getShareLinkBaseUrl({ config }: { config: Config }) {
+  const { shareLinkBaseUrl } = config.documentShareLinks;
+
+  if (!isNil(shareLinkBaseUrl)) {
+    return { shareLinkBaseUrl };
+  }
+
   const { clientBaseUrl } = getClientBaseUrl({ config });
 
-  return { url: buildUrl({ baseUrl: clientBaseUrl, path: `/share/${token}` }) };
+  return { shareLinkBaseUrl: clientBaseUrl };
+}
+
+export function buildShareLinkUrl({ token, config }: { token: string; config: Config }) {
+  const { shareLinkBaseUrl } = getShareLinkBaseUrl({ config });
+
+  return { url: buildUrl({ baseUrl: shareLinkBaseUrl, path: `/share/${token}` }) };
 }
 
 export function formatShareLinkForApi({ shareLink, config }: { shareLink: DbSelectableShareLink; config: Config }) {
@@ -26,7 +40,7 @@ export function formatShareLinkForApi({ shareLink, config }: { shareLink: DbSele
 
   return {
     ...omit(shareLink, ['passwordHash']),
-    isPasswordProtected: shareLink.passwordHash !== null,
+    isPasswordProtected: !isNil(shareLink.passwordHash),
     url,
   };
 }
@@ -42,4 +56,12 @@ export function formatPublicSharedDocument({ document }: { document: { name: str
     size: document.originalSize,
     mimeType: document.mimeType,
   };
+}
+
+export function shouldTouchShareLinkLastAccessedAt({ lastAccessedAt, clock }: { lastAccessedAt: null | undefined | Temporal.Instant; clock: Clock }) {
+  if (isNil(lastAccessedAt)) {
+    return true;
+  }
+
+  return clock.now().since(lastAccessedAt).total('second') > SHARE_LINK_LAST_ACCESSED_TOUCH_DELAY_SECONDS;
 }

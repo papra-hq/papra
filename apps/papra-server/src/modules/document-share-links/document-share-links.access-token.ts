@@ -8,17 +8,21 @@ const ACCESS_TOKEN_HKDF_INFO = 'document-share-link-access-token';
 const ACCESS_TOKEN_ALGORITHM = 'HS256';
 
 // Derive a dedicated signing key from the auth secret so share-link tokens can't be reused for anything else.
-function getSigningKey({ authSecret }: { authSecret: string }) {
-  return deriveKeyWithHkdf({ key: authSecret, info: ACCESS_TOKEN_HKDF_INFO });
+// The current password hash is folded into the derivation so that rotating (or removing) the share link
+// password changes the signing key, invalidating every previously issued token via a signature mismatch.
+function getSigningKey({ authSecret, passwordHash }: { authSecret: string; passwordHash: string }) {
+  return deriveKeyWithHkdf({ key: authSecret, info: `${ACCESS_TOKEN_HKDF_INFO}:${passwordHash}` });
 }
 
 export async function issueShareLinkAccessToken({
   shareLinkId,
+  passwordHash,
   authSecret,
   ttlMinutes,
   clock = systemClock,
 }: {
   shareLinkId: string;
+  passwordHash: string;
   authSecret: string;
   ttlMinutes: number;
   clock?: Clock;
@@ -31,7 +35,7 @@ export async function issueShareLinkAccessToken({
       exp: nowSeconds + ttlMinutes * 60,
       iat: nowSeconds,
     },
-    getSigningKey({ authSecret }),
+    getSigningKey({ authSecret, passwordHash }),
     ACCESS_TOKEN_ALGORITHM,
   );
 
@@ -43,11 +47,13 @@ export async function issueShareLinkAccessToken({
 export async function isShareLinkAccessTokenValid({
   accessToken,
   shareLinkId,
+  passwordHash,
   authSecret,
   clock = systemClock,
 }: {
   accessToken: string | undefined;
   shareLinkId: string;
+  passwordHash: string;
   authSecret: string;
   clock?: Clock;
 }): Promise<{ isValid: boolean }> {
@@ -56,7 +62,7 @@ export async function isShareLinkAccessTokenValid({
   }
 
   try {
-    const payload = await verify(accessToken, getSigningKey({ authSecret }), { alg: ACCESS_TOKEN_ALGORITHM, exp: false, iat: false, nbf: false });
+    const payload = await verify(accessToken, getSigningKey({ authSecret, passwordHash }), { alg: ACCESS_TOKEN_ALGORITHM, exp: false, iat: false, nbf: false });
 
     if (payload.shareLinkId !== shareLinkId) {
       return { isValid: false };

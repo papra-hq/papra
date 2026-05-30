@@ -1,7 +1,7 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createResource, lazy, Match, Suspense, Switch } from 'solid-js';
+import { createMemo, createResource, lazy, Match, onCleanup, Show, Suspense, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
@@ -110,20 +110,31 @@ const TextFromBlob: Component<{ blob: Blob }> = (props) => {
   );
 };
 
-export const DocumentPreview: Component<{ document: Document }> = (props) => {
-  const getIsImage = () => imageMimeType.includes(props.document.mimeType);
-  const getIsPdf = () => pdfMimeType.includes(props.document.mimeType);
-  const getIsTxtLike = () => txtLikeMimeType.includes(props.document.mimeType) || props.document.mimeType.startsWith('text/');
+export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = (props) => {
+  const getIsImage = () => imageMimeType.includes(props.mimeType);
+  const getIsPdf = () => pdfMimeType.includes(props.mimeType);
+  const getIsTxtLike = () => txtLikeMimeType.includes(props.mimeType) || props.mimeType.startsWith('text/');
   const { t } = useI18n();
 
-  const query = useQuery(() => ({
-    queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, 'file'],
-    queryFn: () => fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
-  }));
+  const getObjectUrl = createMemo<string | undefined>((prev) => {
+    if (prev) {
+      // Revoke the previous object URL to avoid memory leaks
+      URL.revokeObjectURL(prev);
+    }
+
+    return getIsImage() || getIsPdf() ? URL.createObjectURL(props.blob) : undefined;
+  });
+
+  onCleanup(() => {
+    const url = getObjectUrl();
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+  });
 
   // Create a resource to check if octet-stream blob is text-safe
   const [isOctetStreamTextSafe] = createResource(
-    () => query.data && props.document.mimeType === 'application/octet-stream' ? query.data : null,
+    () => props.blob && props.mimeType === 'application/octet-stream' ? props.blob : null,
     async (blob) => {
       if (!blob) {
         return false;
@@ -133,38 +144,51 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
   );
 
   return (
-    <Suspense>
-      <Switch>
-        <Match when={getIsImage() && query.data}>
-          <div>
-            <img src={URL.createObjectURL(query.data!)} class="w-full h-full object-contain" />
-          </div>
-        </Match>
+    <Switch>
+      <Match when={getIsImage()}>
+        <div>
+          <img src={getObjectUrl()} class="w-full h-full object-contain" />
+        </div>
+      </Match>
 
-        <Match when={getIsPdf() && query.data}>
-          <PdfViewer url={URL.createObjectURL(query.data!)} />
-        </Match>
+      <Match when={getIsPdf()}>
+        <PdfViewer url={getObjectUrl()!} />
+      </Match>
 
-        <Match when={getIsTxtLike() && query.data}>
-          <TextFromBlob blob={query.data!} />
-        </Match>
+      <Match when={getIsTxtLike()}>
+        <TextFromBlob blob={props.blob} />
+      </Match>
 
-        <Match when={props.document.mimeType === 'application/octet-stream' && query.data && isOctetStreamTextSafe()}>
-          <TextFromBlob blob={query.data!} />
-        </Match>
+      <Match when={props.mimeType === 'application/octet-stream' && isOctetStreamTextSafe()}>
+        <TextFromBlob blob={props.blob} />
+      </Match>
 
-        <Match when={props.document.mimeType === 'application/octet-stream' && query.data && !isOctetStreamTextSafe()}>
-          <Card class="px-6 py-12 text-center text-sm text-muted-foreground">
-            <p>{t('documents.preview.binary-file')}</p>
-          </Card>
-        </Match>
+      <Match when={props.mimeType === 'application/octet-stream' && !isOctetStreamTextSafe()}>
+        <Card class="px-6 py-12 text-center text-sm text-muted-foreground">
+          <p>{t('documents.preview.binary-file')}</p>
+        </Card>
+      </Match>
 
-        <Match when={query.data}>
-          <Card class="px-6 py-12 text-center text-sm text-muted-foreground">
-            <p>{t('documents.preview.unknown-file-type')}</p>
-          </Card>
-        </Match>
-      </Switch>
-    </Suspense>
+      <Match when={true}>
+        <Card class="px-6 py-12 text-center text-sm text-muted-foreground">
+          <p>{t('documents.preview.unknown-file-type')}</p>
+        </Card>
+      </Match>
+    </Switch>
+  );
+};
+
+export const DocumentPreview: Component<{ document: Document }> = (props) => {
+  const query = useQuery(() => ({
+    queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, 'file'],
+    queryFn: () => fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
+  }));
+
+  return (
+    <Show when={query.data}>
+      {getBlob => (
+        <DocumentBlobPreview blob={getBlob()} mimeType={props.document.mimeType} />
+      )}
+    </Show>
   );
 };

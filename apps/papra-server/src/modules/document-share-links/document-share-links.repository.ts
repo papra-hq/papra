@@ -1,8 +1,8 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableShareLink } from './document-share-links.types';
-import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq } from 'drizzle-orm';
-import { isUniqueConstraintError } from '../shared/db/constraints.models';
+import { injectArguments } from '@corentinth/chisels';
+import { and, count, desc, eq, getTableColumns } from 'drizzle-orm';
+import { documentsTable } from '../documents/documents.table';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/objects';
 import { isNil } from '../shared/utils';
@@ -29,25 +29,11 @@ export function createShareLinksRepository({ db }: { db: Database }) {
 }
 
 async function createShareLink({ db, ...shareLinkToInsert }: { db: Database } & DbInsertableShareLink) {
-  const [shareLinks, error] = await safely(db.insert(documentShareLinksTable).values(shareLinkToInsert).returning());
-
-  if (isUniqueConstraintError({ error })) {
-    // Token collision is astronomically unlikely; surface as a 500 so the caller can retry.
-    throw createError({
-      message: 'Error while creating share link',
-      code: 'share_link.save_error',
-      statusCode: 500,
-      isInternal: true,
-    });
-  }
-
-  if (error) {
-    throw error;
-  }
-
-  const [shareLink] = shareLinks ?? [];
+  const [shareLink] = await db.insert(documentShareLinksTable).values(shareLinkToInsert).returning();
 
   if (isNil(shareLink)) {
+    // shouldn't happen because of the returning, but for type safety
+
     throw createError({
       message: 'Error while creating share link',
       code: 'share_link.save_error',
@@ -98,9 +84,11 @@ async function getDocumentShareLinks({ documentId, organizationId, db }: { docum
 }
 
 async function getOrganizationShareLinks({ organizationId, db }: { organizationId: string; db: Database }) {
+  // Joins the document name (and trashed state) so the management UI can display it without a second round-trip.
   const shareLinks = await db
-    .select()
+    .select({ ...getTableColumns(documentShareLinksTable), documentName: documentsTable.name, isDocumentDeleted: documentsTable.isDeleted })
     .from(documentShareLinksTable)
+    .innerJoin(documentsTable, eq(documentShareLinksTable.documentId, documentsTable.id))
     .where(eq(documentShareLinksTable.organizationId, organizationId))
     .orderBy(desc(documentShareLinksTable.createdAt));
 
