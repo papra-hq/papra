@@ -18,6 +18,9 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.3",
+    "oxfmt": "^0.50.0",
+    "oxlint": "^1.65.0",
+    "oxlint-tsgolint": "^0.22.1",
     "vitest": "catalog:"
   }
 }
