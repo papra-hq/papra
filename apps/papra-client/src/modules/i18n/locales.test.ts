@@ -59,6 +59,7 @@ describe('locales', () => {
       /^activity\.document\.[a-z0-9:]+$/, // activity.document.created
       /^organizations\.invitations\.status\.[a-z0-9:]+$/, // organizations.invitations.status.pending
       /^socials\.[a-z0-9]+$/, // socials.bluesky
+      /^document-share-links\.create\.expiration\.[a-z0-9]+$/, // document-share-links.create.expiration.24h
     ];
 
     const keys = new Set(

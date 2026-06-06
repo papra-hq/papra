@@ -16,6 +16,8 @@ import { ResetPasswordPage } from './modules/auth/pages/reset-password.page';
 import { CreateCustomPropertyPage } from './modules/custom-properties/pages/create-custom-property.page';
 import { CustomPropertiesPage } from './modules/custom-properties/pages/custom-properties-list.page';
 import { UpdateCustomPropertyPage } from './modules/custom-properties/pages/update-custom-property.page';
+import { OrganizationShareLinksPage } from './modules/document-share-links/pages/organization-share-links.page';
+import { SharedDocumentPage } from './modules/document-share-links/pages/shared-document.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPdfViewerPage } from './modules/documents/pages/document-pdf-viewer.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
@@ -163,6 +165,10 @@ export const routes: RouteDefinition[] = [
                     component: TaggingRulesPage,
                   },
                   {
+                    path: '/share-links',
+                    component: OrganizationShareLinksPage,
+                  },
+                  {
                     path: '/tagging-rules/create',
                     component: CreateTaggingRulePage,
                   },
@@ -291,6 +297,11 @@ export const routes: RouteDefinition[] = [
   {
     path: '/about',
     component: AboutPage,
+  },
+  {
+    // Public document share page — accessible to anyone (logged in or not), no auth guard.
+    path: '/share/:token',
+    component: SharedDocumentPage,
   },
   {
     path: '*404',

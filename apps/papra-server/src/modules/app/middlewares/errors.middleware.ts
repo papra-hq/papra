@@ -8,6 +8,10 @@ export function registerErrorMiddleware({ app }: { app: ServerInstance }) {
   app.onError((error, context) => {
     logger.error({ error }, error.message ?? 'An error occurred');
 
+    // For some status code browsers may tend to cache error responses and not play new requests
+    // Happened with document share links and 410 responses when disabling/re-enabling share links
+    context.header('Cache-Control', 'no-store');
+
     if (isCustomError(error) && !error.isInternal) {
       return context.json(
         formatPublicErrorPayload(error),

@@ -8,6 +8,7 @@ import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from '
 import { useConfig } from '@/modules/config/config.provider';
 import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/components/document-custom-properties-panel.component';
 import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
+import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
@@ -131,6 +132,7 @@ export const DocumentPage: Component = () => {
   const navigate = useNavigate();
   const { config } = useConfig();
   const { openRenameDialog } = useRenameDocumentDialog();
+  const { openShareDialog } = useShareDocumentDialog();
 
   const getInitialTab = (): Tab => {
     const tab = searchParams.tab;
@@ -234,6 +236,19 @@ export const DocumentPage: Component = () => {
                     </Button>
 
                     <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />
+
+                    <Button
+                      onClick={() => openShareDialog({
+                        documentId: getDocument().id,
+                        organizationId: params.organizationId,
+                        documentName: getDocument().name,
+                      })}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <div class="i-tabler-share size-4 mr-2" />
+                      {t('document-share-links.share-action')}
+                    </Button>
 
                     {getDocument().isDeleted
                       ? (

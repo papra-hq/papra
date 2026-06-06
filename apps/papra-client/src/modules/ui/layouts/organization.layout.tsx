@@ -100,6 +100,11 @@ const OrganizationLayoutSideNav: Component = () => {
       href: `/organizations/${params.organizationId}/tagging-rules`,
     },
     {
+      label: t('layout.menu.share-links'),
+      icon: 'i-tabler-share',
+      href: `/organizations/${params.organizationId}/share-links`,
+    },
+    {
       label: t('layout.menu.members'),
       icon: 'i-tabler-users',
       href: `/organizations/${params.organizationId}/members`,
