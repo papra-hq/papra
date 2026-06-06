@@ -5,6 +5,7 @@ import type { DocumentSearchSortField, DocumentSearchSortOrder } from '../docume
 import { useParams } from '@solidjs/router';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createEffect, createMemo, createSignal, on, Show, Suspense } from 'solid-js';
+import { CreateDocumentViewModal } from '@/modules/document-views/components/document-view-modals';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
@@ -233,34 +234,46 @@ export const DocumentsPage: Component = () => {
                   {t('documents.list.title')}
                 </h2>
 
-                <div class="flex items-center">
-                  <TextFieldRoot class="max-w-md flex-1">
-                    <TextField
-                      type="search"
-                      name="search"
-                      placeholder={t('documents.list.search.placeholder')}
-                      value={getSearchQuery()}
-                      onInput={e => setSearchQuery(e.currentTarget.value)}
-                      class="pr-9"
-                      autofocus
-                    />
-                  </TextFieldRoot>
+                <div class="flex items-center gap-4">
+                  <div class="flex items-center max-w-md flex-1">
+                    <TextFieldRoot class="flex-1">
+                      <TextField
+                        type="search"
+                        name="search"
+                        placeholder={t('documents.list.search.placeholder')}
+                        value={getSearchQuery()}
+                        onInput={e => setSearchQuery(e.currentTarget.value)}
+                        class="pr-9"
+                        autofocus
+                      />
+                    </TextFieldRoot>
+
+                    <Show when={getSearchQuery().length > 0}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="size-6 ml--8"
+                        disabled={documentsQuery.isFetching}
+                        onClick={() => setSearchQuery('')}
+                        aria-label={documentsQuery.isFetching ? 'Loading' : 'Clear search'}
+                      >
+                        <div
+                          class={cn('text-muted-foreground', documentsQuery.isFetching ? 'i-tabler-loader-2 animate-spin' : 'i-tabler-x')}
+                        />
+                      </Button>
+                    </Show>
+                  </div>
 
                   <Show when={getSearchQuery().length > 0}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-6 ml--8"
-                      disabled={documentsQuery.isFetching}
-                      onClick={() => setSearchQuery('')}
-                      aria-label={documentsQuery.isFetching ? 'Loading' : 'Clear search'}
-                    >
-                      <div
-                        class={cn('text-muted-foreground', documentsQuery.isFetching ? 'i-tabler-loader-2 animate-spin' : 'i-tabler-x')}
-                      />
-                    </Button>
+                    <CreateDocumentViewModal organizationId={params.organizationId} initialValues={{ query: debouncedSearchQuery() }}>
+                      {triggerProps => (
+                        <Button variant="outline" title={t('document-views.save-as-view')} {...triggerProps}>
+                          <div class="i-tabler-layout-list size-4 mr-1.5" />
+                          {t('document-views.save-as-view')}
+                        </Button>
+                      )}
+                    </CreateDocumentViewModal>
                   </Show>
-
                 </div>
 
                 <div class="mb-4 mt-2 ml-2 min-h-8 flex items-center">

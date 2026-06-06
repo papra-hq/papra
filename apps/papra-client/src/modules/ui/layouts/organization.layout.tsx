@@ -6,6 +6,7 @@ import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { fetchDocumentViews } from '@/modules/document-views/document-views.services';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
@@ -72,43 +73,71 @@ const OrganizationLayoutSideNav: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
+  const documentViewsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'document-views'],
+    queryFn: () => fetchDocumentViews({ organizationId: params.organizationId }),
+  }));
+
+  const getDocumentViewsSections = () => {
+    const documentViews = documentViewsQuery.data?.documentViews ?? [];
+
+    if (documentViews.length === 0) {
+      return [];
+    }
+
+    return [
+      {
+        label: t('layout.menu.document-views'),
+        items: documentViews.map(documentView => ({
+          label: documentView.name,
+          icon: 'i-tabler-layout-list',
+          href: `/organizations/${params.organizationId}/views/${documentView.id}`,
+        })),
+      },
+    ];
+  };
+
   const getMainMenuItems = () => [
     {
-      label: t('layout.menu.home'),
-      icon: 'i-tabler-home',
-      href: `/organizations/${params.organizationId}`,
+      items: [
+        {
+          label: t('layout.menu.home'),
+          icon: 'i-tabler-home',
+          href: `/organizations/${params.organizationId}`,
+        },
+        {
+          label: t('layout.menu.documents'),
+          icon: 'i-tabler-file-text',
+          href: `/organizations/${params.organizationId}/documents`,
+        },
+        {
+          label: t('layout.menu.tags'),
+          icon: 'i-tabler-tag',
+          href: `/organizations/${params.organizationId}/tags`,
+        },
+        {
+          label: t('layout.menu.custom-properties'),
+          icon: 'i-tabler-forms',
+          href: `/organizations/${params.organizationId}/custom-properties`,
+        },
+        {
+          label: t('layout.menu.tagging-rules'),
+          icon: 'i-tabler-list-check',
+          href: `/organizations/${params.organizationId}/tagging-rules`,
+        },
+        {
+          label: t('layout.menu.share-links'),
+          icon: 'i-tabler-share',
+          href: `/organizations/${params.organizationId}/share-links`,
+        },
+        {
+          label: t('layout.menu.members'),
+          icon: 'i-tabler-users',
+          href: `/organizations/${params.organizationId}/members`,
+        },
+      ],
     },
-    {
-      label: t('layout.menu.documents'),
-      icon: 'i-tabler-file-text',
-      href: `/organizations/${params.organizationId}/documents`,
-    },
-
-    {
-      label: t('layout.menu.tags'),
-      icon: 'i-tabler-tag',
-      href: `/organizations/${params.organizationId}/tags`,
-    },
-    {
-      label: t('layout.menu.custom-properties'),
-      icon: 'i-tabler-forms',
-      href: `/organizations/${params.organizationId}/custom-properties`,
-    },
-    {
-      label: t('layout.menu.tagging-rules'),
-      icon: 'i-tabler-list-check',
-      href: `/organizations/${params.organizationId}/tagging-rules`,
-    },
-    {
-      label: t('layout.menu.share-links'),
-      icon: 'i-tabler-share',
-      href: `/organizations/${params.organizationId}/share-links`,
-    },
-    {
-      label: t('layout.menu.members'),
-      icon: 'i-tabler-users',
-      href: `/organizations/${params.organizationId}/members`,
-    },
+    ...getDocumentViewsSections(),
   ];
 
   const getFooterMenuItems = () => [

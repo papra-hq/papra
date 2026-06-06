@@ -18,6 +18,7 @@ import { CustomPropertiesPage } from './modules/custom-properties/pages/custom-p
 import { UpdateCustomPropertyPage } from './modules/custom-properties/pages/update-custom-property.page';
 import { OrganizationShareLinksPage } from './modules/document-share-links/pages/organization-share-links.page';
 import { SharedDocumentPage } from './modules/document-share-links/pages/shared-document.page';
+import { DocumentViewPage } from './modules/document-views/pages/document-view.page';
 import { DeletedDocumentsPage } from './modules/documents/pages/deleted-documents.page';
 import { DocumentPdfViewerPage } from './modules/documents/pages/document-pdf-viewer.page';
 import { DocumentPage } from './modules/documents/pages/document.page';
@@ -147,6 +148,10 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/tags',
                     component: TagsPage,
+                  },
+                  {
+                    path: '/views/:documentViewId',
+                    component: DocumentViewPage,
                   },
                   {
                     path: '/custom-properties',

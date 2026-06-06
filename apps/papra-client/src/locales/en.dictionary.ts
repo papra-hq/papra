@@ -675,6 +675,38 @@ export const translations = {
   'tags.picker.create-new-with-name': 'Create new tag "{{ name }}"',
   'tags.picker.create-new': 'Create new tag',
 
+  // Document views
+
+  'document-views.create': 'Create view',
+  'document-views.save-as-view': 'Save query as view',
+  'document-views.update': 'Update view',
+  'document-views.delete': 'Delete view',
+  'document-views.delete.confirm.title': 'Delete view',
+  'document-views.delete.confirm.message': 'Are you sure you want to delete this view?',
+  'document-views.delete.confirm.confirm-button': 'Delete',
+  'document-views.delete.confirm.cancel-button': 'Cancel',
+  'document-views.delete.success': 'View deleted successfully',
+  'document-views.create.success': 'View "{{ name }}" created successfully.',
+  'document-views.update.success': 'View "{{ name }}" updated successfully.',
+  'document-views.form.name.label': 'Name',
+  'document-views.form.name.placeholder': 'Eg. Inbox',
+  'document-views.form.name.required': 'Please enter a view name',
+  'document-views.form.name.max-length': 'View name must be less than 100 characters',
+  'document-views.form.query.label': 'Query',
+  'document-views.form.query.placeholder': 'Eg. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Please enter a query',
+  'document-views.form.query.max-length': 'Query must be less than 500 characters',
+  'document-views.form.query.hint': 'Use the same syntax as the document search bar. Eg. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Description',
+  'document-views.form.description.optional': '(optional)',
+  'document-views.form.description.placeholder': 'Eg. Documents waiting to be processed',
+  'document-views.form.description.max-length': 'Description must be less than 256 characters',
+  'document-views.actions.menu': 'View actions',
+  'document-views.view.no-documents': 'No documents match this view\'s query.',
+  'document-views.view.not-found': 'View not found.',
+  'api-errors.document_views.already_exists': 'A view with this name already exists for this organization',
+  'api-errors.document_views.not_found': 'View not found',
+
   // Tagging rules
 
   'tagging-rules.field.name': 'document name',
@@ -881,6 +913,7 @@ export const translations = {
   'layout.menu.intake-emails': 'Intake emails',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Members',
+  'layout.menu.document-views': 'Views',
   'layout.menu.invitations': 'Invitations',
   'layout.menu.admin': 'Admin',
 
