@@ -1,6 +1,7 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component, JSX, ValidComponent } from 'solid-js';
 import type { DocumentView } from '../document-views.types';
+import { useNavigate } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
 import { createSignal } from 'solid-js';
 import * as v from 'valibot';
@@ -99,6 +100,7 @@ export const CreateDocumentViewModal: Component<{
 }> = (props) => {
   const [getIsOpen, setIsOpen] = createSignal(false);
   const { t } = useI18n();
+  const navigate = useNavigate();
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const mutation = useMutation(() => ({
@@ -108,10 +110,11 @@ export const CreateDocumentViewModal: Component<{
       query: data.query,
       description: data.description,
     }),
-    onSuccess: async (_, variables) => {
+    onSuccess: async ({ documentView }, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'document-views'], refetchType: 'all' });
       createToast({ message: t('document-views.create.success', { name: variables.name }), type: 'success' });
       setIsOpen(false);
+      navigate(`/organizations/${props.organizationId}/views/${documentView.id}`);
     },
     onError: (error) => {
       createToast({ message: getErrorMessage({ error }), type: 'error' });
