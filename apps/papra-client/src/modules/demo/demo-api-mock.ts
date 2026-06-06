@@ -1282,6 +1282,34 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await documentCustomPropertyValueStorage.removeItem(valueKey);
     },
   }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/share-links',
+    method: 'GET',
+    handler: async () => ({ shareLinks: [] }),
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/share-links',
+    method: 'GET',
+    handler: async () => ({ shareLinks: [] }),
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/documents/:documentId/share-links',
+    method: 'POST',
+    handler: async () => {
+      throw Object.assign(new FetchError('Not available in demo'), {
+        status: 501,
+        data: {
+          error: {
+            message: 'Share links are not available in demo',
+            code: 'demo.not_available',
+          },
+        },
+      });
+    },
+  }),
 };
 
 export const router = createRouter({ routes: inMemoryApiMock, strictTrailingSlash: false });
