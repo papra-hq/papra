@@ -1,8 +1,8 @@
 import type { Migration } from '../migrations.types';
 import { sql } from 'drizzle-orm';
 
-export const viewsMigration = {
-  name: 'views',
+export const documentsViewsMigration = {
+  name: 'documents-views',
 
   up: async ({ db }) => {
     await db.run(sql`
