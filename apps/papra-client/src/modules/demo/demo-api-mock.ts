@@ -17,6 +17,7 @@ import {
   documentCustomPropertyValueStorage,
   documentFileStorage,
   documentStorage,
+  documentViewStorage,
   organizationStorage,
   tagDocumentStorage,
   taggingRuleStorage,
@@ -1281,6 +1282,123 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const valueKey = `${documentId}:${propertyDefinitionId}`;
 
       await documentCustomPropertyValueStorage.removeItem(valueKey);
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/document-views',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documentViews = await findMany(documentViewStorage, view => view.organizationId === organizationId);
+
+      return {
+        documentViews: documentViews.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/document-views',
+    method: 'POST',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const name = get(body, ['name']) as string;
+      const query = get(body, ['query']) as string;
+      const description = (get(body, ['description']) ?? null) as string | null;
+
+      const existingViewsWithSameName = await findMany(
+        documentViewStorage,
+        view => view.organizationId === organizationId && view.name.toLowerCase() === name.toLowerCase(),
+      );
+
+      if (existingViewsWithSameName.length > 0) {
+        throw Object.assign(new FetchError('A view with this name already exists'), {
+          status: 400,
+          data: { error: { code: 'document_views.already_exists' } },
+        });
+      }
+
+      const documentView = {
+        id: createId({ prefix: 'dv' }),
+        organizationId,
+        name,
+        query,
+        description,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await documentViewStorage.setItem(documentView.id, documentView);
+
+      return { documentView };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/document-views/:documentViewId',
+    method: 'PUT',
+    handler: async ({ params: { organizationId, documentViewId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documentView = await documentViewStorage.getItem(documentViewId);
+
+      assert(documentView && documentView.organizationId === organizationId, {
+        status: 404,
+        message: 'Document view not found',
+      });
+
+      const newName = get(body, ['name']) as string | undefined;
+
+      if (newName) {
+        const existingViewsWithSameName = await findMany(
+          documentViewStorage,
+          view =>
+            view.organizationId === organizationId
+            && view.id !== documentViewId
+            && view.name.toLowerCase() === newName.toLowerCase(),
+        );
+
+        if (existingViewsWithSameName.length > 0) {
+          throw Object.assign(new FetchError('A view with this name already exists'), {
+            status: 400,
+            data: { error: { code: 'document_views.already_exists' } },
+          });
+        }
+      }
+
+      const updatedDocumentView = Object.assign(documentView, body, { updatedAt: new Date() });
+
+      await documentViewStorage.setItem(documentViewId, updatedDocumentView);
+
+      return { documentView: updatedDocumentView };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/document-views/:documentViewId',
+    method: 'DELETE',
+    handler: async ({ params: { organizationId, documentViewId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const documentView = await documentViewStorage.getItem(documentViewId);
+
+      assert(documentView && documentView.organizationId === organizationId, {
+        status: 404,
+        message: 'Document view not found',
+      });
+
+      await documentViewStorage.removeItem(documentViewId);
     },
   }),
 
