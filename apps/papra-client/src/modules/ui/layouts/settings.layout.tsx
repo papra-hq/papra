@@ -7,23 +7,25 @@ import { Button } from '../components/button';
 export const SettingsLayout: ParentComponent = (props) => {
   const { t } = useI18n();
 
-  const getMainMenuItems = () => [
-    {
-      label: t('layout.menu.account'),
-      icon: 'i-tabler-user',
-      href: '/settings',
-    },
-    {
-      label: t('layout.menu.api-keys'),
-      icon: 'i-tabler-key',
-      href: '/api-keys',
-    },
-    {
-      label: t('layout.menu.invitations'),
-      icon: 'i-tabler-mail',
-      href: '/invitations',
-    },
-  ];
+  const getMainMenuItems = () => [{
+    items: [
+      {
+        label: t('layout.menu.account'),
+        icon: 'i-tabler-user',
+        href: '/settings',
+      },
+      {
+        label: t('layout.menu.api-keys'),
+        icon: 'i-tabler-key',
+        href: '/api-keys',
+      },
+      {
+        label: t('layout.menu.invitations'),
+        icon: 'i-tabler-mail',
+        href: '/invitations',
+      },
+    ],
+  }];
 
   return (
     <div class="flex flex-row h-screen min-h-0">

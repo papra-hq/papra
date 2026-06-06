@@ -10,23 +10,25 @@ import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 const AdminLayout: ParentComponent = (props) => {
   const { t } = useI18n();
 
-  const getNavigationMenu = () => [
-    {
-      label: t('admin.layout.menu.analytics'),
-      href: '/admin/analytics',
-      icon: 'i-tabler-chart-bar',
-    },
-    {
-      label: t('admin.layout.menu.users'),
-      href: '/admin/users',
-      icon: 'i-tabler-users',
-    },
-    {
-      label: t('admin.layout.menu.organizations'),
-      href: '/admin/organizations',
-      icon: 'i-tabler-building-community',
-    },
-  ];
+  const getNavigationMenu = () => [{
+    items: [
+      {
+        label: t('admin.layout.menu.analytics'),
+        href: '/admin/analytics',
+        icon: 'i-tabler-chart-bar',
+      },
+      {
+        label: t('admin.layout.menu.users'),
+        href: '/admin/users',
+        icon: 'i-tabler-users',
+      },
+      {
+        label: t('admin.layout.menu.organizations'),
+        href: '/admin/organizations',
+        icon: 'i-tabler-building-community',
+      },
+    ],
+  }];
 
   const sidenav = () => (
     <SideNav
