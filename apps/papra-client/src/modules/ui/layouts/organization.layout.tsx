@@ -6,6 +6,7 @@ import { useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
+import { fetchDocumentViews } from '@/modules/document-views/document-views.services';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
@@ -14,8 +15,6 @@ import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { SideNav } from '@/modules/ui/components/sidenav';
-import { CreateViewModal } from '@/modules/views/components/view-modals';
-import { fetchViews } from '@/modules/views/views.services';
 import { Button } from '../components/button';
 import {
   Select,
@@ -74,29 +73,25 @@ const OrganizationLayoutSideNav: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
-  const viewsQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'views'],
-    queryFn: () => fetchViews({ organizationId: params.organizationId }),
+  const documentViewsQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'document-views'],
+    queryFn: () => fetchDocumentViews({ organizationId: params.organizationId }),
   }));
 
-  const getViewsSections = () => {
-    const views = viewsQuery.data?.views ?? [];
+  const getDocumentViewsSections = () => {
+    const documentViews = documentViewsQuery.data?.documentViews ?? [];
+
+    if (documentViews.length === 0) {
+      return [];
+    }
+
     return [
       {
-        label: t('layout.menu.views'),
-        action: (
-          <CreateViewModal organizationId={params.organizationId}>
-            {triggerProps => (
-              <button class="text-muted-foreground/70 hover:text-foreground transition" title={t('views.create')} {...triggerProps}>
-                <div class="i-tabler-plus size-3.5" />
-              </button>
-            )}
-          </CreateViewModal>
-        ),
-        items: views.map(view => ({
-          label: view.name,
+        label: t('layout.menu.document-views'),
+        items: documentViews.map(documentView => ({
+          label: documentView.name,
           icon: 'i-tabler-layout-list',
-          href: `/organizations/${params.organizationId}/views/${view.id}`,
+          href: `/organizations/${params.organizationId}/views/${documentView.id}`,
         })),
       },
     ];
@@ -142,7 +137,7 @@ const OrganizationLayoutSideNav: Component = () => {
         },
       ],
     },
-    ...getViewsSections(),
+    ...getDocumentViewsSections(),
   ];
 
   const getFooterMenuItems = () => [

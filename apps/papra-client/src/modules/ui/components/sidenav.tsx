@@ -28,8 +28,8 @@ const MenuItemButton: Component<SideNavMenuItem> = (props) => {
         : { as: A, href: props.href, activeClass: 'bg-accent/50! text-accent-foreground! truncate', end: true } as ComponentProps<typeof Button>)
       }
     >
-      <div class={cn(props.icon, 'size-5 text-muted-foreground opacity-50')} />
-      <div>{props.label}</div>
+      <div class={cn(props.icon, 'size-5 text-muted-foreground opacity-50 flex-shrink-0')} />
+      <div class="truncate">{props.label}</div>
       {props.badge && <div class="ml-auto">{props.badge}</div>}
     </Button>
   );
@@ -52,7 +52,7 @@ export const SideNav: Component<{
             {section => (
               <div class="mt-4 px-4">
                 {section.label && (
-                  <div class="flex items-center justify-between px-2 mb-0.5">
+                  <div class="flex items-center justify-between pl-3 mb-2">
                     <div class="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">{section.label}</div>
                     {section.action}
                   </div>

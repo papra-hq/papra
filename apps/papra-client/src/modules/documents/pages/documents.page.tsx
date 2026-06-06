@@ -5,6 +5,7 @@ import type { DocumentSearchSortField, DocumentSearchSortOrder } from '../docume
 import { useParams } from '@solidjs/router';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createEffect, createMemo, createSignal, on, Show, Suspense } from 'solid-js';
+import { CreateDocumentViewModal } from '@/modules/document-views/components/document-view-modals';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
@@ -16,7 +17,6 @@ import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { CreateViewModal } from '@/modules/views/components/view-modals';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '../components/documents-list.component';
@@ -265,14 +265,14 @@ export const DocumentsPage: Component = () => {
                   </div>
 
                   <Show when={getSearchQuery().length > 0}>
-                    <CreateViewModal organizationId={params.organizationId} initialValues={{ query: debouncedSearchQuery() }}>
+                    <CreateDocumentViewModal organizationId={params.organizationId} initialValues={{ query: debouncedSearchQuery() }}>
                       {triggerProps => (
-                        <Button variant="outline" title={t('views.save-as-view')} {...triggerProps}>
+                        <Button variant="outline" title={t('document-views.save-as-view')} {...triggerProps}>
                           <div class="i-tabler-layout-list size-4 mr-1.5" />
-                          {t('views.save-as-view')}
+                          {t('document-views.save-as-view')}
                         </Button>
                       )}
-                    </CreateViewModal>
+                    </CreateDocumentViewModal>
                   </Show>
                 </div>
 

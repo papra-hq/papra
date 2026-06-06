@@ -21,7 +21,8 @@ function setValidParams(path: string) {
     .replaceAll(':propertyDefinitionId', 'cpd_111111111111111111111111')
     .replaceAll(':optionId', 'cpso_222222222222222222222222')
     .replaceAll(':shareLinkId', 'dsl_333333333333333333333333')
-    .replaceAll(':shareLinkToken', 't'.repeat(SHARE_LINK_TOKEN_LENGTH));
+    .replaceAll(':shareLinkToken', 't'.repeat(SHARE_LINK_TOKEN_LENGTH))
+    .replaceAll(':documentViewId', 'dv_444444444444444444444444');
 
   // throw if there are any remaining params
   if (newPath.match(/:\w+/g)) {
