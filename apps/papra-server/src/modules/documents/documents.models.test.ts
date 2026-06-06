@@ -9,7 +9,7 @@ describe('documents models', () => {
   });
 
   describe('buildOriginalDocumentKey', () => {
-    test(`the original document storage key is composed of 
+    test(`the original document storage key is composed of
           - the organization id
           - the original documents storage key "originals"
           - the document id withe the same extension as the original file (if any)`, () => {
@@ -80,6 +80,7 @@ describe('documents models', () => {
           createdAt: new Date('2025-01-01'),
           updatedAt: new Date('2025-01-01'),
           documentDate: new Date('2025-12-24'),
+          notes: null,
         },
       })).to.eql({
         content: 'Hello, world!',
@@ -97,6 +98,7 @@ describe('documents models', () => {
         originalSize: 100,
         updatedAt: new Date('2025-01-01'),
         documentDate: new Date('2025-12-24'),
+        notes: null,
       });
     });
   });

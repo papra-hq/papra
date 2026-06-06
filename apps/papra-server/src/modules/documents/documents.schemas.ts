@@ -10,10 +10,11 @@ export const updateDocumentBodySchema = v.pipe(
     name: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(255))),
     content: v.optional(v.string()),
     documentDate: v.optional(v.nullable(v.pipe(v.string(), v.toDate()))),
+    notes: v.optional(v.pipe(v.string(), v.maxLength(2048))),
   }),
   v.check(
-    data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined,
-    'At least one of \'name\', \'content\', or \'documentDate\' must be provided',
+    data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined || data.notes !== undefined,
+    'At least one of \'name\', \'content\', \'documentDate\' or \'notes\' must be provided',
   ),
 );
 

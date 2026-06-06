@@ -10,6 +10,7 @@ export type DocumentEvents = {
     changes: {
       name?: string;
       content?: string;
+      notes?: string;
     };
   };
   'document.deleted': { documentId: string; organizationId: string }; // Hard deleted from trash

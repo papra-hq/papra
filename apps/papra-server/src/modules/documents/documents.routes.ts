@@ -394,7 +394,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
-      const changes = context.req.valid('json');
+      const { content, documentDate, name, notes } = context.req.valid('json');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -408,7 +408,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
         userId,
         documentsRepository,
         eventServices,
-        changes,
+        changes: { content, documentDate, name, notes },
       });
 
       return context.json({ document: formatDocumentForApi({ document }) });

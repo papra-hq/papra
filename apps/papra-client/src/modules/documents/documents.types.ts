@@ -16,6 +16,7 @@ export type Document = {
   deletedAt?: Date;
   deletedBy?: string;
   content: string;
+  notes?: string;
   tags: Tag[];
   customProperties?: DocumentCustomProperty[];
 };
