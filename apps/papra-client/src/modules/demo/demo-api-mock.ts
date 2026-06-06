@@ -1002,13 +1002,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(document, { status: 404 });
 
-      const { name, content, documentDate } = body as { name?: string; content?: string; documentDate?: string };
+      const { name, content, documentDate, notes } = body as { name?: string; content?: string; documentDate?: string; notes?: string };
 
       const newDocument = {
         ...document,
         ...(name !== undefined && { name }),
         ...(content !== undefined && { content }),
         ...(documentDate !== undefined && { documentDate: documentDate === null ? null : new Date(documentDate) }),
+        ...(notes !== undefined && { notes }),
         updatedAt: new Date(),
       };
 

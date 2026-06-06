@@ -369,6 +369,11 @@ export const translations = {
   'documents.info.document-date': 'Date',
   'documents.info.no-date': 'No date',
   'documents.info.today': 'Today',
+  'documents.notes.label': 'Notes',
+  'documents.notes.placeholder': 'Add some notes about this document',
+  'documents.notes.saving': 'Saving',
+  'documents.notes.saved': 'Saved',
+  'documents.notes.save-error': 'Failed to save notes',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Number',

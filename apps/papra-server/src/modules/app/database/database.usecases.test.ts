@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { usersTable } from '../../users/users.table';
+import { setupDatabase } from './database';
 import { createInMemoryDatabase } from './database.test-utils';
-import { createBatchedIterator, createIterator } from './database.usecases';
+import { createBatchedIterator, createIterator, getRuntimeTableColumns } from './database.usecases';
 
 const createUsers = ({ count }: { count: number }) => Array.from({ length: count }, (_, i) => ({ id: `usr_${i}`, email: `user-${i}@papra.dev` }));
 
@@ -104,6 +105,22 @@ describe('database usecases', () => {
       const results = await Array.fromAsync(iterator);
 
       expect(results).to.eql([1, 2, 3, 4, 5, 6]);
+    });
+  });
+
+  describe('getRuntimeTableColumns', () => {
+    test('returns the list of columns for a given table', async () => {
+      const { db } = setupDatabase({ url: ':memory:' });
+
+      await db.run(`CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)`);
+
+      expect(await getRuntimeTableColumns({ tableName: 'test_table', db })).to.eql(['id', 'name']);
+    });
+
+    test('returns an empty array for a non-existing table', async () => {
+      const { db } = setupDatabase({ url: ':memory:' });
+
+      expect(await getRuntimeTableColumns({ tableName: 'non_existing_table', db })).to.eql([]);
     });
   });
 });

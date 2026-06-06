@@ -1088,6 +1088,7 @@ describe('documents usecases', () => {
                 id: 'document-1',
                 isDeleted: false,
                 mimeType: 'text/plain',
+                notes: null,
                 name: 'new-name.txt',
                 documentDate: null,
                 organizationId: 'organization-1',
