@@ -8,12 +8,14 @@ import { authConfig } from '../app/auth/auth.config';
 import { ensureAuthSecretIsNotDefaultInProduction } from '../app/auth/auth.config.models';
 import { databaseConfig } from '../app/database/database.config';
 import { customPropertiesConfig } from '../custom-properties/custom-properties.config';
+import { documentShareLinksConfig } from '../document-share-links/document-share-links.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
 import { documentStorageConfig } from '../documents/storage/document-storage.config';
 import { emailsConfig } from '../emails/emails.config';
 import { ingestionFolderConfig } from '../ingestion-folders/ingestion-folders.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
+import { kvStoreConfig } from '../kv-store/kv-store.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
@@ -157,8 +159,10 @@ export const configDefinition = {
   subscriptions: subscriptionsConfig,
   tags: tagsConfig,
   customProperties: customPropertiesConfig,
+  documentShareLinks: documentShareLinksConfig,
   tracking: trackingConfig,
   webhooks: webhookConfig,
+  kvStore: kvStoreConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

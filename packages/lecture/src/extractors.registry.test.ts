@@ -11,8 +11,8 @@ describe('extractors registry', () => {
         defineTextExtractor({ name: '3', mimeTypes: ['c/d'], extract: async () => ({ content: '' }) }),
       ];
 
-      expect(getExtractor({ mimeType: 'a/b', extractors: extractorDefinitions }).extractor.name).to.eql('1');
-      expect(getExtractor({ mimeType: 'a/c', extractors: extractorDefinitions }).extractor.name).to.eql('2');
+      expect(getExtractor({ mimeType: 'a/b', extractors: extractorDefinitions }).extractor?.name).to.eql('1');
+      expect(getExtractor({ mimeType: 'a/c', extractors: extractorDefinitions }).extractor?.name).to.eql('2');
       expect(getExtractor({ mimeType: 'e/f', extractors: extractorDefinitions })).to.eql({ extractor: undefined });
     });
   });

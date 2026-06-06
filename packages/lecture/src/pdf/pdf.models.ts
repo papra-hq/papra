@@ -2,7 +2,7 @@ import type { PdfRawImage } from './pdf.types';
 import { IMAGE_KIND_CHANNELS } from './pdf.constants';
 
 export function isValidPdfImage(image: unknown): image is PdfRawImage {
-  return Boolean(image)
+  return image != null
     && typeof image === 'object'
     && 'data' in image
     && 'width' in image

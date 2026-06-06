@@ -1,5 +1,11 @@
 # @papra/webhooks
 
+## 0.3.3
+
+### Patch Changes
+
+- [#1099](https://github.com/papra-hq/papra/pull/1099) [`086dccb`](https://github.com/papra-hq/papra/commit/086dccbfda18c850bee50b94c48f5f110be6935c) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Export the http client type.
+
 ## 0.3.2
 
 ### Patch Changes

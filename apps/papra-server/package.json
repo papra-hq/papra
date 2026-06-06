@@ -53,7 +53,7 @@
     "@crowlog/logger": "^2.2.2",
     "@hono/node-server": "^2.0.2",
     "@libsql/client": "^0.14.0",
-    "@owlrelay/api-sdk": "^0.0.2",
+    "@owlrelay/api-sdk": "^0.0.3",
     "@owlrelay/webhook": "^0.0.3",
     "@papra/lecture": "workspace:*",
     "@papra/search-parser": "workspace:*",
@@ -81,6 +81,7 @@
     "resend": "^4.6.0",
     "stripe": "^17.7.0",
     "tsx": "catalog:",
+    "undici": "^8.2.0",
     "valibot": "catalog:"
   },
   "devDependencies": {

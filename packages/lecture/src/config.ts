@@ -4,7 +4,7 @@ import { languages as tesseractLanguages } from 'tesseract.js';
 export const ocrLanguages = Object.values(tesseractLanguages);
 
 export function parseConfig({ rawConfig = {} }: { rawConfig?: PartialExtractorConfig } = {}): { config: ExtractorConfig } {
-  const languages = rawConfig.tesseract?.languages ?? [];
+  const languages = (rawConfig.tesseract?.languages ?? []).filter((language): language is string => language != null);
   const invalidLanguages = languages.filter(language => !ocrLanguages.includes(language));
 
   if (invalidLanguages.length > 0) {

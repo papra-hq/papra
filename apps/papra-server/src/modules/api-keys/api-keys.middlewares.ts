@@ -33,8 +33,10 @@ export function createApiKeyMiddleware({ db }: { db: Database }) {
       throw createUnauthorizedError();
     }
 
+    // The token isn't an API key (e.g. a share-link access token JWT). Leave it for
+    // downstream handlers; protected routes still enforce auth via requireAuthentication.
     if (!looksLikeAnApiKey(token)) {
-      throw createUnauthorizedError();
+      return next();
     }
 
     const { apiKey } = await getApiKey({ token, apiKeyRepository });

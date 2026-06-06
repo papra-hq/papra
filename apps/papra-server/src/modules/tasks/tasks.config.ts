@@ -5,6 +5,8 @@ import { coercedPositiveIntegerSchema } from '../shared/schemas/number.schemas';
 import { IN_MS } from '../shared/units';
 import { tasksDriverNames } from './drivers/tasks-driver.constants';
 
+const RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV = 'RUN_SCHEDULED_TASKS_ON_STARTUP_DEFAULT';
+
 export const tasksConfig = {
   persistence: {
     driverName: {
@@ -60,7 +62,7 @@ export const tasksConfig = {
       doc: 'Whether the task to hard delete expired "soft deleted" documents should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: 'DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_RUN_ON_STARTUP',
+      env: ['DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
     },
   },
   expireInvitations: {
@@ -74,7 +76,7 @@ export const tasksConfig = {
       doc: 'Whether the task to expire invitations should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: 'ORGANIZATIONS_EXPIRE_INVITATIONS_RUN_ON_STARTUP',
+      env: ['ORGANIZATIONS_EXPIRE_INVITATIONS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
     },
   },
   purgeExpiredOrganizations: {
@@ -88,7 +90,21 @@ export const tasksConfig = {
       doc: 'Whether the task to purge expired soft-deleted organizations should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: 'ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP',
+      env: ['ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+    },
+  },
+  purgeExpiredKvEntries: {
+    cron: {
+      doc: 'The cron schedule for the task to purge expired key-value store entries (only runs when the configured kv-store driver requires it, e.g. libsql)',
+      schema: v.string(),
+      default: '0 2 * * *',
+      env: 'KV_STORE_PURGE_EXPIRED_ENTRIES_CRON',
+    },
+    runOnStartup: {
+      doc: 'Whether the task to purge expired key-value store entries should run on startup',
+      schema: booleanishSchema,
+      default: true,
+      env: ['KV_STORE_PURGE_EXPIRED_ENTRIES_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
     },
   },
 } as const satisfies ConfigDefinition;

@@ -51,7 +51,7 @@ function syncLocaleFiles() {
     const newLocalesContent = enLines
       .filter(line => !line.startsWith('export') && !line.startsWith('}'))
       .map((enLine) => {
-        // Reflect empty lines from en.yml
+        // Reflect empty lines from en
         if (enLine.trim() === '') {
           return '';
         }
@@ -66,12 +66,12 @@ function syncLocaleFiles() {
           return `${' '.repeat(enLineIndentation - targetLineIndentation)}${targetLine}`;
         }
 
-        // Reflect comments from en.yml
+        // Reflect comments from en
         if (enLine.trim().startsWith('//')) {
           return enLine;
         }
 
-        // If the translation key does not exist in the target file, add a comment with the one from en.yml
+        // If the translation key does not exist in the target file, add a comment with the one from en
         return `// ${enLine}`;
       });
 

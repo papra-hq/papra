@@ -31,7 +31,7 @@ export async function pdfImageToBuffer(image: PdfRawImage): Promise<Buffer> {
     raw: {
       width: image.width,
       height: image.height,
-      channels: IMAGE_KIND_CHANNELS[image.kind],
+      channels: IMAGE_KIND_CHANNELS[image.kind]!,
     },
   })
     .png()

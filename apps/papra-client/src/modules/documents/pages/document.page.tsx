@@ -3,20 +3,25 @@ import type { Component, JSX } from 'solid-js';
 import type { Document, DocumentActivity } from '../documents.types';
 import { formatBytes } from '@corentinth/chisels';
 import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
-import { useInfiniteQuery, useQuery } from '@tanstack/solid-query';
-import { createEffect, createSignal, For, Match, Show, Suspense, Switch } from 'solid-js';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/solid-query';
+import { createEffect, createSignal, For, Match, onCleanup, Show, Suspense, Switch } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/components/document-custom-properties-panel.component';
 import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
+import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { debounce } from '@/modules/shared/utils/timing';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { TagLink } from '@/modules/tags/components/tag.component';
 import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
 import { Separator } from '@/modules/ui/components/separator';
+import { createToast } from '@/modules/ui/components/sonner';
 import { Tabs, TabsContent, TabsIndicator, TabsList, TabsTrigger } from '@/modules/ui/components/tabs';
+import { TextArea } from '@/modules/ui/components/textarea';
+import { TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { DocumentContentEditionPanel } from '../components/document-content-edition-panel.component';
 import { DocumentDatePicker } from '../components/document-date-picker.component';
 import { DocumentPreview } from '../components/document-preview.component';
@@ -24,12 +29,92 @@ import { DocumentOpenWithDropdownItems } from '../components/open-with.component
 import { useRenameDocumentDialog } from '../components/rename-document-button.component';
 import { getDaysBeforePermanentDeletion, getDocumentActivityIcon, getDocumentOpenWithApps } from '../document.models';
 import { useDeleteDocument, useDownloadDocument, useRestoreDocument } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities } from '../documents.services';
+import { fetchDocument, fetchDocumentActivities, updateDocument } from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
   value: string | JSX.Element;
   icon?: string;
+};
+
+const DocumentNotes: Component<{ documentId: string; organizationId: string; notes?: string }> = (props) => {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const [notes, setNotes] = createSignal(props.notes ?? '');
+  const [getStatus, setStatus] = createSignal<'idle' | 'pending' | 'saved'>('idle');
+  const [getIsSavedVisible, setIsSavedVisible] = createSignal(false);
+
+  let fadeTimeout: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(fadeTimeout));
+
+  const updateNotesMutation = useMutation(() => ({
+    mutationFn: ({ notes }: { notes: string }) => updateDocument({
+      documentId: props.documentId,
+      organizationId: props.organizationId,
+      notes,
+    }),
+    onSuccess: () => {
+      setStatus('saved');
+      setIsSavedVisible(true);
+
+      clearTimeout(fadeTimeout);
+      fadeTimeout = setTimeout(() => setIsSavedVisible(false), 2000);
+
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
+        exact: true, // To avoid refetching the document file content
+      });
+    },
+    onError: () => {
+      setStatus('idle');
+      createToast({ type: 'error', message: t('documents.notes.save-error') });
+    },
+  }));
+
+  const debouncedSave = debounce((value: string) => updateNotesMutation.mutate({ notes: value }), 500);
+
+  const handleInput = (value: string) => {
+    setNotes(value);
+    setStatus('pending');
+    debouncedSave(value);
+  };
+
+  return (
+    <div>
+      <Separator class="mb-3" />
+      <TextFieldRoot>
+        <TextFieldLabel class="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide flex items-center gap-2">
+          {t('documents.notes.label')}
+
+          <Switch>
+            <Match when={getStatus() === 'pending'}>
+              <span class="flex items-center gap-1 normal-case tracking-normal">
+                <div class="i-tabler-loader-2 size-3 animate-spin" />
+                {t('documents.notes.saving')}
+              </span>
+            </Match>
+            <Match when={getStatus() === 'saved'}>
+              <span
+                class="flex items-center gap-1 normal-case tracking-normal text-primary transition-opacity duration-1000"
+                classList={{ 'opacity-0': !getIsSavedVisible() }}
+              >
+                <div class="i-tabler-check size-3" />
+                {t('documents.notes.saved')}
+              </span>
+            </Match>
+          </Switch>
+        </TextFieldLabel>
+
+        <TextArea
+          rows={2}
+          autoResize
+          value={notes()}
+          onInput={e => handleInput(e.currentTarget.value)}
+          placeholder={t('documents.notes.placeholder')}
+        />
+      </TextFieldRoot>
+    </div>
+  );
 };
 
 const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
@@ -131,6 +216,7 @@ export const DocumentPage: Component = () => {
   const navigate = useNavigate();
   const { config } = useConfig();
   const { openRenameDialog } = useRenameDocumentDialog();
+  const { openShareDialog } = useShareDocumentDialog();
 
   const getInitialTab = (): Tab => {
     const tab = searchParams.tab;
@@ -234,6 +320,19 @@ export const DocumentPage: Component = () => {
                     </Button>
 
                     <DocumentOpenWithDropdown document={getDocument()} organizationId={params.organizationId} />
+
+                    <Button
+                      onClick={() => openShareDialog({
+                        documentId: getDocument().id,
+                        organizationId: params.organizationId,
+                        documentName: getDocument().name,
+                      })}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <div class="i-tabler-share size-4 mr-2" />
+                      {t('document-share-links.share-action')}
+                    </Button>
 
                     {getDocument().isDeleted
                       ? (
@@ -350,7 +449,13 @@ export const DocumentPage: Component = () => {
                             />
                           )}
                         </Show>
+
                       </div>
+                      <DocumentNotes
+                        documentId={getDocument().id}
+                        organizationId={params.organizationId}
+                        notes={getDocument().notes}
+                      />
                     </TabsContent>
 
                     <TabsContent value="content">

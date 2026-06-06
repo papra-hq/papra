@@ -3,6 +3,7 @@ import { registerAdminRoutes } from '../admin/admin.routes';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
 import { registerConfigRoutes } from '../config/config.routes';
 import { registerCustomPropertiesRoutes } from '../custom-properties/custom-properties.routes';
+import { registerDocumentShareLinksRoutes } from '../document-share-links/document-share-links.routes';
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
 import { registerDocumentsBatchRoutes } from '../documents/documents-batch/documents-batch.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
@@ -36,5 +37,6 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerInvitationsRoutes(context);
   registerDocumentActivityRoutes(context);
   registerCustomPropertiesRoutes(context);
+  registerDocumentShareLinksRoutes(context);
   registerAdminRoutes(context);
 }

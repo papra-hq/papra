@@ -1,6 +1,7 @@
 import { inspectRoutes } from 'hono/dev';
 import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../config/config.test-utils';
+import { SHARE_LINK_TOKEN_LENGTH } from '../document-share-links/document-share-links.constants';
 import { createInMemoryDatabase } from './database/database.test-utils';
 import { createServer } from './server';
 import { createTestServerDependencies } from './server.test-utils';
@@ -18,7 +19,9 @@ function setValidParams(path: string) {
     .replaceAll(':memberId', 'org_mem_999999999999999999999999')
     .replaceAll(':invitationId', 'inv_101010101010101010101010')
     .replaceAll(':propertyDefinitionId', 'cpd_111111111111111111111111')
-    .replaceAll(':optionId', 'cpso_222222222222222222222222');
+    .replaceAll(':optionId', 'cpso_222222222222222222222222')
+    .replaceAll(':shareLinkId', 'dsl_333333333333333333333333')
+    .replaceAll(':shareLinkToken', 't'.repeat(SHARE_LINK_TOKEN_LENGTH));
 
   // throw if there are any remaining params
   if (newPath.match(/:\w+/g)) {
@@ -43,6 +46,11 @@ describe('server routes', () => {
 
       // Stripe stuff
       'POST /api/stripe/webhook',
+
+      // Document share link access
+      'GET /api/share-links/:shareLinkToken/document',
+      'POST /api/share-links/:shareLinkToken/verify',
+      'GET /api/share-links/:shareLinkToken/document/file',
     ];
 
     // Excluding auth routes that are managed by better-auth

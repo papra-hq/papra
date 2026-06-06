@@ -23,3 +23,15 @@ export const createUserAccountCreationDisabledError = createErrorFactory({
   code: 'users.create_account_disabled',
   statusCode: 403,
 });
+
+export const createUserStillOwnsOrganizationsError = createErrorFactory({
+  message: 'User still owns organizations',
+  code: 'users.still_owns_organizations',
+  statusCode: 400,
+});
+
+export const createCannotDeleteSelfError = createErrorFactory({
+  message: 'Cannot delete your own account from the admin panel',
+  code: 'users.cannot_delete_self',
+  statusCode: 400,
+});

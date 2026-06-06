@@ -68,7 +68,7 @@ The code for the Email Worker proxy is available in the [papra-hq/email-proxy](h
         pnpm build
 
         # Deploy the worker (you will be prompted to login to Cloudflare through wrangler)
-        pnpm deploy
+        pnpm run deploy
         ```
 
 2. **Configure the Email Worker**
@@ -113,6 +113,15 @@ The code for the Email Worker proxy is available in the [papra-hq/email-proxy](h
 
 ## Troubleshooting
 
+### View logs using wrangler tail
+
+To view real-time logs associated with any deployed Worker using Wrangler:
+
+  - Go to your Worker project directory.
+  - Run npx wrangler tail.
+
+This will log any incoming requests to your application available in your local terminal.
+
 ### Email Worker not receiving emails
 
 If the Email Worker is not receiving emails, make sure that the email routing is correctly configured in the Cloudflare dashboard.
@@ -130,3 +139,8 @@ If your Papra instance is returning a `401 Unauthorized` error, make sure that t
 
 Make sure that the `WEBHOOK_URL` and `WEBHOOK_SECRET` environment variables are correctly set in the Email Worker, and the `INTAKE_EMAILS_WEBHOOK_SECRET` environment variable is correctly set in your Papra instance.
 Also, check the [logs in the Email Worker dashboard](https://developers.cloudflare.com/workers/observability/logs/real-time-logs/) or the logs in your Papra instance for any errors.
+
+### TypeError: Too many redirects.
+
+If you get "too many redirects" (check log from wrangler), check that your domain is configured with SSL/TLS Encryption as Full (strict). 
+Cloudflare dashboard → (domain) → SSL/TLS → Overview → set encryption mode to Full (strict) or at minimum Full. Save, then re-send a test email.

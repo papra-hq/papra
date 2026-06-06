@@ -44,7 +44,7 @@ async function ocrPdfImages({ pdf, pageCount, extract, logger }: { pdf: PDFDocum
       const image = await new Promise(resolve => (imageKey.startsWith('g_') ? page.commonObjs : page.objs).get(imageKey, resolve));
 
       if (!isValidPdfImage(image)) {
-        const get = (prop: string) => (image != null && typeof image === 'object' && prop in image ? image[prop] : undefined);
+        const get = (prop: string) => (image != null && typeof image === 'object' && prop in image ? (image as Record<string, unknown>)[prop] : undefined);
 
         logger?.warn({
           pageIndex,

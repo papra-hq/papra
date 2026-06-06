@@ -38,11 +38,11 @@ export async function extractText({ arrayBuffer, mimeType, config: rawConfig, lo
       extractorName,
       extractorType,
       textContent: content,
-      subExtractorsUsed,
+      subExtractorsUsed: subExtractorsUsed ?? [],
     };
   } catch (error) {
     return {
-      error,
+      error: error as Error,
       extractorName,
       extractorType: undefined,
       textContent: undefined,
