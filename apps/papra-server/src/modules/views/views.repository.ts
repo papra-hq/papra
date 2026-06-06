@@ -2,7 +2,7 @@ import type { Database } from '../app/database/database.types';
 import { injectArguments, safely } from '@corentinth/chisels';
 import { and, desc, eq } from 'drizzle-orm';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
-import { omitUndefined } from '../shared/utils';
+import { omitUndefined } from '../shared/objects';
 import { createViewAlreadyExistsError } from './views.errors';
 import { viewsTable } from './views.table';
 
