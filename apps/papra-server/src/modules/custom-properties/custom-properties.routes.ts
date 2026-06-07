@@ -32,7 +32,7 @@ export function registerCustomPropertiesRoutes(context: RouteDefinitionContext) 
 function setupCreatePropertyDefinitionRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/custom-properties',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.CREATE] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
@@ -64,7 +64,7 @@ function setupCreatePropertyDefinitionRoute({ app, db, config }: RouteDefinition
 function setupGetOrganizationPropertyDefinitionsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/custom-properties',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
     })),
@@ -87,7 +87,7 @@ function setupGetOrganizationPropertyDefinitionsRoute({ app, db }: RouteDefiniti
 function setupGetPropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
@@ -115,7 +115,7 @@ function setupGetPropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
 function setupUpdatePropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.UPDATE] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
@@ -147,7 +147,7 @@ function setupUpdatePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
 function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
-    requireAuthentication(),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.DELETE] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       propertyDefinitionId: customPropertyDefinitionIdSchema,
@@ -175,7 +175,7 @@ function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
 function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE] }),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -221,7 +221,7 @@ function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionCo
 function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE] }),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,
@@ -258,7 +258,7 @@ function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitio
 function setupGetDocumentCustomPropertyValuesRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.READ] }),
+    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.READ, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
     validateParams(v.strictObject({
       organizationId: organizationIdSchema,
       documentId: documentIdSchema,

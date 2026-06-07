@@ -54,7 +54,7 @@ describe('locales', () => {
       /^auth\.register\.providers\.[a-z0-9:]+$/, // auth.register.providers.google
       /^webhooks\.events\.[a-z0-9]+\.[a-z0-9:]+.description$/, // webhooks.events.documents.document:created.description
       /^webhooks\.events\.[a-z0-9]+\.title$/, // webhooks.events.documents.title
-      /^api-keys\.permissions\.[a-z0-9:]+\.[a-z0-9:]+$/, // api-keys.permissions.documents.documents:delete
+      /^api-keys\.permissions\.[a-z0-9:-]+\.[a-z0-9:-]+$/, // api-keys.permissions.documents.documents:delete
       /^organizations\.members\.roles\.[a-z0-9]+$/, // organizations.members.roles.admin
       /^activity\.document\.[a-z0-9:]+$/, // activity.document.created
       /^organizations\.invitations\.status\.[a-z0-9:]+$/, // organizations.invitations.status.pending

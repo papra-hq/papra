@@ -26,6 +26,12 @@ export const API_KEY_PERMISSIONS = {
     UPDATE: 'tags:update',
     DELETE: 'tags:delete',
   },
+  CUSTOM_PROPERTIES: {
+    CREATE: 'custom-properties:create',
+    READ: 'custom-properties:read',
+    UPDATE: 'custom-properties:update',
+    DELETE: 'custom-properties:delete',
+  },
 } as const;
 
 export const API_KEY_PERMISSIONS_VALUES = Object.values(API_KEY_PERMISSIONS).flatMap(permissions => Object.values(permissions));
