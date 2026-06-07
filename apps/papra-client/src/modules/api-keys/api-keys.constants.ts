@@ -1,46 +1,10 @@
-// export const API_KEY_PERMISSIONS = {
-//   documents: {
-//     create: 'documents:create',
-//   },
-// } as const;
+import { API_KEY_PERMISSIONS_VALUES, API_KEY_PERMISSIONS as PERMISSIONS } from '@papra/app-server/apiKeys/constants';
 
 export const API_KEY_PERMISSIONS = [
-  {
-    section: 'organizations',
-    permissions: [
-      'organizations:create',
-      'organizations:read',
-      'organizations:update',
-      'organizations:delete',
-    ],
-  },
-  {
-    section: 'documents',
-    permissions: [
-      'documents:create',
-      'documents:read',
-      'documents:update',
-      'documents:delete',
-    ],
-  },
-  {
-    section: 'tags',
-    permissions: [
-      'tags:create',
-      'tags:read',
-      'tags:update',
-      'tags:delete',
-    ],
-  },
-  {
-    section: 'custom-properties',
-    permissions: [
-      'custom-properties:create',
-      'custom-properties:read',
-      'custom-properties:update',
-      'custom-properties:delete',
-    ],
-  },
+  { section: 'organizations', permissions: Object.values(PERMISSIONS.ORGANIZATIONS) },
+  { section: 'documents', permissions: Object.values(PERMISSIONS.DOCUMENTS) },
+  { section: 'tags', permissions: Object.values(PERMISSIONS.TAGS) },
+  { section: 'custom-properties', permissions: Object.values(PERMISSIONS.CUSTOM_PROPERTIES) },
 ] as const;
 
-export const API_KEY_PERMISSIONS_LIST = API_KEY_PERMISSIONS.flatMap(permission => permission.permissions);
+export { API_KEY_PERMISSIONS_VALUES };
