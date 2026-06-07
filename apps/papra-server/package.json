@@ -8,7 +8,8 @@
   "license": "AGPL-3.0-or-later",
   "keywords": [],
   "exports": {
-    "./organizations/constants": "./src/modules/organizations/organizations.constants.ts"
+    "./organizations/constants": "./src/modules/organizations/organizations.constants.ts",
+    "./customProperties/constants": "./src/modules/custom-properties/custom-properties.constants.ts"
   },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env  src/index.ts | crowlog-pretty",
