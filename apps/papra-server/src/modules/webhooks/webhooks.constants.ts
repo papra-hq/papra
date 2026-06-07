@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const WEBHOOK_ID_PREFIX = 'wbh';
 export const WEBHOOK_ID_REGEX = createPrefixedIdRegex({ prefix: WEBHOOK_ID_PREFIX });

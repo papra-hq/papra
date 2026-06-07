@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const API_KEY_ID_PREFIX = 'ak';
 export const API_KEY_ID_REGEX = createPrefixedIdRegex({ prefix: API_KEY_ID_PREFIX });

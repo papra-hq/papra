@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const SHARE_LINK_ID_PREFIX = 'dsl';
 export const SHARE_LINK_ID_REGEX = createPrefixedIdRegex({ prefix: SHARE_LINK_ID_PREFIX });

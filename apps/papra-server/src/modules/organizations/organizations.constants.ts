@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const ORGANIZATION_ID_PREFIX = 'org';
 export const ORGANIZATION_ID_REGEX = createPrefixedIdRegex({ prefix: ORGANIZATION_ID_PREFIX });

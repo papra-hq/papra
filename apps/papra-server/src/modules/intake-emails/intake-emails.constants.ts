@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const INTAKE_EMAIL_ID_PREFIX = 'ie';
 export const INTAKE_EMAIL_ID_REGEX = createPrefixedIdRegex({ prefix: INTAKE_EMAIL_ID_PREFIX });
