@@ -10,7 +10,7 @@ import { CopyButton } from '@/modules/shared/utils/copy';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { API_KEY_PERMISSIONS_LIST } from '../api-keys.constants';
+import { API_KEY_PERMISSIONS_VALUES } from '../api-keys.constants';
 import { createApiKey } from '../api-keys.services';
 import { ApiKeyPermissionsPicker } from '../components/api-key-permissions-picker.component';
 
@@ -42,13 +42,13 @@ export const CreateApiKeyPage: Component = () => {
         v.nonEmpty(t('api-keys.create.form.name.required')),
       ),
       permissions: v.pipe(
-        v.array(v.picklist(API_KEY_PERMISSIONS_LIST as string[])),
+        v.array(v.picklist(API_KEY_PERMISSIONS_VALUES as string[])),
         v.nonEmpty(t('api-keys.create.form.permissions.required')),
       ),
     }),
     initialValues: {
       name: '',
-      permissions: API_KEY_PERMISSIONS_LIST,
+      permissions: API_KEY_PERMISSIONS_VALUES,
     },
   });
 
