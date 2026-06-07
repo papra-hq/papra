@@ -167,7 +167,7 @@ function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
         customPropertiesRepository,
       });
 
-      return context.json({});
+      return context.body(null, 204);
     },
   );
 }
