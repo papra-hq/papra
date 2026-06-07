@@ -37,12 +37,6 @@ A live demo of the platform is available at [demo.papra.app](https://demo.papra.
 
 [![Papra](./.github/papra-screenshot.png)](https://demo.papra.app)
 
-## Project Status
-
-Papra is under active development, the core functionalities are stable and usable. With lots of features and improvements added regularly.
-
-Feedback and bug reports are highly appreciated to help us improve the platform.
-
 ## Features
 
 - **Document management**: Upload, store, and manage your documents in one place.
@@ -62,7 +56,7 @@ Feedback and bug reports are highly appreciated to help us improve the platform.
 - **API, SDK and webhooks**: Build your own applications on top of Papra.
 - **i18n**: Support for multiple languages.
 - **Custom properties**: Define per-organization custom properties to store additional information about documents.
-- _Coming soon:_ **Document sharing**: Share documents with others.
+- **Document sharing**: Share documents with external users with optional expiration dates and password protection.
 - _Coming soon:_ **Document requests**: Generate upload links for people to add documents.
 - _Coming maybe one day:_ **Mobile app**: Access and upload documents on the go.
 - _Coming maybe one day:_ **Desktop app**: Access and upload documents from your computer.
@@ -76,7 +70,7 @@ If you are a company, you can also [contact me](https://papra.app/contact) to di
 
 ## Self-hosting
 
-Papra is dedicated to providing a simple yet highly configurable self-hosting experience. Our lightweight Docker image (<200MB) is compatible with multiple architectures including x86, ARM64, and ARMv7.
+Papra is dedicated to providing a simple yet highly configurable self-hosting experience. 
 
 For a quick start, simply run the following command:
 
