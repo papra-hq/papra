@@ -1,4 +1,8 @@
-export type CustomPropertyType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multi_select' | 'user_relation' | 'document_relation';
+import type { CustomPropertyType } from '@papra/app-server/customProperties/constants';
+
+export {
+  CustomPropertyType,
+};
 
 export type DocumentCustomProperty = {
   key: string;
