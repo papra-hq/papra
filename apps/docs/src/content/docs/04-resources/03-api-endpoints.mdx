@@ -204,23 +204,6 @@ Get a document file content by its ID.
 - Required API key permissions: `documents:read`
 - Response: The document file stream.
 
-### Search documents
-
-**GET** `/api/organizations/:organizationId/documents/search`
-
-Search documents in the organization by name or content.
-
-WARNING: This endpoint was removed in 26.2.0 - please use the `searchQuery` parameter of the list all documents endpoint instead.
-
-- Required API key permissions: `documents:read`
-- Query parameters
-  - `searchQuery`: The search query. Supports advanced search syntax with filters (`name:`, `content:`, `tag:`, `created:`), logical operators (`AND`, `OR`, `NOT`), and grouping. See the [Advanced Search guide](/guides/advanced-search) for details.
-  - `pageIndex`: (optional, default: 0) The page index to start from.
-  - `pageSize`: (optional, default: 100) The number of documents to return.
-- Response (JSON)
-  - `documents`: The list of documents matching the search query.
-  - `totalCount`: The total number of documents matching the search query.
-
 ### Get organization documents statistics
 
 **GET** `/api/organizations/:organizationId/documents/statistics`
@@ -365,9 +348,9 @@ Create a new custom property definition in the organization.
 - Required API key permissions: `custom-properties:create`
 - Body (JSON)
   - `name`: The custom property name.
-  - `type`: The custom property typ (`text`, `number`, `date`, `boolean`, `select`, `multi_select`, `user_relation`, `document_relation`).
+  - `type`: The custom property type (`text`, `number`, `date`, `boolean`, `select`, `multi_select`, `user_relation`, `document_relation`).
   - `description`: (optional) The custom property description.
-  - `options`: (option, only valid for type `select` and `multi_select`): list of options
+  - `options`: (optional, only valid for type `select` and `multi_select`): list of options
     - `name`: Name of the option
 - Response (JSON)
   - `propertyDefinition`: The created custom property definition.
@@ -383,8 +366,8 @@ The property type cannot be changed after creation.
 - Body
   - `name`: (optional) The custom property name.
   - `description`: (optional) The custom property description.
-  - `options`: (option, only valid for type `select` and `multi_select`): list of options
-    - `id`: (only for exiting option) ID of the option
+  - `options`: (optional, only valid for type `select` and `multi_select`): list of options
+    - `id`: (only for existing options) ID of the option
     - `name`: Name of the option
 - Response (JSON)
   - `propertyDefinition`: The updated custom property definition.
@@ -424,7 +407,7 @@ Sets the value of a custom property on a document.
 **DELETE** `/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId`
 
 Clear the value of a custom property on a document.
-For `multi_select` properties sent an update with an empty list instead.
+For `multi_select` properties send an update with an empty list instead.
 
 - Required API key permissions: `custom-properties:read` and `documents:update`
 - Response: empty (204 status code)
