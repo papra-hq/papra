@@ -1,5 +1,31 @@
 # @papra/app
 
+## 26.5.0
+
+### Minor Changes
+
+- [#960](https://github.com/papra-hq/papra/pull/960) [`f4b361e`](https://github.com/papra-hq/papra/commit/f4b361ed79e58a862e5a8b34eb1c7b3a8d61fd3d) Thanks [@anbraten](https://github.com/anbraten)! - Added the ability to save search queries as views, allowing quick access to frequently used searches. Saved views can be accessed from the sidebar.
+
+- [#1130](https://github.com/papra-hq/papra/pull/1130) [`4fc4f68`](https://github.com/papra-hq/papra/commit/4fc4f686bd6288a736d19e7ebdb04884c65cf8f0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added document sharing by link: generate a public link to share a document with anyone, without requiring a Papra account. Links can optionally be password-protected and given an expiration date, can be disabled/re-enabled, and are all manageable from a new organization-level "Share links" page.
+
+### Patch Changes
+
+- [#1111](https://github.com/papra-hq/papra/pull/1111) [`1ecd2c8`](https://github.com/papra-hq/papra/commit/1ecd2c8a0ef668a166941a797d241d605f1ae0b7) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix admin layout pushing the sidenav out of view when page content is long.
+
+- [#1130](https://github.com/papra-hq/papra/pull/1130) [`4fc4f68`](https://github.com/papra-hq/papra/commit/4fc4f686bd6288a736d19e7ebdb04884c65cf8f0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Laid out the base for the rate limit system.
+
+- [#1121](https://github.com/papra-hq/papra/pull/1121) [`3a67507`](https://github.com/papra-hq/papra/commit/3a675076877ea6c22feb06267ba7e68201947e60) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to disable the initial startup execution of all scheduled tasks by setting the `RUN_SCHEDULED_TASKS_ON_STARTUP_DEFAULT=false` environment variable, mainly usefull for instance that reboot often, dev environments or fast startup requirements (few ms gained). Each task startup configuration remain individually configurable with their dedicated environment variable.
+
+- [#1135](https://github.com/papra-hq/papra/pull/1135) [`d73933a`](https://github.com/papra-hq/papra/commit/d73933a8ee14edc6b09ce79f64be99e31c6ac90b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added api-key permissions for managing custom properties
+
+- [#1141](https://github.com/papra-hq/papra/pull/1141) [`f93d6e1`](https://github.com/papra-hq/papra/commit/f93d6e17936f61095414bab9fd0339b3562f4377) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Custom property definition deletion endpoint (`DELETE /api/organizations/:organizationId/custom-properties/:propertyDefinitionId`) now returns a 204 with no body instead of a 200 with an empty object.
+
+- [#1133](https://github.com/papra-hq/papra/pull/1133) [`a0f2455`](https://github.com/papra-hq/papra/commit/a0f24554d5495d06d0ad04c494f475e3f47378cb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to add notes to documents, which can be used to add additional information or context to a document.
+
+- [#1109](https://github.com/papra-hq/papra/pull/1109) [`d9bc129`](https://github.com/papra-hq/papra/commit/d9bc129b7c74aff9b07682ec67cd6e148b50e138) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to delete a user in the admin user details page.
+
+- [#996](https://github.com/papra-hq/papra/pull/996) [`2a8bdec`](https://github.com/papra-hq/papra/commit/2a8bdec2ae3c9e42c36777901264e47ceede00cc) Thanks [@magic0whi](https://github.com/magic0whi)! - Fix preview of pdfs without embedded fonts by packaging cmaps and custom fonts in the app assets. Increasing the bundle size by ~2mb, but it's worth it for the improved UX and compatibility with a wider range of pdfs.
+
 ## 26.4.2
 
 ### Patch Changes
