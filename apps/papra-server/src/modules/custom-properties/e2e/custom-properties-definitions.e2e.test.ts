@@ -149,7 +149,7 @@ describe('custom properties e2e', () => {
         { loggedInUserId: USER_ID },
       );
 
-      expect(deleteResponse.status).to.eql(200);
+      expect(deleteResponse.status).to.eql(204);
 
       const listResponse = await app.request(
         `/api/organizations/${ORG_ID}/custom-properties`,
