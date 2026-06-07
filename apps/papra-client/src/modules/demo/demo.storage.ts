@@ -1,5 +1,6 @@
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { CustomPropertyDefinition } from '../custom-properties/custom-properties.types';
+import type { DocumentView } from '../document-views/document-views.types';
 import type { Document } from '../documents/documents.types';
 import type { Organization } from '../organizations/organizations.types';
 import type { TaggingRule } from '../tagging-rules/tagging-rules.types';
@@ -39,6 +40,7 @@ export const apiKeyStorage = prefixStorage<ApiKey>(storage, 'apiKeys');
 export const webhooksStorage = prefixStorage<Webhook>(storage, 'webhooks');
 export const customPropertyDefinitionStorage = prefixStorage<CustomPropertyDefinition>(storage, 'customPropertyDefinitions');
 export const documentCustomPropertyValueStorage = prefixStorage<DocumentCustomPropertyValueStorage>(storage, 'documentCustomPropertyValues');
+export const documentViewStorage = prefixStorage<DocumentView>(storage, 'documentViews');
 
 export async function clearDemoStorage() {
   await storage.clear();
@@ -119,6 +121,23 @@ export async function seedDemoStorage() {
     customPropertyDefinitions.map(def => ({ key: def.id, value: def })),
   );
 
+  // Create stored document views
+  const documentViews = [
+    { name: 'Receipts', query: 'tag:Receipts', description: 'Payment receipts and bills' },
+  ].map(view => ({
+    id: createId({ prefix: 'dv' }),
+    organizationId,
+    name: view.name,
+    query: view.query,
+    description: view.description,
+    createdAt: lastMonth,
+    updatedAt: lastMonth,
+  }));
+
+  const documentViewsPromises = documentViewStorage.setItems(
+    documentViews.map(view => ({ key: view.id, value: view })),
+  );
+
   const documentsPromises = documentFixtures.flatMap((fixture) => {
     const documentId = createId({ prefix: 'doc' });
 
@@ -179,6 +198,7 @@ export async function seedDemoStorage() {
   await Promise.all([
     tagsPromises,
     customPropertyDefinitionsPromises,
+    documentViewsPromises,
     ...documentsPromises,
   ]);
 }
