@@ -7,6 +7,9 @@
   "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",
   "keywords": [],
+  "exports": {
+    "./organizations/constants": "./src/modules/organizations/organizations.constants.ts"
+  },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env  src/index.ts | crowlog-pretty",
     "build": "pnpm esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=dist/index.js --minify",

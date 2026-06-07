@@ -59,6 +59,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@iconify-json/tabler": "catalog:",
+    "@papra/app-server": "workspace:*",
     "@papra/lecture": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
