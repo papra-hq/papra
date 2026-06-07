@@ -210,6 +210,8 @@ Get a document file content by its ID.
 
 Search documents in the organization by name or content.
 
+WARNING: This endpoint was removed in 26.2.0 - please use the `searchQuery` parameter of the list all documents endpoint instead.
+
 - Required API key permissions: `documents:read`
 - Query parameters
   - `searchQuery`: The search query. Supports advanced search syntax with filters (`name:`, `content:`, `tag:`, `created:`), logical operators (`AND`, `OR`, `NOT`), and grouping. See the [Advanced Search guide](/guides/advanced-search) for details.
