@@ -204,21 +204,6 @@ Get a document file content by its ID.
 - Required API key permissions: `documents:read`
 - Response: The document file stream.
 
-### Search documents
-
-**GET** `/api/organizations/:organizationId/documents/search`
-
-Search documents in the organization by name or content.
-
-- Required API key permissions: `documents:read`
-- Query parameters
-  - `searchQuery`: The search query. Supports advanced search syntax with filters (`name:`, `content:`, `tag:`, `created:`), logical operators (`AND`, `OR`, `NOT`), and grouping. See the [Advanced Search guide](/guides/advanced-search) for details.
-  - `pageIndex`: (optional, default: 0) The page index to start from.
-  - `pageSize`: (optional, default: 100) The number of documents to return.
-- Response (JSON)
-  - `documents`: The list of documents matching the search query.
-  - `totalCount`: The total number of documents matching the search query.
-
 ### Get organization documents statistics
 
 **GET** `/api/organizations/:organizationId/documents/statistics`
@@ -333,3 +318,96 @@ Enqueue a background task to apply a tagging rule to all existing documents in t
 - Required API key permissions: `tags:read` and `documents:update`
 - Response (JSON, HTTP 202)
   - `taskId`: The ID of the background task. You can use this to track the task's progress (task status retrieval coming in a future release).
+
+### List custom property definitions
+
+**GET** `/api/organizations/:organizationId/custom-properties`
+
+List all custom property definitions in the organization.
+
+- Required API key permissions: `custom-properties:read`
+- Response (JSON)
+  - `propertyDefinitions`: The list of custom property definitions.
+
+### Get custom property definition
+
+**GET** `/api/organizations/:organizationId/custom-properties/:propertyDefinitionId`
+
+Get a custom property by its ID.
+
+- Required API key permissions: `custom-properties:read`
+- Response (JSON)
+  - `definition`: The custom property definition.
+
+### Create a custom property definition
+
+**POST** `/api/organizations/:organizationId/custom-properties`
+
+Create a new custom property definition in the organization.
+
+- Required API key permissions: `custom-properties:create`
+- Body (JSON)
+  - `name`: The custom property name.
+  - `type`: The custom property type (`text`, `number`, `date`, `boolean`, `select`, `multi_select`, `user_relation`, `document_relation`).
+  - `description`: (optional) The custom property description.
+  - `options`: (optional, only valid for type `select` and `multi_select`): list of options
+    - `name`: Name of the option
+- Response (JSON)
+  - `propertyDefinition`: The created custom property definition.
+
+### Update a custom property definition
+
+**PUT** `/api/organizations/:organizationId/custom-properties/:propertyDefinitionId`
+
+Change the name, description or select options of a custom property definition.
+The property type cannot be changed after creation.
+
+- Required API key permissions: `custom-properties:update`
+- Body
+  - `name`: (optional) The custom property name.
+  - `description`: (optional) The custom property description.
+  - `options`: (optional, only valid for type `select` and `multi_select`): list of options
+    - `id`: (only for existing options) ID of the option
+    - `name`: Name of the option
+- Response (JSON)
+  - `propertyDefinition`: The updated custom property definition.
+
+### Delete a custom property definition
+
+**DELETE** `/api/organizations/:organizationId/custom-properties/:propertyDefinitionId`
+
+Delete a custom property definition by its ID.
+
+- Required API key permissions: `custom-properties:delete`
+- Response: empty (204 status code)
+
+### List all custom properties of a document
+
+**GET** `/api/organizations/:organizationId/documents/:documentId/custom-properties`
+
+List all currently set custom properties of a document with their respective values.
+
+- Required API key permissions: `custom-properties:read` and `documents:read`
+- Response (JSON)
+  - `customProperties`: The list of currently set custom properties.
+
+### Set a custom property value on a document
+
+**PUT** `/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId`
+
+Sets the value of a custom property on a document.
+
+- Required API key permissions: `custom-properties:read` and `documents:update`
+- Body
+  - `value`: The new value - for `select`, `user_relation` and `document_relation` properties this is the select option / user / document ID, for `multi_select` properties this is a list of select option IDs
+- Response: empty (204 status code)
+
+### Clear a custom property from a document
+
+**DELETE** `/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId`
+
+Clear the value of a custom property on a document.
+For `multi_select` properties send an update with an empty list instead.
+
+- Required API key permissions: `custom-properties:read` and `documents:update`
+- Response: empty (204 status code)
