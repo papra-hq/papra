@@ -1,16 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { ID_RANDOM_PART_LENGTH } from '../../app/database/database.constants';
-import { createDeterministicIdGenerator, createPrefixedIdRegex, generateId } from './ids';
+import { createDeterministicIdGenerator, generateId } from './ids';
 
 describe('database models', () => {
-  describe('createPrefixedIdRegex', () => {
-    test('build a regex for prefixed id validation', () => {
-      const regex = createPrefixedIdRegex({ prefix: 'tag' });
-
-      expect(regex.toString()).to.eql('/^tag_[a-z0-9]{24}$/');
-    });
-  });
-
   describe('createDeterministicIdGenerator', () => {
     describe('provide a id generator that increments ids deterministically, mainly used for testing', () => {
       test('the id generator produces sequential ids with the given prefix', () => {

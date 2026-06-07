@@ -1,4 +1,4 @@
-import { createPrefixedIdRegex } from '../shared/random/ids';
+import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const CUSTOM_PROPERTY_DEFINITION_ID_PREFIX = 'cpd';
 export const CUSTOM_PROPERTY_DEFINITION_ID_REGEX = createPrefixedIdRegex({ prefix: CUSTOM_PROPERTY_DEFINITION_ID_PREFIX });

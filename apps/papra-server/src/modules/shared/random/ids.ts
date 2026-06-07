@@ -10,10 +10,6 @@ export function generateId({ prefix, getRandomPart = createId }: { prefix?: stri
   return prefix !== undefined ? `${prefix}_${id}` : id;
 }
 
-export function createPrefixedIdRegex({ prefix }: { prefix: string }) {
-  return new RegExp(`^${prefix}_[a-z0-9]{${ID_RANDOM_PART_LENGTH}}$`);
-}
-
 export function createDeterministicIdGenerator({ prefix }: { prefix?: string } = {}) {
   let counter = 1;
 
