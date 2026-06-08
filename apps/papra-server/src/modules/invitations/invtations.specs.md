@@ -17,6 +17,7 @@ Privileged members of an organization (owner or admin) can invite other users to
 - `cancelled`: The invitation has been cancelled by a privileged member of the organization.
 
 State machine:
+
 ```mermaid
 stateDiagram-v2
     [*] --> pending

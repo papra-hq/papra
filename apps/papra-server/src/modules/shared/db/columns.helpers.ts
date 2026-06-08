@@ -6,9 +6,7 @@ export function createPrimaryKeyField({
   idGenerator = () => generateId({ prefix }),
 }: { prefix?: string; idGenerator?: () => string } = {}) {
   return {
-    id: text('id')
-      .primaryKey()
-      .$default(idGenerator),
+    id: text('id').primaryKey().$default(idGenerator),
   };
 }
 

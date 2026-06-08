@@ -7,13 +7,16 @@ import { Button } from '@/modules/ui/components/button';
 import { fetchOrganizationUsage } from '../subscriptions.services';
 import { UpgradeDialog } from './upgrade-dialog.component';
 
-const ONE_DAY_IN_MS = 24/* hours */ * 60/* minutes */ * 60/* seconds */ * 1000/* milliseconds */;
+const ONE_DAY_IN_MS = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000;
 
 export const UsageWarningCard: Component<{ organizationId: string }> = (props) => {
   const { t } = useI18n();
   const getOrganizationId = () => props.organizationId;
   // TODO: mutualize the creation of the storage key
-  const [getDismissedDate, setDismissedDate] = makePersisted(createSignal<number | null>(null), { name: `papra:${getOrganizationId()}:usage-warning-dismissed`, storage: localStorage });
+  const [getDismissedDate, setDismissedDate] = makePersisted(createSignal<number | null>(null), {
+    name: `papra:${getOrganizationId()}:usage-warning-dismissed`,
+    storage: localStorage,
+  });
 
   const query = useQuery(() => ({
     queryKey: ['organizations', getOrganizationId(), 'usage'],
@@ -60,25 +63,20 @@ export const UsageWarningCard: Component<{ organizationId: string }> = (props) =
     <Show when={shouldShow()}>
       <div class="bg-destructive/10 border-b border-b-destructive text-red-500 px-6 py-3 flex items-center gap-4 ">
         <div class="max-w-5xl mx-auto flex sm:items-center gap-2 flex-col sm:flex-row">
-
           <span class="text-sm">
             <span class="i-tabler-alert-triangle size-5 inline-block mb--1 mr-2" />
-            {t('subscriptions.usage-warning.message', { percent: getStorageSizeUsedPercent().toFixed(2) })}
+            {t('subscriptions.usage-warning.message', {
+              percent: getStorageSizeUsedPercent().toFixed(2),
+            })}
           </span>
 
           <UpgradeDialog organizationId={getOrganizationId()}>
-            {triggerProps => (
-              <Button
-                variant="outline"
-                size="sm"
-                class="flex-shrink-0"
-                {...triggerProps}
-              >
+            {(triggerProps) => (
+              <Button variant="outline" size="sm" class="flex-shrink-0" {...triggerProps}>
                 {t('subscriptions.usage-warning.upgrade-button')}
               </Button>
             )}
           </UpgradeDialog>
-
         </div>
 
         <Button

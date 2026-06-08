@@ -1,5 +1,9 @@
 import { describe, expect, test } from 'vitest';
-import { coerceStripeTimestampToDate, doesSubscriptionBlockDeletion, isSignatureHeaderFormatValid } from './subscriptions.models';
+import {
+  coerceStripeTimestampToDate,
+  doesSubscriptionBlockDeletion,
+  isSignatureHeaderFormatValid,
+} from './subscriptions.models';
 
 describe('subscriptions models', () => {
   describe('coerceStripeTimestampToDate', () => {
@@ -153,7 +157,6 @@ describe('subscriptions models', () => {
           cancelAtPeriodEnd: true, // User canceled via customer portal, will end at period end
           createdAt: new Date('2025-10-01'),
           updatedAt: new Date('2025-10-01'),
-
         };
 
         expect(doesSubscriptionBlockDeletion(subscription)).toBe(false);

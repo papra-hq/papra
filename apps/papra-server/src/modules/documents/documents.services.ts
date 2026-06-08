@@ -19,11 +19,18 @@ export async function extractDocumentText({
   logger?: Logger;
 }) {
   const startTime = Date.now();
-  const { textContent, error, extractorName, extractorType } = await extractTextFromFile({ file, config: { tesseract: { languages: ocrLanguages } }, logger });
+  const { textContent, error, extractorName, extractorType } = await extractTextFromFile({
+    file,
+    config: { tesseract: { languages: ocrLanguages } },
+    logger,
+  });
   const durationMs = Date.now() - startTime;
 
   if (error) {
-    logger.error({ error, extractorName, extractorType, durationMs }, 'Error while extracting text from document');
+    logger.error(
+      { error, extractorName, extractorType, durationMs },
+      'Error while extracting text from document',
+    );
   } else {
     logger.info({ extractorName, extractorType, durationMs }, 'Text extracted from document');
   }

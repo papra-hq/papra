@@ -1,8 +1,17 @@
 import type { Component } from 'solid-js';
-import type { OrganizationInvitation, OrganizationInvitationStatus, OrganizationMemberRole } from '../organizations.types';
+import type {
+  OrganizationInvitation,
+  OrganizationInvitationStatus,
+  OrganizationMemberRole,
+} from '../organizations.types';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+} from '@tanstack/solid-table';
 import { For, Match, onMount, Show, Switch } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -12,7 +21,14 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { useCurrentUserRole } from '../organizations.composables';
 import { ORGANIZATION_INVITATION_STATUS } from '../organizations.constants';
 import { fetchOrganizationInvitations } from '../organizations.services';
@@ -21,13 +37,16 @@ const InvitationStatusBadge: Component<{ status: OrganizationInvitationStatus }>
   const { t } = useI18n();
 
   const getStatus = () => t(`organizations.invitations.status.${props.status}`);
-  const getVariant = () => ({
-    [ORGANIZATION_INVITATION_STATUS.PENDING]: 'default',
-    [ORGANIZATION_INVITATION_STATUS.ACCEPTED]: 'default',
-    [ORGANIZATION_INVITATION_STATUS.REJECTED]: 'destructive',
-    [ORGANIZATION_INVITATION_STATUS.EXPIRED]: 'destructive',
-    [ORGANIZATION_INVITATION_STATUS.CANCELLED]: 'destructive',
-  } as const)[props.status] ?? 'default';
+  const getVariant = () =>
+    (
+      ({
+        [ORGANIZATION_INVITATION_STATUS.PENDING]: 'default',
+        [ORGANIZATION_INVITATION_STATUS.ACCEPTED]: 'default',
+        [ORGANIZATION_INVITATION_STATUS.REJECTED]: 'destructive',
+        [ORGANIZATION_INVITATION_STATUS.EXPIRED]: 'destructive',
+        [ORGANIZATION_INVITATION_STATUS.CANCELLED]: 'destructive',
+      }) as const
+    )[props.status] ?? 'default';
 
   return <Badge variant={getVariant()}>{getStatus()}</Badge>;
 };
@@ -39,14 +58,18 @@ const InvitationActions: Component<{ invitation: OrganizationInvitation }> = (pr
   const cancelMutation = useMutation(() => ({
     mutationFn: (invitationId: string) => cancelInvitation({ invitationId }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', props.invitation.organizationId, 'invitations'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.invitation.organizationId, 'invitations'],
+      });
     },
   }));
 
   const resendMutation = useMutation(() => ({
     mutationFn: (invitationId: string) => resendInvitation({ invitationId }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', props.invitation.organizationId, 'invitations'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.invitation.organizationId, 'invitations'],
+      });
     },
   }));
 
@@ -104,11 +127,14 @@ const InvitationActions: Component<{ invitation: OrganizationInvitation }> = (pr
         </Button>
       </Match>
 
-      <Match when={([
-        ORGANIZATION_INVITATION_STATUS.REJECTED,
-        ORGANIZATION_INVITATION_STATUS.EXPIRED,
-        ORGANIZATION_INVITATION_STATUS.CANCELLED,
-      ] as OrganizationInvitationStatus[]).includes(props.invitation.status)}
+      <Match
+        when={(
+          [
+            ORGANIZATION_INVITATION_STATUS.REJECTED,
+            ORGANIZATION_INVITATION_STATUS.EXPIRED,
+            ORGANIZATION_INVITATION_STATUS.CANCELLED,
+          ] as OrganizationInvitationStatus[]
+        ).includes(props.invitation.status)}
       >
         <Button
           size="sm"
@@ -120,7 +146,6 @@ const InvitationActions: Component<{ invitation: OrganizationInvitation }> = (pr
           {t('organizations.invitations.resend')}
         </Button>
       </Match>
-
     </Switch>
   );
 };
@@ -135,25 +160,36 @@ const InvitationsList: Component = () => {
 
   const table = createSolidTable({
     get data() {
-      return query.data?.invitations.filter(invitation => !([ORGANIZATION_INVITATION_STATUS.ACCEPTED] as OrganizationInvitationStatus[]).includes(invitation.status)) ?? [];
+      return (
+        query.data?.invitations.filter(
+          (invitation) =>
+            !([ORGANIZATION_INVITATION_STATUS.ACCEPTED] as OrganizationInvitationStatus[]).includes(
+              invitation.status,
+            ),
+        ) ?? []
+      );
     },
     columns: [
       { header: t('organizations.members.table.headers.email'), accessorKey: 'email' },
-      { header: t('organizations.members.table.headers.role'), accessorKey: 'role', cell: data => t(`organizations.members.roles.${data.getValue<OrganizationMemberRole>()}`) },
+      {
+        header: t('organizations.members.table.headers.role'),
+        accessorKey: 'role',
+        cell: (data) => t(`organizations.members.roles.${data.getValue<OrganizationMemberRole>()}`),
+      },
       {
         header: t('invitations.list.headers.status'),
         accessorKey: 'status',
-        cell: data => <InvitationStatusBadge status={data.getValue()} />,
+        cell: (data) => <InvitationStatusBadge status={data.getValue()} />,
       },
       {
         header: t('organizations.members.table.headers.created'),
         accessorKey: 'createdAt',
-        cell: data => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
+        cell: (data) => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
       },
       {
         header: '',
         id: 'actions',
-        cell: data => (
+        cell: (data) => (
           <div class="flex items-center justify-end">
             <InvitationActions invitation={data.row.original} />
           </div>
@@ -166,18 +202,21 @@ const InvitationsList: Component = () => {
 
   return (
     <div>
-
       <Show when={query.data?.invitations.length === 0}>
         <EmptyState
           title={t('organizations.invitations.list.empty.title')}
           description={t('organizations.invitations.list.empty.description')}
           icon="i-tabler-mail"
-          cta={(
-            <Button as={A} href={`/organizations/${params.organizationId}/invite`} variant="outline">
+          cta={
+            <Button
+              as={A}
+              href={`/organizations/${params.organizationId}/invite`}
+              variant="outline"
+            >
               <div class="i-tabler-plus size-4 mr-2" />
               {t('organizations.invitations.list.cta')}
             </Button>
-          )}
+          }
         />
       </Show>
 
@@ -185,19 +224,29 @@ const InvitationsList: Component = () => {
         <Table>
           <TableHeader>
             <For each={table.getHeaderGroups()}>
-              {headerGroup => (
+              {(headerGroup) => (
                 <TableRow>
-                  <For each={headerGroup.headers}>{header => <TableHead>{flexRender(header.column.columnDef.header, header.getContext())}</TableHead>}</For>
+                  <For each={headerGroup.headers}>
+                    {(header) => (
+                      <TableHead>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    )}
+                  </For>
                 </TableRow>
               )}
             </For>
           </TableHeader>
           <TableBody>
             <For each={table.getRowModel().rows}>
-              {row => (
+              {(row) => (
                 <TableRow>
                   <For each={row.getVisibleCells()}>
-                    {cell => <TableCell>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>}
+                    {(cell) => (
+                      <TableCell>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )}
                   </For>
                 </TableRow>
               )}
@@ -224,19 +273,19 @@ export const InvitationsListPage: Component = () => {
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4 ">
       <div class="border-b mb-6 pb-4">
-
         <div>
-          <Button as={A} href={`/organizations/${params.organizationId}/members`} variant="ghost" class="ml--4 text-muted-foreground">
+          <Button
+            as={A}
+            href={`/organizations/${params.organizationId}/members`}
+            variant="ghost"
+            class="ml--4 text-muted-foreground"
+          >
             <div class="i-tabler-arrow-left size-4 mr-2" />
             {t('organizations.members.title')}
           </Button>
         </div>
-        <h1 class="text-xl font-bold">
-          {t('organizations.invitations.title')}
-        </h1>
-        <p class="text-sm text-muted-foreground">
-          {t('organizations.invitations.description')}
-        </p>
+        <h1 class="text-xl font-bold">{t('organizations.invitations.title')}</h1>
+        <p class="text-sm text-muted-foreground">{t('organizations.invitations.description')}</p>
       </div>
 
       <InvitationsList />

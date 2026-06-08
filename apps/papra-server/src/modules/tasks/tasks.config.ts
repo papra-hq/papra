@@ -10,7 +10,7 @@ const RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV = 'RUN_SCHEDULED_TASKS_ON_STARTUP_D
 export const tasksConfig = {
   persistence: {
     driverName: {
-      doc: `The driver to use for the tasks persistence, values can be one of: ${tasksDriverNames.map(x => `\`${x}\``).join(', ')}. Using the memory driver is enough when running a single instance of the server.`,
+      doc: `The driver to use for the tasks persistence, values can be one of: ${tasksDriverNames.map((x) => `\`${x}\``).join(', ')}. Using the memory driver is enough when running a single instance of the server.`,
       schema: v.picklist(tasksDriverNames),
       default: 'memory',
       env: 'TASKS_PERSISTENCE_DRIVER',
@@ -62,7 +62,10 @@ export const tasksConfig = {
       doc: 'Whether the task to hard delete expired "soft deleted" documents should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: ['DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+      env: [
+        'DOCUMENTS_HARD_DELETE_EXPIRED_DOCUMENTS_RUN_ON_STARTUP',
+        RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV,
+      ],
     },
   },
   expireInvitations: {
@@ -76,7 +79,10 @@ export const tasksConfig = {
       doc: 'Whether the task to expire invitations should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: ['ORGANIZATIONS_EXPIRE_INVITATIONS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+      env: [
+        'ORGANIZATIONS_EXPIRE_INVITATIONS_RUN_ON_STARTUP',
+        RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV,
+      ],
     },
   },
   purgeExpiredOrganizations: {
@@ -90,7 +96,10 @@ export const tasksConfig = {
       doc: 'Whether the task to purge expired soft-deleted organizations should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: ['ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+      env: [
+        'ORGANIZATIONS_PURGE_EXPIRED_ORGANIZATIONS_RUN_ON_STARTUP',
+        RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV,
+      ],
     },
   },
   purgeExpiredKvEntries: {
@@ -104,7 +113,10 @@ export const tasksConfig = {
       doc: 'Whether the task to purge expired key-value store entries should run on startup',
       schema: booleanishSchema,
       default: true,
-      env: ['KV_STORE_PURGE_EXPIRED_ENTRIES_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+      env: [
+        'KV_STORE_PURGE_EXPIRED_ENTRIES_RUN_ON_STARTUP',
+        RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV,
+      ],
     },
   },
 } as const satisfies ConfigDefinition;

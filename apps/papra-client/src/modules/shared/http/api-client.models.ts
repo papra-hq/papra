@@ -9,7 +9,9 @@ export function shouldRefreshAuthTokens({ error }: { error: FetchError | unknown
   return getErrorStatus(error) === 401;
 }
 
-export function buildAuthHeader({ accessToken }: { accessToken?: string | null | undefined } = {}): Record<string, string> {
+export function buildAuthHeader({
+  accessToken,
+}: { accessToken?: string | null | undefined } = {}): Record<string, string> {
   if (!accessToken) {
     return {};
   }

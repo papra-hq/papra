@@ -10,7 +10,9 @@ import { isNil } from '../../shared/utils';
 import { createUnauthorizedError } from './auth.errors';
 import { isAuthenticationValid } from './auth.models';
 
-export function requireAuthentication({ apiKeyPermissions }: { apiKeyPermissions?: ApiKeyPermissions[] } = {}) {
+export function requireAuthentication({
+  apiKeyPermissions,
+}: { apiKeyPermissions?: ApiKeyPermissions[] } = {}) {
   return createMiddleware(async (context: Context, next) => {
     const isAuthenticated = isAuthenticationValid({
       authType: context.get('authType'),
@@ -30,7 +32,13 @@ export function requireAuthentication({ apiKeyPermissions }: { apiKeyPermissions
 /**
  * Middleware to require specific permissions for the authenticated user.
  */
-export function createRoleMiddleware({ db, permissionsByRole = PERMISSIONS_BY_ROLE }: { db: Database; permissionsByRole?: Record<Role, Readonly<Permission[]>> }) {
+export function createRoleMiddleware({
+  db,
+  permissionsByRole = PERMISSIONS_BY_ROLE,
+}: {
+  db: Database;
+  permissionsByRole?: Record<Role, Readonly<Permission[]>>;
+}) {
   const rolesRepository = createRolesRepository({ db });
 
   return {
@@ -46,7 +54,9 @@ export function createRoleMiddleware({ db, permissionsByRole = PERMISSIONS_BY_RO
 
         const { permissions } = getPermissionsForRoles({ roles, permissionsByRole });
 
-        const hasAllPermissions = requiredPermissions.every(permission => permissions.includes(permission));
+        const hasAllPermissions = requiredPermissions.every((permission) =>
+          permissions.includes(permission),
+        );
 
         if (!hasAllPermissions) {
           throw createUnauthorizedError();

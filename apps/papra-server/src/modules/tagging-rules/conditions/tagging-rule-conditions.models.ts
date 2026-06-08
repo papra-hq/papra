@@ -1,8 +1,14 @@
-import type { TaggingRuleConditionDefinition, TaggingRuleConditionDefinitionValidator, TaggingRuleConditionDefinitionValidatorArguments } from './tagging-rule-conditions.types';
+import type {
+  TaggingRuleConditionDefinition,
+  TaggingRuleConditionDefinitionValidator,
+  TaggingRuleConditionDefinitionValidatorArguments,
+} from './tagging-rule-conditions.types';
 import { TAGGING_RULE_OPERATORS } from '../tagging-rules.constants';
 import { defineTaggingRuleCondition } from './tagging-rule-conditions.registry.models';
 
-function negateValidator({ validate }: TaggingRuleConditionDefinition): TaggingRuleConditionDefinitionValidator {
+function negateValidator({
+  validate,
+}: TaggingRuleConditionDefinition): TaggingRuleConditionDefinitionValidator {
   return (args: TaggingRuleConditionDefinitionValidatorArguments) => !validate(args);
 }
 

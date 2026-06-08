@@ -63,7 +63,15 @@ async function getUserById({ userId, db }: { userId: string; db: Database }) {
   return { user };
 }
 
-async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFoundError }: { userId: string; db: Database; errorFactory?: () => Error }) {
+async function getUserByIdOrThrow({
+  userId,
+  db,
+  errorFactory = createUsersNotFoundError,
+}: {
+  userId: string;
+  db: Database;
+  errorFactory?: () => Error;
+}) {
   const { user } = await getUserById({ userId, db });
 
   if (!user) {
@@ -74,7 +82,11 @@ async function getUserByIdOrThrow({ userId, db, errorFactory = createUsersNotFou
 }
 
 async function updateUser({ userId, name, db }: { userId: string; name: string; db: Database }) {
-  const [user] = await db.update(usersTable).set({ name }).where(eq(usersTable.id, userId)).returning();
+  const [user] = await db
+    .update(usersTable)
+    .set({ name })
+    .where(eq(usersTable.id, userId))
+    .returning();
 
   return { user };
 }
@@ -110,10 +122,7 @@ async function listUsers({
       organizationCount: count(organizationMembersTable.id),
     })
     .from(usersTable)
-    .leftJoin(
-      organizationMembersTable,
-      eq(usersTable.id, organizationMembersTable.userId),
-    )
+    .leftJoin(organizationMembersTable, eq(usersTable.id, organizationMembersTable.userId))
     .where(searchWhereClause)
     .groupBy(usersTable.id)
     .$dynamic();

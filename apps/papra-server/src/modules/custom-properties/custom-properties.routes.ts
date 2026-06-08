@@ -13,7 +13,14 @@ import { validateJsonBody, validateParams } from '../shared/validation/validatio
 import { aggregateDocumentCustomPropertyValues } from './custom-properties.models';
 import { createCustomPropertiesRepository } from './custom-properties.repository';
 import { customPropertyDefinitionIdSchema } from './custom-properties.schemas';
-import { createPropertyDefinition, deleteDocumentCustomPropertyValue, deletePropertyDefinition, ensurePropertyDefinitionExists, setDocumentCustomPropertyValue, updatePropertyDefinition } from './custom-properties.usecases';
+import {
+  createPropertyDefinition,
+  deleteDocumentCustomPropertyValue,
+  deletePropertyDefinition,
+  ensurePropertyDefinitionExists,
+  setDocumentCustomPropertyValue,
+  updatePropertyDefinition,
+} from './custom-properties.usecases';
 import { createPropertyDefinitionBodySchema } from './definitions/custom-property-definition.registry';
 import { createCustomPropertiesOptionsRepository } from './options/custom-properties-options.repository';
 
@@ -33,9 +40,11 @@ function setupCreatePropertyDefinitionRoute({ app, db, config }: RouteDefinition
   app.post(
     '/api/organizations/:organizationId/custom-properties',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.CREATE] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateJsonBody(createPropertyDefinitionBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
@@ -65,9 +74,11 @@ function setupGetOrganizationPropertyDefinitionsRoute({ app, db }: RouteDefiniti
   app.get(
     '/api/organizations/:organizationId/custom-properties',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -77,7 +88,8 @@ function setupGetOrganizationPropertyDefinitionsRoute({ app, db }: RouteDefiniti
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { propertyDefinitions } = await customPropertiesRepository.getOrganizationPropertyDefinitions({ organizationId });
+      const { propertyDefinitions } =
+        await customPropertiesRepository.getOrganizationPropertyDefinitions({ organizationId });
 
       return context.json({ propertyDefinitions });
     },
@@ -88,10 +100,12 @@ function setupGetPropertyDefinitionRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      propertyDefinitionId: customPropertyDefinitionIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        propertyDefinitionId: customPropertyDefinitionIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, propertyDefinitionId } = context.req.valid('param');
@@ -116,10 +130,12 @@ function setupUpdatePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
   app.put(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.UPDATE] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      propertyDefinitionId: customPropertyDefinitionIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        propertyDefinitionId: customPropertyDefinitionIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, propertyDefinitionId } = context.req.valid('param');
@@ -148,10 +164,12 @@ function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
   app.delete(
     '/api/organizations/:organizationId/custom-properties/:propertyDefinitionId',
     requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.DELETE] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      propertyDefinitionId: customPropertyDefinitionIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        propertyDefinitionId: customPropertyDefinitionIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, propertyDefinitionId } = context.req.valid('param');
@@ -175,15 +193,24 @@ function setupDeletePropertyDefinitionRoute({ app, db }: RouteDefinitionContext)
 function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-      propertyDefinitionId: customPropertyDefinitionIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      value: v.unknown(), // validation happens per-type in the use case
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [
+        API_KEY_PERMISSIONS.DOCUMENTS.UPDATE,
+        API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ,
+      ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+        propertyDefinitionId: customPropertyDefinitionIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        value: v.unknown(), // validation happens per-type in the use case
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId, propertyDefinitionId } = context.req.valid('param');
@@ -196,7 +223,10 @@ function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionCo
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
+      const { document } = await documentsRepository.getDocumentById({
+        documentId,
+        organizationId,
+      });
 
       if (!document) {
         throw createDocumentNotFoundError();
@@ -221,12 +251,19 @@ function setupSetDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionCo
 function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties/:propertyDefinitionId',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-      propertyDefinitionId: customPropertyDefinitionIdSchema,
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [
+        API_KEY_PERMISSIONS.DOCUMENTS.UPDATE,
+        API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ,
+      ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+        propertyDefinitionId: customPropertyDefinitionIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId, propertyDefinitionId } = context.req.valid('param');
@@ -237,7 +274,10 @@ function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitio
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
+      const { document } = await documentsRepository.getDocumentById({
+        documentId,
+        organizationId,
+      });
 
       if (!document) {
         throw createDocumentNotFoundError();
@@ -258,11 +298,18 @@ function setupDeleteDocumentCustomPropertyValueRoute({ app, db }: RouteDefinitio
 function setupGetDocumentCustomPropertyValuesRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/custom-properties',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.READ, API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [
+        API_KEY_PERMISSIONS.DOCUMENTS.READ,
+        API_KEY_PERMISSIONS.CUSTOM_PROPERTIES.READ,
+      ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
@@ -273,13 +320,18 @@ function setupGetDocumentCustomPropertyValuesRoute({ app, db }: RouteDefinitionC
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
+      const { document } = await documentsRepository.getDocumentById({
+        documentId,
+        organizationId,
+      });
 
       if (!document) {
         throw createDocumentNotFoundError();
       }
 
-      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({ documentId });
+      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({
+        documentId,
+      });
 
       const customProperties = aggregateDocumentCustomPropertyValues({ rawValues: values });
 

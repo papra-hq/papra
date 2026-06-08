@@ -11,12 +11,18 @@ const migrationsDirectory = path.join(currentDirectory, '..', 'migrations', 'lis
 const KEBAB_CASE_REGEX = /^[a-z]+(?:-[a-z0-9]+)*$/;
 
 function kebabToCamelCase(str: string) {
-  return str.split('-').map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
+  return str
+    .split('-')
+    .map((word, index) => (index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join('');
 }
 
 async function getLastMigrationFilePrefixNumber() {
   const migrations = await fs.readdir(migrationsDirectory);
-  const lastMigrationFileName = migrations.filter(file => file.endsWith('.migration.ts')).toSorted().pop();
+  const lastMigrationFileName = migrations
+    .filter((file) => file.endsWith('.migration.ts'))
+    .toSorted()
+    .pop();
 
   if (lastMigrationFileName === undefined) {
     return 0;
@@ -26,33 +32,35 @@ async function getLastMigrationFilePrefixNumber() {
   return lastMigrationNumber === undefined ? 0 : Number.parseInt(lastMigrationNumber);
 }
 
-await runScript(
-  { scriptName: 'create-migration' },
-  async ({ logger }) => {
-    const rawMigrationName = process.argv[2];
+await runScript({ scriptName: 'create-migration' }, async ({ logger }) => {
+  const rawMigrationName = process.argv[2];
 
-    if (rawMigrationName === undefined || rawMigrationName === '') {
-      logger.error('Migration name is required, example: pnpm migrate:create <migration-name>');
-      process.exit(1);
-    }
+  if (rawMigrationName === undefined || rawMigrationName === '') {
+    logger.error('Migration name is required, example: pnpm migrate:create <migration-name>');
+    process.exit(1);
+  }
 
-    const migrationName = rawMigrationName.trim();
+  const migrationName = rawMigrationName.trim();
 
-    if (!KEBAB_CASE_REGEX.test(migrationName)) {
-      logger.error('Migration name should be in kebab-case, example: pnpm migrate:create add-users-table');
-      process.exit(1);
-    }
+  if (!KEBAB_CASE_REGEX.test(migrationName)) {
+    logger.error(
+      'Migration name should be in kebab-case, example: pnpm migrate:create add-users-table',
+    );
+    process.exit(1);
+  }
 
-    const lastMigrationPrefixNumber = await getLastMigrationFilePrefixNumber();
-    const prefixNumber = (lastMigrationPrefixNumber + 1).toString().padStart(4, '0');
+  const lastMigrationPrefixNumber = await getLastMigrationFilePrefixNumber();
+  const prefixNumber = (lastMigrationPrefixNumber + 1).toString().padStart(4, '0');
 
-    const fileNameWithoutExtension = `${prefixNumber}-${migrationName}.migration`;
-    const fileName = `${fileNameWithoutExtension}.ts`;
+  const fileNameWithoutExtension = `${prefixNumber}-${migrationName}.migration`;
+  const fileName = `${fileNameWithoutExtension}.ts`;
 
-    const migrationPath = path.join(migrationsDirectory, fileName);
-    const migrationObjectIdentifier = `${kebabToCamelCase(migrationName)}Migration`;
+  const migrationPath = path.join(migrationsDirectory, fileName);
+  const migrationObjectIdentifier = `${kebabToCamelCase(migrationName)}Migration`;
 
-    await fs.writeFile(migrationPath, `
+  await fs.writeFile(
+    migrationPath,
+    `
 import type { Migration } from '../migrations.types';
 import { sql } from 'drizzle-orm';
 
@@ -70,20 +78,20 @@ export const ${migrationObjectIdentifier} = {
       db.run(sql\`SELECT 1\`),
     ]);
   },
-} satisfies Migration;`.trim());
+} satisfies Migration;`.trim(),
+  );
 
-    logger.info(`Migration ${fileName} created`);
+  logger.info(`Migration ${fileName} created`);
 
-    const registry = await loadFile(path.join(migrationsDirectory, '..', 'migrations.registry.ts'));
+  const registry = await loadFile(path.join(migrationsDirectory, '..', 'migrations.registry.ts'));
 
-    registry.imports.$append({
-      imported: migrationObjectIdentifier,
-      from: `./list/${fileNameWithoutExtension}`,
-    });
+  registry.imports.$append({
+    imported: migrationObjectIdentifier,
+    from: `./list/${fileNameWithoutExtension}`,
+  });
 
-    // eslint-disable-next-line ts/no-unsafe-call, ts/no-unsafe-member-access
-    registry.exports.migrations.push(builders.raw(migrationObjectIdentifier));
+  // eslint-disable-next-line ts/no-unsafe-call, ts/no-unsafe-member-access
+  registry.exports.migrations.push(builders.raw(migrationObjectIdentifier));
 
-    await writeFile(registry, path.join(migrationsDirectory, '..', 'migrations.registry.ts'));
-  },
-);
+  await writeFile(registry, path.join(migrationsDirectory, '..', 'migrations.registry.ts'));
+});

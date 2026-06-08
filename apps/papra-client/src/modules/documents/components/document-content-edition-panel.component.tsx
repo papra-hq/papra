@@ -22,11 +22,12 @@ export const DocumentContentEditionPanel: Component<{
   const [getContent, setContent] = createSignal(props.content);
 
   const updateMutation = useMutation(() => ({
-    mutationFn: ({ content }: { content: string }) => updateDocument({
-      documentId: props.documentId,
-      organizationId: props.organizationId,
-      content,
-    }),
+    mutationFn: ({ content }: { content: string }) =>
+      updateDocument({
+        documentId: props.documentId,
+        organizationId: props.organizationId,
+        content,
+      }),
     onSuccess: () => {
       createToast({ type: 'success', message: 'Document content updated' });
       setIsEditing(false);
@@ -57,8 +58,10 @@ export const DocumentContentEditionPanel: Component<{
       <TextFieldRoot>
         <TextArea
           value={getContent()}
-          onInput={e => setContent(e.currentTarget.value)}
-          class={cn('font-mono placeholder:italic max-h-500px', { 'bg-muted text-muted-foreground': !isEditing() })}
+          onInput={(e) => setContent(e.currentTarget.value)}
+          class={cn('font-mono placeholder:italic max-h-500px', {
+            'bg-muted text-muted-foreground': !isEditing(),
+          })}
           readonly={!isEditing()}
           placeholder={t('documents.content.empty-placeholder')}
           rows={2}
@@ -68,12 +71,12 @@ export const DocumentContentEditionPanel: Component<{
       <div class="flex justify-end gap-2">
         <Show
           when={isEditing()}
-          fallback={(
+          fallback={
             <Button variant="outline" onClick={handleEdit}>
               <div class="i-tabler-edit size-4 mr-2" />
               {t('documents.actions.edit')}
             </Button>
-          )}
+          }
         >
           <Button variant="outline" onClick={handleCancel} disabled={updateMutation.isPending}>
             {t('documents.actions.cancel')}
@@ -86,9 +89,7 @@ export const DocumentContentEditionPanel: Component<{
 
       <Alert variant="muted" class="my-4 flex items-center gap-2">
         <div class="i-tabler-info-circle size-8 flex-shrink-0" />
-        <AlertDescription>
-          {t('documents.content.alert')}
-        </AlertDescription>
+        <AlertDescription>{t('documents.content.alert')}</AlertDescription>
       </Alert>
     </div>
   );

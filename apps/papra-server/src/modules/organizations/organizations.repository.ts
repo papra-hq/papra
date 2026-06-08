@@ -1,5 +1,9 @@
 import type { Database } from '../app/database/database.types';
-import type { DbInsertableOrganization, OrganizationInvitationStatus, OrganizationRole } from './organizations.types';
+import type {
+  DbInsertableOrganization,
+  OrganizationInvitationStatus,
+  OrganizationRole,
+} from './organizations.types';
 import { injectArguments } from '@corentinth/chisels';
 import { and, count, desc, eq, getTableColumns, gte, isNotNull, isNull, lte } from 'drizzle-orm';
 import { addDays, startOfDay } from '../shared/date';
@@ -8,8 +12,15 @@ import { omitUndefined } from '../shared/objects';
 import { usersTable } from '../users/users.table';
 import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationNotFoundError } from './organizations.errors';
-import { createSearchOrganizationWhereClause, ensureInvitationStatus } from './organizations.repository.models';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
+import {
+  createSearchOrganizationWhereClause,
+  ensureInvitationStatus,
+} from './organizations.repository.models';
+import {
+  organizationInvitationsTable,
+  organizationMembersTable,
+  organizationsTable,
+} from './organizations.table';
 
 export type OrganizationsRepository = ReturnType<typeof createOrganizationsRepository>;
 
@@ -57,8 +68,17 @@ export function createOrganizationsRepository({ db }: { db: Database }) {
   );
 }
 
-async function saveOrganization({ organization: organizationToInsert, db }: { organization: DbInsertableOrganization; db: Database }) {
-  const [organization] = await db.insert(organizationsTable).values(organizationToInsert).returning();
+async function saveOrganization({
+  organization: organizationToInsert,
+  db,
+}: {
+  organization: DbInsertableOrganization;
+  db: Database;
+}) {
+  const [organization] = await db
+    .insert(organizationsTable)
+    .values(organizationToInsert)
+    .returning();
 
   if (!organization) {
     // This should never happen, as the database should always return the inserted organization
@@ -75,36 +95,64 @@ async function getUserOrganizations({ userId, db }: { userId: string; db: Databa
       organization: getTableColumns(organizationsTable),
     })
     .from(organizationsTable)
-    .leftJoin(organizationMembersTable, eq(organizationsTable.id, organizationMembersTable.organizationId))
-    .where(and(
-      eq(organizationMembersTable.userId, userId),
-      isNull(organizationsTable.deletedAt),
-    ));
+    .leftJoin(
+      organizationMembersTable,
+      eq(organizationsTable.id, organizationMembersTable.organizationId),
+    )
+    .where(and(eq(organizationMembersTable.userId, userId), isNull(organizationsTable.deletedAt)));
 
   return {
     organizations: organizations.map(({ organization }) => organization),
   };
 }
 
-async function addUserToOrganization({ userId, organizationId, role, db }: { userId: string; organizationId: string; role: OrganizationRole; db: Database }) {
+async function addUserToOrganization({
+  userId,
+  organizationId,
+  role,
+  db,
+}: {
+  userId: string;
+  organizationId: string;
+  role: OrganizationRole;
+  db: Database;
+}) {
   await db.insert(organizationMembersTable).values({ userId, organizationId, role });
 }
 
-async function isUserInOrganization({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
+async function isUserInOrganization({
+  userId,
+  organizationId,
+  db,
+}: {
+  userId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const organizationUser = await db
     .select()
     .from(organizationMembersTable)
-    .where(and(
-      eq(organizationMembersTable.userId, userId),
-      eq(organizationMembersTable.organizationId, organizationId),
-    ));
+    .where(
+      and(
+        eq(organizationMembersTable.userId, userId),
+        eq(organizationMembersTable.organizationId, organizationId),
+      ),
+    );
 
   return {
     isInOrganization: organizationUser.length > 0,
   };
 }
 
-async function updateOrganization({ organizationId, organization: organizationToUpdate, db }: { organizationId: string; organization: { name?: string; customerId?: string }; db: Database }) {
+async function updateOrganization({
+  organizationId,
+  organization: organizationToUpdate,
+  db,
+}: {
+  organizationId: string;
+  organization: { name?: string; customerId?: string };
+  db: Database;
+}) {
   const [organization] = await db
     .update(organizationsTable)
     .set(omitUndefined(organizationToUpdate))
@@ -114,7 +162,13 @@ async function updateOrganization({ organizationId, organization: organizationTo
   return { organization };
 }
 
-async function deleteOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+async function deleteOrganization({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   await db.delete(organizationsTable).where(eq(organizationsTable.id, organizationId));
 }
 
@@ -125,7 +179,13 @@ async function clearUserDeletedByReferences({ userId, db }: { userId: string; db
     .where(eq(organizationsTable.deletedBy, userId));
 }
 
-async function getOrganizationById({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationById({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [organization] = await db
     .select()
     .from(organizationsTable)
@@ -160,7 +220,13 @@ async function getUserOwnedOrganizationCount({ userId, db }: { userId: string; d
   };
 }
 
-async function getOrganizationOwner({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationOwner({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({
       organizationOwner: getTableColumns(usersTable),
@@ -183,15 +249,19 @@ async function getOrganizationOwner({ organizationId, db }: { organizationId: st
   return { organizationOwner };
 }
 
-async function getOrganizationMembersCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationMembersCount({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({
       membersCount: count(organizationMembersTable.id),
     })
     .from(organizationMembersTable)
-    .where(
-      eq(organizationMembersTable.organizationId, organizationId),
-    );
+    .where(eq(organizationMembersTable.organizationId, organizationId));
 
   if (!record) {
     throw createOrganizationNotFoundError();
@@ -212,14 +282,18 @@ async function getAllOrganizationIds({ db }: { db: Database }) {
   };
 }
 
-async function getOrganizationMembers({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationMembers({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const members = await db
     .select()
     .from(organizationMembersTable)
     .leftJoin(usersTable, eq(organizationMembersTable.userId, usersTable.id))
-    .where(
-      eq(organizationMembersTable.organizationId, organizationId),
-    );
+    .where(eq(organizationMembersTable.organizationId, organizationId));
 
   return {
     members: members.map(({ organization_members, users }) => ({
@@ -229,7 +303,15 @@ async function getOrganizationMembers({ organizationId, db }: { organizationId: 
   };
 }
 
-async function removeUserFromOrganization({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
+async function removeUserFromOrganization({
+  userId,
+  organizationId,
+  db,
+}: {
+  userId: string;
+  organizationId: string;
+  db: Database;
+}) {
   await db
     .delete(organizationMembersTable)
     .where(
@@ -240,19 +322,33 @@ async function removeUserFromOrganization({ userId, organizationId, db }: { user
     );
 }
 
-async function updateOrganizationMemberRole({ memberId, role, db }: { memberId: string; role: OrganizationRole; db: Database }) {
+async function updateOrganizationMemberRole({
+  memberId,
+  role,
+  db,
+}: {
+  memberId: string;
+  role: OrganizationRole;
+  db: Database;
+}) {
   const [updatedMember] = await db
     .update(organizationMembersTable)
     .set({ role })
-    .where(
-      eq(organizationMembersTable.id, memberId),
-    )
+    .where(eq(organizationMembersTable.id, memberId))
     .returning();
 
   return { member: updatedMember };
 }
 
-async function getOrganizationMemberByUserId({ userId, organizationId, db }: { userId: string; organizationId: string; db: Database }) {
+async function getOrganizationMemberByUserId({
+  userId,
+  organizationId,
+  db,
+}: {
+  userId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [member] = await db
     .select()
     .from(organizationMembersTable)
@@ -266,7 +362,15 @@ async function getOrganizationMemberByUserId({ userId, organizationId, db }: { u
   return { member };
 }
 
-async function getOrganizationMemberByMemberId({ memberId, organizationId, db }: { memberId: string; organizationId: string; db: Database }) {
+async function getOrganizationMemberByMemberId({
+  memberId,
+  organizationId,
+  db,
+}: {
+  memberId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [member] = await db
     .select()
     .from(organizationMembersTable)
@@ -312,7 +416,15 @@ async function saveOrganizationInvitation({
   return { organizationInvitation };
 }
 
-async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { userId: string; db: Database; now?: Date }) {
+async function getTodayUserInvitationCount({
+  userId,
+  db,
+  now = new Date(),
+}: {
+  userId: string;
+  db: Database;
+  now?: Date;
+}) {
   const [record] = await db
     .select({
       userInvitationCount: count(organizationInvitationsTable.id),
@@ -336,11 +448,22 @@ async function getTodayUserInvitationCount({ userId, db, now = new Date() }: { u
   };
 }
 
-async function getPendingOrganizationInvitationsForEmail({ email, db, now = new Date() }: { email: string; db: Database; now?: Date }) {
+async function getPendingOrganizationInvitationsForEmail({
+  email,
+  db,
+  now = new Date(),
+}: {
+  email: string;
+  db: Database;
+  now?: Date;
+}) {
   const rawInvitations = await db
     .select()
     .from(organizationInvitationsTable)
-    .leftJoin(organizationsTable, eq(organizationInvitationsTable.organizationId, organizationsTable.id))
+    .leftJoin(
+      organizationsTable,
+      eq(organizationInvitationsTable.organizationId, organizationsTable.id),
+    )
     .where(
       and(
         eq(organizationInvitationsTable.email, email),
@@ -360,32 +483,56 @@ async function getPendingOrganizationInvitationsForEmail({ email, db, now = new 
   };
 }
 
-async function getOrganizationInvitationById({ invitationId, db, now = new Date() }: { invitationId: string; db: Database; now?: Date }) {
+async function getOrganizationInvitationById({
+  invitationId,
+  db,
+  now = new Date(),
+}: {
+  invitationId: string;
+  db: Database;
+  now?: Date;
+}) {
   const [invitation] = await db
     .select()
     .from(organizationInvitationsTable)
-    .where(
-      eq(organizationInvitationsTable.id, invitationId),
-    );
+    .where(eq(organizationInvitationsTable.id, invitationId));
 
   return {
     invitation: ensureInvitationStatus({ invitation, now }),
   };
 }
 
-async function updateOrganizationInvitation({ invitationId, status, expiresAt, db }: { invitationId: string; status: OrganizationInvitationStatus; expiresAt?: Date; db: Database }) {
+async function updateOrganizationInvitation({
+  invitationId,
+  status,
+  expiresAt,
+  db,
+}: {
+  invitationId: string;
+  status: OrganizationInvitationStatus;
+  expiresAt?: Date;
+  db: Database;
+}) {
   await db
     .update(organizationInvitationsTable)
-    .set(omitUndefined({
-      status,
-      expiresAt,
-    }))
-    .where(
-      eq(organizationInvitationsTable.id, invitationId),
-    );
+    .set(
+      omitUndefined({
+        status,
+        expiresAt,
+      }),
+    )
+    .where(eq(organizationInvitationsTable.id, invitationId));
 }
 
-async function getPendingInvitationsCount({ email, db, now = new Date() }: { email: string; db: Database; now?: Date }) {
+async function getPendingInvitationsCount({
+  email,
+  db,
+  now = new Date(),
+}: {
+  email: string;
+  db: Database;
+  now?: Date;
+}) {
   const [record] = await db
     .select({
       pendingInvitationsCount: count(organizationInvitationsTable.id),
@@ -411,7 +558,17 @@ async function getPendingInvitationsCount({ email, db, now = new Date() }: { ema
   };
 }
 
-async function getInvitationForEmailAndOrganization({ email, organizationId, db, now = new Date() }: { email: string; organizationId: string; db: Database; now?: Date }) {
+async function getInvitationForEmailAndOrganization({
+  email,
+  organizationId,
+  db,
+  now = new Date(),
+}: {
+  email: string;
+  organizationId: string;
+  db: Database;
+  now?: Date;
+}) {
   const [invitation] = await db
     .select()
     .from(organizationInvitationsTable)
@@ -427,16 +584,21 @@ async function getInvitationForEmailAndOrganization({ email, organizationId, db,
   };
 }
 
-async function getOrganizationMemberByEmail({ email, organizationId, db }: { email: string; organizationId: string; db: Database }) {
+async function getOrganizationMemberByEmail({
+  email,
+  organizationId,
+  db,
+}: {
+  email: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [rawMember] = await db
     .select()
     .from(organizationMembersTable)
     .leftJoin(usersTable, eq(organizationMembersTable.userId, usersTable.id))
     .where(
-      and(
-        eq(usersTable.email, email),
-        eq(organizationMembersTable.organizationId, organizationId),
-      ),
+      and(eq(usersTable.email, email), eq(organizationMembersTable.organizationId, organizationId)),
     );
 
   return {
@@ -444,16 +606,32 @@ async function getOrganizationMemberByEmail({ email, organizationId, db }: { ema
   };
 }
 
-async function getOrganizationInvitations({ organizationId, db, now = new Date() }: { organizationId: string; db: Database; now?: Date }) {
+async function getOrganizationInvitations({
+  organizationId,
+  db,
+  now = new Date(),
+}: {
+  organizationId: string;
+  db: Database;
+  now?: Date;
+}) {
   const invitations = await db
     .select()
     .from(organizationInvitationsTable)
     .where(eq(organizationInvitationsTable.organizationId, organizationId));
 
-  return { invitations: invitations.map(invitation => ensureInvitationStatus({ invitation, now })) };
+  return {
+    invitations: invitations.map((invitation) => ensureInvitationStatus({ invitation, now })),
+  };
 }
 
-async function updateExpiredPendingInvitationsStatus({ db, now = new Date() }: { db: Database; now?: Date }) {
+async function updateExpiredPendingInvitationsStatus({
+  db,
+  now = new Date(),
+}: {
+  db: Database;
+  now?: Date;
+}) {
   await db
     .update(organizationInvitationsTable)
     .set({ status: ORGANIZATION_INVITATION_STATUS.EXPIRED })
@@ -465,7 +643,13 @@ async function updateExpiredPendingInvitationsStatus({ db, now = new Date() }: {
     );
 }
 
-async function getOrganizationPendingInvitationsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationPendingInvitationsCount({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({
       pendingInvitationsCount: count(organizationInvitationsTable.id),
@@ -489,19 +673,43 @@ async function getOrganizationPendingInvitationsCount({ organizationId, db }: { 
   };
 }
 
-async function deleteAllMembersFromOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+async function deleteAllMembersFromOrganization({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   await db
     .delete(organizationMembersTable)
     .where(eq(organizationMembersTable.organizationId, organizationId));
 }
 
-async function deleteAllOrganizationInvitations({ organizationId, db }: { organizationId: string; db: Database }) {
+async function deleteAllOrganizationInvitations({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   await db
     .delete(organizationInvitationsTable)
     .where(eq(organizationInvitationsTable.organizationId, organizationId));
 }
 
-async function softDeleteOrganization({ organizationId, deletedBy, db, now = new Date(), purgeDaysDelay = 30 }: { organizationId: string; deletedBy: string; db: Database; now?: Date; purgeDaysDelay?: number }) {
+async function softDeleteOrganization({
+  organizationId,
+  deletedBy,
+  db,
+  now = new Date(),
+  purgeDaysDelay = 30,
+}: {
+  organizationId: string;
+  deletedBy: string;
+  db: Database;
+  now?: Date;
+  purgeDaysDelay?: number;
+}) {
   await db
     .update(organizationsTable)
     .set({
@@ -512,7 +720,13 @@ async function softDeleteOrganization({ organizationId, deletedBy, db, now = new
     .where(eq(organizationsTable.id, organizationId));
 }
 
-async function restoreOrganization({ organizationId, db }: { organizationId: string; db: Database }) {
+async function restoreOrganization({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   await db
     .update(organizationsTable)
     .set({
@@ -523,32 +737,47 @@ async function restoreOrganization({ organizationId, db }: { organizationId: str
     .where(eq(organizationsTable.id, organizationId));
 }
 
-async function getUserDeletedOrganizations({ userId, db, now = new Date() }: { userId: string; db: Database; now?: Date }) {
+async function getUserDeletedOrganizations({
+  userId,
+  db,
+  now = new Date(),
+}: {
+  userId: string;
+  db: Database;
+  now?: Date;
+}) {
   const organizations = await db
     .select()
     .from(organizationsTable)
-    .where(and(
-      eq(organizationsTable.deletedBy, userId),
-      isNotNull(organizationsTable.deletedAt),
-      gte(organizationsTable.scheduledPurgeAt, now),
-    ));
+    .where(
+      and(
+        eq(organizationsTable.deletedBy, userId),
+        isNotNull(organizationsTable.deletedAt),
+        gte(organizationsTable.scheduledPurgeAt, now),
+      ),
+    );
 
   return {
     organizations,
   };
 }
 
-async function getExpiredSoftDeletedOrganizations({ db, now = new Date() }: { db: Database; now?: Date }) {
+async function getExpiredSoftDeletedOrganizations({
+  db,
+  now = new Date(),
+}: {
+  db: Database;
+  now?: Date;
+}) {
   const organizations = await db
     .select({ id: organizationsTable.id })
     .from(organizationsTable)
-    .where(and(
-      isNotNull(organizationsTable.deletedAt),
-      lte(organizationsTable.scheduledPurgeAt, now),
-    ));
+    .where(
+      and(isNotNull(organizationsTable.deletedAt), lte(organizationsTable.scheduledPurgeAt, now)),
+    );
 
   return {
-    organizationIds: organizations.map(org => org.id),
+    organizationIds: organizations.map((org) => org.id),
   };
 }
 

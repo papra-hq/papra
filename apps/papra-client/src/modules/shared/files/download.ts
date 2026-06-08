@@ -5,7 +5,13 @@ export function downloadFile({ url, fileName = 'file' }: { url: string; fileName
   link.click();
 }
 
-export function downloadTextFile({ content, fileName = 'file.txt' }: { content: string; fileName?: string }) {
+export function downloadTextFile({
+  content,
+  fileName = 'file.txt',
+}: {
+  content: string;
+  fileName?: string;
+}) {
   const blob = new Blob([content], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   downloadFile({ url, fileName });

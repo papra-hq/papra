@@ -15,19 +15,32 @@ describe('document-share-links.password', () => {
 
     test('an incorrect password fails verification', async () => {
       const { passwordHash } = await hashPassword({ password: 'my secret password' });
-      const { isValid } = await verifyPassword({ password: 'not the right password', passwordHash });
+      const { isValid } = await verifyPassword({
+        password: 'not the right password',
+        passwordHash,
+      });
 
       expect(isValid).toBe(false);
     });
 
     test('a malformed hash fails verification', async () => {
-      expect(await verifyPassword({ password: 'any password', passwordHash: 'this-is-not-a-valid-hash' })).to.eql({ isValid: false });
+      expect(
+        await verifyPassword({
+          password: 'any password',
+          passwordHash: 'this-is-not-a-valid-hash',
+        }),
+      ).to.eql({ isValid: false });
     });
 
     test('a tampered hash fails verification', async () => {
       const { passwordHash } = await hashPassword({ password: 'my secret password' });
 
-      expect(await verifyPassword({ password: 'my secret password', passwordHash: passwordHash.replace(/^./, 'X') })).to.eql({ isValid: false });
+      expect(
+        await verifyPassword({
+          password: 'my secret password',
+          passwordHash: passwordHash.replace(/^./, 'X'),
+        }),
+      ).to.eql({ isValid: false });
     });
 
     test('regression test, ensure Buffer can base64 decode unpadded string, as the PHC spec requires', () => {

@@ -5,7 +5,7 @@ import { LIBSQL_KV_STORE_DRIVER_NAME } from './drivers/libsql/libsql.kv-store-dr
 
 export const kvStoreConfig = {
   driverName: {
-    doc: `The driver to use for the key-value store, value can be one of: ${kvStoreDriverNames.map(x => `\`${x}\``).join(', ')}`,
+    doc: `The driver to use for the key-value store, value can be one of: ${kvStoreDriverNames.map((x) => `\`${x}\``).join(', ')}`,
     schema: v.picklist(kvStoreDriverNames),
     default: LIBSQL_KV_STORE_DRIVER_NAME,
     env: 'KV_STORE_DRIVER',

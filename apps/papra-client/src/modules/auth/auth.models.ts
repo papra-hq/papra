@@ -7,7 +7,8 @@ export function isAuthErrorWithCode({ error, code }: { error: unknown; code: str
   return get(error, ['code']) === code;
 }
 
-export const isEmailVerificationRequiredError = ({ error }: { error: unknown }) => isAuthErrorWithCode({ error, code: 'EMAIL_NOT_VERIFIED' });
+export const isEmailVerificationRequiredError = ({ error }: { error: unknown }) =>
+  isAuthErrorWithCode({ error, code: 'EMAIL_NOT_VERIFIED' });
 
 export function getEnabledSsoProviderConfigs({ config }: { config: Config }): SsoProviderConfig[] {
   const enabledSsoProviders: SsoProviderConfig[] = [

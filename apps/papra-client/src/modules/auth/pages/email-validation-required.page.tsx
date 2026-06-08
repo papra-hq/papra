@@ -11,9 +11,7 @@ export const EmailValidationRequiredPage: Component = () => {
         <div class="max-w-sm w-full">
           <div class="i-tabler-mail size-12 text-primary mb-2" />
 
-          <h1 class="text-xl font-bold">
-            {t('auth.email-validation-required.title')}
-          </h1>
+          <h1 class="text-xl font-bold">{t('auth.email-validation-required.title')}</h1>
           <p class="text-muted-foreground mt-1 mb-4">
             {t('auth.email-validation-required.description')}
           </p>

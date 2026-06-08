@@ -12,7 +12,9 @@ const posthogApiKey = env.POSTHOG_API_KEY;
 const posthogApiHost = env.POSTHOG_HOST ?? 'https://eu.i.posthog.com';
 const isPosthogEnabled = Boolean(posthogApiKey);
 
-const posthogScript = posthogRawScript.replace('[POSTHOG-API-KEY]', posthogApiKey ?? '').replace('[POSTHOG-API-HOST]', posthogApiHost);
+const posthogScript = posthogRawScript
+  .replace('[POSTHOG-API-KEY]', posthogApiKey ?? '')
+  .replace('[POSTHOG-API-HOST]', posthogApiHost);
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,7 +22,10 @@ export default defineConfig({
   integrations: [
     UnoCSS(),
     starlight({
-      plugins: [starlightThemeRapide(), starlightLinksValidator({ exclude: ['http://localhost:1221'] })],
+      plugins: [
+        starlightThemeRapide(),
+        starlightLinksValidator({ exclude: ['http://localhost:1221'] }),
+      ],
       title: 'Papra Docs',
       logo: {
         dark: './src/assets/logo-dark.svg',
@@ -41,7 +46,7 @@ export default defineConfig({
       sidebar,
       favicon: '/favicon.svg',
       head: [
-      // Add ICO favicon fallback for Safari.
+        // Add ICO favicon fallback for Safari.
         {
           tag: 'link',
           attrs: {

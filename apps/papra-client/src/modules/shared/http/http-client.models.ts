@@ -17,7 +17,7 @@ type CoerceDates<T> = {
 };
 
 export function coerceDates<T extends Record<string, any>>(obj: T): CoerceDates<T> {
-  const toDate = (value: string | Date | null | undefined) => value ? new Date(value) : undefined;
+  const toDate = (value: string | Date | null | undefined) => (value ? new Date(value) : undefined);
 
   return {
     ...obj,

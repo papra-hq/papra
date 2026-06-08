@@ -1,12 +1,6 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useRouter } from 'expo-router';
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { queryClient } from '@/modules/api/providers/query.provider';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
@@ -48,8 +42,14 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
         return;
       }
 
-      await uploadDocument({ file: localDocument, apiClient, organizationId: currentOrganizationId });
-      await queryClient.invalidateQueries({ queryKey: ['organizations', currentOrganizationId, 'documents'] });
+      await uploadDocument({
+        file: localDocument,
+        apiClient,
+        organizationId: currentOrganizationId,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', currentOrganizationId, 'documents'],
+      });
 
       showAlert({
         title: 'Upload Successful',
@@ -69,60 +69,38 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={styles.drawer}>
           <View style={styles.header}>
             <Text style={styles.title}>Import Document</Text>
           </View>
 
           <View style={styles.optionsContainer}>
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleImportFromFiles}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handleImportFromFiles}>
               <View style={styles.optionIconContainer}>
                 <Icon name="file-plus" size={24} style={styles.optionIcon} />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Import from Files</Text>
-                <Text style={styles.optionDescription}>
-                  Choose a document from your device
-                </Text>
+                <Text style={styles.optionDescription}>Choose a document from your device</Text>
               </View>
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleScanDocument}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handleScanDocument}>
               <View style={styles.optionIconContainer}>
                 <Icon name="camera" size={24} style={styles.optionIcon} />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Scan Document</Text>
-                <Text style={styles.optionDescription}>
-                  Use camera to scan a document
-                </Text>
+                <Text style={styles.optionDescription}>Use camera to scan a document</Text>
               </View>
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={onClose}
-          >
+          <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
         </View>

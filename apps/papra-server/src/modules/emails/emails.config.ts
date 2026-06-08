@@ -14,7 +14,7 @@ export const emailsConfig = {
     env: 'EMAILS_FROM_ADDRESS',
   },
   driverName: {
-    doc: `The driver to use when sending emails, value can be one of: ${emailDriverFactoryNames.map(x => `\`${x}\``).join(', ')}. Using \`logger\` will not send anything but log them instead`,
+    doc: `The driver to use when sending emails, value can be one of: ${emailDriverFactoryNames.map((x) => `\`${x}\``).join(', ')}. Using \`logger\` will not send anything but log them instead`,
     schema: v.picklist(emailDriverFactoryNames),
     default: LOGGER_EMAIL_DRIVER_NAME,
     env: 'EMAILS_DRIVER',

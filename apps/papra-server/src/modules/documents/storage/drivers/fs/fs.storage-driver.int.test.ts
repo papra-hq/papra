@@ -4,7 +4,10 @@ import path from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { createDisposableTmpDirectory } from '../../../../shared/fs/fs.test-utils';
 import { createReadableStream } from '../../../../shared/streams/readable-stream';
-import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
+import {
+  createFileAlreadyExistsInStorageError,
+  createFileNotFoundError,
+} from '../../document-storage.errors';
 import { runDriverTestSuites } from '../drivers.test-suite';
 import { fsStorageDriverFactory } from './fs.storage-driver';
 
@@ -16,7 +19,9 @@ describe('storage driver', () => {
 
         return {
           driver: fsStorageDriverFactory({
-            documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig,
+            documentStorageConfig: {
+              drivers: { filesystem: { root: tmpDirectoryPath } },
+            } as DocumentStorageConfig,
           }),
           [Symbol.asyncDispose]: async () => {
             await removeTmpDirectory();
@@ -30,7 +35,11 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
         const storageKey = 'org_1/text-file.txt';
 
         await fsStorageDriver.saveFile({
@@ -42,7 +51,10 @@ describe('storage driver', () => {
 
         const storagePath = path.join(tmpDirectoryPath, storageKey);
 
-        const fileExists = await fs.promises.access(storagePath, fs.constants.F_OK).then(() => true).catch(() => false);
+        const fileExists = await fs.promises
+          .access(storagePath, fs.constants.F_OK)
+          .then(() => true)
+          .catch(() => false);
 
         expect(fileExists).to.eql(true);
       });
@@ -51,7 +63,11 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -76,7 +92,11 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -85,7 +105,9 @@ describe('storage driver', () => {
           storageKey: 'org_1/text-file.txt',
         });
 
-        const { fileStream } = await fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' });
+        const { fileStream } = await fsStorageDriver.getFileStream({
+          storageKey: 'org_1/text-file.txt',
+        });
 
         const chunks: unknown[] = [];
         for await (const chunk of fileStream) {
@@ -99,9 +121,15 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
 
-        await expect(fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
+        await expect(
+          fsStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' }),
+        ).rejects.toThrow(createFileNotFoundError());
       });
     });
 
@@ -110,7 +138,11 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
 
         await fsStorageDriver.saveFile({
           fileStream: createReadableStream({ content: 'lorem ipsum' }),
@@ -119,14 +151,20 @@ describe('storage driver', () => {
           storageKey: 'org_1/text-file.txt',
         });
 
-        const fileInitiallyExists = await fs.promises.access(path.join(tmpDirectoryPath, 'org_1/text-file.txt'), fs.constants.F_OK).then(() => true).catch(() => false);
+        const fileInitiallyExists = await fs.promises
+          .access(path.join(tmpDirectoryPath, 'org_1/text-file.txt'), fs.constants.F_OK)
+          .then(() => true)
+          .catch(() => false);
 
         expect(fileInitiallyExists).to.eql(true);
 
         await fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' });
 
         const storagePath = path.join(tmpDirectoryPath, 'org_1/text-file.txt');
-        const fileExists = await fs.promises.access(storagePath, fs.constants.F_OK).then(() => true).catch(() => false);
+        const fileExists = await fs.promises
+          .access(storagePath, fs.constants.F_OK)
+          .then(() => true)
+          .catch(() => false);
 
         expect(fileExists).to.eql(false);
       });
@@ -135,9 +173,15 @@ describe('storage driver', () => {
         await using tmpDirectory = await createDisposableTmpDirectory();
         const { tmpDirectoryPath } = tmpDirectory;
 
-        const fsStorageDriver = fsStorageDriverFactory({ documentStorageConfig: { drivers: { filesystem: { root: tmpDirectoryPath } } } as DocumentStorageConfig });
+        const fsStorageDriver = fsStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { filesystem: { root: tmpDirectoryPath } },
+          } as DocumentStorageConfig,
+        });
 
-        await expect(fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
+        await expect(
+          fsStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' }),
+        ).rejects.toThrow(createFileNotFoundError());
       });
     });
   });

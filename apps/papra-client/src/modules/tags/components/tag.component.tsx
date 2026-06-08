@@ -33,7 +33,9 @@ export const Tag: Component<TagProps & ComponentProps<'span'>> = (props) => {
     >
       <span class="size-1.5 rounded-full" style={{ 'background-color': props.color }} />
       {props.name}
-      {props.closable && <div class="i-tabler-x text-muted-foreground group-hover:text-foreground transition" />}
+      {props.closable && (
+        <div class="i-tabler-x text-muted-foreground group-hover:text-foreground transition" />
+      )}
     </span>
   );
 };
@@ -46,12 +48,20 @@ type TagLinkProps = {
   organizationId: string;
 };
 
-export const TagLink: Component<TagLinkProps & Omit<ComponentProps<typeof A>, 'href'> & { href?: string }> = (props) => {
+export const TagLink: Component<
+  TagLinkProps & Omit<ComponentProps<typeof A>, 'href'> & { href?: string }
+> = (props) => {
   const [local, rest] = splitProps(props, ['id', 'name', 'description', 'color', 'class', 'href']);
 
   return (
     <A
-      href={props.href ?? makeDocumentSearchPermalink({ organizationId: props.organizationId, search: { tags: [props] } })}
+      href={
+        props.href ??
+        makeDocumentSearchPermalink({
+          organizationId: props.organizationId,
+          search: { tags: [props] },
+        })
+      }
       class={cn(
         'inline-flex gap-2 px-2.5 py-1 leading-none rounded-lg text-sm items-center bg-muted group hover:underline',
         local.class,

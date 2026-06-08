@@ -38,7 +38,10 @@ export const importCommand = defineCommand({
       apiBaseUrl: apiUrl,
     });
 
-    const { organizationId } = await getOrganizationId({ apiClient, argOrganizationId: args.organizationId });
+    const { organizationId } = await getOrganizationId({
+      apiClient,
+      argOrganizationId: args.organizationId,
+    });
 
     await prompts.tasks([
       {
@@ -50,10 +53,12 @@ export const importCommand = defineCommand({
 
           const file = new File([fileBuffer as BlobPart], fileName, { type: mimeType });
 
-          const [, error] = await safely(apiClient.uploadDocument({
-            organizationId,
-            file,
-          }));
+          const [, error] = await safely(
+            apiClient.uploadDocument({
+              organizationId,
+              file,
+            }),
+          );
 
           if (error) {
             reportClientError(error);

@@ -38,7 +38,7 @@ const ExpressionViewer: Component<{ expression: Expression }> = (props) => {
     <>
       {match(props.expression)
         .with({ type: 'empty' }, () => <div class="text-muted">[empty]</div>)
-        .with({ type: 'filter' }, expr => (
+        .with({ type: 'filter' }, (expr) => (
           <div class="bg-secondary border border-border rounded-md px-2 py-1 flex sm:gap-2 flex-col sm:flex-row">
             <span class="font-semibold">FILTER</span>
 
@@ -58,33 +58,33 @@ const ExpressionViewer: Component<{ expression: Expression }> = (props) => {
             </span>
           </div>
         ))
-        .with({ type: 'text' }, expr => (
+        .with({ type: 'text' }, (expr) => (
           <div class="bg-secondary border border-border rounded-md px-2 py-1 flex gap-2">
             <span class="font-semibold">TEXT</span>
             <span class="bg-surface border border-border rounded-md px-2">{expr.value}</span>
           </div>
         ))
-        .with({ type: 'and' }, expr => (
+        .with({ type: 'and' }, (expr) => (
           <div>
             <div class="font-bold mb-1">AND</div>
             <div class="space-y-2 pl-4 border-l-2 border-border">
-              {expr.operands.map(subExpr => (
+              {expr.operands.map((subExpr) => (
                 <ExpressionViewer expression={subExpr} />
               ))}
             </div>
           </div>
         ))
-        .with({ type: 'or' }, expr => (
+        .with({ type: 'or' }, (expr) => (
           <div>
             <div class="font-bold mb-1">OR</div>
             <div class="space-y-2 pl-4 border-l-2 border-border">
-              {expr.operands.map(subExpr => (
+              {expr.operands.map((subExpr) => (
                 <ExpressionViewer expression={subExpr} />
               ))}
             </div>
           </div>
         ))
-        .with({ type: 'not' }, expr => (
+        .with({ type: 'not' }, (expr) => (
           <div>
             <div class="font-bold mb-1">NOT</div>
             <div class="pl-4 border-l-2 border-border">
@@ -93,7 +93,6 @@ const ExpressionViewer: Component<{ expression: Expression }> = (props) => {
           </div>
         ))
         .exhaustive()}
-
     </>
   );
 };
@@ -119,7 +118,7 @@ export const JsonViewer: Component<{ json: string }> = (props) => {
     });
   };
 
-  return (<div innerHTML={getHtml()} class="overflow-x-auto text-sm bg-secondary p-4" />);
+  return <div innerHTML={getHtml()} class="overflow-x-auto text-sm bg-secondary p-4" />;
 };
 
 export const ParserDemo: Component = () => {
@@ -127,34 +126,33 @@ export const ParserDemo: Component = () => {
   const [getOutputFormat, setOutputFormat] = createQueryParamSignal('format', 'expression');
   const [getOptimized, setOptimized] = createQueryParamSignal('optimized', 'yes');
 
-  const getParsed = createMemo(() => parseSearchQuery({
-    query: getSearchQuery(),
-    optimize: getOptimized() === 'yes',
-  }));
+  const getParsed = createMemo(() =>
+    parseSearchQuery({
+      query: getSearchQuery(),
+      optimize: getOptimized() === 'yes',
+    }),
+  );
 
   return (
     <div>
-
-      <h2 class="text-lg font-bold mb-1">
-        Search Query:
-      </h2>
+      <h2 class="text-lg font-bold mb-1">Search Query:</h2>
       <input
         type="text"
         placeholder="Ex: status:open priority:high bug"
         value={getSearchQuery()}
-        onInput={e => setSearchQuery(e.currentTarget.value)}
+        onInput={(e) => setSearchQuery(e.currentTarget.value)}
         class="text-base border border-border py-2 px-4 w-full bg-surface rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         autofocus
       />
       <div class="mt-2 flex flex-wrap gap-2 flex-col sm:flex-row">
-        {queryExamples.map(example => (
+        {queryExamples.map((example) => (
           <button
             class="px-2 py-1 bg-secondary rounded-lg hover:(bg-primary border-primary text-primary-foreground) transition text-sm font-medium border border-border"
             onClick={() => setSearchQuery(example.query)}
           >
             {example.label}
           </button>
-        )) }
+        ))}
       </div>
 
       <h2 class="text-lg font-bold mb-1 mt-8">Parsed Output:</h2>
@@ -163,10 +161,24 @@ export const ParserDemo: Component = () => {
         <div class="text-muted">
           Display AST as
           <div class="inline-flex ml-2 border border-border rounded-lg overflow-hidden bg-secondary text-sm">
-            <button class={getOutputFormat() === 'expression' ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground' : 'px-4  border border-transparent'} onClick={() => setOutputFormat('expression')}>
+            <button
+              class={
+                getOutputFormat() === 'expression'
+                  ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground'
+                  : 'px-4  border border-transparent'
+              }
+              onClick={() => setOutputFormat('expression')}
+            >
               Expression tree
             </button>
-            <button class={getOutputFormat() === 'json' ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground' : 'px-4 py-1 border border-transparent'} onClick={() => setOutputFormat('json')}>
+            <button
+              class={
+                getOutputFormat() === 'json'
+                  ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground'
+                  : 'px-4 py-1 border border-transparent'
+              }
+              onClick={() => setOutputFormat('json')}
+            >
               JSON
             </button>
           </div>
@@ -175,10 +187,24 @@ export const ParserDemo: Component = () => {
         <div class="text-muted">
           Optimize AST?
           <div class="inline-flex ml-2 border border-border rounded-lg overflow-hidden bg-secondary text-sm">
-            <button class={getOptimized() === 'yes' ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground' : 'px-4  border border-transparent'} onClick={() => setOptimized('yes')}>
+            <button
+              class={
+                getOptimized() === 'yes'
+                  ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground'
+                  : 'px-4  border border-transparent'
+              }
+              onClick={() => setOptimized('yes')}
+            >
               Yes
             </button>
-            <button class={getOptimized() === 'no' ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground' : 'px-4 py-1 border border-transparent'} onClick={() => setOptimized('no')}>
+            <button
+              class={
+                getOptimized() === 'no'
+                  ? 'bg-surface px-4 py-1 rounded-md border border-border text-foreground'
+                  : 'px-4 py-1 border border-transparent'
+              }
+              onClick={() => setOptimized('no')}
+            >
               No
             </button>
           </div>
@@ -186,9 +212,13 @@ export const ParserDemo: Component = () => {
       </div>
 
       <div class=" bg-background border border-border rounded-lg">
-        {getOutputFormat() === 'json'
-          ? <JsonViewer json={JSON.stringify(getParsed(), null, 2)} />
-          : <div class="p-4"><ExpressionViewer expression={getParsed().expression} /></div>}
+        {getOutputFormat() === 'json' ? (
+          <JsonViewer json={JSON.stringify(getParsed(), null, 2)} />
+        ) : (
+          <div class="p-4">
+            <ExpressionViewer expression={getParsed().expression} />
+          </div>
+        )}
       </div>
 
       {getParsed().issues.length > 0 && getOutputFormat() === 'expression' && (
@@ -196,10 +226,8 @@ export const ParserDemo: Component = () => {
           <h2 class="text-lg font-bold mb-1 mt-8">Issues:</h2>
           <div class="p-4 bg-background border border-border rounded-lg space-y-2">
             <ul class="text-red-600 list-disc list-inside">
-              {getParsed().issues.map(issue => (
-                <li>
-                  {issue.message}
-                </li>
+              {getParsed().issues.map((issue) => (
+                <li>{issue.message}</li>
               ))}
             </ul>
           </div>

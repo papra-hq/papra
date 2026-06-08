@@ -4,6 +4,7 @@ A search query parser library for building GitHub-style search syntax with filte
 You can play with the parser in the [demo application](https://search-parser.papra.app/).
 
 ## Features
+
 - **TypeScript-first**: Fully typed API and AST structures.
 - **Dependency-free**: No external dependencies, lightweight and fast.
 - **Error-resilient**: Best-effort parsing with detailed issue reporting.
@@ -57,18 +58,21 @@ parseSearchQuery({ query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-0
 ## Query Syntax
 
 ### Text Search
+
 ```
 my invoice
 "quoted text"
 ```
 
 ### Filters
+
 ```
 tag:invoice                # Equality (same as tag:=invoice)
 createdAt:>2024-01-01      # Comparison operators: >, <, >=, <=, =
 ```
 
 ### Logical Operators
+
 ```
 tag:invoice AND status:active
 tag:invoice OR tag:receipt
@@ -77,11 +81,13 @@ NOT tag:personal
 ```
 
 ### Grouping
+
 ```
 (tag:invoice OR tag:receipt) AND status:active
 ```
 
 ### Optimization
+
 You can enable optimization to simplify the parsed expression tree:
 
 ```typescript
@@ -130,18 +136,16 @@ parseSearchQuery({ query, optimize: true });
 //   },
 //   issues: [],
 // }
-
 ```
-
 
 ## API
 
 ```typescript
 function parseSearchQuery(options: {
   query: string;
-  maxDepth?: number;    // Default: 10
-  maxTokens?: number;   // Default: 200
-  optimize?: boolean;   // Default: true
+  maxDepth?: number; // Default: 10
+  maxTokens?: number; // Default: 200
+  optimize?: boolean; // Default: true
 }): ParsedQuery;
 
 type ParsedQuery = {

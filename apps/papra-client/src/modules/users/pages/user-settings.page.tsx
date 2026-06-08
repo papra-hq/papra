@@ -7,7 +7,13 @@ import { signOut } from '@/modules/auth/auth.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { Button } from '@/modules/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { TwoFactorCard } from '../components/two-factor-card';
@@ -30,9 +36,7 @@ const LogoutCard: Component = () => {
     <Card class="flex flex-row justify-between items-center p-6 border-destructive">
       <div class="flex flex-col gap-1.5">
         <CardTitle>{t('user.settings.logout.title')}</CardTitle>
-        <CardDescription>
-          {t('user.settings.logout.description')}
-        </CardDescription>
+        <CardDescription>{t('user.settings.logout.description')}</CardDescription>
       </div>
       <Button onClick={handleLogout} variant="destructive" isLoading={getIsLoading()}>
         {t('user.settings.logout.button')}
@@ -138,7 +142,7 @@ export const UserSettingsPage: Component = () => {
     <div class="p-6 mt-12 pb-32 mx-auto max-w-xl">
       <Suspense>
         <Show when={query.data?.user}>
-          {getUser => (
+          {(getUser) => (
             <>
               <div class="border-b pb-4">
                 <h1 class="text-2xl font-semibold mb-1">{t('user.settings.title')}</h1>
@@ -148,7 +152,10 @@ export const UserSettingsPage: Component = () => {
               <div class="mt-6 flex flex-col gap-6">
                 <UserEmailCard email={getUser().email} />
                 <UpdateFullNameCard name={getUser().name} />
-                <TwoFactorCard twoFactorEnabled={getUser().twoFactorEnabled} onUpdate={() => query.refetch()} />
+                <TwoFactorCard
+                  twoFactorEnabled={getUser().twoFactorEnabled}
+                  onUpdate={() => query.refetch()}
+                />
                 <LogoutCard />
               </div>
             </>

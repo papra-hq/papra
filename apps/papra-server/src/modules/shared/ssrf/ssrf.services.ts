@@ -14,7 +14,9 @@ export async function isUrlSsrfSafe({
 }: {
   url: string;
   allowedHostnames?: Set<string>;
-  dnsLookup?: (args: { hostname: string }) => Promise<{ addresses: { address: string; family: number }[] }>;
+  dnsLookup?: (args: {
+    hostname: string;
+  }) => Promise<{ addresses: { address: string; family: number }[] }>;
   logger?: Logger;
 }): Promise<boolean> {
   const hostname = getUrlHostname(url);
@@ -35,7 +37,9 @@ async function isHostnameSsrfSafe({
 }: {
   hostname: string;
   allowedHostnames?: Set<string>;
-  dnsLookup?: (args: { hostname: string }) => Promise<{ addresses: { address: string; family: number }[] }>;
+  dnsLookup?: (args: {
+    hostname: string;
+  }) => Promise<{ addresses: { address: string; family: number }[] }>;
   logger?: Logger;
 }): Promise<boolean> {
   try {
@@ -62,7 +66,9 @@ export function createCachedIsUrlSsrfSafeFunction({
   logger = createLogger({ namespace: 'ssrf.services' }),
 }: {
   allowedHostnames?: Set<string>;
-  dnsLookup?: (args: { hostname: string }) => Promise<{ addresses: { address: string; family: number }[] }>;
+  dnsLookup?: (args: {
+    hostname: string;
+  }) => Promise<{ addresses: { address: string; family: number }[] }>;
   logger?: Logger;
 }) {
   const hostnameCache = new Map<string, boolean>();

@@ -40,8 +40,18 @@ export const CreateOrganizationForm: Component<{
         <Field name="organizationName">
           {(field, inputProps) => (
             <TextFieldRoot class="flex flex-col gap-1 mb-6">
-              <TextFieldLabel for="organizationName">{t('organizations.create.form.name.label')}</TextFieldLabel>
-              <TextField type="text" id="organizationName" placeholder={t('organizations.create.form.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+              <TextFieldLabel for="organizationName">
+                {t('organizations.create.form.name.label')}
+              </TextFieldLabel>
+              <TextField
+                type="text"
+                id="organizationName"
+                placeholder={t('organizations.create.form.name.placeholder')}
+                {...inputProps}
+                autoFocus
+                value={field.value}
+                aria-invalid={Boolean(field.error)}
+              />
               {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
             </TextFieldRoot>
           )}

@@ -7,7 +7,12 @@ import mime from 'mime-types';
 import pc from 'picocolors';
 import { getErrorMessage } from '../../../errors/errors.models';
 import { exit, exitOnCancel } from '../../../prompts/utils';
-import { extractFileFromArchive, extractManifest, parseManifest, readArchive } from './paperless.usecases';
+import {
+  extractFileFromArchive,
+  extractManifest,
+  parseManifest,
+  readArchive,
+} from './paperless.usecases';
 
 function pluralize(count: number, singular: string, plural?: string): string {
   if (count === 1) {
@@ -84,7 +89,7 @@ export async function analyzeAndHandleTags({
 
   const { tags: existingTags } = await apiClient.listTags({ organizationId });
   const missingTags = preview.tags.filter(
-    tag => !existingTags.some(existingTag => existingTag.name === tag.fields.name),
+    (tag) => !existingTags.some((existingTag) => existingTag.name === tag.fields.name),
   );
 
   prompts.note(
@@ -124,7 +129,11 @@ export async function analyzeAndHandleTags({
   };
 }
 
-async function selectTagStrategy({ hasMissingTags }: { hasMissingTags: boolean }): Promise<TagStrategy> {
+async function selectTagStrategy({
+  hasMissingTags,
+}: {
+  hasMissingTags: boolean;
+}): Promise<TagStrategy> {
   if (!hasMissingTags) {
     return 'create-and-map';
   }
@@ -212,7 +221,7 @@ async function executeTagStrategy({
 
   if (strategy === 'create-and-map') {
     for (const existingTag of existingTags) {
-      const paperlessTag = allTags.find(tag => tag.fields.name === existingTag.name);
+      const paperlessTag = allTags.find((tag) => tag.fields.name === existingTag.name);
       if (paperlessTag && !tagMapping.has(paperlessTag.pk)) {
         tagMapping.set(paperlessTag.pk, existingTag.id);
       }
@@ -340,7 +349,7 @@ async function importSingleDocument({
   });
 
   const documentTags = document.fields.tags
-    .map(tagPk => tagMapping.get(tagPk))
+    .map((tagPk) => tagMapping.get(tagPk))
     .filter((tagId): tagId is string => tagId !== undefined);
 
   for (const tagId of documentTags) {
@@ -370,7 +379,11 @@ async function createFileFromDocument({
   archive: JSZip;
 }): Promise<File> {
   const filePath = document.__exported_file_name__;
-  const fileName = document.fields.original_filename ?? document.__exported_file_name__ ?? document.fields.title ?? 'untitled';
+  const fileName =
+    document.fields.original_filename ??
+    document.__exported_file_name__ ??
+    document.fields.title ??
+    'untitled';
 
   const fileBuffer = await extractFileFromArchive({
     archive,
@@ -384,10 +397,16 @@ async function createFileFromDocument({
 
 export function displayImportSummary({ stats }: { stats: ImportStats }): void {
   const summaryLines = [
-    stats.tagsCreated > 0 ? `${pc.green('✓')} ${pluralize(stats.tagsCreated, 'tag')} created` : null,
+    stats.tagsCreated > 0
+      ? `${pc.green('✓')} ${pluralize(stats.tagsCreated, 'tag')} created`
+      : null,
     `${pc.green('✓')} ${pluralize(stats.documentsImported, 'document')} imported`,
-    stats.documentsSkipped > 0 ? `${pc.yellow('⊘')} ${pluralize(stats.documentsSkipped, 'document')} skipped (already exist)` : null,
-    stats.documentsFailed > 0 ? `${pc.red('✗')} ${pluralize(stats.documentsFailed, 'document')} failed` : null,
+    stats.documentsSkipped > 0
+      ? `${pc.yellow('⊘')} ${pluralize(stats.documentsSkipped, 'document')} skipped (already exist)`
+      : null,
+    stats.documentsFailed > 0
+      ? `${pc.red('✗')} ${pluralize(stats.documentsFailed, 'document')} failed`
+      : null,
   ].filter(Boolean);
 
   prompts.note(summaryLines.join('\n'), 'Import summary');

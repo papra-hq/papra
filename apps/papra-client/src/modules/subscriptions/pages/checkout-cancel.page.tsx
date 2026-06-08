@@ -15,17 +15,11 @@ export const CheckoutCancelPage: Component = () => {
           </div>
         </div>
 
-        <h1 class="text-3xl font-bold mb-3">
-          {t('subscriptions.checkout-cancel.title')}
-        </h1>
+        <h1 class="text-3xl font-bold mb-3">{t('subscriptions.checkout-cancel.title')}</h1>
 
-        <p class="text-muted-foreground mb-1">
-          {t('subscriptions.checkout-cancel.description')}
-        </p>
+        <p class="text-muted-foreground mb-1">{t('subscriptions.checkout-cancel.description')}</p>
 
-        <p class="text-muted-foreground mb-8">
-          {t('subscriptions.checkout-cancel.no-charges')}
-        </p>
+        <p class="text-muted-foreground mb-8">{t('subscriptions.checkout-cancel.no-charges')}</p>
 
         <div class="flex flex-col gap-3">
           <Button as={A} href="/" size="lg" class="w-full">
@@ -34,9 +28,13 @@ export const CheckoutCancelPage: Component = () => {
           </Button>
 
           <p class="text-sm text-muted-foreground">
-            {t('subscriptions.checkout-cancel.need-help')}
-            {' '}
-            <a href="https://papra.app/contact" class="underline hover:no-underline" target="_blank" rel="noreferrer">
+            {t('subscriptions.checkout-cancel.need-help')}{' '}
+            <a
+              href="https://papra.app/contact"
+              class="underline hover:no-underline"
+              target="_blank"
+              rel="noreferrer"
+            >
               {t('subscriptions.checkout-cancel.contact-support')}
             </a>
           </p>

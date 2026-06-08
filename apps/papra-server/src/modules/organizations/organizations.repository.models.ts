@@ -5,7 +5,13 @@ import { isNilOrEmptyString } from '../shared/utils';
 import { ORGANIZATION_ID_REGEX, ORGANIZATION_INVITATION_STATUS } from './organizations.constants';
 import { organizationsTable } from './organizations.table';
 
-export function ensureInvitationStatus({ invitation, now = new Date() }: { invitation?: OrganizationInvitation | null | undefined; now?: Date }) {
+export function ensureInvitationStatus({
+  invitation,
+  now = new Date(),
+}: {
+  invitation?: OrganizationInvitation | null | undefined;
+  now?: Date;
+}) {
   if (!invitation) {
     return null;
   }

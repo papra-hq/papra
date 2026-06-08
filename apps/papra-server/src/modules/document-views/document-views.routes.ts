@@ -9,7 +9,11 @@ import { ensureUserIsInOrganization } from '../organizations/organizations.useca
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createDocumentViewNotFoundError } from './document-views.errors';
 import { createDocumentViewsRepository } from './document-views.repository';
-import { documentViewDescriptionSchema, documentViewIdSchema, documentViewNameSchema } from './document-views.schemas';
+import {
+  documentViewDescriptionSchema,
+  documentViewIdSchema,
+  documentViewNameSchema,
+} from './document-views.schemas';
 
 export function registerDocumentViewsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentViewRoute(context);
@@ -23,11 +27,13 @@ function setupCreateDocumentViewRoute({ app, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/document-views',
     requireAuthentication(),
     validateParams(v.strictObject({ organizationId: organizationIdSchema })),
-    validateJsonBody(v.strictObject({
-      name: documentViewNameSchema,
-      query: searchDocumentsQuerySchema,
-      description: v.optional(documentViewDescriptionSchema),
-    })),
+    validateJsonBody(
+      v.strictObject({
+        name: documentViewNameSchema,
+        query: searchDocumentsQuerySchema,
+        description: v.optional(documentViewDescriptionSchema),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -38,7 +44,9 @@ function setupCreateDocumentViewRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documentView } = await documentViewsRepository.createDocumentView({ documentView: { organizationId, name, query, description } });
+      const { documentView } = await documentViewsRepository.createDocumentView({
+        documentView: { organizationId, name, query, description },
+      });
 
       return context.json({ documentView });
     },
@@ -59,7 +67,9 @@ function setupGetOrganizationDocumentViewsRoute({ app, db }: RouteDefinitionCont
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documentViews } = await documentViewsRepository.getOrganizationDocumentViews({ organizationId });
+      const { documentViews } = await documentViewsRepository.getOrganizationDocumentViews({
+        organizationId,
+      });
 
       return context.json({ documentViews });
     },
@@ -70,15 +80,19 @@ function setupUpdateDocumentViewRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/document-views/:documentViewId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentViewId: documentViewIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      name: documentViewNameSchema,
-      query: searchDocumentsQuerySchema,
-      description: v.optional(documentViewDescriptionSchema),
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentViewId: documentViewIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        name: documentViewNameSchema,
+        query: searchDocumentsQuerySchema,
+        description: v.optional(documentViewDescriptionSchema),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentViewId } = context.req.valid('param');
@@ -89,13 +103,19 @@ function setupUpdateDocumentViewRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documentView: existingDocumentView } = await documentViewsRepository.getDocumentViewById({ documentViewId, organizationId });
+      const { documentView: existingDocumentView } =
+        await documentViewsRepository.getDocumentViewById({ documentViewId, organizationId });
 
       if (!existingDocumentView) {
         throw createDocumentViewNotFoundError();
       }
 
-      const { documentView } = await documentViewsRepository.updateDocumentView({ documentViewId, name, query, description });
+      const { documentView } = await documentViewsRepository.updateDocumentView({
+        documentViewId,
+        name,
+        query,
+        description,
+      });
 
       return context.json({ documentView });
     },
@@ -106,10 +126,12 @@ function setupDeleteDocumentViewRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/document-views/:documentViewId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentViewId: documentViewIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentViewId: documentViewIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentViewId } = context.req.valid('param');
@@ -119,7 +141,8 @@ function setupDeleteDocumentViewRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documentView: existingDocumentView } = await documentViewsRepository.getDocumentViewById({ documentViewId, organizationId });
+      const { documentView: existingDocumentView } =
+        await documentViewsRepository.getDocumentViewById({ documentViewId, organizationId });
 
       if (!existingDocumentView) {
         throw createDocumentViewNotFoundError();

@@ -19,8 +19,9 @@ export const updateShareLinkBodySchema = v.pipe(
     isEnabled: v.optional(v.boolean()),
   }),
   v.check(
-    data => data.expiresAt !== undefined || data.password !== undefined || data.isEnabled !== undefined,
-    'At least one of \'expiresAt\', \'password\', or \'isEnabled\' must be provided',
+    (data) =>
+      data.expiresAt !== undefined || data.password !== undefined || data.isEnabled !== undefined,
+    "At least one of 'expiresAt', 'password', or 'isEnabled' must be provided",
   ),
 );
 

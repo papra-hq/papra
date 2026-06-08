@@ -3,7 +3,13 @@ import type { PdfViewerStoreProps } from '../pdf-viewer.types';
 import { For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/modules/ui/components/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/modules/ui/components/tooltip';
 
 const zoomValues = new Map([
@@ -70,9 +76,10 @@ export const ZoomSelector: Component<PdfViewerStoreProps> = (props) => {
         <DropdownMenuContent class="min-w-36">
           <For each={Array.from(scalePresets.entries())}>
             {([value, label]) => (
-              <DropdownMenuItem onSelect={() => {
-                props.store.pdfSlick!.currentScaleValue = value;
-              }}
+              <DropdownMenuItem
+                onSelect={() => {
+                  props.store.pdfSlick!.currentScaleValue = value;
+                }}
               >
                 <span>{label}</span>
               </DropdownMenuItem>
@@ -81,9 +88,10 @@ export const ZoomSelector: Component<PdfViewerStoreProps> = (props) => {
           <DropdownMenuSeparator />
           <For each={Array.from(zoomValues.entries())}>
             {([value, label]) => (
-              <DropdownMenuItem onSelect={() => {
-                props.store.pdfSlick!.currentScale = value;
-              }}
+              <DropdownMenuItem
+                onSelect={() => {
+                  props.store.pdfSlick!.currentScale = value;
+                }}
               >
                 <span>{label}</span>
               </DropdownMenuItem>

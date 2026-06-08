@@ -1,4 +1,7 @@
-import { API_KEY_PERMISSIONS_VALUES, API_KEY_PERMISSIONS as PERMISSIONS } from '@papra/app-server/apiKeys/constants';
+import {
+  API_KEY_PERMISSIONS_VALUES,
+  API_KEY_PERMISSIONS as PERMISSIONS,
+} from '@papra/app-server/apiKeys/constants';
 
 export const API_KEY_PERMISSIONS = [
   { section: 'organizations', permissions: Object.values(PERMISSIONS.ORGANIZATIONS) },

@@ -33,6 +33,7 @@ export function createDemoAuthClient() {
   return new Proxy(baseClient, {
     get: (target, prop) => {
       if (!(prop in target)) {
+        // oxlint-disable-next-line no-console
         console.warn(`Accessing undefined property "${String(prop)}" in demo auth client`);
       }
       return target[prop as keyof typeof target];

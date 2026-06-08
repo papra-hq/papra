@@ -7,8 +7,21 @@ import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/modules/ui/components/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { UserListDetail } from '../../users/components/user-list-detail.component';
 import {
   getOrganizationBasicInfo,
@@ -28,27 +41,37 @@ const OrganizationBasicInfo: Component<{ organizationId: string }> = (props) => 
 
   return (
     <Show when={query.data}>
-      {data => (
+      {(data) => (
         <Card>
           <CardHeader>
             <CardTitle>{t('admin.organization-detail.basic-info.title')}</CardTitle>
-            <CardDescription>{t('admin.organization-detail.basic-info.description')}</CardDescription>
+            <CardDescription>
+              {t('admin.organization-detail.basic-info.description')}
+            </CardDescription>
           </CardHeader>
           <CardContent class="space-y-3">
             <div class="flex justify-between items-start">
-              <span class="text-sm text-muted-foreground">{t('admin.organization-detail.basic-info.id')}</span>
+              <span class="text-sm text-muted-foreground">
+                {t('admin.organization-detail.basic-info.id')}
+              </span>
               <span class="font-mono text-xs">{data().organization.id}</span>
             </div>
             <div class="flex justify-between items-start">
-              <span class="text-sm text-muted-foreground">{t('admin.organization-detail.basic-info.name')}</span>
+              <span class="text-sm text-muted-foreground">
+                {t('admin.organization-detail.basic-info.name')}
+              </span>
               <span class="text-sm font-medium">{data().organization.name}</span>
             </div>
             <div class="flex justify-between items-start">
-              <span class="text-sm text-muted-foreground">{t('admin.organization-detail.basic-info.created')}</span>
+              <span class="text-sm text-muted-foreground">
+                {t('admin.organization-detail.basic-info.created')}
+              </span>
               <RelativeTime class="text-sm" date={new Date(data().organization.createdAt)} />
             </div>
             <div class="flex justify-between items-start">
-              <span class="text-sm text-muted-foreground">{t('admin.organization-detail.basic-info.updated')}</span>
+              <span class="text-sm text-muted-foreground">
+                {t('admin.organization-detail.basic-info.updated')}
+              </span>
               <RelativeTime class="text-sm" date={new Date(data().organization.updatedAt)} />
             </div>
           </CardContent>
@@ -76,10 +99,14 @@ const OrganizationMembers: Component<{ organizationId: string }> = (props) => {
       </CardHeader>
       <CardContent>
         <Show when={query.data}>
-          {data => (
+          {(data) => (
             <Show
               when={data().members.length > 0}
-              fallback={<p class="text-sm text-muted-foreground">{t('admin.organization-detail.members.empty')}</p>}
+              fallback={
+                <p class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.members.empty')}
+                </p>
+              }
             >
               <div class="rounded-md border">
                 <Table>
@@ -93,9 +120,8 @@ const OrganizationMembers: Component<{ organizationId: string }> = (props) => {
                   </TableHeader>
                   <TableBody>
                     <For each={data().members}>
-                      {member => (
+                      {(member) => (
                         <TableRow>
-
                           <TableCell>
                             <UserListDetail {...member.user} />
                           </TableCell>
@@ -113,7 +139,10 @@ const OrganizationMembers: Component<{ organizationId: string }> = (props) => {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <RelativeTime class="text-muted-foreground text-sm" date={new Date(member.createdAt)} />
+                            <RelativeTime
+                              class="text-muted-foreground text-sm"
+                              date={new Date(member.createdAt)}
+                            />
                           </TableCell>
                         </TableRow>
                       )}
@@ -141,29 +170,41 @@ const OrganizationIntakeEmails: Component<{ organizationId: string }> = (props) 
     <Card>
       <CardHeader>
         <CardTitle>
-          {t('admin.organization-detail.intake-emails.title', { count: query.data?.intakeEmails.length ?? 0 })}
+          {t('admin.organization-detail.intake-emails.title', {
+            count: query.data?.intakeEmails.length ?? 0,
+          })}
         </CardTitle>
-        <CardDescription>{t('admin.organization-detail.intake-emails.description')}</CardDescription>
+        <CardDescription>
+          {t('admin.organization-detail.intake-emails.description')}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Show when={query.data}>
-          {data => (
+          {(data) => (
             <Show
               when={data().intakeEmails.length > 0}
-              fallback={<p class="text-sm text-muted-foreground">{t('admin.organization-detail.intake-emails.empty')}</p>}
+              fallback={
+                <p class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.intake-emails.empty')}
+                </p>
+              }
             >
               <div class="space-y-2">
                 <For each={data().intakeEmails}>
-                  {email => (
+                  {(email) => (
                     <div class="flex items-center justify-between p-3 border rounded-md">
                       <div>
                         <div class="font-mono text-sm">{email.emailAddress}</div>
                         <div class="text-xs text-muted-foreground mt-1">
-                          {email.isEnabled ? t('admin.organization-detail.intake-emails.status.enabled') : t('admin.organization-detail.intake-emails.status.disabled')}
+                          {email.isEnabled
+                            ? t('admin.organization-detail.intake-emails.status.enabled')
+                            : t('admin.organization-detail.intake-emails.status.disabled')}
                         </div>
                       </div>
                       <Badge variant={email.isEnabled ? 'default' : 'outline'}>
-                        {email.isEnabled ? t('admin.organization-detail.intake-emails.badge.active') : t('admin.organization-detail.intake-emails.badge.inactive')}
+                        {email.isEnabled
+                          ? t('admin.organization-detail.intake-emails.badge.active')
+                          : t('admin.organization-detail.intake-emails.badge.inactive')}
                       </Badge>
                     </div>
                   )}
@@ -189,27 +230,40 @@ const OrganizationWebhooks: Component<{ organizationId: string }> = (props) => {
     <Card>
       <CardHeader>
         <CardTitle>
-          {t('admin.organization-detail.webhooks.title', { count: query.data?.webhooks.length ?? 0 })}
+          {t('admin.organization-detail.webhooks.title', {
+            count: query.data?.webhooks.length ?? 0,
+          })}
         </CardTitle>
         <CardDescription>{t('admin.organization-detail.webhooks.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Show when={query.data}>
-          {data => (
+          {(data) => (
             <Show
               when={data().webhooks.length > 0}
-              fallback={<p class="text-sm text-muted-foreground">{t('admin.organization-detail.webhooks.empty')}</p>}
+              fallback={
+                <p class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.webhooks.empty')}
+                </p>
+              }
             >
               <div class="space-y-2">
                 <For each={data().webhooks}>
-                  {webhook => (
+                  {(webhook) => (
                     <div class="flex items-center justify-between p-3 border rounded-md">
                       <div class="flex-1 min-w-0">
                         <div class="font-medium text-sm truncate">{webhook.name}</div>
-                        <div class="font-mono text-xs text-muted-foreground truncate mt-1">{webhook.url}</div>
+                        <div class="font-mono text-xs text-muted-foreground truncate mt-1">
+                          {webhook.url}
+                        </div>
                       </div>
-                      <Badge variant={webhook.enabled ? 'default' : 'outline'} class="ml-2 flex-shrink-0">
-                        {webhook.enabled ? t('admin.organization-detail.webhooks.badge.active') : t('admin.organization-detail.webhooks.badge.inactive')}
+                      <Badge
+                        variant={webhook.enabled ? 'default' : 'outline'}
+                        class="ml-2 flex-shrink-0"
+                      >
+                        {webhook.enabled
+                          ? t('admin.organization-detail.webhooks.badge.active')
+                          : t('admin.organization-detail.webhooks.badge.inactive')}
                       </Badge>
                     </div>
                   )}
@@ -239,31 +293,49 @@ const OrganizationStats: Component<{ organizationId: string }> = (props) => {
       </CardHeader>
       <CardContent>
         <Show when={query.data}>
-          {data => (
+          {(data) => (
             <div class="space-y-3">
               <div class="flex justify-between items-start">
-                <span class="text-sm text-muted-foreground">{t('admin.organization-detail.stats.active-documents')}</span>
+                <span class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.stats.active-documents')}
+                </span>
                 <span class="text-sm font-medium">{data().stats.documentsCount}</span>
               </div>
               <div class="flex justify-between items-start">
-                <span class="text-sm text-muted-foreground">{t('admin.organization-detail.stats.active-storage')}</span>
-                <span class="text-sm font-medium">{formatBytes({ bytes: data().stats.documentsSize, base: 1000 })}</span>
+                <span class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.stats.active-storage')}
+                </span>
+                <span class="text-sm font-medium">
+                  {formatBytes({ bytes: data().stats.documentsSize, base: 1000 })}
+                </span>
               </div>
               <div class="flex justify-between items-start">
-                <span class="text-sm text-muted-foreground">{t('admin.organization-detail.stats.deleted-documents')}</span>
+                <span class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.stats.deleted-documents')}
+                </span>
                 <span class="text-sm font-medium">{data().stats.deletedDocumentsCount}</span>
               </div>
               <div class="flex justify-between items-start">
-                <span class="text-sm text-muted-foreground">{t('admin.organization-detail.stats.deleted-storage')}</span>
-                <span class="text-sm font-medium">{formatBytes({ bytes: data().stats.deletedDocumentsSize, base: 1000 })}</span>
+                <span class="text-sm text-muted-foreground">
+                  {t('admin.organization-detail.stats.deleted-storage')}
+                </span>
+                <span class="text-sm font-medium">
+                  {formatBytes({ bytes: data().stats.deletedDocumentsSize, base: 1000 })}
+                </span>
               </div>
               <div class="flex justify-between items-start pt-2 border-t">
-                <span class="text-sm font-medium">{t('admin.organization-detail.stats.total-documents')}</span>
+                <span class="text-sm font-medium">
+                  {t('admin.organization-detail.stats.total-documents')}
+                </span>
                 <span class="text-sm font-bold">{data().stats.totalDocumentsCount}</span>
               </div>
               <div class="flex justify-between items-start">
-                <span class="text-sm font-medium">{t('admin.organization-detail.stats.total-storage')}</span>
-                <span class="text-sm font-bold">{formatBytes({ bytes: data().stats.totalDocumentsSize, base: 1000 })}</span>
+                <span class="text-sm font-medium">
+                  {t('admin.organization-detail.stats.total-storage')}
+                </span>
+                <span class="text-sm font-bold">
+                  {formatBytes({ bytes: data().stats.totalDocumentsSize, base: 1000 })}
+                </span>
               </div>
             </div>
           )}
@@ -285,36 +357,62 @@ export const AdminOrganizationDetailPage: Component = () => {
           {t('admin.organization-detail.back')}
         </Button>
 
-        <h1 class="text-2xl font-bold mb-1">
-          {t('admin.organization-detail.title')}
-        </h1>
-        <p class="text-muted-foreground">
-          {params.organizationId}
-        </p>
+        <h1 class="text-2xl font-bold mb-1">{t('admin.organization-detail.title')}</h1>
+        <p class="text-muted-foreground">{params.organizationId}</p>
       </div>
 
       <div class="space-y-6">
         <div class="grid gap-6 md:grid-cols-2">
-          <Suspense fallback={<div class="text-center py-4 text-muted-foreground">{t('admin.organization-detail.loading.info')}</div>}>
+          <Suspense
+            fallback={
+              <div class="text-center py-4 text-muted-foreground">
+                {t('admin.organization-detail.loading.info')}
+              </div>
+            }
+          >
             <OrganizationBasicInfo organizationId={params.organizationId} />
           </Suspense>
 
-          <Suspense fallback={<div class="text-center py-4 text-muted-foreground">{t('admin.organization-detail.loading.stats')}</div>}>
+          <Suspense
+            fallback={
+              <div class="text-center py-4 text-muted-foreground">
+                {t('admin.organization-detail.loading.stats')}
+              </div>
+            }
+          >
             <OrganizationStats organizationId={params.organizationId} />
           </Suspense>
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
-          <Suspense fallback={<div class="text-center py-4 text-muted-foreground">{t('admin.organization-detail.loading.intake-emails')}</div>}>
+          <Suspense
+            fallback={
+              <div class="text-center py-4 text-muted-foreground">
+                {t('admin.organization-detail.loading.intake-emails')}
+              </div>
+            }
+          >
             <OrganizationIntakeEmails organizationId={params.organizationId} />
           </Suspense>
 
-          <Suspense fallback={<div class="text-center py-4 text-muted-foreground">{t('admin.organization-detail.loading.webhooks')}</div>}>
+          <Suspense
+            fallback={
+              <div class="text-center py-4 text-muted-foreground">
+                {t('admin.organization-detail.loading.webhooks')}
+              </div>
+            }
+          >
             <OrganizationWebhooks organizationId={params.organizationId} />
           </Suspense>
         </div>
 
-        <Suspense fallback={<div class="text-center py-4 text-muted-foreground">{t('admin.organization-detail.loading.members')}</div>}>
+        <Suspense
+          fallback={
+            <div class="text-center py-4 text-muted-foreground">
+              {t('admin.organization-detail.loading.members')}
+            </div>
+          }
+        >
           <OrganizationMembers organizationId={params.organizationId} />
         </Suspense>
       </div>

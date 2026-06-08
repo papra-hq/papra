@@ -47,7 +47,9 @@ export const documentActivityLogOnDeleteSetNullMigration = {
           FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE no action
         );
       `),
-      db.run(sql`INSERT INTO "__restore_document_activity_log"("id", "created_at", "document_id", "event", "event_data", "user_id", "tag_id") SELECT "id", "created_at", "document_id", "event", "event_data", "user_id", "tag_id" FROM "document_activity_log";`),
+      db.run(
+        sql`INSERT INTO "__restore_document_activity_log"("id", "created_at", "document_id", "event", "event_data", "user_id", "tag_id") SELECT "id", "created_at", "document_id", "event", "event_data", "user_id", "tag_id" FROM "document_activity_log";`,
+      ),
       db.run(sql`DROP TABLE IF EXISTS "document_activity_log"`),
       db.run(sql`ALTER TABLE "__restore_document_activity_log" RENAME TO "document_activity_log"`),
       db.run(sql`PRAGMA foreign_keys=ON`),

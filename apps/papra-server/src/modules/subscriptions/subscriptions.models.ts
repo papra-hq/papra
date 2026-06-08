@@ -33,7 +33,9 @@ export function isSignatureHeaderFormatValid(signature: string | undefined): sig
  * @param subscription - The subscription to check, or null/undefined if no subscription exists
  * @returns true if the subscription blocks deletion, false otherwise
  */
-export function doesSubscriptionBlockDeletion(subscription: Subscription | null | undefined): boolean {
+export function doesSubscriptionBlockDeletion(
+  subscription: Subscription | null | undefined,
+): boolean {
   if (!subscription) {
     return false;
   }

@@ -1,10 +1,14 @@
 import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const CUSTOM_PROPERTY_DEFINITION_ID_PREFIX = 'cpd';
-export const CUSTOM_PROPERTY_DEFINITION_ID_REGEX = createPrefixedIdRegex({ prefix: CUSTOM_PROPERTY_DEFINITION_ID_PREFIX });
+export const CUSTOM_PROPERTY_DEFINITION_ID_REGEX = createPrefixedIdRegex({
+  prefix: CUSTOM_PROPERTY_DEFINITION_ID_PREFIX,
+});
 
 export const DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_PREFIX = 'dcpv';
-export const DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_REGEX = createPrefixedIdRegex({ prefix: DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_PREFIX });
+export const DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_REGEX = createPrefixedIdRegex({
+  prefix: DOCUMENT_CUSTOM_PROPERTY_VALUE_ID_PREFIX,
+});
 
 export const CUSTOM_PROPERTY_TYPES = {
   TEXT: 'text',
@@ -19,4 +23,4 @@ export const CUSTOM_PROPERTY_TYPES = {
 
 export const CUSTOM_PROPERTY_TYPES_LIST = Object.values(CUSTOM_PROPERTY_TYPES);
 
-export type CustomPropertyType = typeof CUSTOM_PROPERTY_TYPES[keyof typeof CUSTOM_PROPERTY_TYPES];
+export type CustomPropertyType = (typeof CUSTOM_PROPERTY_TYPES)[keyof typeof CUSTOM_PROPERTY_TYPES];

@@ -2,7 +2,14 @@ import type { JSX, ParentComponent } from 'solid-js';
 import { createContext, createSignal, Show, useContext } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '../ui/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/components/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/components/dialog';
 import { TextField, TextFieldLabel, TextFieldRoot } from '../ui/components/textfield';
 
 type ConfirmModalConfig = {
@@ -19,7 +26,9 @@ type ConfirmModalConfig = {
   shouldType?: string;
 };
 
-const ConfirmModalContext = createContext<{ confirm: (config: ConfirmModalConfig) => Promise<boolean> }>(undefined);
+const ConfirmModalContext = createContext<{
+  confirm: (config: ConfirmModalConfig) => Promise<boolean>;
+}>(undefined);
 
 export function useConfirmModal() {
   const context = useContext(ConfirmModalContext);
@@ -38,7 +47,13 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
   const [getResolve, setResolve] = createSignal<((isConfirmed: boolean) => void) | undefined>();
   const [getTypedText, setTypedText] = createSignal<string>('');
 
-  const confirm = ({ title, message, confirmButton, cancelButton, shouldType }: ConfirmModalConfig) => {
+  const confirm = ({
+    title,
+    message,
+    confirmButton,
+    cancelButton,
+    shouldType,
+  }: ConfirmModalConfig) => {
     setConfig({
       title,
       message,
@@ -92,13 +107,15 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
           </DialogHeader>
 
           <Show when={getConfig()?.shouldType}>
-            {getText => (
+            {(getText) => (
               <div class="mt-0">
                 <TextFieldRoot>
-                  <TextFieldLabel class="font-semibold">{t('common.confirm-modal.type-to-confirm', { text: getText() })}</TextFieldLabel>
+                  <TextFieldLabel class="font-semibold">
+                    {t('common.confirm-modal.type-to-confirm', { text: getText() })}
+                  </TextFieldLabel>
                   <TextField
                     value={getTypedText()}
-                    onInput={e => setTypedText(e.currentTarget.value)}
+                    onInput={(e) => setTypedText(e.currentTarget.value)}
                   />
                 </TextFieldRoot>
               </div>
@@ -107,11 +124,17 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
 
           <DialogFooter>
             <div class="flex gap-2 justify-end flex-col-reverse sm:flex-row">
-
-              <Button onClick={() => handleConfirm({ isConfirmed: false })} variant={getConfig()?.cancelButton?.variant ?? 'secondary'}>
+              <Button
+                onClick={() => handleConfirm({ isConfirmed: false })}
+                variant={getConfig()?.cancelButton?.variant ?? 'secondary'}
+              >
                 {getConfig()?.cancelButton?.text ?? 'Cancel'}
               </Button>
-              <Button onClick={() => handleConfirm({ isConfirmed: true })} variant={getConfig()?.confirmButton?.variant ?? 'default'} disabled={!getIsConfirmEnabled()}>
+              <Button
+                onClick={() => handleConfirm({ isConfirmed: true })}
+                variant={getConfig()?.confirmButton?.variant ?? 'default'}
+                disabled={!getIsConfirmEnabled()}
+              >
                 {getConfig()?.confirmButton?.text ?? 'Confirm'}
               </Button>
             </div>

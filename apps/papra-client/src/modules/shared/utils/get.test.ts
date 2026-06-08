@@ -71,10 +71,7 @@ describe('get', () => {
 
   test('handles arrays in paths', () => {
     const obj = {
-      users: [
-        { name: 'John' },
-        { name: 'Jane' },
-      ],
+      users: [{ name: 'John' }, { name: 'Jane' }],
     };
 
     expect(get(obj, ['users', '0', 'name'])).toBe('John');
@@ -154,7 +151,11 @@ describe('get', () => {
     };
 
     expect(
-      get(apiResponseWithoutUserEmail, ['data', 'user', 'profile', 'contact', 'email'], ['meta', 'fallbackEmail']),
+      get(
+        apiResponseWithoutUserEmail,
+        ['data', 'user', 'profile', 'contact', 'email'],
+        ['meta', 'fallbackEmail'],
+      ),
     ).toBe('admin@example.com');
   });
 });

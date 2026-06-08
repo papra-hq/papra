@@ -22,16 +22,25 @@ export const ShareLinkRow: Component<{ shareLink: ShareLink }> = (props) => {
           <span class="truncate text-sm font-mono min-w-0">{props.shareLink.url}</span>
           <div
             class="size-4 flex-shrink-0 opacity-0 transition group-hover:opacity-100"
-            classList={{ 'i-tabler-check text-green opacity-100': getIsJustCopied(), 'i-tabler-copy': !getIsJustCopied() }}
+            classList={{
+              'i-tabler-check text-green opacity-100': getIsJustCopied(),
+              'i-tabler-copy': !getIsJustCopied(),
+            }}
           />
         </button>
         <div class="flex items-center gap-2 text-xs text-muted-foreground mt-1">
           <ShareLinkStatus shareLink={props.shareLink} />
 
-          <span>{props.shareLink.isPasswordProtected ? t('document-share-links.password-protected') : t('document-share-links.no-password')}</span>
+          <span>
+            {props.shareLink.isPasswordProtected
+              ? t('document-share-links.password-protected')
+              : t('document-share-links.no-password')}
+          </span>
           <span>-</span>
           <Show when={props.shareLink.expiresAt} fallback={t('document-share-links.never-expires')}>
-            {getExpiresAt => t('document-share-links.expires-on', { date: formatDate(getExpiresAt()) })}
+            {(getExpiresAt) =>
+              t('document-share-links.expires-on', { date: formatDate(getExpiresAt()) })
+            }
           </Show>
         </div>
       </div>

@@ -7,6 +7,9 @@ export type StoragePatternInterpolationContext = {
   now: Date;
 };
 
-export type StoragePatternExpressionTransformer = (args: { value: unknown; args?: string[] }) => string;
+export type StoragePatternExpressionTransformer = (args: {
+  value: unknown;
+  args?: string[];
+}) => string;
 
 export type StoragePatternConfig = Config['documentsStorage']['pattern'];

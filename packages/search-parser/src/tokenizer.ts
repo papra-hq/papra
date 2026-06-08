@@ -2,15 +2,15 @@ import type { Issue, Operator } from './parser.types';
 import { ERROR_CODES } from './errors';
 import { isWhitespace } from './string';
 
-export type Token
-  = | { type: 'LPAREN' }
-    | { type: 'RPAREN' }
-    | { type: 'AND' }
-    | { type: 'OR' }
-    | { type: 'NOT' }
-    | { type: 'FILTER'; field: string; operator: Operator; value: string }
-    | { type: 'TEXT'; value: string }
-    | { type: 'EOF' };
+export type Token =
+  | { type: 'LPAREN' }
+  | { type: 'RPAREN' }
+  | { type: 'AND' }
+  | { type: 'OR' }
+  | { type: 'NOT' }
+  | { type: 'FILTER'; field: string; operator: Operator; value: string }
+  | { type: 'TEXT'; value: string }
+  | { type: 'EOF' };
 
 export type TokenizeResult = {
   tokens: Token[];
@@ -27,7 +27,13 @@ function isWhitespaceOrParen(char: string): boolean {
   return isWhitespace(char) || char === '(' || char === ')';
 }
 
-export function tokenize({ query, maxTokens }: { query: string; maxTokens: number }): TokenizeResult {
+export function tokenize({
+  query,
+  maxTokens,
+}: {
+  query: string;
+  maxTokens: number;
+}): TokenizeResult {
   const tokens: Token[] = [];
   const issues: Issue[] = [];
   let pos = 0;

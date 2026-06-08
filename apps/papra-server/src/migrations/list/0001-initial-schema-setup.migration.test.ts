@@ -9,7 +9,9 @@ describe('0001-initial-schema-setup migration', () => {
       const { db } = setupDatabase({ url: ':memory:' });
       await initialSchemaSetupMigration.up({ db });
 
-      const { rows: existingTables } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
+      const { rows: existingTables } = await db.run(
+        sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`,
+      );
 
       expect(existingTables.map(({ name }) => name)).to.eql([
         'documents',
@@ -43,7 +45,9 @@ describe('0001-initial-schema-setup migration', () => {
 
       await initialSchemaSetupMigration.down({ db });
 
-      const { rows: existingTablesAfterDown } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
+      const { rows: existingTablesAfterDown } = await db.run(
+        sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`,
+      );
 
       expect(existingTablesAfterDown.map(({ name }) => name)).to.eql([]);
     });

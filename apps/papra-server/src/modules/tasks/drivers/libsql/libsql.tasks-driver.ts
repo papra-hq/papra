@@ -6,8 +6,13 @@ import { createLogger } from '../../../shared/logger/logger';
 
 const logger = createLogger({ namespace: 'tasks-driver:libsql' });
 
-export function createLibSqlTaskServiceDriver({ taskPersistenceConfig }: { taskPersistenceConfig: TaskPersistenceConfig }): TaskServiceDriverDefinition {
-  const { url, authToken, pollIntervalMs, migrateWithPragma } = taskPersistenceConfig.drivers.libSql;
+export function createLibSqlTaskServiceDriver({
+  taskPersistenceConfig,
+}: {
+  taskPersistenceConfig: TaskPersistenceConfig;
+}): TaskServiceDriverDefinition {
+  const { url, authToken, pollIntervalMs, migrateWithPragma } =
+    taskPersistenceConfig.drivers.libSql;
 
   const client = createClient({ url, authToken });
   const driver = createLibSqlDriver({ client, pollIntervalMs });

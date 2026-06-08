@@ -10,7 +10,10 @@ export const docExtractorDefinition = defineTextExtractor({
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],
   extract: async ({ arrayBuffer }) => {
-    const documentXml = await getFileContentFromArchive({ arrayBuffer, filePath: 'word/document.xml' });
+    const documentXml = await getFileContentFromArchive({
+      arrayBuffer,
+      filePath: 'word/document.xml',
+    });
 
     if (!documentXml) {
       return { content: '' };

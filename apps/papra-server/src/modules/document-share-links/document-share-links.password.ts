@@ -2,7 +2,17 @@ import type { ScryptOptions } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 
-async function scryptAsync({ password, salt, keyLength, options = {}}: { password: string; salt: Buffer; keyLength: number; options?: ScryptOptions }): Promise<Buffer> {
+async function scryptAsync({
+  password,
+  salt,
+  keyLength,
+  options = {},
+}: {
+  password: string;
+  salt: Buffer;
+  keyLength: number;
+  options?: ScryptOptions;
+}): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     scrypt(password, salt, keyLength, options, (err, derivedKey) => {
       if (err) {
@@ -23,7 +33,11 @@ const SCRYPT_PARAMS = {
   p: 1, // Parallelization
 };
 
-export async function hashPassword({ password }: { password: string }): Promise<{ passwordHash: string }> {
+export async function hashPassword({
+  password,
+}: {
+  password: string;
+}): Promise<{ passwordHash: string }> {
   const salt = randomBytes(SALT_LENGTH_BYTES);
   const options = {
     n: 2 ** SCRYPT_PARAMS.logN,
@@ -40,7 +54,13 @@ export async function hashPassword({ password }: { password: string }): Promise<
   };
 }
 
-export async function verifyPassword({ password, passwordHash }: { password: string; passwordHash: string }): Promise<{ isValid: boolean }> {
+export async function verifyPassword({
+  password,
+  passwordHash,
+}: {
+  password: string;
+  passwordHash: string;
+}): Promise<{ isValid: boolean }> {
   const [prefix, paramsPart, saltBase64 = '', hashBase64 = ''] = passwordHash.split('$').slice(1);
 
   if (prefix !== SCRYPT_PREFIX) {
@@ -67,5 +87,7 @@ export async function verifyPassword({ password, passwordHash }: { password: str
 
   const derivedKey = await scryptAsync({ password, salt, options, keyLength: expectedHash.length });
 
-  return { isValid: derivedKey.length === expectedHash.length && timingSafeEqual(derivedKey, expectedHash) };
+  return {
+    isValid: derivedKey.length === expectedHash.length && timingSafeEqual(derivedKey, expectedHash),
+  };
 }

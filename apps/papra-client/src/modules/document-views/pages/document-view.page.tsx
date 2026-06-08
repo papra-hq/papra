@@ -4,7 +4,12 @@ import { safely } from '@corentinth/chisels';
 import { useNavigate, useParams } from '@solidjs/router';
 import { keepPreviousData, useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
-import { createdAtColumn, DocumentsPaginatedList, standardActionsColumn, tagsColumn } from '@/modules/documents/components/documents-list.component';
+import {
+  createdAtColumn,
+  DocumentsPaginatedList,
+  standardActionsColumn,
+  tagsColumn,
+} from '@/modules/documents/components/documents-list.component';
 import { fetchOrganizationDocuments } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -12,7 +17,12 @@ import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-err
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/modules/ui/components/dropdown-menu';
 import { createToast } from '@/modules/ui/components/sonner';
 import { UpdateDocumentViewModal } from '../components/document-view-modals';
 import { deleteDocumentView, fetchDocumentView } from '../document-views.services';
@@ -30,38 +40,64 @@ export const DocumentViewPage: Component = () => {
     const confirmed = await confirm({
       title: t('document-views.delete.confirm.title'),
       message: t('document-views.delete.confirm.message'),
-      cancelButton: { text: t('document-views.delete.confirm.cancel-button'), variant: 'secondary' },
-      confirmButton: { text: t('document-views.delete.confirm.confirm-button'), variant: 'destructive' },
+      cancelButton: {
+        text: t('document-views.delete.confirm.cancel-button'),
+        variant: 'secondary',
+      },
+      confirmButton: {
+        text: t('document-views.delete.confirm.confirm-button'),
+        variant: 'destructive',
+      },
     });
 
     if (!confirmed) {
       return;
     }
 
-    const [, error] = await safely(deleteDocumentView({ organizationId: params.organizationId, documentViewId: params.documentViewId }));
+    const [, error] = await safely(
+      deleteDocumentView({
+        organizationId: params.organizationId,
+        documentViewId: params.documentViewId,
+      }),
+    );
 
     if (error) {
       createToast({ message: getErrorMessage({ error }), type: 'error' });
       return;
     }
 
-    await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'document-views'], refetchType: 'all' });
+    await queryClient.invalidateQueries({
+      queryKey: ['organizations', params.organizationId, 'document-views'],
+      refetchType: 'all',
+    });
     createToast({ message: t('document-views.delete.success'), type: 'success' });
     navigate(`/organizations/${params.organizationId}`);
   };
 
   const documentViewQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'document-views', params.documentViewId],
-    queryFn: () => fetchDocumentView({ organizationId: params.organizationId, documentViewId: params.documentViewId }),
+    queryFn: () =>
+      fetchDocumentView({
+        organizationId: params.organizationId,
+        documentViewId: params.documentViewId,
+      }),
   }));
 
   const documentsQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'documents', 'document-view', params.documentViewId, getPagination()],
-    queryFn: () => fetchOrganizationDocuments({
-      organizationId: params.organizationId,
-      searchQuery: documentViewQuery.data?.documentView?.query ?? '',
-      ...getPagination(),
-    }),
+    queryKey: [
+      'organizations',
+      params.organizationId,
+      'documents',
+      'document-view',
+      params.documentViewId,
+      getPagination(),
+    ],
+    queryFn: () =>
+      fetchOrganizationDocuments({
+        organizationId: params.organizationId,
+        searchQuery: documentViewQuery.data?.documentView?.query ?? '',
+        ...getPagination(),
+      }),
     enabled: Boolean(documentViewQuery.data?.documentView),
     placeholderData: keepPreviousData,
   }));
@@ -70,7 +106,7 @@ export const DocumentViewPage: Component = () => {
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
       <Suspense>
         <Show when={documentViewQuery.data?.documentView}>
-          {getDocumentView => (
+          {(getDocumentView) => (
             <>
               <div class="mb-6">
                 <div class="flex items-center justify-between gap-2 mb-1">
@@ -81,27 +117,40 @@ export const DocumentViewPage: Component = () => {
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       as={(triggerProps: DropdownMenuSubTriggerProps) => (
-                        <Button variant="ghost" size="icon" aria-label={t('document-views.actions.menu')} {...triggerProps}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t('document-views.actions.menu')}
+                          {...triggerProps}
+                        >
                           <div class="i-tabler-dots-vertical size-4" />
                         </Button>
                       )}
                     />
                     <DropdownMenuContent class="w-48">
-                      <DropdownMenuItem class="cursor-pointer" onClick={() => setIsUpdateOpen(true)}>
+                      <DropdownMenuItem
+                        class="cursor-pointer"
+                        onClick={() => setIsUpdateOpen(true)}
+                      >
                         <div class="i-tabler-edit size-4 mr-2" />
                         <span>{t('document-views.update')}</span>
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem class="cursor-pointer text-red" onClick={deleteDocumentViewConfirm}>
+                      <DropdownMenuItem
+                        class="cursor-pointer text-red"
+                        onClick={deleteDocumentViewConfirm}
+                      >
                         <div class="i-tabler-trash size-4 mr-2" />
                         <span>{t('document-views.delete')}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                <code class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground">{getDocumentView().query}</code>
+                <code class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground">
+                  {getDocumentView().query}
+                </code>
                 <Show when={getDocumentView().description}>
-                  {getDescription => (
+                  {(getDescription) => (
                     <p class="text-sm text-muted-foreground mt-2">{getDescription()}</p>
                   )}
                 </Show>
@@ -115,7 +164,7 @@ export const DocumentViewPage: Component = () => {
               />
 
               <Show when={documentsQuery.data}>
-                {getData => (
+                {(getData) => (
                   <DocumentsPaginatedList
                     documents={getData().documents}
                     documentsCount={getData().documentsCount}

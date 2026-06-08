@@ -28,7 +28,17 @@ export function createSubscriptionsServices({ config }: { config: Config }) {
   );
 }
 
-async function createCustomer({ stripeClient, email, ownerId, organizationId }: { stripeClient: Stripe; email: string; ownerId: string; organizationId: string }) {
+async function createCustomer({
+  stripeClient,
+  email,
+  ownerId,
+  organizationId,
+}: {
+  stripeClient: Stripe;
+  email: string;
+  ownerId: string;
+  organizationId: string;
+}) {
   const customer = await stripeClient.customers.create({
     email,
     metadata: {
@@ -57,7 +67,10 @@ export async function createCheckoutUrl({
 }) {
   const { clientBaseUrl } = getClientBaseUrl({ config });
 
-  const successUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-success?sessionId={CHECKOUT_SESSION_ID}' });
+  const successUrl = buildUrl({
+    baseUrl: clientBaseUrl,
+    path: '/checkout-success?sessionId={CHECKOUT_SESSION_ID}',
+  });
   const cancelUrl = buildUrl({ baseUrl: clientBaseUrl, path: '/checkout-cancel' });
 
   const { globalCouponId } = config.subscriptions;
@@ -96,8 +109,22 @@ export async function createCheckoutUrl({
   return { checkoutUrl: session.url };
 }
 
-async function parseWebhookEvent({ stripeClient, payload, signature, config }: { stripeClient: Stripe; payload: string | Buffer; signature: string; config: Config }) {
-  const event = await stripeClient.webhooks.constructEventAsync(payload, signature, config.subscriptions.stripeWebhookSecret);
+async function parseWebhookEvent({
+  stripeClient,
+  payload,
+  signature,
+  config,
+}: {
+  stripeClient: Stripe;
+  payload: string | Buffer;
+  signature: string;
+  config: Config;
+}) {
+  const event = await stripeClient.webhooks.constructEventAsync(
+    payload,
+    signature,
+    config.subscriptions.stripeWebhookSecret,
+  );
 
   return { event };
 }
@@ -123,13 +150,27 @@ async function getCustomerPortalUrl({
   return { customerPortalUrl: session.url };
 }
 
-async function getCheckoutSession({ stripeClient, sessionId }: { stripeClient: Stripe; sessionId: string }) {
+async function getCheckoutSession({
+  stripeClient,
+  sessionId,
+}: {
+  stripeClient: Stripe;
+  sessionId: string;
+}) {
   const checkoutSession = await stripeClient.checkout.sessions.retrieve(sessionId);
 
   return { checkoutSession };
 }
 
-async function getCoupon({ stripeClient, couponId, logger = createLogger({ namespace: 'subscriptions:services:getCoupon' }) }: { stripeClient: Stripe; couponId?: string; logger?: Logger }) {
+async function getCoupon({
+  stripeClient,
+  couponId,
+  logger = createLogger({ namespace: 'subscriptions:services:getCoupon' }),
+}: {
+  stripeClient: Stripe;
+  couponId?: string;
+  logger?: Logger;
+}) {
   if (isNil(couponId)) {
     return { coupon: null };
   }
@@ -160,13 +201,27 @@ async function getCoupon({ stripeClient, couponId, logger = createLogger({ names
   };
 }
 
-async function cancelSubscription({ stripeClient, subscriptionId }: { stripeClient: Stripe; subscriptionId: string }) {
+async function cancelSubscription({
+  stripeClient,
+  subscriptionId,
+}: {
+  stripeClient: Stripe;
+  subscriptionId: string;
+}) {
   await stripeClient.subscriptions.cancel(subscriptionId);
 
   return { success: true };
 }
 
-async function expireActiveCheckoutSessions({ stripeClient, customerId, logger = createLogger({ namespace: 'subscriptions:services:expireActiveCheckoutSessions' }) }: { stripeClient: Stripe; customerId: string; logger?: Logger }) {
+async function expireActiveCheckoutSessions({
+  stripeClient,
+  customerId,
+  logger = createLogger({ namespace: 'subscriptions:services:expireActiveCheckoutSessions' }),
+}: {
+  stripeClient: Stripe;
+  customerId: string;
+  logger?: Logger;
+}) {
   // List all open checkout sessions for this customer
   // Note: Checkout sessions auto-expire after 24h, so 100 limit is typically sufficient
   // For edge cases with 100+ sessions, we paginate through all results
@@ -206,7 +261,13 @@ async function expireActiveCheckoutSessions({ stripeClient, customerId, logger =
   logger.info({ customerId, totalSessions: sessionsIds.size }, 'Expired active checkout sessions');
 }
 
-async function getSubscription({ stripeClient, subscriptionId }: { stripeClient: Stripe; subscriptionId: string }) {
+async function getSubscription({
+  stripeClient,
+  subscriptionId,
+}: {
+  stripeClient: Stripe;
+  subscriptionId: string;
+}) {
   const subscription = await stripeClient.subscriptions.retrieve(subscriptionId);
 
   return { subscription };

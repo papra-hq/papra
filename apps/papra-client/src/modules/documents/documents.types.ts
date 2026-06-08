@@ -21,7 +21,8 @@ export type Document = {
   customProperties?: DocumentCustomProperty[];
 };
 
-export type DocumentActivityEvent = (typeof DOCUMENT_ACTIVITY_EVENTS)[keyof typeof DOCUMENT_ACTIVITY_EVENTS];
+export type DocumentActivityEvent =
+  (typeof DOCUMENT_ACTIVITY_EVENTS)[keyof typeof DOCUMENT_ACTIVITY_EVENTS];
 
 export type DocumentActivity = {
   id: string;

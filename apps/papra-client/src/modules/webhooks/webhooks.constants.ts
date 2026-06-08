@@ -9,7 +9,6 @@ export const WEBHOOK_EVENTS = [
       'document:tag:removed',
     ],
   },
-
 ] as const;
 
-export const WEBHOOK_EVENT_NAMES = WEBHOOK_EVENTS.flatMap(event => event.events);
+export const WEBHOOK_EVENT_NAMES = WEBHOOK_EVENTS.flatMap((event) => event.events);

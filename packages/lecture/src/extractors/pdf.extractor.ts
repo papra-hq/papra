@@ -20,7 +20,17 @@ async function extractPdfText({ pdf }: { pdf: PDFDocumentProxy }) {
 }
 
 // Inspired by unpdf's extractImages helper with added support for 1-bit grayscale images
-async function ocrPdfImages({ pdf, pageCount, extract, logger }: { pdf: PDFDocumentProxy; pageCount: number; extract: OcrExtract; logger?: Logger }) {
+async function ocrPdfImages({
+  pdf,
+  pageCount,
+  extract,
+  logger,
+}: {
+  pdf: PDFDocumentProxy;
+  pageCount: number;
+  extract: OcrExtract;
+  logger?: Logger;
+}) {
   const { OPS } = await getResolvedPDFJS();
   const imageTexts: string[] = [];
 
@@ -37,32 +47,56 @@ async function ocrPdfImages({ pdf, pageCount, extract, logger }: { pdf: PDFDocum
       const imageKey = operatorList.argsArray[opIndex][0];
 
       if (!imageKey || typeof imageKey !== 'string') {
-        logger?.warn({ pageIndex, pageCount, opIndex, imageKey }, 'Skipping PDF image with invalid image key for OCR.');
+        logger?.warn(
+          { pageIndex, pageCount, opIndex, imageKey },
+          'Skipping PDF image with invalid image key for OCR.',
+        );
         continue;
       }
 
-      const image = await new Promise(resolve => (imageKey.startsWith('g_') ? page.commonObjs : page.objs).get(imageKey, resolve));
+      const image = await new Promise((resolve) =>
+        (imageKey.startsWith('g_') ? page.commonObjs : page.objs).get(imageKey, resolve),
+      );
 
       if (!isValidPdfImage(image)) {
-        const get = (prop: string) => (image != null && typeof image === 'object' && prop in image ? (image as Record<string, unknown>)[prop] : undefined);
+        const get = (prop: string) =>
+          image != null && typeof image === 'object' && prop in image
+            ? (image as Record<string, unknown>)[prop]
+            : undefined;
 
-        logger?.warn({
-          pageIndex,
-          pageCount,
-          imageKey,
-          imageWidth: get('width'),
-          imageHeight: get('height'),
-          imageKind: get('kind'),
-        }, 'Skipping unsupported PDF image for OCR.');
+        logger?.warn(
+          {
+            pageIndex,
+            pageCount,
+            imageKey,
+            imageWidth: get('width'),
+            imageHeight: get('height'),
+            imageKind: get('kind'),
+          },
+          'Skipping unsupported PDF image for OCR.',
+        );
         continue;
       }
 
       pageImageCount++;
-      logger?.debug({ pageIndex, pageCount, imageKey, imageWidth: image.width, imageHeight: image.height, imageKind: image.kind }, 'Extracting image from PDF page for OCR.');
+      logger?.debug(
+        {
+          pageIndex,
+          pageCount,
+          imageKey,
+          imageWidth: image.width,
+          imageHeight: image.height,
+          imageKind: image.kind,
+        },
+        'Extracting image from PDF page for OCR.',
+      );
 
       const startTime = Date.now();
       const imageBuffer = await pdfImageToBuffer(image);
-      logger?.debug({ pageIndex, pageCount, durationMs: Date.now() - startTime }, 'Converted PDF image to PNG buffer for OCR.');
+      logger?.debug(
+        { pageIndex, pageCount, durationMs: Date.now() - startTime },
+        'Converted PDF image to PNG buffer for OCR.',
+      );
 
       const imageText = await extract(imageBuffer);
       imageTexts.push(imageText);
@@ -76,7 +110,17 @@ async function ocrPdfImages({ pdf, pageCount, extract, logger }: { pdf: PDFDocum
   return { imageTexts };
 }
 
-async function ocrPdfRenderedPages({ pdf, pageCount, extract, logger }: { pdf: PDFDocumentProxy; pageCount: number; extract: OcrExtract; logger?: Logger }) {
+async function ocrPdfRenderedPages({
+  pdf,
+  pageCount,
+  extract,
+  logger,
+}: {
+  pdf: PDFDocumentProxy;
+  pageCount: number;
+  extract: OcrExtract;
+  logger?: Logger;
+}) {
   const renderedTexts: string[] = [];
 
   for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
@@ -87,11 +131,17 @@ async function ocrPdfRenderedPages({ pdf, pageCount, extract, logger }: { pdf: P
     });
 
     const renderDelay = Date.now() - startTime;
-    logger?.debug({ pageIndex, pageCount, durationMs: renderDelay }, 'Rendered PDF page as image for OCR.');
+    logger?.debug(
+      { pageIndex, pageCount, durationMs: renderDelay },
+      'Rendered PDF page as image for OCR.',
+    );
 
     const pageText = await extract(Buffer.from(pageImage));
     const ocrDelay = Date.now() - startTime - renderDelay;
-    logger?.debug({ pageIndex, pageCount, durationMs: ocrDelay }, 'Extracted text from rendered page using OCR.');
+    logger?.debug(
+      { pageIndex, pageCount, durationMs: ocrDelay },
+      'Extracted text from rendered page using OCR.',
+    );
     renderedTexts.push(pageText);
   }
 
@@ -120,7 +170,10 @@ export const pdfExtractorDefinition = defineTextExtractor({
     const { imageTexts } = await ocrPdfImages({ pdf, pageCount, extract, logger });
 
     if (imageTexts.length > 0) {
-      logger?.info({ pageCount, imagesProcessedCount: imageTexts.length }, 'Completed OCR on PDF images.');
+      logger?.info(
+        { pageCount, imagesProcessedCount: imageTexts.length },
+        'Completed OCR on PDF images.',
+      );
 
       return {
         content: imageTexts.join('\n'),
@@ -132,7 +185,10 @@ export const pdfExtractorDefinition = defineTextExtractor({
 
     const { renderedTexts } = await ocrPdfRenderedPages({ pdf, pageCount, extract, logger });
 
-    logger?.info({ pageCount, pagesRendered: renderedTexts.length }, 'Completed OCR on rendered PDF pages.');
+    logger?.info(
+      { pageCount, pagesRendered: renderedTexts.length },
+      'Completed OCR on rendered PDF pages.',
+    );
 
     return {
       content: renderedTexts.join('\n'),

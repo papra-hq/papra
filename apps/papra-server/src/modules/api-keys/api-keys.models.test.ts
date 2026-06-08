@@ -6,10 +6,10 @@ describe('api-keys models', () => {
   describe('getApiKeyUiPrefix', () => {
     test('the prefix is what the user will see in the ui in order to identify the api key, it is the first 5 characters of the token regardless of the token prefix', () => {
       expect(
-        getApiKeyUiPrefix({ token: 'ppapi_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD' }),
-      ).to.eql(
-        { prefix: 'ppapi_29qxv' },
-      );
+        getApiKeyUiPrefix({
+          token: 'ppapi_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD',
+        }),
+      ).to.eql({ prefix: 'ppapi_29qxv' });
     });
   });
 
@@ -22,29 +22,27 @@ describe('api-keys models', () => {
         looksLikeAnApiKey('ppapi_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD'),
       ).toBe(true);
 
+      expect(looksLikeAnApiKey('')).toBe(false);
+
+      expect(looksLikeAnApiKey('ppapi_')).toBe(false);
+
       expect(
-        looksLikeAnApiKey(''),
+        looksLikeAnApiKey(
+          'ppapi_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD_extra',
+        ),
       ).toBe(false);
 
       expect(
-        looksLikeAnApiKey('ppapi_'),
-      ).toBe(false);
-
-      expect(
-        looksLikeAnApiKey('ppapi_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD_extra'),
-      ).toBe(false);
-
-      expect(
-        looksLikeAnApiKey('invalidprefix_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD'),
+        looksLikeAnApiKey(
+          'invalidprefix_29qxv9eCbRkQQGhwrVZCEXEFjOYpXZX07G4vDK4HT03Jp7fVHyJx1b0l6e1LIEPD',
+        ),
       ).toBe(false);
     });
 
     test('a freshly generated token should always look like an api key', () => {
       const { token } = generateApiToken();
 
-      expect(
-        looksLikeAnApiKey(token),
-      ).toBe(true);
+      expect(looksLikeAnApiKey(token)).toBe(true);
     });
   });
 });

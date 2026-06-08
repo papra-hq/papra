@@ -95,8 +95,7 @@ export function DocumentActionSheet({
       });
 
       await Sharing.shareAsync(fileUri);
-    } catch (error) {
-      console.error('Error downloading document file:', error);
+    } catch {
       showAlert({
         title: 'Error',
         message: 'Failed to download document file',
@@ -107,7 +106,8 @@ export function DocumentActionSheet({
   // Extract MIME type subtype, fallback to full MIME type if subtype is missing
   const mimeParts = document.mimeType.split('/');
   const mimeSubtype = mimeParts[1];
-  const displayMimeType = mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype.toUpperCase() : document.mimeType;
+  const displayMimeType =
+    mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype.toUpperCase() : document.mimeType;
 
   const actions: { key: ActionsKey; label: string; icon: IconName; onPress: () => void }[] = [
     {
@@ -123,15 +123,10 @@ export function DocumentActionSheet({
       onPress: handleDownloadAndShare,
     },
   ];
-  const filteredActions = actions.filter(action => !excludedActions.includes(action.key));
+  const filteredActions = actions.filter((action) => !excludedActions.includes(action.key));
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
@@ -157,7 +152,7 @@ export function DocumentActionSheet({
               </View>
 
               <View style={styles.actions}>
-                {filteredActions.map(action => (
+                {filteredActions.map((action) => (
                   <TouchableOpacity
                     key={action.key}
                     style={styles.actionRow}

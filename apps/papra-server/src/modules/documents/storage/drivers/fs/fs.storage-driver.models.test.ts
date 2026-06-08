@@ -9,11 +9,21 @@ const makeNonexistentFilePath = () => `unexisting-file-${Math.random().toString(
 describe('fs storage driver models', () => {
   describe('isFileNotFoundError', () => {
     test('file not found errors have a code property equal to ENOENT', () => {
-      expect(isFileNotFoundError({ error: Object.assign(new Error('File not found'), { code: 'ENOENT' }) })).to.eql(true);
+      expect(
+        isFileNotFoundError({
+          error: Object.assign(new Error('File not found'), { code: 'ENOENT' }),
+        }),
+      ).to.eql(true);
       expect(isFileNotFoundError({ error: { code: 'ENOENT' } })).to.eql(true);
 
-      expect(isFileNotFoundError({ error: Object.assign(new Error('Some other error'), { code: 'SOME_OTHER_CODE' }) })).to.eql(false);
-      expect(isFileNotFoundError({ error: new Error('File not found without code') })).to.eql(false);
+      expect(
+        isFileNotFoundError({
+          error: Object.assign(new Error('Some other error'), { code: 'SOME_OTHER_CODE' }),
+        }),
+      ).to.eql(false);
+      expect(isFileNotFoundError({ error: new Error('File not found without code') })).to.eql(
+        false,
+      );
       expect(isFileNotFoundError({ error: null })).to.eql(false);
       expect(isFileNotFoundError({ error: undefined })).to.eql(false);
       expect(isFileNotFoundError({ error: 'Some string error' })).to.eql(false);

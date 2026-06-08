@@ -19,7 +19,7 @@ export const GET: APIRoute = async (context) => {
     title: 'Papra Blog',
     description: 'News and updates about Papra.',
     site: context.site!.href,
-    items: posts.map(item => ({
+    items: posts.map((item) => ({
       title: item.data.title,
       description: item.data.description,
       link: `/blog/${item.slug}/`,

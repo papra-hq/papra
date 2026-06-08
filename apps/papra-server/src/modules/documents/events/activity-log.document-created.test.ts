@@ -20,7 +20,9 @@ describe('activity-log document-created', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({

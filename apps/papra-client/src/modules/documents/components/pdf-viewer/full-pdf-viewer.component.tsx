@@ -110,13 +110,12 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
 
       <div class="flex-1 flex overflow-hidden min-h-0">
         <div
-          class={cn('shrink-0 h-full overflow-hidden', { 'transition-width duration-200': !isDragging() })}
+          class={cn('shrink-0 h-full overflow-hidden', {
+            'transition-width duration-200': !isDragging(),
+          })}
           style={{ width: isSidebarOpen() ? `${sidebarWidth()}px` : '0px' }}
         >
-          <SideBar
-            store={store}
-            thumbsRef={thumbsRef}
-          />
+          <SideBar store={store} thumbsRef={thumbsRef} />
         </div>
 
         <div

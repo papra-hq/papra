@@ -1,13 +1,25 @@
 import type { Component } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+} from '@tanstack/solid-table';
 import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { UserListDetail } from '../components/user-list-detail.component';
 import { listUsers } from '../users.services';
@@ -19,10 +31,11 @@ export const AdminListUsersPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'users', search(), pagination()],
-    queryFn: () => listUsers({
-      search: search() || undefined,
-      ...pagination(),
-    }),
+    queryFn: () =>
+      listUsers({
+        search: search() || undefined,
+        ...pagination(),
+      }),
   }));
 
   const table = createSolidTable({
@@ -30,16 +43,15 @@ export const AdminListUsersPage: Component = () => {
       return query.data?.users ?? [];
     },
     columns: [
-
       {
         header: t('admin.users.table.user'),
         accessorKey: 'email',
-        cell: data => <UserListDetail {...data.row.original} />,
+        cell: (data) => <UserListDetail {...data.row.original} />,
       },
       {
         header: t('admin.users.table.id'),
         accessorKey: 'id',
-        cell: data => (
+        cell: (data) => (
           <A
             href={`/admin/users/${data.getValue<string>()}`}
             class="font-mono hover:underline text-muted-foreground"
@@ -51,25 +63,28 @@ export const AdminListUsersPage: Component = () => {
       {
         header: t('admin.users.table.status'),
         accessorKey: 'emailVerified',
-        cell: data => (
+        cell: (data) => (
           <Badge variant={data.getValue<boolean>() ? 'default' : 'outline'}>
-            {data.getValue<boolean>() ? t('admin.users.table.status.verified') : t('admin.users.table.status.unverified')}
+            {data.getValue<boolean>()
+              ? t('admin.users.table.status.verified')
+              : t('admin.users.table.status.unverified')}
           </Badge>
         ),
       },
       {
         header: t('admin.users.table.orgs'),
         accessorKey: 'organizationCount',
-        cell: data => (
-          <div class="text-center">
-            {data.getValue<number>()}
-          </div>
-        ),
+        cell: (data) => <div class="text-center">{data.getValue<number>()}</div>,
       },
       {
         header: t('admin.users.table.created'),
         accessorKey: 'createdAt',
-        cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
+        cell: (data) => (
+          <RelativeTime
+            class="text-muted-foreground text-sm"
+            date={new Date(data.getValue<string>())}
+          />
+        ),
       },
     ],
     get rowCount() {
@@ -95,12 +110,8 @@ export const AdminListUsersPage: Component = () => {
   return (
     <div class="p-6">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold mb-1">
-          {t('admin.users.title')}
-        </h1>
-        <p class="text-sm text-muted-foreground">
-          {t('admin.users.description')}
-        </p>
+        <h1 class="text-xl font-bold mb-1">{t('admin.users.title')}</h1>
+        <p class="text-sm text-muted-foreground">{t('admin.users.description')}</p>
       </div>
 
       <div class="mb-4">
@@ -116,24 +127,26 @@ export const AdminListUsersPage: Component = () => {
 
       <Show
         when={!query.isLoading}
-        fallback={<div class="text-center py-8 text-muted-foreground">{t('admin.users.loading')}</div>}
+        fallback={
+          <div class="text-center py-8 text-muted-foreground">{t('admin.users.loading')}</div>
+        }
       >
         <Show
           when={(query.data?.users.length ?? 0) > 0}
-          fallback={(
+          fallback={
             <div class="text-center py-8 text-muted-foreground">
               {search() ? t('admin.users.no-results') : t('admin.users.empty')}
             </div>
-          )}
+          }
         >
           <div class="border-y">
             <Table>
               <TableHeader>
                 <For each={table.getHeaderGroups()}>
-                  {headerGroup => (
+                  {(headerGroup) => (
                     <TableRow>
                       <For each={headerGroup.headers}>
-                        {header => (
+                        {(header) => (
                           <TableHead>
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </TableHead>
@@ -145,10 +158,10 @@ export const AdminListUsersPage: Component = () => {
               </TableHeader>
               <TableBody>
                 <For each={table.getRowModel().rows}>
-                  {row => (
+                  {(row) => (
                     <TableRow>
                       <For each={row.getVisibleCells()}>
-                        {cell => (
+                        {(cell) => (
                           <TableCell>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
@@ -164,8 +177,13 @@ export const AdminListUsersPage: Component = () => {
           <div class="flex flex-col items-center justify-between mt-4 md:flex-row">
             <div class="text-sm text-muted-foreground">
               {t('admin.users.pagination.info', {
-                start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
-                end: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0),
+                start:
+                  table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                end: Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  query.data?.totalCount ?? 0,
+                ),
                 total: query.data?.totalCount ?? 0,
               })}
             </div>

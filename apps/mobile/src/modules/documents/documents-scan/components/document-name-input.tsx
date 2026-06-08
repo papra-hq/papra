@@ -32,7 +32,6 @@ export function DocumentNameInput({ value, onChangeText, format }: DocumentNameI
         />
         <Text style={styles.suffix}>{getFileExtension(format)}</Text>
       </View>
-
     </View>
   );
 }
@@ -69,6 +68,5 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     suffix: {
       color: themeColors.mutedForeground,
     },
-
   });
 }

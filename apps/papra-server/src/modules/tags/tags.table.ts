@@ -10,25 +10,34 @@ export const tagsTable = sqliteTable(
     ...createPrimaryKeyField({ prefix: tagIdPrefix }),
     ...createTimestampColumns(),
 
-    organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     name: text('name').notNull(),
     normalizedName: text('normalized_name'),
     color: text('color').notNull(),
     description: text('description'),
   },
-  table => [
+  (table) => [
     // To ensure that tags are unique per organization
-    unique('tags_organization_id_normalized_name_unique').on(table.organizationId, table.normalizedName),
+    unique('tags_organization_id_normalized_name_unique').on(
+      table.organizationId,
+      table.normalizedName,
+    ),
   ],
 );
 
 export const documentsTagsTable = sqliteTable(
   'documents_tags',
   {
-    documentId: text('document_id').notNull().references(() => documentsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
-    tagId: text('tag_id').notNull().references(() => tagsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    documentId: text('document_id')
+      .notNull()
+      .references(() => documentsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => tagsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   },
-  table => [
+  (table) => [
     primaryKey({
       name: 'documents_tags_pkey',
       columns: [table.documentId, table.tagId],

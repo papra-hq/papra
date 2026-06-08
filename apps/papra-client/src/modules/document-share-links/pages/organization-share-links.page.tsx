@@ -1,14 +1,26 @@
 import type { Component } from 'solid-js';
 import { A, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/solid-table';
 import { For, Show, Suspense } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useCopy } from '@/modules/shared/utils/copy';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { ShareLinkActions } from '../components/share-link-actions.component';
 import { getShareLinkStatus, ShareLinkStatus } from '../components/share-link-status.component';
 import { fetchOrganizationShareLinks } from '../document-share-links.services';
@@ -17,20 +29,20 @@ const CopyLink: Component<{ url: string }> = (props) => {
   const { copy, getIsJustCopied } = useCopy();
 
   return (
-    <Button class="group gap-1 cursor-pointer bg-transparent! px-0 text-muted-foreground transition max-w-150px" variant="ghost" onClick={() => copy({ text: props.url })}>
+    <Button
+      class="group gap-1 cursor-pointer bg-transparent! px-0 text-muted-foreground transition max-w-150px"
+      variant="ghost"
+      onClick={() => copy({ text: props.url })}
+    >
       <span class="truncate max-w-full group-hover:text-foreground transition" title={props.url}>
         {new URL(props.url).pathname}
-
       </span>
 
-      {getIsJustCopied()
-        ? (
-            <div class="i-tabler-check size-4 opacity-0 group-hover:opacity-100 transition text-green flex-shrink-0" />
-          )
-        : (
-            <div class="i-tabler-copy size-4 opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
-          )}
-
+      {getIsJustCopied() ? (
+        <div class="i-tabler-check size-4 opacity-0 group-hover:opacity-100 transition text-green flex-shrink-0" />
+      ) : (
+        <div class="i-tabler-copy size-4 opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
+      )}
     </Button>
   );
 };
@@ -53,7 +65,7 @@ export const OrganizationShareLinksPage: Component = () => {
         header: () => t('document-share-links.management.table.document'),
         accessorKey: 'documentName',
         sortingFn: 'alphanumeric',
-        cell: data => (
+        cell: (data) => (
           <div class="max-w-xs flex items-center gap-2">
             <A
               href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.documentId}`}
@@ -69,49 +81,46 @@ export const OrganizationShareLinksPage: Component = () => {
         header: () => t('document-share-links.management.table.link'),
         accessorKey: 'token',
         sortingFn: 'alphanumeric',
-        cell: data => (
-          <CopyLink url={data.row.original.url} />
-        ),
+        cell: (data) => <CopyLink url={data.row.original.url} />,
       },
       {
         id: 'status',
         header: () => t('document-share-links.management.table.status'),
-        accessorFn: shareLink => getShareLinkStatus({ shareLink }),
+        accessorFn: (shareLink) => getShareLinkStatus({ shareLink }),
         sortingFn: 'alphanumeric',
-        cell: data => (
-          <ShareLinkStatus status={data.getValue()} />
-        ),
+        cell: (data) => <ShareLinkStatus status={data.getValue()} />,
       },
       {
         header: () => t('document-share-links.management.table.security'),
         accessorKey: 'isPasswordProtected',
         sortingFn: 'basic',
-        cell: data => (
-          data.getValue<boolean>()
-            ? (
-                <div class="inline-flex items-center gap-1 ">
-                  <div class="i-tabler-lock size-4" />
-                  {t('document-share-links.management.security.password')}
-                </div>
-              )
-            : (
-                <div class="inline-flex items-center gap-1 text-muted-foreground">
-                  <div class="i-tabler-lock-open size-4" />
-                  {t('document-share-links.management.security.public')}
-                </div>
-              )
-        ),
+        cell: (data) =>
+          data.getValue<boolean>() ? (
+            <div class="inline-flex items-center gap-1 ">
+              <div class="i-tabler-lock size-4" />
+              {t('document-share-links.management.security.password')}
+            </div>
+          ) : (
+            <div class="inline-flex items-center gap-1 text-muted-foreground">
+              <div class="i-tabler-lock-open size-4" />
+              {t('document-share-links.management.security.public')}
+            </div>
+          ),
       },
       {
         header: () => t('document-share-links.management.table.expiry'),
         accessorKey: 'expiresAt',
         sortingFn: 'datetime',
-        cell: data => (
+        cell: (data) => (
           <Show
             when={data.getValue<Date | undefined>()}
-            fallback={<span class="text-muted-foreground">{t('document-share-links.management.never')}</span>}
+            fallback={
+              <span class="text-muted-foreground">
+                {t('document-share-links.management.never')}
+              </span>
+            }
           >
-            {getExpiresAt => <RelativeTime date={getExpiresAt()} />}
+            {(getExpiresAt) => <RelativeTime date={getExpiresAt()} />}
           </Show>
         ),
       },
@@ -119,20 +128,26 @@ export const OrganizationShareLinksPage: Component = () => {
         header: () => t('document-share-links.management.table.last-accessed'),
         accessorKey: 'lastAccessedAt',
         sortingFn: 'datetime',
-        cell: data => (
+        cell: (data) => (
           <Show
             when={data.getValue<Date | undefined>()}
-            fallback={<span class="text-muted-foreground">{t('document-share-links.management.never')}</span>}
+            fallback={
+              <span class="text-muted-foreground">
+                {t('document-share-links.management.never')}
+              </span>
+            }
           >
-            {getLastAccessedAt => <RelativeTime date={getLastAccessedAt()} />}
+            {(getLastAccessedAt) => <RelativeTime date={getLastAccessedAt()} />}
           </Show>
         ),
       },
       {
         id: 'actions',
-        header: () => <div class="text-right">{t('document-share-links.management.table.actions')}</div>,
+        header: () => (
+          <div class="text-right">{t('document-share-links.management.table.actions')}</div>
+        ),
         enableSorting: false,
-        cell: data => (
+        cell: (data) => (
           <div class="text-right">
             <ShareLinkActions shareLink={data.row.original} />
           </div>
@@ -150,33 +165,38 @@ export const OrganizationShareLinksPage: Component = () => {
     <div class="p-6 mt-4 pb-32 ">
       <Suspense>
         <Show when={query.data?.shareLinks}>
-          {getShareLinks => (
+          {(getShareLinks) => (
             <Show
               when={getShareLinks().length > 0}
-              fallback={(
+              fallback={
                 <EmptyState
                   title={t('document-share-links.management.empty.title')}
                   icon="i-tabler-share"
                   description={t('document-share-links.management.empty.description')}
                 />
-              )}
+              }
             >
               <div class="pb-6">
                 <h2 class="text-xl font-bold">{t('document-share-links.management.title')}</h2>
-                <p class="text-muted-foreground mt-1">{t('document-share-links.management.description')}</p>
+                <p class="text-muted-foreground mt-1">
+                  {t('document-share-links.management.description')}
+                </p>
               </div>
 
               <Table>
                 <TableHeader>
                   <For each={table.getHeaderGroups()}>
-                    {headerGroup => (
+                    {(headerGroup) => (
                       <TableRow>
                         <For each={headerGroup.headers}>
-                          {header => (
+                          {(header) => (
                             <TableHead>
                               <Show
                                 when={header.column.getCanSort()}
-                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                                fallback={flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                               >
                                 <button
                                   class="flex items-center gap-1 cursor-pointer select-none"
@@ -203,10 +223,10 @@ export const OrganizationShareLinksPage: Component = () => {
                 </TableHeader>
                 <TableBody>
                   <For each={table.getRowModel().rows}>
-                    {row => (
+                    {(row) => (
                       <TableRow>
                         <For each={row.getVisibleCells()}>
-                          {cell => (
+                          {(cell) => (
                             <TableCell>
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>

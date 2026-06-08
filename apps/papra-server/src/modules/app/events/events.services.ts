@@ -13,16 +13,29 @@ type HandlerMeta = {
 
 export type EventServices = ReturnType<typeof createEventServices<AppEvents>>;
 
-export function createEventServices<T extends Record<string, Record<string, unknown>> = AppEvents>({ logger = createLogger({ namespace: 'events-services' }) }: { logger?: Logger } = {}) {
-  const handlers = new Map<keyof T, { handlerName: string; handler: (payload: T[keyof T], meta: HandlerMeta) => Promise<void> | void }[]>();
+export function createEventServices<T extends Record<string, Record<string, unknown>> = AppEvents>({
+  logger = createLogger({ namespace: 'events-services' }),
+}: { logger?: Logger } = {}) {
+  const handlers = new Map<
+    keyof T,
+    {
+      handlerName: string;
+      handler: (payload: T[keyof T], meta: HandlerMeta) => Promise<void> | void;
+    }[]
+  >();
 
   return {
-    onEvent<K extends keyof T>({ eventName, handlerName, handler }: {
+    onEvent<K extends keyof T>({
+      eventName,
+      handlerName,
+      handler,
+    }: {
       eventName: K;
       handlerName: string;
       handler: (payload: T[K], meta: HandlerMeta) => Promise<void>;
     }) {
-      const isDuplicateName = handlers.get(eventName)?.some(h => h.handlerName === handlerName) ?? false;
+      const isDuplicateName =
+        handlers.get(eventName)?.some((h) => h.handlerName === handlerName) ?? false;
 
       if (isDuplicateName) {
         throw createError({
@@ -35,7 +48,10 @@ export function createEventServices<T extends Record<string, Record<string, unkn
 
       handlers.set(eventName, [
         ...(handlers.get(eventName) ?? []),
-        { handlerName, handler: handler as (payload: T[keyof T], meta: HandlerMeta) => Promise<void> },
+        {
+          handlerName,
+          handler: handler as (payload: T[keyof T], meta: HandlerMeta) => Promise<void>,
+        },
       ]);
     },
 
@@ -57,26 +73,33 @@ export function createEventServices<T extends Record<string, Record<string, unkn
         return;
       }
 
-      logger.debug({
-        eventName,
-        eventId,
-        handlerCount: eventHandlers.length,
-        handlerNames: eventHandlers.map(({ handlerName }) => handlerName),
-      }, 'Event emitted');
+      logger.debug(
+        {
+          eventName,
+          eventId,
+          handlerCount: eventHandlers.length,
+          handlerNames: eventHandlers.map(({ handlerName }) => handlerName),
+        },
+        'Event emitted',
+      );
 
       setImmediate(async () => {
-        await Promise.allSettled(eventHandlers.map(async ({ handlerName, handler }) => {
-          await wrapWithLoggerContext({ eventId, eventName, handlerName }, async () => {
-            const [, error] = await safely(async () => handler(payload, { emittedAt: now, eventId }));
+        await Promise.allSettled(
+          eventHandlers.map(async ({ handlerName, handler }) => {
+            await wrapWithLoggerContext({ eventId, eventName, handlerName }, async () => {
+              const [, error] = await safely(async () =>
+                handler(payload, { emittedAt: now, eventId }),
+              );
 
-            if (error) {
-              logger.error({ error }, 'Error in event handler');
-              return;
-            }
+              if (error) {
+                logger.error({ error }, 'Error in event handler');
+                return;
+              }
 
-            logger.info('Event handler executed successfully');
-          });
-        }));
+              logger.info('Event handler executed successfully');
+            });
+          }),
+        );
       });
     },
   };

@@ -20,9 +20,11 @@ export const sheetVariants = cva(
     variants: {
       side: {
         top: 'inset-x-0 top-0 border-b data-[closed]:slide-out-to-top data-[expanded]:slide-in-from-top',
-        bottom: 'inset-x-0 bottom-0 border-t data-[closed]:slide-out-to-bottom data-[expanded]:slide-in-from-bottom',
+        bottom:
+          'inset-x-0 bottom-0 border-t data-[closed]:slide-out-to-bottom data-[expanded]:slide-in-from-bottom',
         left: 'inset-y-0 left-0 h-full w-3/4 border-r data-[closed]:slide-out-to-left data-[expanded]:slide-in-from-left sm:max-w-sm',
-        right: 'inset-y-0 right-0 h-full w-3/4 border-l data-[closed]:slide-out-to-right data-[expanded]:slide-in-from-right sm:max-w-sm',
+        right:
+          'inset-y-0 right-0 h-full w-3/4 border-l data-[closed]:slide-out-to-right data-[expanded]:slide-in-from-right sm:max-w-sm',
       },
     },
     defaultVariants: {
@@ -32,19 +34,17 @@ export const sheetVariants = cva(
 );
 
 type sheetContentProps<T extends ValidComponent = 'div'> = ParentProps<
-  DialogContentProps<T>
-  & VariantProps<typeof sheetVariants> & {
-    class?: string;
-  }
+  DialogContentProps<T> &
+    VariantProps<typeof sheetVariants> & {
+      class?: string;
+    }
 >;
 
-export function SheetContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, sheetContentProps<T>>) {
+export function SheetContent<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, sheetContentProps<T>>,
+) {
   const merge = mergeProps<sheetContentProps<T>[]>({ side: 'right' }, props);
-  const [local, rest] = splitProps(merge as sheetContentProps, [
-    'class',
-    'children',
-    'side',
-  ]);
+  const [local, rest] = splitProps(merge as sheetContentProps, ['class', 'children', 'side']);
 
   return (
     <DialogPrimitive.Portal>
@@ -68,7 +68,9 @@ type sheetTitleProps<T extends ValidComponent = 'h2'> = DialogTitleProps<T> & {
   class?: string;
 };
 
-export function SheetTitle<T extends ValidComponent = 'h2'>(props: PolymorphicProps<T, sheetTitleProps<T>>) {
+export function SheetTitle<T extends ValidComponent = 'h2'>(
+  props: PolymorphicProps<T, sheetTitleProps<T>>,
+) {
   const [local, rest] = splitProps(props as sheetTitleProps, ['class']);
 
   return (
@@ -79,12 +81,13 @@ export function SheetTitle<T extends ValidComponent = 'h2'>(props: PolymorphicPr
   );
 }
 
-type sheetDescriptionProps<T extends ValidComponent = 'p'>
-  = DialogDescriptionProps<T> & {
-    class?: string;
-  };
+type sheetDescriptionProps<T extends ValidComponent = 'p'> = DialogDescriptionProps<T> & {
+  class?: string;
+};
 
-export function SheetDescription<T extends ValidComponent = 'p'>(props: PolymorphicProps<T, sheetDescriptionProps<T>>) {
+export function SheetDescription<T extends ValidComponent = 'p'>(
+  props: PolymorphicProps<T, sheetDescriptionProps<T>>,
+) {
   const [local, rest] = splitProps(props as sheetDescriptionProps, ['class']);
 
   return (
@@ -99,13 +102,7 @@ export function SheetHeader(props: ComponentProps<'div'>) {
   const [local, rest] = splitProps(props, ['class']);
 
   return (
-    <div
-      class={cn(
-        'flex flex-col space-y-2 text-center sm:text-left',
-        local.class,
-      )}
-      {...rest}
-    />
+    <div class={cn('flex flex-col space-y-2 text-center sm:text-left', local.class)} {...rest} />
   );
 }
 
@@ -114,10 +111,7 @@ export function SheetFooter(props: ComponentProps<'div'>) {
 
   return (
     <div
-      class={cn(
-        'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-        local.class,
-      )}
+      class={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', local.class)}
       {...rest}
     />
   );

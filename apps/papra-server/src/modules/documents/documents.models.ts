@@ -11,12 +11,24 @@ export function joinStorageKeyParts(...parts: string[]) {
   return parts.join('/');
 }
 
-export function buildOriginalDocumentKey({ documentId, organizationId, fileName }: { documentId: string; organizationId: string; fileName: string }) {
+export function buildOriginalDocumentKey({
+  documentId,
+  organizationId,
+  fileName,
+}: {
+  documentId: string;
+  organizationId: string;
+  fileName: string;
+}) {
   const { extension } = getExtension({ fileName });
 
   const newFileName = isDefined(extension) ? `${documentId}.${extension}` : documentId;
 
-  const originalDocumentStorageKey = joinStorageKeyParts(organizationId, ORIGINAL_DOCUMENTS_STORAGE_KEY, newFileName);
+  const originalDocumentStorageKey = joinStorageKeyParts(
+    organizationId,
+    ORIGINAL_DOCUMENTS_STORAGE_KEY,
+    newFileName,
+  );
 
   return { originalDocumentStorageKey };
 }
@@ -29,20 +41,25 @@ export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: n
   return maxUploadSize > 0;
 }
 
-export function formatDocumentForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ document }: { document: T }) {
-  return omit(
-    document,
-    [
-      'fileEncryptionAlgorithm',
-      'fileEncryptionKeyWrapped',
-      'fileEncryptionKekVersion',
-      'originalStorageKey',
-    ],
-  );
+export function formatDocumentForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({
+  document,
+}: {
+  document: T;
+}) {
+  return omit(document, [
+    'fileEncryptionAlgorithm',
+    'fileEncryptionKeyWrapped',
+    'fileEncryptionKekVersion',
+    'originalStorageKey',
+  ]);
 }
 
-export function formatDocumentsForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({ documents }: { documents: T[] }) {
-  return documents.map(document => formatDocumentForApi({ document }));
+export function formatDocumentsForApi<T extends PartialBy<DbSelectableDocument, 'content'>>({
+  documents,
+}: {
+  documents: T[];
+}) {
+  return documents.map((document) => formatDocumentForApi({ document }));
 }
 
 export function ensureSafeFileName(fileName: string) {

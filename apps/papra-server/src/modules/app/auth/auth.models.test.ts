@@ -40,9 +40,7 @@ describe('auth models', () => {
 
       const { trustedOrigins } = getTrustedOrigins({ config });
 
-      expect(
-        trustedOrigins,
-      ).to.deep.equal([
+      expect(trustedOrigins).to.deep.equal([
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
@@ -82,21 +80,14 @@ describe('auth models', () => {
           baseUrl: 'http://localhost:3000',
         },
         server: {
-          trustedOrigins: [
-            'http://localhost:3001',
-          ],
-          trustedAppSchemes: [
-            'papra://',
-            'exp://',
-          ],
+          trustedOrigins: ['http://localhost:3001'],
+          trustedAppSchemes: ['papra://', 'exp://'],
         },
       } as Config;
 
       const { trustedOrigins } = getTrustedOrigins({ config });
 
-      expect(
-        trustedOrigins,
-      ).to.deep.equal([
+      expect(trustedOrigins).to.deep.equal([
         'http://localhost:3000',
         'http://localhost:3001',
         'papra://',
@@ -108,204 +99,258 @@ describe('auth models', () => {
   describe('checkAuthentication', () => {
     describe('coherence checks', () => {
       test('when the auth type is null, the authentication is invalid', () => {
-        expect(isAuthenticationValid({
-          authType: null,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: null,
+          }),
+        ).to.eql(false);
       });
 
       test('when the auth type is api-key, the apiKey is required', () => {
-        expect(isAuthenticationValid({
-          authType: 'api-key',
-          apiKey: null,
-          session: null,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'api-key',
+            apiKey: null,
+            session: null,
+          }),
+        ).to.eql(false);
       });
 
       test('when the auth type is session, the session is required', () => {
-        expect(isAuthenticationValid({
-          authType: 'session',
-          apiKey: null,
-          session: null,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'session',
+            apiKey: null,
+            session: null,
+          }),
+        ).to.eql(false);
       });
 
       test('when the auth type is api-key, the session is not allowed', () => {
-        expect(isAuthenticationValid({
-          authType: 'api-key',
-          apiKey: {} as ApiKey,
-          session: {} as Session,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'api-key',
+            apiKey: {} as ApiKey,
+            session: {} as Session,
+          }),
+        ).to.eql(false);
       });
 
       test('when the auth type is session, the apiKey is not allowed', () => {
-        expect(isAuthenticationValid({
-          authType: 'session',
-          apiKey: {} as ApiKey,
-          session: {} as Session,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'session',
+            apiKey: {} as ApiKey,
+            session: {} as Session,
+          }),
+        ).to.eql(false);
       });
 
       test('when the auth type is api-key, the requiredApiKeyPermissions are required', () => {
-        expect(isAuthenticationValid({
-          authType: 'api-key',
-          apiKey: {} as ApiKey,
-          session: null,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'api-key',
+            apiKey: {} as ApiKey,
+            session: null,
+          }),
+        ).to.eql(false);
       });
 
       test('when both the apiKey and the session are provided, the authentication is invalid', () => {
-        expect(isAuthenticationValid({
-          authType: 'api-key',
-          apiKey: {} as ApiKey,
-          session: {} as Session,
-        })).to.eql(false);
+        expect(
+          isAuthenticationValid({
+            authType: 'api-key',
+            apiKey: {} as ApiKey,
+            session: {} as Session,
+          }),
+        ).to.eql(false);
       });
     });
 
     test('when the auth type is api-key, all permissions must match', () => {
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: [] as ApiKeyPermissions[],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:create'],
-      })).to.eql(false);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: [] as ApiKeyPermissions[],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:create'],
+        }),
+      ).to.eql(false);
 
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: ['documents:create'],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:create'],
-      })).to.eql(true);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: ['documents:create'],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:create'],
+        }),
+      ).to.eql(true);
 
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: ['documents:create'],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:read'],
-      })).to.eql(false);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: ['documents:create'],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:read'],
+        }),
+      ).to.eql(false);
 
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: ['documents:create'],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:create', 'documents:read'],
-      })).to.eql(false);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: ['documents:create'],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:create', 'documents:read'],
+        }),
+      ).to.eql(false);
 
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: ['documents:create', 'documents:read'],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:create', 'documents:read'],
-      })).to.eql(true);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: ['documents:create', 'documents:read'],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:create', 'documents:read'],
+        }),
+      ).to.eql(true);
 
-      expect(isAuthenticationValid({
-        authType: 'api-key',
-        apiKey: {
-          permissions: ['documents:create', 'documents:read', 'documents:update'],
-        } as ApiKey,
-        requiredApiKeyPermissions: ['documents:create', 'documents:read'],
-      })).to.eql(true);
+      expect(
+        isAuthenticationValid({
+          authType: 'api-key',
+          apiKey: {
+            permissions: ['documents:create', 'documents:read', 'documents:update'],
+          } as ApiKey,
+          requiredApiKeyPermissions: ['documents:create', 'documents:read'],
+        }),
+      ).to.eql(true);
     });
 
     test('when the auth type is session, the session should exist', () => {
-      expect(isAuthenticationValid({
-        authType: 'session',
-        session: null,
-      })).to.eql(false);
+      expect(
+        isAuthenticationValid({
+          authType: 'session',
+          session: null,
+        }),
+      ).to.eql(false);
 
-      expect(isAuthenticationValid({
-        authType: 'session',
-        session: {} as Session,
-      })).to.eql(true);
+      expect(
+        isAuthenticationValid({
+          authType: 'session',
+          session: {} as Session,
+        }),
+      ).to.eql(true);
     });
   });
 
   describe('isEmailDomainAllowed', () => {
     test('when no forbidden domains are configured, all email domains are allowed', () => {
-      expect(isEmailDomainAllowed({
-        email: 'user@example.com',
-        forbiddenEmailDomains: undefined,
-      })).to.eql(true);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          forbiddenEmailDomains: undefined,
+        }),
+      ).to.eql(true);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@example.com',
-        forbiddenEmailDomains: new Set(),
-      })).to.eql(true);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          forbiddenEmailDomains: new Set(),
+        }),
+      ).to.eql(true);
     });
 
     test('when an email domain is in the forbidden list, the email is rejected', () => {
       const forbiddenEmailDomains = new Set(['tempmail.com', 'disposable.email']);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@tempmail.com',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@tempmail.com',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@disposable.email',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@disposable.email',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
     });
 
     test('when an email domain is not in the forbidden list, the email is allowed', () => {
       const forbiddenEmailDomains = new Set(['tempmail.com', 'disposable.email']);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@example.com',
-        forbiddenEmailDomains,
-      })).to.eql(true);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@example.com',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(true);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@papra.app',
-        forbiddenEmailDomains,
-      })).to.eql(true);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@papra.app',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(true);
     });
 
     test('email domain matching is case-insensitive', () => {
       const forbiddenEmailDomains = new Set(['tempmail.com']);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@TEMPMAIL.COM',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@TEMPMAIL.COM',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@TempMail.Com',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@TempMail.Com',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
     });
 
     test('when an email has no @ symbol, it is rejected', () => {
       const forbiddenEmailDomains = new Set(['notanemail']);
 
-      expect(isEmailDomainAllowed({
-        email: 'notanemail',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'notanemail',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
 
-      expect(isEmailDomainAllowed({
-        email: 'notanemail@',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'notanemail@',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
     });
 
     test('email domains with whitespace are properly trimmed before checking', () => {
       const forbiddenEmailDomains = new Set(['tempmail.com']);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@tempmail.com  ',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@tempmail.com  ',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
 
-      expect(isEmailDomainAllowed({
-        email: 'user@  tempmail.com  ',
-        forbiddenEmailDomains,
-      })).to.eql(false);
+      expect(
+        isEmailDomainAllowed({
+          email: 'user@  tempmail.com  ',
+          forbiddenEmailDomains,
+        }),
+      ).to.eql(false);
     });
   });
 });

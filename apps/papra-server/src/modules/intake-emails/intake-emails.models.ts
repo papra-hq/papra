@@ -56,14 +56,18 @@ export function getIsFromAllowedOrigin({
   allowedOrigins: string[];
 }) {
   return allowedOrigins
-    .map(allowedOrigin => allowedOrigin.toLowerCase())
+    .map((allowedOrigin) => allowedOrigin.toLowerCase())
     .includes(origin.toLowerCase());
 }
 
-export function getRecipientAddresses({ email }: { email: {
-  to: { address: string }[];
-  originalTo: { address: string }[];
-}; }): string[] {
+export function getRecipientAddresses({
+  email,
+}: {
+  email: {
+    to: { address: string }[];
+    originalTo: { address: string }[];
+  };
+}): string[] {
   const { to, originalTo } = email;
 
   return uniq([...to, ...originalTo].map(({ address }) => address.toLowerCase()));

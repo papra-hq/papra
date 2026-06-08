@@ -54,7 +54,9 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   await ensureLocalDatabaseDirectoryExists({ config });
   const { db } = setupDatabase({ ...config.database, shutdownServices });
 
-  const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+  const documentsStorageService = createDocumentStorageService({
+    documentStorageConfig: config.documentsStorage,
+  });
   const taskServices = createTaskServices({ config });
   const trackingServices = createTrackingServices({ config, shutdownServices });
   const eventServices = createEventServices();
@@ -64,12 +66,22 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   const subscriptionsServices = createSubscriptionsServices({ config });
   const documentSearchServices = createDocumentSearchServices({ db, config });
   const webhookRepository = createWebhookRepository({ db });
-  const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository });
+  const webhookTriggerServices = createWebhookTriggerServices({
+    webhooksConfig: config.webhooks,
+    webhookRepository,
+  });
   const kvStore = buildKvStore({ config, db });
 
   // --- Services initialization
   await taskServices.initialize();
-  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config, webhookTriggerServices });
+  registerEventHandlers({
+    eventServices,
+    trackingServices,
+    db,
+    documentSearchServices,
+    config,
+    webhookTriggerServices,
+  });
 
   return {
     config,

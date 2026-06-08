@@ -37,7 +37,13 @@ const HEADER_LENGTH = MAGIC.length + IV_LENGTH;
 
 // | MAGIC (4 bytes) | IV (12 bytes) | ... encrypted data ... | TAG (16 bytes) |
 
-export function createEncryptTransformer({ key, iv = randomBytes(IV_LENGTH) }: { key: BinaryLike; iv?: Buffer }) {
+export function createEncryptTransformer({
+  key,
+  iv = randomBytes(IV_LENGTH),
+}: {
+  key: BinaryLike;
+  iv?: Buffer;
+}) {
   const cipher = createCipheriv(ALGORITHM, key, iv);
   const header = Buffer.concat([MAGIC, iv]);
 
@@ -85,8 +91,12 @@ export function createDecryptTransformer({ key }: { key: BinaryLike }) {
       const chunkWithPreviousLast16Bytes = Buffer.concat([last16Bytes, chunk]);
       const isThereAtLeast16Bytes = chunkWithPreviousLast16Bytes.length >= TAG_LENGTH;
 
-      let chunkWithoutLast16Bytes: Buffer = isThereAtLeast16Bytes ? chunkWithPreviousLast16Bytes.subarray(0, chunkWithPreviousLast16Bytes.length - TAG_LENGTH) : Buffer.alloc(0);
-      last16Bytes = isThereAtLeast16Bytes ? chunkWithPreviousLast16Bytes.subarray(chunkWithPreviousLast16Bytes.length - TAG_LENGTH) : chunkWithPreviousLast16Bytes;
+      let chunkWithoutLast16Bytes: Buffer = isThereAtLeast16Bytes
+        ? chunkWithPreviousLast16Bytes.subarray(0, chunkWithPreviousLast16Bytes.length - TAG_LENGTH)
+        : Buffer.alloc(0);
+      last16Bytes = isThereAtLeast16Bytes
+        ? chunkWithPreviousLast16Bytes.subarray(chunkWithPreviousLast16Bytes.length - TAG_LENGTH)
+        : chunkWithPreviousLast16Bytes;
 
       if (header.length < HEADER_LENGTH) {
         const headerChunk = chunkWithoutLast16Bytes.subarray(0, HEADER_LENGTH - header.length);

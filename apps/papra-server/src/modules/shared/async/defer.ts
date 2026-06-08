@@ -2,7 +2,10 @@ import type { Logger } from '../logger/logger';
 import { safely } from '@corentinth/chisels';
 import { createLogger } from '../logger/logger';
 
-export function safelyDefer(fn: () => Promise<void>, { logger = createLogger({ namespace: 'defer' }) }: { logger?: Logger } = {}) {
+export function safelyDefer(
+  fn: () => Promise<void>,
+  { logger = createLogger({ namespace: 'defer' }) }: { logger?: Logger } = {},
+) {
   setImmediate(async () => {
     const [, error] = await safely(fn);
 

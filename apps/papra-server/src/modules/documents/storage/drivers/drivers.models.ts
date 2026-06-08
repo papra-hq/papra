@@ -34,7 +34,9 @@ export type StorageServices = {
   fileExists: StorageDriver['fileExists'];
 };
 
-export type StorageDriverFactory = (args: { documentStorageConfig: DocumentStorageConfig }) => StorageDriver;
+export type StorageDriverFactory = (args: {
+  documentStorageConfig: DocumentStorageConfig;
+}) => StorageDriver;
 
 export function defineStorageDriver<T extends StorageDriverFactory>(factory: T) {
   return factory;

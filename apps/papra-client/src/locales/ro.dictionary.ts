@@ -5,7 +5,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'auth.request-password-reset.title': 'Resetează parola',
   'auth.request-password-reset.description': 'Introdu adresa de e-mail pentru a reseta parola.',
-  'auth.request-password-reset.requested': 'Dacă există un cont pentru acest e-mail, am trimis un e-mail pentru resetarea parolei.',
+  'auth.request-password-reset.requested':
+    'Dacă există un cont pentru acest e-mail, am trimis un e-mail pentru resetarea parolei.',
   'auth.request-password-reset.back-to-login': 'Înapoi la autentificare',
   'auth.request-password-reset.form.email.label': 'E-mail',
   'auth.request-password-reset.form.email.placeholder': 'Exemplu: popescu@papra.app',
@@ -20,14 +21,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.reset-password.form.new-password.label': 'Parolă nouă',
   'auth.reset-password.form.new-password.placeholder': 'Exemplu: **********',
   'auth.reset-password.form.new-password.required': 'Introdu parola nouă',
-  'auth.reset-password.form.new-password.min-length': 'Parola trebuie să fie de minim {{ minLength }} caractere',
-  'auth.reset-password.form.new-password.max-length': 'Parola trebuie să fie de maxim {{ maxLength }} de caractere',
+  'auth.reset-password.form.new-password.min-length':
+    'Parola trebuie să fie de minim {{ minLength }} caractere',
+  'auth.reset-password.form.new-password.max-length':
+    'Parola trebuie să fie de maxim {{ maxLength }} de caractere',
   'auth.reset-password.form.submit': 'Resetează parola',
 
   'auth.email-provider.open': 'Deschide {{ provider }}',
 
   'auth.login.title': 'Autentificare la Papra',
-  'auth.login.description': 'Introdu e-mailul sau folosește autentificarea cu cont social pentru a accesa contul Papra.',
+  'auth.login.description':
+    'Introdu e-mailul sau folosește autentificarea cu cont social pentru a accesa contul Papra.',
   'auth.login.login-with-provider': 'Autentificare cu {{ provider }}',
   'auth.login.no-account': 'Nu ai cont?',
   'auth.login.register': 'Înregistrare',
@@ -43,16 +47,20 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Autentificare',
 
   'auth.login.two-factor.title': 'Verificare în doi pași',
-  'auth.login.two-factor.description.totp': 'Introduceți codul de verificare de 6 cifre din aplicația dvs. de autentificare.',
-  'auth.login.two-factor.description.backup-code': 'Introduceți unul dintre codurile dvs. de rezervă pentru a accesa contul.',
+  'auth.login.two-factor.description.totp':
+    'Introduceți codul de verificare de 6 cifre din aplicația dvs. de autentificare.',
+  'auth.login.two-factor.description.backup-code':
+    'Introduceți unul dintre codurile dvs. de rezervă pentru a accesa contul.',
   'auth.login.two-factor.code.label.totp': 'Cod de autentificare',
   'auth.login.two-factor.code.label.backup-code': 'Cod de rezervă',
   'auth.login.two-factor.code.placeholder.backup-code': 'Introduceți codul de rezervă',
   'auth.login.two-factor.code.required': 'Vă rugăm să introduceți codul de verificare',
-  'auth.login.two-factor.trust-device.label': 'Acordă încredere acestui dispozitiv pentru 30 de zile',
+  'auth.login.two-factor.trust-device.label':
+    'Acordă încredere acestui dispozitiv pentru 30 de zile',
   'auth.login.two-factor.back': 'Înapoi la autentificare',
   'auth.login.two-factor.submit': 'Verifică',
-  'auth.login.two-factor.verification-failed': 'Verificare eșuată. Verificați codul și încercați din nou.',
+  'auth.login.two-factor.verification-failed':
+    'Verificare eșuată. Verificați codul și încercați din nou.',
   'auth.login.two-factor.use-backup-code': 'Folosește cod de rezervă',
   'auth.login.two-factor.use-totp': 'Folosește aplicația de autentificare',
 
@@ -65,7 +73,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Ai deja un cont?',
   'auth.register.login': 'Autentificare',
   'auth.register.registration-disabled.title': 'Înregistrarea este dezactivată',
-  'auth.register.registration-disabled.description': 'Crearea de conturi noi este momentan dezactivată pe această instanță de Papra. Doar utilizatorii cu conturi existente se pot autentifica. Dacă aceasta pare a fi o greșeală, contactează administratorul acestei instanțe.',
+  'auth.register.registration-disabled.description':
+    'Crearea de conturi noi este momentan dezactivată pe această instanță de Papra. Doar utilizatorii cu conturi existente se pot autentifica. Dacă aceasta pare a fi o greșeală, contactează administratorul acestei instanțe.',
   'auth.register.form.email.label': 'E-mail',
   'auth.register.form.email.placeholder': 'Exemplu: popescu@papra.app',
   'auth.register.form.email.required': 'Introdu adresa de e-mail',
@@ -73,8 +82,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.password.label': 'Parola',
   'auth.register.form.password.placeholder': 'Setează parola',
   'auth.register.form.password.required': 'Te rugăm să introduci parola',
-  'auth.register.form.password.min-length': 'Parola trebuie să fie de minim {{ minLength }} caractere',
-  'auth.register.form.password.max-length': 'Parola trebuie să fie de maxim {{ maxLength }} de caractere',
+  'auth.register.form.password.min-length':
+    'Parola trebuie să fie de minim {{ minLength }} caractere',
+  'auth.register.form.password.max-length':
+    'Parola trebuie să fie de maxim {{ maxLength }} de caractere',
   'auth.register.form.name.label': 'Nume',
   'auth.register.form.name.placeholder': 'Exemplu: Andrei Popescu',
   'auth.register.form.name.required': 'Introdu numele',
@@ -82,21 +93,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.submit': 'Înregistrare',
 
   'auth.email-validation-required.title': 'Verifică-ți email-ul',
-  'auth.email-validation-required.description': 'A fost trimis un e-mail de verificare la adresa ta de e-mail. Te rugăm să îți verifici adresa de e-mail dând click pe linkul din e-mail.',
+  'auth.email-validation-required.description':
+    'A fost trimis un e-mail de verificare la adresa ta de e-mail. Te rugăm să îți verifici adresa de e-mail dând click pe linkul din e-mail.',
 
   'auth.email-verification.success.title': 'Email verificat',
-  'auth.email-verification.success.description': 'Email-ul tău a fost verificat cu succes. Acum te poți autentifica în contul tău.',
+  'auth.email-verification.success.description':
+    'Email-ul tău a fost verificat cu succes. Acum te poți autentifica în contul tău.',
   'auth.email-verification.success.login': 'Mergi la autentificare',
   'auth.email-verification.error.title': 'Verificare eșuată',
-  'auth.email-verification.error.description': 'Linkul de verificare este invalid sau a expirat. Te rugăm să soliciți un nou e-mail de verificare autentificându-te.',
+  'auth.email-verification.error.description':
+    'Linkul de verificare este invalid sau a expirat. Te rugăm să soliciți un nou e-mail de verificare autentificându-te.',
   'auth.email-verification.error.back': 'Înapoi la autentificare',
 
-  'auth.legal-links.description': 'Continuând, confirmați că întelegeți și sunteti de acord cu {{ terms }} și {{ privacy }}.',
+  'auth.legal-links.description':
+    'Continuând, confirmați că întelegeți și sunteti de acord cu {{ terms }} și {{ privacy }}.',
   'auth.legal-links.terms': 'Termenii și condițiile',
   'auth.legal-links.privacy': 'Politica de confidențialitate',
 
   'auth.no-auth-provider.title': 'Niciun furnizor de autentificare',
-  'auth.no-auth-provider.description': 'Nu este niciun furnizor de autentificare activat pe această instanță de Papra. Te rugăm să contactezi administratorul aceste instanțe pentru a le activa.',
+  'auth.no-auth-provider.description':
+    'Nu este niciun furnizor de autentificare activat pe această instanță de Papra. Te rugăm să contactezi administratorul aceste instanțe pentru a le activa.',
 
   // User settings
 
@@ -115,11 +131,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.name.updated': 'Numele a fost schimbat',
 
   'user.settings.logout.title': 'Deconectare',
-  'user.settings.logout.description': 'Vei fi deconectat din cont. Te poți conecta înapoi ulterior.',
+  'user.settings.logout.description':
+    'Vei fi deconectat din cont. Te poți conecta înapoi ulterior.',
   'user.settings.logout.button': 'Deconectare',
 
   'user.settings.two-factor.title': 'Autentificare cu doi factori',
-  'user.settings.two-factor.description': 'Adăugați un nivel suplimentar de securitate contului dvs.',
+  'user.settings.two-factor.description':
+    'Adăugați un nivel suplimentar de securitate contului dvs.',
   'user.settings.two-factor.status.enabled': 'Activată',
   'user.settings.two-factor.status.disabled': 'Dezactivată',
   'user.settings.two-factor.enable-button': 'Activează A2F',
@@ -136,22 +154,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Configurare autentificare cu doi factori',
   'user.settings.two-factor.setup-dialog.step1.title': 'Pasul 1: Scanați codul QR',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Scanați codul QR de mai jos sau introduceți manual cheia de configurare în aplicația dvs. de autentificare.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Scanați codul QR de mai jos sau introduceți manual cheia de configurare în aplicația dvs. de autentificare.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Copiază cheia de configurare',
   'user.settings.two-factor.setup-dialog.step2.title': 'Pasul 2: Verificați codul',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Introduceți codul de 6 cifre generat de aplicația dvs. de autentificare pentru a verifica și activa autentificarea cu doi factori.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Introduceți codul de 6 cifre generat de aplicația dvs. de autentificare pentru a verifica și activa autentificarea cu doi factori.',
   'user.settings.two-factor.setup-dialog.cancel': 'Anulează',
   'user.settings.two-factor.setup-dialog.verify': 'Verifică și activează A2F',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Coduri de rezervă',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Salvați aceste coduri de rezervă într-un loc sigur. Le puteți folosi pentru a accesa contul dacă pierdeți accesul la aplicația dvs. de autentificare.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Salvați aceste coduri de rezervă într-un loc sigur. Le puteți folosi pentru a accesa contul dacă pierdeți accesul la aplicația dvs. de autentificare.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Copiază codurile de rezervă',
   'user.settings.two-factor.backup-codes-dialog.download': 'Descarcă codurile de rezervă',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Am salvat codurile',
 
   'user.settings.two-factor.disable-dialog.title': 'Dezactivare autentificare cu doi factori',
-  'user.settings.two-factor.disable-dialog.description': 'Introduceți parola pentru a dezactiva A2F. Aceasta va face contul dvs. mai puțin sigur.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Introduceți parola pentru a dezactiva A2F. Aceasta va face contul dvs. mai puțin sigur.',
   'user.settings.two-factor.disable-dialog.password.label': 'Parolă',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Introduceți parola',
   'user.settings.two-factor.disable-dialog.password.required': 'Vă rugăm să introduceți parola',
@@ -159,7 +181,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': 'Dezactivează A2F',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Regenerare coduri de rezervă',
-  'user.settings.two-factor.regenerate-dialog.description': 'Aceasta va invalida toate codurile de rezervă existente și va genera altele noi. Introduceți parola pentru a continua.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Aceasta va invalida toate codurile de rezervă existente și va genera altele noi. Introduceți parola pentru a continua.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Parolă',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Introduceți parola',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Vă rugăm să introduceți parola',
@@ -173,33 +196,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Organizațiile tale',
-  'organizations.list.description': 'Organizațiile sunt o modalitate de a grupa documentele și de a gestiona accesul la acestea. Poți crea multiple organizații și invita membrii echipei tale să colaboreze.',
+  'organizations.list.description':
+    'Organizațiile sunt o modalitate de a grupa documentele și de a gestiona accesul la acestea. Poți crea multiple organizații și invita membrii echipei tale să colaboreze.',
   'organizations.list.create-new': 'Creează o organizație nouă',
   'organizations.list.back': 'Înapoi la organizații',
   'organizations.list.deleted.title': 'Organizații șterse',
-  'organizations.list.deleted.description': 'Organizațiile șterse sunt păstrate {{ days }} zile înainte de a fi eliminate definitiv. Le poți restaura în această perioadă.',
+  'organizations.list.deleted.description':
+    'Organizațiile șterse sunt păstrate {{ days }} zile înainte de a fi eliminate definitiv. Le poți restaura în această perioadă.',
   'organizations.list.deleted.empty': 'Nu există organizații șterse',
-  'organizations.list.deleted.empty-description': 'Când ștergi o organizație, va apărea aici pentru {{ days }} zile înainte de a fi ștearsă definitiv.',
+  'organizations.list.deleted.empty-description':
+    'Când ștergi o organizație, va apărea aici pentru {{ days }} zile înainte de a fi ștearsă definitiv.',
   'organizations.list.deleted.restore': 'Restaurează',
   'organizations.list.deleted.restore-success': 'Organizația a fost restaurată cu succes',
   'organizations.list.deleted.restore-confirm.title': 'Restaurează organizația',
-  'organizations.list.deleted.restore-confirm.message': 'Ești sigur că vrei să restaurezi această organizație? Va fi mutată înapoi în lista organizațiilor active.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Ești sigur că vrei să restaurezi această organizație? Va fi mutată înapoi în lista organizațiilor active.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Restaurează organizația',
   'organizations.list.deleted.deleted-at': 'Ștearsă {{ date }}',
   'organizations.list.deleted.purge-at': 'Va fi ștearsă definitiv {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} zi, {daysUntilPurge} zile }} rămas{{ daysUntilPurge, =1:ă, e}})',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} zi, {daysUntilPurge} zile }} rămas{{ daysUntilPurge, =1:ă, e}})',
 
   'organizations.details.no-documents.title': 'Niciun document',
-  'organizations.details.no-documents.description': 'Încă nu există documente în această organizație. Încarcă niște documente pentru a începe.',
+  'organizations.details.no-documents.description':
+    'Încă nu există documente în această organizație. Încarcă niște documente pentru a începe.',
   'organizations.details.upload-documents': 'Încarcă documente',
   'organizations.details.documents-count': 'documente in total',
   'organizations.details.total-size': 'mărime totala',
   'organizations.details.latest-documents': 'Ultimele documente încarcate',
 
   'organizations.create.title': 'Creează o organizație nouă',
-  'organizations.create.description': 'Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.',
+  'organizations.create.description':
+    'Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.',
   'organizations.create.back': 'Înapoi',
-  'organizations.create.error.max-count-reached': 'Ai ajuns la numărul maxim de organizații pe care le poți crea. Dacă ai nevoie de mai multe, contactează asistența.',
+  'organizations.create.error.max-count-reached':
+    'Ai ajuns la numărul maxim de organizații pe care le poți crea. Dacă ai nevoie de mai multe, contactează asistența.',
   'organizations.create.form.name.label': 'Numle organizației',
   'organizations.create.form.name.placeholder': 'Ex. Acme SRL.',
   'organizations.create.form.name.required': 'Introdu numele organizației',
@@ -207,7 +238,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Organizația a fost creată cu succes',
 
   'organizations.create-first.title': 'Creează organizația',
-  'organizations.create-first.description': 'Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.',
+  'organizations.create-first.description':
+    'Documentele sunt grupate în funcție de organizație. Poți crea mai multe organizații pentru documente diferite, de exemplu, pentru uz personal și profesional.',
   'organizations.create-first.default-name': 'Organizația mea',
   'organizations.create-first.user-name': 'Organizația lui {{ name }}',
 
@@ -223,17 +255,22 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.subscription.manage': 'Gestionează-ți abonamentul',
   'organization.settings.subscription.error': 'Eroare la obținerea URL-ului portalului de client',
   'organization.settings.delete.title': 'Șterge organizația',
-  'organization.settings.delete.description': 'Ștergerea acestei organizații va elimina definitiv toate datele asociate cu aceasta.',
+  'organization.settings.delete.description':
+    'Ștergerea acestei organizații va elimina definitiv toate datele asociate cu aceasta.',
   'organization.settings.delete.confirm.title': 'Șterge organizatia',
-  'organization.settings.delete.confirm.message': 'Sigur doriți să ștergeți această organizație? Organizația va fi marcată pentru ștergere și eliminată definitiv după {{ days }} zile. În această perioadă, o puteți restaura din lista dvs. de organizații. Toate documentele și datele vor fi șterse definitiv după această perioadă.',
+  'organization.settings.delete.confirm.message':
+    'Sigur doriți să ștergeți această organizație? Organizația va fi marcată pentru ștergere și eliminată definitiv după {{ days }} zile. În această perioadă, o puteți restaura din lista dvs. de organizații. Toate documentele și datele vor fi șterse definitiv după această perioadă.',
   'organization.settings.delete.confirm.confirm-button': 'Șterge organizație',
   'organization.settings.delete.confirm.cancel-button': 'Anulează',
   'organization.settings.delete.success': 'Organizație ștearsă cu succes',
-  'organization.settings.delete.only-owner': 'Doar proprietarul organizației poate șterge această organizație.',
-  'organization.settings.delete.has-active-subscription': 'Nu se poate șterge organizația cu un abonament activ, vă rugăm să anulați mai întâi abonamentul de mai sus.',
+  'organization.settings.delete.only-owner':
+    'Doar proprietarul organizației poate șterge această organizație.',
+  'organization.settings.delete.has-active-subscription':
+    'Nu se poate șterge organizația cu un abonament activ, vă rugăm să anulați mai întâi abonamentul de mai sus.',
 
   'organization.usage.page.title': 'Utilizare',
-  'organization.usage.page.description': 'Vizualizează utilizarea curentă și limitele organizației tale.',
+  'organization.usage.page.description':
+    'Vizualizează utilizarea curentă și limitele organizației tale.',
   'organization.usage.storage.title': 'Stocare documente',
   'organization.usage.storage.description': 'Spațiul total folosit de documentele tale',
   'organization.usage.intake-emails.title': 'E-mailuri de intrare',
@@ -245,14 +282,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Membri',
   'organizations.members.description': 'Gestionează membrii organizației tale',
   'organizations.members.invite-member': 'Invită membru',
-  'organizations.members.invite-member-disabled-tooltip': 'Doar administratorii sau proprietarii pot invita membrii la organizație',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Doar administratorii sau proprietarii pot invita membrii la organizație',
   'organizations.members.remove-from-organization': 'Elimina din organizație',
   'organizations.members.role': 'Rol',
   'organizations.members.roles.owner': 'Proprietar',
   'organizations.members.roles.admin': 'Admin',
   'organizations.members.roles.member': 'Membru',
   'organizations.members.delete.confirm.title': 'Elimină membrul',
-  'organizations.members.delete.confirm.message': 'Ești sigur că vrei să elimini acest membru din organizație?',
+  'organizations.members.delete.confirm.message':
+    'Ești sigur că vrei să elimini acest membru din organizație?',
   'organizations.members.delete.confirm.confirm-button': 'Elimină',
   'organizations.members.delete.confirm.cancel-button': 'Anulează',
   'organizations.members.delete.success': 'Membru eliminat cu succes',
@@ -271,14 +310,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invite-member.form.role.label': 'Rol',
   'organizations.invite-member.form.submit': 'Invită membru',
   'organizations.invite-member.success.message': 'Membru invitat',
-  'organizations.invite-member.success.description': 'Adresă de e-mail a fost invitată la organizație.',
+  'organizations.invite-member.success.description':
+    'Adresă de e-mail a fost invitată la organizație.',
   'organizations.invite-member.error.message': 'Eroare la invitarea membrului',
 
   'organizations.invitations.title': 'Invitații',
   'organizations.invitations.description': 'Gestionează invitațiile la organizație',
   'organizations.invitations.list.cta': 'Invită membru',
   'organizations.invitations.list.empty.title': 'Nicio invitație în așteptare',
-  'organizations.invitations.list.empty.description': 'Încă nu ai fost invitat la nicio organizație.',
+  'organizations.invitations.list.empty.description':
+    'Încă nu ai fost invitat la nicio organizație.',
   'organizations.invitations.status.pending': 'În așteptare',
   'organizations.invitations.status.accepted': 'Acceptată',
   'organizations.invitations.status.rejected': 'Respinsă',
@@ -286,11 +327,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.status.cancelled': 'Anulată',
   'organizations.invitations.resend': 'Retrimite invitația',
   'organizations.invitations.cancel.title': 'Anulează invitația',
-  'organizations.invitations.cancel.description': 'Ești sigur că vrei să anulezi această invitație?',
+  'organizations.invitations.cancel.description':
+    'Ești sigur că vrei să anulezi această invitație?',
   'organizations.invitations.cancel.confirm': 'Anulează invitația',
   'organizations.invitations.cancel.cancel': 'Anulează',
   'organizations.invitations.resend.title': 'Retrimite invitația',
-  'organizations.invitations.resend.description': 'Ești sigur că vrei să retrimiți această invitație? Se va trimite un nou e-mail destinatarului.',
+  'organizations.invitations.resend.description':
+    'Ești sigur că vrei să retrimiți această invitație? Se va trimite un nou e-mail destinatarului.',
   'organizations.invitations.resend.confirm': 'Retrimite invitația',
   'organizations.invitations.resend.cancel': 'Anulează',
 
@@ -313,7 +356,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Documente',
   'documents.list.no-documents.title': 'Niciun document',
-  'documents.list.no-documents.description': 'Încă nu există documente în aceasta organizație. Începe prin a încarca câteva documente.',
+  'documents.list.no-documents.description':
+    'Încă nu există documente în aceasta organizație. Începe prin a încarca câteva documente.',
   'documents.list.no-results': 'Nu au fost găsite documente',
   'documents.list.table.headers.file-name': 'Nume fișier',
   'documents.list.table.headers.created': 'Creat la',
@@ -321,13 +365,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Acțiuni',
   'documents.list.table.headers.tags': 'Etichete',
   'documents.list.search.placeholder': 'Caută documente...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:document, documente }} corespunzător acestei căutări',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:document, documente }} în total',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:document, documente }} corespunzător acestei căutări',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:document, documente }} în total',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Conținut',
   'documents.tabs.activity': 'Activitate',
-  'documents.deleted.message': 'Acest document a fost șters și va fi eliminat definitiv după {{ days }} zile.',
+  'documents.deleted.message':
+    'Acest document a fost șters și va fi eliminat definitiv după {{ days }} zile.',
   'documents.actions.download.title': 'Descarcă',
   'documents.actions.download.error': 'Nu s-a putut descărca documentul',
   'documents.actions.restore': 'Restaurează',
@@ -336,8 +383,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Anulează',
   'documents.actions.save': 'Salvează',
   'documents.actions.saving': 'Se salvează...',
-  'documents.content.alert': 'Conținutul documentului este extras automat din document la încarcare. Este folosit doar pentru căutare și indexare.',
-  'documents.content.empty-placeholder': 'Acest document nu are conținut extra, poți introduce manual aici.',
+  'documents.content.alert':
+    'Conținutul documentului este extras automat din document la încarcare. Este folosit doar pentru căutare și indexare.',
+  'documents.content.empty-placeholder':
+    'Acest document nu are conținut extra, poți introduce manual aici.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Nume',
   'documents.info.type': 'Tip',
@@ -359,10 +408,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Document',
 
   'custom-properties.list.title': 'Proprietăți personalizate',
-  'custom-properties.list.description': 'Definiți câmpuri de metadate personalizate pentru documentele dvs. Proprietățile pot fi text, numere, date, valori booleene sau liste de selectare.',
+  'custom-properties.list.description':
+    'Definiți câmpuri de metadate personalizate pentru documentele dvs. Proprietățile pot fi text, numere, date, valori booleene sau liste de selectare.',
   'custom-properties.list.create-button': 'Creare proprietate',
   'custom-properties.list.empty.title': 'Proprietăți personalizate',
-  'custom-properties.list.empty.description': 'Proprietățile personalizate vă permit să adăugați metadate structurate la documentele dvs., precum date de expirare, nume de companii sau sume.',
+  'custom-properties.list.empty.description':
+    'Proprietățile personalizate vă permit să adăugați metadate structurate la documentele dvs., precum date de expirare, nume de companii sau sume.',
   'custom-properties.list.table.name': 'Nume',
   'custom-properties.list.table.type': 'Tip',
   'custom-properties.list.table.description': 'Descriere',
@@ -370,7 +421,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Acțiuni',
   'custom-properties.list.table.no-description': 'Fără descriere',
   'custom-properties.list.delete.confirm-title': 'Ștergere proprietate personalizată',
-  'custom-properties.list.delete.confirm-message': 'Sigur doriți să ștergeți proprietatea personalizată „{{ name }}”? Această acțiune nu poate fi anulată.',
+  'custom-properties.list.delete.confirm-message':
+    'Sigur doriți să ștergeți proprietatea personalizată „{{ name }}”? Această acțiune nu poate fi anulată.',
   'custom-properties.list.delete.confirm-button': 'Șterge',
   'custom-properties.list.delete.success': 'Proprietatea personalizată a fost ștearsă cu succes',
   'custom-properties.list.delete.error': 'Ștergerea proprietății personalizate a eșuat',
@@ -392,18 +444,22 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.description.label': 'Descriere',
   'custom-properties.form.description.optional': '(opțional)',
   'custom-properties.form.description.placeholder': 'Descrieți la ce servește această proprietate',
-  'custom-properties.form.description.max-length': 'Descrierea trebuie să aibă cel mult 1000 de caractere',
+  'custom-properties.form.description.max-length':
+    'Descrierea trebuie să aibă cel mult 1000 de caractere',
   'custom-properties.form.type.label': 'Tip',
   'custom-properties.form.type.immutable': 'Tipul proprietății nu poate fi modificat după creare.',
   'custom-properties.form.options.title': 'Opțiuni',
-  'custom-properties.form.options.description': 'Definiți opțiunile disponibile pentru această proprietate.',
+  'custom-properties.form.options.description':
+    'Definiți opțiunile disponibile pentru această proprietate.',
   'custom-properties.form.options.name.placeholder': 'Denumire opțiune',
   'custom-properties.form.options.name.required': 'Denumirea opțiunii este obligatorie',
-  'custom-properties.form.options.name.max-length': 'Denumirea opțiunii trebuie să aibă cel mult 255 de caractere',
+  'custom-properties.form.options.name.max-length':
+    'Denumirea opțiunii trebuie să aibă cel mult 255 de caractere',
   'custom-properties.form.options.validation.required': 'Adăugați cel puțin o opțiune',
   'custom-properties.form.options.add': 'Adăugare opțiune',
   'custom-properties.form.cancel': 'Anulare',
-  'custom-properties.form.save-error': 'A apărut o eroare la salvarea definiției proprietății. Vă rugăm să încercați din nou.',
+  'custom-properties.form.save-error':
+    'A apărut o eroare la salvarea definiției proprietății. Vă rugăm să încercați din nou.',
 
   'documents.custom-properties.section-title': 'Proprietăți',
   'documents.custom-properties.no-value': 'Nesetat',
@@ -432,20 +488,24 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': 'Documente șterse',
   'documents.deleted.empty.title': 'Niciun document șters',
-  'documents.deleted.empty.description': 'Nu ai niciun document șters. Documentele care sunt șterse vor fi mutate în coșul de gunoi timp de {{ days }} zile.',
-  'documents.deleted.retention-notice': 'Toate documentele șterse sunt stocate în coșul de gunoi timp de {{ days }} zile. După acest interval, documentele vor fi șterse definitiv și nu le vei mai putea restaura.',
+  'documents.deleted.empty.description':
+    'Nu ai niciun document șters. Documentele care sunt șterse vor fi mutate în coșul de gunoi timp de {{ days }} zile.',
+  'documents.deleted.retention-notice':
+    'Toate documentele șterse sunt stocate în coșul de gunoi timp de {{ days }} zile. După acest interval, documentele vor fi șterse definitiv și nu le vei mai putea restaura.',
   'documents.deleted.deleted-at': 'Șterse la',
   'documents.deleted.restoring': 'Se restaurează...',
   'documents.deleted.deleting': 'Se șterge...',
 
-  'documents.preview.unknown-file-type': 'Nicio previzualizare disponibilă pentru acest tip de fișier',
+  'documents.preview.unknown-file-type':
+    'Nicio previzualizare disponibilă pentru acest tip de fișier',
   'documents.preview.binary-file': 'Acesta pare a fi un fișier binar și nu poate fi afișat ca text',
 
   'documents.open-with.label': 'Deschide cu',
   'documents.open-with.pdf-viewer': 'Vizualizator PDF',
 
   'documents.pdf-viewer.loading': 'Se încarcă PDF-ul',
-  'documents.pdf-viewer.not-a-pdf': 'Acest document nu este un PDF și nu poate fi deschis în vizualizatorul PDF.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Acest document nu este un PDF și nu poate fi deschis în vizualizatorul PDF.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Ascunde panoul lateral',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Afișează panoul lateral',
@@ -471,7 +531,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.more-actions.go-to-first-page': 'Mergi la prima pagină',
   'documents.pdf-viewer.more-actions.go-to-last-page': 'Mergi la ultima pagină',
   'documents.pdf-viewer.more-actions.rotate-clockwise': 'Rotire în sensul acelor de ceasornic',
-  'documents.pdf-viewer.more-actions.rotate-counterclockwise': 'Rotire în sens invers acelor de ceasornic',
+  'documents.pdf-viewer.more-actions.rotate-counterclockwise':
+    'Rotire în sens invers acelor de ceasornic',
   'documents.pdf-viewer.more-actions.page-scrolling': 'Derulare pe pagini',
   'documents.pdf-viewer.more-actions.vertical-scrolling': 'Derulare verticală',
   'documents.pdf-viewer.more-actions.horizontal-scrolling': 'Derulare orizontală',
@@ -508,12 +569,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Șterge tot',
   'trash.delete-all.confirm.title': 'Ștergi definitiv toate documentele?',
-  'trash.delete-all.confirm.description': 'Ești sigur că dorești să ștergi definitiv toate documentele din coșul de gunoi? Această acțiune nu poate fi anulată.',
+  'trash.delete-all.confirm.description':
+    'Ești sigur că dorești să ștergi definitiv toate documentele din coșul de gunoi? Această acțiune nu poate fi anulată.',
   'trash.delete-all.confirm.label': 'Șterge',
   'trash.delete-all.confirm.cancel': 'Anulează',
   'trash.delete.button': 'Șterge',
   'trash.delete.confirm.title': 'Ștergi definitiv documentul?',
-  'trash.delete.confirm.description': 'Sunteti sigur ca doriti să stergeti definitiv acest document din cosul de gunoi? Această actiune nu poate fi anulată.',
+  'trash.delete.confirm.description':
+    'Sunteti sigur ca doriti să stergeti definitiv acest document din cosul de gunoi? Această actiune nu poate fi anulată.',
   'trash.delete.confirm.label': 'Șterge',
   'trash.delete.confirm.cancel': 'Anulează',
   'trash.deleted.success.title': 'Document șters',
@@ -536,16 +599,19 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Încă nu există etichete',
-  'tags.no-tags.description': 'Această organizație nu are încă etichete. Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.',
+  'tags.no-tags.description':
+    'Această organizație nu are încă etichete. Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.',
   'tags.no-tags.create-tag': 'Creează eticheta',
 
   'tags.title': 'Etichete documente',
-  'tags.description': 'Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.',
+  'tags.description':
+    'Etichetele sunt folosite pentru a clasifica documentele. Poți adăuga etichete la documente pentru a le găsi și organiza mai ușor.',
   'tags.create': 'Creează eticheta',
   'tags.update': 'Actualizează eticheta',
   'tags.delete': 'Șterge eticheta',
   'tags.delete.confirm.title': 'Șterge eticheta',
-  'tags.delete.confirm.message': 'Ești sigur că vrei să ștergi aceasta eticheta? Stergerea unei etichete o va elimina din toate documentele.',
+  'tags.delete.confirm.message':
+    'Ești sigur că vrei să ștergi aceasta eticheta? Stergerea unei etichete o va elimina din toate documentele.',
   'tags.delete.confirm.confirm-button': 'Șterge',
   'tags.delete.confirm.cancel-button': 'Anulează',
   'tags.delete.success': 'Eticheta a fost ștearsă cu succes',
@@ -584,10 +650,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'începe cu',
   'tagging-rules.operator.ends-with': 'se termină cu',
   'tagging-rules.list.title': 'Reguli de etichetare',
-  'tagging-rules.list.description': 'Gestionează regulile de etichetare ale organizației pentru a eticheta automat documentele pe baza unor condiții definite.',
-  'tagging-rules.list.demo-warning': 'Notă: Deoarece acesta este un mediu demonstrativ (fără server), regulile de etichetare nu vor fi aplicate documentelor nou adăugate.',
+  'tagging-rules.list.description':
+    'Gestionează regulile de etichetare ale organizației pentru a eticheta automat documentele pe baza unor condiții definite.',
+  'tagging-rules.list.demo-warning':
+    'Notă: Deoarece acesta este un mediu demonstrativ (fără server), regulile de etichetare nu vor fi aplicate documentelor nou adăugate.',
   'tagging-rules.list.no-tagging-rules.title': 'Nicio regulă de etichetare',
-  'tagging-rules.list.no-tagging-rules.description': 'Creează o regulă de etichetare pentru a eticheta automat documentele adăugate pe baza unor condiții definite.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Creează o regulă de etichetare pentru a eticheta automat documentele adăugate pe baza unor condiții definite.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Creează regula de etichetare',
   'tagging-rules.list.card.no-conditions': 'Nicio condiție',
   'tagging-rules.list.card.one-condition': 'O condiție',
@@ -603,10 +672,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Te rugăm să introduci numele regulii',
   'tagging-rules.form.name.max-length': 'Numele trebuie să aibă mai puțin de 64 de caractere',
   'tagging-rules.form.description.label': 'Descriere',
-  'tagging-rules.form.description.placeholder': 'Exemplu: Etichetează documentele cu \'factură\' în nume',
-  'tagging-rules.form.description.max-length': 'Descrierea trebuie să aibă mai puțin de 256 de caractere',
+  'tagging-rules.form.description.placeholder':
+    "Exemplu: Etichetează documentele cu 'factură' în nume",
+  'tagging-rules.form.description.max-length':
+    'Descrierea trebuie să aibă mai puțin de 256 de caractere',
   'tagging-rules.form.conditions.label': 'Condiții',
-  'tagging-rules.form.conditions.description': 'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Fără condiții înseamnă că regula se va aplica tuturor documentelor',
+  'tagging-rules.form.conditions.description':
+    'Definește condițiile care trebuie îndeplinite pentru ca regula să se aplice. Fără condiții înseamnă că regula se va aplica tuturor documentelor',
   'tagging-rules.form.conditions.add-condition': 'Adaugă condiție',
   'tagging-rules.form.conditions.connector.when': 'Când',
   'tagging-rules.form.conditions.connector.and': 'și că',
@@ -614,13 +686,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Toate condițiile trebuie îndeplinite',
   'tagging-rules.condition-match-mode.any': 'Orice condiție trebuie îndeplinită',
   'tagging-rules.form.conditions.no-conditions.title': 'Nicio condiție',
-  'tagging-rules.form.conditions.no-conditions.description': 'Nu ai adăugat nicio condiție acestei reguli. Această regula va aplica etichetele sale tuturor documentelor.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'Nu ai adăugat nicio condiție acestei reguli. Această regula va aplica etichetele sale tuturor documentelor.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Aplică regula fara condiții',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Anulează',
   'tagging-rules.form.conditions.value.placeholder': 'Exemplu: factură',
-  'tagging-rules.form.conditions.value.min-length': 'Te rugăm să introduci o valoare pentru condiție',
+  'tagging-rules.form.conditions.value.min-length':
+    'Te rugăm să introduci o valoare pentru condiție',
   'tagging-rules.form.tags.label': 'Etichete',
-  'tagging-rules.form.tags.description': 'Selectează etichetele de aplicat documentelor adăugate care corespund condițiilor',
+  'tagging-rules.form.tags.description':
+    'Selectează etichetele de aplicat documentelor adăugate care corespund condițiilor',
   'tagging-rules.form.tags.min-length': 'Este necesară cel puțin o etichetă de aplicat',
   'tagging-rules.form.tags.add-tag': 'Creează eticheta',
   'tagging-rules.update.title': 'Actualizează regula de etichetare',
@@ -629,7 +704,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Anulează',
   'tagging-rules.apply.button': 'Aplicați la documente existente',
   'tagging-rules.apply.confirm.title': 'Aplicați regula la documente existente?',
-  'tagging-rules.apply.confirm.description': 'Aceasta va verifica toate documentele existente din organizația dvs. și va aplica etichetele unde condițiile corespund. Procesarea va avea loc în fundal.',
+  'tagging-rules.apply.confirm.description':
+    'Aceasta va verifica toate documentele existente din organizația dvs. și va aplica etichetele unde condițiile corespund. Procesarea va avea loc în fundal.',
   'tagging-rules.apply.confirm.button': 'Aplicați regula',
   'tagging-rules.apply.success': 'Aplicarea regulii a fost pornită în fundal',
   'tagging-rules.apply.error': 'Eroare la pornirea aplicării regulii',
@@ -638,13 +714,17 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'E-mailuri de primire',
-  'intake-emails.description': 'Adresele de e-mail de primire sunt folosite pentru a introduce automat email-uri în Papra. Doar redirecționează e-mailuri către adresa de primire, iar fișierele atașate vor fi adăugate automat în documentele organizației tale.',
+  'intake-emails.description':
+    'Adresele de e-mail de primire sunt folosite pentru a introduce automat email-uri în Papra. Doar redirecționează e-mailuri către adresa de primire, iar fișierele atașate vor fi adăugate automat în documentele organizației tale.',
   'intake-emails.disabled.title': 'Email-urile de primire sunt dezactivate',
-  'intake-emails.disabled.description': 'Email-urile de primire sunt dezactivate pe aceasta instanță. Te rugăm să contactezi administratorul pentru a le activa. Consultă {{ documentation }} pentru mai multe informații.',
+  'intake-emails.disabled.description':
+    'Email-urile de primire sunt dezactivate pe aceasta instanță. Te rugăm să contactezi administratorul pentru a le activa. Consultă {{ documentation }} pentru mai multe informații.',
   'intake-emails.disabled.documentation': 'documentația',
-  'intake-emails.info': 'Vor fi procesate numai e-mailurile de primire activate de la originile permise. Poți activa sau dezactiva un e-mail de primire în orice moment.',
+  'intake-emails.info':
+    'Vor fi procesate numai e-mailurile de primire activate de la originile permise. Poți activa sau dezactiva un e-mail de primire în orice moment.',
   'intake-emails.empty.title': 'Niciun e-mail de primire',
-  'intake-emails.empty.description': 'Generează o adresă de primire pentru a primi cu ușurință fișiere atașate din e-mail.',
+  'intake-emails.empty.description':
+    'Generează o adresă de primire pentru a primi cu ușurință fișiere atașate din e-mail.',
   'intake-emails.empty.generate': 'Generează e-mail de primire',
   'intake-emails.count': '{{ count }} email{{ plural }} de primire pentru această organizație',
   'intake-emails.new': 'E-mail nou de primire',
@@ -656,7 +736,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Gestionează adresele de origine',
   'intake-emails.actions.delete': 'Șterge',
   'intake-emails.delete.confirm.title': 'Ștergi email-ul de primire?',
-  'intake-emails.delete.confirm.message': 'Ești sigur că vrei să ștergi acest e-mail de primire? Această acțiune nu poate fi anulată.',
+  'intake-emails.delete.confirm.message':
+    'Ești sigur că vrei să ștergi acest e-mail de primire? Această acțiune nu poate fi anulată.',
   'intake-emails.delete.confirm.confirm-button': 'Șterge email-ul de primire',
   'intake-emails.delete.confirm.cancel-button': 'Anulează',
   'intake-emails.delete.success': 'E-mail de primire șters',
@@ -664,11 +745,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'E-mail de primire activat',
   'intake-emails.update.success.disabled': 'E-mail de primire dezactivat',
   'intake-emails.allowed-origins.title': 'Origini permise',
-  'intake-emails.allowed-origins.description': 'Doar email-urile trimise la {{ e-mail }} de la aceste origini vor fi procesate. Dacă nu sunt specificate origini, toate email-urile vor fi ignorate.',
+  'intake-emails.allowed-origins.description':
+    'Doar email-urile trimise la {{ e-mail }} de la aceste origini vor fi procesate. Dacă nu sunt specificate origini, toate email-urile vor fi ignorate.',
   'intake-emails.allowed-origins.add.label': 'Adaugă adresa de e-mail de origine permisă',
   'intake-emails.allowed-origins.add.placeholder': 'Ex. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Adaugă',
-  'intake-emails.allowed-origins.add.error.exists': 'Acest e-mail este deja în originile permise pentru acest e-mail de primire',
+  'intake-emails.allowed-origins.add.error.exists':
+    'Acest e-mail este deja în originile permise pentru acest e-mail de primire',
 
   // API keys
 
@@ -700,7 +783,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Te rugăm să selectezi cel puțin o permisiune',
   'api-keys.create.form.submit': 'Creează cheie API',
   'api-keys.create.created.title': 'Cheie API creată',
-  'api-keys.create.created.description': 'Cheia API a fost creată cu succes. Salveaz-o într-un loc sigur, deoarece nu va fi afișată din nou.',
+  'api-keys.create.created.description':
+    'Cheia API a fost creată cu succes. Salveaz-o într-un loc sigur, deoarece nu va fi afișată din nou.',
   'api-keys.list.title': 'Chei API',
   'api-keys.list.description': 'Gestionează-ți cheile API aici.',
   'api-keys.list.create': 'Creează cheie API',
@@ -709,7 +793,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Creat la',
   'api-keys.delete.success': 'Cheia API a fost ștearsă cu succes',
   'api-keys.delete.confirm.title': 'Șterge cheia API',
-  'api-keys.delete.confirm.message': 'Ești sigur ca vrei să ștergi aceasta cheie API? Această acțiune nu poate fi anulată.',
+  'api-keys.delete.confirm.message':
+    'Ești sigur ca vrei să ștergi aceasta cheie API? Această acțiune nu poate fi anulată.',
   'api-keys.delete.confirm.confirm-button': 'Șterge',
   'api-keys.delete.confirm.cancel-button': 'Anulează',
 
@@ -718,7 +803,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.list.title': 'Webhook-uri',
   'webhooks.list.description': 'Gestionează webhook-urile organizației tale',
   'webhooks.list.empty.title': 'Niciun webhook',
-  'webhooks.list.empty.description': 'Creează primul webhook pentru a începe să primesti evenimente',
+  'webhooks.list.empty.description':
+    'Creează primul webhook pentru a începe să primesti evenimente',
   'webhooks.list.create': 'Creează webhook',
   'webhooks.list.card.last-triggered': 'Ultima declanșare',
   'webhooks.list.card.never': 'Niciodată',
@@ -758,8 +844,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.events.documents.document:created.description': 'Document creat',
   'webhooks.events.documents.document:deleted.description': 'Document șters',
   'webhooks.events.documents.document:updated.description': 'Document actualizat',
-  'webhooks.events.documents.document:tag:added.description': 'O etichetă a fost adăugată la un document',
-  'webhooks.events.documents.document:tag:removed.description': 'O etichetă a fost eliminată dintr-un document',
+  'webhooks.events.documents.document:tag:added.description':
+    'O etichetă a fost adăugată la un document',
+  'webhooks.events.documents.document:tag:removed.description':
+    'O etichetă a fost eliminată dintr-un document',
 
   // Navigation
 
@@ -782,7 +870,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.admin': 'Administrare',
 
   'layout.upgrade-cta.title': 'Ai nevoie de mai mult spațiu?',
-  'layout.upgrade-cta.description': 'Obține de 10x mai mult spațiu de stocare + colaborare în echipă',
+  'layout.upgrade-cta.description':
+    'Obține de 10x mai mult spațiu de stocare + colaborare în echipă',
   'layout.upgrade-cta.button': 'Actualizează la Plus',
 
   'layout.theme.light': 'Mod luminos',
@@ -810,24 +899,36 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API errors
 
-  'api-errors.api.timeout': 'Cererea a durat prea mult și a expirat. Vă rugăm să încercați din nou.',
+  'api-errors.api.timeout':
+    'Cererea a durat prea mult și a expirat. Vă rugăm să încercați din nou.',
   'api-errors.document.already_exists': 'Documentul există deja',
   'api-errors.document.size_too_large': 'Fișierul este prea mare',
   'api-errors.intake-emails.already_exists': 'Un email de primire cu această adresă există deja.',
-  'api-errors.intake_email.limit_reached': 'Numărul maxim de email-uri de primire pentru această organizație a fost atins. Te rugăm să-ți îmbunătățești planul pentru a crea mai multe email-uri de primire.',
-  'api-errors.user.max_organization_count_reached': 'Ai atins numărul maxim de organizații pe care le poți crea. Dacă ai nevoie să creezi mai multe, te rugăm să contactezi asistența.',
+  'api-errors.intake_email.limit_reached':
+    'Numărul maxim de email-uri de primire pentru această organizație a fost atins. Te rugăm să-ți îmbunătățești planul pentru a crea mai multe email-uri de primire.',
+  'api-errors.user.max_organization_count_reached':
+    'Ai atins numărul maxim de organizații pe care le poți crea. Dacă ai nevoie să creezi mai multe, te rugăm să contactezi asistența.',
   'api-errors.default': 'A apărut o eroare la procesarea cererii.',
-  'api-errors.organization.invitation_already_exists': 'O invitatie pentru acest e-mail există deja în această organizație.',
+  'api-errors.organization.invitation_already_exists':
+    'O invitatie pentru acest e-mail există deja în această organizație.',
   'api-errors.user.already_in_organization': 'Acest utilizator este deja în această organizație.',
-  'api-errors.user.organization_invitation_limit_reached': 'Numărul maxim de invitații a fost atins pentru astazi. Te rugăm să încerci din nou mâine.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Numărul maxim de invitații a fost atins pentru astazi. Te rugăm să încerci din nou mâine.',
   'api-errors.demo.not_available': 'Această functie nu este disponibila în demo',
-  'api-errors.tags.already_exists': 'O etichetă cu acest nume există deja pentru aceasta organizație',
-  'api-errors.tags.organization_limit_reached': 'Numărul maxim de etichete pentru această organizație a fost atins.',
-  'api-errors.internal.error': 'A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.',
-  'api-errors.auth.invalid_origin': 'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
-  'api-errors.organization.has_active_subscription': 'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'URL-ul furnizat nu este permis. URL-urile webhook nu trebuie să indice spre adrese IP private sau rezervate.',
+  'api-errors.tags.already_exists':
+    'O etichetă cu acest nume există deja pentru aceasta organizație',
+  'api-errors.tags.organization_limit_reached':
+    'Numărul maxim de etichete pentru această organizație a fost atins.',
+  'api-errors.internal.error':
+    'A apărut o eroare la procesarea cererii. Te rugăm să încerci din nou.',
+  'api-errors.auth.invalid_origin':
+    'Origine invalidă a aplicației. Dacă hospedezi Papra, asigură-te că variabila de mediu APP_BASE_URL corespunde URL-ului actual. Pentru mai multe detalii, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'Numărul maxim de membri și invitații în așteptare pentru această organizație a fost atins. Te rugăm să îți actualizezi planul pentru a adăuga mai mulți membri.',
+  'api-errors.organization.has_active_subscription':
+    'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'URL-ul furnizat nu este permis. URL-urile webhook nu trebuie să indice spre adrese IP private sau rezervate.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Utilizatorul nu a fost găsit',
   'api-errors.FAILED_TO_CREATE_USER': 'Eroare la crearea utilizatorului',
@@ -836,7 +937,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.FAILED_TO_GET_SESSION': 'Eroare la obținerea sesiunii',
   'api-errors.INVALID_PASSWORD': 'Parolă invalidă',
   'api-errors.INVALID_EMAIL': 'Email invalid',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Email-ul sau parola este incorectă, sau contul nu există.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'Email-ul sau parola este incorectă, sau contul nu există.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Contul social este deja asociat',
   'api-errors.PROVIDER_NOT_FOUND': 'Furnizorul nu a fost găsit',
   'api-errors.INVALID_TOKEN': 'Token invalid',
@@ -857,21 +959,27 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.OTP_NOT_ENABLED': 'Autentificarea cu doi factori nu este activată pentru acest cont',
   'api-errors.OTP_HAS_EXPIRED': 'Codul de autentificare cu doi factori a expirat',
   'api-errors.TOTP_NOT_ENABLED': 'TOTP nu este activat pentru acest cont',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Autentificarea cu doi factori nu este activată pentru acest cont',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'Autentificarea cu doi factori nu este activată pentru acest cont',
   'api-errors.BACKUP_CODES_NOT_ENABLED': 'Codurile de rezervă nu sunt activate pentru acest cont',
-  'api-errors.INVALID_BACKUP_CODE': 'Codul de rezervă furnizat este invalid sau a fost deja folosit',
-  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Prea multe încercări. Vă rugăm să solicitați un cod nou.',
+  'api-errors.INVALID_BACKUP_CODE':
+    'Codul de rezervă furnizat este invalid sau a fost deja folosit',
+  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE':
+    'Prea multe încercări. Vă rugăm să solicitați un cod nou.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Cookie de autentificare cu doi factori invalid',
 
   // Not found
 
   'not-found.title': '404 - Nu a fost gasit',
-  'not-found.description': 'Ne pare rău, pagina pe care o cauți nu pare să existe. Te rugăm să verifici URL-ul și să încerci din nou.',
+  'not-found.description':
+    'Ne pare rău, pagina pe care o cauți nu pare să existe. Te rugăm să verifici URL-ul și să încerci din nou.',
 
   // Demo
 
-  'demo.popup.description': 'Acesta este un mediu demonstrativ, toate datele sunt salvate in stocarea locală a browserului.',
-  'demo.popup.discord': 'Alătură-te {{ discordLink }} pentru a obtine asistență, a propune funcționalități sau doar pentru a discuta.',
+  'demo.popup.description':
+    'Acesta este un mediu demonstrativ, toate datele sunt salvate in stocarea locală a browserului.',
+  'demo.popup.discord':
+    'Alătură-te {{ discordLink }} pentru a obtine asistență, a propune funcționalități sau doar pentru a discuta.',
   'demo.popup.discord-link-label': 'serverului de Discord',
   'demo.popup.reset': 'Resetează datele demo',
   'demo.popup.hide': 'Ascunde',
@@ -889,26 +997,32 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Plată reușită!',
   'subscriptions.checkout-success.description': 'Abonamentul tău a fost activat cu succes.',
-  'subscriptions.checkout-success.thank-you': 'Mulțumim pentru că ai făcut upgrade la Papra Plus. Acum ai acces la toate funcționalitățile premium.',
+  'subscriptions.checkout-success.thank-you':
+    'Mulțumim pentru că ai făcut upgrade la Papra Plus. Acum ai acces la toate funcționalitățile premium.',
   'subscriptions.checkout-success.go-to-organizations': 'Mergi la Organizații',
-  'subscriptions.checkout-success.redirecting': 'Redirecționare în {{ count }} secundă{{ plural }}...',
+  'subscriptions.checkout-success.redirecting':
+    'Redirecționare în {{ count }} secundă{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Plată anulată',
   'subscriptions.checkout-cancel.description': 'Upgrade-ul abonamentului tău a fost anulat.',
-  'subscriptions.checkout-cancel.no-charges': 'Nu au fost efectuate taxe pe contul tău. Poți încerca din nou oricând ești gata.',
+  'subscriptions.checkout-cancel.no-charges':
+    'Nu au fost efectuate taxe pe contul tău. Poți încerca din nou oricând ești gata.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Înapoi la Organizații',
   'subscriptions.checkout-cancel.need-help': 'Ai nevoie de ajutor?',
   'subscriptions.checkout-cancel.contact-support': 'Contactează asistența',
 
   'subscriptions.upgrade-dialog.title': 'Upgrade la Plus',
-  'subscriptions.upgrade-dialog.description': 'Deblochează funcționalități puternice pentru organizația ta',
+  'subscriptions.upgrade-dialog.description':
+    'Deblochează funcționalități puternice pentru organizația ta',
   'subscriptions.upgrade-dialog.contact-us': 'Contactează-ne',
-  'subscriptions.upgrade-dialog.enterprise-plans': 'dacă ai nevoie de planuri enterprise personalizate.',
+  'subscriptions.upgrade-dialog.enterprise-plans':
+    'dacă ai nevoie de planuri enterprise personalizate.',
   'subscriptions.upgrade-dialog.per-month': '/lună',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturat anual',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade acum',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Ofertă pe durată limitată',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Obțineți {{ percent }}% reducere pe organizație la toate planurile pentru totdeauna ca early adopter! Oferta expiră în {{ days, >1:{days} zile, =1:1 zi, mai puțin de o zi }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Obțineți {{ percent }}% reducere pe organizație la toate planurile pentru totdeauna ca early adopter! Oferta expiră în {{ days, >1:{days} zile, =1:1 zi, mai puțin de o zi }}.',
 
   'subscriptions.plan.free.name': 'Plan gratuit',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1043,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Lunar',
   'subscriptions.billing-interval.annual': 'Anual',
 
-  'subscriptions.usage-warning.message': 'Ai folosit {{ percent }}% din spațiul de stocare pentru documente. Ia în considerare actualizarea planului pentru a obține mai mult spațiu.',
+  'subscriptions.usage-warning.message':
+    'Ai folosit {{ percent }}% din spațiul de stocare pentru documente. Ia în considerare actualizarea planului pentru a obține mai mult spațiu.',
   'subscriptions.usage-warning.upgrade-button': 'Actualizează planul',
 
   // Admin
@@ -960,7 +1075,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': 'Membri',
   'admin.organizations.table.created': 'Creată',
   'admin.organizations.table.updated': 'Actualizată',
-  'admin.organizations.pagination.info': 'Se afișează {{ start }} până la {{ end }} din {{ total }} {{ total, =1:organizație, organizații }}',
+  'admin.organizations.pagination.info':
+    'Se afișează {{ start }} până la {{ end }} din {{ total }} {{ total, =1:organizație, organizații }}',
   'admin.organizations.pagination.page-info': 'Pagina {{ current }} din {{ total }}',
 
   'admin.organization-detail.title': 'Detalii organizație',
@@ -984,7 +1100,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organization-detail.members.table.role': 'Rol',
   'admin.organization-detail.members.table.joined': 'Alăturat',
   'admin.organization-detail.intake-emails.title': 'Email-uri de primire ({{ count }})',
-  'admin.organization-detail.intake-emails.description': 'Adrese email pentru preluarea documentelor',
+  'admin.organization-detail.intake-emails.description':
+    'Adrese email pentru preluarea documentelor',
   'admin.organization-detail.intake-emails.empty': 'Nu sunt configurate email-uri de primire',
   'admin.organization-detail.intake-emails.status.enabled': 'Activat',
   'admin.organization-detail.intake-emails.status.disabled': 'Dezactivat',
@@ -1017,14 +1134,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Neverificat',
   'admin.users.table.orgs': 'Org',
   'admin.users.table.created': 'Creat',
-  'admin.users.pagination.info': 'Se afișează {{ start }} până la {{ end }} din {{ total }} {{ total, =1:utilizator, utilizatori }}',
+  'admin.users.pagination.info':
+    'Se afișează {{ start }} până la {{ end }} din {{ total }} {{ total, =1:utilizator, utilizatori }}',
   'admin.users.pagination.page-info': 'Pagina {{ current }} din {{ total }}',
 
   'admin.user-detail.back': 'Înapoi la utilizatori',
   'admin.user-detail.loading': 'Se încarcă detaliile utilizatorului...',
   'admin.user-detail.unnamed': 'Utilizator fără nume',
   'admin.user-detail.basic-info.title': 'Informații utilizator',
-  'admin.user-detail.basic-info.description': 'Detalii de bază ale utilizatorului și informații despre cont',
+  'admin.user-detail.basic-info.description':
+    'Detalii de bază ale utilizatorului și informații despre cont',
   'admin.user-detail.basic-info.user-id': 'ID utilizator',
   'admin.user-detail.basic-info.email': 'Email',
   'admin.user-detail.basic-info.name': 'Nume',
@@ -1059,7 +1178,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Versiune',
   'about.git-commit': 'Commit Git',
   'about.commit-date': 'Data Commit-ului',
-  'about.description': 'Papra este un sistem de gestionare a documentelor cu sursă deschisă care vă ajută să arhivați, să organizați, să etichetați și să gestionați documentele cu ușurință.',
+  'about.description':
+    'Papra este un sistem de gestionare a documentelor cu sursă deschisă care vă ajută să arhivați, să organizați, să etichetați și să gestionați documentele cu ușurință.',
   'about.links.title': 'Linkuri',
   'about.links.documentation': 'Documentație',
   'about.links.documentation-description': 'Ghiduri utilizator și referință API',

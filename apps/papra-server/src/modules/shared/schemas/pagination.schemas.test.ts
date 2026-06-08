@@ -6,21 +6,33 @@ describe('pagination.schemas', () => {
   describe('createQueryPaginationSchemaKeys', () => {
     describe('start-time guards on options', () => {
       test('it throws if defaultPageSize is less than 1', () => {
-        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: 0 })).toThrow('defaultPageSize must be at least 1');
-        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: -1 })).toThrow('defaultPageSize must be at least 1');
+        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: 0 })).toThrow(
+          'defaultPageSize must be at least 1',
+        );
+        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: -1 })).toThrow(
+          'defaultPageSize must be at least 1',
+        );
       });
 
       test('it throws if maxPageSize is less than 1', () => {
-        expect(() => createQueryPaginationSchemaKeys({ maxPageSize: 0 })).toThrow('maxPageSize must be at least 1');
-        expect(() => createQueryPaginationSchemaKeys({ maxPageSize: -1 })).toThrow('maxPageSize must be at least 1');
+        expect(() => createQueryPaginationSchemaKeys({ maxPageSize: 0 })).toThrow(
+          'maxPageSize must be at least 1',
+        );
+        expect(() => createQueryPaginationSchemaKeys({ maxPageSize: -1 })).toThrow(
+          'maxPageSize must be at least 1',
+        );
       });
 
       test('it throws if defaultPageSize is greater than maxPageSize', () => {
-        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: 50, maxPageSize: 10 })).toThrow('defaultPageSize cannot be greater than maxPageSize');
+        expect(() =>
+          createQueryPaginationSchemaKeys({ defaultPageSize: 50, maxPageSize: 10 }),
+        ).toThrow('defaultPageSize cannot be greater than maxPageSize');
       });
 
       test('it does not throw when defaultPageSize equals maxPageSize', () => {
-        expect(() => createQueryPaginationSchemaKeys({ defaultPageSize: 10, maxPageSize: 10 })).not.toThrow();
+        expect(() =>
+          createQueryPaginationSchemaKeys({ defaultPageSize: 10, maxPageSize: 10 }),
+        ).not.toThrow();
       });
     });
 
@@ -62,7 +74,10 @@ describe('pagination.schemas', () => {
       });
 
       test('it should be possible to customize maxPageSize and defaultPageSize', () => {
-        const { pageSize } = createQueryPaginationSchemaKeys({ maxPageSize: 50, defaultPageSize: 10 });
+        const { pageSize } = createQueryPaginationSchemaKeys({
+          maxPageSize: 50,
+          defaultPageSize: 10,
+        });
 
         expect(v.parse(pageSize, '1')).toBe(1);
         expect(v.parse(pageSize, '10')).toBe(10);
@@ -74,33 +89,23 @@ describe('pagination.schemas', () => {
         expect(() => v.parse(pageSize, '51')).toThrow();
       });
 
-      test('it\'s possible to build an object schema with the pagination keys and validate an object with them', () => {
+      test("it's possible to build an object schema with the pagination keys and validate an object with them", () => {
         expect(
-          v.parse(
-            v.strictObject(createQueryPaginationSchemaKeys()),
-            { pageIndex: '2', pageSize: '30' },
-          ),
-        ).toEqual(
-          { pageIndex: 2, pageSize: 30 },
-        );
+          v.parse(v.strictObject(createQueryPaginationSchemaKeys()), {
+            pageIndex: '2',
+            pageSize: '30',
+          }),
+        ).toEqual({ pageIndex: 2, pageSize: 30 });
 
-        expect(
-          v.parse(
-            v.strictObject(createQueryPaginationSchemaKeys()),
-            {},
-          ),
-        ).toEqual(
-          { pageIndex: 0, pageSize: 25 },
-        );
+        expect(v.parse(v.strictObject(createQueryPaginationSchemaKeys()), {})).toEqual({
+          pageIndex: 0,
+          pageSize: 25,
+        });
 
-        expect(
-          v.parse(
-            v.strictObject({ ...createQueryPaginationSchemaKeys() }),
-            {},
-          ),
-        ).toEqual(
-          { pageIndex: 0, pageSize: 25 },
-        );
+        expect(v.parse(v.strictObject({ ...createQueryPaginationSchemaKeys() }), {})).toEqual({
+          pageIndex: 0,
+          pageSize: 25,
+        });
       });
     });
   });

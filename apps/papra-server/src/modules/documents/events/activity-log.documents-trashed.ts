@@ -17,7 +17,7 @@ export function registerInsertActivityLogOnDocumentsTrashedHandler({
     handlerName: 'insert-activity-log',
     async handler({ documentIds, trashedBy }) {
       await registerDocumentsActivityLog({
-        activities: documentIds.map(documentId => ({
+        activities: documentIds.map((documentId) => ({
           documentId,
           event: 'deleted',
           userId: trashedBy,

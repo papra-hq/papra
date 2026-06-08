@@ -15,7 +15,7 @@ export function getApiKeyHash({ token }: { token: string }) {
 }
 
 // Positional argument as TS does not like named argument with type guards
-export function looksLikeAnApiKey(token?: string | null | undefined): token is string {
+export function looksLikeAnApiKey(token?: string | null): token is string {
   if (isNil(token)) {
     return false;
   }

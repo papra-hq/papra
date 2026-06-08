@@ -1,6 +1,13 @@
 import { Transform } from 'node:stream';
 
-export function createByteCounter({ onByteCountChange }: { onByteCountChange?: (arg: { byteCount: number; destroy: (args: { error: Error }) => void }) => void } = {}) {
+export function createByteCounter({
+  onByteCountChange,
+}: {
+  onByteCountChange?: (arg: {
+    byteCount: number;
+    destroy: (args: { error: Error }) => void;
+  }) => void;
+} = {}) {
   let byteCount = 0;
 
   const tap = new Transform({

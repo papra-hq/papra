@@ -1,6 +1,14 @@
 import { icons as tablerIconSet } from '@iconify-json/tabler';
 import { describe, expect, test } from 'vitest';
-import { fileIcons, getDaysBeforePermanentDeletion, getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension, makeDocumentSearchPermalink, makeDocumentSearchQuery } from './document.models';
+import {
+  fileIcons,
+  getDaysBeforePermanentDeletion,
+  getDocumentIcon,
+  getDocumentNameExtension,
+  getDocumentNameWithoutExtension,
+  makeDocumentSearchPermalink,
+  makeDocumentSearchQuery,
+} from './document.models';
 
 describe('files models', () => {
   describe('iconByFileType', () => {
@@ -30,9 +38,7 @@ describe('files models', () => {
 
       for (const { extensions, icon } of fileIcons) {
         for (const extension of extensions) {
-          expect(
-            seenExtensions.has(extension),
-          ).to.eql(
+          expect(seenExtensions.has(extension)).to.eql(
             false,
             `Duplicate icon ${icon} found for extension .${extension}`,
           );
@@ -46,9 +52,7 @@ describe('files models', () => {
 
       for (const { mimeTypes, icon } of fileIcons) {
         for (const mimeType of mimeTypes) {
-          expect(
-            seenMimeTypes.has(mimeType),
-          ).to.eql(
+          expect(seenMimeTypes.has(mimeType)).to.eql(
             false,
             `Duplicate icon ${icon} found for mime type ${mimeType}`,
           );
@@ -85,7 +89,10 @@ describe('files models', () => {
 
     test('when an icon is defined for both the whole type and the group type, the file type icon is used', () => {
       const document = { mimeType: 'text/html' };
-      const icon = getDocumentIcon({ document, iconByMimeTypeMap: { 'text/html': 'i-tabler-file-type-html', 'text': 'i-tabler-file-text' } });
+      const icon = getDocumentIcon({
+        document,
+        iconByMimeTypeMap: { 'text/html': 'i-tabler-file-type-html', 'text': 'i-tabler-file-text' },
+      });
 
       expect(icon).to.eql('i-tabler-file-type-html');
     });
@@ -107,10 +114,12 @@ describe('files models', () => {
     });
 
     test('if the document has no name nor mimeType, the default icon is used', () => {
-      expect(getDocumentIcon({ document: { name: undefined, mimeType: undefined } })).to.eql('i-tabler-file');
+      expect(getDocumentIcon({ document: { name: undefined, mimeType: undefined } })).to.eql(
+        'i-tabler-file',
+      );
       expect(getDocumentIcon({ document: { name: undefined } })).to.eql('i-tabler-file');
       expect(getDocumentIcon({ document: { mimeType: undefined } })).to.eql('i-tabler-file');
-      expect(getDocumentIcon({ document: { } })).to.eql('i-tabler-file');
+      expect(getDocumentIcon({ document: {} })).to.eql('i-tabler-file');
     });
 
     test('when a document has both a mimeType and a name, the mimeType takes precedence for icon selection', () => {
@@ -128,7 +137,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-10');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(21);
     });
@@ -138,7 +151,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-10');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(undefined);
     });
@@ -148,7 +165,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-31');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(0);
     });
@@ -158,7 +179,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-02-15');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(-15);
     });
@@ -168,7 +193,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-10T14:00:00');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       // Since differenceInDays counts full days, and there's only 6 hours difference,
       // the permanent deletion date (30 days from 08:00) is 29 full days from 14:00
@@ -180,7 +209,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 1;
       const now = new Date('2021-01-10');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(1);
     });
@@ -190,7 +223,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 365;
       const now = new Date('2021-01-10');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(356);
     });
@@ -200,7 +237,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 0;
       const now = new Date('2021-01-10');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(0);
     });
@@ -210,7 +251,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-05');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(14);
     });
@@ -220,7 +265,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2020-02-20');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(25);
     });
@@ -230,7 +279,11 @@ describe('files models', () => {
       const deletedDocumentsRetentionDays = 30;
       const now = new Date('2021-01-02T00:00:01');
 
-      const daysBeforeDeletion = getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now });
+      const daysBeforeDeletion = getDaysBeforePermanentDeletion({
+        document,
+        deletedDocumentsRetentionDays,
+        now,
+      });
 
       expect(daysBeforeDeletion).to.eql(29);
     });
@@ -242,7 +295,9 @@ describe('files models', () => {
       expect(getDocumentNameWithoutExtension({ name: 'document' })).to.eql('document');
       expect(getDocumentNameWithoutExtension({ name: '.document' })).to.eql('.document');
       expect(getDocumentNameWithoutExtension({ name: '.document.txt' })).to.eql('.document');
-      expect(getDocumentNameWithoutExtension({ name: 'document.test.txt' })).to.eql('document.test');
+      expect(getDocumentNameWithoutExtension({ name: 'document.test.txt' })).to.eql(
+        'document.test',
+      );
     });
   });
 
@@ -270,43 +325,27 @@ describe('files models', () => {
     test('the tags are prefixed with "tag:" and use preferably the name over the id', () => {
       expect(
         makeDocumentSearchQuery({
-          tags: [
-            { name: 'invoices', id: 'tag_1111' },
-            { name: 'receipts' },
-            { id: 'tag_2222' },
-          ],
+          tags: [{ name: 'invoices', id: 'tag_1111' }, { name: 'receipts' }, { id: 'tag_2222' }],
         }),
       ).to.eql('tag:invoices tag:receipts tag:tag_2222');
     });
 
     test('tags with spaces in their name are quoted in the search query', () => {
-      expect(
-        makeDocumentSearchQuery({ tags: [{ name: 'my tag' }] }),
-      ).to.eql(
-        'tag:"my tag"',
-      );
+      expect(makeDocumentSearchQuery({ tags: [{ name: 'my tag' }] })).to.eql('tag:"my tag"');
 
-      expect(
-        makeDocumentSearchQuery({ tags: [{ name: 'tag with "quotes"' }] }),
-      ).to.eql(
+      expect(makeDocumentSearchQuery({ tags: [{ name: 'tag with "quotes"' }] })).to.eql(
         'tag:"tag with \\"quotes\\""',
       );
 
       expect(
         makeDocumentSearchQuery({ tags: [{ id: 'tag_1234', name: 'escaped \\"quote' }] }),
-      ).to.eql(
-        `tag:"escaped \\\\\\"quote"`,
-      );
+      ).to.eql(`tag:"escaped \\\\\\"quote"`);
     });
 
     test('the tags are sorted alphabetically in the search query for deterministic results', () => {
       expect(
         makeDocumentSearchQuery({
-          tags: [
-            { name: 'bbb' },
-            { name: 'ccc' },
-            { name: 'aaa' },
-          ],
+          tags: [{ name: 'bbb' }, { name: 'ccc' }, { name: 'aaa' }],
         }),
       ).to.eql('tag:aaa tag:bbb tag:ccc');
     });
@@ -318,10 +357,7 @@ describe('files models', () => {
     test('both tags and text query are included in the search query', () => {
       expect(
         makeDocumentSearchQuery({
-          tags: [
-            { name: 'invoices' },
-            { id: 'tag_2222' },
-          ],
+          tags: [{ name: 'invoices' }, { id: 'tag_2222' }],
           query: 'my search',
         }),
       ).to.eql('tag:invoices tag:tag_2222 my search');
@@ -333,16 +369,14 @@ describe('files models', () => {
       const permalink = makeDocumentSearchPermalink({
         organizationId: 'org-123',
         search: {
-          tags: [
-            { name: 'invoices', id: 'tag_1111' },
-            { name: 'receipts' },
-            { id: 'tag_2222' },
-          ],
+          tags: [{ name: 'invoices', id: 'tag_1111' }, { name: 'receipts' }, { id: 'tag_2222' }],
           query: 'financial report',
         },
       });
 
-      expect(permalink).to.eql('/organizations/org-123/documents?query=tag%3Ainvoices%20tag%3Areceipts%20tag%3Atag_2222%20financial%20report');
+      expect(permalink).to.eql(
+        '/organizations/org-123/documents?query=tag%3Ainvoices%20tag%3Areceipts%20tag%3Atag_2222%20financial%20report',
+      );
     });
   });
 });

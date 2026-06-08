@@ -51,7 +51,7 @@ import { extractText } from '@papra/lecture';
 // or CommonJS
 const { extractText } = require('@papra/lecture');
 
-const { textContent } = await extractText({arrayBuffer: file, mimeType: 'application/pdf'});
+const { textContent } = await extractText({ arrayBuffer: file, mimeType: 'application/pdf' });
 
 console.log('Extracted Text:', textContent);
 ```
@@ -65,7 +65,7 @@ Extracts text from an arrayBuffer using its MIME type.
 **Example**:
 
 ```javascript
-const file = await fetch('example.pdf').then(res => res.arrayBuffer());
+const file = await fetch('example.pdf').then((res) => res.arrayBuffer());
 const mimeType = 'application/pdf';
 
 const { textContent } = await extractText({ arrayBuffer: file, mimeType });

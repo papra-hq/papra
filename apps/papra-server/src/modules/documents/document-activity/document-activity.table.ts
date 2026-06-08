@@ -11,10 +11,20 @@ export const documentActivityLogTable = sqliteTable('document_activity_log', {
   ...createPrimaryKeyField({ prefix: 'doc_act' }),
   ...createCreatedAtField(),
 
-  documentId: text('document_id').notNull().references(() => documentsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
-  event: text('event', { enum: DOCUMENT_ACTIVITY_EVENT_LIST as NonEmptyArray<DocumentActivityEvent> }).notNull(),
+  documentId: text('document_id')
+    .notNull()
+    .references(() => documentsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  event: text('event', {
+    enum: DOCUMENT_ACTIVITY_EVENT_LIST as NonEmptyArray<DocumentActivityEvent>,
+  }).notNull(),
   eventData: text('event_data', { mode: 'json' }).$type<Record<string, unknown>>(),
 
-  userId: text('user_id').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
-  tagId: text('tag_id').references(() => tagsTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+  userId: text('user_id').references(() => usersTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
+  tagId: text('tag_id').references(() => tagsTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
 });

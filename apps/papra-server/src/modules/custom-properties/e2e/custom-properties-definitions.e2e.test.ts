@@ -13,10 +13,14 @@ async function setupApp() {
   const { db } = await createInMemoryDatabase({
     users: [{ id: USER_ID, email: 'user@example.com' }],
     organizations: [{ id: ORG_ID, name: 'Org 1' }],
-    organizationMembers: [{ organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+    organizationMembers: [
+      { organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+    ],
   });
 
-  const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+  const { app } = createServer(
+    createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+  );
 
   return { db, app };
 }
@@ -38,7 +42,9 @@ describe('custom properties e2e', () => {
 
       expect(response.status).to.eql(200);
 
-      const { propertyDefinition } = await response.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await response.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       expect(propertyDefinition).to.include({
         organizationId: ORG_ID,
@@ -69,7 +75,9 @@ describe('custom properties e2e', () => {
 
       expect(response.status).to.eql(200);
 
-      const { propertyDefinitions } = await response.json() as { propertyDefinitions: CustomPropertyDefinition[] };
+      const { propertyDefinitions } = (await response.json()) as {
+        propertyDefinitions: CustomPropertyDefinition[];
+      };
 
       expect(propertyDefinitions).to.have.length(1);
       expect(propertyDefinitions[0]).to.include({ key: 'invoicenumber', name: 'Invoice Number' });
@@ -87,7 +95,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       const response = await app.request(
         `/api/organizations/${ORG_ID}/custom-properties/${propertyDefinition.id}`,
@@ -97,7 +107,7 @@ describe('custom properties e2e', () => {
 
       expect(response.status).to.eql(200);
 
-      const { definition } = await response.json() as { definition: CustomPropertyDefinition };
+      const { definition } = (await response.json()) as { definition: CustomPropertyDefinition };
 
       expect(definition).to.include({ id: propertyDefinition.id, key: 'invoicenumber' });
     });
@@ -114,17 +124,25 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       const updateResponse = await app.request(
         `/api/organizations/${ORG_ID}/custom-properties/${propertyDefinition.id}`,
-        { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Invoice No.' }) },
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'Invoice No.' }),
+        },
         { loggedInUserId: USER_ID },
       );
 
       expect(updateResponse.status).to.eql(200);
 
-      const { propertyDefinition: updated } = await updateResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition: updated } = (await updateResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       expect(updated).to.include({ name: 'Invoice No.', key: 'invoiceno' });
     });
@@ -141,7 +159,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       const deleteResponse = await app.request(
         `/api/organizations/${ORG_ID}/custom-properties/${propertyDefinition.id}`,
@@ -156,7 +176,9 @@ describe('custom properties e2e', () => {
         { method: 'GET' },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinitions } = await listResponse.json() as { propertyDefinitions: CustomPropertyDefinition[] };
+      const { propertyDefinitions } = (await listResponse.json()) as {
+        propertyDefinitions: CustomPropertyDefinition[];
+      };
 
       expect(propertyDefinitions).to.have.length(0);
     });

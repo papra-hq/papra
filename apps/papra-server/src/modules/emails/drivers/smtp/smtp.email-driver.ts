@@ -8,15 +8,17 @@ export const smtpEmailDriverFactory = defineEmailDriverFactory(({ config, logger
   const { fromEmail } = config.emails;
   const { host, port, secure, user, password, rawConfig } = config.emails.drivers.smtp;
 
-  const transporter = nodemailer.createTransport(rawConfig ?? {
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass: password,
+  const transporter = nodemailer.createTransport(
+    rawConfig ?? {
+      host,
+      port,
+      secure,
+      auth: {
+        user,
+        pass: password,
+      },
     },
-  });
+  );
 
   return {
     name: SMTP_EMAIL_DRIVER_NAME,

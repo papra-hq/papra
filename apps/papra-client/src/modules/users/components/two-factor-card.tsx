@@ -11,7 +11,13 @@ import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-err
 import { CopyButton } from '@/modules/shared/utils/copy';
 import { Badge } from '@/modules/ui/components/badge';
 import { Button } from '@/modules/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/ui/components/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/modules/ui/components/card';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +28,12 @@ import {
 } from '@/modules/ui/components/dialog';
 import { QrCode } from '@/modules/ui/components/qr-code';
 import { createToast } from '@/modules/ui/components/sonner';
-import { TextField, TextFieldErrorMessage, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import {
+  TextField,
+  TextFieldErrorMessage,
+  TextFieldLabel,
+  TextFieldRoot,
+} from '@/modules/ui/components/textfield';
 import { getSecretFromTotpUri } from '../2fa.models';
 
 const EnableTwoFactorDialog: Component<{
@@ -32,7 +43,10 @@ const EnableTwoFactorDialog: Component<{
 }> = (props) => {
   const { t } = useI18n();
 
-  const passwordSchema = v.pipe(v.string(), v.minLength(1, t('user.settings.two-factor.enable-dialog.password.required')));
+  const passwordSchema = v.pipe(
+    v.string(),
+    v.minLength(1, t('user.settings.two-factor.enable-dialog.password.required')),
+  );
 
   const { form, Form, Field } = createForm({
     schema: v.object({
@@ -60,7 +74,9 @@ const EnableTwoFactorDialog: Component<{
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('user.settings.two-factor.enable-dialog.title')}</DialogTitle>
-          <DialogDescription>{t('user.settings.two-factor.enable-dialog.description')}</DialogDescription>
+          <DialogDescription>
+            {t('user.settings.two-factor.enable-dialog.description')}
+          </DialogDescription>
         </DialogHeader>
         <Form>
           <Field name="password">
@@ -120,16 +136,12 @@ const SetupTwoFactorDialog: Component<{
   }));
 
   return (
-    <Dialog
-      open={props.open}
-      onOpenChange={props.onOpenChange}
-    >
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('user.settings.two-factor.setup-dialog.title')}</DialogTitle>
         </DialogHeader>
         <div>
-
           <h3 class="font-semibold">{t('user.settings.two-factor.setup-dialog.step1.title')}</h3>
           <p class="mb-4 text-sm text-muted-foreground">
             {t('user.settings.two-factor.setup-dialog.step1.description')}
@@ -138,10 +150,18 @@ const SetupTwoFactorDialog: Component<{
           <div class="flex flex-col items-center">
             <QrCode value={props.totpUri} class="w-full max-w-48" />
 
-            <CopyButton text={getTotpSecret()} variant="outline" label={t('user.settings.two-factor.setup-dialog.copy-setup-key')} size="sm" class="mt-2" />
+            <CopyButton
+              text={getTotpSecret()}
+              variant="outline"
+              label={t('user.settings.two-factor.setup-dialog.copy-setup-key')}
+              size="sm"
+              class="mt-2"
+            />
           </div>
 
-          <h3 class="mt-8 font-semibold">{t('user.settings.two-factor.setup-dialog.step2.title')}</h3>
+          <h3 class="mt-8 font-semibold">
+            {t('user.settings.two-factor.setup-dialog.step2.title')}
+          </h3>
           <p class="mb-4 text-sm text-muted-foreground">
             {t('user.settings.two-factor.setup-dialog.step2.description')}
           </p>
@@ -150,13 +170,19 @@ const SetupTwoFactorDialog: Component<{
             <TotpField value={getTotpCode()} onValueChange={setTotpCode} />
           </div>
 
-          <Show when={verifyMutation.error}>{getError => (<div class="text-red">{getError().message}</div>)}</Show>
+          <Show when={verifyMutation.error}>
+            {(getError) => <div class="text-red">{getError().message}</div>}
+          </Show>
 
           <div class="flex md:flex-row flex-col justify-end gap-2 mt-6">
             <Button variant="outline" onClick={() => props.onOpenChange(false)}>
               {t('user.settings.two-factor.setup-dialog.cancel')}
             </Button>
-            <Button type="submit" isLoading={verifyMutation.isPending} onClick={() => verifyMutation.mutate({ totpCode: getTotpCode() })}>
+            <Button
+              type="submit"
+              isLoading={verifyMutation.isPending}
+              onClick={() => verifyMutation.mutate({ totpCode: getTotpCode() })}
+            >
               {t('user.settings.two-factor.setup-dialog.verify')}
             </Button>
           </div>
@@ -178,16 +204,14 @@ const BackupCodesDialog: Component<{
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('user.settings.two-factor.backup-codes-dialog.title')}</DialogTitle>
-          <DialogDescription>{t('user.settings.two-factor.backup-codes-dialog.description')}</DialogDescription>
+          <DialogDescription>
+            {t('user.settings.two-factor.backup-codes-dialog.description')}
+          </DialogDescription>
         </DialogHeader>
         <div>
           <div class="p-4 rounded-md bg-background border">
             <div class="grid grid-cols-2 gap-2 font-mono text-sm">
-              <For each={props.backupCodes}>
-                {code => (
-                  <div class="text-center">{code}</div>
-                )}
-              </For>
+              <For each={props.backupCodes}>{(code) => <div class="text-center">{code}</div>}</For>
             </div>
           </div>
 
@@ -202,10 +226,12 @@ const BackupCodesDialog: Component<{
             <Button
               variant="outline"
               size="sm"
-              onClick={() => downloadTextFile({
-                content: props.backupCodes.join('\n'),
-                fileName: t('user.settings.two-factor.backup-codes-dialog.download-filename'),
-              })}
+              onClick={() =>
+                downloadTextFile({
+                  content: props.backupCodes.join('\n'),
+                  fileName: t('user.settings.two-factor.backup-codes-dialog.download-filename'),
+                })
+              }
             >
               <div class="i-tabler-download size-4 mr-2" />
               {t('user.settings.two-factor.backup-codes-dialog.download')}
@@ -229,7 +255,10 @@ const DisableTwoFactorDialog: Component<{
 }> = (props) => {
   const { t } = useI18n();
 
-  const passwordSchema = v.pipe(v.string(), v.minLength(1, t('user.settings.two-factor.disable-dialog.password.required')));
+  const passwordSchema = v.pipe(
+    v.string(),
+    v.minLength(1, t('user.settings.two-factor.disable-dialog.password.required')),
+  );
 
   const { form, Form, Field } = createForm({
     schema: v.object({
@@ -256,7 +285,9 @@ const DisableTwoFactorDialog: Component<{
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('user.settings.two-factor.disable-dialog.title')}</DialogTitle>
-          <DialogDescription>{t('user.settings.two-factor.disable-dialog.description')}</DialogDescription>
+          <DialogDescription>
+            {t('user.settings.two-factor.disable-dialog.description')}
+          </DialogDescription>
         </DialogHeader>
         <Form>
           <Field name="password">
@@ -298,7 +329,10 @@ const RegenerateBackupCodesDialog: Component<{
 }> = (props) => {
   const { t } = useI18n();
 
-  const passwordSchema = v.pipe(v.string(), v.minLength(1, t('user.settings.two-factor.regenerate-dialog.password.required')));
+  const passwordSchema = v.pipe(
+    v.string(),
+    v.minLength(1, t('user.settings.two-factor.regenerate-dialog.password.required')),
+  );
 
   const { form, Form, Field } = createForm({
     schema: v.object({
@@ -327,7 +361,9 @@ const RegenerateBackupCodesDialog: Component<{
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('user.settings.two-factor.regenerate-dialog.title')}</DialogTitle>
-          <DialogDescription>{t('user.settings.two-factor.regenerate-dialog.description')}</DialogDescription>
+          <DialogDescription>
+            {t('user.settings.two-factor.regenerate-dialog.description')}
+          </DialogDescription>
         </DialogHeader>
         <Form>
           <Field name="password">
@@ -362,9 +398,17 @@ const RegenerateBackupCodesDialog: Component<{
   );
 };
 
-type DialogState = 'none' | 'enable-password' | 'setup-qr' | 'backup-codes' | 'disable-password' | 'regenerate-codes';
+type DialogState =
+  | 'none'
+  | 'enable-password'
+  | 'setup-qr'
+  | 'backup-codes'
+  | 'disable-password'
+  | 'regenerate-codes';
 
-export const TwoFactorCard: Component<{ twoFactorEnabled: boolean; onUpdate: () => void }> = (props) => {
+export const TwoFactorCard: Component<{ twoFactorEnabled: boolean; onUpdate: () => void }> = (
+  props,
+) => {
   const { t } = useI18n();
   const [dialogState, setDialogState] = createSignal<DialogState>('none');
   const [totpUri, setTotpUri] = createSignal<string>('');
@@ -418,11 +462,11 @@ export const TwoFactorCard: Component<{ twoFactorEnabled: boolean; onUpdate: () 
           <div class="flex flex-row justify-end gap-3">
             <Show
               when={props.twoFactorEnabled}
-              fallback={(
+              fallback={
                 <Button onClick={() => setDialogState('enable-password')}>
                   {t('user.settings.two-factor.enable-button')}
                 </Button>
-              )}
+              }
             >
               <Button variant="outline" onClick={() => setDialogState('regenerate-codes')}>
                 {t('user.settings.two-factor.regenerate-codes-button')}
@@ -437,32 +481,32 @@ export const TwoFactorCard: Component<{ twoFactorEnabled: boolean; onUpdate: () 
 
       <EnableTwoFactorDialog
         open={dialogState() === 'enable-password'}
-        onOpenChange={open => !open && closeDialog()}
+        onOpenChange={(open) => !open && closeDialog()}
         onSuccess={handleEnableSuccess}
       />
 
       <SetupTwoFactorDialog
         open={dialogState() === 'setup-qr'}
-        onOpenChange={open => !open && closeDialog()}
+        onOpenChange={(open) => !open && closeDialog()}
         totpUri={totpUri()}
         onSuccess={handleSetupSuccess}
       />
 
       <BackupCodesDialog
         open={dialogState() === 'backup-codes'}
-        onOpenChange={open => !open && closeDialog()}
+        onOpenChange={(open) => !open && closeDialog()}
         backupCodes={backupCodes()}
       />
 
       <DisableTwoFactorDialog
         open={dialogState() === 'disable-password'}
-        onOpenChange={open => !open && closeDialog()}
+        onOpenChange={(open) => !open && closeDialog()}
         onSuccess={handleDisableSuccess}
       />
 
       <RegenerateBackupCodesDialog
         open={dialogState() === 'regenerate-codes'}
-        onOpenChange={open => !open && closeDialog()}
+        onOpenChange={(open) => !open && closeDialog()}
         onSuccess={handleRegenerateSuccess}
       />
     </>

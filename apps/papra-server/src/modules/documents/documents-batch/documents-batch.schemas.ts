@@ -35,13 +35,10 @@ export const batchTagsBodySchema = v.pipe(
     ({ addTagIds, removeTagIds }) => addTagIds.length + removeTagIds.length > 0,
     'At least one of addTagIds or removeTagIds must be non-empty',
   ),
-  v.check(
-    ({ addTagIds, removeTagIds }) => {
-      const removeSet = new Set(removeTagIds);
-      return addTagIds.every(id => !removeSet.has(id));
-    },
-    'addTagIds and removeTagIds must be disjoint',
-  ),
+  v.check(({ addTagIds, removeTagIds }) => {
+    const removeSet = new Set(removeTagIds);
+    return addTagIds.every((id) => !removeSet.has(id));
+  }, 'addTagIds and removeTagIds must be disjoint'),
 );
 
 export type BatchTargetFilter = v.InferOutput<typeof batchTargetFilterSchema>;

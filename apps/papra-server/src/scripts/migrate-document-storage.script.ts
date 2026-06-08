@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import type { Database } from '../modules/app/database/database.types';
 import process from 'node:process';
 import { parseArgs, parseEnv } from 'node:util';
@@ -13,7 +14,8 @@ import { createDocumentStorageService } from '../modules/documents/storage/docum
 import { ensureBooleanArg } from './commons/args.utils';
 import { runScriptWithDb } from './commons/run-script';
 
-const envArgsToString = (args: (string | boolean)[] = []) => args.filter(arg => typeof arg === 'string').join('\n');
+const envArgsToString = (args: (string | boolean)[] = []) =>
+  args.filter((arg) => typeof arg === 'string').join('\n');
 
 export async function migrateDocumentStorage({
   db,
@@ -33,18 +35,29 @@ export async function migrateDocumentStorage({
   const { config: fromConfig } = await parseConfig({ env: { ...process.env, ...fromEnv } });
   const { config: toConfig } = await parseConfig({ env: { ...process.env, ...toEnv } });
 
-  const fromStorageService = createDocumentStorageService({ documentStorageConfig: fromConfig.documentsStorage });
-  const toStorageService = createDocumentStorageService({ documentStorageConfig: toConfig.documentsStorage });
+  const fromStorageService = createDocumentStorageService({
+    documentStorageConfig: fromConfig.documentsStorage,
+  });
+  const toStorageService = createDocumentStorageService({
+    documentStorageConfig: toConfig.documentsStorage,
+  });
 
   prompts?.intro('Document Storage Migration');
 
   if (isDryRun) {
-    prompts?.log.info('This is a dry run, no actual migration will be performed.\nJust logging the documents that would be migrated.');
+    prompts?.log.info(
+      'This is a dry run, no actual migration will be performed.\nJust logging the documents that would be migrated.',
+    );
   }
 
-  const migrationErrors: { document: { id: string; originalName: string; originalStorageKey: string }; error: unknown }[] = [];
+  const migrationErrors: {
+    document: { id: string; originalName: string; originalStorageKey: string };
+    error: unknown;
+  }[] = [];
 
-  const [{ count: documentCount = 0 } = {}] = await db.select({ count: count() }).from(documentsTable);
+  const [{ count: documentCount = 0 } = {}] = await db
+    .select({ count: count() })
+    .from(documentsTable);
 
   if (documentCount === 0) {
     prompts?.outro('No documents found in the database, nothing to migrate');
@@ -91,7 +104,7 @@ export async function migrateDocumentStorage({
     progress?.message(`Migrating ${originalName} - ${storageKey}`);
 
     if (isDryRun) {
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       progress?.advance();
       continue;
     }
@@ -140,33 +153,35 @@ export async function migrateDocumentStorage({
     progress?.advance();
   }
 
-  progress?.stop(`Migration completed: ${documentCount - migrationErrors.length} succeeded, ${migrationErrors.length} failed.`);
+  progress?.stop(
+    `Migration completed: ${documentCount - migrationErrors.length} succeeded, ${migrationErrors.length} failed.`,
+  );
 
   if (migrationErrors.length > 0) {
     migrationErrors.forEach(({ document, error }) => {
       const { id, originalName, originalStorageKey } = document;
-      prompts?.log.error(`- Document ID: ${id}, Name: ${originalName}, Storage Key: ${originalStorageKey}\n  Error: ${castError(error).message}`);
+      prompts?.log.error(
+        `- Document ID: ${id}, Name: ${originalName}, Storage Key: ${originalStorageKey}\n  Error: ${castError(error).message}`,
+      );
     });
   }
 }
 
-await runScriptWithDb(
-  { scriptName: 'migrate-document-storage', silent: true },
-  async ({ db }) => {
-    const { values } = parseArgs({
-      args: process.argv.slice(2),
-      options: {
-        'from': { type: 'string', multiple: true, default: [] },
-        'to': { type: 'string', multiple: true, default: [] },
-        'delete-source': { type: 'boolean', default: false },
-        'dry-run': { type: 'boolean', default: false },
-        'help': { type: 'boolean', short: 'h', default: false },
-      },
-      strict: false,
-    });
+await runScriptWithDb({ scriptName: 'migrate-document-storage', silent: true }, async ({ db }) => {
+  const { values } = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      'from': { type: 'string', multiple: true, default: [] },
+      'to': { type: 'string', multiple: true, default: [] },
+      'delete-source': { type: 'boolean', default: false },
+      'dry-run': { type: 'boolean', default: false },
+      'help': { type: 'boolean', short: 'h', default: false },
+    },
+    strict: false,
+  });
 
-    if (ensureBooleanArg(values.help)) {
-      console.log(`
+  if (ensureBooleanArg(values.help)) {
+    console.log(`
 Usage: migrate-document-storage [options]
 
 Options:
@@ -176,21 +191,20 @@ Options:
   --dry-run           Perform a dry run without actual migration, just logs
   -h, --help          Show this help message
       `);
-      process.exit(0);
-    }
+    process.exit(0);
+  }
 
-    const fromEnv = parseEnv(envArgsToString(values.from)) as Record<string, string>;
-    const toEnv = parseEnv(envArgsToString(values.to)) as Record<string, string>;
-    const deleteSource = ensureBooleanArg(values['delete-source']);
-    const isDryRun = ensureBooleanArg(values['dry-run']);
+  const fromEnv = parseEnv(envArgsToString(values.from)) as Record<string, string>;
+  const toEnv = parseEnv(envArgsToString(values.to)) as Record<string, string>;
+  const deleteSource = ensureBooleanArg(values['delete-source']);
+  const isDryRun = ensureBooleanArg(values['dry-run']);
 
-    await migrateDocumentStorage({
-      db,
-      fromEnv,
-      toEnv,
-      deleteSource,
-      isDryRun,
-      prompts: p,
-    });
-  },
-);
+  await migrateDocumentStorage({
+    db,
+    fromEnv,
+    toEnv,
+    deleteSource,
+    isDryRun,
+    prompts: p,
+  });
+});

@@ -21,10 +21,8 @@ export const DocumentOpenWithDropdownItem: Component<{ app: DocumentOpenWithApp 
   );
 };
 
-export const DocumentOpenWithDropdownItems: Component<{ apps: DocumentOpenWithApp[] }> = (props) => {
-  return (
-    <For each={props.apps}>
-      {app => <DocumentOpenWithDropdownItem app={app} />}
-    </For>
-  );
+export const DocumentOpenWithDropdownItems: Component<{ apps: DocumentOpenWithApp[] }> = (
+  props,
+) => {
+  return <For each={props.apps}>{(app) => <DocumentOpenWithDropdownItem app={app} />}</For>;
 };

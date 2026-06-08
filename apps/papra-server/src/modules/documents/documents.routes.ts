@@ -17,10 +17,31 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { DEFAULT_DOCUMENT_SEARCH_SORT } from './document-search/document-search.constants';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
 import { createDocumentIsNotDeletedError } from './documents.errors';
-import { formatDocumentForApi, formatDocumentsForApi, isDocumentSizeLimitEnabled } from './documents.models';
+import {
+  formatDocumentForApi,
+  formatDocumentsForApi,
+  isDocumentSizeLimitEnabled,
+} from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { documentIdSchema, documentSearchSortFieldSchema, documentSearchSortOrderSchema, searchDocumentsQuerySchema, updateDocumentBodySchema } from './documents.schemas';
-import { createDocumentCreationUsecase, deleteAllTrashDocuments, deleteTrashDocument, enrichAndFormatDocumentForApi, enrichAndFormatDocumentsForApi, ensureDocumentExists, getDocumentOrThrow, restoreDocument, trashDocument, updateDocument } from './documents.usecases';
+import {
+  documentIdSchema,
+  documentSearchSortFieldSchema,
+  documentSearchSortOrderSchema,
+  searchDocumentsQuerySchema,
+  updateDocumentBodySchema,
+} from './documents.schemas';
+import {
+  createDocumentCreationUsecase,
+  deleteAllTrashDocuments,
+  deleteTrashDocument,
+  enrichAndFormatDocumentForApi,
+  enrichAndFormatDocumentsForApi,
+  ensureDocumentExists,
+  getDocumentOrThrow,
+  restoreDocument,
+  trashDocument,
+  updateDocument,
+} from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -42,9 +63,11 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:create'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -56,18 +79,30 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
-      const { organizationPlan } = await getOrganizationPlan({ organizationId, plansRepository, subscriptionsRepository });
+      const { organizationPlan } = await getOrganizationPlan({
+        organizationId,
+        plansRepository,
+        subscriptionsRepository,
+      });
       const { maxFileSize } = organizationPlan.limits;
 
       const { fileStream, fileName, mimeType } = await getFileStreamFromMultipartForm({
         body: context.req.raw.body,
         headers: context.req.header(),
-        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize: maxFileSize }) ? maxFileSize : undefined,
+        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize: maxFileSize })
+          ? maxFileSize
+          : undefined,
       });
 
       const createDocument = createDocumentCreationUsecase({ ...deps });
 
-      const { document } = await createDocument({ fileStream, fileName, mimeType, userId, organizationId });
+      const { document } = await createDocument({
+        fileStream,
+        fileName,
+        mimeType,
+        userId,
+        organizationId,
+      });
 
       return context.json({ document: formatDocumentForApi({ document }) });
     },
@@ -78,9 +113,11 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/deleted',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateQuery(
       v.strictObject({
         ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),
@@ -97,11 +134,12 @@ function setupGetDeletedDocumentsRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const [
-        { documents },
-        { documentsCount },
-      ] = await Promise.all([
-        documentsRepository.getOrganizationDeletedDocuments({ organizationId, pageIndex, pageSize }),
+      const [{ documents }, { documentsCount }] = await Promise.all([
+        documentsRepository.getOrganizationDeletedDocuments({
+          organizationId,
+          pageIndex,
+          pageSize,
+        }),
         documentsRepository.getOrganizationDeletedDocumentsCount({ organizationId }),
       ]);
 
@@ -117,10 +155,12 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -133,8 +173,16 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
-      const { enrichedDocument } = await enrichAndFormatDocumentForApi({ document, tagsRepository, customPropertiesRepository });
+      const { document } = await getDocumentOrThrow({
+        documentId,
+        organizationId,
+        documentsRepository,
+      });
+      const { enrichedDocument } = await enrichAndFormatDocumentForApi({
+        document,
+        tagsRepository,
+        customPropertiesRepository,
+      });
 
       return context.json({ document: enrichedDocument });
     },
@@ -145,10 +193,12 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -179,10 +229,12 @@ function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/restore',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -193,7 +245,11 @@ function setupRestoreDocumentRoute({ app, db, eventServices }: RouteDefinitionCo
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+      const { document } = await getDocumentOrThrow({
+        documentId,
+        organizationId,
+        documentsRepository,
+      });
 
       if (!document.isDeleted) {
         throw createDocumentIsNotDeletedError();
@@ -216,10 +272,12 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/file',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -230,7 +288,11 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { document } = await getDocumentOrThrow({ documentId, documentsRepository, organizationId });
+      const { document } = await getDocumentOrThrow({
+        documentId,
+        documentsRepository,
+        organizationId,
+      });
 
       const { fileStream } = await documentsStorageService.getFileStream({
         storageKey: document.originalStorageKey,
@@ -239,19 +301,15 @@ function setupGetDocumentFileRoute({ app, db, documentsStorageService }: RouteDe
         fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
       });
 
-      return context.body(
-        Readable.toWeb(fileStream),
-        200,
-        {
-          // Prevent XSS by serving the file as an octet-stream
-          'Content-Type': 'application/octet-stream',
-          // Always use attachment for defense in depth - client uses blob API anyway
-          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
-          'Content-Length': String(document.originalSize),
-          'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'DENY',
-        },
-      );
+      return context.body(Readable.toWeb(fileStream), 200, {
+        // Prevent XSS by serving the file as an octet-stream
+        'Content-Type': 'application/octet-stream',
+        // Always use attachment for defense in depth - client uses blob API anyway
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
+        'Content-Length': String(document.originalSize),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+      });
     },
   );
 }
@@ -260,9 +318,11 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
   app.get(
     '/api/organizations/:organizationId/documents',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateQuery(
       v.strictObject({
         searchQuery: v.optional(searchDocumentsQuerySchema, ''),
@@ -283,8 +343,19 @@ function setupGetDocumentsRoute({ app, db, documentSearchServices }: RouteDefini
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { documents, documentsCount } = await searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, sort: { field: sortField, order: sortOrder }, documentSearchServices });
-      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents, tagsRepository, customPropertiesRepository });
+      const { documents, documentsCount } = await searchOrganizationDocuments({
+        organizationId,
+        searchQuery,
+        pageIndex,
+        pageSize,
+        sort: { field: sortField, order: sortOrder },
+        documentSearchServices,
+      });
+      const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
+        documents,
+        tagsRepository,
+        customPropertiesRepository,
+      });
 
       return context.json({ documents: enrichedDocuments, documentsCount });
     },
@@ -295,9 +366,11 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   app.get(
     '/api/organizations/:organizationId/documents/statistics',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -315,7 +388,9 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
         deletedDocumentsSize,
         totalDocumentsCount,
         totalDocumentsSize,
-      } = await documentsRepository.getOrganizationStats({ organizationId });
+      } = await documentsRepository.getOrganizationStats({
+        organizationId,
+      });
 
       return context.json({
         organizationStats: {
@@ -331,14 +406,21 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
   );
 }
 
-function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, eventServices }: RouteDefinitionContext) {
+function setupDeleteTrashDocumentRoute({
+  app,
+  db,
+  documentsStorageService,
+  eventServices,
+}: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash/:documentId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -349,7 +431,13 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, event
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await deleteTrashDocument({ documentId, organizationId, documentsRepository, documentsStorageService, eventServices });
+      await deleteTrashDocument({
+        documentId,
+        organizationId,
+        documentsRepository,
+        documentsStorageService,
+        eventServices,
+      });
 
       return context.json({
         success: true,
@@ -358,13 +446,20 @@ function setupDeleteTrashDocumentRoute({ app, db, documentsStorageService, event
   );
 }
 
-function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService, eventServices }: RouteDefinitionContext) {
+function setupDeleteAllTrashDocumentsRoute({
+  app,
+  db,
+  documentsStorageService,
+  eventServices,
+}: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/trash',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -375,7 +470,12 @@ function setupDeleteAllTrashDocumentsRoute({ app, db, documentsStorageService, e
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await deleteAllTrashDocuments({ organizationId, documentsRepository, documentsStorageService, eventServices });
+      await deleteAllTrashDocuments({
+        organizationId,
+        documentsRepository,
+        documentsStorageService,
+        eventServices,
+      });
 
       return context.body(null, 204);
     },
@@ -386,10 +486,12 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
   app.patch(
     '/api/organizations/:organizationId/documents/:documentId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     validateJsonBody(updateDocumentBodySchema),
     async (context) => {
       const { userId } = getUser({ context });

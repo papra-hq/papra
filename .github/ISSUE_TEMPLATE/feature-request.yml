@@ -49,4 +49,4 @@ body:
         - label: Check that there isn't already an issue that request the same feature to avoid creating a duplicate.
           required: true
         - label: Check that the feature is technically feasible and aligns with the project's goals.
-          required: true 
+          required: true

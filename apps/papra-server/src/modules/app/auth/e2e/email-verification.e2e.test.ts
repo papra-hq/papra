@@ -36,7 +36,12 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
+        const { auth } = getAuth({
+          db,
+          config,
+          authEmailsServices,
+          eventServices: createEventServices(),
+        });
 
         const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
@@ -77,7 +82,12 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
+        const { auth } = getAuth({
+          db,
+          config,
+          authEmailsServices,
+          eventServices: createEventServices(),
+        });
 
         const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
@@ -112,9 +122,7 @@ describe('email verification e2e', () => {
         // Better auth returns 403 for unverified email
         expect(loginResponse.status).to.eql(403);
 
-        expect(
-          await loginResponse.json(),
-        ).to.eql({
+        expect(await loginResponse.json()).to.eql({
           code: 'EMAIL_NOT_VERIFIED',
           message: 'Email not verified',
         });
@@ -137,7 +145,12 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
+        const { auth } = getAuth({
+          db,
+          config,
+          authEmailsServices,
+          eventServices: createEventServices(),
+        });
 
         const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 
@@ -168,7 +181,12 @@ describe('email verification e2e', () => {
         });
 
         const authEmailsServices = createAuthEmailsServices({ emailsServices: mockEmailsServices });
-        const { auth } = getAuth({ db, config, authEmailsServices, eventServices: createEventServices() });
+        const { auth } = getAuth({
+          db,
+          config,
+          authEmailsServices,
+          eventServices: createEventServices(),
+        });
 
         const { app } = createServer(createTestServerDependencies({ db, config, auth }));
 

@@ -21,7 +21,13 @@ export function createDocumentViewsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getOrganizationDocumentViews({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationDocumentViews({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const documentViews = await db
     .select()
     .from(documentViewsTable)
@@ -31,7 +37,15 @@ async function getOrganizationDocumentViews({ organizationId, db }: { organizati
   return { documentViews };
 }
 
-async function getDocumentViewById({ documentViewId, organizationId, db }: { documentViewId: string; organizationId: string; db: Database }) {
+async function getDocumentViewById({
+  documentViewId,
+  organizationId,
+  db,
+}: {
+  documentViewId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [documentView] = await db
     .select()
     .from(documentViewsTable)
@@ -45,7 +59,18 @@ async function getDocumentViewById({ documentViewId, organizationId, db }: { doc
   return { documentView };
 }
 
-async function createDocumentView({ documentView, db }: { documentView: { name: string; query: string; description?: string | null; organizationId: string }; db: Database }) {
+async function createDocumentView({
+  documentView,
+  db,
+}: {
+  documentView: {
+    name: string;
+    query: string;
+    description?: string | null;
+    organizationId: string;
+  };
+  db: Database;
+}) {
   const [result, error] = await safely(
     db.insert(documentViewsTable).values(documentView).returning(),
   );
@@ -62,7 +87,19 @@ async function createDocumentView({ documentView, db }: { documentView: { name: 
   return { documentView: createdDocumentView };
 }
 
-async function updateDocumentView({ documentViewId, name, query, description, db }: { documentViewId: string; name?: string; query?: string; description?: string | null; db: Database }) {
+async function updateDocumentView({
+  documentViewId,
+  name,
+  query,
+  description,
+  db,
+}: {
+  documentViewId: string;
+  name?: string;
+  query?: string;
+  description?: string | null;
+  db: Database;
+}) {
   const [result, error] = await safely(
     db
       .update(documentViewsTable)
@@ -83,6 +120,12 @@ async function updateDocumentView({ documentViewId, name, query, description, db
   return { documentView };
 }
 
-async function deleteDocumentView({ documentViewId, db }: { documentViewId: string; db: Database }) {
+async function deleteDocumentView({
+  documentViewId,
+  db,
+}: {
+  documentViewId: string;
+  db: Database;
+}) {
   await db.delete(documentViewsTable).where(eq(documentViewsTable.id, documentViewId));
 }

@@ -52,7 +52,13 @@ export async function createShareLink({
   return { shareLink: toShareLink(shareLink) };
 }
 
-export async function fetchDocumentShareLinks({ organizationId, documentId }: { organizationId: string; documentId: string }) {
+export async function fetchDocumentShareLinks({
+  organizationId,
+  documentId,
+}: {
+  organizationId: string;
+  documentId: string;
+}) {
   const { shareLinks } = await apiClient<{ shareLinks: ShareLinkDto[] }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/${documentId}/share-links`,
@@ -92,7 +98,13 @@ export async function updateShareLink({
   return { shareLink: toShareLink(shareLink) };
 }
 
-export async function deleteShareLink({ organizationId, shareLinkId }: { organizationId: string; shareLinkId: string }) {
+export async function deleteShareLink({
+  organizationId,
+  shareLinkId,
+}: {
+  organizationId: string;
+  shareLinkId: string;
+}) {
   await apiClient({
     method: 'DELETE',
     path: `/api/organizations/${organizationId}/share-links/${shareLinkId}`,
@@ -103,11 +115,21 @@ export async function deleteShareLink({ organizationId, shareLinkId }: { organiz
 // These intentionally use the lower-level `httpClient` instead of `apiClient`: `apiClient` redirects to /login on any 401,
 // but the public share flow uses 401 to signal "password required", which must be handled in-page.
 
-function getAuthorizationHeaders({ accessToken }: { accessToken?: string }): Record<string, string> {
+function getAuthorizationHeaders({
+  accessToken,
+}: {
+  accessToken?: string;
+}): Record<string, string> {
   return accessToken === undefined ? {} : { Authorization: `Bearer ${accessToken}` };
 }
 
-export async function fetchSharedDocument({ token, accessToken }: { token: string; accessToken?: string }) {
+export async function fetchSharedDocument({
+  token,
+  accessToken,
+}: {
+  token: string;
+  accessToken?: string;
+}) {
   const { document } = await httpClient<{ document: PublicSharedDocument }>({
     method: 'GET',
     baseUrl: buildTimeConfig.baseApiUrl,
@@ -118,7 +140,13 @@ export async function fetchSharedDocument({ token, accessToken }: { token: strin
   return { document };
 }
 
-export async function verifySharePassword({ token, password }: { token: string; password: string }) {
+export async function verifySharePassword({
+  token,
+  password,
+}: {
+  token: string;
+  password: string;
+}) {
   const { accessToken } = await httpClient<{ accessToken: string }>({
     method: 'POST',
     baseUrl: buildTimeConfig.baseApiUrl,
@@ -129,7 +157,13 @@ export async function verifySharePassword({ token, password }: { token: string; 
   return { accessToken };
 }
 
-export async function fetchSharedDocumentFile({ token, accessToken }: { token: string; accessToken?: string }) {
+export async function fetchSharedDocumentFile({
+  token,
+  accessToken,
+}: {
+  token: string;
+  accessToken?: string;
+}) {
   const blob = await httpClient<Blob, 'blob'>({
     method: 'GET',
     baseUrl: buildTimeConfig.baseApiUrl,

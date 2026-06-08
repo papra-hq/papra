@@ -45,9 +45,7 @@ describe('first user admin assignment', () => {
       await nextTick();
 
       const roles = await db.select().from(userRolesTable);
-      expect(
-        roles.map(({ userId, role }) => ({ userId, role })),
-      ).to.deep.equal([
+      expect(roles.map(({ userId, role }) => ({ userId, role }))).to.deep.equal([
         { userId: 'usr_1', role: 'admin' },
       ]);
     });
@@ -69,9 +67,7 @@ describe('first user admin assignment', () => {
       await nextTick();
 
       const roles = await db.select().from(userRolesTable);
-      expect(
-        roles.map(({ userId, role }) => ({ userId, role })),
-      ).to.deep.equal([
+      expect(roles.map(({ userId, role }) => ({ userId, role }))).to.deep.equal([
         { userId: 'usr_1', role: 'admin' },
       ]);
     });
@@ -84,22 +80,34 @@ describe('first user admin assignment', () => {
 
       registerFirstUserAdminEventHandler({ eventServices, config, db, logger: createNoopLogger() });
 
-      const firstUser = { id: 'usr_1', email: 'first@example.com', createdAt: new Date('2026-01-01') };
+      const firstUser = {
+        id: 'usr_1',
+        email: 'first@example.com',
+        createdAt: new Date('2026-01-01'),
+      };
       await db.insert(usersTable).values(firstUser);
 
-      eventServices.emitEvent({ eventName: 'user.created', payload: { userId: firstUser.id, ...firstUser } });
+      eventServices.emitEvent({
+        eventName: 'user.created',
+        payload: { userId: firstUser.id, ...firstUser },
+      });
       await nextTick();
 
-      const secondUser = { id: 'usr_2', email: 'second@example.com', createdAt: new Date('2026-01-02') };
+      const secondUser = {
+        id: 'usr_2',
+        email: 'second@example.com',
+        createdAt: new Date('2026-01-02'),
+      };
       await db.insert(usersTable).values(secondUser);
 
-      eventServices.emitEvent({ eventName: 'user.created', payload: { userId: secondUser.id, ...secondUser } });
+      eventServices.emitEvent({
+        eventName: 'user.created',
+        payload: { userId: secondUser.id, ...secondUser },
+      });
       await nextTick();
 
       const roles = await db.select().from(userRolesTable);
-      expect(
-        roles.map(({ userId, role }) => ({ userId, role })),
-      ).to.deep.equal([
+      expect(roles.map(({ userId, role }) => ({ userId, role }))).to.deep.equal([
         { userId: 'usr_1', role: 'admin' },
       ]);
     });
@@ -108,7 +116,7 @@ describe('first user admin assignment', () => {
       const users = [
         { id: 'usr_1', email: 'user1@example.com', createdAt: new Date('2026-01-01') },
         { id: 'usr_2', email: 'user2@example.com', createdAt: new Date('2026-01-01') },
-      ].map(user => ({ ...user, userId: user.id }));
+      ].map((user) => ({ ...user, userId: user.id }));
 
       const { db } = await createInMemoryDatabase({ users });
       const eventServices = createEventServices();

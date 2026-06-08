@@ -12,7 +12,7 @@ function formatWithSwitch(date: Date, exp: string): string {
       case '{yy}':
         return `${date.getFullYear()}`.slice(-2);
       case '{MM}':
-        return `${(date.getMonth() + 1)}`.padStart(2, '0');
+        return `${date.getMonth() + 1}`.padStart(2, '0');
       case '{dd}':
         return `${date.getDate()}`.padStart(2, '0');
       case '{HH}':
@@ -30,14 +30,14 @@ function formatWithSwitch(date: Date, exp: string): string {
 }
 
 const formatters: Record<string, (date: Date) => string> = {
-  '{yyyy}': date => `${date.getFullYear()}`,
-  '{yy}': date => `${date.getFullYear()}`.slice(-2),
-  '{MM}': date => `${(date.getMonth() + 1)}`.padStart(2, '0'),
-  '{dd}': date => `${date.getDate()}`.padStart(2, '0'),
-  '{HH}': date => `${date.getHours()}`.padStart(2, '0'),
-  '{mm}': date => `${date.getMinutes()}`.padStart(2, '0'),
-  '{ss}': date => `${date.getSeconds()}`.padStart(2, '0'),
-  '{SSS}': date => `${date.getMilliseconds()}`.padStart(3, '0'),
+  '{yyyy}': (date) => `${date.getFullYear()}`,
+  '{yy}': (date) => `${date.getFullYear()}`.slice(-2),
+  '{MM}': (date) => `${date.getMonth() + 1}`.padStart(2, '0'),
+  '{dd}': (date) => `${date.getDate()}`.padStart(2, '0'),
+  '{HH}': (date) => `${date.getHours()}`.padStart(2, '0'),
+  '{mm}': (date) => `${date.getMinutes()}`.padStart(2, '0'),
+  '{ss}': (date) => `${date.getSeconds()}`.padStart(2, '0'),
+  '{SSS}': (date) => `${date.getMilliseconds()}`.padStart(3, '0'),
 };
 
 export function formatWithLut(date: Date, exp: string): string {

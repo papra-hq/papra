@@ -9,16 +9,16 @@ describe('database-fts5 repository models', () => {
     const { db } = await createInMemoryDatabase();
 
     test('a simple text query', () => {
-      const { issues, searchWhereClause } = makeSearchWhereClause({ organizationId: 'org_1', query: 'foo', db });
+      const { issues, searchWhereClause } = makeSearchWhereClause({
+        organizationId: 'org_1',
+        query: 'foo',
+        db,
+      });
 
       expect(issues).to.eql([]);
       expect(stringifySqlQuery(searchWhereClause)).to.eql({
-        query: `(\"documents\".\"organization_id\" = ? and \"documents\".\"is_deleted\" = ? and \"documents\".\"id\" in (select distinct \"document_id\" from \"documents_fts\" where \"documents_fts\" = ?))`,
-        params: [
-          'org_1',
-          0,
-          'organization_id:"org_1" {name content}:"foo"*',
-        ],
+        query: `("documents"."organization_id" = ? and "documents"."is_deleted" = ? and "documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?))`,
+        params: ['org_1', 0, 'organization_id:"org_1" {name content}:"foo"*'],
       });
     });
 
@@ -31,7 +31,8 @@ describe('database-fts5 repository models', () => {
 
       expect(issues).to.eql([]);
       expect(stringifySqlQuery(searchWhereClause)).to.eql({
-        query: '("documents"."organization_id" = ? and "documents"."is_deleted" = ? and (("documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?)) or "documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))) and not "documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)))',
+        query:
+          '("documents"."organization_id" = ? and "documents"."is_deleted" = ? and (("documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?)) or "documents"."id" in (select distinct "documents_tags"."document_id" from "documents_tags" inner join "tags" on "documents_tags"."tag_id" = "tags"."id" where ("tags"."organization_id" = ? and "tags"."normalized_name" = ?))) and not "documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)))',
         params: [
           'org_1',
           0,
@@ -39,69 +40,61 @@ describe('database-fts5 repository models', () => {
           'important',
           'org_1',
           'urgent',
-          'organization_id:\"org_1\" {name content}:\"confidential\"*',
+          'organization_id:"org_1" {name content}:"confidential"*',
         ],
       });
     });
   });
 
   describe('makeSearchOrderByClauses', () => {
-    const toOrderByClause = ({ orderByClauses }: { orderByClauses: SQL[] }) => orderByClauses.map(clause => stringifySqlQuery(clause)).map(({ query }) => query).join(', ');
+    const toOrderByClause = ({ orderByClauses }: { orderByClauses: SQL[] }) =>
+      orderByClauses
+        .map((clause) => stringifySqlQuery(clause))
+        .map(({ query }) => query)
+        .join(', ');
 
     test('sort by createdAt', () => {
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'createdAt', order: 'asc' } })),
-      ).to.eql(
-        '"documents"."created_at" asc, "documents"."id" asc',
-      );
+      ).to.eql('"documents"."created_at" asc, "documents"."id" asc');
 
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'createdAt', order: 'desc' } })),
-      ).to.eql(
-        '"documents"."created_at" desc, "documents"."id" desc',
-      );
+      ).to.eql('"documents"."created_at" desc, "documents"."id" desc');
     });
 
     test('sort by name, the name is sorted case-insensitively', () => {
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'name', order: 'desc' } })),
-      ).to.eql(
-        '"documents"."name" COLLATE NOCASE desc, "documents"."id" desc',
-      );
+      ).to.eql('"documents"."name" COLLATE NOCASE desc, "documents"."id" desc');
 
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'name', order: 'asc' } })),
-      ).to.eql(
-        '"documents"."name" COLLATE NOCASE asc, "documents"."id" asc',
-      );
+      ).to.eql('"documents"."name" COLLATE NOCASE asc, "documents"."id" asc');
     });
 
     test('sort by documentDate asc', () => {
       expect(
-        toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'asc' } })),
-      ).to.eql(
-        '"documents"."document_date" asc, "documents"."id" asc',
-      );
+        toOrderByClause(
+          makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'asc' } }),
+        ),
+      ).to.eql('"documents"."document_date" asc, "documents"."id" asc');
 
       expect(
-        toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'desc' } })),
-      ).to.eql(
-        '"documents"."document_date" desc, "documents"."id" desc',
-      );
+        toOrderByClause(
+          makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'desc' } }),
+        ),
+      ).to.eql('"documents"."document_date" desc, "documents"."id" desc');
     });
 
     test('sort by updatedAt desc', () => {
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'updatedAt', order: 'desc' } })),
-      ).to.eql(
-        '"documents"."updated_at" desc, "documents"."id" desc',
-      );
+      ).to.eql('"documents"."updated_at" desc, "documents"."id" desc');
 
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'updatedAt', order: 'asc' } })),
-      ).to.eql(
-        '"documents"."updated_at" asc, "documents"."id" asc',
-      );
+      ).to.eql('"documents"."updated_at" asc, "documents"."id" asc');
     });
   });
 });

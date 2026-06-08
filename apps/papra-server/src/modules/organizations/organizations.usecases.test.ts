@@ -11,10 +11,34 @@ import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { createMaxOrganizationMembersCountReachedError, createOrganizationHasActiveSubscriptionError, createOrganizationInvitationAlreadyExistsError, createOrganizationNotFoundError, createUserAlreadyInOrganizationError, createUserMaxOrganizationCountReachedError, createUserNotInOrganizationError, createUserNotOrganizationOwnerError, createUserOrganizationInvitationLimitReachedError } from './organizations.errors';
+import {
+  createMaxOrganizationMembersCountReachedError,
+  createOrganizationHasActiveSubscriptionError,
+  createOrganizationInvitationAlreadyExistsError,
+  createOrganizationNotFoundError,
+  createUserAlreadyInOrganizationError,
+  createUserMaxOrganizationCountReachedError,
+  createUserNotInOrganizationError,
+  createUserNotOrganizationOwnerError,
+  createUserOrganizationInvitationLimitReachedError,
+} from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
-import { checkIfUserCanCreateNewOrganization, ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId, inviteMemberToOrganization, purgeExpiredSoftDeletedOrganization, purgeExpiredSoftDeletedOrganizations, removeMemberFromOrganization, softDeleteOrganization } from './organizations.usecases';
+import {
+  organizationInvitationsTable,
+  organizationMembersTable,
+  organizationsTable,
+} from './organizations.table';
+import {
+  checkIfUserCanCreateNewOrganization,
+  ensureUserIsInOrganization,
+  ensureUserIsOwnerOfOrganization,
+  getOrCreateOrganizationCustomerId,
+  inviteMemberToOrganization,
+  purgeExpiredSoftDeletedOrganization,
+  purgeExpiredSoftDeletedOrganizations,
+  removeMemberFromOrganization,
+  softDeleteOrganization,
+} from './organizations.usecases';
 
 describe('organizations usecases', () => {
   describe('ensureUserIsInOrganization', () => {
@@ -23,7 +47,9 @@ describe('organizations usecases', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          ],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
@@ -101,7 +127,11 @@ describe('organizations usecases', () => {
 
       // add a second organization owned by the user
       await db.insert(organizationsTable).values({ id: 'organization-3', name: 'Organization 3' });
-      await db.insert(organizationMembersTable).values({ organizationId: 'organization-3', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER });
+      await db.insert(organizationMembersTable).values({
+        organizationId: 'organization-3',
+        userId: 'user-1',
+        role: ORGANIZATION_ROLES.OWNER,
+      });
 
       // throw
       await expect(
@@ -111,9 +141,7 @@ describe('organizations usecases', () => {
           organizationsRepository,
           usersRepository,
         }),
-      ).rejects.toThrow(
-        createUserMaxOrganizationCountReachedError(),
-      );
+      ).rejects.toThrow(createUserMaxOrganizationCountReachedError());
     });
 
     test('an admin can individually allow a user to create more organizations by setting the maxOrganizationCount on the user', async () => {
@@ -143,7 +171,11 @@ describe('organizations usecases', () => {
 
       // add a third organization owned by the user
       await db.insert(organizationsTable).values({ id: 'organization-3', name: 'Organization 3' });
-      await db.insert(organizationMembersTable).values({ organizationId: 'organization-3', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER });
+      await db.insert(organizationMembersTable).values({
+        organizationId: 'organization-3',
+        userId: 'user-1',
+        role: ORGANIZATION_ROLES.OWNER,
+      });
 
       // throw
       await expect(
@@ -164,7 +196,9 @@ describe('organizations usecases', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          ],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
@@ -183,10 +217,14 @@ describe('organizations usecases', () => {
           organizationsRepository,
         });
 
-        expect(createCustomerArgs).toEqual([{ email: 'user-1@example.com', ownerId: 'user-1', organizationId: 'organization-1' }]);
+        expect(createCustomerArgs).toEqual([
+          { email: 'user-1@example.com', ownerId: 'user-1', organizationId: 'organization-1' },
+        ]);
         expect(customerId).toEqual('cus_123');
 
-        const { organization } = await organizationsRepository.getOrganizationById({ organizationId: 'organization-1' });
+        const { organization } = await organizationsRepository.getOrganizationById({
+          organizationId: 'organization-1',
+        });
 
         expect(organization?.customerId).toEqual('cus_123');
       });
@@ -195,7 +233,9 @@ describe('organizations usecases', () => {
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'user-1', email: 'user-1@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Organization 1', customerId: 'cus_123' }],
-          organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+          organizationMembers: [
+            { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+          ],
         });
 
         const organizationsRepository = createOrganizationsRepository({ db });
@@ -212,7 +252,9 @@ describe('organizations usecases', () => {
         expect(customerId).toEqual('cus_123');
 
         // ensure the customer id is still the same in the database
-        const { organization } = await organizationsRepository.getOrganizationById({ organizationId: 'organization-1' });
+        const { organization } = await organizationsRepository.getOrganizationById({
+          organizationId: 'organization-1',
+        });
 
         expect(organization?.customerId).toEqual('cus_123');
       });
@@ -230,9 +272,7 @@ describe('organizations usecases', () => {
             subscriptionsServices,
             organizationsRepository,
           }),
-        ).rejects.toThrow(
-          createOrganizationNotFoundError(),
-        );
+        ).rejects.toThrow(createOrganizationNotFoundError());
       });
     });
   });
@@ -268,9 +308,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           organizationsRepository,
         }),
-      ).rejects.toThrow(
-        createUserNotOrganizationOwnerError(),
-      );
+      ).rejects.toThrow(createUserNotOrganizationOwnerError());
 
       // throw as user-3 is not in the organization
       await expect(
@@ -279,9 +317,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           organizationsRepository,
         }),
-      ).rejects.toThrow(
-        createUserNotOrganizationOwnerError(),
-      );
+      ).rejects.toThrow(createUserNotOrganizationOwnerError());
     });
   });
 
@@ -294,8 +330,18 @@ describe('organizations usecases', () => {
         ],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [
-          { id: 'member-1', organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
-          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.ADMIN },
+          {
+            id: 'member-1',
+            organizationId: 'organization-1',
+            userId: 'user-1',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+          {
+            id: 'member-2',
+            organizationId: 'organization-1',
+            userId: 'user-2',
+            role: ORGANIZATION_ROLES.ADMIN,
+          },
         ],
       });
 
@@ -322,8 +368,18 @@ describe('organizations usecases', () => {
         ],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [
-          { id: 'member-1', organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.MEMBER },
-          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.MEMBER },
+          {
+            id: 'member-1',
+            organizationId: 'organization-1',
+            userId: 'user-1',
+            role: ORGANIZATION_ROLES.MEMBER,
+          },
+          {
+            id: 'member-2',
+            organizationId: 'organization-1',
+            userId: 'user-2',
+            role: ORGANIZATION_ROLES.MEMBER,
+          },
         ],
       });
 
@@ -414,7 +470,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -507,7 +565,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -562,13 +622,20 @@ describe('organizations usecases', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [
           { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
-          { id: 'member-2', organizationId: 'organization-1', userId: 'user-2', role: ORGANIZATION_ROLES.MEMBER },
+          {
+            id: 'member-2',
+            organizationId: 'organization-1',
+            userId: 'user-2',
+            role: ORGANIZATION_ROLES.MEMBER,
+          },
         ],
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -639,7 +706,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -689,9 +758,7 @@ describe('organizations usecases', () => {
     test('cannot invite new members when the organization has reached its maximum member count (including pending invitations) defined by the plan to enforce subscription limits', async () => {
       const { logger, getLogs } = createTestLogger();
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'user-1', email: 'owner@example.com' },
-        ],
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [
           { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
@@ -710,7 +777,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -788,7 +857,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 2 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 2 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -910,7 +981,9 @@ describe('organizations usecases', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({ organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 } });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
@@ -995,7 +1068,11 @@ describe('organizations usecases', () => {
           organizations: [{ id: 'organization-1', name: 'Test Org' }],
           organizationMembers: [
             { organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
-            { organizationId: 'organization-1', userId: 'admin-user', role: ORGANIZATION_ROLES.ADMIN },
+            {
+              organizationId: 'organization-1',
+              userId: 'admin-user',
+              role: ORGANIZATION_ROLES.ADMIN,
+            },
           ],
         });
 
@@ -1019,7 +1096,12 @@ describe('organizations usecases', () => {
           users: [{ id: 'usr_1', email: 'owner@example.com' }],
           organizations: [{ id: 'organization-1', name: 'Test Org' }],
           organizationMembers: [
-            { id: 'member-1', organizationId: 'organization-1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+            {
+              id: 'member-1',
+              organizationId: 'organization-1',
+              userId: 'usr_1',
+              role: ORGANIZATION_ROLES.OWNER,
+            },
           ],
           organizationInvitations: [
             {
@@ -1099,7 +1181,10 @@ describe('organizations usecases', () => {
         });
 
         const members = await db.select().from(organizationMembersTable);
-        const [org1, org2] = await db.select().from(organizationsTable).orderBy(organizationsTable.id);
+        const [org1, org2] = await db
+          .select()
+          .from(organizationsTable)
+          .orderBy(organizationsTable.id);
 
         // Only organization-2 member remains
         expect(members).toHaveLength(1);
@@ -1239,13 +1324,15 @@ describe('organizations usecases', () => {
         const { logger, getLogs } = createTestLogger();
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'usr_1', email: 'owner@example.com' }],
-          organizations: [{
-            id: 'organization-1',
-            name: 'Expired Org',
-            deletedAt: new Date('2025-10-05'),
-            deletedBy: 'usr_1',
-            scheduledPurgeAt: new Date('2025-11-04'),
-          }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Expired Org',
+              deletedAt: new Date('2025-10-05'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-11-04'),
+            },
+          ],
           documents: [
             {
               id: 'doc-1',
@@ -1299,70 +1386,69 @@ describe('organizations usecases', () => {
         expect(orgs).to.eql([]);
 
         // Ensure logs contain expected entries (order may vary)
-        assert.includeDeepMembers(
-          getLogs({ excludeTimestampMs: true }),
-          [
-            {
-              level: 'info',
-              message: 'Starting purge of organization',
-              namespace: 'test',
-              data: {
-                organizationId: 'organization-1',
-              },
+        assert.includeDeepMembers(getLogs({ excludeTimestampMs: true }), [
+          {
+            level: 'info',
+            message: 'Starting purge of organization',
+            namespace: 'test',
+            data: {
+              organizationId: 'organization-1',
             },
-            {
-              level: 'debug',
-              message: 'Deleted document file from storage',
-              namespace: 'test',
-              data: {
-                documentId: 'doc-2',
-                organizationId: 'organization-1',
-                storageKey: 'org-1/doc-2.txt',
-              },
+          },
+          {
+            level: 'debug',
+            message: 'Deleted document file from storage',
+            namespace: 'test',
+            data: {
+              documentId: 'doc-2',
+              organizationId: 'organization-1',
+              storageKey: 'org-1/doc-2.txt',
             },
-            {
-              level: 'debug',
-              message: 'Deleted document file from storage',
-              namespace: 'test',
-              data: {
-                documentId: 'doc-1',
-                organizationId: 'organization-1',
-                storageKey: 'org-1/doc-1.pdf',
-              },
+          },
+          {
+            level: 'debug',
+            message: 'Deleted document file from storage',
+            namespace: 'test',
+            data: {
+              documentId: 'doc-1',
+              organizationId: 'organization-1',
+              storageKey: 'org-1/doc-1.pdf',
             },
-            {
-              level: 'info',
-              message: 'Finished deleting document files from storage',
-              namespace: 'test',
-              data: {
-                deletedCount: 2,
-                failedCount: 0,
-                organizationId: 'organization-1',
-              },
+          },
+          {
+            level: 'info',
+            message: 'Finished deleting document files from storage',
+            namespace: 'test',
+            data: {
+              deletedCount: 2,
+              failedCount: 0,
+              organizationId: 'organization-1',
             },
-            {
-              level: 'info',
-              message: 'Successfully purged organization',
-              namespace: 'test',
-              data: {
-                organizationId: 'organization-1',
-              },
+          },
+          {
+            level: 'info',
+            message: 'Successfully purged organization',
+            namespace: 'test',
+            data: {
+              organizationId: 'organization-1',
             },
-          ],
-        );
+          },
+        ]);
       });
 
       test('handles storage deletion errors gracefully and continues purging', async () => {
         const { logger, getLogs } = createTestLogger();
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'usr_1', email: 'owner@example.com' }],
-          organizations: [{
-            id: 'organization-1',
-            name: 'Expired Org',
-            deletedAt: new Date('2025-10-05'),
-            deletedBy: 'usr_1',
-            scheduledPurgeAt: new Date('2025-11-04'),
-          }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Expired Org',
+              deletedAt: new Date('2025-10-05'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-11-04'),
+            },
+          ],
           documents: [
             {
               id: 'doc-1',
@@ -1417,28 +1503,34 @@ describe('organizations usecases', () => {
 
         // Verify error was logged
         const logs = getLogs({ excludeTimestampMs: true });
-        expect(logs).toContainEqual(expect.objectContaining({
-          level: 'error',
-          message: 'Failed to delete document file from storage',
-        }));
-        expect(logs).toContainEqual(expect.objectContaining({
-          level: 'info',
-          message: 'Finished deleting document files from storage',
-          data: { organizationId: 'organization-1', deletedCount: 1, failedCount: 1 },
-        }));
+        expect(logs).toContainEqual(
+          expect.objectContaining({
+            level: 'error',
+            message: 'Failed to delete document file from storage',
+          }),
+        );
+        expect(logs).toContainEqual(
+          expect.objectContaining({
+            level: 'info',
+            message: 'Finished deleting document files from storage',
+            data: { organizationId: 'organization-1', deletedCount: 1, failedCount: 1 },
+          }),
+        );
       });
 
       test('purges organization even when it has no documents', async () => {
         const { logger } = createTestLogger();
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'usr_1', email: 'owner@example.com' }],
-          organizations: [{
-            id: 'organization-1',
-            name: 'Empty Org',
-            deletedAt: new Date('2025-10-05'),
-            deletedBy: 'usr_1',
-            scheduledPurgeAt: new Date('2025-11-04'),
-          }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Empty Org',
+              deletedAt: new Date('2025-10-05'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-11-04'),
+            },
+          ],
         });
 
         const documentsRepository = createDocumentsRepository({ db });
@@ -1471,13 +1563,15 @@ describe('organizations usecases', () => {
         const { logger } = createTestLogger();
         const { db } = await createInMemoryDatabase({
           users: [{ id: 'usr_1', email: 'owner@example.com' }],
-          organizations: [{
-            id: 'organization-1',
-            name: 'Large Org',
-            deletedAt: new Date('2025-10-05'),
-            deletedBy: 'usr_1',
-            scheduledPurgeAt: new Date('2025-11-04'),
-          }],
+          organizations: [
+            {
+              id: 'organization-1',
+              name: 'Large Org',
+              deletedAt: new Date('2025-10-05'),
+              deletedBy: 'usr_1',
+              scheduledPurgeAt: new Date('2025-11-04'),
+            },
+          ],
           documents: Array.from({ length: 250 }, (_, i) => ({
             id: `doc-${i}`,
             organizationId: 'organization-1',
@@ -1613,11 +1707,13 @@ describe('organizations usecases', () => {
 
         // Verify logs
         const logs = getLogs({ excludeTimestampMs: true });
-        expect(logs).toContainEqual(expect.objectContaining({
-          level: 'info',
-          message: 'Found expired soft-deleted organizations to purge',
-          data: { organizationCount: 2 },
-        }));
+        expect(logs).toContainEqual(
+          expect.objectContaining({
+            level: 'info',
+            message: 'Found expired soft-deleted organizations to purge',
+            data: { organizationCount: 2 },
+          }),
+        );
       });
 
       test('handles errors during individual organization purge and continues with others', async () => {
@@ -1699,10 +1795,12 @@ describe('organizations usecases', () => {
 
         // Verify file deletion error was logged (but not organization purge failure)
         const logs = getLogs({ excludeTimestampMs: true });
-        expect(logs).toContainEqual(expect.objectContaining({
-          level: 'error',
-          message: 'Failed to delete document file from storage',
-        }));
+        expect(logs).toContainEqual(
+          expect.objectContaining({
+            level: 'error',
+            message: 'Failed to delete document file from storage',
+          }),
+        );
       });
 
       test('returns zero count when no organizations need purging', async () => {

@@ -37,10 +37,7 @@ export const CreateApiKeyPage: Component = () => {
       });
     },
     schema: v.object({
-      name: v.pipe(
-        v.string(),
-        v.nonEmpty(t('api-keys.create.form.name.required')),
-      ),
+      name: v.pipe(v.string(), v.nonEmpty(t('api-keys.create.form.name.required'))),
       permissions: v.pipe(
         v.array(v.picklist(API_KEY_PERMISSIONS_VALUES as string[])),
         v.nonEmpty(t('api-keys.create.form.permissions.required')),
@@ -62,10 +59,16 @@ export const CreateApiKeyPage: Component = () => {
       <Show when={getToken()}>
         <div class="bg-card border p-6 rounded-md mt-6">
           <h2 class="text-lg font-semibold mb-2">{t('api-keys.create.created.title')}</h2>
-          <p class="text-sm text-muted-foreground mb-4">{t('api-keys.create.created.description')}</p>
+          <p class="text-sm text-muted-foreground mb-4">
+            {t('api-keys.create.created.description')}
+          </p>
 
           <TextFieldRoot class="flex items-center gap-2 space-y-0">
-            <TextField type="text" placeholder={t('api-keys.create.form.name.placeholder')} value={getToken() ?? ''} />
+            <TextField
+              type="text"
+              placeholder={t('api-keys.create.form.name.placeholder')}
+              value={getToken() ?? ''}
+            />
             <CopyButton text={getToken() ?? ''} />
           </TextFieldRoot>
         </div>
@@ -81,26 +84,34 @@ export const CreateApiKeyPage: Component = () => {
         <Form>
           <Field name="name">
             {(field, inputProps) => (
-
               <TextFieldRoot class="flex flex-col mb-6">
                 <TextFieldLabel for="name">{t('api-keys.create.form.name.label')}</TextFieldLabel>
-                <TextField type="text" id="name" placeholder={t('api-keys.create.form.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+                <TextField
+                  type="text"
+                  id="name"
+                  placeholder={t('api-keys.create.form.name.placeholder')}
+                  {...inputProps}
+                  autoFocus
+                  value={field.value}
+                  aria-invalid={Boolean(field.error)}
+                />
                 {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
               </TextFieldRoot>
-
             )}
           </Field>
 
           <Field name="permissions" type="string[]">
-            {field => (
+            {(field) => (
               <div>
                 <p class="text-sm font-bold">{t('api-keys.create.form.permissions.label')}</p>
 
-                <ApiKeyPermissionsPicker permissions={field.value ?? []} onChange={permissions => setValue(form, 'permissions', permissions)} />
+                <ApiKeyPermissionsPicker
+                  permissions={field.value ?? []}
+                  onChange={(permissions) => setValue(form, 'permissions', permissions)}
+                />
 
                 {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
               </div>
-
             )}
           </Field>
 

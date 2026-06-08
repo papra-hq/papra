@@ -16,20 +16,23 @@ export function createDummyTrackingServices(): TrackingServices {
   };
 }
 
-export function createTrackingServices({ config, shutdownServices }: { config: Config; shutdownServices?: ShutdownServices }): TrackingServices {
+export function createTrackingServices({
+  config,
+  shutdownServices,
+}: {
+  config: Config;
+  shutdownServices?: ShutdownServices;
+}): TrackingServices {
   const { apiKey, host, isEnabled } = config.tracking.posthog;
 
   if (!isEnabled) {
     return createDummyTrackingServices();
   }
 
-  const trackingClient = new PostHog(
-    apiKey,
-    {
-      host,
-      disableGeoip: true,
-    },
-  );
+  const trackingClient = new PostHog(apiKey, {
+    host,
+    disableGeoip: true,
+  });
 
   shutdownServices?.registerShutdownHandler({
     id: 'tracking-client-shutdown',

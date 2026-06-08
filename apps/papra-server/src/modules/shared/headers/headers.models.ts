@@ -17,7 +17,11 @@ export function getImpersonatedUserIdFromHeader({ context }: { context: Context 
   return { impersonatedUserId };
 }
 
-export function getContentLengthHeader({ headers }: { headers: Record<string, string> }): number | undefined {
+export function getContentLengthHeader({
+  headers,
+}: {
+  headers: Record<string, string>;
+}): number | undefined {
   const contentLengthHeaderValue = headers['content-length'] ?? headers['Content-Length'];
 
   if (isNil(contentLengthHeaderValue)) {
@@ -27,7 +31,13 @@ export function getContentLengthHeader({ headers }: { headers: Record<string, st
   return Number(contentLengthHeaderValue);
 }
 
-export function getIpFromHeaders({ context, headerNames }: { context: Context; headerNames: string[] }): string | undefined {
+export function getIpFromHeaders({
+  context,
+  headerNames,
+}: {
+  context: Context;
+  headerNames: string[];
+}): string | undefined {
   for (const headerName of headerNames) {
     const headerValue = getHeader({ context, name: headerName });
 

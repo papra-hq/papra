@@ -44,7 +44,10 @@ describe('users usecases', () => {
 
       await deleteUser({ userId: 'user-1', usersRepository, organizationsRepository });
 
-      const members = await db.select().from(organizationMembersTable).where(eq(organizationMembersTable.userId, 'user-1'));
+      const members = await db
+        .select()
+        .from(organizationMembersTable)
+        .where(eq(organizationMembersTable.userId, 'user-1'));
 
       expect(members).toEqual([]);
     });
@@ -52,8 +55,17 @@ describe('users usecases', () => {
     test('deleting an user cascades the authentication related data, accounts, sessions, 2fa, ...', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
-        accounts: [{ id: 'account-1', accountId: 'account-1', providerId: 'email', userId: 'user-1' }],
-        sessions: [{ id: 'session-1', token: 'lorem-ipsum', userId: 'user-1', expiresAt: new Date('2050-01-01') }],
+        accounts: [
+          { id: 'account-1', accountId: 'account-1', providerId: 'email', userId: 'user-1' },
+        ],
+        sessions: [
+          {
+            id: 'session-1',
+            token: 'lorem-ipsum',
+            userId: 'user-1',
+            expiresAt: new Date('2050-01-01'),
+          },
+        ],
         twoFactor: [{ id: '2fa-1', userId: 'user-1', secret: 'super-secret' }],
       });
 
@@ -62,11 +74,7 @@ describe('users usecases', () => {
 
       await deleteUser({ userId: 'user-1', usersRepository, organizationsRepository });
 
-      const [
-        accounts,
-        sessions,
-        twoFactor,
-      ] = await Promise.all([
+      const [accounts, sessions, twoFactor] = await Promise.all([
         db.select().from(accountsTable),
         db.select().from(sessionsTable),
         db.select().from(twoFactorTable),
@@ -81,7 +89,14 @@ describe('users usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         // The user soft-deleted this organization, but is no longer a member of it
-        organizations: [{ id: 'organization-1', name: 'Organization 1', deletedAt: new Date(), deletedBy: 'user-1' }],
+        organizations: [
+          {
+            id: 'organization-1',
+            name: 'Organization 1',
+            deletedAt: new Date(),
+            deletedBy: 'user-1',
+          },
+        ],
       });
 
       const usersRepository = createUsersRepository({ db });
@@ -89,7 +104,10 @@ describe('users usecases', () => {
 
       await deleteUser({ userId: 'user-1', usersRepository, organizationsRepository });
 
-      const [organization] = await db.select().from(organizationsTable).where(eq(organizationsTable.id, 'organization-1'));
+      const [organization] = await db
+        .select()
+        .from(organizationsTable)
+        .where(eq(organizationsTable.id, 'organization-1'));
 
       expect(organization).toBeDefined();
       expect(organization?.deletedBy).toBeNull();

@@ -15,8 +15,12 @@ describe('config models', () => {
     test('if the url ends with a /api it is removed', () => {
       expect(validateServerUrl({ url: 'https://example.com/api' })).to.eql('https://example.com');
       expect(validateServerUrl({ url: 'https://example.com/api/' })).to.eql('https://example.com');
-      expect(validateServerUrl({ url: 'https://example.com/papra/api/' })).to.eql('https://example.com/papra');
-      expect(validateServerUrl({ url: 'https://example.com/papi' })).to.eql('https://example.com/papi');
+      expect(validateServerUrl({ url: 'https://example.com/papra/api/' })).to.eql(
+        'https://example.com/papra',
+      );
+      expect(validateServerUrl({ url: 'https://example.com/papi' })).to.eql(
+        'https://example.com/papi',
+      );
     });
 
     test('protocol must be present', () => {
@@ -29,9 +33,15 @@ describe('config models', () => {
       expect(validateServerUrl({ url: 'https://example.com/' })).to.eql('https://example.com/');
       expect(validateServerUrl({ url: 'http://example.com' })).to.eql('http://example.com');
       expect(validateServerUrl({ url: 'https://192.168.0.0' })).to.eql('https://192.168.0.0');
-      expect(validateServerUrl({ url: 'https://sub.domain.example.com' })).to.eql('https://sub.domain.example.com');
-      expect(validateServerUrl({ url: 'https://example.com:8080' })).to.eql('https://example.com:8080');
-      expect(validateServerUrl({ url: 'https://example.com/papra' })).to.eql('https://example.com/papra');
+      expect(validateServerUrl({ url: 'https://sub.domain.example.com' })).to.eql(
+        'https://sub.domain.example.com',
+      );
+      expect(validateServerUrl({ url: 'https://example.com:8080' })).to.eql(
+        'https://example.com:8080',
+      );
+      expect(validateServerUrl({ url: 'https://example.com/papra' })).to.eql(
+        'https://example.com/papra',
+      );
     });
   });
 });

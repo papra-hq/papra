@@ -4,7 +4,9 @@ import { version } from '../package.json';
 
 export type ApiClient = $Fetch;
 
-export function createApiClient({ apiKey, apiBaseUrl }: { apiKey: string; apiBaseUrl: string }): { apiClient: ApiClient } {
+export function createApiClient({ apiKey, apiBaseUrl }: { apiKey: string; apiBaseUrl: string }): {
+  apiClient: ApiClient;
+} {
   const apiClient = ofetch.create({
     headers: {
       'Authorization': `Bearer ${apiKey}`,

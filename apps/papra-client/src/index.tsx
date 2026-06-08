@@ -23,47 +23,45 @@ import 'virtual:uno.css';
 import './app.css';
 
 const DemoIndicator = isDemoMode
-  ? lazy(() => import('./modules/demo/demo.provider').then(mod => ({ default: mod.DemoIndicator })))
+  ? lazy(() =>
+      import('./modules/demo/demo.provider').then((mod) => ({ default: mod.DemoIndicator })),
+    )
   : null;
 
-render(
-  () => {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <Router
-          children={routes}
-          root={props => (
-            <Suspense>
-              <PageViewTracker />
-              <IdentifyUser />
-              <I18nProvider>
-                <ConfirmModalProvider>
-                  <ThemeProvider>
-                    <CommandPaletteProvider>
-                      <ConfigProvider>
-                        <AboutDialogProvider>
-                          <RenameDocumentDialogProvider>
-                            <ShareDocumentDialogProvider>
-                              <div class="min-h-screen font-sans text-sm font-400">
-                                {props.children}
-                              </div>
-                            </ShareDocumentDialogProvider>
-                          </RenameDocumentDialogProvider>
-                          {DemoIndicator && <DemoIndicator />}
-                        </AboutDialogProvider>
-                      </ConfigProvider>
+render(() => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router
+        children={routes}
+        root={(props) => (
+          <Suspense>
+            <PageViewTracker />
+            <IdentifyUser />
+            <I18nProvider>
+              <ConfirmModalProvider>
+                <ThemeProvider>
+                  <CommandPaletteProvider>
+                    <ConfigProvider>
+                      <AboutDialogProvider>
+                        <RenameDocumentDialogProvider>
+                          <ShareDocumentDialogProvider>
+                            <div class="min-h-screen font-sans text-sm font-400">
+                              {props.children}
+                            </div>
+                          </ShareDocumentDialogProvider>
+                        </RenameDocumentDialogProvider>
+                        {DemoIndicator && <DemoIndicator />}
+                      </AboutDialogProvider>
+                    </ConfigProvider>
 
-                      <Toaster />
-                    </CommandPaletteProvider>
-                  </ThemeProvider>
-
-                </ConfirmModalProvider>
-              </I18nProvider>
-            </Suspense>
-          )}
-        />
-      </QueryClientProvider>
-    );
-  },
-  document.getElementById('root')!,
-);
+                    <Toaster />
+                  </CommandPaletteProvider>
+                </ThemeProvider>
+              </ConfirmModalProvider>
+            </I18nProvider>
+          </Suspense>
+        )}
+      />
+    </QueryClientProvider>
+  );
+}, document.getElementById('root')!);

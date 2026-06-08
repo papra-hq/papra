@@ -4,19 +4,17 @@ import { ERROR_CODES } from './errors';
 import { simplifyExpression } from './optimization';
 import { tokenize } from './tokenizer';
 
-export function parseSearchQuery(
-  {
-    query,
-    maxDepth = 10,
-    maxTokens = 200,
-    optimize = true,
-  }: {
-    query: string;
-    maxDepth?: number;
-    maxTokens?: number;
-    optimize?: boolean;
-  },
-): ParsedQuery {
+export function parseSearchQuery({
+  query,
+  maxDepth = 10,
+  maxTokens = 200,
+  optimize = true,
+}: {
+  query: string;
+  maxDepth?: number;
+  maxTokens?: number;
+  optimize?: boolean;
+}): ParsedQuery {
   const { tokens, issues: tokenizerIssues } = tokenize({ query, maxTokens });
 
   const { expression, issues: parserIssues } = parseExpression({ tokens, maxDepth });
@@ -164,7 +162,7 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     }
 
     return { type: 'and', operands };
-  };
+  }
 
   function parseOrExpression(): Expression | undefined {
     const left = parseAndExpression();
@@ -187,7 +185,7 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     }
 
     return { type: 'or', operands };
-  };
+  }
 
   const expression = parseOrExpression();
 

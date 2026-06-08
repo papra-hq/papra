@@ -1,15 +1,18 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "papra-hq/papra"} 
-  ],
+  "changelog": ["@changesets/changelog-github", { "repo": "papra-hq/papra" }],
   "commit": false,
   "fixed": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@papra/app-client", "@papra/app-server", "@papra/docs", "@papra/search-parser-demo", "@papra/website"],
+  "ignore": [
+    "@papra/app-client",
+    "@papra/app-server",
+    "@papra/docs",
+    "@papra/search-parser-demo",
+    "@papra/website"
+  ],
   "privatePackages": {
     "tag": true,
     "version": true

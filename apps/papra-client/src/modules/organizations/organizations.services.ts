@@ -1,9 +1,22 @@
 import type { AsDto } from '../shared/http/http-client.types';
-import type { Organization, OrganizationInvitation, OrganizationMember, OrganizationMemberRole } from './organizations.types';
+import type {
+  Organization,
+  OrganizationInvitation,
+  OrganizationMember,
+  OrganizationMemberRole,
+} from './organizations.types';
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
 
-export async function inviteOrganizationMember({ organizationId, email, role }: { organizationId: string; email: string; role: OrganizationMemberRole }) {
+export async function inviteOrganizationMember({
+  organizationId,
+  email,
+  role,
+}: {
+  organizationId: string;
+  email: string;
+  role: OrganizationMemberRole;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/members/invitations`,
     method: 'POST',
@@ -34,7 +47,13 @@ export async function createOrganization({ name }: { name: string }) {
   };
 }
 
-export async function updateOrganization({ organizationId, name }: { organizationId: string; name: string }) {
+export async function updateOrganization({
+  organizationId,
+  name,
+}: {
+  organizationId: string;
+  name: string;
+}) {
   const { organization } = await apiClient<{ organization: AsDto<Organization> }>({
     path: `/api/organizations/${organizationId}`,
     method: 'PUT',
@@ -86,7 +105,13 @@ export async function fetchOrganizationInvitations({ organizationId }: { organiz
   };
 }
 
-export async function removeOrganizationMember({ organizationId, memberId }: { organizationId: string; memberId: string }) {
+export async function removeOrganizationMember({
+  organizationId,
+  memberId,
+}: {
+  organizationId: string;
+  memberId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/members/${memberId}`,
     method: 'DELETE',
@@ -104,7 +129,15 @@ export async function getMembership({ organizationId }: { organizationId: string
   };
 }
 
-export async function updateOrganizationMemberRole({ organizationId, memberId, role }: { organizationId: string; memberId: string; role: OrganizationMemberRole }) {
+export async function updateOrganizationMemberRole({
+  organizationId,
+  memberId,
+  role,
+}: {
+  organizationId: string;
+  memberId: string;
+  role: OrganizationMemberRole;
+}) {
   const { member } = await apiClient<{ member: AsDto<OrganizationMember> }>({
     path: `/api/organizations/${organizationId}/members/${memberId}`,
     method: 'PATCH',

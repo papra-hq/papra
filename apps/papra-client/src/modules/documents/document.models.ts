@@ -30,17 +30,26 @@ export const fileIcons: { mimeTypes: string[]; extensions: string[]; icon: strin
     icon: 'i-tabler-file-zip',
   },
   {
-    mimeTypes: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    mimeTypes: [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ],
     extensions: ['xls', 'xlsx'],
     icon: 'i-tabler-file-excel',
   },
   {
-    mimeTypes: ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    mimeTypes: [
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
     extensions: ['doc', 'docx'],
     icon: 'i-tabler-file-word',
   },
   {
-    mimeTypes: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    mimeTypes: [
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
     extensions: ['ppt', 'pptx'],
     icon: 'i-tabler-file-type-ppt',
   },
@@ -50,7 +59,15 @@ export const fileIcons: { mimeTypes: string[]; extensions: string[]; icon: strin
     icon: 'i-tabler-file-text',
   },
   {
-    mimeTypes: ['application/json', 'application/xml', 'application/javascript', 'application/typescript', 'text/xml', 'text/javascript', 'text/typescript'],
+    mimeTypes: [
+      'application/json',
+      'application/xml',
+      'application/javascript',
+      'application/typescript',
+      'text/xml',
+      'text/javascript',
+      'text/typescript',
+    ],
     extensions: ['json', 'xml', 'js', 'ts'],
     icon: 'i-tabler-file-code',
   },
@@ -76,11 +93,11 @@ export const { iconByExtension, iconByFileType } = fileIcons.reduce(
   ({ iconByFileType, iconByExtension }, { mimeTypes, extensions, icon }) => ({
     iconByFileType: {
       ...iconByFileType,
-      ...Object.fromEntries(mimeTypes.map(mimeType => [mimeType, icon])),
+      ...Object.fromEntries(mimeTypes.map((mimeType) => [mimeType, icon])),
     },
     iconByExtension: {
       ...iconByExtension,
-      ...Object.fromEntries(extensions.map(extension => [extension, icon])),
+      ...Object.fromEntries(extensions.map((extension) => [extension, icon])),
     },
   }),
   { iconByFileType: {} as Record<string, string>, iconByExtension: {} as Record<string, string> },
@@ -91,10 +108,15 @@ export function getDocumentIcon({
   iconByMimeTypeMap = iconByFileType,
   iconByExtensionMap = iconByExtension,
   defaultIcon = DEFAULT_DOCUMENT_ICON,
-}: { document: {
-  mimeType?: string;
-  name?: string;
-}; iconByMimeTypeMap?: Record<string, string>; iconByExtensionMap?: Record<string, string>; defaultIcon?: string; }): string {
+}: {
+  document: {
+    mimeType?: string;
+    name?: string;
+  };
+  iconByMimeTypeMap?: Record<string, string>;
+  iconByExtensionMap?: Record<string, string>;
+  defaultIcon?: string;
+}): string {
   const { mimeType, name } = document;
 
   const mimeTypeIcon = mimeType ? iconByMimeTypeMap[mimeType] : undefined;
@@ -121,7 +143,15 @@ export function getDocumentIcon({
   return defaultIcon;
 }
 
-export function getDaysBeforePermanentDeletion({ document, deletedDocumentsRetentionDays, now = new Date() }: { document: { deletedAt?: Date }; deletedDocumentsRetentionDays: number; now?: Date }) {
+export function getDaysBeforePermanentDeletion({
+  document,
+  deletedDocumentsRetentionDays,
+  now = new Date(),
+}: {
+  document: { deletedAt?: Date };
+  deletedDocumentsRetentionDays: number;
+  now?: Date;
+}) {
   if (!document.deletedAt) {
     return undefined;
   }
@@ -185,15 +215,21 @@ type DocumentSearchCriteria = {
 };
 
 export function makeDocumentSearchQuery({ tags = [], query }: DocumentSearchCriteria = {}) {
-  const quoteIfSpaces = (str: string) => (str.includes(' ') ? `"${str.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : str);
+  const quoteIfSpaces = (str: string) =>
+    str.includes(' ') ? `"${str.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : str;
 
-  return [
-    ...tags.map(t => `tag:${quoteIfSpaces(t.name ?? t.id ?? '')}`).toSorted(),
-    query,
-  ].filter(Boolean).join(' ');
+  return [...tags.map((t) => `tag:${quoteIfSpaces(t.name ?? t.id ?? '')}`).toSorted(), query]
+    .filter(Boolean)
+    .join(' ');
 }
 
-export function makeDocumentSearchPermalink({ organizationId, search }: { organizationId: string; search: DocumentSearchCriteria }) {
+export function makeDocumentSearchPermalink({
+  organizationId,
+  search,
+}: {
+  organizationId: string;
+  search: DocumentSearchCriteria;
+}) {
   const queryString = makeDocumentSearchQuery(search);
 
   return `/organizations/${organizationId}/documents?query=${encodeURIComponent(queryString)}`;
@@ -208,7 +244,11 @@ export type DocumentOpenWithApp = {
   href: string;
 };
 
-export function getDocumentOpenWithApps({ document }: { document: { mimeType: string; organizationId: string; id: string } }): DocumentOpenWithApp[] {
+export function getDocumentOpenWithApps({
+  document,
+}: {
+  document: { mimeType: string; organizationId: string; id: string };
+}): DocumentOpenWithApp[] {
   const openWithApps: { mimeTypes: string[]; app: DocumentOpenWithApp }[] = [
     {
       mimeTypes: pdfMimeTypes,

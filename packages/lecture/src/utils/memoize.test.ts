@@ -80,7 +80,7 @@ describe('memoize', () => {
   });
 
   test('caches falsy values correctly', () => {
-    const fn = vi.fn((x: number) => x === 0 ? 0 : null);
+    const fn = vi.fn((x: number) => (x === 0 ? 0 : null));
     const memoized = memoize(fn);
 
     expect(memoized(0)).toBe(0);

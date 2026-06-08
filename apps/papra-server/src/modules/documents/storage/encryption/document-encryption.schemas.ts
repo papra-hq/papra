@@ -4,18 +4,12 @@ import { areDocumentKeyEncryptionKeysUnique } from './document-encryption.schema
 
 const documentKeyEncryptionKeySchema = v.object({
   version: v.string(),
-  key: v.pipe(
-    v.instance(Buffer),
-    v.length(32),
-  ),
+  key: v.pipe(v.instance(Buffer), v.length(32)),
 });
 
 const documentKeyEncryptionKeyListSchema = v.pipe(
   v.array(documentKeyEncryptionKeySchema),
-  v.check(
-    keys => areDocumentKeyEncryptionKeysUnique(keys),
-    'The keys must have unique versions',
-  ),
+  v.check((keys) => areDocumentKeyEncryptionKeysUnique(keys), 'The keys must have unique versions'),
 );
 
 const versionedHexKeySchema = v.pipe(
@@ -40,18 +34,20 @@ const versionedHexKeySchema = v.pipe(
   })),
 );
 
-export const coercedDocumentKeyEncryptionKeysListSchema = v.optional(v.union(
-  [
-    documentKeyEncryptionKeyListSchema,
-    v.pipe(
-      v.string(),
-      v.transform(value => value.split(',').map(part => part.trim())),
-      v.array(versionedHexKeySchema),
-      v.check(
-        keys => areDocumentKeyEncryptionKeysUnique(keys),
-        'The keys must have unique versions',
+export const coercedDocumentKeyEncryptionKeysListSchema = v.optional(
+  v.union(
+    [
+      documentKeyEncryptionKeyListSchema,
+      v.pipe(
+        v.string(),
+        v.transform((value) => value.split(',').map((part) => part.trim())),
+        v.array(versionedHexKeySchema),
+        v.check(
+          (keys) => areDocumentKeyEncryptionKeysUnique(keys),
+          'The keys must have unique versions',
+        ),
       ),
-    ),
-  ],
-  'The value must be either a 32 bytes long hex string, or a comma separated list of version:key pairs where the key is a 32 bytes long hex string',
-));
+    ],
+    'The value must be either a 32 bytes long hex string, or a comma separated list of version:key pairs where the key is a 32 bytes long hex string',
+  ),
+);

@@ -4,7 +4,10 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { invitationIdSchema } from '../organizations/organization.schemas';
-import { ORGANIZATION_INVITATION_STATUS, ORGANIZATION_ROLES } from '../organizations/organizations.constants';
+import {
+  ORGANIZATION_INVITATION_STATUS,
+  ORGANIZATION_ROLES,
+} from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { resendOrganizationInvitation } from '../organizations/organizations.usecases';
 import { createError } from '../shared/errors/errors';
@@ -24,50 +27,48 @@ export function registerInvitationsRoutes(context: RouteDefinitionContext) {
 }
 
 function setupGetInvitationsRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/invitations',
-    requireAuthentication(),
-    async (context) => {
-      const { userId } = getUser({ context });
+  app.get('/api/invitations', requireAuthentication(), async (context) => {
+    const { userId } = getUser({ context });
 
-      const organizationsRepository = createOrganizationsRepository({ db });
-      const usersRepository = createUsersRepository({ db });
+    const organizationsRepository = createOrganizationsRepository({ db });
+    const usersRepository = createUsersRepository({ db });
 
-      const { user } = await usersRepository.getUserByIdOrThrow({ userId });
+    const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-      const { invitations } = await organizationsRepository.getPendingOrganizationInvitationsForEmail({ email: user.email.toLowerCase() });
+    const { invitations } = await organizationsRepository.getPendingOrganizationInvitationsForEmail(
+      { email: user.email.toLowerCase() },
+    );
 
-      return context.json({ invitations });
-    },
-  );
+    return context.json({ invitations });
+  });
 }
 
 function setupGetPendingInvitationsCountRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/invitations/count',
-    requireAuthentication(),
-    async (context) => {
-      const { userId } = getUser({ context });
+  app.get('/api/invitations/count', requireAuthentication(), async (context) => {
+    const { userId } = getUser({ context });
 
-      const organizationsRepository = createOrganizationsRepository({ db });
-      const usersRepository = createUsersRepository({ db });
+    const organizationsRepository = createOrganizationsRepository({ db });
+    const usersRepository = createUsersRepository({ db });
 
-      const { user } = await usersRepository.getUserByIdOrThrow({ userId });
+    const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-      const { pendingInvitationsCount } = await organizationsRepository.getPendingInvitationsCount({ email: user.email.toLowerCase() });
+    const { pendingInvitationsCount } = await organizationsRepository.getPendingInvitationsCount({
+      email: user.email.toLowerCase(),
+    });
 
-      return context.json({ pendingInvitationsCount });
-    },
-  );
+    return context.json({ pendingInvitationsCount });
+  });
 }
 
 function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/accept',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      invitationId: invitationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        invitationId: invitationIdSchema,
+      }),
+    ),
     async (context) => {
       const { invitationId } = context.req.valid('param');
       const { userId } = getUser({ context });
@@ -77,7 +78,9 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
 
       const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-      const { invitation } = await organizationsRepository.getOrganizationInvitationById({ invitationId });
+      const { invitation } = await organizationsRepository.getOrganizationInvitationById({
+        invitationId,
+      });
 
       if (!invitation) {
         throw createError({
@@ -96,7 +99,10 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
       }
 
       if (invitation.email !== user.email) {
-        logger.error({ invitationId, invitationEmail: invitation.email, userId, userEmail: user.email }, 'User tried to accept invitation for another email');
+        logger.error(
+          { invitationId, invitationEmail: invitation.email, userId, userEmail: user.email },
+          'User tried to accept invitation for another email',
+        );
         throw createForbiddenError();
       }
 
@@ -106,7 +112,10 @@ function setupAcceptInvitationRoute({ app, db }: RouteDefinitionContext) {
         role: invitation.role,
       });
 
-      await organizationsRepository.updateOrganizationInvitation({ invitationId, status: ORGANIZATION_INVITATION_STATUS.ACCEPTED });
+      await organizationsRepository.updateOrganizationInvitation({
+        invitationId,
+        status: ORGANIZATION_INVITATION_STATUS.ACCEPTED,
+      });
 
       return context.body(null, 204);
     },
@@ -117,9 +126,11 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/reject',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      invitationId: invitationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        invitationId: invitationIdSchema,
+      }),
+    ),
     async (context) => {
       const { invitationId } = context.req.valid('param');
       const { userId } = getUser({ context });
@@ -129,7 +140,9 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
 
       const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-      const { invitation } = await organizationsRepository.getOrganizationInvitationById({ invitationId });
+      const { invitation } = await organizationsRepository.getOrganizationInvitationById({
+        invitationId,
+      });
 
       if (!invitation) {
         throw createError({
@@ -140,11 +153,17 @@ function setupRejectInvitationRoute({ app, db }: RouteDefinitionContext) {
       }
 
       if (invitation.email !== user.email) {
-        logger.error({ invitationId, invitationEmail: invitation.email, userId, userEmail: user.email }, 'User tried to decline invitation for another email');
+        logger.error(
+          { invitationId, invitationEmail: invitation.email, userId, userEmail: user.email },
+          'User tried to decline invitation for another email',
+        );
         throw createForbiddenError();
       }
 
-      await organizationsRepository.updateOrganizationInvitation({ invitationId, status: ORGANIZATION_INVITATION_STATUS.REJECTED });
+      await organizationsRepository.updateOrganizationInvitation({
+        invitationId,
+        status: ORGANIZATION_INVITATION_STATUS.REJECTED,
+      });
 
       return context.body(null, 204);
     },
@@ -155,16 +174,20 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/invitations/:invitationId/cancel',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      invitationId: invitationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        invitationId: invitationIdSchema,
+      }),
+    ),
     async (context) => {
       const { invitationId } = context.req.valid('param');
       const { userId } = getUser({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      const { invitation } = await organizationsRepository.getOrganizationInvitationById({ invitationId });
+      const { invitation } = await organizationsRepository.getOrganizationInvitationById({
+        invitationId,
+      });
 
       if (!invitation) {
         throw createError({
@@ -174,13 +197,19 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
         });
       }
 
-      const { member } = await organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId: invitation.organizationId });
+      const { member } = await organizationsRepository.getOrganizationMemberByUserId({
+        userId,
+        organizationId: invitation.organizationId,
+      });
 
       if (!member || ![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(member.role)) {
         throw createForbiddenError();
       }
 
-      await organizationsRepository.updateOrganizationInvitation({ invitationId, status: ORGANIZATION_INVITATION_STATUS.CANCELLED });
+      await organizationsRepository.updateOrganizationInvitation({
+        invitationId,
+        status: ORGANIZATION_INVITATION_STATUS.CANCELLED,
+      });
 
       return context.body(null, 204);
     },
@@ -191,9 +220,11 @@ function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDe
   app.post(
     '/api/invitations/:invitationId/resend',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      invitationId: invitationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        invitationId: invitationIdSchema,
+      }),
+    ),
     async (context) => {
       const { invitationId } = context.req.valid('param');
       const { userId } = getUser({ context });

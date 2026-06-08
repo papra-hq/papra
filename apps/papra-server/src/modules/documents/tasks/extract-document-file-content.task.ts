@@ -33,7 +33,11 @@ export async function registerExtractDocumentFileContentTask({
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       // TODO: remove type cast
-      const { documentId, organizationId, ocrLanguages } = data as { documentId: string; organizationId: string; ocrLanguages: string[] };
+      const { documentId, organizationId, ocrLanguages } = data as {
+        documentId: string;
+        organizationId: string;
+        ocrLanguages: string[];
+      };
 
       await extractAndSaveDocumentFileContent({
         documentId,

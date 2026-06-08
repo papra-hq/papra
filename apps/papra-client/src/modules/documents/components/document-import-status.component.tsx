@@ -52,21 +52,34 @@ type TaskError = {
   error: Error;
 };
 
-type Task = TaskSuccess | TaskError | {
-  file: File;
-  status: 'pending' | 'uploading';
-};
+type Task =
+  | TaskSuccess
+  | TaskError
+  | {
+      file: File;
+      status: 'pending' | 'uploading';
+    };
 
 export const DocumentUploadProvider: ParentComponent<{ organizationId: string }> = (props) => {
-  const throttledInvalidateOrganizationDocumentsQuery = throttle(invalidateOrganizationDocumentsQuery, 500);
+  const throttledInvalidateOrganizationDocumentsQuery = throttle(
+    invalidateOrganizationDocumentsQuery,
+    500,
+  );
   const { getErrorMessage } = useI18nApiErrors();
   const { t } = useI18n();
 
   const [getState, setState] = createSignal<'open' | 'closed' | 'collapsed'>('closed');
   const [getTasks, setTasks] = createSignal<Task[]>([]);
 
-  const updateTaskStatus = (args: { file: File; status: 'success'; document: Document } | { file: File; status: 'error'; error: Error } | { file: File; status: 'pending' | 'uploading' }) => {
-    setTasks(tasks => tasks.map(task => task.file === args.file ? { ...task, ...args } : task));
+  const updateTaskStatus = (
+    args:
+      | { file: File; status: 'success'; document: Document }
+      | { file: File; status: 'error'; error: Error }
+      | { file: File; status: 'pending' | 'uploading' },
+  ) => {
+    setTasks((tasks) =>
+      tasks.map((task) => (task.file === args.file ? { ...task, ...args } : task)),
+    );
   };
 
   const organizationLimitsQuery = useQuery(() => ({
@@ -76,7 +89,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
   }));
 
   const uploadDocuments = async ({ files }: { files: File[] }) => {
-    setTasks(tasks => [...tasks, ...files.map(file => ({ file, status: 'pending' } as const))]);
+    setTasks((tasks) => [...tasks, ...files.map((file) => ({ file, status: 'pending' }) as const)]);
     setState('open');
 
     if (!organizationLimitsQuery.data) {
@@ -89,29 +102,37 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
     // Limit concurrent uploads to 3 to avoid overwhelming browser/server
     const limit = pLimit(MAX_CONCURRENT_DOCUMENT_UPLOADS);
 
-    await Promise.all(files.map(async (file) => {
-      // maxUploadSize can also be null when self hosting which means no limit
-      if (maxUploadSize && file.size > maxUploadSize) {
-        updateTaskStatus({ file, status: 'error', error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }) });
-        return;
-      }
-
-      await limit(async () => {
-        updateTaskStatus({ file, status: 'uploading' });
-
-        const [result, error] = await safely(uploadDocument({ file, organizationId: props.organizationId }));
-
-        if (error) {
-          updateTaskStatus({ file, status: 'error', error });
-        } else {
-          const { document } = result;
-
-          updateTaskStatus({ file, status: 'success', document });
+    await Promise.all(
+      files.map(async (file) => {
+        // maxUploadSize can also be null when self hosting which means no limit
+        if (maxUploadSize && file.size > maxUploadSize) {
+          updateTaskStatus({
+            file,
+            status: 'error',
+            error: Object.assign(new Error('File too large'), { code: 'document.size_too_large' }),
+          });
+          return;
         }
 
-        throttledInvalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
-      });
-    }));
+        await limit(async () => {
+          updateTaskStatus({ file, status: 'uploading' });
+
+          const [result, error] = await safely(
+            uploadDocument({ file, organizationId: props.organizationId }),
+          );
+
+          if (error) {
+            updateTaskStatus({ file, status: 'error', error });
+          } else {
+            const { document } = result;
+
+            updateTaskStatus({ file, status: 'success', document });
+          }
+
+          throttledInvalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
+        });
+      }),
+    );
   };
 
   const getTitle = () => {
@@ -119,8 +140,8 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
       return t('import-documents.title.none');
     }
 
-    const successCount = getTasks().filter(task => task.status === 'success').length;
-    const errorCount = getTasks().filter(task => task.status === 'error').length;
+    const successCount = getTasks().filter((task) => task.status === 'success').length;
+    const errorCount = getTasks().filter((task) => task.status === 'error').length;
     const totalCount = getTasks().length;
 
     if (errorCount > 0) {
@@ -149,30 +170,35 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
             <div class="flex items-center gap-1 pl-6 pr-4 py-3 border-b">
               <h2 class="text-base font-bold flex-1">{getTitle()}</h2>
 
-              <Button variant="ghost" size="icon" onClick={() => setState(state => state === 'open' ? 'collapsed' : 'open')}>
-                <div class={cn('i-tabler-chevron-down size-5 transition-transform', getState() === 'collapsed' && 'rotate-180')} />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setState((state) => (state === 'open' ? 'collapsed' : 'open'))}
+              >
+                <div
+                  class={cn(
+                    'i-tabler-chevron-down size-5 transition-transform',
+                    getState() === 'collapsed' && 'rotate-180',
+                  )}
+                />
               </Button>
 
               <Button variant="ghost" size="icon" onClick={close}>
                 <div class="i-tabler-x size-5" />
               </Button>
-
             </div>
 
             <Show when={getState() === 'open'}>
               <div class="flex flex-col overflow-y-auto h-[450px] pb-4">
                 <For each={getTasks()}>
-                  {task => (
-
+                  {(task) => (
                     <Switch>
                       <Match when={task.status === 'success'}>
                         <A
                           href={`/organizations/${(task as TaskSuccess).document.organizationId}/documents/${(task as TaskSuccess).document.id}`}
                           class="text-sm truncate min-w-0 flex items-center gap-4 min-h-48px group hover:bg-muted/50 transition-colors px-6 border-b border-border/80"
                         >
-                          <div class="flex-1 truncate">
-                            {task.file.name}
-                          </div>
+                          <div class="flex-1 truncate">{task.file.name}</div>
 
                           <div class="flex-none">
                             <div class="i-tabler-circle-check text-primary size-5.5 group-hover:hidden" />
@@ -199,9 +225,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
 
                       <Match when={['pending', 'uploading'].includes(task.status)}>
                         <div class="text-sm truncate min-w-0 flex items-center gap-4 min-h-48px px-6 border-b border-border/80">
-                          <div class="flex-1 truncate">
-                            {task.file.name}
-                          </div>
+                          <div class="flex-1 truncate">{task.file.name}</div>
 
                           <div class="flex-none">
                             <div class="i-tabler-loader-2 animate-spin text-muted-foreground size-5.5" />
@@ -209,7 +233,6 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                         </div>
                       </Match>
                     </Switch>
-
                   )}
                 </For>
 
@@ -225,9 +248,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
                   </div>
                 </Show>
               </div>
-
             </Show>
-
           </div>
         </Show>
       </Portal>

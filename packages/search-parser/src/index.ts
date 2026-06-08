@@ -1,14 +1,8 @@
-export {
-  ERROR_CODES,
-} from './errors';
+export { ERROR_CODES } from './errors';
 
-export {
-  simplifyExpression,
-} from './optimization';
+export { simplifyExpression } from './optimization';
 
-export {
-  parseSearchQuery,
-} from './parser';
+export { parseSearchQuery } from './parser';
 
 export type {
   AndExpression,

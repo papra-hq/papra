@@ -1,5 +1,14 @@
 import { describe, expect, test } from 'vitest';
-import { isDefined, isNil, isNilOrEmptyString, isNonEmptyString, isString, nullifyPositiveInfinity, uniq, uniqBy } from './utils';
+import {
+  isDefined,
+  isNil,
+  isNilOrEmptyString,
+  isNonEmptyString,
+  isString,
+  nullifyPositiveInfinity,
+  uniq,
+  uniqBy,
+} from './utils';
 
 describe('utils', () => {
   describe('isNil', () => {
@@ -105,7 +114,7 @@ describe('utils', () => {
         { id: 2, name: 'Bob' },
       ];
 
-      const result = uniqBy(data, item => item.id);
+      const result = uniqBy(data, (item) => item.id);
 
       expect(result).toEqual([
         { id: 1, name: 'Alice' },

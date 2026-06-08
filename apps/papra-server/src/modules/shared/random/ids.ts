@@ -4,7 +4,10 @@ import { isNil } from '../utils';
 
 const createId = init({ length: ID_RANDOM_PART_LENGTH });
 
-export function generateId({ prefix, getRandomPart = createId }: { prefix?: string; getRandomPart?: () => string } = {}) {
+export function generateId({
+  prefix,
+  getRandomPart = createId,
+}: { prefix?: string; getRandomPart?: () => string } = {}) {
   const id = getRandomPart();
 
   return prefix !== undefined ? `${prefix}_${id}` : id;
@@ -13,5 +16,6 @@ export function generateId({ prefix, getRandomPart = createId }: { prefix?: stri
 export function createDeterministicIdGenerator({ prefix }: { prefix?: string } = {}) {
   let counter = 1;
 
-  return () => `${isNil(prefix) ? '' : `${prefix}_`}${String(counter++).padStart(ID_RANDOM_PART_LENGTH, '0')}`;
+  return () =>
+    `${isNil(prefix) ? '' : `${prefix}_`}${String(counter++).padStart(ID_RANDOM_PART_LENGTH, '0')}`;
 }

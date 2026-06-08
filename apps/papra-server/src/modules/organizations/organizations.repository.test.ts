@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createOrganizationsRepository } from './organizations.repository';
-import { organizationInvitationsTable, organizationMembersTable, organizationsTable } from './organizations.table';
+import {
+  organizationInvitationsTable,
+  organizationMembersTable,
+  organizationsTable,
+} from './organizations.table';
 
 describe('organizations repository', () => {
   describe('updateExpiredPendingInvitationsStatus', () => {
@@ -44,9 +48,14 @@ describe('organizations repository', () => {
 
       const organizationsRepository = createOrganizationsRepository({ db });
 
-      await organizationsRepository.updateExpiredPendingInvitationsStatus({ now: new Date('2025-05-13') });
+      await organizationsRepository.updateExpiredPendingInvitationsStatus({
+        now: new Date('2025-05-13'),
+      });
 
-      const invitations = await db.select().from(organizationInvitationsTable).orderBy(organizationInvitationsTable.id);
+      const invitations = await db
+        .select()
+        .from(organizationInvitationsTable)
+        .orderBy(organizationInvitationsTable.id);
 
       expect(invitations).to.eql([
         {
@@ -158,9 +167,7 @@ describe('organizations repository', () => {
     test('marks organization as deleted with deletedAt, deletedBy, and scheduledPurgeAt', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user_1', email: 'user1@test.com' }],
-        organizations: [
-          { id: 'org_1', name: 'Org to Delete' },
-        ],
+        organizations: [{ id: 'org_1', name: 'Org to Delete' }],
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -185,9 +192,7 @@ describe('organizations repository', () => {
     test('uses default purge delay of 30 days when not specified', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user_1', email: 'user1@test.com' }],
-        organizations: [
-          { id: 'org_1', name: 'Org to Delete' },
-        ],
+        organizations: [{ id: 'org_1', name: 'Org to Delete' }],
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -238,7 +243,13 @@ describe('organizations repository', () => {
         users: [{ id: 'user_1', email: 'user1@test.com' }],
         organizations: [
           { id: 'org_1', name: 'Org 1' },
-          { id: 'org_2', name: 'Org 2', deletedAt: new Date('2025-05-15'), deletedBy: 'user_1', scheduledPurgeAt: new Date('2025-06-15') },
+          {
+            id: 'org_2',
+            name: 'Org 2',
+            deletedAt: new Date('2025-05-15'),
+            deletedBy: 'user_1',
+            scheduledPurgeAt: new Date('2025-06-15'),
+          },
           { id: 'org_3', name: 'Org 3' },
         ],
       });
@@ -291,7 +302,7 @@ describe('organizations repository', () => {
       expect(result.pageSize).to.equal(25);
 
       expect(
-        result.organizations.map(org => ({
+        result.organizations.map((org) => ({
           id: org.id,
           name: org.name,
           memberCount: org.memberCount,
@@ -332,7 +343,7 @@ describe('organizations repository', () => {
 
       expect(result.organizations).to.have.length(2);
       expect(result.totalCount).to.equal(2);
-      expect(result.organizations.map(org => org.name)).to.deep.equal([
+      expect(result.organizations.map((org) => org.name)).to.deep.equal([
         'Alpha Corporation',
         'Alpha Industries',
       ]);
@@ -397,7 +408,14 @@ describe('organizations repository', () => {
         users: [{ id: 'user_1', email: 'user1@test.com' }],
         organizations: [
           { id: 'org_1', name: 'Active Org', createdAt: new Date('2025-01-02') },
-          { id: 'org_2', name: 'Deleted Org', createdAt: new Date('2025-01-03'), deletedAt: new Date('2025-05-15'), deletedBy: 'user_1', scheduledPurgeAt: new Date('2025-06-15') },
+          {
+            id: 'org_2',
+            name: 'Deleted Org',
+            createdAt: new Date('2025-01-03'),
+            deletedAt: new Date('2025-05-15'),
+            deletedBy: 'user_1',
+            scheduledPurgeAt: new Date('2025-06-15'),
+          },
           { id: 'org_3', name: 'Another Active Org', createdAt: new Date('2025-01-01') },
         ],
       });
@@ -407,7 +425,7 @@ describe('organizations repository', () => {
 
       expect(result.organizations).to.have.length(2);
       expect(result.totalCount).to.equal(2);
-      expect(result.organizations.map(org => org.name)).to.deep.equal([
+      expect(result.organizations.map((org) => org.name)).to.deep.equal([
         'Active Org',
         'Another Active Org',
       ]);

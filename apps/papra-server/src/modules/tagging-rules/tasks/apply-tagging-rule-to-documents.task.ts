@@ -10,7 +10,15 @@ import { applyTaggingRuleToExistingDocuments } from '../tagging-rules.usecases';
 
 const logger = createLogger({ namespace: 'tasks:apply-tagging-rule' });
 
-export async function registerApplyTaggingRuleToDocumentsTask({ taskServices, db, webhookTriggerServices }: { taskServices: TaskServices; db: Database; webhookTriggerServices: WebhookTriggerServices }) {
+export async function registerApplyTaggingRuleToDocumentsTask({
+  taskServices,
+  db,
+  webhookTriggerServices,
+}: {
+  taskServices: TaskServices;
+  db: Database;
+  webhookTriggerServices: WebhookTriggerServices;
+}) {
   const taskName = 'apply-tagging-rule-to-documents';
 
   taskServices.registerTask({
@@ -22,9 +30,15 @@ export async function registerApplyTaggingRuleToDocumentsTask({ taskServices, db
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       // TODO: remove type cast once taskServices has proper typing
-      const { organizationId, taggingRuleId } = data as { organizationId: string; taggingRuleId: string };
+      const { organizationId, taggingRuleId } = data as {
+        organizationId: string;
+        taggingRuleId: string;
+      };
 
-      logger.info({ organizationId, taggingRuleId }, 'Starting background task to apply tagging rule');
+      logger.info(
+        { organizationId, taggingRuleId },
+        'Starting background task to apply tagging rule',
+      );
 
       const result = await applyTaggingRuleToExistingDocuments({
         taggingRuleId,
@@ -37,7 +51,10 @@ export async function registerApplyTaggingRuleToDocumentsTask({ taskServices, db
         logger,
       });
 
-      logger.info({ organizationId, taggingRuleId, result }, 'Completed background task to apply tagging rule');
+      logger.info(
+        { organizationId, taggingRuleId, result },
+        'Completed background task to apply tagging rule',
+      );
 
       return result;
     },

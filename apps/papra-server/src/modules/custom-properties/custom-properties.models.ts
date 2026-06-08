@@ -1,8 +1,18 @@
 import type { DocumentCustomPropertyValueWithRelatedInfo } from './definitions/custom-property-definition.models';
 import { getCustomPropertyTypeDefinition } from './definitions/custom-property-definition.registry';
 
-export function aggregateDocumentCustomPropertyValues({ rawValues }: { rawValues: DocumentCustomPropertyValueWithRelatedInfo[] }) {
-  const groupedRows = new Map<string, { definition: DocumentCustomPropertyValueWithRelatedInfo['definition']; rows: DocumentCustomPropertyValueWithRelatedInfo[] }>();
+export function aggregateDocumentCustomPropertyValues({
+  rawValues,
+}: {
+  rawValues: DocumentCustomPropertyValueWithRelatedInfo[];
+}) {
+  const groupedRows = new Map<
+    string,
+    {
+      definition: DocumentCustomPropertyValueWithRelatedInfo['definition'];
+      rows: DocumentCustomPropertyValueWithRelatedInfo[];
+    }
+  >();
 
   for (const row of rawValues) {
     const existing = groupedRows.get(row.definition.id);
@@ -37,11 +47,17 @@ export type DocumentCustomPropertyForApi = {
   value: unknown;
 };
 
-export function buildCustomPropertiesArray({ rawValues, propertyDefinitions }: { rawValues: DocumentCustomPropertyValueWithRelatedInfo[]; propertyDefinitions: { key: string; name: string; type: string; displayOrder: number }[] }): DocumentCustomPropertyForApi[] {
+export function buildCustomPropertiesArray({
+  rawValues,
+  propertyDefinitions,
+}: {
+  rawValues: DocumentCustomPropertyValueWithRelatedInfo[];
+  propertyDefinitions: { key: string; name: string; type: string; displayOrder: number }[];
+}): DocumentCustomPropertyForApi[] {
   const aggregated = aggregateDocumentCustomPropertyValues({ rawValues });
   const valuesByKey = Object.fromEntries(aggregated.map(({ key, value }) => [key, value]));
 
-  return propertyDefinitions.map(def => ({
+  return propertyDefinitions.map((def) => ({
     key: def.key,
     name: def.name,
     type: def.type,

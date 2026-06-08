@@ -37,10 +37,7 @@ export async function fetchOrganizationDocuments({
   sortField?: DocumentSearchSortField;
   sortOrder?: DocumentSearchSortOrder;
 }) {
-  const {
-    documents,
-    documentsCount,
-  } = await apiClient<{
+  const { documents, documentsCount } = await apiClient<{
     documents: AsDto<Document>[];
     documentsCount: number;
   }>({
@@ -70,10 +67,10 @@ export async function fetchOrganizationDeletedDocuments({
   pageIndex: number;
   pageSize: number;
 }) {
-  const {
-    documents,
-    documentsCount,
-  } = await apiClient<{ documents: AsDto<Document>[]; documentsCount: number }>({
+  const { documents, documentsCount } = await apiClient<{
+    documents: AsDto<Document>[];
+    documentsCount: number;
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents/deleted`,
     query: {
@@ -147,7 +144,11 @@ export async function fetchDocumentFile({
   return blob;
 }
 
-export async function getOrganizationDocumentsStats({ organizationId }: { organizationId: string }) {
+export async function getOrganizationDocumentsStats({
+  organizationId,
+}: {
+  organizationId: string;
+}) {
   const { organizationStats } = await apiClient<{
     organizationStats: {
       documentsCount: number;
@@ -172,7 +173,13 @@ export async function deleteAllTrashDocuments({ organizationId }: { organization
   });
 }
 
-export async function deleteTrashDocument({ documentId, organizationId }: { documentId: string; organizationId: string }) {
+export async function deleteTrashDocument({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
   await apiClient({
     method: 'DELETE',
     path: `/api/organizations/${organizationId}/documents/trash/${documentId}`,

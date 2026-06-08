@@ -42,19 +42,23 @@ export function ImportTabButton(props: BottomTabBarButtonProps) {
 
   return (
     <>
-      <Pressable
-        onPress={handlePress}
-        style={[styles.container, props.style]}
-      >
-        <View style={[styles.button, { backgroundColor: themeColors.primary, marginBottom: 20 + insets.bottom }]}>
-          <Icon name="plus" size={32} color={themeColors.primaryForeground} style={{ height: 32 }} />
+      <Pressable onPress={handlePress} style={[styles.container, props.style]}>
+        <View
+          style={[
+            styles.button,
+            { backgroundColor: themeColors.primary, marginBottom: 20 + insets.bottom },
+          ]}
+        >
+          <Icon
+            name="plus"
+            size={32}
+            color={themeColors.primaryForeground}
+            style={{ height: 32 }}
+          />
         </View>
       </Pressable>
 
-      <ImportDrawer
-        visible={isDrawerVisible}
-        onClose={() => setIsDrawerVisible(false)}
-      />
+      <ImportDrawer visible={isDrawerVisible} onClose={() => setIsDrawerVisible(false)} />
     </>
   );
 }

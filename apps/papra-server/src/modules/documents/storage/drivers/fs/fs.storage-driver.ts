@@ -2,8 +2,15 @@ import fs from 'node:fs';
 import { dirname, join } from 'node:path';
 import { safely } from '@corentinth/chisels';
 import { isFileAlreadyExistsError } from '../../../../shared/fs/fs.models';
-import { checkFileExists, deleteFile, ensureDirectoryExists } from '../../../../shared/fs/fs.services';
-import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
+import {
+  checkFileExists,
+  deleteFile,
+  ensureDirectoryExists,
+} from '../../../../shared/fs/fs.services';
+import {
+  createFileAlreadyExistsInStorageError,
+  createFileNotFoundError,
+} from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 import { isFileNotFoundError } from './fs.storage-driver.models';
 
@@ -12,7 +19,9 @@ export const FS_STORAGE_DRIVER_NAME = 'filesystem' as const;
 export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {
   const { root } = documentStorageConfig.drivers.filesystem;
 
-  const getStoragePath = ({ storageKey }: { storageKey: string }) => ({ storagePath: join(root, storageKey) });
+  const getStoragePath = ({ storageKey }: { storageKey: string }) => ({
+    storagePath: join(root, storageKey),
+  });
 
   return {
     name: FS_STORAGE_DRIVER_NAME,
@@ -80,6 +89,5 @@ export const fsStorageDriverFactory = defineStorageDriver(({ documentStorageConf
 
       return exists;
     },
-
   };
 });

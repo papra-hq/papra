@@ -14,9 +14,7 @@ export function createWebhookHttpClient({
   allowedHostnames: Set<string>;
   blockList?: BlockList;
 }): WebhookHttpClient {
-  const ssrfSafeAgent = isSsrfProtectionEnabled
-    ? new Agent({ connect: { blockList } })
-    : undefined;
+  const ssrfSafeAgent = isSsrfProtectionEnabled ? new Agent({ connect: { blockList } }) : undefined;
 
   return async ({ url, ...options }) => {
     const hostname = getUrlHostname(url);

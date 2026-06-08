@@ -62,10 +62,7 @@ async function saveDocumentActivities({
     return { activities: [] };
   }
 
-  const inserted = await db
-    .insert(documentActivityLogTable)
-    .values(activities)
-    .returning();
+  const inserted = await db.insert(documentActivityLogTable).values(activities).returning();
 
   return { activities: inserted };
 }
@@ -109,14 +106,11 @@ async function getOrganizationDocumentActivities({
       ),
     );
 
-  const activities = await withPagination(
-    query.$dynamic(),
-    {
-      orderByColumn: desc(documentActivityLogTable.createdAt),
-      pageIndex,
-      pageSize,
-    },
-  );
+  const activities = await withPagination(query.$dynamic(), {
+    orderByColumn: desc(documentActivityLogTable.createdAt),
+    pageIndex,
+    pageSize,
+  });
 
   return { activities };
 }

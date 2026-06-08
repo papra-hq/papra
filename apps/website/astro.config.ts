@@ -44,7 +44,7 @@ export default defineConfig({
   adapter: cloudflare(),
 
   i18n: {
-    locales: LOCALES.map(locale => locale), // Because astro expects string[] and not readonly string[]
+    locales: LOCALES.map((locale) => locale), // Because astro expects string[] and not readonly string[]
     defaultLocale: DEFAULT_LOCALE,
     routing: {
       prefixDefaultLocale: true,

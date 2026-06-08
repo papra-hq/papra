@@ -28,7 +28,9 @@ export async function createPropertyDefinition({
   customPropertiesRepository: CustomPropertiesRepository;
   customPropertiesOptionsRepository: CustomPropertiesOptionsRepository;
 }) {
-  const { count } = await customPropertiesRepository.getOrganizationPropertyDefinitionsCount({ organizationId });
+  const { count } = await customPropertiesRepository.getOrganizationPropertyDefinitionsCount({
+    organizationId,
+  });
 
   if (count >= config.customProperties.maxCustomPropertiesPerOrganization) {
     throw createOrganizationCustomPropertyLimitReachedError();
@@ -44,7 +46,9 @@ export async function createPropertyDefinition({
     },
   });
 
-  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({ type: propertyDefinition.type });
+  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({
+    type: propertyDefinition.type,
+  });
 
   await customPropertyTypeDefinition.definition.onCreate?.({
     apiInput: definition,
@@ -69,11 +73,20 @@ export async function updatePropertyDefinition({
   customPropertiesRepository: CustomPropertiesRepository;
   customPropertiesOptionsRepository: CustomPropertiesOptionsRepository;
 }) {
-  const { definition: existingDefinition } = await ensurePropertyDefinitionExists({ propertyDefinitionId, organizationId, customPropertiesRepository });
+  const { definition: existingDefinition } = await ensurePropertyDefinitionExists({
+    propertyDefinitionId,
+    organizationId,
+    customPropertiesRepository,
+  });
 
-  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({ type: existingDefinition.type });
+  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({
+    type: existingDefinition.type,
+  });
 
-  const parseResult = v.safeParse(customPropertyTypeDefinition.definition.updatePropertySchema, rawDefinition);
+  const parseResult = v.safeParse(
+    customPropertyTypeDefinition.definition.updatePropertySchema,
+    rawDefinition,
+  );
 
   if (!parseResult.success) {
     throw createCustomPropertyDefinitionInvalidUpdateError();
@@ -108,9 +121,16 @@ export async function deletePropertyDefinition({
   organizationId: string;
   customPropertiesRepository: CustomPropertiesRepository;
 }) {
-  await ensurePropertyDefinitionExists({ propertyDefinitionId, organizationId, customPropertiesRepository });
+  await ensurePropertyDefinitionExists({
+    propertyDefinitionId,
+    organizationId,
+    customPropertiesRepository,
+  });
 
-  await customPropertiesRepository.deletePropertyDefinition({ propertyDefinitionId, organizationId });
+  await customPropertiesRepository.deletePropertyDefinition({
+    propertyDefinitionId,
+    organizationId,
+  });
 }
 
 export async function setDocumentCustomPropertyValue({
@@ -132,9 +152,15 @@ export async function setDocumentCustomPropertyValue({
   organizationsRepository: OrganizationsRepository;
   documentsRepository: DocumentsRepository;
 }) {
-  const { definition: customProperty } = await ensurePropertyDefinitionExists({ propertyDefinitionId, organizationId, customPropertiesRepository });
+  const { definition: customProperty } = await ensurePropertyDefinitionExists({
+    propertyDefinitionId,
+    organizationId,
+    customPropertiesRepository,
+  });
 
-  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({ type: customProperty.type });
+  const customPropertyTypeDefinition = getCustomPropertyTypeDefinition({
+    type: customProperty.type,
+  });
 
   const parseResult = v.safeParse(customPropertyTypeDefinition.value.inputSchema, value);
 
@@ -173,9 +199,16 @@ export async function deleteDocumentCustomPropertyValue({
   organizationId: string;
   customPropertiesRepository: CustomPropertiesRepository;
 }) {
-  await ensurePropertyDefinitionExists({ propertyDefinitionId, organizationId, customPropertiesRepository });
+  await ensurePropertyDefinitionExists({
+    propertyDefinitionId,
+    organizationId,
+    customPropertiesRepository,
+  });
 
-  await customPropertiesRepository.deleteDocumentCustomPropertyValue({ documentId, propertyDefinitionId });
+  await customPropertiesRepository.deleteDocumentCustomPropertyValue({
+    documentId,
+    propertyDefinitionId,
+  });
 }
 
 export async function ensurePropertyDefinitionExists({
@@ -187,7 +220,10 @@ export async function ensurePropertyDefinitionExists({
   organizationId: string;
   customPropertiesRepository: CustomPropertiesRepository;
 }) {
-  const { definition } = await customPropertiesRepository.getPropertyDefinitionById({ propertyDefinitionId, organizationId });
+  const { definition } = await customPropertiesRepository.getPropertyDefinitionById({
+    propertyDefinitionId,
+    organizationId,
+  });
 
   if (!definition) {
     throw createCustomPropertyDefinitionNotFoundError();

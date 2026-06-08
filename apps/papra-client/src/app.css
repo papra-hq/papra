@@ -33,7 +33,7 @@
   --radius: 0.5rem;
 }
 
-[data-kb-theme="dark"] {
+[data-kb-theme='dark'] {
   --background: 240 4% 10%;
   --foreground: 0 0% 98%;
 
@@ -66,13 +66,12 @@
   --ring: 0 0% 83.1%;
 }
 
-
 * {
   @apply border-border;
 }
 body {
   @apply bg-background text-foreground;
 }
-input[type="search"]::-webkit-search-cancel-button {
+input[type='search']::-webkit-search-cancel-button {
   -webkit-appearance: none;
 }

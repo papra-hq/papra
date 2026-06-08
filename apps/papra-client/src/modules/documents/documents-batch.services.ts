@@ -1,8 +1,6 @@
 import { apiClient } from '../shared/http/api-client';
 
-export type BatchTargetFilter
-  = | { documentIds: string[] }
-    | { query: string };
+export type BatchTargetFilter = { documentIds: string[] } | { query: string };
 
 export async function batchTrashDocuments({
   organizationId,

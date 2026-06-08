@@ -25,11 +25,15 @@ async function setupApp() {
   const { db } = await createInMemoryDatabase({
     users: [{ id: USER_ID, email: 'user@example.com' }],
     organizations: [{ id: ORG_ID, name: 'Org 1' }],
-    organizationMembers: [{ organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+    organizationMembers: [
+      { organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+    ],
     documents: [BASE_DOCUMENT],
   });
 
-  const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+  const { app } = createServer(
+    createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+  );
 
   return { db, app };
 }
@@ -48,7 +52,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       const setResponse = await app.request(
         `/api/organizations/${ORG_ID}/documents/${DOC_ID}/custom-properties/${propertyDefinition.id}`,
@@ -67,10 +73,18 @@ describe('custom properties e2e', () => {
         { method: 'GET' },
         { loggedInUserId: USER_ID },
       );
-      const { document } = await getResponse.json() as { document: { customProperties: DocumentCustomPropertyForApi[] } };
+      const { document } = (await getResponse.json()) as {
+        document: { customProperties: DocumentCustomPropertyForApi[] };
+      };
 
       expect(document.customProperties).to.eql([
-        { key: 'invoicenumber', name: 'Invoice Number', type: 'text', displayOrder: 0, value: 'INV-001' },
+        {
+          key: 'invoicenumber',
+          name: 'Invoice Number',
+          type: 'text',
+          displayOrder: 0,
+          value: 'INV-001',
+        },
       ]);
     });
 
@@ -86,7 +100,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       await app.request(
         `/api/organizations/${ORG_ID}/documents/${DOC_ID}/custom-properties/${propertyDefinition.id}`,
@@ -113,7 +129,9 @@ describe('custom properties e2e', () => {
         { method: 'GET' },
         { loggedInUserId: USER_ID },
       );
-      const { document } = await getResponse.json() as { document: { customProperties: DocumentCustomPropertyForApi[] } };
+      const { document } = (await getResponse.json()) as {
+        document: { customProperties: DocumentCustomPropertyForApi[] };
+      };
 
       expect(document.customProperties[0]?.value).to.eql('INV-002');
     });
@@ -130,7 +148,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
-      const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       await app.request(
         `/api/organizations/${ORG_ID}/documents/${DOC_ID}/custom-properties/${propertyDefinition.id}`,
@@ -155,10 +175,18 @@ describe('custom properties e2e', () => {
         { method: 'GET' },
         { loggedInUserId: USER_ID },
       );
-      const { document } = await getResponse.json() as { document: { customProperties: DocumentCustomPropertyForApi[] } };
+      const { document } = (await getResponse.json()) as {
+        document: { customProperties: DocumentCustomPropertyForApi[] };
+      };
 
       expect(document.customProperties).to.eql([
-        { key: 'invoicenumber', name: 'Invoice Number', type: 'text', displayOrder: 0, value: null },
+        {
+          key: 'invoicenumber',
+          name: 'Invoice Number',
+          type: 'text',
+          displayOrder: 0,
+          value: null,
+        },
       ]);
     });
 
@@ -180,10 +208,18 @@ describe('custom properties e2e', () => {
         { method: 'GET' },
         { loggedInUserId: USER_ID },
       );
-      const { document } = await getResponse.json() as { document: { customProperties: DocumentCustomPropertyForApi[] } };
+      const { document } = (await getResponse.json()) as {
+        document: { customProperties: DocumentCustomPropertyForApi[] };
+      };
 
       expect(document.customProperties).to.eql([
-        { key: 'invoicenumber', name: 'Invoice Number', type: 'text', displayOrder: 0, value: null },
+        {
+          key: 'invoicenumber',
+          name: 'Invoice Number',
+          type: 'text',
+          displayOrder: 0,
+          value: null,
+        },
       ]);
     });
   });

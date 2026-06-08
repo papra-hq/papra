@@ -9,4 +9,7 @@ export type DocumentSearchSort = {
   order: DocumentSearchSortOrder;
 };
 
-export const DEFAULT_DOCUMENT_SEARCH_SORT: DocumentSearchSort = { field: 'createdAt', order: 'desc' };
+export const DEFAULT_DOCUMENT_SEARCH_SORT: DocumentSearchSort = {
+  field: 'createdAt',
+  order: 'desc',
+};

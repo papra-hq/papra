@@ -10,11 +10,24 @@ import { createForm } from '@/modules/shared/form/form';
 import { DocumentTagPicker } from '@/modules/tags/components/tag-picker.component';
 import { CreateTagModal } from '@/modules/tags/pages/tags.page';
 import { Button } from '@/modules/ui/components/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/modules/ui/components/select';
 import { Separator } from '@/modules/ui/components/separator';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { CONDITION_MATCH_MODES, CONDITION_MATCH_MODES_LOCALIZATION_KEYS, TAGGING_RULE_FIELDS, TAGGING_RULE_FIELDS_LOCALIZATION_KEYS, TAGGING_RULE_OPERATORS, TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS } from '../tagging-rules.constants';
+import {
+  CONDITION_MATCH_MODES,
+  CONDITION_MATCH_MODES_LOCALIZATION_KEYS,
+  TAGGING_RULE_FIELDS,
+  TAGGING_RULE_FIELDS_LOCALIZATION_KEYS,
+  TAGGING_RULE_OPERATORS,
+  TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS,
+} from '../tagging-rules.constants';
 
 export const TaggingRuleForm: Component<{
   onSubmit: (args: { taggingRule: TaggingRuleForCreation }) => Promise<void> | void;
@@ -45,7 +58,9 @@ export const TaggingRuleForm: Component<{
         }
       }
 
-      props.onSubmit({ taggingRule: { name, conditions, tagIds, description, conditionMatchMode } });
+      props.onSubmit({
+        taggingRule: { name, conditions, tagIds, description, conditionMatchMode },
+      });
     },
     schema: v.object({
       name: v.pipe(
@@ -59,23 +74,22 @@ export const TaggingRuleForm: Component<{
       ),
       conditionMatchMode: v.optional(v.picklist(Object.values(CONDITION_MATCH_MODES))),
       conditions: v.optional(
-        v.array(v.object({
-          field: v.picklist(Object.values(TAGGING_RULE_FIELDS)),
-          operator: v.picklist(Object.values(TAGGING_RULE_OPERATORS)),
-          value: v.pipe(
-            v.string(),
-            v.minLength(1, t('tagging-rules.form.conditions.value.min-length')),
-          ),
-        })),
+        v.array(
+          v.object({
+            field: v.picklist(Object.values(TAGGING_RULE_FIELDS)),
+            operator: v.picklist(Object.values(TAGGING_RULE_OPERATORS)),
+            value: v.pipe(
+              v.string(),
+              v.minLength(1, t('tagging-rules.form.conditions.value.min-length')),
+            ),
+          }),
+        ),
       ),
-      tagIds: v.pipe(
-        v.array(v.string()),
-        v.minLength(1, t('tagging-rules.form.tags.min-length')),
-      ),
+      tagIds: v.pipe(v.array(v.string()), v.minLength(1, t('tagging-rules.form.tags.min-length'))),
     }),
     initialValues: {
       conditions: props.taggingRule?.conditions ?? [],
-      tagIds: props.taggingRule?.actions.map(action => action.tagId) ?? [],
+      tagIds: props.taggingRule?.actions.map((action) => action.tagId) ?? [],
       name: props.taggingRule?.name,
       description: props.taggingRule?.description,
       conditionMatchMode: props.taggingRule?.conditionMatchMode ?? CONDITION_MATCH_MODES.ALL,
@@ -83,11 +97,19 @@ export const TaggingRuleForm: Component<{
   });
 
   const getOperatorLabel = (operator: string) => {
-    return t(TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS[operator as keyof typeof TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS]);
+    return t(
+      TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS[
+        operator as keyof typeof TAGGING_RULE_OPERATORS_LOCALIZATION_KEYS
+      ],
+    );
   };
 
   const getFieldLabel = (field: string) => {
-    return t(TAGGING_RULE_FIELDS_LOCALIZATION_KEYS[field as keyof typeof TAGGING_RULE_FIELDS_LOCALIZATION_KEYS]);
+    return t(
+      TAGGING_RULE_FIELDS_LOCALIZATION_KEYS[
+        field as keyof typeof TAGGING_RULE_FIELDS_LOCALIZATION_KEYS
+      ],
+    );
   };
 
   const getConditionConnector = (index: number) => {
@@ -125,7 +147,9 @@ export const TaggingRuleForm: Component<{
       <Field name="description">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mt-6">
-            <TextFieldLabel for="description">{t('tagging-rules.form.description.label')}</TextFieldLabel>
+            <TextFieldLabel for="description">
+              {t('tagging-rules.form.description.label')}
+            </TextFieldLabel>
             <TextArea
               id="description"
               placeholder={t('tagging-rules.form.description.placeholder')}
@@ -140,23 +164,37 @@ export const TaggingRuleForm: Component<{
       <Separator class="my-6" />
 
       <p class="mb-1 font-medium">{t('tagging-rules.form.conditions.label')}</p>
-      <p class="mb-2 text-sm text-muted-foreground">{t('tagging-rules.form.conditions.description')}</p>
+      <p class="mb-2 text-sm text-muted-foreground">
+        {t('tagging-rules.form.conditions.description')}
+      </p>
 
       <Field name="conditionMatchMode">
-        {field => (
+        {(field) => (
           <Select
             id="conditionMatchMode"
             defaultValue={field.value ?? CONDITION_MATCH_MODES.ALL}
-            onChange={value => value && setValue(form, 'conditionMatchMode', value)}
+            onChange={(value) => value && setValue(form, 'conditionMatchMode', value)}
             options={Object.values(CONDITION_MATCH_MODES)}
-            itemComponent={props => (
+            itemComponent={(props) => (
               <SelectItem item={props.item}>
-                {t(CONDITION_MATCH_MODES_LOCALIZATION_KEYS[props.item.rawValue as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS])}
+                {t(
+                  CONDITION_MATCH_MODES_LOCALIZATION_KEYS[
+                    props.item.rawValue as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS
+                  ],
+                )}
               </SelectItem>
             )}
           >
             <SelectTrigger class="w-full mb-4">
-              <SelectValue<string>>{state => t(CONDITION_MATCH_MODES_LOCALIZATION_KEYS[state.selectedOption() as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS])}</SelectValue>
+              <SelectValue<string>>
+                {(state) =>
+                  t(
+                    CONDITION_MATCH_MODES_LOCALIZATION_KEYS[
+                      state.selectedOption() as keyof typeof CONDITION_MATCH_MODES_LOCALIZATION_KEYS
+                    ],
+                  )
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent />
           </Select>
@@ -164,7 +202,7 @@ export const TaggingRuleForm: Component<{
       </Field>
 
       <FieldArray name="conditions">
-        {fieldArray => (
+        {(fieldArray) => (
           <div>
             <For each={fieldArray.items}>
               {(_, index) => (
@@ -172,18 +210,24 @@ export const TaggingRuleForm: Component<{
                   <div>{getConditionConnector(index())}</div>
 
                   <Field name={`conditions.${index()}.field`}>
-                    {field => (
+                    {(field) => (
                       <Select
                         id="field"
                         defaultValue={field.value}
-                        onChange={value => value && setValue(form, `conditions.${index()}.field`, value)}
+                        onChange={(value) =>
+                          value && setValue(form, `conditions.${index()}.field`, value)
+                        }
                         options={Object.values(TAGGING_RULE_FIELDS)}
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>{getFieldLabel(props.item.rawValue)}</SelectItem>
+                        itemComponent={(props) => (
+                          <SelectItem item={props.item}>
+                            {getFieldLabel(props.item.rawValue)}
+                          </SelectItem>
                         )}
                       >
                         <SelectTrigger class="w-[180px]">
-                          <SelectValue<string>>{state => getFieldLabel(state.selectedOption())}</SelectValue>
+                          <SelectValue<string>>
+                            {(state) => getFieldLabel(state.selectedOption())}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent />
                       </Select>
@@ -191,18 +235,24 @@ export const TaggingRuleForm: Component<{
                   </Field>
 
                   <Field name={`conditions.${index()}.operator`}>
-                    {field => (
+                    {(field) => (
                       <Select
                         id="operator"
                         defaultValue={field.value}
-                        onChange={value => value && setValue(form, `conditions.${index()}.operator`, value)}
+                        onChange={(value) =>
+                          value && setValue(form, `conditions.${index()}.operator`, value)
+                        }
                         options={Object.values(TAGGING_RULE_OPERATORS)}
-                        itemComponent={props => (
-                          <SelectItem item={props.item}>{getOperatorLabel(props.item.rawValue)}</SelectItem>
+                        itemComponent={(props) => (
+                          <SelectItem item={props.item}>
+                            {getOperatorLabel(props.item.rawValue)}
+                          </SelectItem>
                         )}
                       >
                         <SelectTrigger class="w-[140px]">
-                          <SelectValue<string>>{state => getOperatorLabel(state.selectedOption())}</SelectValue>
+                          <SelectValue<string>>
+                            {(state) => getOperatorLabel(state.selectedOption())}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent />
                       </Select>
@@ -217,15 +267,17 @@ export const TaggingRuleForm: Component<{
                           {...inputProps}
                           value={field.value}
                           placeholder={t('tagging-rules.form.conditions.value.placeholder')}
-
                         />
                         {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
-
                       </TextFieldRoot>
                     )}
                   </Field>
 
-                  <Button variant="outline" size="icon" onClick={() => remove(form, 'conditions', { at: index() })}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => remove(form, 'conditions', { at: index() })}
+                  >
                     <div class="i-tabler-x size-4" />
                   </Button>
                 </div>
@@ -238,7 +290,9 @@ export const TaggingRuleForm: Component<{
 
       <Button
         variant="outline"
-        onClick={() => insert(form, 'conditions', { value: { field: 'name', operator: 'contains', value: '' } })}
+        onClick={() =>
+          insert(form, 'conditions', { value: { field: 'name', operator: 'contains', value: '' } })
+        }
         class="gap-2 mt-2"
       >
         <div class="i-tabler-plus size-4" />
@@ -251,20 +305,25 @@ export const TaggingRuleForm: Component<{
       <p class="mb-2 text-sm text-muted-foreground">{t('tagging-rules.form.tags.description')}</p>
 
       <Field name="tagIds" type="string[]">
-        {field => (
+        {(field) => (
           <>
             <div class="flex gap-2 sm:items-center sm:flex-row flex-col">
               <div class="flex-1">
-
                 <DocumentTagPicker
                   organizationId={props.organizationId}
                   tagIds={field.value ?? []}
-                  onTagsChange={({ tags }) => setValue(form, 'tagIds', tags.map(tag => tag.id))}
+                  onTagsChange={({ tags }) =>
+                    setValue(
+                      form,
+                      'tagIds',
+                      tags.map((tag) => tag.id),
+                    )
+                  }
                 />
               </div>
 
               <CreateTagModal organizationId={props.organizationId}>
-                {props => (
+                {(props) => (
                   <Button variant="outline" {...props}>
                     <div class="i-tabler-plus size-4 mr-2" />
                     {t('tagging-rules.form.tags.add-tag')}
@@ -279,12 +338,16 @@ export const TaggingRuleForm: Component<{
 
       <div class="flex justify-end mt-6 gap-2">
         <Show when={props.taggingRule}>
-          <Button variant="outline" as={A} href={`/organizations/${props.organizationId}/tagging-rules`}>
+          <Button
+            variant="outline"
+            as={A}
+            href={`/organizations/${props.organizationId}/tagging-rules`}
+          >
             {t('tagging-rules.update.cancel')}
           </Button>
         </Show>
 
-        { props.submitButton }
+        {props.submitButton}
       </div>
     </Form>
   );

@@ -33,10 +33,12 @@ describe('events services', () => {
 
       await nextTick();
 
-      expect(handlerCalls).to.deep.equal([{
-        payload: { userId: '123', email: 'test@example.com' },
-        meta: { emittedAt: new Date('2024-01-01'), eventId: 'evt_test' },
-      }]);
+      expect(handlerCalls).to.deep.equal([
+        {
+          payload: { userId: '123', email: 'test@example.com' },
+          meta: { emittedAt: new Date('2024-01-01'), eventId: 'evt_test' },
+        },
+      ]);
     });
 
     test('multiple handlers registered for the same event are all called', async () => {
@@ -69,8 +71,14 @@ describe('events services', () => {
       await nextTick();
 
       expect(handlerCalls).to.have.length(2);
-      expect(handlerCalls).to.deep.include({ handler: 'handler-1', payload: { userId: '456', email: 'test2@example.com' } });
-      expect(handlerCalls).to.deep.include({ handler: 'handler-2', payload: { userId: '456', email: 'test2@example.com' } });
+      expect(handlerCalls).to.deep.include({
+        handler: 'handler-1',
+        payload: { userId: '456', email: 'test2@example.com' },
+      });
+      expect(handlerCalls).to.deep.include({
+        handler: 'handler-2',
+        payload: { userId: '456', email: 'test2@example.com' },
+      });
     });
 
     test('emitting an event with no registered handlers does not throw an error', async () => {

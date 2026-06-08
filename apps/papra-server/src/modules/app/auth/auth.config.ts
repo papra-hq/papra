@@ -29,7 +29,9 @@ export const authConfig = {
   secret: {
     doc: 'The secret for the auth, it should be at least 32 characters long, you can generate a secure one using `openssl rand -hex 48`',
     schema: v.pipe(
-      v.string('Please provide an auth secret using the AUTH_SECRET environment variable, you can use `openssl rand -hex 48` to generate a secure one'),
+      v.string(
+        'Please provide an auth secret using the AUTH_SECRET environment variable, you can use `openssl rand -hex 48` to generate a secure one',
+      ),
       v.minLength(32),
     ),
     default: DEFAULT_AUTH_SECRET,
@@ -70,7 +72,10 @@ export const authConfig = {
 - If behind a standard proxy, you might want to set this to "x-forwarded-for".
 - If behind Cloudflare, you might want to set this to "cf-connecting-ip".`,
     schema: v.union([
-      v.pipe(v.string(), v.transform(value => value.split(',').map(v => v.trim()))),
+      v.pipe(
+        v.string(),
+        v.transform((value) => value.split(',').map((v) => v.trim())),
+      ),
       v.array(v.string()),
     ]),
     default: ['x-forwarded-for'],

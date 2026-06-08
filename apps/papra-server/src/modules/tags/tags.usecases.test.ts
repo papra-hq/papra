@@ -11,7 +11,13 @@ describe('tags usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org-1', name: 'Organization 1' }],
         tags: [
-          { id: 'tag-1', organizationId: 'org-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#AA0000' },
+          {
+            id: 'tag-1',
+            organizationId: 'org-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#AA0000',
+          },
         ],
       });
 
@@ -29,8 +35,20 @@ describe('tags usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org-1', name: 'Organization 1' }],
         tags: [
-          { id: 'tag-1', organizationId: 'org-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#AA0000' },
-          { id: 'tag-2', organizationId: 'org-1', name: 'Tag 2', normalizedName: 'tag 2', color: '#00AA00' },
+          {
+            id: 'tag-1',
+            organizationId: 'org-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#AA0000',
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'org-1',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#00AA00',
+          },
         ],
       });
 
@@ -53,9 +71,27 @@ describe('tags usecases', () => {
           { id: 'org-2', name: 'Organization 2' },
         ],
         tags: [
-          { id: 'tag-1', organizationId: 'org-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#AA0000' },
-          { id: 'tag-2', organizationId: 'org-2', name: 'Tag 2', normalizedName: 'tag 2', color: '#00AA00' },
-          { id: 'tag-3', organizationId: 'org-2', name: 'Tag 3', normalizedName: 'tag 3', color: '#0000AA' },
+          {
+            id: 'tag-1',
+            organizationId: 'org-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#AA0000',
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'org-2',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#00AA00',
+          },
+          {
+            id: 'tag-3',
+            organizationId: 'org-2',
+            name: 'Tag 3',
+            normalizedName: 'tag 3',
+            color: '#0000AA',
+          },
         ],
       });
 
@@ -98,8 +134,20 @@ describe('tags usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org-1', name: 'Organization 1' }],
         tags: [
-          { id: 'tag-1', organizationId: 'org-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#AA0000' },
-          { id: 'tag-2', organizationId: 'org-1', name: 'Tag 2', normalizedName: 'tag 2', color: '#00AA00' },
+          {
+            id: 'tag-1',
+            organizationId: 'org-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#AA0000',
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'org-1',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#00AA00',
+          },
         ],
       });
 

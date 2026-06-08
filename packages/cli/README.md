@@ -32,6 +32,7 @@ papra config init
 ```
 
 This command will prompt you for:
+
 - **Instance URL**: Your Papra instance URL (e.g., `https://api.papra.app`)
 - **API Key**: Your personal API key (can be created in your User Settings)
 

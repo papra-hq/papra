@@ -73,7 +73,15 @@ export const EmailRegisterForm: Component = () => {
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="email">{t('auth.register.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.register.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField
+              type="email"
+              id="email"
+              placeholder={t('auth.register.form.email.placeholder')}
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -83,7 +91,14 @@ export const EmailRegisterForm: Component = () => {
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="name">{t('auth.register.form.name.label')}</TextFieldLabel>
-            <TextField type="text" id="name" placeholder={t('auth.register.form.name.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField
+              type="text"
+              id="name"
+              placeholder={t('auth.register.form.name.placeholder')}
+              {...inputProps}
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -94,16 +109,24 @@ export const EmailRegisterForm: Component = () => {
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="password">{t('auth.register.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder={t('auth.register.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField
+              type="password"
+              id="password"
+              placeholder={t('auth.register.form.password.placeholder')}
+              {...inputProps}
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <Button type="submit" class="w-full">{t('auth.register.form.submit')}</Button>
+      <Button type="submit" class="w-full">
+        {t('auth.register.form.submit')}
+      </Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -117,21 +140,17 @@ export const RegisterPage: Component = () => {
       <AuthLayout>
         <div class="flex items-center justify-center h-full p-6 sm:pb-32">
           <div class="max-w-sm w-full">
-            <h1 class="text-xl font-bold">
-              {t('auth.register.registration-disabled.title')}
-            </h1>
+            <h1 class="text-xl font-bold">{t('auth.register.registration-disabled.title')}</h1>
             <p class="text-muted-foreground mt-1 mb-4">
               {t('auth.register.registration-disabled.description')}
             </p>
 
             <p class="text-muted-foreground mt-4">
-              {t('auth.register.have-account')}
-              {' '}
+              {t('auth.register.have-account')}{' '}
               <Button variant="link" as={A} class="inline px-0" href="/login">
                 {t('auth.register.login')}
               </Button>
             </p>
-
           </div>
         </div>
       </AuthLayout>
@@ -147,29 +166,29 @@ export const RegisterPage: Component = () => {
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
 
   if (!config.auth.providers.email.isEnabled && !getHasSsoProviders()) {
-    return <AuthLayout><NoAuthProviderWarning /></AuthLayout>;
+    return (
+      <AuthLayout>
+        <NoAuthProviderWarning />
+      </AuthLayout>
+    );
   }
 
   return (
     <AuthLayout>
       <div class="flex items-center justify-center h-full p-6 sm:pb-32">
         <div class="max-w-sm w-full">
-          <h1 class="text-xl font-bold">
-            {t('auth.register.title')}
-          </h1>
-          <p class="text-muted-foreground mt-1 mb-4">
-            {t('auth.register.description')}
-          </p>
+          <h1 class="text-xl font-bold">{t('auth.register.title')}</h1>
+          <p class="text-muted-foreground mt-1 mb-4">{t('auth.register.description')}</p>
 
           <Show when={config.auth.providers.email.isEnabled}>
-            {getShowEmailRegister() || !getHasSsoProviders()
-              ? <EmailRegisterForm />
-              : (
-                  <Button onClick={() => setShowEmailRegister(true)} class="w-full">
-                    <div class="i-tabler-mail mr-2 size-4.5" />
-                    {t('auth.register.register-with-email')}
-                  </Button>
-                )}
+            {getShowEmailRegister() || !getHasSsoProviders() ? (
+              <EmailRegisterForm />
+            ) : (
+              <Button onClick={() => setShowEmailRegister(true)} class="w-full">
+                <div class="i-tabler-mail mr-2 size-4.5" />
+                {t('auth.register.register-with-email')}
+              </Button>
+            )}
           </Show>
 
           <Show when={config.auth.providers.email.isEnabled && getHasSsoProviders()}>
@@ -177,10 +196,9 @@ export const RegisterPage: Component = () => {
           </Show>
 
           <Show when={getHasSsoProviders()}>
-
             <div class="flex flex-col gap-2">
               <For each={getEnabledSsoProviderConfigs({ config })}>
-                {provider => (
+                {(provider) => (
                   <SsoProviderButton
                     name={provider.name}
                     icon={provider.icon}
@@ -193,8 +211,7 @@ export const RegisterPage: Component = () => {
           </Show>
 
           <p class="text-muted-foreground mt-4">
-            {t('auth.register.have-account')}
-            {' '}
+            {t('auth.register.have-account')}{' '}
             <Button variant="link" as={A} class="inline px-0" href="/login">
               {t('auth.register.login')}
             </Button>

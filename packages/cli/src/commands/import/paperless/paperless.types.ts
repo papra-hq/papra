@@ -1,9 +1,9 @@
 export type PaperlessManifest = PaperlessManifestItem[];
 
-export type PaperlessManifestItem
-  = | PaperlessDocumentItem
-    | PaperlessTagItem
-    | PaperlessManifestOtherItem;
+export type PaperlessManifestItem =
+  | PaperlessDocumentItem
+  | PaperlessTagItem
+  | PaperlessManifestOtherItem;
 
 export type PaperlessDocumentItem = {
   model: 'documents.document';

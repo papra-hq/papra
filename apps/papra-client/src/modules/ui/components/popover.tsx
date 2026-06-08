@@ -1,8 +1,5 @@
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
-import type {
-  PopoverContentProps,
-  PopoverRootProps,
-} from '@kobalte/core/popover';
+import type { PopoverContentProps, PopoverRootProps } from '@kobalte/core/popover';
 import type { ParentProps, ValidComponent } from 'solid-js';
 import { Popover as PopoverPrimitive } from '@kobalte/core/popover';
 import { mergeProps, splitProps } from 'solid-js';
@@ -31,12 +28,10 @@ type popoverContentProps<T extends ValidComponent = 'div'> = ParentProps<
   }
 >;
 
-export function PopoverContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, popoverContentProps<T>>) {
-  const [local, rest] = splitProps(props as popoverContentProps, [
-    'class',
-    'children',
-    'closable',
-  ]);
+export function PopoverContent<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, popoverContentProps<T>>,
+) {
+  const [local, rest] = splitProps(props as popoverContentProps, ['class', 'children', 'closable']);
 
   return (
     <PopoverPrimitive.Portal>
@@ -50,11 +45,7 @@ export function PopoverContent<T extends ValidComponent = 'div'>(props: Polymorp
         {local.children}
         {local.closable && (
           <PopoverPrimitive.CloseButton class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:(outline-none ring-1.5 ring-ring ring-offset-2) disabled:pointer-events-none bg-inherit transition-property-[opacity,box-shadow]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              class="h-4 w-4"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4">
               <path
                 fill="none"
                 stroke="currentColor"

@@ -24,7 +24,15 @@ export type OrganizationStats = {
   totalDocumentsSize: number;
 };
 
-export async function listOrganizations({ search, pageIndex = 0, pageSize = 25 }: { search?: string; pageIndex?: number; pageSize?: number }) {
+export async function listOrganizations({
+  search,
+  pageIndex = 0,
+  pageSize = 25,
+}: {
+  search?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}) {
   const { totalCount, organizations } = await apiClient<{
     organizations: OrganizationWithMemberCount[];
     totalCount: number;

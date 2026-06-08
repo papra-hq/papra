@@ -16,8 +16,12 @@ describe('file.services', () => {
     });
 
     test('the fallback mime type can be customized', () => {
-      expect(getMimeTypeForExtension({ extension: 'foo', fallbackMimeType: 'text/plain' })).toBe('text/plain');
-      expect(getMimeTypeForExtension({ extension: undefined, fallbackMimeType: 'text/plain' })).toBe('text/plain');
+      expect(getMimeTypeForExtension({ extension: 'foo', fallbackMimeType: 'text/plain' })).toBe(
+        'text/plain',
+      );
+      expect(
+        getMimeTypeForExtension({ extension: undefined, fallbackMimeType: 'text/plain' }),
+      ).toBe('text/plain');
     });
   });
 });

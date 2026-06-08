@@ -38,7 +38,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   };
 
   const handleDismiss = () => {
-    setAlertState(prev => ({ ...prev, visible: false }));
+    setAlertState((prev) => ({ ...prev, visible: false }));
   };
 
   return (

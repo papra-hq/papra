@@ -5,7 +5,9 @@ import { joinUrlPaths } from '@corentinth/chisels';
 import { router } from './demo-api-mock';
 import { ensureDemoStorageSeeded } from './demo.storage';
 
-export async function demoHttpClient<A, R extends ResponseType = 'json'>(options: HttpClientOptions<R>): Promise<MappedResponseType<R, A>> {
+export async function demoHttpClient<A, R extends ResponseType = 'json'>(
+  options: HttpClientOptions<R>,
+): Promise<MappedResponseType<R, A>> {
   await ensureDemoStorageSeeded();
 
   const path = `/${joinUrlPaths(options.method ?? 'GET', options.url)}`;

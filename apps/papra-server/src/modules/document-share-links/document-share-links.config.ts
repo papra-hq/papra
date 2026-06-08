@@ -7,7 +7,7 @@ import { coercedStrictlyPositiveIntegerSchema } from '../shared/schemas/number.s
 
 export const documentShareLinksConfig = {
   shareLinkBaseUrl: {
-    doc: 'The base URL used to generate share links, if not specified it\'ll use the application `APP_BASE_URL` and the `CLIENT_BASE_URL` as fallback.',
+    doc: "The base URL used to generate share links, if not specified it'll use the application `APP_BASE_URL` and the `CLIENT_BASE_URL` as fallback.",
     schema: v.optional(urlSchema),
     env: 'DOCUMENT_SHARE_LINKS_BASE_URL',
     default: undefined,

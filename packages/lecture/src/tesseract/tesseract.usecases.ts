@@ -4,7 +4,9 @@ import { x as exec } from 'tinyexec';
 import { castToBuffer } from '../utils/buffer';
 import { memoize } from '../utils/memoize';
 
-export async function isTesseractCliAvailable({ binary = 'tesseract' }: { binary?: string } = {}): Promise<boolean> {
+export async function isTesseractCliAvailable({
+  binary = 'tesseract',
+}: { binary?: string } = {}): Promise<boolean> {
   // eslint-disable-next-line node/prefer-global/process
   const isNode = typeof process !== 'undefined' && Boolean(process?.versions?.node);
   if (!isNode) {
@@ -20,12 +22,23 @@ export async function isTesseractCliAvailable({ binary = 'tesseract' }: { binary
   }
 }
 
-export const isTesseractCliAvailableMemoized = memoize(isTesseractCliAvailable, ({ binary } = {}) => binary ?? 'tesseract');
+export const isTesseractCliAvailableMemoized = memoize(
+  isTesseractCliAvailable,
+  ({ binary } = {}) => binary ?? 'tesseract',
+);
 
-export function createTesseractCliExtractor({ binary = 'tesseract', languages: factoryLanguages = ['eng'] }: { binary?: string; languages?: string[] } = {}) {
-  return async (maybeArrayBuffer: ArrayBuffer | Buffer, { languages = factoryLanguages }: { languages?: string[] } = {}): Promise<string> => {
+export function createTesseractCliExtractor({
+  binary = 'tesseract',
+  languages: factoryLanguages = ['eng'],
+}: { binary?: string; languages?: string[] } = {}) {
+  return async (
+    maybeArrayBuffer: ArrayBuffer | Buffer,
+    { languages = factoryLanguages }: { languages?: string[] } = {},
+  ): Promise<string> => {
     try {
-      const proc = exec(binary, ['stdin', 'stdout', '-l', languages.join('+')], { throwOnError: true });
+      const proc = exec(binary, ['stdin', 'stdout', '-l', languages.join('+')], {
+        throwOnError: true,
+      });
       proc.process?.stdin?.end(castToBuffer(maybeArrayBuffer));
 
       const { stdout } = await proc;
@@ -37,12 +50,19 @@ export function createTesseractCliExtractor({ binary = 'tesseract', languages: f
   };
 }
 
-export function createTesseractJsExtractor({ languages: factoryLanguages = ['eng'] }: { languages?: string[] } = {}) {
-  return async (maybeArrayBuffer: ArrayBuffer | Buffer, { languages = factoryLanguages }: { languages?: string[] } = {}): Promise<string> => {
+export function createTesseractJsExtractor({
+  languages: factoryLanguages = ['eng'],
+}: { languages?: string[] } = {}) {
+  return async (
+    maybeArrayBuffer: ArrayBuffer | Buffer,
+    { languages = factoryLanguages }: { languages?: string[] } = {},
+  ): Promise<string> => {
     try {
       const worker = await createWorker(languages);
 
-      const { data: { text } } = await worker.recognize(castToBuffer(maybeArrayBuffer));
+      const {
+        data: { text },
+      } = await worker.recognize(castToBuffer(maybeArrayBuffer));
       await worker.terminate();
 
       return text?.trim();

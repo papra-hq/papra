@@ -29,18 +29,34 @@ async function listDocuments({ query = '' }: { query?: string } = {}) {
   const { db } = await createInMemoryDatabase({
     users: [{ id: USER_ID, email: 'user@example.com' }],
     organizations: [{ id: ORGANIZATION_ID, name: 'Org 1' }],
-    organizationMembers: [{ organizationId: ORGANIZATION_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+    organizationMembers: [
+      { organizationId: ORGANIZATION_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+    ],
     documents: [
-      makeDocument({ id: 'doc_111111111111111111111111', name: 'banana.txt', createdAt: new Date('2026-01-03') }),
-      makeDocument({ id: 'doc_222222222222222222222222', name: 'apple.txt', createdAt: new Date('2026-01-01') }),
-      makeDocument({ id: 'doc_333333333333333333333333', name: 'Cherry.txt', createdAt: new Date('2026-01-02') }),
+      makeDocument({
+        id: 'doc_111111111111111111111111',
+        name: 'banana.txt',
+        createdAt: new Date('2026-01-03'),
+      }),
+      makeDocument({
+        id: 'doc_222222222222222222222222',
+        name: 'apple.txt',
+        createdAt: new Date('2026-01-01'),
+      }),
+      makeDocument({
+        id: 'doc_333333333333333333333333',
+        name: 'Cherry.txt',
+        createdAt: new Date('2026-01-02'),
+      }),
     ],
   });
 
-  const { app } = createServer(createTestServerDependencies({
-    db,
-    config: overrideConfig({ env: 'test' }),
-  }));
+  const { app } = createServer(
+    createTestServerDependencies({
+      db,
+      config: overrideConfig({ env: 'test' }),
+    }),
+  );
 
   const response = await app.request(
     `/api/organizations/${ORGANIZATION_ID}/documents${query}`,
@@ -48,11 +64,15 @@ async function listDocuments({ query = '' }: { query?: string } = {}) {
     { loggedInUserId: USER_ID },
   );
 
-  const body = response.status === 200
-    ? (await response.json()) as { documents: { name: string }[]; documentsCount: number }
-    : undefined;
+  const body =
+    response.status === 200
+      ? ((await response.json()) as { documents: { name: string }[]; documentsCount: number })
+      : undefined;
 
-  return { status: response.status, documentNames: body?.documents.map(document => document.name) };
+  return {
+    status: response.status,
+    documentNames: body?.documents.map((document) => document.name),
+  };
 }
 
 describe('documents e2e', () => {
@@ -65,14 +85,18 @@ describe('documents e2e', () => {
     });
 
     test('documents can be sorted by name ascending, case-insensitively', async () => {
-      const { status, documentNames } = await listDocuments({ query: '?sortField=name&sortOrder=asc' });
+      const { status, documentNames } = await listDocuments({
+        query: '?sortField=name&sortOrder=asc',
+      });
 
       expect(status).to.eql(200);
       expect(documentNames).to.eql(['apple.txt', 'banana.txt', 'Cherry.txt']);
     });
 
     test('documents can be sorted by name descending', async () => {
-      const { status, documentNames } = await listDocuments({ query: '?sortField=name&sortOrder=desc' });
+      const { status, documentNames } = await listDocuments({
+        query: '?sortField=name&sortOrder=desc',
+      });
 
       expect(status).to.eql(200);
       expect(documentNames).to.eql(['Cherry.txt', 'banana.txt', 'apple.txt']);

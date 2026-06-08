@@ -7,7 +7,8 @@ export const createCustomPropertyDefinitionNotFoundError = createErrorFactory({
 });
 
 export const createCustomPropertyDefinitionAlreadyExistsError = createErrorFactory({
-  message: 'A custom property definition with this name or key already exists in this organization.',
+  message:
+    'A custom property definition with this name or key already exists in this organization.',
   code: 'custom_property_definition.already_exists',
   statusCode: 409,
 });

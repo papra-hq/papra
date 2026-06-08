@@ -15,7 +15,7 @@ export function registerTriggerWebhooksOnDocumentsTrashedHandler({
       await webhookTriggerServices.triggerWebhooks({
         organizationId,
         event: 'document:deleted',
-        payloads: documentIds.map(documentId => ({
+        payloads: documentIds.map((documentId) => ({
           documentId,
           organizationId,
         })),

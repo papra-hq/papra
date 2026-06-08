@@ -21,7 +21,12 @@ const Slider: Component<{
   onChange?: (value: Color) => void;
 }> = (props) => {
   return (
-    <ColorSlider channel={props.channel} class="relative flex flex-col gap-0.5 w-full" value={props.value} onChange={props.onChange}>
+    <ColorSlider
+      channel={props.channel}
+      class="relative flex flex-col gap-0.5 w-full"
+      value={props.value}
+      onChange={props.onChange}
+    >
       <div class="flex items-center justify-between text-xs font-medium text-muted-foreground">
         <ColorSlider.Label>{props.label}</ColorSlider.Label>
         <ColorSlider.ValueLabel />
@@ -53,18 +58,36 @@ const ColorPicker: Component<{
     try {
       const parsedColor = parseColor(color);
       onUpdateColor(parsedColor);
-    } catch (_error) {
-    }
+    } catch (_error) {}
   };
 
   return (
     <div class="flex flex-col gap-2">
-      <Slider channel="hue" label={t('color-picker.hue')} value={color()} onChange={onUpdateColor} />
-      <Slider channel="saturation" label={t('color-picker.saturation')} value={color()} onChange={onUpdateColor} />
-      <Slider channel="lightness" label={t('color-picker.lightness')} value={color()} onChange={onUpdateColor} />
+      <Slider
+        channel="hue"
+        label={t('color-picker.hue')}
+        value={color()}
+        onChange={onUpdateColor}
+      />
+      <Slider
+        channel="saturation"
+        label={t('color-picker.saturation')}
+        value={color()}
+        onChange={onUpdateColor}
+      />
+      <Slider
+        channel="lightness"
+        label={t('color-picker.lightness')}
+        value={color()}
+        onChange={onUpdateColor}
+      />
 
       <TextFieldRoot>
-        <TextField value={color().toString('hex').toUpperCase()} onInput={onInputColorChange} placeholder="#000000" />
+        <TextField
+          value={color().toString('hex').toUpperCase()}
+          onInput={onInputColorChange}
+          placeholder="#000000"
+        />
       </TextFieldRoot>
     </div>
   );
@@ -145,7 +168,7 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
       {...rest}
     >
       <For each={colors()}>
-        {color => (
+        {(color) => (
           <button
             type="button"
             class={cn(
@@ -172,7 +195,14 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
           style={{ 'background-color': getIsNotInSwatch(local.value) ? local.value : '' }}
           aria-label={t('color-picker.select-a-color')}
         >
-          <div class="i-tabler-plus size-4" style={{ color: getIsNotInSwatch(local.value) ? getContrastTextColor(local.value ?? '') : undefined }} />
+          <div
+            class="i-tabler-plus size-4"
+            style={{
+              color: getIsNotInSwatch(local.value)
+                ? getContrastTextColor(local.value ?? '')
+                : undefined,
+            }}
+          />
         </PopoverTrigger>
         <PopoverContent closable>
           <p class="text-sm font-medium mb-4">{t('color-picker.select-a-color')}</p>
@@ -182,12 +212,16 @@ export function ColorSwatchPicker(props: ColorSwatchPickerProps) {
       </Popover>
 
       <Tooltip>
-        <TooltipContent>
-          {t('color-picker.random-color')}
-        </TooltipContent>
+        <TooltipContent>{t('color-picker.random-color')}</TooltipContent>
 
         <TooltipTrigger>
-          <Button variant="ghost" size="icon" onClick={handleRandomColor} aria-label={t('color-picker.random-color')} disabled={local.disabled}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRandomColor}
+            aria-label={t('color-picker.random-color')}
+            disabled={local.disabled}
+          >
             <div class="i-tabler-refresh size-5 text-muted-foreground" />
           </Button>
         </TooltipTrigger>

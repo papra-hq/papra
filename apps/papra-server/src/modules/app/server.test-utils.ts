@@ -18,24 +18,42 @@ import { registerEventHandlers } from './events/events.handlers';
 import { createEventServices } from './events/events.services';
 import { createGracefulShutdownService } from './graceful-shutdown/graceful-shutdown.services';
 
-export function createTestServerDependencies(overrides: Partial<GlobalDependencies> = {}): GlobalDependencies {
+export function createTestServerDependencies(
+  overrides: Partial<GlobalDependencies> = {},
+): GlobalDependencies {
   const config = overrides.config ?? overrideConfig();
   const shutdownServices = overrides.shutdownServices ?? createGracefulShutdownService();
   const db = overrides.db ?? setupDatabase({ ...config.database, shutdownServices }).db;
 
-  const documentsStorageService = overrides.documentsStorageService ?? createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+  const documentsStorageService =
+    overrides.documentsStorageService ??
+    createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
   const taskServices = overrides.taskServices ?? createInMemoryTaskServices();
   const trackingServices = overrides.trackingServices ?? createDummyTrackingServices();
   const eventServices = overrides.eventServices ?? createEventServices();
   const emailsServices = overrides.emailsServices ?? createEmailsServices({ config });
   const authEmailsServices = createAuthEmailsServices({ emailsServices });
   const auth = overrides.auth ?? getAuth({ db, config, authEmailsServices, eventServices }).auth;
-  const subscriptionsServices = overrides.subscriptionsServices ?? createSubscriptionsServices({ config });
-  const documentSearchServices = overrides.documentSearchServices ?? createDocumentSearchServices({ db, config });
-  const webhookTriggerServices = overrides.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) });
+  const subscriptionsServices =
+    overrides.subscriptionsServices ?? createSubscriptionsServices({ config });
+  const documentSearchServices =
+    overrides.documentSearchServices ?? createDocumentSearchServices({ db, config });
+  const webhookTriggerServices =
+    overrides.webhookTriggerServices ??
+    createWebhookTriggerServices({
+      webhooksConfig: config.webhooks,
+      webhookRepository: createWebhookRepository({ db }),
+    });
   const kvStore = overrides.kvStore ?? createKvStore({ driver: createInMemoryKvStoreDriver() });
 
-  registerEventHandlers({ eventServices, trackingServices, db, documentSearchServices, config, webhookTriggerServices });
+  registerEventHandlers({
+    eventServices,
+    trackingServices,
+    db,
+    documentSearchServices,
+    config,
+    webhookTriggerServices,
+  });
 
   return {
     config,

@@ -26,23 +26,21 @@ const PageThumbnail: Component<{
     <button
       type="button"
       onClick={props.onClick}
-      class={cn('p-2 rounded-xl transition-colors hover:bg-accent mx-auto block', { 'bg-muted': isCurrentPageSelected() })}
+      class={cn('p-2 rounded-xl transition-colors hover:bg-accent mx-auto block', {
+        'bg-muted': isCurrentPageSelected(),
+      })}
     >
       <div
         class="rounded bg-muted overflow-hidden"
         style={{ width: `${props.width}px`, height: `${props.height}px` }}
       >
-        {props.src && (
-          <img
-            src={props.src}
-            alt={props.altText}
-            class="block w-full h-full"
-          />
-        )}
+        {props.src && <img src={props.src} alt={props.altText} class="block w-full h-full" />}
       </div>
 
       <div
-        class={cn('text-center text-xs pt-2 transition-colors text-muted-foreground', { 'text-foreground font-medium': isCurrentPageSelected() })}
+        class={cn('text-center text-xs pt-2 transition-colors text-muted-foreground', {
+          'text-foreground font-medium': isCurrentPageSelected(),
+        })}
       >
         {props.pageLabel ?? props.pageNumber}
       </div>
@@ -71,22 +69,16 @@ export const ThumbnailsPanel: Component<ThumbnailsPanelProps> = (props) => {
   });
 
   return (
-    <div
-      class="px-2 relative h-full"
-      ref={containerRef}
-    >
+    <div class="px-2 relative h-full" ref={containerRef}>
       <PDFSlickThumbnails
         thumbsRef={props.thumbsRef}
         store={props.store}
-        class={cn(
-          'grid gap-1 mx-auto py-4 content-start',
-          {
-            'grid-cols-1': cols() <= 1,
-            'grid-cols-2': cols() === 2,
-            'grid-cols-3': cols() === 3,
-            'grid-cols-4': cols() > 3,
-          },
-        )}
+        class={cn('grid gap-1 mx-auto py-4 content-start', {
+          'grid-cols-1': cols() <= 1,
+          'grid-cols-2': cols() === 2,
+          'grid-cols-3': cols() === 3,
+          'grid-cols-4': cols() > 3,
+        })}
       >
         {({ pageNumber, width, height, src, pageLabel }) => (
           <PageThumbnail
@@ -97,7 +89,9 @@ export const ThumbnailsPanel: Component<ThumbnailsPanelProps> = (props) => {
             pageLabel={pageLabel}
             currentPage={props.store.pageNumber}
             onClick={() => props.store.pdfSlick?.gotoPage(pageNumber)}
-            altText={t('documents.pdf-viewer.thumbnails.page-alt', { page: pageLabel ?? pageNumber })}
+            altText={t('documents.pdf-viewer.thumbnails.page-alt', {
+              page: pageLabel ?? pageNumber,
+            })}
           />
         )}
       </PDFSlickThumbnails>

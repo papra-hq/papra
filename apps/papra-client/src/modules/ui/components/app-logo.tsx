@@ -4,7 +4,9 @@ import { Polymorphic } from '@kobalte/core/polymorphic';
 import { splitProps } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 
-export function AppLogo<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, { class?: string }>) {
+export function AppLogo<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, { class?: string }>,
+) {
   const [local, rest] = splitProps(props, ['class']);
 
   return (

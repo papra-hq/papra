@@ -9,7 +9,9 @@ import { registerSyncDocumentSearchEventHandlers } from './sync-document-search.
 function createTestSearchServices() {
   const methodsArgs = {
     searchDocuments: [] as Parameters<DocumentSearchServices['searchDocuments']>[0][],
-    getDocumentIdsMatchingQuery: [] as Parameters<DocumentSearchServices['getDocumentIdsMatchingQuery']>[0][],
+    getDocumentIdsMatchingQuery: [] as Parameters<
+      DocumentSearchServices['getDocumentIdsMatchingQuery']
+    >[0][],
     indexDocuments: [] as Parameters<DocumentSearchServices['indexDocuments']>[0][],
     updateDocuments: [] as Parameters<DocumentSearchServices['updateDocuments']>[0][],
     deleteDocuments: [] as Parameters<DocumentSearchServices['deleteDocuments']>[0][],
@@ -136,12 +138,16 @@ describe('sync-document-search event handlers', () => {
         searchDocuments: [],
         getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
-        updateDocuments: [{
-          updates: [{
-            documentId: 'doc-1',
-            document: changes,
-          }],
-        }],
+        updateDocuments: [
+          {
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: changes,
+              },
+            ],
+          },
+        ],
         deleteDocuments: [],
       });
     });
@@ -168,12 +174,16 @@ describe('sync-document-search event handlers', () => {
         searchDocuments: [],
         getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
-        updateDocuments: [{
-          updates: [{
-            documentId: 'doc-1',
-            document: { isDeleted: true },
-          }],
-        }],
+        updateDocuments: [
+          {
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: { isDeleted: true },
+              },
+            ],
+          },
+        ],
         deleteDocuments: [],
       });
     });
@@ -200,12 +210,16 @@ describe('sync-document-search event handlers', () => {
         searchDocuments: [],
         getDocumentIdsMatchingQuery: [],
         indexDocuments: [],
-        updateDocuments: [{
-          updates: [{
-            documentId: 'doc-1',
-            document: { isDeleted: false },
-          }],
-        }],
+        updateDocuments: [
+          {
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: { isDeleted: false },
+              },
+            ],
+          },
+        ],
         deleteDocuments: [],
       });
     });
@@ -315,22 +329,28 @@ describe('sync-document-search event handlers', () => {
         indexDocuments: [{ documents: [document] }],
         updateDocuments: [
           {
-            updates: [{
-              documentId: 'doc-1',
-              document: { name: 'Updated Name' },
-            }],
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: { name: 'Updated Name' },
+              },
+            ],
           },
           {
-            updates: [{
-              documentId: 'doc-1',
-              document: { isDeleted: true },
-            }],
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: { isDeleted: true },
+              },
+            ],
           },
           {
-            updates: [{
-              documentId: 'doc-1',
-              document: { isDeleted: false },
-            }],
+            updates: [
+              {
+                documentId: 'doc-1',
+                document: { isDeleted: false },
+              },
+            ],
           },
         ],
         deleteDocuments: [{ documentIds: ['doc-1'] }],

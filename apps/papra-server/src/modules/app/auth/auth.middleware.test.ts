@@ -11,7 +11,7 @@ describe('createRoleMiddleware', () => {
     admin: [PERMISSIONS.BO_ACCESS],
   };
 
-  const createTestServer = ({ loggedInUserId}: { loggedInUserId: string | null }) => {
+  const createTestServer = ({ loggedInUserId }: { loggedInUserId: string | null }) => {
     const app = new Hono<ServerInstanceGenerics>();
     registerErrorMiddleware({ app });
 
@@ -28,9 +28,7 @@ describe('createRoleMiddleware', () => {
     test('the request is allowed to proceed', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user@example.com' }],
-        userRoles: [
-          { userId: 'user-1', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'user-1', role: 'admin' }],
       });
 
       const { app } = createTestServer({ loggedInUserId: 'user-1' });
@@ -40,7 +38,7 @@ describe('createRoleMiddleware', () => {
       app.get(
         '/protected',
         requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS] }),
-        async c => c.json({ success: true }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });
@@ -63,7 +61,7 @@ describe('createRoleMiddleware', () => {
       app.get(
         '/protected',
         requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS] }),
-        async c => c.json({ success: true }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });
@@ -89,7 +87,7 @@ describe('createRoleMiddleware', () => {
       app.get(
         '/protected',
         requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS] }),
-        async c => c.json({ success: true }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });
@@ -112,19 +110,20 @@ describe('createRoleMiddleware', () => {
 
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user@example.com' }],
-        userRoles: [
-          { userId: 'user-1', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'user-1', role: 'admin' }],
       });
 
       const { app } = createTestServer({ loggedInUserId: 'user-1' });
 
-      const { requirePermissions } = createRoleMiddleware({ db, permissionsByRole: extendedPermissionsByRole });
+      const { requirePermissions } = createRoleMiddleware({
+        db,
+        permissionsByRole: extendedPermissionsByRole,
+      });
 
       app.get(
         '/protected',
         requirePermissions({ requiredPermissions: [PERMISSIONS.VIEW_USERS] }),
-        async c => c.json({ success: true }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });
@@ -142,19 +141,22 @@ describe('createRoleMiddleware', () => {
 
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user@example.com' }],
-        userRoles: [
-          { userId: 'user-1', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'user-1', role: 'admin' }],
       });
 
       const { app } = createTestServer({ loggedInUserId: 'user-1' });
 
-      const { requirePermissions } = createRoleMiddleware({ db, permissionsByRole: extendedPermissionsByRole });
+      const { requirePermissions } = createRoleMiddleware({
+        db,
+        permissionsByRole: extendedPermissionsByRole,
+      });
 
       app.get(
         '/protected',
-        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS] }),
-        async c => c.json({ success: true }),
+        requirePermissions({
+          requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS],
+        }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });
@@ -170,19 +172,22 @@ describe('createRoleMiddleware', () => {
 
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user@example.com' }],
-        userRoles: [
-          { userId: 'user-1', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'user-1', role: 'admin' }],
       });
 
       const { app } = createTestServer({ loggedInUserId: 'user-1' });
 
-      const { requirePermissions } = createRoleMiddleware({ db, permissionsByRole: extendedPermissionsByRole });
+      const { requirePermissions } = createRoleMiddleware({
+        db,
+        permissionsByRole: extendedPermissionsByRole,
+      });
 
       app.get(
         '/protected',
-        requirePermissions({ requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS] }),
-        async c => c.json({ success: true }),
+        requirePermissions({
+          requiredPermissions: [PERMISSIONS.BO_ACCESS, PERMISSIONS.VIEW_USERS],
+        }),
+        async (c) => c.json({ success: true }),
       );
 
       const response = await app.request('/protected', { method: 'GET' });

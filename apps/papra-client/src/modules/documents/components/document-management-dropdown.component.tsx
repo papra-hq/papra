@@ -6,7 +6,15 @@ import { Show } from 'solid-js';
 import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/modules/ui/components/dropdown-menu';
 import { getDocumentOpenWithApps } from '../document.models';
 import { useDeleteDocument, useDownloadDocument } from '../documents.composables';
 import { DocumentOpenWithDropdownItems } from './open-with.component';
@@ -19,16 +27,16 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
   const { openShareDialog } = useShareDocumentDialog();
   const { t } = useI18n();
 
-  const deleteDoc = () => deleteDocument({
-    documentId: props.document.id,
-    organizationId: props.document.organizationId,
-    documentName: props.document.name,
-  });
+  const deleteDoc = () =>
+    deleteDocument({
+      documentId: props.document.id,
+      organizationId: props.document.organizationId,
+      documentName: props.document.name,
+    });
 
   const getOpenWithApps = () => getDocumentOpenWithApps({ document: props.document });
 
   return (
-
     <DropdownMenu>
       <DropdownMenuTrigger
         as={(props: DropdownMenuSubTriggerProps) => (
@@ -61,10 +69,12 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() => downloadDocument({
-            documentId: props.document.id,
-            organizationId: props.document.organizationId,
-          })}
+          onClick={() =>
+            downloadDocument({
+              documentId: props.document.id,
+              organizationId: props.document.organizationId,
+            })
+          }
         >
           <div class="i-tabler-download size-4 mr-2" />
           <span>{t('documents.actions.download.title')}</span>
@@ -72,11 +82,13 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() => openShareDialog({
-            documentId: props.document.id,
-            organizationId: props.document.organizationId,
-            documentName: props.document.name,
-          })}
+          onClick={() =>
+            openShareDialog({
+              documentId: props.document.id,
+              organizationId: props.document.organizationId,
+              documentName: props.document.name,
+            })
+          }
         >
           <div class="i-tabler-share size-4 mr-2" />
           <span>{t('document-share-links.share-action')}</span>
@@ -84,25 +96,23 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() => openRenameDialog({
-            documentId: props.document.id,
-            organizationId: props.document.organizationId,
-            documentName: props.document.name,
-          })}
+          onClick={() =>
+            openRenameDialog({
+              documentId: props.document.id,
+              organizationId: props.document.organizationId,
+              documentName: props.document.name,
+            })
+          }
         >
           <div class="i-tabler-pencil size-4 mr-2" />
           <span>Rename document</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          class="cursor-pointer text-red"
-          onClick={() => deleteDoc()}
-        >
+        <DropdownMenuItem class="cursor-pointer text-red" onClick={() => deleteDoc()}>
           <div class="i-tabler-trash size-4 mr-2" />
           <span>Delete document</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-
   );
 };

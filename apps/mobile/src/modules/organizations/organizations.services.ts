@@ -10,7 +10,13 @@ export async function fetchOrganizations({ apiClient }: { apiClient: ApiClient }
   });
 }
 
-export async function createOrganization({ name, apiClient }: { name: string; apiClient: ApiClient }) {
+export async function createOrganization({
+  name,
+  apiClient,
+}: {
+  name: string;
+  apiClient: ApiClient;
+}) {
   return apiClient<{
     organization: {
       id: string;

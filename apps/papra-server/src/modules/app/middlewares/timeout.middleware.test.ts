@@ -13,22 +13,14 @@ describe('middlewares', () => {
       const app = new Hono<ServerInstanceGenerics>();
       registerErrorMiddleware({ app });
 
-      app.get(
-        '/should-timeout',
-        createTimeoutMiddleware({ config }),
-        async (context) => {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          return context.json({ status: 'ok' });
-        },
-      );
+      app.get('/should-timeout', createTimeoutMiddleware({ config }), async (context) => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return context.json({ status: 'ok' });
+      });
 
-      app.get(
-        '/should-not-timeout',
-        createTimeoutMiddleware({ config }),
-        async (context) => {
-          return context.json({ status: 'ok' });
-        },
-      );
+      app.get('/should-not-timeout', createTimeoutMiddleware({ config }), async (context) => {
+        return context.json({ status: 'ok' });
+      });
 
       const response1 = await app.request('/should-timeout', { method: 'GET' });
 
@@ -64,34 +56,22 @@ describe('middlewares', () => {
       registerErrorMiddleware({ app });
 
       // POST to matching route with longer timeout - should not timeout
-      app.post(
-        '/api/upload/:id',
-        createTimeoutMiddleware({ config }),
-        async (context) => {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          return context.json({ status: 'ok' });
-        },
-      );
+      app.post('/api/upload/:id', createTimeoutMiddleware({ config }), async (context) => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return context.json({ status: 'ok' });
+      });
 
       // GET to same route - should timeout with default
-      app.get(
-        '/api/upload/:id',
-        createTimeoutMiddleware({ config }),
-        async (context) => {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          return context.json({ status: 'ok' });
-        },
-      );
+      app.get('/api/upload/:id', createTimeoutMiddleware({ config }), async (context) => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return context.json({ status: 'ok' });
+      });
 
       // Different route - should timeout with default
-      app.post(
-        '/api/other',
-        createTimeoutMiddleware({ config }),
-        async (context) => {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          return context.json({ status: 'ok' });
-        },
-      );
+      app.post('/api/other', createTimeoutMiddleware({ config }), async (context) => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return context.json({ status: 'ok' });
+      });
 
       // POST to matching pattern should succeed
       const response1 = await app.request('/api/upload/123', { method: 'POST' });
@@ -128,18 +108,20 @@ describe('middlewares', () => {
 
       // Route that should have extended timeout
       app.post('/api/organizations/:orgId/documents', async (context) => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         return context.json({ status: 'upload ok' });
       });
 
       // Route that should use default timeout
       app.get('/api/other', async (context) => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         return context.json({ status: 'ok' });
       });
 
       // POST to upload route should succeed (extended timeout)
-      const response1 = await app.request('/api/organizations/org-123/documents', { method: 'POST' });
+      const response1 = await app.request('/api/organizations/org-123/documents', {
+        method: 'POST',
+      });
       expect(response1.status).to.eql(200);
       expect(await response1.json()).to.eql({ status: 'upload ok' });
 

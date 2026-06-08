@@ -1,40 +1,38 @@
 {
   "name": "@papra/lecture",
-  "type": "module",
   "version": "0.5.0",
   "description": "A simple library to extract text from files",
-  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "keywords": [
+    "content",
+    "document",
+    "extract",
+    "file",
+    "lecture",
+    "text"
+  ],
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
   "license": "MIT",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra",
     "directory": "packages/lecture"
   },
-  "bugs": {
-    "url": "https://github.com/papra-hq/papra/issues"
-  },
-  "keywords": [
-    "file",
-    "text",
-    "extract",
-    "lecture",
-    "document",
-    "content"
+  "files": [
+    "dist"
   ],
+  "type": "module",
   "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "generate-fixtures": "vitest --update",
@@ -56,10 +54,8 @@
     "unpdf": "^1.4.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "eslint": "catalog:",
     "mime": "^4.0.6",
     "tsdown": "catalog:",
     "typescript": "catalog:",

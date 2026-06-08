@@ -22,7 +22,10 @@ export function nullifyPositiveInfinity(value: number): number | null {
   return value === Number.POSITIVE_INFINITY ? null : value;
 }
 
-export function uniqBy<T, K extends string | number | symbol>(array: T[], keyGetter: (item: T) => K): T[] {
+export function uniqBy<T, K extends string | number | symbol>(
+  array: T[],
+  keyGetter: (item: T) => K,
+): T[] {
   const seen: Record<string | number | symbol, boolean> = {};
   const result: T[] = [];
 
@@ -37,4 +40,5 @@ export function uniqBy<T, K extends string | number | symbol>(array: T[], keyGet
   return result;
 }
 
-export const uniq = <T extends string | number | symbol>(array: T[]): T[] => uniqBy(array, item => item);
+export const uniq = <T extends string | number | symbol>(array: T[]): T[] =>
+  uniqBy(array, (item) => item);

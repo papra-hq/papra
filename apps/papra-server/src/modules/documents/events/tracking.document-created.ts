@@ -14,7 +14,10 @@ export function registerTrackDocumentCreatedHandler({
     handlerName: 'track-document-created',
     async handler({ document }) {
       if (isDefined(document.createdBy)) {
-        trackingServices.captureUserEvent({ userId: document.createdBy, event: 'Document created' });
+        trackingServices.captureUserEvent({
+          userId: document.createdBy,
+          event: 'Document created',
+        });
       }
     },
   });

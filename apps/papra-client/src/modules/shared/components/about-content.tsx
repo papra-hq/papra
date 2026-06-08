@@ -69,7 +69,8 @@ export const AboutContent: Component = () => {
     },
   ];
 
-  const getSocials = () => socials.map(social => ({ ...social, label: t(`socials.${social.id}`) }));
+  const getSocials = () =>
+    socials.map((social) => ({ ...social, label: t(`socials.${social.id}`) }));
 
   return (
     <div class="flex flex-col gap-6">
@@ -81,18 +82,12 @@ export const AboutContent: Component = () => {
 
       <div>
         <For each={getVersionDetails()}>
-          {detail => (
+          {(detail) => (
             <div class="flex items-center gap-2 py-1">
               <div class={`${detail.icon} text-muted-foreground size-5`} />
 
-              <span class="font-medium text-muted-foreground">
-                {detail.label}
-                :
-              </span>
-              <Show
-                when={detail.url}
-                fallback={<span class="font-semibold">{detail.value}</span>}
-              >
+              <span class="font-medium text-muted-foreground">{detail.label}:</span>
+              <Show when={detail.url} fallback={<span class="font-semibold">{detail.value}</span>}>
                 <a
                   href={detail.url!}
                   target="_blank"
@@ -111,7 +106,7 @@ export const AboutContent: Component = () => {
         <h3 class="text-lg font-semibold">{t('about.links.title')}</h3>
         <div class="flex flex-col gap-3">
           <For each={getLinks()}>
-            {link => (
+            {(link) => (
               <a
                 href={link.href}
                 target="_blank"
@@ -135,11 +130,9 @@ export const AboutContent: Component = () => {
 
         <div class="flex flex-wrap gap-4">
           <For each={getSocials()}>
-            {social => (
+            {(social) => (
               <Tooltip>
-                <TooltipContent>
-                  {social.label}
-                </TooltipContent>
+                <TooltipContent>{social.label}</TooltipContent>
                 <TooltipTrigger>
                   <a
                     href={social.url}

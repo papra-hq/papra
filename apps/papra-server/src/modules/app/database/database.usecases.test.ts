@@ -4,7 +4,8 @@ import { setupDatabase } from './database';
 import { createInMemoryDatabase } from './database.test-utils';
 import { createBatchedIterator, createIterator, getRuntimeTableColumns } from './database.usecases';
 
-const createUsers = ({ count }: { count: number }) => Array.from({ length: count }, (_, i) => ({ id: `usr_${i}`, email: `user-${i}@papra.dev` }));
+const createUsers = ({ count }: { count: number }) =>
+  Array.from({ length: count }, (_, i) => ({ id: `usr_${i}`, email: `user-${i}@papra.dev` }));
 
 describe('database usecases', () => {
   describe('createIterator', () => {
@@ -22,7 +23,18 @@ describe('database usecases', () => {
       }
 
       expect(results.length).to.eql(10);
-      expect(results).to.eql(['usr_0', 'usr_1', 'usr_2', 'usr_3', 'usr_4', 'usr_5', 'usr_6', 'usr_7', 'usr_8', 'usr_9']);
+      expect(results).to.eql([
+        'usr_0',
+        'usr_1',
+        'usr_2',
+        'usr_3',
+        'usr_4',
+        'usr_5',
+        'usr_6',
+        'usr_7',
+        'usr_8',
+        'usr_9',
+      ]);
     });
 
     test('it works with Array.fromAsync', async () => {
@@ -52,7 +64,18 @@ describe('database usecases', () => {
       }
 
       expect(results.length).to.eql(10);
-      expect(results).to.eql(['usr_0', 'usr_1', 'usr_2', 'usr_3', 'usr_4', 'usr_5', 'usr_6', 'usr_7', 'usr_8', 'usr_9']);
+      expect(results).to.eql([
+        'usr_0',
+        'usr_1',
+        'usr_2',
+        'usr_3',
+        'usr_4',
+        'usr_5',
+        'usr_6',
+        'usr_7',
+        'usr_8',
+        'usr_9',
+      ]);
     });
   });
 

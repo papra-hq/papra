@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import process from 'node:process';
@@ -23,13 +24,13 @@ type FileMetadata = {
 
 function getNextFixtureNumber(): string {
   const files = fs.readdirSync(DOCUMENTS_DIR);
-  const fixtureFiles = files.filter(file => /^\d{3}\.demo-document\.ts$/.test(file));
+  const fixtureFiles = files.filter((file) => /^\d{3}\.demo-document\.ts$/.test(file));
 
   if (fixtureFiles.length === 0) {
     return '001';
   }
 
-  const numbers = fixtureFiles.map(file => Number.parseInt(file.substring(0, 3), 10));
+  const numbers = fixtureFiles.map((file) => Number.parseInt(file.substring(0, 3), 10));
   const maxNumber = Math.max(...numbers);
   const nextNumber = maxNumber + 1;
 
@@ -63,7 +64,7 @@ function getFilesToProcess(): FileMetadata[] {
   const files = fs.readdirSync(GENERATE_DIR);
 
   return files
-    .filter(filename => filename !== '.gitkeep')
+    .filter((filename) => filename !== '.gitkeep')
     .map((filename) => {
       const filePath = path.join(GENERATE_DIR, filename);
       const stats = fs.statSync(filePath);
@@ -80,7 +81,13 @@ function getFilesToProcess(): FileMetadata[] {
     });
 }
 
-async function extractTextFromFile({ filePath, mimeType }: { filePath: string; mimeType: string }): Promise<string> {
+async function extractTextFromFile({
+  filePath,
+  mimeType,
+}: {
+  filePath: string;
+  mimeType: string;
+}): Promise<string> {
   const fileBuffer = fs.readFileSync(filePath);
   const arrayBuffer = fileBuffer.buffer.slice(
     fileBuffer.byteOffset,
@@ -97,15 +104,17 @@ async function extractTextFromFile({ filePath, mimeType }: { filePath: string; m
   }
 
   // Remove duplicated words, lines breaks, punctuations, and extra spaces
-  const simplifiedContentWords = [...new Set(
-    result.textContent
-      ?.replace(/[\r\n]+/g, ' ') // Normalize line breaks
-      .replace(/[^\w\s]|_/g, ' ') // Remove punctuations
-      .replace(/\s+/g, ' ') // Remove extra spaces
-      .trim()
-      .toLowerCase()
-      .split(' '),
-  )];
+  const simplifiedContentWords = [
+    ...new Set(
+      result.textContent
+        ?.replace(/[\r\n]+/g, ' ') // Normalize line breaks
+        .replace(/[^\w\s]|_/g, ' ') // Remove punctuations
+        .replace(/\s+/g, ' ') // Remove extra spaces
+        .trim()
+        .toLowerCase()
+        .split(' '),
+    ),
+  ];
 
   // multi-lined content
   const wordPerLine = 10;
@@ -118,7 +127,15 @@ async function extractTextFromFile({ filePath, mimeType }: { filePath: string; m
   return simplifiedContent;
 }
 
-function generateFixtureFile({ fixtureNumber, metadata, content }: { fixtureNumber: string; metadata: FileMetadata; content: string }): string {
+function generateFixtureFile({
+  fixtureNumber,
+  metadata,
+  content,
+}: {
+  fixtureNumber: string;
+  metadata: FileMetadata;
+  content: string;
+}): string {
   const nameWithoutExt = path.basename(metadata.filename, metadata.extension);
 
   return `import type { DemoDocumentFixture } from '../fixtures.types';
@@ -140,12 +157,21 @@ export default demoDocumentFixture;
 `;
 }
 
-async function processFile({ file, fixtureNumber }: { file: FileMetadata; fixtureNumber: string }): Promise<void> {
+async function processFile({
+  file,
+  fixtureNumber,
+}: {
+  file: FileMetadata;
+  fixtureNumber: string;
+}): Promise<void> {
   console.log(`\nProcessing: ${file.filename}`);
 
   const content = await extractTextFromFile({ filePath: file.path, mimeType: file.mimeType });
 
-  const fileDestPath = path.join(DOCUMENTS_DIR, `${fixtureNumber}.demo-document.file${file.extension}`);
+  const fileDestPath = path.join(
+    DOCUMENTS_DIR,
+    `${fixtureNumber}.demo-document.file${file.extension}`,
+  );
   fs.copyFileSync(file.path, fileDestPath);
 
   const fixtureContent = generateFixtureFile({ fixtureNumber, metadata: file, content });
@@ -174,7 +200,7 @@ async function main() {
   }
 
   console.log(`Found ${files.length} file(s) to process:\n`);
-  files.forEach(file => console.log(`  - ${file.filename}`));
+  files.forEach((file) => console.log(`  - ${file.filename}`));
 
   // Process each file
   let currentFixtureNumber = Number.parseInt(getNextFixtureNumber(), 10);

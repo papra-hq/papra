@@ -5,10 +5,10 @@ import { isDefined, isNil } from '../../shared/utils';
 
 function getOverrideUserId(context: Context): string | undefined {
   if (
-    !isNil(context.env)
-    && typeof context.env === 'object'
-    && 'loggedInUserId' in context.env
-    && typeof context.env.loggedInUserId === 'string'
+    !isNil(context.env) &&
+    typeof context.env === 'object' &&
+    'loggedInUserId' in context.env &&
+    typeof context.env.loggedInUserId === 'string'
   ) {
     return context.env.loggedInUserId;
   }
@@ -27,7 +27,7 @@ export function registerAuthRoutes({ app, auth, config }: RouteDefinitionContext
       }
       return next();
     },
-    async context => auth.handler(context.req.raw),
+    async (context) => auth.handler(context.req.raw),
   );
 
   app.use('*', async (context: Context, next) => {

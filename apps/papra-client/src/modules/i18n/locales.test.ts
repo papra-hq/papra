@@ -6,7 +6,10 @@ import { locales as registeredLocales } from './i18n.constants';
 
 const rawLocales = import.meta.glob('../../locales/*.ts', { eager: true, import: 'translations' });
 const locales = Object.fromEntries(
-  Object.entries(rawLocales).map(([key, value]: [string, any]) => [key.replace('../../locales/', '').replace('.dictionary.ts', ''), value]),
+  Object.entries(rawLocales).map(([key, value]: [string, any]) => [
+    key.replace('../../locales/', '').replace('.dictionary.ts', ''),
+    value,
+  ]),
 );
 
 const { en: defaultLocal } = locales;
@@ -16,7 +19,7 @@ const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '.
 describe('locales', () => {
   test('all registered locales must have a translation file', () => {
     const availableLocales = Object.keys(locales).toSorted();
-    const registeredLocalesKeys = registeredLocales.map(x => x.key).toSorted();
+    const registeredLocalesKeys = registeredLocales.map((x) => x.key).toSorted();
 
     expect(registeredLocalesKeys).to.eql(availableLocales);
   });
@@ -24,16 +27,13 @@ describe('locales', () => {
   for (const [locale, translations] of Object.entries(locales)) {
     describe(locale, () => {
       test(`locale ${locale} must not have extra keys compared to default`, () => {
-        const extraKeys = Object
-          .keys(translations)
-          .filter(key => !(key in defaultLocal));
+        const extraKeys = Object.keys(translations).filter((key) => !(key in defaultLocal));
 
         expect(extraKeys).to.eql([], `Extra keys found in ${locale}`);
       });
 
       test(`all translations in ${locale} must be strings`, () => {
-        const nonStringTranslations = Object
-          .entries(translations)
+        const nonStringTranslations = Object.entries(translations)
           .filter(([, value]) => typeof value !== 'string')
           .map(([key]) => key);
 
@@ -43,10 +43,12 @@ describe('locales', () => {
   }
 
   test('all keys in en dictionary must be used in the app (dynamic keys are manually excluded)', async () => {
-    const srcFileNames = await Array.fromAsync(glob('src/**/*.{ts,tsx}', {
-      cwd: packageRoot,
-      exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts', 'src/locales/*.ts'],
-    }));
+    const srcFileNames = await Array.fromAsync(
+      glob('src/**/*.{ts,tsx}', {
+        cwd: packageRoot,
+        exclude: ['src/**/*.test.*', 'src/modules/i18n/locales.types.ts', 'src/locales/*.ts'],
+      }),
+    );
 
     // Exclude keys that are used in dynamic contexts
     const dynamicKeysMatchers = [
@@ -63,9 +65,9 @@ describe('locales', () => {
     ];
 
     const keys = new Set(
-      Object
-        .keys(defaultLocal)
-        .filter(key => !dynamicKeysMatchers.some(matcher => matcher.test(key))),
+      Object.keys(defaultLocal).filter(
+        (key) => !dynamicKeysMatchers.some((matcher) => matcher.test(key)),
+      ),
     );
 
     for (const srcFileName of srcFileNames) {
@@ -82,6 +84,9 @@ describe('locales', () => {
       }
     }
 
-    expect([...keys]).to.eql([], 'Unused keys found in en dictionary, please remove them (or add them to the dynamic keys matchers in locales.test.ts if they are used in dynamic contexts)');
+    expect([...keys]).to.eql(
+      [],
+      'Unused keys found in en dictionary, please remove them (or add them to the dynamic keys matchers in locales.test.ts if they are used in dynamic contexts)',
+    );
   });
 });

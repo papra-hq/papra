@@ -51,21 +51,26 @@ export const DeletedOrganizationsPage: Component = () => {
 
   return (
     <div class="p-6 mt-4 pb-32 max-w-5xl mx-auto">
-      <Button variant="ghost" as={A} href="/organizations" class="text-muted-foreground gap-2 ml--4">
+      <Button
+        variant="ghost"
+        as={A}
+        href="/organizations"
+        class="text-muted-foreground gap-2 ml--4"
+      >
         <div class="i-tabler-arrow-left size-5" />
         {t('organizations.list.back')}
       </Button>
 
-      <h2 class="text-xl font-bold">
-        {t('organizations.list.deleted.title')}
-      </h2>
+      <h2 class="text-xl font-bold">{t('organizations.list.deleted.title')}</h2>
       <p class="text-muted-foreground mb-6">
         {t('organizations.list.deleted.description', { days: purgeDaysDelay })}
       </p>
 
       <Show
-        when={deletedOrgsQuery.data?.organizations && deletedOrgsQuery.data.organizations.length > 0}
-        fallback={(
+        when={
+          deletedOrgsQuery.data?.organizations && deletedOrgsQuery.data.organizations.length > 0
+        }
+        fallback={
           <Alert variant="muted" class="my-4 flex items-center gap-4">
             <div class="i-tabler-info-circle size-10 text-primary flex-shrink-0 hidden sm:block" />
             <div>
@@ -73,28 +78,34 @@ export const DeletedOrganizationsPage: Component = () => {
               <AlertDescription>
                 {t('organizations.list.deleted.empty-description', { days: purgeDaysDelay })}
               </AlertDescription>
-              <Button as={A} href="/organizations" variant="outline" class="mt-2 hover:(bg-primary text-primary-foreground) transition-colors" size="sm">
+              <Button
+                as={A}
+                href="/organizations"
+                variant="outline"
+                class="mt-2 hover:(bg-primary text-primary-foreground) transition-colors"
+                size="sm"
+              >
                 <div class="i-tabler-arrow-left size-4 mr-2" />
                 {t('organizations.list.back')}
               </Button>
             </div>
           </Alert>
-        )}
+        }
       >
         <div class="space-y-3">
           <For each={deletedOrgsQuery.data?.organizations}>
             {(organization) => {
               const daysUntilPurge = organization.scheduledPurgeAt
-                ? Math.ceil((organization.scheduledPurgeAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                ? Math.ceil(
+                    (organization.scheduledPurgeAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+                  )
                 : purgeDaysDelay;
 
               return (
                 <div class="border rounded-lg p-4 bg-card">
                   <div class="flex items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
-                      <h3 class="font-semibold text-base truncate">
-                        {organization.name}
-                      </h3>
+                      <h3 class="font-semibold text-base truncate">{organization.name}</h3>
                       <div class="mt-2 text-sm text-muted-foreground flex flex-col sm:flex-row sm:gap-2 flex-wrap">
                         <Show when={organization.deletedAt}>
                           <div class="flex-shrink-0">
@@ -107,8 +118,7 @@ export const DeletedOrganizationsPage: Component = () => {
                           <div class="text-red-500 flex-shrink-0">
                             {t('organizations.list.deleted.purge-at', {
                               date: formatDate(organization.scheduledPurgeAt!),
-                            })}
-                            {' '}
+                            })}{' '}
                             {t('organizations.list.deleted.days-remaining', { daysUntilPurge })}
                           </div>
                         </Show>

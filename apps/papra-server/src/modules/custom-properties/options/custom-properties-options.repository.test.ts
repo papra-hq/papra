@@ -13,10 +13,7 @@ async function getOptions({ db, withId = true }: { db: Database; withId?: boolea
 
   return db
     .select({
-      ...pick(
-        getTableColumns(customPropertySelectOptionsTable),
-        withId ? ['id', ...props] : props,
-      ),
+      ...pick(getTableColumns(customPropertySelectOptionsTable), withId ? ['id', ...props] : props),
     })
     .from(customPropertySelectOptionsTable);
 }
@@ -26,13 +23,15 @@ describe('custom-properties-options repository', () => {
     test('creates new options when none exist', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
 
@@ -43,24 +42,34 @@ describe('custom-properties-options repository', () => {
         options: [{ name: 'Open' }, { name: 'Closed' }],
       });
 
-      expect(
-        await getOptions({ db, withId: false }),
-      ).to.eql([
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Open', key: 'open', displayOrder: 0 },
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Closed', key: 'closed', displayOrder: 1 },
+      expect(await getOptions({ db, withId: false })).to.eql([
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Open',
+          key: 'open',
+          displayOrder: 0,
+        },
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Closed',
+          key: 'closed',
+          displayOrder: 1,
+        },
       ]);
     });
 
     test('assigns displayOrder based on array position', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
 
@@ -69,32 +78,49 @@ describe('custom-properties-options repository', () => {
         options: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
       });
 
-      expect(
-        await getOptions({ db, withId: false }),
-      ).to.eql([
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'A', key: 'a', displayOrder: 0 },
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'B', key: 'b', displayOrder: 1 },
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'C', key: 'c', displayOrder: 2 },
+      expect(await getOptions({ db, withId: false })).to.eql([
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'A',
+          key: 'a',
+          displayOrder: 0,
+        },
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'B',
+          key: 'b',
+          displayOrder: 1,
+        },
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'C',
+          key: 'c',
+          displayOrder: 2,
+        },
       ]);
     });
 
     test('updates existing options by ID', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
-        customPropertySelectOptions: [{
-          id: 'cso_111111111111111111111111',
-          propertyDefinitionId: 'cpd_111111111111111111111111',
-          name: 'Draft',
-          key: 'draft',
-          displayOrder: 0,
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
+        customPropertySelectOptions: [
+          {
+            id: 'cso_111111111111111111111111',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'Draft',
+            key: 'draft',
+            displayOrder: 0,
+          },
+        ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
 
@@ -103,26 +129,44 @@ describe('custom-properties-options repository', () => {
         options: [{ id: 'cso_111111111111111111111111', name: 'Published' }],
       });
 
-      expect(
-        await getOptions({ db }),
-      ).to.eql([
-        { id: 'cso_111111111111111111111111', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Published', key: 'published', displayOrder: 0 },
+      expect(await getOptions({ db })).to.eql([
+        {
+          id: 'cso_111111111111111111111111',
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Published',
+          key: 'published',
+          displayOrder: 0,
+        },
       ]);
     });
 
     test('deletes options omitted from the incoming list', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
         customPropertySelectOptions: [
-          { id: 'cso_111111111111111111111111', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Keep', key: 'keep', displayOrder: 0 },
-          { id: 'cso_222222222222222222222222', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Remove', key: 'remove', displayOrder: 1 },
+          {
+            id: 'cso_111111111111111111111111',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'Keep',
+            key: 'keep',
+            displayOrder: 0,
+          },
+          {
+            id: 'cso_222222222222222222222222',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'Remove',
+            key: 'remove',
+            displayOrder: 1,
+          },
         ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
@@ -132,26 +176,43 @@ describe('custom-properties-options repository', () => {
         options: [{ id: 'cso_111111111111111111111111', name: 'Keep' }],
       });
 
-      expect(
-        await getOptions({ db, withId: false }),
-      ).to.eql([
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Keep', key: 'keep', displayOrder: 0 },
+      expect(await getOptions({ db, withId: false })).to.eql([
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Keep',
+          key: 'keep',
+          displayOrder: 0,
+        },
       ]);
     });
 
     test('handles mixed create, update, and delete in one call', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
         customPropertySelectOptions: [
-          { id: 'cso_111111111111111111111111', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Old', key: 'old', displayOrder: 0 },
-          { id: 'cso_222222222222222222222222', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'ToDelete', key: 'todelete', displayOrder: 1 },
+          {
+            id: 'cso_111111111111111111111111',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'Old',
+            key: 'old',
+            displayOrder: 0,
+          },
+          {
+            id: 'cso_222222222222222222222222',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'ToDelete',
+            key: 'todelete',
+            displayOrder: 1,
+          },
         ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
@@ -161,24 +222,34 @@ describe('custom-properties-options repository', () => {
         options: [{ id: 'cso_111111111111111111111111', name: 'Updated' }, { name: 'New' }],
       });
 
-      expect(
-        await getOptions({ db, withId: false }),
-      ).to.eql([
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Updated', key: 'updated', displayOrder: 0 },
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'New', key: 'new', displayOrder: 1 },
+      expect(await getOptions({ db, withId: false })).to.eql([
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Updated',
+          key: 'updated',
+          displayOrder: 0,
+        },
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'New',
+          key: 'new',
+          displayOrder: 1,
+        },
       ]);
     });
 
     test('is a no-op when the incoming list is empty and there are no existing options', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
 
@@ -193,16 +264,30 @@ describe('custom-properties-options repository', () => {
     test('deletes all options when an empty list is provided', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
         customPropertySelectOptions: [
-          { id: 'cso_111111111111111111111111', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'A', key: 'a', displayOrder: 0 },
-          { id: 'cso_222222222222222222222222', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'B', key: 'b', displayOrder: 1 },
+          {
+            id: 'cso_111111111111111111111111',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'A',
+            key: 'a',
+            displayOrder: 0,
+          },
+          {
+            id: 'cso_222222222222222222222222',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'B',
+            key: 'b',
+            displayOrder: 1,
+          },
         ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
@@ -218,13 +303,15 @@ describe('custom-properties-options repository', () => {
     test('throws when an unknown option ID is provided', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
 
@@ -239,15 +326,23 @@ describe('custom-properties-options repository', () => {
     test('does not wipe existing options when a foreign ID is provided', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_111111111111111111111111', name: 'Test Org' }],
-        customPropertyDefinitions: [{
-          id: 'cpd_111111111111111111111111',
-          organizationId: 'org_111111111111111111111111',
-          name: 'Status',
-          type: CUSTOM_PROPERTY_TYPES.SELECT,
-          key: 'status',
-        }],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_111111111111111111111111',
+            organizationId: 'org_111111111111111111111111',
+            name: 'Status',
+            type: CUSTOM_PROPERTY_TYPES.SELECT,
+            key: 'status',
+          },
+        ],
         customPropertySelectOptions: [
-          { id: 'cso_111111111111111111111111', propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Safe', key: 'safe', displayOrder: 0 },
+          {
+            id: 'cso_111111111111111111111111',
+            propertyDefinitionId: 'cpd_111111111111111111111111',
+            name: 'Safe',
+            key: 'safe',
+            displayOrder: 0,
+          },
         ],
       });
       const customPropertiesOptionsRepository = createCustomPropertiesOptionsRepository({ db });
@@ -259,10 +354,13 @@ describe('custom-properties-options repository', () => {
         }),
       ).rejects.toThrow(createCustomPropertySelectOptionUnknownIdError());
 
-      expect(
-        await getOptions({ db, withId: false }),
-      ).to.eql([
-        { propertyDefinitionId: 'cpd_111111111111111111111111', name: 'Safe', key: 'safe', displayOrder: 0 },
+      expect(await getOptions({ db, withId: false })).to.eql([
+        {
+          propertyDefinitionId: 'cpd_111111111111111111111111',
+          name: 'Safe',
+          key: 'safe',
+          displayOrder: 0,
+        },
       ]);
     });
   });

@@ -9,12 +9,15 @@ export const loggerEmailDriverFactory = defineEmailDriverFactory(({ config, logg
   return {
     name: LOGGER_EMAIL_DRIVER_NAME,
     sendEmail: async ({ to, subject, html, from }) => {
-      logger[level]({
-        to,
-        subject,
-        from: from ?? fromEmail,
-        html,
-      }, 'Sending email');
+      logger[level](
+        {
+          to,
+          subject,
+          from: from ?? fromEmail,
+          html,
+        },
+        'Sending email',
+      );
     },
   };
 });

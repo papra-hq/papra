@@ -53,7 +53,15 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
+          createDocument: createDocumentCreationUsecase({
+            db,
+            config,
+            logger,
+            documentsStorageService,
+            generateDocumentId,
+            taskServices,
+            eventServices: createTestEventServices(),
+          }),
         });
 
         // Check database
@@ -87,37 +95,35 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                documentId: 'doc_1',
-                mimeType: 'text/markdown',
-                organizationId: 'org_111111111111111111111111',
-                userId: undefined,
-              },
-              level: 'info',
-              message: 'Document created',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              documentId: 'doc_1',
+              mimeType: 'text/markdown',
+              organizationId: 'org_111111111111111111111111',
+              userId: undefined,
             },
-            {
-              data: {
-                documentId: 'doc_1',
-              },
-              level: 'info',
-              message: 'Document imported from ingestion folder',
-              namespace: 'test',
+            level: 'info',
+            message: 'Document created',
+            namespace: 'test',
+          },
+          {
+            data: {
+              documentId: 'doc_1',
             },
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'info',
-              message: 'File moved after ingestion',
-              namespace: 'test',
+            level: 'info',
+            message: 'Document imported from ingestion folder',
+            namespace: 'test',
+          },
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-          ],
-        );
+            level: 'info',
+            message: 'File moved after ingestion',
+            namespace: 'test',
+          },
+        ]);
       });
 
       test('if the post processing strategy is set to "delete", the file is ingested and deleted', async () => {
@@ -156,7 +162,15 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
+          createDocument: createDocumentCreationUsecase({
+            db,
+            config,
+            logger,
+            documentsStorageService,
+            generateDocumentId,
+            taskServices,
+            eventServices: createTestEventServices(),
+          }),
         });
 
         // Check database
@@ -190,37 +204,35 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                documentId: 'doc_1',
-                mimeType: 'text/markdown',
-                organizationId: 'org_111111111111111111111111',
-                userId: undefined,
-              },
-              level: 'info',
-              message: 'Document created',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              documentId: 'doc_1',
+              mimeType: 'text/markdown',
+              organizationId: 'org_111111111111111111111111',
+              userId: undefined,
             },
-            {
-              data: {
-                documentId: 'doc_1',
-              },
-              level: 'info',
-              message: 'Document imported from ingestion folder',
-              namespace: 'test',
+            level: 'info',
+            message: 'Document created',
+            namespace: 'test',
+          },
+          {
+            data: {
+              documentId: 'doc_1',
             },
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'info',
-              message: 'File deleted after ingestion',
-              namespace: 'test',
+            level: 'info',
+            message: 'Document imported from ingestion folder',
+            namespace: 'test',
+          },
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-          ],
-        );
+            level: 'info',
+            message: 'File deleted after ingestion',
+            namespace: 'test',
+          },
+        ]);
       });
 
       test('if the post processing strategy is not implemented, an error is thrown after the file has been ingested', async () => {
@@ -253,17 +265,29 @@ describe('ingestion-folders usecases', () => {
           '/apps/papra/ingestion/org_111111111111111111111111/hello.md': 'lorem ipsum',
         });
 
-        const [, error] = await safely(processFile({
-          filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-          ingestionFolderPath: '/apps/papra/ingestion',
-          config,
-          organizationsRepository,
-          logger,
-          fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
-        }));
+        const [, error] = await safely(
+          processFile({
+            filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
+            ingestionFolderPath: '/apps/papra/ingestion',
+            config,
+            organizationsRepository,
+            logger,
+            fs,
+            createDocument: createDocumentCreationUsecase({
+              db,
+              config,
+              logger,
+              documentsStorageService,
+              generateDocumentId,
+              taskServices,
+              eventServices: createTestEventServices(),
+            }),
+          }),
+        );
 
-        expect(error).to.deep.equal(createInvalidPostProcessingStrategyError({ strategy: 'unknown' }));
+        expect(error).to.deep.equal(
+          createInvalidPostProcessingStrategyError({ strategy: 'unknown' }),
+        );
 
         // Check database
         const documents = await db.select().from(documentsTable);
@@ -338,23 +362,29 @@ describe('ingestion-folders usecases', () => {
               throw new Error('File not found');
             },
           },
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
+          createDocument: createDocumentCreationUsecase({
+            db,
+            config,
+            logger,
+            documentsStorageService,
+            generateDocumentId,
+            taskServices,
+            eventServices: createTestEventServices(),
+          }),
         });
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                error: new Error('File not found'),
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'error',
-              message: 'Error reading file',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              error: new Error('File not found'),
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-          ],
-        );
+            level: 'error',
+            message: 'Error reading file',
+            namespace: 'test',
+          },
+        ]);
 
         // Check database
         const documents = await db.select().from(documentsTable);
@@ -415,26 +445,24 @@ describe('ingestion-folders usecases', () => {
         expect(documents).to.have.length(0);
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/done/hello.md',
-              },
-              level: 'debug',
-              message: 'File from post-processing folder, skipping',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/done/hello.md',
             },
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/error/world.md',
-              },
-              level: 'debug',
-              message: 'File from error folder, skipping',
-              namespace: 'test',
+            level: 'debug',
+            message: 'File from post-processing folder, skipping',
+            namespace: 'test',
+          },
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/error/world.md',
             },
-          ],
-        );
+            level: 'debug',
+            message: 'File from error folder, skipping',
+            namespace: 'test',
+          },
+        ]);
       });
 
       test('when the document already exists in the database, it is not ingested, but the post-processing is still executed', async () => {
@@ -442,11 +470,22 @@ describe('ingestion-folders usecases', () => {
         const { logger, getLogs } = createTestLogger();
 
         // This is the sha256 hash of the "lorem ipsum" text
-        const loremIpsumSha256Hash = '5e2bf57d3f40c4b6df69daf1936cb766f832374b4fc0259a7cbff06e2f70f269';
+        const loremIpsumSha256Hash =
+          '5e2bf57d3f40c4b6df69daf1936cb766f832374b4fc0259a7cbff06e2f70f269';
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org_111111111111111111111111', name: 'Org 1' }],
-          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown' }],
+          documents: [
+            {
+              id: 'doc_1',
+              organizationId: 'org_111111111111111111111111',
+              name: 'hello.md',
+              originalName: 'hello.md',
+              originalStorageKey: 'hello.md',
+              originalSha256Hash: loremIpsumSha256Hash,
+              mimeType: 'text/markdown',
+            },
+          ],
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -478,7 +517,15 @@ describe('ingestion-folders usecases', () => {
           organizationsRepository,
           logger,
           fs,
-          createDocument: createDocumentCreationUsecase({ db, config, logger, documentsStorageService, generateDocumentId, taskServices, eventServices: createTestEventServices() }),
+          createDocument: createDocumentCreationUsecase({
+            db,
+            config,
+            logger,
+            documentsStorageService,
+            generateDocumentId,
+            taskServices,
+            eventServices: createTestEventServices(),
+          }),
         });
 
         // Check database
@@ -493,37 +540,46 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'info',
-              message: 'Document not inserted because it already exists',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-            {
-              data: {
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'info',
-              message: 'File moved after ingestion',
-              namespace: 'test',
+            level: 'info',
+            message: 'Document not inserted because it already exists',
+            namespace: 'test',
+          },
+          {
+            data: {
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-          ],
-        );
+            level: 'info',
+            message: 'File moved after ingestion',
+            namespace: 'test',
+          },
+        ]);
       });
 
       test('when their is an issue with the document creation, the file is moved to the error folder', async () => {
         const { logger, getLogs } = createTestLogger();
 
         // This is the sha256 hash of the "lorem ipsum" text
-        const loremIpsumSha256Hash = '5e2bf57d3f40c4b6df69daf1936cb766f832374b4fc0259a7cbff06e2f70f269';
+        const loremIpsumSha256Hash =
+          '5e2bf57d3f40c4b6df69daf1936cb766f832374b4fc0259a7cbff06e2f70f269';
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org_111111111111111111111111', name: 'Org 1' }],
-          documents: [{ id: 'doc_1', organizationId: 'org_111111111111111111111111', name: 'hello.md', originalName: 'hello.md', originalStorageKey: 'hello.md', originalSha256Hash: loremIpsumSha256Hash, mimeType: 'text/markdown' }],
+          documents: [
+            {
+              id: 'doc_1',
+              organizationId: 'org_111111111111111111111111',
+              name: 'hello.md',
+              originalName: 'hello.md',
+              originalStorageKey: 'hello.md',
+              originalSha256Hash: loremIpsumSha256Hash,
+              mimeType: 'text/markdown',
+            },
+          ],
         });
         const organizationsRepository = createOrganizationsRepository({ db });
 
@@ -569,19 +625,17 @@ describe('ingestion-folders usecases', () => {
         });
 
         // Check logs
-        expect(getLogs({ excludeTimestampMs: true })).to.eql(
-          [
-            {
-              data: {
-                error: new Error('Document creation failed'),
-                filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
-              },
-              level: 'error',
-              message: 'Error creating document',
-              namespace: 'test',
+        expect(getLogs({ excludeTimestampMs: true })).to.eql([
+          {
+            data: {
+              error: new Error('Document creation failed'),
+              filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
             },
-          ],
-        );
+            level: 'error',
+            message: 'Error creating document',
+            namespace: 'test',
+          },
+        ]);
       });
     });
   });

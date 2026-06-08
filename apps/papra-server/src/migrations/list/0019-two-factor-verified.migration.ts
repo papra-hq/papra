@@ -6,13 +6,15 @@ export const twoFactorVerifiedMigration = {
 
   up: async ({ db }) => {
     const tableInfo = await db.run(sql`PRAGMA table_info(auth_two_factor)`);
-    const existingColumns = tableInfo.rows.map(row => row.name);
+    const existingColumns = tableInfo.rows.map((row) => row.name);
     const hasColumn = (columnName: string) => existingColumns.includes(columnName);
 
     if (!hasColumn('verified')) {
       // Default to true so existing two-factor setups (which were already verified
       // before better-auth introduced this column) keep working after the upgrade.
-      await db.run(sql`ALTER TABLE "auth_two_factor" ADD COLUMN "verified" integer DEFAULT true NOT NULL;`);
+      await db.run(
+        sql`ALTER TABLE "auth_two_factor" ADD COLUMN "verified" integer DEFAULT true NOT NULL;`,
+      );
     }
   },
 

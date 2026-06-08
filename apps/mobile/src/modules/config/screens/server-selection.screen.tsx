@@ -48,7 +48,8 @@ export function ServerSelectionScreen() {
     if (urlValidationError) {
       showAlert({
         title: 'Invalid URL',
-        message: 'Please enter a valid server URL. Make sure to include the protocol (http:// or https://).',
+        message:
+          'Please enter a valid server URL. Make sure to include the protocol (http:// or https://).',
       });
       setIsValidating(false);
       return;
@@ -75,10 +76,7 @@ export function ServerSelectionScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text style={styles.title}>Welcome to Papra</Text>
           <Text style={styles.subtitle}>Choose your server</Text>
@@ -86,17 +84,12 @@ export function ServerSelectionScreen() {
 
         <View style={styles.options}>
           <TouchableOpacity
-            style={[
-              styles.optionCard,
-              selectedOption === 'managed' && styles.optionCardSelected,
-            ]}
+            style={[styles.optionCard, selectedOption === 'managed' && styles.optionCardSelected]}
             onPress={() => setSelectedOption('managed')}
             disabled={isValidating}
           >
             <Text style={styles.optionTitle}>Managed Cloud</Text>
-            <Text style={styles.optionDescription}>
-              Use the official Papra cloud service
-            </Text>
+            <Text style={styles.optionDescription}>Use the official Papra cloud service</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -108,9 +101,7 @@ export function ServerSelectionScreen() {
             disabled={isValidating}
           >
             <Text style={styles.optionTitle}>Self-Hosted</Text>
-            <Text style={styles.optionDescription}>
-              Connect to your own Papra server
-            </Text>
+            <Text style={styles.optionDescription}>Connect to your own Papra server</Text>
           </TouchableOpacity>
         </View>
 
@@ -120,13 +111,11 @@ export function ServerSelectionScreen() {
             onPress={async () => handleValidateCustomUrl({ url: MANAGED_SERVER_URL })}
             disabled={isValidating}
           >
-            {isValidating
-              ? (
-                  <ActivityIndicator color={themeColors.primaryForeground} />
-                )
-              : (
-                  <Text style={styles.buttonText}>Continue with Managed</Text>
-                )}
+            {isValidating ? (
+              <ActivityIndicator color={themeColors.primaryForeground} />
+            ) : (
+              <Text style={styles.buttonText}>Continue with Managed</Text>
+            )}
           </TouchableOpacity>
         )}
 
@@ -149,13 +138,11 @@ export function ServerSelectionScreen() {
               onPress={async () => handleValidateCustomUrl({ url: customUrl })}
               disabled={isValidating}
             >
-              {isValidating
-                ? (
-                    <ActivityIndicator color={themeColors.primaryForeground} />
-                  )
-                : (
-                    <Text style={styles.buttonText}>Connect</Text>
-                  )}
+              {isValidating ? (
+                <ActivityIndicator color={themeColors.primaryForeground} />
+              ) : (
+                <Text style={styles.buttonText}>Connect</Text>
+              )}
             </TouchableOpacity>
           </View>
         )}

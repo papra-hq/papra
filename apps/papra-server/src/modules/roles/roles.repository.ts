@@ -18,19 +18,22 @@ export function createRolesRepository({ db }: { db: Database }) {
 }
 
 async function getUserRoles({ userId, db }: { userId: string; db: Database }) {
-  const roles = await db
-    .select()
-    .from(userRolesTable)
-    .where(
-      eq(userRolesTable.userId, userId),
-    );
+  const roles = await db.select().from(userRolesTable).where(eq(userRolesTable.userId, userId));
 
   return {
-    roles: roles.map(r => r.role),
+    roles: roles.map((r) => r.role),
   };
 }
 
-async function assignRoleToUser({ userId, role, db }: { userId: string; role: Role; db: Database }) {
+async function assignRoleToUser({
+  userId,
+  role,
+  db,
+}: {
+  userId: string;
+  role: Role;
+  db: Database;
+}) {
   await db
     .insert(userRolesTable)
     .values({
@@ -40,13 +43,16 @@ async function assignRoleToUser({ userId, role, db }: { userId: string; role: Ro
     .onConflictDoNothing();
 }
 
-async function removeRoleFromUser({ userId, role, db }: { userId: string; role: Role; db: Database }) {
+async function removeRoleFromUser({
+  userId,
+  role,
+  db,
+}: {
+  userId: string;
+  role: Role;
+  db: Database;
+}) {
   await db
     .delete(userRolesTable)
-    .where(
-      and(
-        eq(userRolesTable.userId, userId),
-        eq(userRolesTable.role, role),
-      ),
-    );
+    .where(and(eq(userRolesTable.userId, userId), eq(userRolesTable.role, role)));
 }

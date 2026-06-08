@@ -44,7 +44,13 @@ export async function createApiKey({
   };
 }
 
-export async function getApiKey({ token, apiKeyRepository }: { token: string; apiKeyRepository: ApiKeysRepository }) {
+export async function getApiKey({
+  token,
+  apiKeyRepository,
+}: {
+  token: string;
+  apiKeyRepository: ApiKeysRepository;
+}) {
   const { keyHash } = getApiKeyHash({ token });
 
   const apiKey = await apiKeyRepository.getApiKeyByHash({ keyHash });

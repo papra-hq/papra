@@ -6,9 +6,11 @@ import { trackingServices } from '../tracking.services';
 export const PageViewTracker: Component = () => {
   const matches = useCurrentMatches();
 
-  createEffect(on(matches, () => {
-    trackingServices.capture({ event: '$pageview' });
-  }));
+  createEffect(
+    on(matches, () => {
+      trackingServices.capture({ event: '$pageview' });
+    }),
+  );
 
   return null;
 };

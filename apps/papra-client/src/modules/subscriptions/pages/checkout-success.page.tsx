@@ -43,17 +43,11 @@ export const CheckoutSuccessPage: Component = () => {
           </div>
         </div>
 
-        <h1 class="text-3xl font-bold mb-3">
-          {t('subscriptions.checkout-success.title')}
-        </h1>
+        <h1 class="text-3xl font-bold mb-3">{t('subscriptions.checkout-success.title')}</h1>
 
-        <p class="text-muted-foreground mb-1">
-          {t('subscriptions.checkout-success.description')}
-        </p>
+        <p class="text-muted-foreground mb-1">{t('subscriptions.checkout-success.description')}</p>
 
-        <p class="text-muted-foreground mb-8">
-          {t('subscriptions.checkout-success.thank-you')}
-        </p>
+        <p class="text-muted-foreground mb-8">{t('subscriptions.checkout-success.thank-you')}</p>
 
         <div class="flex flex-col gap-3">
           <Button as={A} href="/" size="lg" class="w-full">

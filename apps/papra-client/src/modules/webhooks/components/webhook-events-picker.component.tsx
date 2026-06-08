@@ -5,10 +5,13 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Checkbox, CheckboxControl, CheckboxLabel } from '@/modules/ui/components/checkbox';
 import { WEBHOOK_EVENTS } from '../webhooks.constants';
 
-type WebhookEvent = typeof WEBHOOK_EVENTS[number]['events'][number];
-type WebhookSection = typeof WEBHOOK_EVENTS[number];
+type WebhookEvent = (typeof WEBHOOK_EVENTS)[number]['events'][number];
+type WebhookSection = (typeof WEBHOOK_EVENTS)[number];
 
-export const WebhookEventsPicker: Component<{ events: WebhookEvent[]; onChange: (events: WebhookEvent[]) => void }> = (props) => {
+export const WebhookEventsPicker: Component<{
+  events: WebhookEvent[];
+  onChange: (events: WebhookEvent[]) => void;
+}> = (props) => {
   const [events, setEvents] = createSignal<WebhookEvent[]>(props.events);
   const { t } = useI18n();
 
@@ -36,7 +39,7 @@ export const WebhookEventsPicker: Component<{ events: WebhookEvent[]; onChange: 
   const toggleEvent = (event: WebhookEvent) => {
     setEvents((prev) => {
       if (prev.includes(event)) {
-        return prev.filter(e => e !== event);
+        return prev.filter((e) => e !== event);
       }
 
       return [...prev, event];
@@ -49,13 +52,13 @@ export const WebhookEventsPicker: Component<{ events: WebhookEvent[]; onChange: 
     <div>
       {/* <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> */}
       <For each={getEventsSections()}>
-        {section => (
+        {(section) => (
           <div>
             <p class="text-muted-foreground text-xs">{section.title}</p>
 
             <div class="pl-4 flex flex-col gap-4 mt-4">
               <For each={section.events}>
-                {event => (
+                {(event) => (
                   <Checkbox
                     class="flex items-start gap-2"
                     checked={isEventSelected(event.name)}

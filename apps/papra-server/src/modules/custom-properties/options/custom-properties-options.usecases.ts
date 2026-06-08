@@ -10,7 +10,10 @@ export async function ensureOptionExists({
   optionId: string;
   customPropertiesOptionsRepository: CustomPropertiesOptionsRepository;
 }) {
-  const { option } = await customPropertiesOptionsRepository.getSelectOption({ optionId, propertyDefinitionId });
+  const { option } = await customPropertiesOptionsRepository.getSelectOption({
+    optionId,
+    propertyDefinitionId,
+  });
 
   if (!option) {
     throw createCustomPropertySelectOptionNotFoundError();
@@ -26,9 +29,12 @@ export async function ensureOptionsExist({
   optionIds: string[];
   customPropertiesOptionsRepository: CustomPropertiesOptionsRepository;
 }) {
-  const { options } = await customPropertiesOptionsRepository.getSelectOptions({ optionsIds: optionIds, propertyDefinitionId });
+  const { options } = await customPropertiesOptionsRepository.getSelectOptions({
+    optionsIds: optionIds,
+    propertyDefinitionId,
+  });
 
-  const existingOptionIds = new Set(options.map(option => option.id));
+  const existingOptionIds = new Set(options.map((option) => option.id));
 
   for (const optionId of optionIds) {
     if (!existingOptionIds.has(optionId)) {

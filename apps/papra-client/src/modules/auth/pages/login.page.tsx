@@ -52,18 +52,20 @@ const TotpVerificationForm: Component = () => {
 
   return (
     <div>
-      <p class="text-muted-foreground mt-1 mb-4">
-        {t('auth.login.two-factor.description.totp')}
-      </p>
+      <p class="text-muted-foreground mt-1 mb-4">{t('auth.login.two-factor.description.totp')}</p>
 
       <div class="flex flex-col gap-1 mb-4 items-center">
         <label class="sr-only">{t('auth.login.two-factor.code.label.totp')}</label>
         <TotpField value={totpCode()} onValueChange={handleTotpComplete} />
         <Show when={verifyMutation.error}>
-          {getError => <div class="text-red-500 text-sm">{getError().message}</div>}
+          {(getError) => <div class="text-red-500 text-sm">{getError().message}</div>}
         </Show>
 
-        <Checkbox class="flex items-center gap-2 mt-4" checked={trustDevice()} onChange={setTrustDevice}>
+        <Checkbox
+          class="flex items-center gap-2 mt-4"
+          checked={trustDevice()}
+          onChange={setTrustDevice}
+        >
           <CheckboxControl />
           <CheckboxLabel class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             {t('auth.login.two-factor.trust-device.label')}
@@ -94,10 +96,7 @@ const BackupCodeVerificationForm: Component = () => {
       navigate('/');
     },
     schema: v.object({
-      code: v.pipe(
-        v.string(),
-        v.nonEmpty(t('auth.login.two-factor.code.required')),
-      ),
+      code: v.pipe(v.string(), v.nonEmpty(t('auth.login.two-factor.code.required'))),
     }),
     initialValues: {
       code: '',
@@ -113,7 +112,9 @@ const BackupCodeVerificationForm: Component = () => {
       <Field name="code">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="backup-code">{t('auth.login.two-factor.code.label.backup-code')}</TextFieldLabel>
+            <TextFieldLabel for="backup-code">
+              {t('auth.login.two-factor.code.label.backup-code')}
+            </TextFieldLabel>
             <TextField
               type="text"
               id="backup-code"
@@ -128,7 +129,11 @@ const BackupCodeVerificationForm: Component = () => {
         )}
       </Field>
 
-      <Checkbox class="flex items-center gap-2 mb-4" checked={trustDevice()} onChange={setTrustDevice}>
+      <Checkbox
+        class="flex items-center gap-2 mb-4"
+        checked={trustDevice()}
+        onChange={setTrustDevice}
+      >
         <CheckboxControl />
         <CheckboxLabel class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           {t('auth.login.two-factor.trust-device.label')}
@@ -140,7 +145,6 @@ const BackupCodeVerificationForm: Component = () => {
       </Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -151,25 +155,28 @@ const TwoFactorVerificationForm: Component<{ onBack: () => void }> = (props) => 
 
   return (
     <div>
-      <Show
-        when={!useBackupCode()}
-        fallback={(
-          <BackupCodeVerificationForm />
-        )}
-      >
+      <Show when={!useBackupCode()} fallback={<BackupCodeVerificationForm />}>
         <TotpVerificationForm />
       </Show>
 
       <div class="flex flex-col gap-2 mt-4">
         <Show
           when={!useBackupCode()}
-          fallback={(
-            <Button variant="link" class="p-0 h-auto text-muted-foreground" onClick={() => setUseBackupCode(false)}>
+          fallback={
+            <Button
+              variant="link"
+              class="p-0 h-auto text-muted-foreground"
+              onClick={() => setUseBackupCode(false)}
+            >
               {t('auth.login.two-factor.use-totp')}
             </Button>
-          )}
+          }
         >
-          <Button variant="link" class="p-0 h-auto text-muted-foreground" onClick={() => setUseBackupCode(true)}>
+          <Button
+            variant="link"
+            class="p-0 h-auto text-muted-foreground"
+            onClick={() => setUseBackupCode(true)}
+          >
             {t('auth.login.two-factor.use-backup-code')}
           </Button>
         </Show>
@@ -178,7 +185,6 @@ const TwoFactorVerificationForm: Component<{ onBack: () => void }> = (props) => 
           {t('auth.login.two-factor.back')}
         </Button>
       </div>
-
     </div>
   );
 };
@@ -238,7 +244,15 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="email">{t('auth.login.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.login.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField
+              type="email"
+              id="email"
+              placeholder={t('auth.login.form.email.placeholder')}
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -249,7 +263,14 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="password">{t('auth.login.form.password.label')}</TextFieldLabel>
 
-            <TextField type="password" id="password" placeholder={t('auth.login.form.password.placeholder')} {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextField
+              type="password"
+              id="password"
+              placeholder={t('auth.login.form.password.placeholder')}
+              {...inputProps}
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -274,10 +295,11 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         </Show>
       </div>
 
-      <Button type="submit" class="w-full" isLoading={form.submitting}>{t('auth.login.form.submit')}</Button>
+      <Button type="submit" class="w-full" isLoading={form.submitting}>
+        {t('auth.login.form.submit')}
+      </Button>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -304,25 +326,25 @@ export const LoginPage: Component = () => {
           <div class="max-w-sm w-full">
             <Show
               when={!showTwoFactorForm()}
-              fallback={(
+              fallback={
                 <>
                   <h1 class="text-xl font-bold">{t('auth.login.two-factor.title')}</h1>
                   <TwoFactorVerificationForm onBack={() => setShowTwoFactorForm(false)} />
                 </>
-              )}
+              }
             >
               <h1 class="text-xl font-bold">{t('auth.login.title')}</h1>
               <p class="text-muted-foreground mt-1 mb-4">{t('auth.login.description')}</p>
 
               <Show when={config.auth.providers.email.isEnabled}>
-                {getShowEmailLoginForm() || !getHasSsoProviders()
-                  ? <EmailLoginForm onTwoFactorRequired={() => setShowTwoFactorForm(true)} />
-                  : (
-                      <Button onClick={() => setShowEmailLoginForm(true)} class="w-full">
-                        <div class="i-tabler-mail mr-2 size-4.5" />
-                        {t('auth.login.login-with-provider', { provider: 'Email' })}
-                      </Button>
-                    )}
+                {getShowEmailLoginForm() || !getHasSsoProviders() ? (
+                  <EmailLoginForm onTwoFactorRequired={() => setShowTwoFactorForm(true)} />
+                ) : (
+                  <Button onClick={() => setShowEmailLoginForm(true)} class="w-full">
+                    <div class="i-tabler-mail mr-2 size-4.5" />
+                    {t('auth.login.login-with-provider', { provider: 'Email' })}
+                  </Button>
+                )}
               </Show>
 
               <Show when={config.auth.providers.email.isEnabled && getHasSsoProviders()}>
@@ -330,10 +352,9 @@ export const LoginPage: Component = () => {
               </Show>
 
               <Show when={getHasSsoProviders()}>
-
                 <div class="flex flex-col gap-2">
                   <For each={getEnabledSsoProviderConfigs({ config })}>
-                    {provider => (
+                    {(provider) => (
                       <SsoProviderButton
                         name={provider.name}
                         icon={provider.icon}
@@ -347,8 +368,7 @@ export const LoginPage: Component = () => {
 
               <Show when={config.auth.isRegistrationEnabled}>
                 <p class="text-muted-foreground mt-4">
-                  {t('auth.login.no-account')}
-                  {' '}
+                  {t('auth.login.no-account')}{' '}
                   <Button variant="link" as={A} class="inline px-0" href="/register">
                     {t('auth.login.register')}
                   </Button>

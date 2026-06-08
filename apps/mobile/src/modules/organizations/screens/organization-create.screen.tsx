@@ -64,14 +64,12 @@ export function OrganizationCreateScreen() {
       style={{ ...styles.container, paddingTop: insets.top }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text style={styles.title}>Create organization</Text>
           <Text style={styles.subtitle}>
-            Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.
+            Your documents will be grouped by organization. You can create multiple organizations to
+            separate your documents, for example, for personal and work documents.
           </Text>
         </View>
 
@@ -97,13 +95,11 @@ export function OrganizationCreateScreen() {
             onPress={handleCreate}
             disabled={createMutation.isPending}
           >
-            {createMutation.isPending
-              ? (
-                  <ActivityIndicator color={themeColors.primaryForeground} />
-                )
-              : (
-                  <Text style={styles.buttonText}>Create Organization</Text>
-                )}
+            {createMutation.isPending ? (
+              <ActivityIndicator color={themeColors.primaryForeground} />
+            ) : (
+              <Text style={styles.buttonText}>Create Organization</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

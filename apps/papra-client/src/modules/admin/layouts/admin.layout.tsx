@@ -10,41 +10,40 @@ import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 const AdminLayout: ParentComponent = (props) => {
   const { t } = useI18n();
 
-  const getNavigationMenu = () => [{
-    items: [
-      {
-        label: t('admin.layout.menu.analytics'),
-        href: '/admin/analytics',
-        icon: 'i-tabler-chart-bar',
-      },
-      {
-        label: t('admin.layout.menu.users'),
-        href: '/admin/users',
-        icon: 'i-tabler-users',
-      },
-      {
-        label: t('admin.layout.menu.organizations'),
-        href: '/admin/organizations',
-        icon: 'i-tabler-building-community',
-      },
-    ],
-  }];
+  const getNavigationMenu = () => [
+    {
+      items: [
+        {
+          label: t('admin.layout.menu.analytics'),
+          href: '/admin/analytics',
+          icon: 'i-tabler-chart-bar',
+        },
+        {
+          label: t('admin.layout.menu.users'),
+          href: '/admin/users',
+          icon: 'i-tabler-users',
+        },
+        {
+          label: t('admin.layout.menu.organizations'),
+          href: '/admin/organizations',
+          icon: 'i-tabler-building-community',
+        },
+      ],
+    },
+  ];
 
   const sidenav = () => (
     <SideNav
       header={() => (
         <A href="/admin" class="flex items-center gap-2 pl-6 h-14 w-260px">
           <div class="i-tabler-layout-dashboard text-primary size-7" />
-          <div class="font-medium text-base">
-            {t('admin.layout.header')}
-          </div>
+          <div class="font-medium text-base">{t('admin.layout.header')}</div>
         </A>
       )}
       mainMenu={getNavigationMenu()}
       footer={() => (
         <div class="px-4 text-sm text-muted-foreground text-center">
           Papra &copy;
-          {' '}
           {new Date().getFullYear()}
         </div>
       )}
@@ -53,9 +52,7 @@ const AdminLayout: ParentComponent = (props) => {
 
   return (
     <div class="h-screen bg-card flex flex-row flex-1 min-h-0">
-      <div class="w-280px flex-shrink-0 hidden md:block">
-        {sidenav()}
-      </div>
+      <div class="w-280px flex-shrink-0 hidden md:block">{sidenav()}</div>
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
         <header class="h-14 flex items-center px-4 justify-between">
           <Sheet>
@@ -69,11 +66,7 @@ const AdminLayout: ParentComponent = (props) => {
             </SheetContent>
           </Sheet>
 
-          <Button
-            variant="outline"
-            as={A}
-            href="/"
-          >
+          <Button variant="outline" as={A} href="/">
             {t('admin.layout.back-to-app')}
           </Button>
         </header>
@@ -90,10 +83,7 @@ export const GuardedAdminLayout: ParentComponent = (props) => {
   const { hasPermission } = useCurrentUser();
 
   return (
-    <Show
-      when={hasPermission('bo:access')}
-      fallback={<Navigate href="/" />}
-    >
+    <Show when={hasPermission('bo:access')} fallback={<Navigate href="/" />}>
       <AdminLayout {...props} />
     </Show>
   );

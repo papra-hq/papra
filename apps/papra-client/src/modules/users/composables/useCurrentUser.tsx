@@ -35,7 +35,8 @@ export const CurrentUserProvider: ParentComponent = (props) => {
             query.refetch();
           },
 
-          hasPermission: (permission: string) => query.data?.user.permissions?.includes(permission) ?? false,
+          hasPermission: (permission: string) =>
+            query.data?.user.permissions?.includes(permission) ?? false,
         }}
       >
         {props.children}

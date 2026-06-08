@@ -21,7 +21,8 @@ type OrganizationPickerDrawerProps = {
 export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPickerDrawerProps) {
   const themeColors = useThemeColor();
   const router = useRouter();
-  const { organizations, currentOrganizationId, setCurrentOrganizationId, isLoading } = useOrganizations();
+  const { organizations, currentOrganizationId, setCurrentOrganizationId, isLoading } =
+    useOrganizations();
 
   const styles = createStyles({ themeColors });
 
@@ -36,63 +37,49 @@ export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPicke
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.backdrop}
-        activeOpacity={1}
-        onPress={onClose}
-      >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={styles.drawer}>
           <View style={styles.header}>
             <Text style={styles.title}>Select Organization</Text>
           </View>
 
-          {isLoading
-            ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={themeColors.primary} />
-                </View>
-              )
-            : (
-                <FlatList
-                  data={organizations}
-                  keyExtractor={item => item.id}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.orgItem,
-                        item.id === currentOrganizationId && styles.orgItemSelected,
-                      ]}
-                      onPress={() => {
-                        void handleSelectOrganization(item.id);
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.orgName,
-                          item.id === currentOrganizationId && styles.orgNameSelected,
-                        ]}
-                      >
-                        {item.name}
-                      </Text>
-                      {item.id === currentOrganizationId && (
-                        <Icon name="check" style={styles.checkmark} />
-                      )}
-                    </TouchableOpacity>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={themeColors.primary} />
+            </View>
+          ) : (
+            <FlatList
+              data={organizations}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.orgItem,
+                    item.id === currentOrganizationId && styles.orgItemSelected,
+                  ]}
+                  onPress={() => {
+                    void handleSelectOrganization(item.id);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.orgName,
+                      item.id === currentOrganizationId && styles.orgNameSelected,
+                    ]}
+                  >
+                    {item.name}
+                  </Text>
+                  {item.id === currentOrganizationId && (
+                    <Icon name="check" style={styles.checkmark} />
                   )}
-                  contentContainerStyle={styles.listContent}
-                />
+                </TouchableOpacity>
               )}
+              contentContainerStyle={styles.listContent}
+            />
+          )}
 
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={handleCreateOrganization}
-          >
+          <TouchableOpacity style={styles.createButton} onPress={handleCreateOrganization}>
             <Text style={styles.createButtonText}>+ Create New Organization</Text>
           </TouchableOpacity>
         </View>

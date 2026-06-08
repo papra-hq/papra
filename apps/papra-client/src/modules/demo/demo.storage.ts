@@ -19,7 +19,12 @@ const storage = createStorage<any>({
   driver: localStorageDriver({ base: 'demo:' }),
 });
 
-export type DocumentFileStoredFile = { name: string; size: number; type: string; base64Content: string };
+export type DocumentFileStoredFile = {
+  name: string;
+  size: number;
+  type: string;
+  base64Content: string;
+};
 export type DocumentFileRemoteFile = { name: string; path: string };
 export type DocumentFile = DocumentFileStoredFile | DocumentFileRemoteFile;
 
@@ -34,12 +39,21 @@ export const organizationStorage = prefixStorage<Organization>(storage, 'organiz
 export const documentStorage = prefixStorage<Document>(storage, 'documents');
 export const documentFileStorage = prefixStorage<DocumentFile>(storage, 'documentFiles');
 export const tagStorage = prefixStorage<Omit<Tag, 'documentsCount'>>(storage, 'tags');
-export const tagDocumentStorage = prefixStorage<{ documentId: string; tagId: string; id: string }>(storage, 'tagDocuments');
+export const tagDocumentStorage = prefixStorage<{ documentId: string; tagId: string; id: string }>(
+  storage,
+  'tagDocuments',
+);
 export const taggingRuleStorage = prefixStorage<TaggingRule>(storage, 'taggingRules');
 export const apiKeyStorage = prefixStorage<ApiKey>(storage, 'apiKeys');
 export const webhooksStorage = prefixStorage<Webhook>(storage, 'webhooks');
-export const customPropertyDefinitionStorage = prefixStorage<CustomPropertyDefinition>(storage, 'customPropertyDefinitions');
-export const documentCustomPropertyValueStorage = prefixStorage<DocumentCustomPropertyValueStorage>(storage, 'documentCustomPropertyValues');
+export const customPropertyDefinitionStorage = prefixStorage<CustomPropertyDefinition>(
+  storage,
+  'customPropertyDefinitions',
+);
+export const documentCustomPropertyValueStorage = prefixStorage<DocumentCustomPropertyValueStorage>(
+  storage,
+  'documentCustomPropertyValues',
+);
 export const documentViewStorage = prefixStorage<DocumentView>(storage, 'documentViews');
 
 export async function clearDemoStorage() {
@@ -84,14 +98,16 @@ export async function seedDemoStorage() {
   const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   // Create default organization
-  await organizationStorage.setItem(...idTuple({
-    id: organizationId,
-    name: 'My organization',
-    createdAt: lastMonth,
-    updatedAt: lastMonth,
-  }));
+  await organizationStorage.setItem(
+    ...idTuple({
+      id: organizationId,
+      name: 'My organization',
+      createdAt: lastMonth,
+      updatedAt: lastMonth,
+    }),
+  );
 
-  const tags = tagsFixtures.map(tag => ({
+  const tags = tagsFixtures.map((tag) => ({
     id: createId({ prefix: 'tag' }),
     organizationId,
     name: tag.name,
@@ -101,7 +117,7 @@ export async function seedDemoStorage() {
     updatedAt: lastMonth,
   }));
 
-  const tagsPromises = tagStorage.setItems(tags.map(tag => ({ key: tag.id, value: tag })));
+  const tagsPromises = tagStorage.setItems(tags.map((tag) => ({ key: tag.id, value: tag })));
 
   // Create custom property definitions
   const customPropertyDefinitions = customPropertyDefinitionsFixtures.map((fixture, index) => ({
@@ -118,13 +134,13 @@ export async function seedDemoStorage() {
   }));
 
   const customPropertyDefinitionsPromises = customPropertyDefinitionStorage.setItems(
-    customPropertyDefinitions.map(def => ({ key: def.id, value: def })),
+    customPropertyDefinitions.map((def) => ({ key: def.id, value: def })),
   );
 
   // Create stored document views
   const documentViews = [
     { name: 'Receipts', query: 'tag:Receipts', description: 'Payment receipts and bills' },
-  ].map(view => ({
+  ].map((view) => ({
     id: createId({ prefix: 'dv' }),
     organizationId,
     name: view.name,
@@ -135,7 +151,7 @@ export async function seedDemoStorage() {
   }));
 
   const documentViewsPromises = documentViewStorage.setItems(
-    documentViews.map(view => ({ key: view.id, value: view })),
+    documentViews.map((view) => ({ key: view.id, value: view })),
   );
 
   const documentsPromises = documentFixtures.flatMap((fixture) => {
@@ -155,27 +171,30 @@ export async function seedDemoStorage() {
       tags: [],
     });
 
-    const documentFilePromise = documentFileStorage.setItem(`${organizationId}:${documentId}`, { path: fixture.fileUrl, name: fixture.name });
+    const documentFilePromise = documentFileStorage.setItem(`${organizationId}:${documentId}`, {
+      path: fixture.fileUrl,
+      name: fixture.name,
+    });
 
-    const tagIds = tags
-      .filter(tag => fixture.tags.includes(tag.name))
-      .map(tag => tag.id);
+    const tagIds = tags.filter((tag) => fixture.tags.includes(tag.name)).map((tag) => tag.id);
 
-    const tagDocumentPromise = tagDocumentStorage.setItems(tagIds.map((tagId) => {
-      const id = createId({ prefix: 'tagdoc' });
+    const tagDocumentPromise = tagDocumentStorage.setItems(
+      tagIds.map((tagId) => {
+        const id = createId({ prefix: 'tagdoc' });
 
-      return {
-        key: id,
-        value: {
-          id,
-          documentId,
-          tagId,
-        },
-      };
-    }));
+        return {
+          key: id,
+          value: {
+            id,
+            documentId,
+            tagId,
+          },
+        };
+      }),
+    );
 
     const customPropertyValuePromises = (fixture.customProperties ?? []).map((prop) => {
-      const definition = customPropertyDefinitions.find(def => def.key === prop.key);
+      const definition = customPropertyDefinitions.find((def) => def.key === prop.key);
 
       if (!definition) {
         return Promise.resolve();
@@ -192,7 +211,12 @@ export async function seedDemoStorage() {
       });
     });
 
-    return [documentPromise, documentFilePromise, tagDocumentPromise, ...customPropertyValuePromises];
+    return [
+      documentPromise,
+      documentFilePromise,
+      tagDocumentPromise,
+      ...customPropertyValuePromises,
+    ];
   });
 
   await Promise.all([

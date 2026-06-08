@@ -39,17 +39,18 @@ function syncLocaleFiles() {
 
   const files = fs
     .readdirSync(localesDir)
-    .filter(file => file.endsWith('.dictionary.ts') && file !== 'en.dictionary.ts');
+    .filter((file) => file.endsWith('.dictionary.ts') && file !== 'en.dictionary.ts');
 
   for (const file of files) {
     const targetFile = path.join(localesDir, file);
+    // oxlint-disable-next-line no-console
     console.log(`Syncing ${file} with en.dictionary.ts`);
 
     const targetContent = fs.readFileSync(targetFile, 'utf8');
     const targetLines = indexLinesByKeys(targetContent);
 
     const newLocalesContent = enLines
-      .filter(line => !line.startsWith('export') && !line.startsWith('}'))
+      .filter((line) => !line.startsWith('export') && !line.startsWith('}'))
       .map((enLine) => {
         // Reflect empty lines from en
         if (enLine.trim() === '') {

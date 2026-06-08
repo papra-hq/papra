@@ -368,7 +368,9 @@ describe('parseSearchQuery', () => {
     });
 
     test('combines multiple filters with AND', () => {
-      expect(parseSearchQuery({ query: 'tag:invoice createdAt:>2024-01-01 status:active' })).toEqual({
+      expect(
+        parseSearchQuery({ query: 'tag:invoice createdAt:>2024-01-01 status:active' }),
+      ).toEqual({
         expression: {
           type: 'and',
           operands: [
@@ -459,7 +461,9 @@ describe('parseSearchQuery', () => {
     });
 
     test('combines grouped expressions with AND', () => {
-      expect(parseSearchQuery({ query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01' })).toEqual({
+      expect(
+        parseSearchQuery({ query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01' }),
+      ).toEqual({
         expression: {
           type: 'and',
           operands: [
@@ -478,7 +482,9 @@ describe('parseSearchQuery', () => {
     });
 
     test('handles nested grouping', () => {
-      expect(parseSearchQuery({ query: '((tag:invoice OR tag:receipt) AND status:active)' })).toEqual({
+      expect(
+        parseSearchQuery({ query: '((tag:invoice OR tag:receipt) AND status:active)' }),
+      ).toEqual({
         expression: {
           type: 'and',
           operands: [
@@ -611,7 +617,9 @@ describe('parseSearchQuery', () => {
 
   describe('when enforcing limits', () => {
     test('respects maximum token limit', () => {
-      const longQuery = Array.from({ length: 50 }).map((_, i) => `tag${i}:value${i}`).join(' ');
+      const longQuery = Array.from({ length: 50 })
+        .map((_, i) => `tag${i}:value${i}`)
+        .join(' ');
       const result = parseSearchQuery({ query: longQuery, maxTokens: 10 });
       expect(result.issues).toContainEqual({
         code: 'max-tokens-exceeded',
@@ -633,7 +641,8 @@ describe('parseSearchQuery', () => {
     test('parses complex query with multiple operators and grouping', () => {
       expect(
         parseSearchQuery({
-          query: '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01 AND NOT tag:personal my document',
+          query:
+            '(tag:invoice OR tag:receipt) AND createdAt:>2024-01-01 AND NOT tag:personal my document',
         }),
       ).toEqual({
         expression: {

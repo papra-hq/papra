@@ -2,8 +2,18 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 import type { PlansRepository } from './plans.repository';
 import { FREE_PLAN_ID } from './plans.constants';
 
-export async function getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }: { organizationId: string; subscriptionsRepository: SubscriptionsRepository; plansRepository: PlansRepository }) {
-  const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({ organizationId });
+export async function getOrganizationPlan({
+  organizationId,
+  subscriptionsRepository,
+  plansRepository,
+}: {
+  organizationId: string;
+  subscriptionsRepository: SubscriptionsRepository;
+  plansRepository: PlansRepository;
+}) {
+  const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({
+    organizationId,
+  });
 
   const planId = subscription?.planId ?? FREE_PLAN_ID;
 

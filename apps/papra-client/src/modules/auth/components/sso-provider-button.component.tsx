@@ -4,7 +4,12 @@ import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-err
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 
-export const SsoProviderButton: Component<{ name: string; icon?: string; onClick: () => Promise<void>; label: string }> = (props) => {
+export const SsoProviderButton: Component<{
+  name: string;
+  icon?: string;
+  onClick: () => Promise<void>;
+  label: string;
+}> = (props) => {
   const [getIsLoading, setIsLoading] = createSignal(false);
   const [getError, setError] = createSignal<string | undefined>(undefined);
   const { getErrorMessage } = useI18nApiErrors();
@@ -22,8 +27,12 @@ export const SsoProviderButton: Component<{ name: string; icon?: string; onClick
 
   return (
     <>
-      <Button variant="secondary" class="block w-full flex items-center justify-center gap-2" onClick={onClick} disabled={getIsLoading()}>
-
+      <Button
+        variant="secondary"
+        class="block w-full flex items-center justify-center gap-2"
+        onClick={onClick}
+        disabled={getIsLoading()}
+      >
         <Switch>
           <Match when={getIsLoading()}>
             <span class="i-tabler-loader-2 animate-spin" />

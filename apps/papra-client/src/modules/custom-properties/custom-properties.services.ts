@@ -3,8 +3,14 @@ import type { CustomPropertyDefinition, CustomPropertyType } from './custom-prop
 import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
 
-export async function fetchCustomPropertyDefinitions({ organizationId }: { organizationId: string }) {
-  const { propertyDefinitions } = await apiClient<{ propertyDefinitions: AsDto<CustomPropertyDefinition>[] }>({
+export async function fetchCustomPropertyDefinitions({
+  organizationId,
+}: {
+  organizationId: string;
+}) {
+  const { propertyDefinitions } = await apiClient<{
+    propertyDefinitions: AsDto<CustomPropertyDefinition>[];
+  }>({
     path: `/api/organizations/${organizationId}/custom-properties`,
     method: 'GET',
   });
@@ -14,7 +20,13 @@ export async function fetchCustomPropertyDefinitions({ organizationId }: { organ
   };
 }
 
-export async function fetchCustomPropertyDefinition({ organizationId, propertyDefinitionId }: { organizationId: string; propertyDefinitionId: string }) {
+export async function fetchCustomPropertyDefinition({
+  organizationId,
+  propertyDefinitionId,
+}: {
+  organizationId: string;
+  propertyDefinitionId: string;
+}) {
   const { definition } = await apiClient<{ definition: AsDto<CustomPropertyDefinition> }>({
     path: `/api/organizations/${organizationId}/custom-properties/${propertyDefinitionId}`,
     method: 'GET',
@@ -37,7 +49,9 @@ export async function createCustomPropertyDefinition({
     options?: { name: string }[];
   };
 }) {
-  const { propertyDefinition: created } = await apiClient<{ propertyDefinition: AsDto<CustomPropertyDefinition> }>({
+  const { propertyDefinition: created } = await apiClient<{
+    propertyDefinition: AsDto<CustomPropertyDefinition>;
+  }>({
     path: `/api/organizations/${organizationId}/custom-properties`,
     method: 'POST',
     body: propertyDefinition,
@@ -61,7 +75,9 @@ export async function updateCustomPropertyDefinition({
     options?: { id?: string; name: string }[];
   };
 }) {
-  const { propertyDefinition: updated } = await apiClient<{ propertyDefinition: AsDto<CustomPropertyDefinition> }>({
+  const { propertyDefinition: updated } = await apiClient<{
+    propertyDefinition: AsDto<CustomPropertyDefinition>;
+  }>({
     path: `/api/organizations/${organizationId}/custom-properties/${propertyDefinitionId}`,
     method: 'PUT',
     body: propertyDefinition,

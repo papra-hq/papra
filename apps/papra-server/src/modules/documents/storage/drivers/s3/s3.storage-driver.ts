@@ -1,10 +1,18 @@
 import type { Readable } from 'node:stream';
-import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 
 import { Upload } from '@aws-sdk/lib-storage';
 import { safely } from '@corentinth/chisels';
 import { isString } from '../../../../shared/utils';
-import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
+import {
+  createFileAlreadyExistsInStorageError,
+  createFileNotFoundError,
+} from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 
 export const S3_STORAGE_DRIVER_NAME = 's3' as const;
@@ -12,12 +20,15 @@ export const S3_STORAGE_DRIVER_NAME = 's3' as const;
 function isS3NotFoundError(error: Error) {
   const codes = ['NoSuchKey', 'NotFound'];
 
-  return codes.includes(error.name)
-    || ('Code' in error && isString(error.Code) && codes.includes(error.Code));
+  return (
+    codes.includes(error.name) ||
+    ('Code' in error && isString(error.Code) && codes.includes(error.Code))
+  );
 }
 
 export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {
-  const { accessKeyId, secretAccessKey, bucketName, region, endpoint, forcePathStyle } = documentStorageConfig.drivers.s3;
+  const { accessKeyId, secretAccessKey, bucketName, region, endpoint, forcePathStyle } =
+    documentStorageConfig.drivers.s3;
 
   const s3Client = new S3Client({
     region,
@@ -30,10 +41,14 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
   });
 
   const fileExists = async ({ storageKey }: { storageKey: string }) => {
-    const [, error] = await safely(s3Client.send(new HeadObjectCommand({
-      Bucket: bucketName,
-      Key: storageKey,
-    })));
+    const [, error] = await safely(
+      s3Client.send(
+        new HeadObjectCommand({
+          Bucket: bucketName,
+          Key: storageKey,
+        }),
+      ),
+    );
 
     if (error && isS3NotFoundError(error)) {
       return false;
@@ -68,10 +83,14 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
       await upload.done();
     },
     getFileStream: async ({ storageKey }) => {
-      const [result, error] = await safely(s3Client.send(new GetObjectCommand({
-        Bucket: bucketName,
-        Key: storageKey,
-      })));
+      const [result, error] = await safely(
+        s3Client.send(
+          new GetObjectCommand({
+            Bucket: bucketName,
+            Key: storageKey,
+          }),
+        ),
+      );
 
       if (error && isS3NotFoundError(error)) {
         throw createFileNotFoundError();
@@ -96,10 +115,12 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
         throw createFileNotFoundError();
       }
 
-      await s3Client.send(new DeleteObjectCommand({
-        Bucket: bucketName,
-        Key: storageKey,
-      }));
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: storageKey,
+        }),
+      );
     },
     fileExists,
   };

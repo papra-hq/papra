@@ -30,7 +30,9 @@ export const apiKeysMigration = {
           FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade
         );
       `),
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "api_keys_key_hash_unique" ON "api_keys" ("key_hash")`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "api_keys_key_hash_unique" ON "api_keys" ("key_hash")`,
+      ),
       db.run(sql`CREATE INDEX IF NOT EXISTS "key_hash_index" ON "api_keys" ("key_hash")`),
     ]);
   },

@@ -19,16 +19,17 @@ export function getPublicConfig({ config }: { config: Config }) {
         email: { isEnabled: config.auth.providers.email.isEnabled },
         github: { isEnabled: config.auth.providers.github.isEnabled },
         google: { isEnabled: config.auth.providers.google.isEnabled },
-        customs: config.auth.providers.customs?.map(custom => pick(custom, [
-          'providerId',
-          'providerName',
-          'providerIconUrl',
-        ])) ?? [],
+        customs:
+          config.auth.providers.customs?.map((custom) =>
+            pick(custom, ['providerId', 'providerName', 'providerIconUrl']),
+          ) ?? [],
       },
     },
     documents: { deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays },
     intakeEmails: { isEnabled: config.intakeEmails.isEnabled },
-    organizations: { deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay },
+    organizations: {
+      deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay,
+    },
   };
 
   return {
@@ -48,14 +49,28 @@ export function getClientBaseUrl({ config }: { config: Config }) {
   };
 }
 
-export function exitProcessDueToConfigError({ error, logger }: { error: Error; logger: Logger }): never {
+export function exitProcessDueToConfigError({
+  error,
+  logger,
+}: {
+  error: Error;
+  logger: Logger;
+}): never {
   logger.error({ error }, `Invalid configuration: ${error.message}`);
   process.exit(1);
 }
 
-export function validateParsedConfig({ config, logger, validators }: { config: Config; logger: Logger; validators: ((args: { config: Config }) => void)[] }) {
+export function validateParsedConfig({
+  config,
+  logger,
+  validators,
+}: {
+  config: Config;
+  logger: Logger;
+  validators: ((args: { config: Config }) => void)[];
+}) {
   for (const validator of validators) {
-    const [,error] = safelySync(() => validator({ config }));
+    const [, error] = safelySync(() => validator({ config }));
 
     if (error) {
       exitProcessDueToConfigError({ error, logger });

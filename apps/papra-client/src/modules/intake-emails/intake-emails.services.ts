@@ -25,7 +25,13 @@ export async function createIntakeEmail({ organizationId }: { organizationId: st
   };
 }
 
-export async function deleteIntakeEmail({ organizationId, intakeEmailId }: { organizationId: string; intakeEmailId: string }) {
+export async function deleteIntakeEmail({
+  organizationId,
+  intakeEmailId,
+}: {
+  organizationId: string;
+  intakeEmailId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/intake-emails/${intakeEmailId}`,
     method: 'DELETE',

@@ -1,6 +1,8 @@
 import type { TestClock } from './clock.types';
 
-export function createTestClock({ now = Temporal.Instant.from('2026-05-12T00:00:00Z') }: { now?: Temporal.InstantLike } = {}): { clock: TestClock } {
+export function createTestClock({
+  now = Temporal.Instant.from('2026-05-12T00:00:00Z'),
+}: { now?: Temporal.InstantLike } = {}): { clock: TestClock } {
   let current: Temporal.Instant = Temporal.Instant.from(now);
 
   return {

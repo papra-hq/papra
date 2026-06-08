@@ -18,11 +18,14 @@ export function createWebhookTriggerServices({
     allowedHostnames: webhooksConfig.webhookUrlAllowedHostnames,
   });
 
-  return injectArguments({
-    triggerWebhooks,
-    deferTriggerWebhooks,
-  }, {
-    webhookRepository,
-    httpClient,
-  });
+  return injectArguments(
+    {
+      triggerWebhooks,
+      deferTriggerWebhooks,
+    },
+    {
+      webhookRepository,
+      httpClient,
+    },
+  );
 }

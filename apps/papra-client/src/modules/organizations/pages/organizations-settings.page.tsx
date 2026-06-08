@@ -11,12 +11,26 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createForm } from '@/modules/shared/form/form';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
-import { fetchOrganizationSubscription, getCustomerPortalUrl } from '@/modules/subscriptions/subscriptions.services';
+import {
+  fetchOrganizationSubscription,
+  getCustomerPortalUrl,
+} from '@/modules/subscriptions/subscriptions.services';
 import { Button } from '@/modules/ui/components/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/modules/ui/components/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/modules/ui/components/card';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { useCurrentUserRole, useDeleteOrganization, useUpdateOrganization } from '../organizations.composables';
+import {
+  useCurrentUserRole,
+  useDeleteOrganization,
+  useUpdateOrganization,
+} from '../organizations.composables';
 import { organizationNameSchema } from '../organizations.schemas';
 import { fetchOrganization } from '../organizations.services';
 
@@ -91,13 +105,16 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
       <Card class="border-destructive">
         <CardHeader class="border-b">
           <CardTitle>{t('organization.settings.delete.title')}</CardTitle>
-          <CardDescription>
-            {t('organization.settings.delete.description')}
-          </CardDescription>
+          <CardDescription>{t('organization.settings.delete.description')}</CardDescription>
         </CardHeader>
 
         <CardFooter class="pt-6 gap-4 flex-col items-start sm:flex-row sm:items-center">
-          <Button class="flex-shrink-0" onClick={handleDelete} variant="destructive" disabled={!getIsOwner() || getHasBlockingSubscription()}>
+          <Button
+            class="flex-shrink-0"
+            onClick={handleDelete}
+            variant="destructive"
+            disabled={!getIsOwner() || getHasBlockingSubscription()}
+          >
             {t('organization.settings.delete.confirm.confirm-button')}
           </Button>
 
@@ -114,7 +131,6 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
               </span>
             </Match>
           </Switch>
-
         </CardFooter>
       </Card>
     </div>
@@ -134,7 +150,9 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
   const goToCustomerPortal = async () => {
     setIsLoading(true);
 
-    const [result, error] = await safely(getCustomerPortalUrl({ organizationId: props.organization.id }));
+    const [result, error] = await safely(
+      getCustomerPortalUrl({ organizationId: props.organization.id }),
+    );
 
     if (error) {
       createToast({ type: 'error', message: t('organization.settings.subscription.error') });
@@ -158,7 +176,12 @@ export const SubscriptionCard: Component<{ organization: Organization }> = (prop
           {t('organization.settings.subscription.description')}
         </div>
       </div>
-      <Button onClick={goToCustomerPortal} isLoading={getIsLoading()} class="flex-shrink-0" disabled={isDemoMode}>
+      <Button
+        onClick={goToCustomerPortal}
+        isLoading={getIsLoading()}
+        class="flex-shrink-0"
+        disabled={isDemoMode}
+      >
         {t('organization.settings.subscription.manage')}
       </Button>
     </Card>
@@ -202,9 +225,22 @@ const UpdateOrganizationNameCard: Component<{ organization: Organization }> = (p
                     {t('organization.settings.name.title')}
                   </TextFieldLabel>
                   <div class="flex gap-2 flex-col sm:flex-row">
-                    <TextField type="text" id="organizationName" placeholder={t('organization.settings.name.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+                    <TextField
+                      type="text"
+                      id="organizationName"
+                      placeholder={t('organization.settings.name.placeholder')}
+                      {...inputProps}
+                      autoFocus
+                      value={field.value}
+                      aria-invalid={Boolean(field.error)}
+                    />
 
-                    <Button type="submit" isLoading={form.submitting} class="flex-shrink-0" disabled={field.value?.trim() === props.organization.name}>
+                    <Button
+                      type="submit"
+                      isLoading={form.submitting}
+                      class="flex-shrink-0"
+                      disabled={field.value?.trim() === props.organization.name}
+                    >
                       {t('organization.settings.name.update')}
                     </Button>
                   </div>
@@ -234,15 +270,11 @@ export const OrganizationsSettingsPage: Component = () => {
     <div class="p-6 mt-10 pb-32 mx-auto max-w-screen-md w-full">
       <Suspense>
         <Show when={query.data?.organization}>
-          { getOrganization => (
+          {(getOrganization) => (
             <>
-              <h1 class="text-xl font-semibold mb-2">
-                {t('organization.settings.page.title')}
-              </h1>
+              <h1 class="text-xl font-semibold mb-2">{t('organization.settings.page.title')}</h1>
 
-              <p class="text-muted-foreground">
-                {t('organization.settings.page.description')}
-              </p>
+              <p class="text-muted-foreground">{t('organization.settings.page.description')}</p>
 
               <div class="mt-6 flex flex-col gap-6">
                 <UpdateOrganizationNameCard organization={getOrganization()} />

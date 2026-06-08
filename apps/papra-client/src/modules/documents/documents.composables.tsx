@@ -5,9 +5,18 @@ import { downloadFile } from '@/modules/shared/files/download';
 import { useConfirmModal } from '../shared/confirm';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
-import { deleteDocument, fetchDocument, fetchDocumentFile, restoreDocument } from './documents.services';
+import {
+  deleteDocument,
+  fetchDocument,
+  fetchDocumentFile,
+  restoreDocument,
+} from './documents.services';
 
-export function invalidateOrganizationDocumentsQuery({ organizationId }: { organizationId: string }) {
+export function invalidateOrganizationDocumentsQuery({
+  organizationId,
+}: {
+  organizationId: string;
+}) {
   return queryClient.invalidateQueries({
     queryKey: ['organizations', organizationId],
   });
@@ -16,10 +25,7 @@ export function invalidateOrganizationDocumentsQuery({ organizationId }: { organ
 function getConfirmMessage(documentName: string) {
   return (
     <>
-      Are you sure you want to delete
-      {' '}
-      <span class="font-bold">{documentName}</span>
-      ?
+      Are you sure you want to delete <span class="font-bold">{documentName}</span>?
     </>
   );
 }
@@ -28,7 +34,13 @@ export function useDownloadDocument() {
   const { t } = useI18n();
 
   return {
-    async downloadDocument({ organizationId, documentId}: { organizationId: string; documentId: string }) {
+    async downloadDocument({
+      organizationId,
+      documentId,
+    }: {
+      organizationId: string;
+      documentId: string;
+    }) {
       try {
         const [document, documentFile] = await Promise.all([
           queryClient.fetchQuery({
@@ -57,7 +69,15 @@ export function useDeleteDocument() {
   const { confirm } = useConfirmModal();
 
   return {
-    async deleteDocument({ documentId, organizationId, documentName }: { documentId: string; organizationId: string; documentName: string }): Promise<{ hasDeleted: boolean }> {
+    async deleteDocument({
+      documentId,
+      organizationId,
+      documentName,
+    }: {
+      documentId: string;
+      organizationId: string;
+      documentName: string;
+    }): Promise<{ hasDeleted: boolean }> {
       const isConfirmed = await confirm({
         title: 'Delete document',
         message: getConfirmMessage(documentName),

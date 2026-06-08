@@ -29,9 +29,7 @@ const AnalyticsCard: Component<{
       </div>
 
       <Suspense fallback={<div class="h-8 w-16 animate-pulse bg-muted rounded" />}>
-        <div class="text-3xl font-light">
-          {formattedValue()}
-        </div>
+        <div class="text-3xl font-light">{formattedValue()}</div>
       </Suspense>
     </div>
   );
@@ -83,7 +81,7 @@ export const AdminAnalyticsPage: Component = () => {
           icon="i-tabler-database"
           title={t('admin.analytics.documents-storage')}
           value={() => documentStatsQuery.data?.documentsSize}
-          formatValue={bytes => formatBytes({ bytes, base: 1000 })}
+          formatValue={(bytes) => formatBytes({ bytes, base: 1000 })}
         />
 
         <AnalyticsCard
@@ -96,7 +94,7 @@ export const AdminAnalyticsPage: Component = () => {
           icon="i-tabler-database-x"
           title={t('admin.analytics.deleted-storage')}
           value={() => documentStatsQuery.data?.deletedDocumentsSize}
-          formatValue={bytes => formatBytes({ bytes, base: 1000 })}
+          formatValue={(bytes) => formatBytes({ bytes, base: 1000 })}
         />
       </div>
     </div>

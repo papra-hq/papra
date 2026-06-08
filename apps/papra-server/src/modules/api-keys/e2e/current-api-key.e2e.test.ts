@@ -12,18 +12,26 @@ describe('api-key e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
         organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
+      );
 
       const createApiKeyResponse = await app.request(
         '/api/api-keys',
@@ -39,17 +47,17 @@ describe('api-key e2e', () => {
       );
 
       expect(createApiKeyResponse.status).toBe(200);
-      const { token, apiKey } = await createApiKeyResponse.json() as { token: string; apiKey: { id: string } };
+      const { token, apiKey } = (await createApiKeyResponse.json()) as {
+        token: string;
+        apiKey: { id: string };
+      };
 
-      const getCurrentApiKeyResponse = await app.request(
-        '/api/api-keys/current',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const getCurrentApiKeyResponse = await app.request('/api/api-keys/current', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const response = await getCurrentApiKeyResponse.json();
 
@@ -68,18 +76,26 @@ describe('api-key e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
         organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
+      );
 
       const getCurrentApiKeyResponse = await app.request(
         '/api/api-keys/current',
@@ -103,22 +119,21 @@ describe('api-key e2e', () => {
     test('when not authenticated at all, requesting the /api/api-keys/current route returns an error', async () => {
       const { db } = await createInMemoryDatabase();
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
-
-      const getCurrentApiKeyResponse = await app.request(
-        '/api/api-keys/current',
-        {
-          method: 'GET',
-        },
       );
+
+      const getCurrentApiKeyResponse = await app.request('/api/api-keys/current', {
+        method: 'GET',
+      });
 
       expect(getCurrentApiKeyResponse.status).toBe(401);
       const response = await getCurrentApiKeyResponse.json();
@@ -135,25 +150,24 @@ describe('api-key e2e', () => {
       const { db } = await createInMemoryDatabase();
       const invalidButLegitApiKeyToken = `${API_KEY_ID_PREFIX}_${'x'.repeat(API_KEY_TOKEN_LENGTH)}`;
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
-
-      const getCurrentApiKeyResponse = await app.request(
-        '/api/api-keys/current',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${invalidButLegitApiKeyToken}`,
-          },
-        },
       );
+
+      const getCurrentApiKeyResponse = await app.request('/api/api-keys/current', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${invalidButLegitApiKeyToken}`,
+        },
+      });
 
       expect(getCurrentApiKeyResponse.status).toBe(401);
       const response = await getCurrentApiKeyResponse.json();

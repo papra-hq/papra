@@ -1,6 +1,10 @@
 import type { Logger } from '@crowlog/logger';
 import process from 'node:process';
-import { addLogContext, createAsyncContextPlugin, wrapWithLoggerContext } from '@crowlog/async-context-plugin';
+import {
+  addLogContext,
+  createAsyncContextPlugin,
+  wrapWithLoggerContext,
+} from '@crowlog/async-context-plugin';
 import { createGlobalLogContextPlugin, createLoggerFactory } from '@crowlog/logger';
 
 const { addToGlobalLogContext, globalContextPlugin } = createGlobalLogContextPlugin<{

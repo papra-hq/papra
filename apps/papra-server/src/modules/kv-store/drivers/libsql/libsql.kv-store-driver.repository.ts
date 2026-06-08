@@ -25,7 +25,17 @@ async function getEntry({ key, db }: { key: string; db: Database }) {
   return { entry };
 }
 
-async function upsertEntry({ key, value, expiresAtMsEpoch, db }: { key: string; value: JsonSerializableValue; expiresAtMsEpoch: number | null; db: Database }) {
+async function upsertEntry({
+  key,
+  value,
+  expiresAtMsEpoch,
+  db,
+}: {
+  key: string;
+  value: JsonSerializableValue;
+  expiresAtMsEpoch: number | null;
+  db: Database;
+}) {
   await db
     .insert(kvStoreTable)
     .values({ key, value, expiresAt: expiresAtMsEpoch })
@@ -36,7 +46,15 @@ async function deleteEntry({ key, db }: { key: string; db: Database }) {
   await db.delete(kvStoreTable).where(eq(kvStoreTable.key, key));
 }
 
-async function deleteExpiredEntry({ key, nowMsEpoch, db }: { key: string; nowMsEpoch: number; db: Database }) {
+async function deleteExpiredEntry({
+  key,
+  nowMsEpoch,
+  db,
+}: {
+  key: string;
+  nowMsEpoch: number;
+  db: Database;
+}) {
   await db
     .delete(kvStoreTable)
     .where(
@@ -51,12 +69,7 @@ async function deleteExpiredEntry({ key, nowMsEpoch, db }: { key: string; nowMsE
 async function deleteAllExpiredEntries({ nowMsEpoch, db }: { nowMsEpoch: number; db: Database }) {
   const deleted = await db
     .delete(kvStoreTable)
-    .where(
-      and(
-        isNotNull(kvStoreTable.expiresAt),
-        lte(kvStoreTable.expiresAt, nowMsEpoch),
-      ),
-    )
+    .where(and(isNotNull(kvStoreTable.expiresAt), lte(kvStoreTable.expiresAt, nowMsEpoch)))
     .returning({ key: kvStoreTable.key });
 
   return { deletedCount: deleted.length };

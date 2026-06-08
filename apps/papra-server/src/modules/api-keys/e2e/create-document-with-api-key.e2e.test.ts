@@ -11,18 +11,26 @@ describe('api-key e2e', () => {
     const { db } = await createInMemoryDatabase({
       users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
       organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-      organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+      organizationMembers: [
+        {
+          organizationId: 'org_222222222222222222222222',
+          userId: 'usr_111111111111111111111111',
+          role: ORGANIZATION_ROLES.OWNER,
+        },
+      ],
     });
 
-    const { app } = createServer(createTestServerDependencies({
-      db,
-      config: overrideConfig({
-        env: 'test',
-        documentsStorage: {
-          driver: 'in-memory',
-        },
+    const { app } = createServer(
+      createTestServerDependencies({
+        db,
+        config: overrideConfig({
+          env: 'test',
+          documentsStorage: {
+            driver: 'in-memory',
+          },
+        }),
       }),
-    }));
+    );
 
     const createApiKeyResponse = await app.request(
       '/api/api-keys',
@@ -38,23 +46,26 @@ describe('api-key e2e', () => {
     );
 
     expect(createApiKeyResponse.status).toBe(200);
-    const { token } = await createApiKeyResponse.json() as { token: string };
+    const { token } = (await createApiKeyResponse.json()) as { token: string };
 
     const formData = new FormData();
     formData.append('file', new File(['test'], 'invoice.txt', { type: 'text/plain' }));
     const bodyResponse = new Response(formData);
 
-    const createDocumentResponse = await app.request('/api/organizations/org_222222222222222222222222/documents', {
-      method: 'POST',
-      headers: {
-        ...Object.fromEntries(bodyResponse.headers.entries()),
-        Authorization: `Bearer ${token}`,
+    const createDocumentResponse = await app.request(
+      '/api/organizations/org_222222222222222222222222/documents',
+      {
+        method: 'POST',
+        headers: {
+          ...Object.fromEntries(bodyResponse.headers.entries()),
+          Authorization: `Bearer ${token}`,
+        },
+        body: await bodyResponse.arrayBuffer(),
       },
-      body: await bodyResponse.arrayBuffer(),
-    });
+    );
 
     expect(createDocumentResponse.status).toBe(200);
-    const { document } = await createDocumentResponse.json() as { document: Document };
+    const { document } = (await createDocumentResponse.json()) as { document: Document };
 
     expect(document).to.deep.include({
       isDeleted: false,
@@ -69,12 +80,15 @@ describe('api-key e2e', () => {
       mimeType: 'text/plain',
     });
 
-    const fetchDocumentResponse = await app.request(`/api/organizations/org_222222222222222222222222/documents/${document.id}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const fetchDocumentResponse = await app.request(
+      `/api/organizations/org_222222222222222222222222/documents/${document.id}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     // The api key is not authorized to read the document, only documents:create is granted
     expect(fetchDocumentResponse.status).toBe(401);

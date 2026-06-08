@@ -1,8 +1,5 @@
 import type { PolymorphicProps } from '@kobalte/core/polymorphic';
-import type {
-  SwitchControlProps,
-  SwitchThumbProps,
-} from '@kobalte/core/switch';
+import type { SwitchControlProps, SwitchThumbProps } from '@kobalte/core/switch';
 import type { ParentProps, ValidComponent, VoidProps } from 'solid-js';
 import { Switch as SwitchPrimitive } from '@kobalte/core/switch';
 import { splitProps } from 'solid-js';
@@ -13,13 +10,14 @@ export const Switch = SwitchPrimitive;
 export const SwitchErrorMessage = SwitchPrimitive.ErrorMessage;
 export const SwitchDescription = SwitchPrimitive.Description;
 
-type switchControlProps<T extends ValidComponent = 'input'> = ParentProps<SwitchControlProps<T> & { class?: string }>;
+type switchControlProps<T extends ValidComponent = 'input'> = ParentProps<
+  SwitchControlProps<T> & { class?: string }
+>;
 
-export function SwitchControl<T extends ValidComponent = 'input'>(props: PolymorphicProps<T, switchControlProps<T>>) {
-  const [local, rest] = splitProps(props as switchControlProps, [
-    'class',
-    'children',
-  ]);
+export function SwitchControl<T extends ValidComponent = 'input'>(
+  props: PolymorphicProps<T, switchControlProps<T>>,
+) {
+  const [local, rest] = splitProps(props as switchControlProps, ['class', 'children']);
 
   return (
     <>
@@ -37,9 +35,13 @@ export function SwitchControl<T extends ValidComponent = 'input'>(props: Polymor
   );
 }
 
-type switchThumbProps<T extends ValidComponent = 'div'> = VoidProps<SwitchThumbProps<T> & { class?: string }>;
+type switchThumbProps<T extends ValidComponent = 'div'> = VoidProps<
+  SwitchThumbProps<T> & { class?: string }
+>;
 
-export function SwitchThumb<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, switchThumbProps<T>>) {
+export function SwitchThumb<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, switchThumbProps<T>>,
+) {
   const [local, rest] = splitProps(props as switchThumbProps, ['class']);
 
   return (

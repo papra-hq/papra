@@ -70,7 +70,7 @@ If you are a company, you can also [contact me](https://papra.app/contact) to di
 
 ## Self-hosting
 
-Papra is dedicated to providing a simple yet highly configurable self-hosting experience. 
+Papra is dedicated to providing a simple yet highly configurable self-hosting experience.
 
 For a quick start, simply run the following command:
 

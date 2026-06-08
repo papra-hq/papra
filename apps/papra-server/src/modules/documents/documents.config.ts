@@ -13,10 +13,7 @@ export const documentsConfig = {
   },
   ocrLanguages: {
     doc: 'The languages codes to use for OCR, multiple languages can be specified by separating them with a comma. See https://tesseract-ocr.github.io/tessdoc/Data-Files#data-files-for-version-400-november-29-2016',
-    schema: v.union([
-      stringCoercedOcrLanguagesSchema,
-      ocrLanguagesSchema,
-    ]),
+    schema: v.union([stringCoercedOcrLanguagesSchema, ocrLanguagesSchema]),
     default: ['eng'],
     env: 'DOCUMENTS_OCR_LANGUAGES',
   },

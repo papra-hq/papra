@@ -10,7 +10,9 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { resetPassword } from '../auth.services';
 
-export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: string }) => Promise<void> }> = (props) => {
+export const ResetPasswordForm: Component<{
+  onSubmit: (args: { newPassword: string }) => Promise<void>;
+}> = (props) => {
   const { t } = useI18n();
 
   const { form, Form, Field } = createForm({
@@ -30,8 +32,18 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: stri
       <Field name="newPassword">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="newPassword">{t('auth.reset-password.form.new-password.label')}</TextFieldLabel>
-            <TextField type="password" id="newPassword" placeholder={t('auth.reset-password.form.new-password.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextFieldLabel for="newPassword">
+              {t('auth.reset-password.form.new-password.label')}
+            </TextFieldLabel>
+            <TextField
+              type="password"
+              id="newPassword"
+              placeholder={t('auth.reset-password.form.new-password.placeholder')}
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -42,7 +54,6 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { newPassword: stri
       </Button>
 
       <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -84,33 +95,24 @@ export const ResetPasswordPage: Component = () => {
     <AuthLayout>
       <div class="flex items-center justify-center p-6 sm:pb-32">
         <div class="max-w-sm w-full">
-          <h1 class="text-xl font-bold">
-            {t('auth.reset-password.title')}
-          </h1>
+          <h1 class="text-xl font-bold">{t('auth.reset-password.title')}</h1>
 
-          {getHasPasswordBeenReset()
-            ? (
-                <>
-                  <div class="text-muted-foreground mt-1 mb-4">
-                    {t('auth.reset-password.reset')}
-                  </div>
+          {getHasPasswordBeenReset() ? (
+            <>
+              <div class="text-muted-foreground mt-1 mb-4">{t('auth.reset-password.reset')}</div>
 
-                  <Button as={A} href="/login" class="w-full">
-                    {t('auth.reset-password.back-to-login')}
-                    <div class="i-tabler-login-2 ml-2 size-4" />
-                  </Button>
-                </>
-              )
-            : (
-                <>
-                  <p class="text-muted-foreground mt-1 mb-4">
-                    {t('auth.reset-password.description')}
-                  </p>
+              <Button as={A} href="/login" class="w-full">
+                {t('auth.reset-password.back-to-login')}
+                <div class="i-tabler-login-2 ml-2 size-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <p class="text-muted-foreground mt-1 mb-4">{t('auth.reset-password.description')}</p>
 
-                  <ResetPasswordForm onSubmit={onPasswordResetRequested} />
-                </>
-              )}
-
+              <ResetPasswordForm onSubmit={onPasswordResetRequested} />
+            </>
+          )}
         </div>
       </div>
     </AuthLayout>

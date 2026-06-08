@@ -4,15 +4,17 @@ import { defineIntakeEmailUsernameDriverFactory } from '../intake-email-username
 
 export const RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME = 'random';
 
-export const randomIntakeEmailUsernameDriverFactory = defineIntakeEmailUsernameDriverFactory(({ logger = createLogger({ namespace: 'intake-emails.addresses-drivers.random' }) }) => {
-  return {
-    name: RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME,
-    generateIntakeEmailUsername: async () => {
-      const username = generateHumanReadableId();
+export const randomIntakeEmailUsernameDriverFactory = defineIntakeEmailUsernameDriverFactory(
+  ({ logger = createLogger({ namespace: 'intake-emails.addresses-drivers.random' }) }) => {
+    return {
+      name: RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME,
+      generateIntakeEmailUsername: async () => {
+        const username = generateHumanReadableId();
 
-      logger.debug({ username }, 'Generated email address');
+        logger.debug({ username }, 'Generated email address');
 
-      return { username };
-    },
-  };
-});
+        return { username };
+      },
+    };
+  },
+);

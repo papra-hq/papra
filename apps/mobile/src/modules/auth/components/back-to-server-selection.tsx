@@ -14,9 +14,7 @@ export function BackToServerSelectionButton() {
       onPress={() => router.push('/config/server-selection')}
     >
       <Icon name="arrow-left" size={20} color={themeColors.mutedForeground} />
-      <Text style={styles.backToServerText}>
-        Select server
-      </Text>
+      <Text style={styles.backToServerText}>Select server</Text>
     </TouchableOpacity>
   );
 }

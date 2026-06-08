@@ -36,10 +36,7 @@ export const smtpEmailDriverConfig = {
   },
   rawConfig: {
     doc: 'The raw configuration for the nodemailer SMTP client in JSON format for advanced use cases. If set, this will override all other config options. See https://nodemailer.com/smtp/ for more details.',
-    schema: v.optional(v.pipe(
-      v.string(),
-      v.parseJson(),
-    )),
+    schema: v.optional(v.pipe(v.string(), v.parseJson())),
     default: undefined,
     env: 'SMTP_JSON_CONFIG',
   },

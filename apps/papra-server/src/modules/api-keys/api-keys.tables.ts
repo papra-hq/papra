@@ -21,10 +21,13 @@ export const apiKeysTable = sqliteTable(
       .references(() => usersTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     lastUsedAt: integer('last_used_at', { mode: 'timestamp_ms' }),
     expiresAt: integer('expires_at', { mode: 'timestamp_ms' }),
-    permissions: text('permissions', { mode: 'json' }).notNull().$type<ApiKeyPermissions[]>().default([]),
+    permissions: text('permissions', { mode: 'json' })
+      .notNull()
+      .$type<ApiKeyPermissions[]>()
+      .default([]),
     allOrganizations: integer('all_organizations', { mode: 'boolean' }).notNull().default(false),
   },
-  table => [
+  (table) => [
     // To get an API key by its token
     index('key_hash_index').on(table.keyHash),
   ],

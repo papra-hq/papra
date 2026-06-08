@@ -10,7 +10,7 @@ export function createCorsMiddleware({ config }: { config: Config }) {
         return origin;
       }
 
-      return allowedOrigins.find(allowedOrigin => allowedOrigin === origin);
+      return allowedOrigins.find((allowedOrigin) => allowedOrigin === origin);
     },
     credentials: true,
   });

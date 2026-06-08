@@ -17,15 +17,25 @@ export const UpdateTaggingRulePage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tagging-rules', params.taggingRuleId],
-    queryFn: () => getTaggingRule({ organizationId: params.organizationId, taggingRuleId: params.taggingRuleId }),
+    queryFn: () =>
+      getTaggingRule({
+        organizationId: params.organizationId,
+        taggingRuleId: params.taggingRuleId,
+      }),
   }));
 
   const updateTaggingRuleMutation = useMutation(() => ({
     mutationFn: async ({ taggingRule }: { taggingRule: TaggingRuleForCreation }) => {
-      await updateTaggingRule({ organizationId: params.organizationId, taggingRuleId: params.taggingRuleId, taggingRule });
+      await updateTaggingRule({
+        organizationId: params.organizationId,
+        taggingRuleId: params.taggingRuleId,
+        taggingRule,
+      });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'tagging-rules'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'tagging-rules'],
+      });
 
       createToast({
         message: t('tagging-rules.create.success'),
@@ -44,29 +54,23 @@ export const UpdateTaggingRulePage: Component = () => {
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold">
-          {t('tagging-rules.update.title')}
-        </h1>
+        <h1 class="text-xl font-bold">{t('tagging-rules.update.title')}</h1>
       </div>
 
       <Show when={query.data?.taggingRule}>
-        {getTaggingRule => (
+        {(getTaggingRule) => (
           <TaggingRuleForm
             onSubmit={({ taggingRule }) => updateTaggingRuleMutation.mutate({ taggingRule })}
             organizationId={params.organizationId}
             taggingRule={getTaggingRule()}
-            submitButton={(
-              <Button
-                type="submit"
-                isLoading={updateTaggingRuleMutation.isPending}
-              >
+            submitButton={
+              <Button type="submit" isLoading={updateTaggingRuleMutation.isPending}>
                 {t('tagging-rules.update.submit')}
               </Button>
-            )}
+            }
           />
         )}
       </Show>
-
     </div>
   );
 };

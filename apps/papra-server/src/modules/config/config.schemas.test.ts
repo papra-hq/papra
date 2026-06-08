@@ -19,26 +19,30 @@ describe('config schemas', () => {
       expect(v.parse(booleanishSchema, false)).toBe(false);
       expect(v.parse(booleanishSchema, '0')).toBe(false);
 
-      expect(() => v.parse(booleanishSchema, 'foo')).toThrow('Expected a boolean or a string that can be parsed as a boolean');
-      expect(() => v.parse(booleanishSchema, 1)).toThrow('Expected a boolean or a string that can be parsed as a boolean');
-      expect(() => v.parse(booleanishSchema, 2)).toThrow('Expected a boolean or a string that can be parsed as a boolean');
+      expect(() => v.parse(booleanishSchema, 'foo')).toThrow(
+        'Expected a boolean or a string that can be parsed as a boolean',
+      );
+      expect(() => v.parse(booleanishSchema, 1)).toThrow(
+        'Expected a boolean or a string that can be parsed as a boolean',
+      );
+      expect(() => v.parse(booleanishSchema, 2)).toThrow(
+        'Expected a boolean or a string that can be parsed as a boolean',
+      );
     });
   });
 
   describe('coercedUrlListSchema', () => {
     test('this schema validates and coerces a comma separated string to an array of urls', () => {
-      expect(v.parse(coercedUrlListSchema, 'http://localhost:3000')).toEqual(['http://localhost:3000']);
+      expect(v.parse(coercedUrlListSchema, 'http://localhost:3000')).toEqual([
+        'http://localhost:3000',
+      ]);
       expect(v.parse(coercedUrlListSchema, 'http://localhost:3000,http://localhost:3001')).toEqual([
         'http://localhost:3000',
         'http://localhost:3001',
       ]);
-      expect(v.parse(coercedUrlListSchema, [
-        'http://localhost:3000',
-        'http://localhost:3001',
-      ])).toEqual([
-        'http://localhost:3000',
-        'http://localhost:3001',
-      ]);
+      expect(
+        v.parse(coercedUrlListSchema, ['http://localhost:3000', 'http://localhost:3001']),
+      ).toEqual(['http://localhost:3000', 'http://localhost:3001']);
     });
 
     test('otherwise it throws an error', () => {

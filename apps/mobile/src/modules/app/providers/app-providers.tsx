@@ -9,9 +9,7 @@ type AppProvidersProps = {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryProvider>
-      <AlertProvider>
-        {children}
-      </AlertProvider>
+      <AlertProvider>{children}</AlertProvider>
     </QueryProvider>
   );
 }

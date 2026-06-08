@@ -89,7 +89,7 @@ We recommend running the app locally for development. Follow these steps:
    ```
 
 3. Build the monorepo packages:
-   
+
    As the apps rely on internal packages, you need to build them first.
 
    ```bash
@@ -101,7 +101,7 @@ We recommend running the app locally for development. Follow these steps:
    ```bash
    cd apps/papra-server
    # Run the migration script to create the database schema
-   pnpm migrate:up 
+   pnpm migrate:up
    # Start the server
    pnpm dev
    ```
@@ -189,15 +189,15 @@ We use **Vitest** for testing. Each package comes with its own testing commands.
 
 - To run the tests for any package:
 
-   ```bash
-   pnpm test
-   ```
+  ```bash
+  pnpm test
+  ```
 
 - To run tests in watch mode:
 
-   ```bash
-   pnpm test:watch
-   ```
+  ```bash
+  pnpm test:watch
+  ```
 
 All new features must be covered by unit or integration tests. Be sure to use business-oriented test names (avoid vague descriptions like `it('should return true')`).
 

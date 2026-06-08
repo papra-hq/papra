@@ -12,7 +12,9 @@ import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { requestPasswordReset } from '../auth.services';
 import { OpenEmailProvider } from '../components/open-email-provider.component';
 
-export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) => Promise<void> }> = (props) => {
+export const ResetPasswordForm: Component<{
+  onSubmit: (args: { email: string }) => Promise<void>;
+}> = (props) => {
   const { t } = useI18n();
 
   const { form, Form, Field } = createForm({
@@ -32,8 +34,18 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) 
       <Field name="email">
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
-            <TextFieldLabel for="email">{t('auth.request-password-reset.form.email.label')}</TextFieldLabel>
-            <TextField type="email" id="email" placeholder={t('auth.request-password-reset.form.email.placeholder')} {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} />
+            <TextFieldLabel for="email">
+              {t('auth.request-password-reset.form.email.label')}
+            </TextFieldLabel>
+            <TextField
+              type="email"
+              id="email"
+              placeholder={t('auth.request-password-reset.form.email.placeholder')}
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -44,7 +56,6 @@ export const ResetPasswordForm: Component<{ onSubmit: (args: { email: string }) 
       </Button>
 
       <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -84,31 +95,32 @@ export const RequestPasswordResetPage: Component = () => {
     <AuthLayout>
       <div class="flex items-center justify-center p-6 sm:pb-32">
         <div class="max-w-sm w-full">
-          <h1 class="text-xl font-bold">
-            {t('auth.request-password-reset.title')}
-          </h1>
+          <h1 class="text-xl font-bold">{t('auth.request-password-reset.title')}</h1>
 
-          {getHasPasswordResetBeenRequested()
-            ? (
-                <>
-                  <div class="text-muted-foreground mt-1 mb-4">
-                    {t('auth.request-password-reset.requested')}
-                  </div>
+          {getHasPasswordResetBeenRequested() ? (
+            <>
+              <div class="text-muted-foreground mt-1 mb-4">
+                {t('auth.request-password-reset.requested')}
+              </div>
 
-                  <OpenEmailProvider email={getEmail()} variant="secondary" class="w-full mb-4" />
-                </>
-              )
-            : (
-                <>
-                  <p class="text-muted-foreground mt-1 mb-4">
-                    {t('auth.request-password-reset.description')}
-                  </p>
+              <OpenEmailProvider email={getEmail()} variant="secondary" class="w-full mb-4" />
+            </>
+          ) : (
+            <>
+              <p class="text-muted-foreground mt-1 mb-4">
+                {t('auth.request-password-reset.description')}
+              </p>
 
-                  <ResetPasswordForm onSubmit={onPasswordResetRequested} />
-                </>
-              )}
+              <ResetPasswordForm onSubmit={onPasswordResetRequested} />
+            </>
+          )}
 
-          <Button as={A} href="/login" class="w-full" variant={getHasPasswordResetBeenRequested() ? 'default' : 'ghost'}>
+          <Button
+            as={A}
+            href="/login"
+            class="w-full"
+            variant={getHasPasswordResetBeenRequested() ? 'default' : 'ghost'}
+          >
             <div class="i-tabler-arrow-left mr-2 size-4" />
             {t('auth.request-password-reset.back-to-login')}
           </Button>

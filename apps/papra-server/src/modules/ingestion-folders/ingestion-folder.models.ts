@@ -24,25 +24,59 @@ export function getOrganizationIdFromFilePath({ relativeFilePath }: { relativeFi
   return { organizationId: maybeOrganizationId };
 }
 
-export function addTimestampToFilename({ fileName, now = new Date() }: { fileName: string; now?: Date }): string {
+export function addTimestampToFilename({
+  fileName,
+  now = new Date(),
+}: {
+  fileName: string;
+  now?: Date;
+}): string {
   const { name, ext } = parse(fileName);
   const timestamp = now.getTime();
 
   return `${name}_${timestamp}${ext}`;
 }
 
-export function getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({ path, organizationIngestionFolderPath }: { path: string; organizationIngestionFolderPath: string }) {
+export function getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+  path,
+  organizationIngestionFolderPath,
+}: {
+  path: string;
+  organizationIngestionFolderPath: string;
+}) {
   return isAbsolute(path) ? path : join(organizationIngestionFolderPath, path);
 }
 
-export function isFileInErrorFolder({ filePath, errorFolder, organizationIngestionFolderPath }: { filePath: string; errorFolder: string; organizationIngestionFolderPath: string }) {
-  const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({ path: errorFolder, organizationIngestionFolderPath });
+export function isFileInErrorFolder({
+  filePath,
+  errorFolder,
+  organizationIngestionFolderPath,
+}: {
+  filePath: string;
+  errorFolder: string;
+  organizationIngestionFolderPath: string;
+}) {
+  const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+    path: errorFolder,
+    organizationIngestionFolderPath,
+  });
 
   return filePath.startsWith(errorFolderPath);
 }
 
-export function isFileInDoneFolder({ filePath, doneFolder, organizationIngestionFolderPath }: { filePath: string; doneFolder: string; organizationIngestionFolderPath: string }) {
-  const doneFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({ path: doneFolder, organizationIngestionFolderPath });
+export function isFileInDoneFolder({
+  filePath,
+  doneFolder,
+  organizationIngestionFolderPath,
+}: {
+  filePath: string;
+  doneFolder: string;
+  organizationIngestionFolderPath: string;
+}) {
+  const doneFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+    path: doneFolder,
+    organizationIngestionFolderPath,
+  });
 
   return filePath.startsWith(doneFolderPath);
 }

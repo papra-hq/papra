@@ -1,12 +1,23 @@
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { useQuery } from '@tanstack/solid-query';
-import { createMemo, createResource, lazy, Match, onCleanup, Show, Suspense, Switch } from 'solid-js';
+import {
+  createMemo,
+  createResource,
+  lazy,
+  Match,
+  onCleanup,
+  Show,
+  Suspense,
+  Switch,
+} from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
 
-const PdfViewer = lazy(() => import('./pdf-viewer/simple-pdf-viewer.component').then(m => ({ default: m.SimplePdfViewer })));
+const PdfViewer = lazy(() =>
+  import('./pdf-viewer/simple-pdf-viewer.component').then((m) => ({ default: m.SimplePdfViewer })),
+);
 
 const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
@@ -42,8 +53,10 @@ async function isBlobTextSafe(blob: Blob): Promise<boolean> {
     for (let i = 0; i < text.length; i++) {
       const charCode = text.charCodeAt(i);
       // Check for control characters (0-31, 127-159) excluding common whitespace
-      if ((charCode >= 0 && charCode <= 31 && ![9, 10, 13, 12, 11].includes(charCode))
-        || (charCode >= 127 && charCode <= 159)) {
+      if (
+        (charCode >= 0 && charCode <= 31 && ![9, 10, 13, 12, 11].includes(charCode)) ||
+        (charCode >= 127 && charCode <= 159)
+      ) {
         controlCharCount++;
       }
     }
@@ -60,13 +73,13 @@ async function isBlobTextSafe(blob: Blob): Promise<boolean> {
 
     // Common binary file signatures to check
     const binarySignatures = [
-      [0xFF, 0xD8, 0xFF], // JPEG
-      [0x89, 0x50, 0x4E, 0x47], // PNG
+      [0xff, 0xd8, 0xff], // JPEG
+      [0x89, 0x50, 0x4e, 0x47], // PNG
       [0x47, 0x49, 0x46], // GIF
       [0x25, 0x50, 0x44, 0x46], // PDF
-      [0x50, 0x4B, 0x03, 0x04], // ZIP/DOCX/XLSX
-      [0x7F, 0x45, 0x4C, 0x46], // ELF executable
-      [0x4D, 0x5A], // Windows executable
+      [0x50, 0x4b, 0x03, 0x04], // ZIP/DOCX/XLSX
+      [0x7f, 0x45, 0x4c, 0x46], // ELF executable
+      [0x4d, 0x5a], // Windows executable
     ];
 
     for (const signature of binarySignatures) {
@@ -113,7 +126,8 @@ const TextFromBlob: Component<{ blob: Blob }> = (props) => {
 export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = (props) => {
   const getIsImage = () => imageMimeType.includes(props.mimeType);
   const getIsPdf = () => pdfMimeType.includes(props.mimeType);
-  const getIsTxtLike = () => txtLikeMimeType.includes(props.mimeType) || props.mimeType.startsWith('text/');
+  const getIsTxtLike = () =>
+    txtLikeMimeType.includes(props.mimeType) || props.mimeType.startsWith('text/');
   const { t } = useI18n();
 
   const getObjectUrl = createMemo<string | undefined>((prev) => {
@@ -134,7 +148,7 @@ export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = 
 
   // Create a resource to check if octet-stream blob is text-safe
   const [isOctetStreamTextSafe] = createResource(
-    () => props.blob && props.mimeType === 'application/octet-stream' ? props.blob : null,
+    () => (props.blob && props.mimeType === 'application/octet-stream' ? props.blob : null),
     async (blob) => {
       if (!blob) {
         return false;
@@ -180,15 +194,23 @@ export const DocumentBlobPreview: Component<{ blob: Blob; mimeType: string }> = 
 
 export const DocumentPreview: Component<{ document: Document }> = (props) => {
   const query = useQuery(() => ({
-    queryKey: ['organizations', props.document.organizationId, 'documents', props.document.id, 'file'],
-    queryFn: () => fetchDocumentFile({ documentId: props.document.id, organizationId: props.document.organizationId }),
+    queryKey: [
+      'organizations',
+      props.document.organizationId,
+      'documents',
+      props.document.id,
+      'file',
+    ],
+    queryFn: () =>
+      fetchDocumentFile({
+        documentId: props.document.id,
+        organizationId: props.document.organizationId,
+      }),
   }));
 
   return (
     <Show when={query.data}>
-      {getBlob => (
-        <DocumentBlobPreview blob={getBlob()} mimeType={props.document.mimeType} />
-      )}
+      {(getBlob) => <DocumentBlobPreview blob={getBlob()} mimeType={props.document.mimeType} />}
     </Show>
   );
 };

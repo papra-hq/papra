@@ -62,7 +62,12 @@ export async function isShareLinkAccessTokenValid({
   }
 
   try {
-    const payload = await verify(accessToken, getSigningKey({ authSecret, passwordHash }), { alg: ACCESS_TOKEN_ALGORITHM, exp: false, iat: false, nbf: false });
+    const payload = await verify(accessToken, getSigningKey({ authSecret, passwordHash }), {
+      alg: ACCESS_TOKEN_ALGORITHM,
+      exp: false,
+      iat: false,
+      nbf: false,
+    });
 
     if (payload.shareLinkId !== shareLinkId) {
       return { isValid: false };

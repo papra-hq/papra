@@ -9,7 +9,7 @@ const searchServicesFactories = {
 };
 
 type DocumentsSearchFactoriesArgs = {
-  [K in keyof typeof searchServicesFactories]: Parameters<typeof searchServicesFactories[K]>[0];
+  [K in keyof typeof searchServicesFactories]: Parameters<(typeof searchServicesFactories)[K]>[0];
 }[keyof typeof searchServicesFactories];
 
 export function createDocumentSearchServices({

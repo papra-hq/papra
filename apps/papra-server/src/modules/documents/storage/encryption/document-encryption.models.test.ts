@@ -1,7 +1,10 @@
 import { Buffer } from 'node:buffer';
 import { describe, expect, test } from 'vitest';
 import { getKekByVersion, getMostRecentDocumentKek } from './document-encryption.models';
-import { createDocumentKekNotFoundError, createDocumentKekRequiredError } from './document-encryptions.errors';
+import {
+  createDocumentKekNotFoundError,
+  createDocumentKekRequiredError,
+} from './document-encryptions.errors';
 
 describe('document-encryption models', () => {
   describe('getMostRecentDocumentKek', () => {
@@ -12,16 +15,19 @@ describe('document-encryption models', () => {
         { version: '2', key: Buffer.from('key2') },
       ];
 
-      expect(
-        getMostRecentDocumentKek({ documentKeyEncryptionKeys }),
-      ).to.eql(
-        { version: '3', key: Buffer.from('key3') },
-      );
+      expect(getMostRecentDocumentKek({ documentKeyEncryptionKeys })).to.eql({
+        version: '3',
+        key: Buffer.from('key3'),
+      });
     });
 
     test('when no KEK is found, an error is thrown', () => {
-      expect(() => getMostRecentDocumentKek({ documentKeyEncryptionKeys: undefined })).toThrow(createDocumentKekRequiredError());
-      expect(() => getMostRecentDocumentKek({ documentKeyEncryptionKeys: [] })).toThrow(createDocumentKekRequiredError());
+      expect(() => getMostRecentDocumentKek({ documentKeyEncryptionKeys: undefined })).toThrow(
+        createDocumentKekRequiredError(),
+      );
+      expect(() => getMostRecentDocumentKek({ documentKeyEncryptionKeys: [] })).toThrow(
+        createDocumentKekRequiredError(),
+      );
     });
   });
 
@@ -33,12 +39,19 @@ describe('document-encryption models', () => {
         { version: '2', key: Buffer.from('key2') },
       ];
 
-      expect(getKekByVersion({ documentKeyEncryptionKeys, version: '2' })).to.eql({ version: '2', key: Buffer.from('key2') });
+      expect(getKekByVersion({ documentKeyEncryptionKeys, version: '2' })).to.eql({
+        version: '2',
+        key: Buffer.from('key2'),
+      });
     });
 
     test('when no KEK is found, an error is thrown', () => {
-      expect(() => getKekByVersion({ documentKeyEncryptionKeys: [], version: '2' })).toThrow(createDocumentKekNotFoundError());
-      expect(() => getKekByVersion({ documentKeyEncryptionKeys: undefined, version: '2' })).toThrow(createDocumentKekNotFoundError());
+      expect(() => getKekByVersion({ documentKeyEncryptionKeys: [], version: '2' })).toThrow(
+        createDocumentKekNotFoundError(),
+      );
+      expect(() => getKekByVersion({ documentKeyEncryptionKeys: undefined, version: '2' })).toThrow(
+        createDocumentKekNotFoundError(),
+      );
     });
   });
 });

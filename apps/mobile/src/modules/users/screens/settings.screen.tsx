@@ -1,11 +1,6 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useRouter } from 'expo-router';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
@@ -58,9 +53,7 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Email Verified</Text>
-              <Text style={styles.infoValue}>
-                {session.data.user.emailVerified ? 'Yes' : 'No'}
-              </Text>
+              <Text style={styles.infoValue}>{session.data.user.emailVerified ? 'Yes' : 'No'}</Text>
             </View>
           </>
         )}
@@ -71,9 +64,7 @@ export default function SettingsScreen() {
           style={[styles.actionButton, styles.dangerButton]}
           onPress={handleSignOut}
         >
-          <Text style={[styles.actionButtonText, styles.dangerText]}>
-            Sign Out
-          </Text>
+          <Text style={[styles.actionButtonText, styles.dangerText]}>Sign Out</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -10,7 +10,12 @@ import { S3_STORAGE_DRIVER_NAME } from './drivers/s3/s3.storage-driver';
 import { documentEncryptionConfig } from './encryption/document-encryption.config';
 import { storagePatternConfig } from './patterns/storage-pattern.config';
 
-const driverNames = [FS_STORAGE_DRIVER_NAME, S3_STORAGE_DRIVER_NAME, IN_MEMORY_STORAGE_DRIVER_NAME, AZ_BLOB_STORAGE_DRIVER_NAME] as const;
+const driverNames = [
+  FS_STORAGE_DRIVER_NAME,
+  S3_STORAGE_DRIVER_NAME,
+  IN_MEMORY_STORAGE_DRIVER_NAME,
+  AZ_BLOB_STORAGE_DRIVER_NAME,
+] as const;
 
 export const documentStorageConfig = {
   maxUploadSize: {
@@ -20,7 +25,7 @@ export const documentStorageConfig = {
     env: 'DOCUMENT_STORAGE_MAX_UPLOAD_SIZE',
   },
   driver: {
-    doc: `The driver to use for document storage, values can be one of: ${driverNames.map(x => `\`${x}\``).join(', ')}`,
+    doc: `The driver to use for document storage, values can be one of: ${driverNames.map((x) => `\`${x}\``).join(', ')}`,
     schema: v.picklist(driverNames),
     default: FS_STORAGE_DRIVER_NAME,
     env: 'DOCUMENT_STORAGE_DRIVER',

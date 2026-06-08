@@ -18,13 +18,13 @@ export function findMatchingLocale({
   supportedLocales: Intl.Locale[];
 }) {
   for (const locale of preferredLocales) {
-    const localeMatchRegion = supportedLocales.find(x => x.baseName === locale.baseName);
+    const localeMatchRegion = supportedLocales.find((x) => x.baseName === locale.baseName);
 
     if (localeMatchRegion) {
       return localeMatchRegion.baseName as Locale;
     }
 
-    const localeMatchLanguage = supportedLocales.find(x => x.language === locale.language);
+    const localeMatchLanguage = supportedLocales.find((x) => x.language === locale.language);
     if (localeMatchLanguage) {
       return localeMatchLanguage.baseName as Locale;
     }
@@ -32,13 +32,18 @@ export function findMatchingLocale({
   return 'en';
 }
 
-export function createTranslator<Dict extends Record<string, string>>({ getDictionary }: { getDictionary: () => Dict }) {
+export function createTranslator<Dict extends Record<string, string>>({
+  getDictionary,
+}: {
+  getDictionary: () => Dict;
+}) {
   const { parse } = createBranchlet();
 
   return (key: keyof Dict, args?: Record<string, string | number>) => {
     const translationFromDictionary = getDictionary()[key];
 
     if (!translationFromDictionary && import.meta.env.DEV) {
+      // oxlint-disable-next-line no-console
       console.warn(`Translation not found for key: ${String(key)}`);
     }
 
@@ -50,7 +55,11 @@ export function createTranslator<Dict extends Record<string, string>>({ getDicti
   };
 }
 
-export function createFragmentTranslator<Dict extends Record<string, string>>({ getDictionary }: { getDictionary: () => Dict }) {
+export function createFragmentTranslator<Dict extends Record<string, string>>({
+  getDictionary,
+}: {
+  getDictionary: () => Dict;
+}) {
   return (key: keyof Dict, args?: Record<string, JSX.Element>) => {
     const translation: string = getDictionary()[key] ?? key;
 
@@ -76,13 +85,23 @@ export function createFragmentTranslator<Dict extends Record<string, string>>({ 
 }
 
 export function createDateFormatter({ getLocale }: { getLocale: () => string }) {
-  return (date: CoercibleDate, options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }) => {
+  return (
+    date: CoercibleDate,
+    options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' },
+  ) => {
     return new Intl.DateTimeFormat(getLocale(), options).format(coerceDate(date));
   };
 }
 
 export function createRelativeTimeFormatter({ getLocale }: { getLocale: () => string }) {
-  return (rawDate: CoercibleDate, { now = new Date(), numeric = 'auto', style = 'long' }: { now?: Date; numeric?: 'auto' | 'always'; style?: 'long' | 'short' } = {}) => {
+  return (
+    rawDate: CoercibleDate,
+    {
+      now = new Date(),
+      numeric = 'auto',
+      style = 'long',
+    }: { now?: Date; numeric?: 'auto' | 'always'; style?: 'long' | 'short' } = {},
+  ) => {
     const formatter = new Intl.RelativeTimeFormat(getLocale(), { numeric, style });
 
     const date = coerceDate(rawDate);

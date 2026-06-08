@@ -61,39 +61,44 @@ type FormatSelectorProps = {
   onFormatChange: (format: ScanOutputFormat) => void;
 };
 
-export function FormatSelector({ isSinglePage, selectedFormat, onFormatChange }: FormatSelectorProps) {
+export function FormatSelector({
+  isSinglePage,
+  selectedFormat,
+  onFormatChange,
+}: FormatSelectorProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
 
   const options = formatOptions
-    .filter(option => !isSinglePage || option.key !== 'pdf-per-page')
-    .map(option => ({
+    .filter((option) => !isSinglePage || option.key !== 'pdf-per-page')
+    .map((option) => ({
       key: option.key,
       icon: option.icon,
       label: isSinglePage ? option.singleScan.label : option.multiScan.label,
       description: isSinglePage ? option.singleScan.description : option.multiScan.description,
     }));
 
-  const selectedOption = options.find(opt => opt.key === selectedFormat);
+  const selectedOption = options.find((opt) => opt.key === selectedFormat);
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Output Format</Text>
 
       <View style={styles.segmentedControl}>
-        {options.map(option => (
+        {options.map((option) => (
           <TouchableOpacity
             key={option.key}
-            style={[
-              styles.segment,
-              selectedFormat === option.key && styles.segmentSelected,
-            ]}
+            style={[styles.segment, selectedFormat === option.key && styles.segmentSelected]}
             onPress={() => onFormatChange(option.key)}
           >
             <Icon
               name={option.icon}
               size={18}
-              color={selectedFormat === option.key ? themeColors.primaryForeground : themeColors.foreground}
+              color={
+                selectedFormat === option.key
+                  ? themeColors.primaryForeground
+                  : themeColors.foreground
+              }
             />
             <Text
               style={[

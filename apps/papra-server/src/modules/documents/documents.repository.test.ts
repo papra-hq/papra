@@ -12,7 +12,9 @@ describe('documents repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -38,7 +40,10 @@ describe('documents repository', () => {
         isDeleted: false,
       });
 
-      const documents = await db.select().from(documentsTable).orderBy(desc(documentsTable.createdAt));
+      const documents = await db
+        .select()
+        .from(documentsTable)
+        .orderBy(desc(documentsTable.createdAt));
 
       expect(documents).to.have.length(1);
       expect(documents[0]).to.include({
@@ -57,7 +62,10 @@ describe('documents repository', () => {
         organizationId: 'organization-1',
       });
 
-      const documentsAfterDelete = await db.select().from(documentsTable).orderBy(desc(documentsTable.createdAt));
+      const documentsAfterDelete = await db
+        .select()
+        .from(documentsTable)
+        .orderBy(desc(documentsTable.createdAt));
 
       expect(documentsAfterDelete).to.have.length(1);
       expect(documentsAfterDelete[0]!.isDeleted).toBe(true);
@@ -115,12 +123,82 @@ describe('documents repository', () => {
           { organizationId: 'organization-2', userId: 'user-2', role: ORGANIZATION_ROLES.OWNER },
         ],
         documents: [
-          { id: 'doc-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 200, originalSha256Hash: 'hash1' },
-          { id: 'doc-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 2', originalName: 'document-2.pdf', content: 'lorem', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 10, originalSha256Hash: 'hash2' },
-          { id: 'doc-3', organizationId: 'organization-1', createdBy: 'user-1', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 5, originalSha256Hash: 'hash3' },
-          { id: 'doc-4', organizationId: 'organization-2', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash4' },
-          { id: 'doc-5', organizationId: 'organization-1', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash5', deletedAt: new Date(0), isDeleted: true },
-          { id: 'doc-6', organizationId: 'organization-1', createdBy: 'user-2', name: 'File 3', originalName: 'document-3.pdf', content: 'ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSize: 100, originalSha256Hash: 'hash6', deletedAt: new Date(0), isDeleted: true },
+          {
+            id: 'doc-1',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'Document 1',
+            originalName: 'document-1.pdf',
+            content: 'lorem ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 200,
+            originalSha256Hash: 'hash1',
+          },
+          {
+            id: 'doc-2',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'File 2',
+            originalName: 'document-2.pdf',
+            content: 'lorem',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 10,
+            originalSha256Hash: 'hash2',
+          },
+          {
+            id: 'doc-3',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'File 3',
+            originalName: 'document-3.pdf',
+            content: 'ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 5,
+            originalSha256Hash: 'hash3',
+          },
+          {
+            id: 'doc-4',
+            organizationId: 'organization-2',
+            createdBy: 'user-2',
+            name: 'File 3',
+            originalName: 'document-3.pdf',
+            content: 'ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 100,
+            originalSha256Hash: 'hash4',
+          },
+          {
+            id: 'doc-5',
+            organizationId: 'organization-1',
+            createdBy: 'user-2',
+            name: 'File 3',
+            originalName: 'document-3.pdf',
+            content: 'ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 100,
+            originalSha256Hash: 'hash5',
+            deletedAt: new Date(0),
+            isDeleted: true,
+          },
+          {
+            id: 'doc-6',
+            organizationId: 'organization-1',
+            createdBy: 'user-2',
+            name: 'File 3',
+            originalName: 'document-3.pdf',
+            content: 'ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSize: 100,
+            originalSha256Hash: 'hash6',
+            deletedAt: new Date(0),
+            isDeleted: true,
+          },
         ],
       });
 
@@ -142,12 +220,8 @@ describe('documents repository', () => {
 
     test('returns 0 count and size when no documents are present', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'user-1', email: 'user-1@example.com' },
-        ],
-        organizations: [
-          { id: 'organization-1', name: 'Organization 1' },
-        ],
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         organizationMembers: [
           { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
         ],
@@ -196,9 +270,33 @@ describe('documents repository', () => {
         { id: 'org-2', name: 'Organization 2' },
       ],
       documents: [
-        { id: 'doc-1', organizationId: 'org-1', mimeType: 'text/plain', originalStorageKey: 'org-1/originals/doc-1.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash1' },
-        { id: 'doc-2', organizationId: 'org-1', mimeType: 'text/plain', originalStorageKey: 'org-1/originals/doc-2.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash2' },
-        { id: 'doc-3', organizationId: 'org-2', mimeType: 'text/plain', originalStorageKey: 'org-2/originals/doc-3.txt', name: 'file.txt', originalName: 'file.txt', originalSha256Hash: 'hash3' },
+        {
+          id: 'doc-1',
+          organizationId: 'org-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'org-1/originals/doc-1.txt',
+          name: 'file.txt',
+          originalName: 'file.txt',
+          originalSha256Hash: 'hash1',
+        },
+        {
+          id: 'doc-2',
+          organizationId: 'org-1',
+          mimeType: 'text/plain',
+          originalStorageKey: 'org-1/originals/doc-2.txt',
+          name: 'file.txt',
+          originalName: 'file.txt',
+          originalSha256Hash: 'hash2',
+        },
+        {
+          id: 'doc-3',
+          organizationId: 'org-2',
+          mimeType: 'text/plain',
+          originalStorageKey: 'org-2/originals/doc-3.txt',
+          name: 'file.txt',
+          originalName: 'file.txt',
+          originalSha256Hash: 'hash3',
+        },
       ],
     });
 

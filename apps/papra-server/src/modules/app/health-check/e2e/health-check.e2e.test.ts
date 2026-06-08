@@ -10,7 +10,9 @@ describe('health check routes e2e', () => {
     describe('the /api/health is a publicly accessible route that provides health information about the server', () => {
       test('when the database is healthy, the /api/health returns 200', async () => {
         const { db } = await createInMemoryDatabase();
-        const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
+        const { app } = createServer(
+          createTestServerDependencies({ db, config: overrideConfig() }),
+        );
 
         const response = await app.request('/api/health');
 
@@ -29,14 +31,14 @@ describe('health check routes e2e', () => {
           },
         } as unknown as Database;
 
-        const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig() }));
+        const { app } = createServer(
+          createTestServerDependencies({ db, config: overrideConfig() }),
+        );
 
         const response = await app.request('/api/health');
 
         expect(response.status).to.eql(500);
-        expect(
-          await response.json(),
-        ).to.eql({
+        expect(await response.json()).to.eql({
           isDatabaseHealthy: false,
           isEverythingOk: false,
           status: 'error',

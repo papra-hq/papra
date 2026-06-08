@@ -37,14 +37,16 @@ export const CreateWebhookPage: Component = () => {
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ name, url, secret, enabled, events }) => {
-      const [,error] = await safely(createWebhookMutation.mutateAsync({
-        name,
-        url,
-        secret: secret === '' ? undefined : secret,
-        enabled,
-        events,
-        organizationId: params.organizationId,
-      }));
+      const [, error] = await safely(
+        createWebhookMutation.mutateAsync({
+          name,
+          url,
+          secret: secret === '' ? undefined : secret,
+          enabled,
+          events,
+          organizationId: params.organizationId,
+        }),
+      );
 
       if (error) {
         throw createI18nApiError({ error });
@@ -138,12 +140,15 @@ export const CreateWebhookPage: Component = () => {
         </Field>
 
         <Field name="events" type="string[]">
-          {field => (
+          {(field) => (
             <div>
               <p class="text-sm font-bold">{t('webhooks.create.form.events.label')}</p>
 
               <div class="p-6 pb-8 border rounded-md mt-2">
-                <WebhookEventsPicker events={field.value ?? []} onChange={events => setValue(form, 'events', events)} />
+                <WebhookEventsPicker
+                  events={field.value ?? []}
+                  onChange={(events) => setValue(form, 'events', events)}
+                />
               </div>
 
               {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
@@ -152,7 +157,12 @@ export const CreateWebhookPage: Component = () => {
         </Field>
 
         <div class="flex justify-end mt-6">
-          <Button type="button" variant="secondary" as={A} href={`/organizations/${params.organizationId}/settings/webhooks`}>
+          <Button
+            type="button"
+            variant="secondary"
+            as={A}
+            href={`/organizations/${params.organizationId}/settings/webhooks`}
+          >
             {t('webhooks.create.back')}
           </Button>
           <Button type="submit" class="ml-2" isLoading={form.submitting}>
@@ -161,7 +171,6 @@ export const CreateWebhookPage: Component = () => {
         </div>
 
         <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
-
       </Form>
     </div>
   );

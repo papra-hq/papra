@@ -25,7 +25,7 @@ export const AboutDialogProvider: ParentComponent = (props) => {
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
-  const toggle = () => setIsOpen(prev => !prev);
+  const toggle = () => setIsOpen((prev) => !prev);
 
   return (
     <aboutDialogContext.Provider value={{ getIsOpen, open, close, toggle }}>

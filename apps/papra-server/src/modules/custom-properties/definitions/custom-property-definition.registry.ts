@@ -26,7 +26,9 @@ export const customPropertyDefinitions = Object.values(customPropertyDefinitionR
 export type CustomPropertyType = keyof typeof customPropertyDefinitionRegistry;
 
 export function getCustomPropertyTypeDefinition({ type }: { type: string }) {
-  const definition = customPropertyDefinitionRegistry[type as CustomPropertyType] as CustomPropertyTypeDefinition | undefined;
+  const definition = customPropertyDefinitionRegistry[type as CustomPropertyType] as
+    | CustomPropertyTypeDefinition
+    | undefined;
 
   if (!definition) {
     throw createError({
@@ -39,6 +41,9 @@ export function getCustomPropertyTypeDefinition({ type }: { type: string }) {
   return definition;
 }
 
-export const createPropertyDefinitionBodySchema = v.variant('type', customPropertyDefinitions.map(def => def.definition.createPropertySchema));
+export const createPropertyDefinitionBodySchema = v.variant(
+  'type',
+  customPropertyDefinitions.map((def) => def.definition.createPropertySchema),
+);
 
 export type CreatePropertyDefinition = v.InferOutput<typeof createPropertyDefinitionBodySchema>;

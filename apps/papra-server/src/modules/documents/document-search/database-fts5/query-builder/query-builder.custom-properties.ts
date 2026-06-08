@@ -9,7 +9,12 @@ import { customPropertySelectOptionsTable } from '../../../../custom-properties/
 import { isValidDate } from '../../../../shared/date';
 import { usersTable } from '../../../../users/users.table';
 import { documentsTable } from '../../../documents.table';
-import { createInvalidDateFormatQueryResult, createInvalidQueryResult, createUnsupportedOperatorQueryResult, getSqlOperator } from './query-builder.models';
+import {
+  createInvalidDateFormatQueryResult,
+  createInvalidQueryResult,
+  createUnsupportedOperatorQueryResult,
+  getSqlOperator,
+} from './query-builder.models';
 
 export type CustomPropertyDefinition = typeof customPropertyDefinitionsTable.$inferSelect;
 export type CustomPropertyDefinitionsByKey = Record<string, CustomPropertyDefinition>;
@@ -31,7 +36,15 @@ function parseBooleanValue({ value }: { value: string }): boolean | null {
   return null;
 }
 
-function handleBooleanPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleBooleanPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -50,18 +63,29 @@ function handleBooleanPropertyFilter({ expression, definition, db }: { expressio
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          eq(documentCustomPropertyValuesTable.booleanValue, parsed),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            eq(documentCustomPropertyValuesTable.booleanValue, parsed),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-function handleTextPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleTextPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -71,18 +95,29 @@ function handleTextPropertyFilter({ expression, definition, db }: { expression: 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          eq(documentCustomPropertyValuesTable.textValue, value),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            eq(documentCustomPropertyValuesTable.textValue, value),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-function handleNumberPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleNumberPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, field } = expression;
 
   const parsed = Number(value);
@@ -99,12 +134,15 @@ function handleNumberPropertyFilter({ expression, definition, db }: { expression
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          sqlOperator(documentCustomPropertyValuesTable.numberValue, parsed),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            sqlOperator(documentCustomPropertyValuesTable.numberValue, parsed),
+          ),
+        ),
     ),
     issues: [],
   };
@@ -118,7 +156,17 @@ function getDateValue({ value, now }: { value: string; now: Date }): Date {
   return new Date(value);
 }
 
-function handleDatePropertyFilter({ expression, definition, db, now }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database; now: Date }): QueryResult {
+function handleDatePropertyFilter({
+  expression,
+  definition,
+  db,
+  now,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+  now: Date;
+}): QueryResult {
   const { value, field } = expression;
 
   const dateValue = getDateValue({ value, now });
@@ -132,18 +180,29 @@ function handleDatePropertyFilter({ expression, definition, db, now }: { express
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          sqlOperator(documentCustomPropertyValuesTable.dateValue, dateValue),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            sqlOperator(documentCustomPropertyValuesTable.dateValue, dateValue),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-function handleSelectPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleSelectPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -153,22 +212,33 @@ function handleSelectPropertyFilter({ expression, definition, db }: { expression
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
         .innerJoin(
           customPropertySelectOptionsTable,
           eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id),
         )
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          eq(customPropertySelectOptionsTable.key, generatePropertyKey({ name: value })),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            eq(customPropertySelectOptionsTable.key, generatePropertyKey({ name: value })),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-function handleUserRelationPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleUserRelationPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -178,23 +248,34 @@ function handleUserRelationPropertyFilter({ expression, definition, db }: { expr
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
         .leftJoin(usersTable, eq(documentCustomPropertyValuesTable.userId, usersTable.id))
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          or(
-            eq(documentCustomPropertyValuesTable.userId, value),
-            eq(usersTable.email, value),
-            eq(usersTable.name, value),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            or(
+              eq(documentCustomPropertyValuesTable.userId, value),
+              eq(usersTable.email, value),
+              eq(usersTable.name, value),
+            ),
           ),
-        )),
+        ),
     ),
     issues: [],
   };
 }
 
-function handleDocumentRelationPropertyFilter({ expression, definition, db }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database }): QueryResult {
+function handleDocumentRelationPropertyFilter({
+  expression,
+  definition,
+  db,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -204,18 +285,27 @@ function handleDocumentRelationPropertyFilter({ expression, definition, db }: { 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          eq(documentCustomPropertyValuesTable.relatedDocumentId, value),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            eq(documentCustomPropertyValuesTable.relatedDocumentId, value),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-export function handleHasCustomPropertyFilter({ definition, db }: { definition: CustomPropertyDefinition; db: Database }): QueryResult {
+export function handleHasCustomPropertyFilter({
+  definition,
+  db,
+}: {
+  definition: CustomPropertyDefinition;
+  db: Database;
+}): QueryResult {
   const fieldByTypes = {
     boolean: documentCustomPropertyValuesTable.booleanValue,
     text: documentCustomPropertyValuesTable.textValue,
@@ -232,27 +322,48 @@ export function handleHasCustomPropertyFilter({ definition, db }: { definition: 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.select({ id: documentCustomPropertyValuesTable.documentId })
+      db
+        .select({ id: documentCustomPropertyValuesTable.documentId })
         .from(documentCustomPropertyValuesTable)
-        .where(and(
-          eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
-          isNotNull(field),
-        )),
+        .where(
+          and(
+            eq(documentCustomPropertyValuesTable.propertyDefinitionId, definition.id),
+            isNotNull(field),
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-export function handleCustomPropertyFilter({ expression, definition, db, now }: { expression: FilterExpression; definition: CustomPropertyDefinition; db: Database; now: Date }): QueryResult {
+export function handleCustomPropertyFilter({
+  expression,
+  definition,
+  db,
+  now,
+}: {
+  expression: FilterExpression;
+  definition: CustomPropertyDefinition;
+  db: Database;
+  now: Date;
+}): QueryResult {
   switch (definition.type) {
-    case 'boolean': return handleBooleanPropertyFilter({ expression, definition, db });
-    case 'text': return handleTextPropertyFilter({ expression, definition, db });
-    case 'number': return handleNumberPropertyFilter({ expression, definition, db });
-    case 'date': return handleDatePropertyFilter({ expression, definition, db, now });
-    case 'select': return handleSelectPropertyFilter({ expression, definition, db });
-    case 'multi_select': return handleSelectPropertyFilter({ expression, definition, db });
-    case 'user_relation': return handleUserRelationPropertyFilter({ expression, definition, db });
-    case 'document_relation': return handleDocumentRelationPropertyFilter({ expression, definition, db });
+    case 'boolean':
+      return handleBooleanPropertyFilter({ expression, definition, db });
+    case 'text':
+      return handleTextPropertyFilter({ expression, definition, db });
+    case 'number':
+      return handleNumberPropertyFilter({ expression, definition, db });
+    case 'date':
+      return handleDatePropertyFilter({ expression, definition, db, now });
+    case 'select':
+      return handleSelectPropertyFilter({ expression, definition, db });
+    case 'multi_select':
+      return handleSelectPropertyFilter({ expression, definition, db });
+    case 'user_relation':
+      return handleUserRelationPropertyFilter({ expression, definition, db });
+    case 'document_relation':
+      return handleDocumentRelationPropertyFilter({ expression, definition, db });
     default:
       return createInvalidQueryResult({
         message: `Unsupported custom property type for filter`,

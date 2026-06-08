@@ -4,8 +4,10 @@ export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Επαναφορά κωδικού πρόσβασης',
-  'auth.request-password-reset.description': 'Εισαγάγετε το email σας για να επαναφέρετε τον κωδικό πρόσβασής σας.',
-  'auth.request-password-reset.requested': 'Εάν υπάρχει λογαριασμός με αυτό το email, σας έχουμε στείλει μήνυμα για επαναφορά κωδικού.',
+  'auth.request-password-reset.description':
+    'Εισαγάγετε το email σας για να επαναφέρετε τον κωδικό πρόσβασής σας.',
+  'auth.request-password-reset.requested':
+    'Εάν υπάρχει λογαριασμός με αυτό το email, σας έχουμε στείλει μήνυμα για επαναφορά κωδικού.',
   'auth.request-password-reset.back-to-login': 'Επιστροφή στη σύνδεση',
   'auth.request-password-reset.form.email.label': 'Email',
   'auth.request-password-reset.form.email.placeholder': 'Παράδειγμα: ada@papra.app',
@@ -20,14 +22,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.reset-password.form.new-password.label': 'Νέος κωδικός πρόσβασης',
   'auth.reset-password.form.new-password.placeholder': 'Παράδειγμα: **********',
   'auth.reset-password.form.new-password.required': 'Παρακαλώ εισαγάγετε τον νέο σας κωδικό',
-  'auth.reset-password.form.new-password.min-length': 'Ο κωδικός πρέπει να έχει τουλάχιστον {{ minLength }} χαρακτήρες',
-  'auth.reset-password.form.new-password.max-length': 'Ο κωδικός πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
+  'auth.reset-password.form.new-password.min-length':
+    'Ο κωδικός πρέπει να έχει τουλάχιστον {{ minLength }} χαρακτήρες',
+  'auth.reset-password.form.new-password.max-length':
+    'Ο κωδικός πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
   'auth.reset-password.form.submit': 'Επαναφορά κωδικού',
 
   'auth.email-provider.open': 'Άνοιγμα {{ provider }}',
 
   'auth.login.title': 'Σύνδεση στο Papra',
-  'auth.login.description': 'Εισαγάγετε το email σας ή χρησιμοποιήστε κοινωνική σύνδεση για πρόσβαση στον λογαριασμό σας.',
+  'auth.login.description':
+    'Εισαγάγετε το email σας ή χρησιμοποιήστε κοινωνική σύνδεση για πρόσβαση στον λογαριασμό σας.',
   'auth.login.login-with-provider': 'Σύνδεση με {{ provider }}',
   'auth.login.no-account': 'Δεν έχετε λογαριασμό;',
   'auth.login.register': 'Εγγραφή',
@@ -43,8 +48,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Σύνδεση',
 
   'auth.login.two-factor.title': 'Έλεγχος Δύο Παραγόντων',
-  'auth.login.two-factor.description.totp': 'Εισαγάγετε τον 6-ψήφιο κωδικό από την εφαρμογή αυθεντικοποίησης.',
-  'auth.login.two-factor.description.backup-code': 'Εισαγάγετε έναν από τους κωδικούς ανάκτησής σας.',
+  'auth.login.two-factor.description.totp':
+    'Εισαγάγετε τον 6-ψήφιο κωδικό από την εφαρμογή αυθεντικοποίησης.',
+  'auth.login.two-factor.description.backup-code':
+    'Εισαγάγετε έναν από τους κωδικούς ανάκτησής σας.',
   'auth.login.two-factor.code.label.totp': 'Κωδικός εφαρμογής',
   'auth.login.two-factor.code.label.backup-code': 'Κωδικός ανάκτησης',
   'auth.login.two-factor.code.placeholder.backup-code': 'Εισαγάγετε κωδικό ανάκτησης',
@@ -52,7 +59,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.two-factor.trust-device.label': 'Εμπιστοσύνη σε αυτή τη συσκευή για 30 ημέρες',
   'auth.login.two-factor.back': 'Επιστροφή στη σύνδεση',
   'auth.login.two-factor.submit': 'Επιβεβαίωση',
-  'auth.login.two-factor.verification-failed': 'Η επιβεβαίωση απέτυχε. Ελέγξτε τον κωδικό και δοκιμάστε ξανά.',
+  'auth.login.two-factor.verification-failed':
+    'Η επιβεβαίωση απέτυχε. Ελέγξτε τον κωδικό και δοκιμάστε ξανά.',
   'auth.login.two-factor.use-backup-code': 'Χρήση κωδικού ανάκτησης',
   'auth.login.two-factor.use-totp': 'Χρήση εφαρμογής αυθεντικοποίησης',
 
@@ -65,7 +73,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Έχετε ήδη λογαριασμό;',
   'auth.register.login': 'Σύνδεση',
   'auth.register.registration-disabled.title': 'Η εγγραφή είναι απενεργοποιημένη',
-  'auth.register.registration-disabled.description': 'Η δημιουργία νέων λογαριασμών είναι απενεργοποιημένη σε αυτήν την εγκατάσταση του Papra.',
+  'auth.register.registration-disabled.description':
+    'Η δημιουργία νέων λογαριασμών είναι απενεργοποιημένη σε αυτήν την εγκατάσταση του Papra.',
   'auth.register.form.email.label': 'Email',
   'auth.register.form.email.placeholder': 'Παράδειγμα: ada@papra.app',
   'auth.register.form.email.required': 'Παρακαλώ εισαγάγετε το email σας',
@@ -73,30 +82,38 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.password.label': 'Κωδικός πρόσβασης',
   'auth.register.form.password.placeholder': 'Ορίστε έναν κωδικό',
   'auth.register.form.password.required': 'Παρακαλώ εισαγάγετε τον κωδικό σας',
-  'auth.register.form.password.min-length': 'Ο κωδικός πρέπει να έχει τουλάχιστον {{ minLength }} χαρακτήρες',
-  'auth.register.form.password.max-length': 'Ο κωδικός πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
+  'auth.register.form.password.min-length':
+    'Ο κωδικός πρέπει να έχει τουλάχιστον {{ minLength }} χαρακτήρες',
+  'auth.register.form.password.max-length':
+    'Ο κωδικός πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
   'auth.register.form.name.label': 'Όνομα',
   'auth.register.form.name.placeholder': 'Παράδειγμα: Ada Lovelace',
   'auth.register.form.name.required': 'Παρακαλώ εισαγάγετε το όνομά σας',
-  'auth.register.form.name.max-length': 'Το όνομα πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
+  'auth.register.form.name.max-length':
+    'Το όνομα πρέπει να έχει λιγότερους από {{ maxLength }} χαρακτήρες',
   'auth.register.form.submit': 'Εγγραφή',
 
   'auth.email-validation-required.title': 'Επαλήθευση email',
-  'auth.email-validation-required.description': 'Σας έχει σταλεί email επαλήθευσης. Κάντε κλικ στον σύνδεσμο για επαλήθευση.',
+  'auth.email-validation-required.description':
+    'Σας έχει σταλεί email επαλήθευσης. Κάντε κλικ στον σύνδεσμο για επαλήθευση.',
 
   'auth.email-verification.success.title': 'Το email επαληθεύτηκε',
-  'auth.email-verification.success.description': 'Το email σας επαληθεύτηκε με επιτυχία. Μπορείτε τώρα να συνδεθείτε.',
+  'auth.email-verification.success.description':
+    'Το email σας επαληθεύτηκε με επιτυχία. Μπορείτε τώρα να συνδεθείτε.',
   'auth.email-verification.success.login': 'Μετάβαση στη σύνδεση',
   'auth.email-verification.error.title': 'Η επαλήθευση απέτυχε',
-  'auth.email-verification.error.description': 'Ο σύνδεσμος έχει λήξει ή δεν είναι έγκυρος. Συνδεθείτε για να ζητήσετε νέο email.',
+  'auth.email-verification.error.description':
+    'Ο σύνδεσμος έχει λήξει ή δεν είναι έγκυρος. Συνδεθείτε για να ζητήσετε νέο email.',
   'auth.email-verification.error.back': 'Επιστροφή στη σύνδεση',
 
-  'auth.legal-links.description': 'Συνεχίζοντας, αποδέχεστε ότι κατανοείτε και συμφωνείτε με τους {{ terms }} και την {{ privacy }}.',
+  'auth.legal-links.description':
+    'Συνεχίζοντας, αποδέχεστε ότι κατανοείτε και συμφωνείτε με τους {{ terms }} και την {{ privacy }}.',
   'auth.legal-links.terms': 'Όροι Χρήσης',
   'auth.legal-links.privacy': 'Πολιτική Απορρήτου',
 
   'auth.no-auth-provider.title': 'Δεν υπάρχει διαθέσιμος πάροχος αυθεντικοποίησης',
-  'auth.no-auth-provider.description': 'Δεν έχουν ενεργοποιηθεί πάροχοι αυθεντικοποίησης σε αυτήν την εγκατάσταση του Papra.',
+  'auth.no-auth-provider.description':
+    'Δεν έχουν ενεργοποιηθεί πάροχοι αυθεντικοποίησης σε αυτήν την εγκατάσταση του Papra.',
 
   // User settings
 
@@ -115,11 +132,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.name.updated': 'Το πλήρες όνομά σας ενημερώθηκε',
 
   'user.settings.logout.title': 'Αποσύνδεση',
-  'user.settings.logout.description': 'Αποσυνδεθείτε από τον λογαριασμό σας. Μπορείτε να συνδεθείτε ξανά αργότερα.',
+  'user.settings.logout.description':
+    'Αποσυνδεθείτε από τον λογαριασμό σας. Μπορείτε να συνδεθείτε ξανά αργότερα.',
   'user.settings.logout.button': 'Αποσύνδεση',
 
   'user.settings.two-factor.title': 'Έλεγχος Δύο Παραγόντων',
-  'user.settings.two-factor.description': 'Προσθέστε ένα επιπλέον επίπεδο ασφαλείας στον λογαριασμό σας.',
+  'user.settings.two-factor.description':
+    'Προσθέστε ένα επιπλέον επίπεδο ασφαλείας στον λογαριασμό σας.',
   'user.settings.two-factor.status.enabled': 'Ενεργό',
   'user.settings.two-factor.status.disabled': 'Ανενεργό',
   'user.settings.two-factor.enable-button': 'Ενεργοποίηση 2FA',
@@ -127,7 +146,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.regenerate-codes-button': 'Αναδημιουργία κωδικών ανάκτησης',
 
   'user.settings.two-factor.enable-dialog.title': 'Ενεργοποίηση ελέγχου δύο παραγόντων',
-  'user.settings.two-factor.enable-dialog.description': 'Εισαγάγετε τον κωδικό σας για να ενεργοποιήσετε το 2FA.',
+  'user.settings.two-factor.enable-dialog.description':
+    'Εισαγάγετε τον κωδικό σας για να ενεργοποιήσετε το 2FA.',
   'user.settings.two-factor.enable-dialog.password.label': 'Κωδικός πρόσβασης',
   'user.settings.two-factor.enable-dialog.password.placeholder': 'Εισαγάγετε τον κωδικό σας',
   'user.settings.two-factor.enable-dialog.password.required': 'Παρακαλώ εισαγάγετε τον κωδικό σας',
@@ -136,22 +156,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Ρύθμιση ελέγχου δύο παραγόντων',
   'user.settings.two-factor.setup-dialog.step1.title': 'Βήμα 1: Σάρωση QR',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Σαρώστε τον QR κώδικα ή εισαγάγετε το κλειδί χειροκίνητα.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Σαρώστε τον QR κώδικα ή εισαγάγετε το κλειδί χειροκίνητα.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Αντιγραφή κλειδιού',
   'user.settings.two-factor.setup-dialog.step2.title': 'Βήμα 2: Επιβεβαίωση',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Εισαγάγετε τον 6-ψήφιο κωδικό από την εφαρμογή.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Εισαγάγετε τον 6-ψήφιο κωδικό από την εφαρμογή.',
   'user.settings.two-factor.setup-dialog.cancel': 'Ακύρωση',
   'user.settings.two-factor.setup-dialog.verify': 'Επιβεβαίωση & ενεργοποίηση 2FA',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Κωδικοί ανάκτησης',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Αποθηκεύστε αυτούς τους κωδικούς σε ασφαλές μέρος.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Αποθηκεύστε αυτούς τους κωδικούς σε ασφαλές μέρος.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Αντιγραφή κωδικών',
   'user.settings.two-factor.backup-codes-dialog.download': 'Λήψη κωδικών',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Έχω αποθηκεύσει τους κωδικούς μου',
 
   'user.settings.two-factor.disable-dialog.title': 'Απενεργοποίηση ελέγχου δύο παραγόντων',
-  'user.settings.two-factor.disable-dialog.description': 'Εισαγάγετε τον κωδικό σας για να συνεχίσετε.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Εισαγάγετε τον κωδικό σας για να συνεχίσετε.',
   'user.settings.two-factor.disable-dialog.password.label': 'Κωδικός πρόσβασης',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Εισαγάγετε τον κωδικό σας',
   'user.settings.two-factor.disable-dialog.password.required': 'Παρακαλώ εισαγάγετε τον κωδικό σας',
@@ -159,10 +183,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': 'Απενεργοποίηση 2FA',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Αναδημιουργία κωδικών ανάκτησης',
-  'user.settings.two-factor.regenerate-dialog.description': 'Όλοι οι υπάρχοντες κωδικοί θα ακυρωθούν.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Όλοι οι υπάρχοντες κωδικοί θα ακυρωθούν.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Κωδικός πρόσβασης',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Εισαγάγετε τον κωδικό σας',
-  'user.settings.two-factor.regenerate-dialog.password.required': 'Παρακαλώ εισαγάγετε τον κωδικό σας',
+  'user.settings.two-factor.regenerate-dialog.password.required':
+    'Παρακαλώ εισαγάγετε τον κωδικό σας',
   'user.settings.two-factor.regenerate-dialog.cancel': 'Ακύρωση',
   'user.settings.two-factor.regenerate-dialog.submit': 'Αναδημιουργία κωδικών',
 
@@ -173,33 +199,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Οι οργανισμοί σας',
-  'organizations.list.description': 'Οι οργανισμοί σας βοηθούν να οργανώνετε και να διαχειρίζεστε έγγραφα και πρόσβαση.',
+  'organizations.list.description':
+    'Οι οργανισμοί σας βοηθούν να οργανώνετε και να διαχειρίζεστε έγγραφα και πρόσβαση.',
   'organizations.list.create-new': 'Δημιουργία νέου οργανισμού',
   'organizations.list.back': 'Πίσω στους οργανισμούς',
   'organizations.list.deleted.title': 'Διαγεγραμμένοι οργανισμοί',
-  'organizations.list.deleted.description': 'Οι διαγεγραμμένοι οργανισμοί διατηρούνται για {{ days }} ημέρες πριν διαγραφούν οριστικά.',
+  'organizations.list.deleted.description':
+    'Οι διαγεγραμμένοι οργανισμοί διατηρούνται για {{ days }} ημέρες πριν διαγραφούν οριστικά.',
   'organizations.list.deleted.empty': 'Κανένας διαγεγραμμένος οργανισμός',
-  'organizations.list.deleted.empty-description': 'Όταν διαγράψετε έναν οργανισμό, θα εμφανιστεί εδώ για {{ days }} ημέρες.',
+  'organizations.list.deleted.empty-description':
+    'Όταν διαγράψετε έναν οργανισμό, θα εμφανιστεί εδώ για {{ days }} ημέρες.',
   'organizations.list.deleted.restore': 'Επαναφορά',
   'organizations.list.deleted.restore-success': 'Ο οργανισμός επαναφέρθηκε',
   'organizations.list.deleted.restore-confirm.title': 'Επαναφορά οργανισμού',
-  'organizations.list.deleted.restore-confirm.message': 'Είστε βέβαιοι ότι θέλετε να επαναφέρετε τον οργανισμό;',
+  'organizations.list.deleted.restore-confirm.message':
+    'Είστε βέβαιοι ότι θέλετε να επαναφέρετε τον οργανισμό;',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Επαναφορά οργανισμού',
   'organizations.list.deleted.deleted-at': 'Διαγράφηκε {{ date }}',
   'organizations.list.deleted.purge-at': 'Θα διαγραφεί οριστικά στις {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} ημέρα, {daysUntilPurge} ημέρες }} απομένουν)',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} ημέρα, {daysUntilPurge} ημέρες }} απομένουν)',
 
   'organizations.details.no-documents.title': 'Δεν υπάρχουν έγγραφα',
-  'organizations.details.no-documents.description': 'Δεν υπάρχουν ακόμη έγγραφα σε αυτόν τον οργανισμό. Ξεκινήστε ανεβάζοντας μερικά έγγραφα.',
+  'organizations.details.no-documents.description':
+    'Δεν υπάρχουν ακόμη έγγραφα σε αυτόν τον οργανισμό. Ξεκινήστε ανεβάζοντας μερικά έγγραφα.',
   'organizations.details.upload-documents': 'Μεταφόρτωση εγγράφων',
   'organizations.details.documents-count': 'έγγραφα συνολικά',
   'organizations.details.total-size': 'συνολικό μέγεθος',
   'organizations.details.latest-documents': 'Πιο πρόσφατα εισαχθέντα έγγραφα',
 
   'organizations.create.title': 'Δημιουργία νέου οργανισμού',
-  'organizations.create.description': 'Τα έγγραφά σας ομαδοποιούνται ανά οργανισμό. Μπορείτε να δημιουργήσετε πολλούς για προσωπικά/εργασιακά κ.λπ.',
+  'organizations.create.description':
+    'Τα έγγραφά σας ομαδοποιούνται ανά οργανισμό. Μπορείτε να δημιουργήσετε πολλούς για προσωπικά/εργασιακά κ.λπ.',
   'organizations.create.back': 'Πίσω',
-  'organizations.create.error.max-count-reached': 'Φτάσατε το μέγιστο πλήθος οργανισμών. Επικοινωνήστε με την υποστήριξη για περισσότερους.',
+  'organizations.create.error.max-count-reached':
+    'Φτάσατε το μέγιστο πλήθος οργανισμών. Επικοινωνήστε με την υποστήριξη για περισσότερους.',
   'organizations.create.form.name.label': 'Όνομα οργανισμού',
   'organizations.create.form.name.placeholder': 'Π.χ. Acme Inc.',
   'organizations.create.form.name.required': 'Παρακαλώ εισαγάγετε όνομα οργανισμού',
@@ -207,7 +241,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Ο οργανισμός δημιουργήθηκε με επιτυχία',
 
   'organizations.create-first.title': 'Δημιουργήστε τον οργανισμό σας',
-  'organizations.create-first.description': 'Τα έγγραφά σας ομαδοποιούνται ανά οργανισμό. Δημιουργήστε όσους χρειάζεστε.',
+  'organizations.create-first.description':
+    'Τα έγγραφά σας ομαδοποιούνται ανά οργανισμό. Δημιουργήστε όσους χρειάζεστε.',
   'organizations.create-first.default-name': 'Ο οργανισμός μου',
   'organizations.create-first.user-name': 'Ο οργανισμός του/της {{ name }}',
 
@@ -219,18 +254,21 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.name.placeholder': 'Π.χ. Acme Inc.',
   'organization.settings.name.updated': 'Το όνομα οργανισμού ενημερώθηκε',
   'organization.settings.subscription.title': 'Συνδρομή',
-  'organization.settings.subscription.description': 'Διαχείριση τιμολόγησης, τιμολογίων και μεθόδων πληρωμής.',
+  'organization.settings.subscription.description':
+    'Διαχείριση τιμολόγησης, τιμολογίων και μεθόδων πληρωμής.',
   'organization.settings.subscription.manage': 'Διαχείριση συνδρομής',
   'organization.settings.subscription.error': 'Αποτυχία λήψης URL πελάτη',
   'organization.settings.delete.title': 'Διαγραφή οργανισμού',
   'organization.settings.delete.description': 'Η διαγραφή θα αφαιρέσει οριστικά όλα τα δεδομένα.',
   'organization.settings.delete.confirm.title': 'Διαγραφή οργανισμού',
-  'organization.settings.delete.confirm.message': 'Σίγουρα; Ο οργανισμός θα σημειωθεί προς διαγραφή και θα αφαιρεθεί μετά από {{ days }} ημέρες.',
+  'organization.settings.delete.confirm.message':
+    'Σίγουρα; Ο οργανισμός θα σημειωθεί προς διαγραφή και θα αφαιρεθεί μετά από {{ days }} ημέρες.',
   'organization.settings.delete.confirm.confirm-button': 'Διαγραφή οργανισμού',
   'organization.settings.delete.confirm.cancel-button': 'Ακύρωση',
   'organization.settings.delete.success': 'Ο οργανισμός διαγράφηκε',
   'organization.settings.delete.only-owner': 'Μόνο ο ιδιοκτήτης μπορεί να διαγράψει τον οργανισμό.',
-  'organization.settings.delete.has-active-subscription': 'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα.',
+  'organization.settings.delete.has-active-subscription':
+    'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα.',
 
   'organization.usage.page.title': 'Χρήση',
   'organization.usage.page.description': 'Δείτε τη χρήση και τα όρια του οργανισμού σας.',
@@ -245,14 +283,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Μέλη',
   'organizations.members.description': 'Διαχειριστείτε τα μέλη του οργανισμού σας',
   'organizations.members.invite-member': 'Πρόσκληση μέλους',
-  'organizations.members.invite-member-disabled-tooltip': 'Μόνο διαχειριστές/ιδιοκτήτες μπορούν να προσκαλούν μέλη',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Μόνο διαχειριστές/ιδιοκτήτες μπορούν να προσκαλούν μέλη',
   'organizations.members.remove-from-organization': 'Αφαίρεση από τον οργανισμό',
   'organizations.members.role': 'Ρόλος',
   'organizations.members.roles.owner': 'Ιδιοκτήτης',
   'organizations.members.roles.admin': 'Διαχειριστής',
   'organizations.members.roles.member': 'Μέλος',
   'organizations.members.delete.confirm.title': 'Αφαίρεση μέλους',
-  'organizations.members.delete.confirm.message': 'Σίγουρα θέλετε να αφαιρέσετε το μέλος από τον οργανισμό;',
+  'organizations.members.delete.confirm.message':
+    'Σίγουρα θέλετε να αφαιρέσετε το μέλος από τον οργανισμό;',
   'organizations.members.delete.confirm.confirm-button': 'Αφαίρεση',
   'organizations.members.delete.confirm.cancel-button': 'Ακύρωση',
   'organizations.members.delete.success': 'Το μέλος αφαιρέθηκε',
@@ -286,7 +326,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.status.cancelled': 'Ακυρώθηκε',
   'organizations.invitations.resend': 'Επανάληψη πρόσκλησης',
   'organizations.invitations.cancel.title': 'Ακύρωση πρόσκλησης',
-  'organizations.invitations.cancel.description': 'Είστε βέβαιοι ότι θέλετε να ακυρώσετε την πρόσκληση;',
+  'organizations.invitations.cancel.description':
+    'Είστε βέβαιοι ότι θέλετε να ακυρώσετε την πρόσκληση;',
   'organizations.invitations.cancel.confirm': 'Ακύρωση πρόσκλησης',
   'organizations.invitations.cancel.cancel': 'Ακύρωση',
   'organizations.invitations.resend.title': 'Επανάληψη πρόσκλησης',
@@ -313,7 +354,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Έγγραφα',
   'documents.list.no-documents.title': 'Δεν υπάρχουν έγγραφα',
-  'documents.list.no-documents.description': 'Δεν υπάρχουν ακόμη έγγραφα σε αυτόν τον οργανισμό. Ξεκινήστε ανεβάζοντας μερικά.',
+  'documents.list.no-documents.description':
+    'Δεν υπάρχουν ακόμη έγγραφα σε αυτόν τον οργανισμό. Ξεκινήστε ανεβάζοντας μερικά.',
   'documents.list.no-results': 'Δεν βρέθηκαν έγγραφα',
   'documents.list.table.headers.file-name': 'Όνομα αρχείου',
   'documents.list.table.headers.created': 'Ημερομηνία δημιουργίας',
@@ -321,13 +363,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Ενέργειες',
   'documents.list.table.headers.tags': 'Ετικέτες',
   'documents.list.search.placeholder': 'Αναζήτηση εγγράφων...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} που ταιριάζουν σε αυτό το ερώτημα',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} συνολικά',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} που ταιριάζουν σε αυτό το ερώτημα',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} συνολικά',
 
   'documents.tabs.info': 'Πληροφορίες',
   'documents.tabs.content': 'Περιεχόμενο',
   'documents.tabs.activity': 'Δραστηριότητα',
-  'documents.deleted.message': 'Αυτό το έγγραφο έχει διαγραφεί και θα αφαιρεθεί οριστικά σε {{ days }} ημέρες.',
+  'documents.deleted.message':
+    'Αυτό το έγγραφο έχει διαγραφεί και θα αφαιρεθεί οριστικά σε {{ days }} ημέρες.',
   'documents.actions.download.title': 'Λήψη',
   'documents.actions.download.error': 'Αποτυχία λήψης εγγράφου',
   'documents.actions.restore': 'Επαναφορά',
@@ -336,8 +381,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Ακύρωση',
   'documents.actions.save': 'Αποθήκευση',
   'documents.actions.saving': 'Αποθήκευση...',
-  'documents.content.alert': 'Το περιεχόμενο του εγγράφου εξάγεται αυτόματα κατά το ανέβασμα και χρησιμοποιείται μόνο για αναζήτηση.',
-  'documents.content.empty-placeholder': 'Το έγγραφο δεν έχει εξαγμένο περιεχόμενο. Μπορείτε να το προσθέσετε χειροκίνητα εδώ.',
+  'documents.content.alert':
+    'Το περιεχόμενο του εγγράφου εξάγεται αυτόματα κατά το ανέβασμα και χρησιμοποιείται μόνο για αναζήτηση.',
+  'documents.content.empty-placeholder':
+    'Το έγγραφο δεν έχει εξαγμένο περιεχόμενο. Μπορείτε να το προσθέσετε χειροκίνητα εδώ.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Όνομα',
   'documents.info.type': 'Τύπος',
@@ -359,10 +406,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Έγγραφο',
 
   'custom-properties.list.title': 'Προσαρμοσμένες ιδιότητες',
-  'custom-properties.list.description': 'Ορίστε προσαρμοσμένα πεδία μεταδεδομένων για τα έγγραφά σας. Οι ιδιότητες μπορεί να είναι κείμενο, αριθμοί, ημερομηνίες, λογικές τιμές ή λίστες επιλογών.',
+  'custom-properties.list.description':
+    'Ορίστε προσαρμοσμένα πεδία μεταδεδομένων για τα έγγραφά σας. Οι ιδιότητες μπορεί να είναι κείμενο, αριθμοί, ημερομηνίες, λογικές τιμές ή λίστες επιλογών.',
   'custom-properties.list.create-button': 'Δημιουργία ιδιότητας',
   'custom-properties.list.empty.title': 'Προσαρμοσμένες ιδιότητες',
-  'custom-properties.list.empty.description': 'Οι προσαρμοσμένες ιδιότητες σάς επιτρέπουν να προσθέτετε δομημένα μεταδεδομένα στα έγγραφά σας, όπως ημερομηνίες λήξης, ονόματα εταιρειών ή ποσά.',
+  'custom-properties.list.empty.description':
+    'Οι προσαρμοσμένες ιδιότητες σάς επιτρέπουν να προσθέτετε δομημένα μεταδεδομένα στα έγγραφά σας, όπως ημερομηνίες λήξης, ονόματα εταιρειών ή ποσά.',
   'custom-properties.list.table.name': 'Όνομα',
   'custom-properties.list.table.type': 'Τύπος',
   'custom-properties.list.table.description': 'Περιγραφή',
@@ -370,7 +419,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Ενέργειες',
   'custom-properties.list.table.no-description': 'Χωρίς περιγραφή',
   'custom-properties.list.delete.confirm-title': 'Διαγραφή προσαρμοσμένης ιδιότητας',
-  'custom-properties.list.delete.confirm-message': 'Είστε βέβαιοι ότι θέλετε να διαγράψετε την προσαρμοσμένη ιδιότητα «{{ name }}»; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
+  'custom-properties.list.delete.confirm-message':
+    'Είστε βέβαιοι ότι θέλετε να διαγράψετε την προσαρμοσμένη ιδιότητα «{{ name }}»; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
   'custom-properties.list.delete.confirm-button': 'Διαγραφή',
   'custom-properties.list.delete.success': 'Η προσαρμοσμένη ιδιότητα διαγράφηκε με επιτυχία',
   'custom-properties.list.delete.error': 'Αποτυχία διαγραφής προσαρμοσμένης ιδιότητας',
@@ -391,19 +441,25 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.name.max-length': 'Το όνομα πρέπει να έχει το πολύ 255 χαρακτήρες',
   'custom-properties.form.description.label': 'Περιγραφή',
   'custom-properties.form.description.optional': '(προαιρετικό)',
-  'custom-properties.form.description.placeholder': 'Περιγράψτε για τι χρησιμοποιείται αυτή η ιδιότητα',
-  'custom-properties.form.description.max-length': 'Η περιγραφή πρέπει να έχει το πολύ 1000 χαρακτήρες',
+  'custom-properties.form.description.placeholder':
+    'Περιγράψτε για τι χρησιμοποιείται αυτή η ιδιότητα',
+  'custom-properties.form.description.max-length':
+    'Η περιγραφή πρέπει να έχει το πολύ 1000 χαρακτήρες',
   'custom-properties.form.type.label': 'Τύπος',
-  'custom-properties.form.type.immutable': 'Ο τύπος ιδιότητας δεν μπορεί να αλλάξει μετά τη δημιουργία.',
+  'custom-properties.form.type.immutable':
+    'Ο τύπος ιδιότητας δεν μπορεί να αλλάξει μετά τη δημιουργία.',
   'custom-properties.form.options.title': 'Επιλογές',
-  'custom-properties.form.options.description': 'Ορίστε τις διαθέσιμες επιλογές για αυτή την ιδιότητα.',
+  'custom-properties.form.options.description':
+    'Ορίστε τις διαθέσιμες επιλογές για αυτή την ιδιότητα.',
   'custom-properties.form.options.name.placeholder': 'Όνομα επιλογής',
   'custom-properties.form.options.name.required': 'Το όνομα επιλογής είναι υποχρεωτικό',
-  'custom-properties.form.options.name.max-length': 'Το όνομα επιλογής πρέπει να έχει το πολύ 255 χαρακτήρες',
+  'custom-properties.form.options.name.max-length':
+    'Το όνομα επιλογής πρέπει να έχει το πολύ 255 χαρακτήρες',
   'custom-properties.form.options.validation.required': 'Προσθέστε τουλάχιστον μία επιλογή',
   'custom-properties.form.options.add': 'Προσθήκη επιλογής',
   'custom-properties.form.cancel': 'Ακύρωση',
-  'custom-properties.form.save-error': 'Παρουσιάστηκε σφάλμα κατά την αποθήκευση του ορισμού ιδιότητας. Δοκιμάστε ξανά.',
+  'custom-properties.form.save-error':
+    'Παρουσιάστηκε σφάλμα κατά την αποθήκευση του ορισμού ιδιότητας. Δοκιμάστε ξανά.',
 
   'documents.custom-properties.section-title': 'Ιδιότητες',
   'documents.custom-properties.no-value': 'Μη ορισμένο',
@@ -432,20 +488,25 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': 'Διαγεγραμμένα έγγραφα',
   'documents.deleted.empty.title': 'Δεν υπάρχουν διαγεγραμμένα έγγραφα',
-  'documents.deleted.empty.description': 'Δεν έχετε διαγεγραμμένα έγγραφα. Όταν διαγραφούν, παραμένουν στον κάδο για {{ days }} ημέρες.',
-  'documents.deleted.retention-notice': 'Τα διαγεγραμμένα έγγραφα παραμένουν στον κάδο για {{ days }} ημέρες πριν διαγραφούν οριστικά.',
+  'documents.deleted.empty.description':
+    'Δεν έχετε διαγεγραμμένα έγγραφα. Όταν διαγραφούν, παραμένουν στον κάδο για {{ days }} ημέρες.',
+  'documents.deleted.retention-notice':
+    'Τα διαγεγραμμένα έγγραφα παραμένουν στον κάδο για {{ days }} ημέρες πριν διαγραφούν οριστικά.',
   'documents.deleted.deleted-at': 'Διαγράφηκε',
   'documents.deleted.restoring': 'Γίνεται επαναφορά...',
   'documents.deleted.deleting': 'Γίνεται διαγραφή...',
 
-  'documents.preview.unknown-file-type': 'Δεν υπάρχει διαθέσιμη προεπισκόπηση για αυτόν τον τύπο αρχείου',
-  'documents.preview.binary-file': 'Αυτό φαίνεται να είναι δυαδικό αρχείο και δεν μπορεί να εμφανιστεί ως κείμενο',
+  'documents.preview.unknown-file-type':
+    'Δεν υπάρχει διαθέσιμη προεπισκόπηση για αυτόν τον τύπο αρχείου',
+  'documents.preview.binary-file':
+    'Αυτό φαίνεται να είναι δυαδικό αρχείο και δεν μπορεί να εμφανιστεί ως κείμενο',
 
   'documents.open-with.label': 'Άνοιγμα με',
   'documents.open-with.pdf-viewer': 'Πρόγραμμα προβολής PDF',
 
   'documents.pdf-viewer.loading': 'Φόρτωση PDF',
-  'documents.pdf-viewer.not-a-pdf': 'Αυτό το έγγραφο δεν είναι PDF και δεν μπορεί να ανοιχτεί στο πρόγραμμα προβολής PDF.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Αυτό το έγγραφο δεν είναι PDF και δεν μπορεί να ανοιχτεί στο πρόγραμμα προβολής PDF.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Απόκρυψη πλαϊνής στήλης',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Εμφάνιση πλαϊνής στήλης',
@@ -508,12 +569,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Διαγραφή όλων',
   'trash.delete-all.confirm.title': 'Οριστική διαγραφή όλων των εγγράφων;',
-  'trash.delete-all.confirm.description': 'Είστε βέβαιοι ότι θέλετε να τα διαγράψετε οριστικά; Η ενέργεια δεν μπορεί να αναιρεθεί.',
+  'trash.delete-all.confirm.description':
+    'Είστε βέβαιοι ότι θέλετε να τα διαγράψετε οριστικά; Η ενέργεια δεν μπορεί να αναιρεθεί.',
   'trash.delete-all.confirm.label': 'Διαγραφή',
   'trash.delete-all.confirm.cancel': 'Ακύρωση',
   'trash.delete.button': 'Διαγραφή',
   'trash.delete.confirm.title': 'Οριστική διαγραφή εγγράφου;',
-  'trash.delete.confirm.description': 'Είστε βέβαιοι ότι θέλετε να διαγράψετε οριστικά αυτό το έγγραφο;',
+  'trash.delete.confirm.description':
+    'Είστε βέβαιοι ότι θέλετε να διαγράψετε οριστικά αυτό το έγγραφο;',
   'trash.delete.confirm.label': 'Διαγραφή',
   'trash.delete.confirm.cancel': 'Ακύρωση',
   'trash.deleted.success.title': 'Το έγγραφο διαγράφηκε',
@@ -536,7 +599,8 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Δεν υπάρχουν ετικέτες ακόμη',
-  'tags.no-tags.description': 'Αυτός ο οργανισμός δεν έχει ακόμη ετικέτες. Οι ετικέτες βοηθούν στην ταξινόμηση των εγγράφων.',
+  'tags.no-tags.description':
+    'Αυτός ο οργανισμός δεν έχει ακόμη ετικέτες. Οι ετικέτες βοηθούν στην ταξινόμηση των εγγράφων.',
   'tags.no-tags.create-tag': 'Δημιουργία ετικέτας',
 
   'tags.title': 'Ετικέτες εγγράφων',
@@ -545,7 +609,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.update': 'Ενημέρωση ετικέτας',
   'tags.delete': 'Διαγραφή ετικέτας',
   'tags.delete.confirm.title': 'Διαγραφή ετικέτας',
-  'tags.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την ετικέτα; Θα αφαιρεθεί από όλα τα έγγραφα.',
+  'tags.delete.confirm.message':
+    'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την ετικέτα; Θα αφαιρεθεί από όλα τα έγγραφα.',
   'tags.delete.confirm.confirm-button': 'Διαγραφή',
   'tags.delete.confirm.cancel-button': 'Ακύρωση',
   'tags.delete.success': 'Η ετικέτα διαγράφηκε',
@@ -584,10 +649,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'ξεκινά με',
   'tagging-rules.operator.ends-with': 'τελειώνει με',
   'tagging-rules.list.title': 'Κανόνες ετικετοποίησης',
-  'tagging-rules.list.description': 'Διαχειριστείτε τους κανόνες ετικετοποίησης που εφαρμόζουν αυτόματα ετικέτες σε έγγραφα βάσει συνθηκών.',
-  'tagging-rules.list.demo-warning': 'Σημείωση: Αυτό είναι demo περιβάλλον (χωρίς server). Οι κανόνες δεν θα εφαρμοστούν αυτόματα.',
+  'tagging-rules.list.description':
+    'Διαχειριστείτε τους κανόνες ετικετοποίησης που εφαρμόζουν αυτόματα ετικέτες σε έγγραφα βάσει συνθηκών.',
+  'tagging-rules.list.demo-warning':
+    'Σημείωση: Αυτό είναι demo περιβάλλον (χωρίς server). Οι κανόνες δεν θα εφαρμοστούν αυτόματα.',
   'tagging-rules.list.no-tagging-rules.title': 'Δεν υπάρχουν κανόνες',
-  'tagging-rules.list.no-tagging-rules.description': 'Δημιουργήστε έναν κανόνα για αυτόματη ετικετοποίηση εγγράφων.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Δημιουργήστε έναν κανόνα για αυτόματη ετικετοποίηση εγγράφων.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Δημιουργία κανόνα',
   'tagging-rules.list.card.no-conditions': 'Χωρίς συνθήκες',
   'tagging-rules.list.card.one-condition': '1 συνθήκη',
@@ -603,10 +671,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Παρακαλώ εισαγάγετε όνομα κανόνα',
   'tagging-rules.form.name.max-length': 'Το όνομα πρέπει να έχει λιγότερους από 64 χαρακτήρες',
   'tagging-rules.form.description.label': 'Περιγραφή',
-  'tagging-rules.form.description.placeholder': 'Π.χ. Ετικετοποίηση εγγράφων που περιέχουν "invoice" στο όνομα',
-  'tagging-rules.form.description.max-length': 'Η περιγραφή πρέπει να έχει λιγότερους από 256 χαρακτήρες',
+  'tagging-rules.form.description.placeholder':
+    'Π.χ. Ετικετοποίηση εγγράφων που περιέχουν "invoice" στο όνομα',
+  'tagging-rules.form.description.max-length':
+    'Η περιγραφή πρέπει να έχει λιγότερους από 256 χαρακτήρες',
   'tagging-rules.form.conditions.label': 'Συνθήκες',
-  'tagging-rules.form.conditions.description': 'Καθορίστε τις συνθήκες που πρέπει να πληρούνται ώστε να εφαρμοστούν οι ετικέτες.',
+  'tagging-rules.form.conditions.description':
+    'Καθορίστε τις συνθήκες που πρέπει να πληρούνται ώστε να εφαρμοστούν οι ετικέτες.',
   'tagging-rules.form.conditions.add-condition': 'Προσθήκη συνθήκης',
   'tagging-rules.form.conditions.connector.when': 'Όταν',
   'tagging-rules.form.conditions.connector.and': 'και',
@@ -614,13 +685,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Πρέπει να ισχύουν όλες οι συνθήκες',
   'tagging-rules.condition-match-mode.any': 'Πρέπει να ισχύει οποιαδήποτε συνθήκη',
   'tagging-rules.form.conditions.no-conditions.title': 'Χωρίς συνθήκες',
-  'tagging-rules.form.conditions.no-conditions.description': 'Δεν προσθέσατε συνθήκες. Ο κανόνας θα εφαρμοστεί σε όλα τα έγγραφα.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'Δεν προσθέσατε συνθήκες. Ο κανόνας θα εφαρμοστεί σε όλα τα έγγραφα.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Εφαρμογή κανόνα χωρίς συνθήκες',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Ακύρωση',
   'tagging-rules.form.conditions.value.placeholder': 'Π.χ. invoice',
   'tagging-rules.form.conditions.value.min-length': 'Παρακαλώ εισαγάγετε μια τιμή συνθήκης',
   'tagging-rules.form.tags.label': 'Ετικέτες',
-  'tagging-rules.form.tags.description': 'Επιλέξτε τις ετικέτες που θα εφαρμοστούν στα έγγραφα που ταιριάζουν',
+  'tagging-rules.form.tags.description':
+    'Επιλέξτε τις ετικέτες που θα εφαρμοστούν στα έγγραφα που ταιριάζουν',
   'tagging-rules.form.tags.min-length': 'Απαιτείται τουλάχιστον μία ετικέτα',
   'tagging-rules.form.tags.add-tag': 'Δημιουργία ετικέτας',
   'tagging-rules.update.title': 'Ενημέρωση κανόνα',
@@ -629,7 +702,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Ακύρωση',
   'tagging-rules.apply.button': 'Εφαρμογή σε υπάρχοντα έγγραφα',
   'tagging-rules.apply.confirm.title': 'Να εφαρμοστεί ο κανόνας στα υπάρχοντα έγγραφα;',
-  'tagging-rules.apply.confirm.description': 'Θα γίνει έλεγχος σε όλα τα υπάρχοντα έγγραφα και θα εφαρμοστούν οι κατάλληλες ετικέτες στο παρασκήνιο.',
+  'tagging-rules.apply.confirm.description':
+    'Θα γίνει έλεγχος σε όλα τα υπάρχοντα έγγραφα και θα εφαρμοστούν οι κατάλληλες ετικέτες στο παρασκήνιο.',
   'tagging-rules.apply.confirm.button': 'Εφαρμογή κανόνα',
   'tagging-rules.apply.success': 'Η εφαρμογή του κανόνα ξεκίνησε στο παρασκήνιο',
   'tagging-rules.apply.error': 'Αποτυχία έναρξης εφαρμογής κανόνα',
@@ -638,11 +712,14 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'Email εισαγωγής',
-  'intake-emails.description': 'Τα email εισαγωγής χρησιμοποιούνται για αυτόματη προσθήκη συνημμένων στο Papra.',
+  'intake-emails.description':
+    'Τα email εισαγωγής χρησιμοποιούνται για αυτόματη προσθήκη συνημμένων στο Papra.',
   'intake-emails.disabled.title': 'Τα email εισαγωγής είναι απενεργοποιημένα',
-  'intake-emails.disabled.description': 'Παρακαλώ επικοινωνήστε με τον διαχειριστή. Δείτε τα {{ documentation }} για περισσότερες πληροφορίες.',
+  'intake-emails.disabled.description':
+    'Παρακαλώ επικοινωνήστε με τον διαχειριστή. Δείτε τα {{ documentation }} για περισσότερες πληροφορίες.',
   'intake-emails.disabled.documentation': 'τεκμηρίωση',
-  'intake-emails.info': 'Μόνο ενεργοποιημένα email από επιτρεπόμενες διευθύνσεις θα υποβληθούν σε επεξεργασία.',
+  'intake-emails.info':
+    'Μόνο ενεργοποιημένα email από επιτρεπόμενες διευθύνσεις θα υποβληθούν σε επεξεργασία.',
   'intake-emails.empty.title': 'Δεν υπάρχουν email εισαγωγής',
   'intake-emails.empty.description': 'Δημιουργήστε μια νέα διεύθυνση εισαγωγής.',
   'intake-emails.empty.generate': 'Δημιουργία email εισαγωγής',
@@ -656,7 +733,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Διαχείριση επιτρεπόμενων διευθύνσεων',
   'intake-emails.actions.delete': 'Διαγραφή',
   'intake-emails.delete.confirm.title': 'Διαγραφή email εισαγωγής;',
-  'intake-emails.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
+  'intake-emails.delete.confirm.message':
+    'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
   'intake-emails.delete.confirm.confirm-button': 'Διαγραφή email εισαγωγής',
   'intake-emails.delete.confirm.cancel-button': 'Ακύρωση',
   'intake-emails.delete.success': 'Το email εισαγωγής διαγράφηκε',
@@ -664,7 +742,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'Το email εισαγωγής ενεργοποιήθηκε',
   'intake-emails.update.success.disabled': 'Το email εισαγωγής απενεργοποιήθηκε',
   'intake-emails.allowed-origins.title': 'Επιτρεπόμενες διευθύνσεις',
-  'intake-emails.allowed-origins.description': 'Μόνο email που αποστέλλονται στο {{ email }} από αυτές τις διευθύνσεις θα υποβληθούν σε επεξεργασία.',
+  'intake-emails.allowed-origins.description':
+    'Μόνο email που αποστέλλονται στο {{ email }} από αυτές τις διευθύνσεις θα υποβληθούν σε επεξεργασία.',
   'intake-emails.allowed-origins.add.label': 'Προσθήκη επιτρεπόμενης διεύθυνσης',
   'intake-emails.allowed-origins.add.placeholder': 'Π.χ. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Προσθήκη',
@@ -700,7 +779,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Παρακαλώ επιλέξτε τουλάχιστον ένα δικαίωμα',
   'api-keys.create.form.submit': 'Δημιουργία API key',
   'api-keys.create.created.title': 'API key δημιουργήθηκε',
-  'api-keys.create.created.description': 'Αποθηκεύστε το σε ασφαλές σημείο — δεν θα εμφανιστεί ξανά.',
+  'api-keys.create.created.description':
+    'Αποθηκεύστε το σε ασφαλές σημείο — δεν θα εμφανιστεί ξανά.',
   'api-keys.list.title': 'API keys',
   'api-keys.list.description': 'Διαχειριστείτε τα API keys σας.',
   'api-keys.list.create': 'Δημιουργία API key',
@@ -709,7 +789,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Δημιουργήθηκε',
   'api-keys.delete.success': 'Το API key διαγράφηκε επιτυχώς',
   'api-keys.delete.confirm.title': 'Διαγραφή API key',
-  'api-keys.delete.confirm.message': 'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
+  'api-keys.delete.confirm.message':
+    'Είστε βέβαιοι ότι θέλετε να το διαγράψετε; Η ενέργεια δεν αναιρείται.',
   'api-keys.delete.confirm.confirm-button': 'Διαγραφή',
   'api-keys.delete.confirm.cancel-button': 'Ακύρωση',
 
@@ -814,20 +895,29 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.document.already_exists': 'Το έγγραφο υπάρχει ήδη',
   'api-errors.document.size_too_large': 'Το μέγεθος αρχείου είναι πολύ μεγάλο',
   'api-errors.intake-emails.already_exists': 'Υπάρχει ήδη email εισαγωγής με αυτή τη διεύθυνση.',
-  'api-errors.intake_email.limit_reached': 'Φτάσατε το μέγιστο αριθμό email εισαγωγής. Αναβαθμίστε το πλάνο σας.',
-  'api-errors.user.max_organization_count_reached': 'Φτάσατε το μέγιστο πλήθος οργανισμών. Επικοινωνήστε με την υποστήριξη.',
+  'api-errors.intake_email.limit_reached':
+    'Φτάσατε το μέγιστο αριθμό email εισαγωγής. Αναβαθμίστε το πλάνο σας.',
+  'api-errors.user.max_organization_count_reached':
+    'Φτάσατε το μέγιστο πλήθος οργανισμών. Επικοινωνήστε με την υποστήριξη.',
   'api-errors.default': 'Προέκυψε σφάλμα κατά την επεξεργασία του αιτήματός σας.',
-  'api-errors.organization.invitation_already_exists': 'Υπάρχει ήδη πρόσκληση για αυτό το email στον οργανισμό.',
+  'api-errors.organization.invitation_already_exists':
+    'Υπάρχει ήδη πρόσκληση για αυτό το email στον οργανισμό.',
   'api-errors.user.already_in_organization': 'Ο χρήστης ανήκει ήδη στον οργανισμό.',
-  'api-errors.user.organization_invitation_limit_reached': 'Φτάσατε το ημερήσιο όριο προσκλήσεων. Δοκιμάστε αύριο.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Φτάσατε το ημερήσιο όριο προσκλήσεων. Δοκιμάστε αύριο.',
   'api-errors.demo.not_available': 'Η δυνατότητα δεν είναι διαθέσιμη στο demo',
   'api-errors.tags.already_exists': 'Υπάρχει ήδη ετικέτα με αυτό το όνομα',
-  'api-errors.tags.organization_limit_reached': 'Συμπληρώθηκε ο μέγιστος αριθμός ετικετών για αυτόν τον οργανισμό.',
+  'api-errors.tags.organization_limit_reached':
+    'Συμπληρώθηκε ο μέγιστος αριθμός ετικετών για αυτόν τον οργανισμό.',
   'api-errors.internal.error': 'Προέκυψε σφάλμα. Δοκιμάστε αργότερα.',
-  'api-errors.auth.invalid_origin': 'Μη έγκυρη προέλευση εφαρμογής. Βεβαιωθείτε ότι το APP_BASE_URL ταιριάζει με το τρέχον URL. Δείτε https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'Φτάσατε το μέγιστο αριθμό μελών/προσκλήσεων. Αναβαθμίστε το πλάνο σας.',
-  'api-errors.organization.has_active_subscription': 'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα μέσω "Διαχείριση συνδρομής".',
-  'api-errors.webhooks.ssrf_unsafe_url': 'Η παρεχόμενη URL δεν επιτρέπεται. Οι URL webhook δεν πρέπει να δείχνουν σε ιδιωτικές ή δεσμευμένες διευθύνσεις IP.',
+  'api-errors.auth.invalid_origin':
+    'Μη έγκυρη προέλευση εφαρμογής. Βεβαιωθείτε ότι το APP_BASE_URL ταιριάζει με το τρέχον URL. Δείτε https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'Φτάσατε το μέγιστο αριθμό μελών/προσκλήσεων. Αναβαθμίστε το πλάνο σας.',
+  'api-errors.organization.has_active_subscription':
+    'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα μέσω "Διαχείριση συνδρομής".',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'Η παρεχόμενη URL δεν επιτρέπεται. Οι URL webhook δεν πρέπει να δείχνουν σε ιδιωτικές ή δεσμευμένες διευθύνσεις IP.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Ο χρήστης δεν βρέθηκε',
   'api-errors.FAILED_TO_CREATE_USER': 'Αποτυχία δημιουργίας χρήστη',
@@ -836,7 +926,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.FAILED_TO_GET_SESSION': 'Αποτυχία λήψης συνεδρίας',
   'api-errors.INVALID_PASSWORD': 'Μη έγκυρος κωδικός πρόσβασης',
   'api-errors.INVALID_EMAIL': 'Μη έγκυρο email',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Το email ή ο κωδικός είναι λανθασμένα ή ο λογαριασμός δεν υπάρχει.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'Το email ή ο κωδικός είναι λανθασμένα ή ο λογαριασμός δεν υπάρχει.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Ο κοινωνικός λογαριασμός είναι ήδη συνδεδεμένος',
   'api-errors.PROVIDER_NOT_FOUND': 'Ο πάροχος δεν βρέθηκε',
   'api-errors.INVALID_TOKEN': 'Μη έγκυρο token',
@@ -857,8 +948,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.OTP_NOT_ENABLED': 'Το 2FA δεν είναι ενεργό για αυτόν τον λογαριασμό',
   'api-errors.OTP_HAS_EXPIRED': 'Ο κωδικός 2FA έχει λήξει',
   'api-errors.TOTP_NOT_ENABLED': 'Το TOTP δεν είναι ενεργό για αυτόν τον λογαριασμό',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Ο έλεγχος δύο παραγόντων δεν είναι ενεργός για αυτόν τον λογαριασμό',
-  'api-errors.BACKUP_CODES_NOT_ENABLED': 'Οι κωδικοί ανάκτησης δεν είναι ενεργοί για αυτόν τον λογαριασμό',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'Ο έλεγχος δύο παραγόντων δεν είναι ενεργός για αυτόν τον λογαριασμό',
+  'api-errors.BACKUP_CODES_NOT_ENABLED':
+    'Οι κωδικοί ανάκτησης δεν είναι ενεργοί για αυτόν τον λογαριασμό',
   'api-errors.INVALID_BACKUP_CODE': 'Ο κωδικός ανάκτησης είναι άκυρος ή έχει ήδη χρησιμοποιηθεί',
   'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Πολλές προσπάθειες. Ζητήστε νέο κωδικό.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Μη έγκυρο cookie δύο παραγόντων',
@@ -870,7 +963,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // Demo
 
-  'demo.popup.description': 'Αυτό είναι demo περιβάλλον. Τα δεδομένα αποθηκεύονται μόνο στο local storage του browser.',
+  'demo.popup.description':
+    'Αυτό είναι demo περιβάλλον. Τα δεδομένα αποθηκεύονται μόνο στο local storage του browser.',
   'demo.popup.discord': 'Μπείτε στο {{ discordLink }} για υποστήριξη ή συζητήσεις.',
   'demo.popup.discord-link-label': 'Discord server',
   'demo.popup.reset': 'Επαναφορά δεδομένων demo',
@@ -889,26 +983,31 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Η πληρωμή ολοκληρώθηκε!',
   'subscriptions.checkout-success.description': 'Η συνδρομή σας ενεργοποιήθηκε επιτυχώς.',
-  'subscriptions.checkout-success.thank-you': 'Σας ευχαριστούμε που αναβαθμίσατε στο Papra Plus. Τώρα έχετε πρόσβαση σε όλα τα premium χαρακτηριστικά.',
+  'subscriptions.checkout-success.thank-you':
+    'Σας ευχαριστούμε που αναβαθμίσατε στο Papra Plus. Τώρα έχετε πρόσβαση σε όλα τα premium χαρακτηριστικά.',
   'subscriptions.checkout-success.go-to-organizations': 'Μετάβαση στους Οργανισμούς',
-  'subscriptions.checkout-success.redirecting': 'Ανακατεύθυνση σε {{ count }} δευτερόλεπτο{{ plural }}...',
+  'subscriptions.checkout-success.redirecting':
+    'Ανακατεύθυνση σε {{ count }} δευτερόλεπτο{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Η πληρωμή ακυρώθηκε',
   'subscriptions.checkout-cancel.description': 'Η αναβάθμιση συνδρομής ακυρώθηκε.',
-  'subscriptions.checkout-cancel.no-charges': 'Δεν έγινε καμία χρέωση. Μπορείτε να δοκιμάσετε ξανά οποιαδήποτε στιγμή.',
+  'subscriptions.checkout-cancel.no-charges':
+    'Δεν έγινε καμία χρέωση. Μπορείτε να δοκιμάσετε ξανά οποιαδήποτε στιγμή.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Πίσω στους Οργανισμούς',
   'subscriptions.checkout-cancel.need-help': 'Χρειάζεστε βοήθεια;',
   'subscriptions.checkout-cancel.contact-support': 'Επικοινωνήστε με την υποστήριξη',
 
   'subscriptions.upgrade-dialog.title': 'Αναβάθμιση οργανισμού',
-  'subscriptions.upgrade-dialog.description': 'Ξεκλειδώστε επιπλέον δυνατότητες για τον οργανισμό σας',
+  'subscriptions.upgrade-dialog.description':
+    'Ξεκλειδώστε επιπλέον δυνατότητες για τον οργανισμό σας',
   'subscriptions.upgrade-dialog.contact-us': 'Επικοινωνήστε μαζί μας',
   'subscriptions.upgrade-dialog.enterprise-plans': 'αν χρειάζεστε εταιρικά πλάνα.',
   'subscriptions.upgrade-dialog.per-month': '/μήνα',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} ετησίως',
   'subscriptions.upgrade-dialog.upgrade-now': 'Αναβάθμιση τώρα',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Προσφορά περιορισμένου χρόνου',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Αποκτήστε {{ percent }}% έκπτωση σε όλα τα πλάνα για πάντα ως Early Adopters! Η προσφορά λήγει σε {{ days, >1:{days} ημέρες, =1:1 ημέρα, λιγότερο από 1 ημέρα }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Αποκτήστε {{ percent }}% έκπτωση σε όλα τα πλάνα για πάντα ως Early Adopters! Η προσφορά λήγει σε {{ days, >1:{days} ημέρες, =1:1 ημέρα, λιγότερο από 1 ημέρα }}.',
 
   'subscriptions.plan.free.name': 'Δωρεάν πλάνο',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1028,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Μηνιαίο',
   'subscriptions.billing-interval.annual': 'Ετήσιο',
 
-  'subscriptions.usage-warning.message': 'Έχετε χρησιμοποιήσει το {{ percent }}% του χώρου αποθήκευσης. Σκεφτείτε να αναβαθμίσετε το πλάνο σας.',
+  'subscriptions.usage-warning.message':
+    'Έχετε χρησιμοποιήσει το {{ percent }}% του χώρου αποθήκευσης. Σκεφτείτε να αναβαθμίσετε το πλάνο σας.',
   'subscriptions.usage-warning.upgrade-button': 'Αναβάθμιση πλάνου',
 
   // Admin
@@ -960,7 +1060,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': 'Μέλη',
   'admin.organizations.table.created': 'Δημιουργήθηκε',
   'admin.organizations.table.updated': 'Ενημερώθηκε',
-  'admin.organizations.pagination.info': 'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:οργανισμό, οργανισμούς }}',
+  'admin.organizations.pagination.info':
+    'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:οργανισμό, οργανισμούς }}',
   'admin.organizations.pagination.page-info': 'Σελίδα {{ current }} από {{ total }}',
 
   'admin.organization-detail.title': 'Λεπτομέρειες οργανισμού',
@@ -984,7 +1085,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organization-detail.members.table.role': 'Ρόλος',
   'admin.organization-detail.members.table.joined': 'Ημερομηνία ένταξης',
   'admin.organization-detail.intake-emails.title': 'Email εισαγωγής ({{ count }})',
-  'admin.organization-detail.intake-emails.description': 'Email που χρησιμοποιούνται για εισαγωγή εγγράφων',
+  'admin.organization-detail.intake-emails.description':
+    'Email που χρησιμοποιούνται για εισαγωγή εγγράφων',
   'admin.organization-detail.intake-emails.empty': 'Δεν υπάρχουν email εισαγωγής',
   'admin.organization-detail.intake-emails.status.enabled': 'Ενεργό',
   'admin.organization-detail.intake-emails.status.disabled': 'Ανενεργό',
@@ -1017,7 +1119,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Μη επαληθευμένο',
   'admin.users.table.orgs': 'Οργανισμοί',
   'admin.users.table.created': 'Δημιουργήθηκε',
-  'admin.users.pagination.info': 'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:χρήστη, χρήστες }}',
+  'admin.users.pagination.info':
+    'Εμφάνιση {{ start }}–{{ end }} από {{ total }} {{ total, =1:χρήστη, χρήστες }}',
   'admin.users.pagination.page-info': 'Σελίδα {{ current }} από {{ total }}',
 
   'admin.user-detail.back': 'Πίσω στους χρήστες',
@@ -1059,7 +1162,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Έκδοση',
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Ημερομηνία commit',
-  'about.description': 'Το Papra είναι ένα open-source σύστημα διαχείρισης εγγράφων για αρχειοθέτηση, οργάνωση, ετικετοποίηση και διαχείριση εγγράφων.',
+  'about.description':
+    'Το Papra είναι ένα open-source σύστημα διαχείρισης εγγράφων για αρχειοθέτηση, οργάνωση, ετικετοποίηση και διαχείριση εγγράφων.',
   'about.links.title': 'Σύνδεσμοι',
   'about.links.documentation': 'Τεκμηρίωση',
   'about.links.documentation-description': 'Οδηγοί χρήσης & Αναφορά API',

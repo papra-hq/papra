@@ -17,9 +17,7 @@ describe('intake-emails repository', () => {
         emailAddress: 'foo@example.fr',
       });
 
-      expect(
-        omit(intakeEmail, ['id', 'createdAt', 'updatedAt']),
-      ).to.eql({
+      expect(omit(intakeEmail, ['id', 'createdAt', 'updatedAt'])).to.eql({
         organizationId: 'organization-1',
         isEnabled: true,
         allowedOrigins: [],
@@ -33,9 +31,7 @@ describe('intake-emails repository', () => {
         allowedOrigins: ['foo@example.fr'],
       });
 
-      expect(
-        omit(updatedIntakeEmail, ['id', 'createdAt', 'updatedAt']),
-      ).to.eql({
+      expect(omit(updatedIntakeEmail, ['id', 'createdAt', 'updatedAt'])).to.eql({
         organizationId: 'organization-1',
         isEnabled: false,
         allowedOrigins: ['foo@example.fr'],
@@ -49,26 +45,29 @@ describe('intake-emails repository', () => {
 
       expect.assert(retrievedIntakeEmail);
 
-      expect(
-        omit(retrievedIntakeEmail, ['id', 'createdAt', 'updatedAt']),
-      ).to.eql({
+      expect(omit(retrievedIntakeEmail, ['id', 'createdAt', 'updatedAt'])).to.eql({
         organizationId: 'organization-1',
         isEnabled: false,
         allowedOrigins: ['foo@example.fr'],
         emailAddress: 'foo@example.fr',
       });
 
-      const { intakeEmails: orgIntakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({
-        organizationId: 'organization-1',
-      });
+      const { intakeEmails: orgIntakeEmails } =
+        await intakeEmailsRepository.getOrganizationIntakeEmails({
+          organizationId: 'organization-1',
+        });
 
       expect(orgIntakeEmails).to.eql([retrievedIntakeEmail]);
 
-      await intakeEmailsRepository.deleteIntakeEmail({ intakeEmailId: intakeEmail.id, organizationId: 'organization-1' });
-
-      const { intakeEmails: orgIntakeEmailsAfterDelete } = await intakeEmailsRepository.getOrganizationIntakeEmails({
+      await intakeEmailsRepository.deleteIntakeEmail({
+        intakeEmailId: intakeEmail.id,
         organizationId: 'organization-1',
       });
+
+      const { intakeEmails: orgIntakeEmailsAfterDelete } =
+        await intakeEmailsRepository.getOrganizationIntakeEmails({
+          organizationId: 'organization-1',
+        });
 
       expect(orgIntakeEmailsAfterDelete).to.eql([]);
     });

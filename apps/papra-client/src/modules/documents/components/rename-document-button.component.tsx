@@ -23,7 +23,8 @@ export const RenameDocumentDialog: Component<{
   const { t } = useI18n();
 
   const renameDocumentMutation = useMutation(() => ({
-    mutationFn: ({ name }: { name: string }) => updateDocument({ documentId: props.documentId, organizationId: props.organizationId, name }),
+    mutationFn: ({ name }: { name: string }) =>
+      updateDocument({ documentId: props.documentId, organizationId: props.organizationId, name }),
     onSuccess: async () => {
       createToast({
         message: t('documents.rename.success'),
@@ -34,7 +35,6 @@ export const RenameDocumentDialog: Component<{
 
       await invalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
     },
-
   }));
 
   const { Form, Field, form } = createForm({
@@ -72,8 +72,15 @@ export const RenameDocumentDialog: Component<{
           <Field name="name">
             {(field, inputProps) => (
               <TextFieldRoot>
-                <TextFieldLabel class="sr-only" for="name">{t('documents.rename.form.name.label')}</TextFieldLabel>
-                <TextField {...inputProps} value={field.value} id="name" placeholder={t('documents.rename.form.name.placeholder')} />
+                <TextFieldLabel class="sr-only" for="name">
+                  {t('documents.rename.form.name.label')}
+                </TextFieldLabel>
+                <TextField
+                  {...inputProps}
+                  value={field.value}
+                  id="name"
+                  placeholder={t('documents.rename.form.name.placeholder')}
+                />
                 {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
               </TextFieldRoot>
             )}
@@ -92,7 +99,11 @@ export const RenameDocumentDialog: Component<{
 };
 
 const context = createContext<{
-  openRenameDialog: (args: { documentId: string; organizationId: string; documentName: string }) => void;
+  openRenameDialog: (args: {
+    documentId: string;
+    organizationId: string;
+    documentName: string;
+  }) => void;
 }>();
 
 export function useRenameDocumentDialog() {

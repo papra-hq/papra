@@ -20,7 +20,8 @@ export const createForbiddenEmailDomainError = createErrorFactory({
 
 export const createAuthSecretIsDefaultError = createErrorFactory({
   code: 'auth.config.secret_is_default',
-  message: 'In production, the auth secret must not be the default one. Please set a secure auth secret using the AUTH_SECRET environment variable.',
+  message:
+    'In production, the auth secret must not be the default one. Please set a secure auth secret using the AUTH_SECRET environment variable.',
   statusCode: 500,
   isInternal: true,
 });

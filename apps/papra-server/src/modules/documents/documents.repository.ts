@@ -42,7 +42,15 @@ export function createDocumentsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getOrganizationDocumentBySha256Hash({ sha256Hash, organizationId, db }: { sha256Hash: string; organizationId: string; db: Database }) {
+async function getOrganizationDocumentBySha256Hash({
+  sha256Hash,
+  organizationId,
+  db,
+}: {
+  sha256Hash: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [document] = await db
     .select()
     .from(documentsTable)
@@ -56,8 +64,13 @@ async function getOrganizationDocumentBySha256Hash({ sha256Hash, organizationId,
   return { document };
 }
 
-async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Database } & DbInsertableDocument) {
-  const [documents, error] = await safely(db.insert(documentsTable).values(documentToInsert).returning());
+async function saveOrganizationDocument({
+  db,
+  ...documentToInsert
+}: { db: Database } & DbInsertableDocument) {
+  const [documents, error] = await safely(
+    db.insert(documentsTable).values(documentToInsert).returning(),
+  );
 
   if (isUniqueConstraintError({ error })) {
     throw createDocumentAlreadyExistsError();
@@ -82,17 +95,20 @@ async function saveOrganizationDocument({ db, ...documentToInsert }: { db: Datab
   return { document };
 }
 
-async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationDeletedDocumentsCount({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({
       documentsCount: count(documentsTable.id),
     })
     .from(documentsTable)
     .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, true),
-      ),
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, true)),
     );
 
   if (isNil(record)) {
@@ -104,46 +120,67 @@ async function getOrganizationDeletedDocumentsCount({ organizationId, db }: { or
   return { documentsCount };
 }
 
-async function getOrganizationDeletedDocuments({ organizationId, pageIndex, pageSize, db }: { organizationId: string; pageIndex: number; pageSize: number; db: Database }) {
+async function getOrganizationDeletedDocuments({
+  organizationId,
+  pageIndex,
+  pageSize,
+  db,
+}: {
+  organizationId: string;
+  pageIndex: number;
+  pageSize: number;
+  db: Database;
+}) {
   const query = db
     .select()
     .from(documentsTable)
     .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, true),
-      ),
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, true)),
     );
 
-  const documents = await withPagination(
-    query.$dynamic(),
-    {
-      orderByColumn: desc(documentsTable.deletedAt),
-      pageIndex,
-      pageSize,
-    },
-  );
+  const documents = await withPagination(query.$dynamic(), {
+    orderByColumn: desc(documentsTable.deletedAt),
+    pageIndex,
+    pageSize,
+  });
 
   return {
     documents,
   };
 }
 
-async function getDocumentById({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
+async function getDocumentById({
+  documentId,
+  organizationId,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [document] = await db
     .select()
     .from(documentsTable)
     .where(
-      and(
-        eq(documentsTable.id, documentId),
-        eq(documentsTable.organizationId, organizationId),
-      ),
+      and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     );
 
   return { document };
 }
 
-async function softDeleteDocument({ documentId, organizationId, userId, db, now = new Date() }: { documentId: string; organizationId: string; userId: string; db: Database; now?: Date }) {
+async function softDeleteDocument({
+  documentId,
+  organizationId,
+  userId,
+  db,
+  now = new Date(),
+}: {
+  documentId: string;
+  organizationId: string;
+  userId: string;
+  db: Database;
+  now?: Date;
+}) {
   await db
     .update(documentsTable)
     .set({
@@ -152,10 +189,7 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
       deletedAt: now,
     })
     .where(
-      and(
-        eq(documentsTable.id, documentId),
-        eq(documentsTable.organizationId, organizationId),
-      ),
+      and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     );
 }
 
@@ -163,7 +197,19 @@ async function softDeleteDocument({ documentId, organizationId, userId, db, now 
 // when the documentIds list is large (e.g. resolved from a search query).
 const SOFT_DELETE_CHUNK_SIZE = 500;
 
-async function softDeleteDocuments({ documentIds, organizationId, userId, db, now = new Date() }: { documentIds: string[]; organizationId: string; userId: string; db: Database; now?: Date }) {
+async function softDeleteDocuments({
+  documentIds,
+  organizationId,
+  userId,
+  db,
+  now = new Date(),
+}: {
+  documentIds: string[];
+  organizationId: string;
+  userId: string;
+  db: Database;
+  now?: Date;
+}) {
   if (documentIds.length === 0) {
     return { trashedDocumentIds: [] };
   }
@@ -189,13 +235,25 @@ async function softDeleteDocuments({ documentIds, organizationId, userId, db, no
       )
       .returning({ id: documentsTable.id });
 
-    trashedDocumentIds.push(...rows.map(row => row.id));
+    trashedDocumentIds.push(...rows.map((row) => row.id));
   }
 
   return { trashedDocumentIds };
 }
 
-async function restoreDocument({ documentId, organizationId, name, userId, db }: { documentId: string; organizationId: string; name?: string; userId?: string; db: Database }) {
+async function restoreDocument({
+  documentId,
+  organizationId,
+  name,
+  userId,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  name?: string;
+  userId?: string;
+  db: Database;
+}) {
   const [document] = await db
     .update(documentsTable)
     .set({
@@ -206,10 +264,7 @@ async function restoreDocument({ documentId, organizationId, name, userId, db }:
       ...(isDefined(userId) ? { createdBy: userId } : {}),
     })
     .where(
-      and(
-        eq(documentsTable.id, documentId),
-        eq(documentsTable.organizationId, organizationId),
-      ),
+      and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     )
     .returning();
 
@@ -224,47 +279,76 @@ async function hardDeleteDocument({ documentId, db }: { documentId: string; db: 
   await db.delete(documentsTable).where(eq(documentsTable.id, documentId));
 }
 
-async function getExpiredDeletedDocuments({ db, expirationDelayInDays, now = new Date() }: { db: Database; expirationDelayInDays: number; now?: Date }) {
+async function getExpiredDeletedDocuments({
+  db,
+  expirationDelayInDays,
+  now = new Date(),
+}: {
+  db: Database;
+  expirationDelayInDays: number;
+  now?: Date;
+}) {
   const expirationDate = subDays(now, expirationDelayInDays);
 
-  const documents = await db.select({
-    id: documentsTable.id,
-    originalStorageKey: documentsTable.originalStorageKey,
-    organizationId: documentsTable.organizationId,
-  }).from(documentsTable).where(
-    and(
-      eq(documentsTable.isDeleted, true),
-      lt(documentsTable.deletedAt, expirationDate),
-    ),
-  );
+  const documents = await db
+    .select({
+      id: documentsTable.id,
+      originalStorageKey: documentsTable.originalStorageKey,
+      organizationId: documentsTable.organizationId,
+    })
+    .from(documentsTable)
+    .where(and(eq(documentsTable.isDeleted, true), lt(documentsTable.deletedAt, expirationDate)));
 
   return {
     documents,
   };
 }
 
-async function getOrganizationStats({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationStats({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({
       totalDocumentsCount: count(documentsTable.id),
-      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as('totalDocumentsSize'),
-      deletedDocumentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as('deletedDocumentsCount'),
-      documentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
-      documentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as('documentsSize'),
-      deletedDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as('deletedDocumentsSize'),
+      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as(
+        'totalDocumentsSize',
+      ),
+      deletedDocumentsCount:
+        sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as(
+          'deletedDocumentsCount',
+        ),
+      documentsCount:
+        sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as(
+          'documentsCount',
+        ),
+      documentsSize:
+        sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as(
+          'documentsSize',
+        ),
+      deletedDocumentsSize:
+        sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as(
+          'deletedDocumentsSize',
+        ),
     })
     .from(documentsTable)
-    .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-      ),
-    );
+    .where(and(eq(documentsTable.organizationId, organizationId)));
 
   if (isNil(record)) {
     throw createOrganizationNotFoundError();
   }
 
-  const { documentsCount, documentsSize, deletedDocumentsCount, deletedDocumentsSize, totalDocumentsCount, totalDocumentsSize } = record;
+  const {
+    documentsCount,
+    documentsSize,
+    deletedDocumentsCount,
+    deletedDocumentsSize,
+    totalDocumentsCount,
+    totalDocumentsSize,
+  } = record;
 
   return {
     documentsCount,
@@ -276,61 +360,88 @@ async function getOrganizationStats({ organizationId, db }: { organizationId: st
   };
 }
 
-async function getAllOrganizationTrashDocuments({ organizationId, db }: { organizationId: string; db: Database }) {
-  const documents = await db.select({
-    id: documentsTable.id,
-    originalStorageKey: documentsTable.originalStorageKey,
-    organizationId: documentsTable.organizationId,
-  }).from(documentsTable).where(
-    and(
-      eq(documentsTable.organizationId, organizationId),
-      eq(documentsTable.isDeleted, true),
-    ),
-  );
+async function getAllOrganizationTrashDocuments({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
+  const documents = await db
+    .select({
+      id: documentsTable.id,
+      originalStorageKey: documentsTable.originalStorageKey,
+      organizationId: documentsTable.organizationId,
+    })
+    .from(documentsTable)
+    .where(
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, true)),
+    );
 
   return {
     documents,
   };
 }
 
-async function getAllOrganizationDocuments({ organizationId, db }: { organizationId: string; db: Database }) {
-  const documents = await db.select({
-    id: documentsTable.id,
-    originalStorageKey: documentsTable.originalStorageKey,
-  }).from(documentsTable).where(
-    eq(documentsTable.organizationId, organizationId),
-  );
+async function getAllOrganizationDocuments({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
+  const documents = await db
+    .select({
+      id: documentsTable.id,
+      originalStorageKey: documentsTable.originalStorageKey,
+    })
+    .from(documentsTable)
+    .where(eq(documentsTable.organizationId, organizationId));
 
   return {
     documents,
   };
 }
 
-function getAllOrganizationDocumentsIterator({ organizationId, batchSize = 100, db }: { organizationId: string; batchSize?: number; db: Database }) {
+function getAllOrganizationDocumentsIterator({
+  organizationId,
+  batchSize = 100,
+  db,
+}: {
+  organizationId: string;
+  batchSize?: number;
+  db: Database;
+}) {
   const query = db
     .select({
       id: documentsTable.id,
       originalStorageKey: documentsTable.originalStorageKey,
     })
     .from(documentsTable)
-    .where(
-      eq(documentsTable.organizationId, organizationId),
-    )
+    .where(eq(documentsTable.organizationId, organizationId))
     .orderBy(documentsTable.createdAt)
     .$dynamic();
 
-  return createIterator({ query, batchSize }) as AsyncGenerator<{ id: string; originalStorageKey: string }>;
+  return createIterator({ query, batchSize }) as AsyncGenerator<{
+    id: string;
+    originalStorageKey: string;
+  }>;
 }
 
-function getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSize = 100, db }: { organizationId: string; batchSize?: number; db: Database }) {
+function getAllOrganizationUndeletedDocumentsIterator({
+  organizationId,
+  batchSize = 100,
+  db,
+}: {
+  organizationId: string;
+  batchSize?: number;
+  db: Database;
+}) {
   const query = db
     .select()
     .from(documentsTable)
     .where(
-      and(
-        eq(documentsTable.organizationId, organizationId),
-        eq(documentsTable.isDeleted, false),
-      ),
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
     )
     .orderBy(documentsTable.createdAt)
     .$dynamic();
@@ -338,15 +449,28 @@ function getAllOrganizationUndeletedDocumentsIterator({ organizationId, batchSiz
   return createIterator({ query, batchSize });
 }
 
-async function updateDocument({ documentId, organizationId, name, content, documentDate, notes, db }: { documentId: string; organizationId: string; name?: string; content?: string; documentDate?: Date | null; notes?: string; db: Database }) {
+async function updateDocument({
+  documentId,
+  organizationId,
+  name,
+  content,
+  documentDate,
+  notes,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  name?: string;
+  content?: string;
+  documentDate?: Date | null;
+  notes?: string;
+  db: Database;
+}) {
   const [document] = await db
     .update(documentsTable)
     .set(omitUndefined({ name, content, documentDate, notes }))
     .where(
-      and(
-        eq(documentsTable.id, documentId),
-        eq(documentsTable.organizationId, organizationId),
-      ),
+      and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     )
     .returning();
 
@@ -361,11 +485,25 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
   const [record] = await db
     .select({
       totalDocumentsCount: count(documentsTable.id),
-      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as('totalDocumentsSize'),
-      deletedDocumentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as('deletedDocumentsCount'),
-      documentsCount: sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
-      documentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as('documentsSize'),
-      deletedDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as('deletedDocumentsSize'),
+      totalDocumentsSize: sql<number>`COALESCE(SUM(${documentsTable.originalSize}), 0)`.as(
+        'totalDocumentsSize',
+      ),
+      deletedDocumentsCount:
+        sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = true)`.as(
+          'deletedDocumentsCount',
+        ),
+      documentsCount:
+        sql<number>`COUNT(${documentsTable.id}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as(
+          'documentsCount',
+        ),
+      documentsSize:
+        sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = false), 0)`.as(
+          'documentsSize',
+        ),
+      deletedDocumentsSize:
+        sql<number>`COALESCE(SUM(${documentsTable.originalSize}) FILTER (WHERE ${documentsTable.isDeleted} = true), 0)`.as(
+          'deletedDocumentsSize',
+        ),
     })
     .from(documentsTable);
 
@@ -380,7 +518,14 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
     };
   }
 
-  const { documentsCount, documentsSize, deletedDocumentsCount, deletedDocumentsSize, totalDocumentsCount, totalDocumentsSize } = record;
+  const {
+    documentsCount,
+    documentsSize,
+    deletedDocumentsCount,
+    deletedDocumentsSize,
+    totalDocumentsCount,
+    totalDocumentsSize,
+  } = record;
 
   return {
     documentsCount,
@@ -392,7 +537,15 @@ async function getGlobalDocumentsStats({ db }: { db: Database }) {
   };
 }
 
-export async function areAllDocumentsInOrganization({ documentIds, organizationId, db }: { documentIds: string[]; organizationId: string; db: Database }) {
+export async function areAllDocumentsInOrganization({
+  documentIds,
+  organizationId,
+  db,
+}: {
+  documentIds: string[];
+  organizationId: string;
+  db: Database;
+}) {
   const deduplicatedDocumentIds = uniq(documentIds);
 
   if (deduplicatedDocumentIds.length === 0) {
@@ -409,11 +562,11 @@ export async function areAllDocumentsInOrganization({ documentIds, organizationI
       ),
     );
 
-  const foundDocumentIds = new Set(documents.map(d => d.id));
+  const foundDocumentIds = new Set(documents.map((d) => d.id));
 
   if (foundDocumentIds.size !== deduplicatedDocumentIds.length) {
     return false;
   }
 
-  return documentIds.every(documentId => foundDocumentIds.has(documentId));
+  return documentIds.every((documentId) => foundDocumentIds.has(documentId));
 }

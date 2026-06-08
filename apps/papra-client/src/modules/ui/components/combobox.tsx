@@ -22,7 +22,9 @@ type comboboxInputProps<T extends ValidComponent = 'input'> = VoidProps<
   }
 >;
 
-export function ComboboxInput<T extends ValidComponent = 'input'>(props: PolymorphicProps<T, comboboxInputProps<T>>) {
+export function ComboboxInput<T extends ValidComponent = 'input'>(
+  props: PolymorphicProps<T, comboboxInputProps<T>>,
+) {
   const [local, rest] = splitProps(props as comboboxInputProps, ['class']);
 
   return (
@@ -43,17 +45,15 @@ type comboboxTriggerProps<T extends ValidComponent = 'button'> = ParentProps<
   }
 >;
 
-export function ComboboxTrigger<T extends ValidComponent = 'button'>(props: PolymorphicProps<T, comboboxTriggerProps<T>>) {
-  const [local, rest] = splitProps(props as comboboxTriggerProps, [
-    'class',
-    'children',
-  ]);
+export function ComboboxTrigger<T extends ValidComponent = 'button'>(
+  props: PolymorphicProps<T, comboboxTriggerProps<T>>,
+) {
+  const [local, rest] = splitProps(props as comboboxTriggerProps, ['class', 'children']);
 
   return (
     <ComboboxPrimitive.Control>
-      {state => (
+      {(state) => (
         <>
-
           <ComboboxPrimitive.Trigger
             class={cn(
               'flex min-h-9 w-full items-center rounded-md border border-input px-3 bg-inherit',
@@ -81,20 +81,20 @@ export function ComboboxTrigger<T extends ValidComponent = 'button'>(props: Poly
               </svg>
             </ComboboxPrimitive.Icon>
           </ComboboxPrimitive.Trigger>
-
         </>
       )}
     </ComboboxPrimitive.Control>
   );
 }
 
-type comboboxContentProps<T extends ValidComponent = 'div'>
-  = ComboboxContentProps<T> & {
-    class?: string;
-    footer?: JSX.Element;
-  };
+type comboboxContentProps<T extends ValidComponent = 'div'> = ComboboxContentProps<T> & {
+  class?: string;
+  footer?: JSX.Element;
+};
 
-export function ComboboxContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, comboboxContentProps<T>>) {
+export function ComboboxContent<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, comboboxContentProps<T>>,
+) {
   const [local, rest] = splitProps(props as comboboxContentProps, ['class', 'footer']);
 
   return (
@@ -119,11 +119,10 @@ type comboboxItemProps<T extends ValidComponent = 'li'> = ParentProps<
   }
 >;
 
-export function ComboboxItem<T extends ValidComponent = 'li'>(props: PolymorphicProps<T, comboboxItemProps<T>>) {
-  const [local, rest] = splitProps(props as comboboxItemProps, [
-    'class',
-    'children',
-  ]);
+export function ComboboxItem<T extends ValidComponent = 'li'>(
+  props: PolymorphicProps<T, comboboxItemProps<T>>,
+) {
+  const [local, rest] = splitProps(props as comboboxItemProps, ['class', 'children']);
 
   return (
     <ComboboxPrimitive.Item
@@ -134,11 +133,7 @@ export function ComboboxItem<T extends ValidComponent = 'li'>(props: Polymorphic
       {...rest}
     >
       <ComboboxPrimitive.ItemIndicator class="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          class="h-4 w-4"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4">
           <path
             fill="none"
             stroke="currentColor"
@@ -150,9 +145,7 @@ export function ComboboxItem<T extends ValidComponent = 'li'>(props: Polymorphic
           <title>Checked</title>
         </svg>
       </ComboboxPrimitive.ItemIndicator>
-      <ComboboxPrimitive.ItemLabel>
-        {local.children}
-      </ComboboxPrimitive.ItemLabel>
+      <ComboboxPrimitive.ItemLabel>{local.children}</ComboboxPrimitive.ItemLabel>
     </ComboboxPrimitive.Item>
   );
 }

@@ -15,30 +15,39 @@ describe('documents e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
         organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
+      );
 
       const formData = new FormData();
-      formData.append('file', new File(['this is an invoice'], 'invoice.txt', { type: 'text/plain' }));
+      formData.append(
+        'file',
+        new File(['this is an invoice'], 'invoice.txt', { type: 'text/plain' }),
+      );
       const body = new Response(formData);
 
       const createDocumentResponse = await app.request(
         '/api/organizations/org_222222222222222222222222/documents',
         {
           method: 'POST',
-          headers: {
-            ...Object.fromEntries(body.headers.entries()),
-          },
+          headers: Object.fromEntries(body.headers.entries()),
           body: await body.arrayBuffer(),
         },
         { loggedInUserId: 'usr_111111111111111111111111' },
@@ -62,7 +71,9 @@ describe('documents e2e', () => {
       );
 
       expect(getDocumentResponse.status).to.eql(200);
-      const { document: retrievedDocument } = (await getDocumentResponse.json()) as { document: Document };
+      const { document: retrievedDocument } = (await getDocumentResponse.json()) as {
+        document: Document;
+      };
 
       expect(retrievedDocument).to.eql({ ...document, tags: [], customProperties: [] });
 
@@ -82,21 +93,29 @@ describe('documents e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
         organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
       });
 
       const documentsStorageService = createInMemoryDocumentStorageServices();
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        documentsStorageService,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            maxUploadSize: 100,
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          documentsStorageService,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              maxUploadSize: 100,
+            },
+          }),
         }),
-      }));
+      );
 
       const formData = new FormData();
       formData.append('file', new File(['a'.repeat(101)], 'invoice.txt', { type: 'text/plain' }));
@@ -106,9 +125,7 @@ describe('documents e2e', () => {
         '/api/organizations/org_222222222222222222222222/documents',
         {
           method: 'POST',
-          headers: {
-            ...Object.fromEntries(body.headers.entries()),
-          },
+          headers: Object.fromEntries(body.headers.entries()),
           body: await body.arrayBuffer(),
         },
         { loggedInUserId: 'usr_111111111111111111111111' },
@@ -139,22 +156,31 @@ describe('documents e2e', () => {
         organizations: [{ id: 'org_aaaaaaaaaaaaaaaaaaaaaaaa', name: 'Org 1' }],
         organizationMembers: [
           // Only user 1 is a member of the organization
-          { organizationId: 'org_aaaaaaaaaaaaaaaaaaaaaaaa', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER },
+          {
+            organizationId: 'org_aaaaaaaaaaaaaaaaaaaaaaaa',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
         ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
+      );
 
       const formData = new FormData();
-      formData.append('file', new File(['sensitive document'], 'document.txt', { type: 'text/plain' }));
+      formData.append(
+        'file',
+        new File(['sensitive document'], 'document.txt', { type: 'text/plain' }),
+      );
       const body = new Response(formData);
 
       // User 2 attempts to upload to an organization they are not a member of
@@ -162,9 +188,7 @@ describe('documents e2e', () => {
         '/api/organizations/org_aaaaaaaaaaaaaaaaaaaaaaaa/documents',
         {
           method: 'POST',
-          headers: {
-            ...Object.fromEntries(body.headers.entries()),
-          },
+          headers: Object.fromEntries(body.headers.entries()),
           body: await body.arrayBuffer(),
         },
         { loggedInUserId: 'usr_222222222222222222222222' },
@@ -188,18 +212,26 @@ describe('documents e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
         organizations: [{ id: 'org_222222222222222222222222', name: 'Org 1' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+            },
+          }),
         }),
-      }));
+      );
 
       // Various UTF-8 characters that cause encoding issues
       const testCases = [
@@ -213,16 +245,17 @@ describe('documents e2e', () => {
 
       for (const testCase of testCases) {
         const formData = new FormData();
-        formData.append('file', new File([testCase.content], testCase.filename, { type: 'text/plain' }));
+        formData.append(
+          'file',
+          new File([testCase.content], testCase.filename, { type: 'text/plain' }),
+        );
         const body = new Response(formData);
 
         const createDocumentResponse = await app.request(
           '/api/organizations/org_222222222222222222222222/documents',
           {
             method: 'POST',
-            headers: {
-              ...Object.fromEntries(body.headers.entries()),
-            },
+            headers: Object.fromEntries(body.headers.entries()),
             body: await body.arrayBuffer(),
           },
           { loggedInUserId: 'usr_111111111111111111111111' },
@@ -243,7 +276,9 @@ describe('documents e2e', () => {
         );
 
         expect(getDocumentResponse.status).to.eql(200);
-        const { document: retrievedDocument } = (await getDocumentResponse.json()) as { document: Document };
+        const { document: retrievedDocument } = (await getDocumentResponse.json()) as {
+          document: Document;
+        };
 
         expect(retrievedDocument).to.eql({ ...document, tags: [], customProperties: [] });
       }
@@ -252,46 +287,59 @@ describe('documents e2e', () => {
     test('organizations on Plus plan should be able to upload files up to 100 MiB (not limited by global config)', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
-        organizations: [{ id: 'org_222222222222222222222222', name: 'Plus Org', customerId: 'cus_plus123' }],
-        organizationMembers: [{ organizationId: 'org_222222222222222222222222', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
-        organizationSubscriptions: [{
-          id: 'sub_plus123',
-          customerId: 'cus_plus123',
-          organizationId: 'org_222222222222222222222222',
-          planId: PLUS_PLAN_ID,
-          status: 'active',
-          seatsCount: 5,
-          currentPeriodStart: new Date('2024-01-01'),
-          currentPeriodEnd: new Date('2024-02-01'),
-          cancelAtPeriodEnd: false,
-        }],
+        organizations: [
+          { id: 'org_222222222222222222222222', name: 'Plus Org', customerId: 'cus_plus123' },
+        ],
+        organizationMembers: [
+          {
+            organizationId: 'org_222222222222222222222222',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
+        organizationSubscriptions: [
+          {
+            id: 'sub_plus123',
+            customerId: 'cus_plus123',
+            organizationId: 'org_222222222222222222222222',
+            planId: PLUS_PLAN_ID,
+            status: 'active',
+            seatsCount: 5,
+            currentPeriodStart: new Date('2024-01-01'),
+            currentPeriodEnd: new Date('2024-02-01'),
+            cancelAtPeriodEnd: false,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-            // Global config set to 10 MiB (simulating free tier limit)
-            maxUploadSize: 1024 * 1024 * 10, // 10 MiB
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+              // Global config set to 10 MiB (simulating free tier limit)
+              maxUploadSize: 1024 * 1024 * 10, // 10 MiB
+            },
+          }),
         }),
-      }));
+      );
 
       // File size: 50 MiB - exceeds global config (10 MiB) but within Plus plan limit (100 MiB)
       const fileSizeBytes = 1024 * 1024 * 50; // 50 MiB
       const formData = new FormData();
-      formData.append('file', new File(['a'.repeat(fileSizeBytes)], 'large-document.txt', { type: 'text/plain' }));
+      formData.append(
+        'file',
+        new File(['a'.repeat(fileSizeBytes)], 'large-document.txt', { type: 'text/plain' }),
+      );
       const body = new Response(formData);
 
       const createDocumentResponse = await app.request(
         '/api/organizations/org_222222222222222222222222/documents',
         {
           method: 'POST',
-          headers: {
-            ...Object.fromEntries(body.headers.entries()),
-          },
+          headers: Object.fromEntries(body.headers.entries()),
           body: await body.arrayBuffer(),
         },
         { loggedInUserId: 'usr_111111111111111111111111' },
@@ -311,46 +359,59 @@ describe('documents e2e', () => {
     test('organizations on Pro plan should be able to upload files up to 500 MiB (not limited by global config)', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'usr_111111111111111111111111', email: 'user@example.com' }],
-        organizations: [{ id: 'org_333333333333333333333333', name: 'Pro Org', customerId: 'cus_pro123' }],
-        organizationMembers: [{ organizationId: 'org_333333333333333333333333', userId: 'usr_111111111111111111111111', role: ORGANIZATION_ROLES.OWNER }],
-        organizationSubscriptions: [{
-          id: 'sub_pro123',
-          customerId: 'cus_pro123',
-          organizationId: 'org_333333333333333333333333',
-          planId: PRO_PLAN_ID,
-          status: 'active',
-          seatsCount: 20,
-          currentPeriodStart: new Date('2024-01-01'),
-          currentPeriodEnd: new Date('2024-02-01'),
-          cancelAtPeriodEnd: false,
-        }],
+        organizations: [
+          { id: 'org_333333333333333333333333', name: 'Pro Org', customerId: 'cus_pro123' },
+        ],
+        organizationMembers: [
+          {
+            organizationId: 'org_333333333333333333333333',
+            userId: 'usr_111111111111111111111111',
+            role: ORGANIZATION_ROLES.OWNER,
+          },
+        ],
+        organizationSubscriptions: [
+          {
+            id: 'sub_pro123',
+            customerId: 'cus_pro123',
+            organizationId: 'org_333333333333333333333333',
+            planId: PRO_PLAN_ID,
+            status: 'active',
+            seatsCount: 20,
+            currentPeriodStart: new Date('2024-01-01'),
+            currentPeriodEnd: new Date('2024-02-01'),
+            cancelAtPeriodEnd: false,
+          },
+        ],
       });
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({
-          env: 'test',
-          documentsStorage: {
-            driver: 'in-memory',
-            // Global config set to 10 MiB (simulating free tier limit)
-            maxUploadSize: 1024 * 1024 * 10, // 10 MiB
-          },
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({
+            env: 'test',
+            documentsStorage: {
+              driver: 'in-memory',
+              // Global config set to 10 MiB (simulating free tier limit)
+              maxUploadSize: 1024 * 1024 * 10, // 10 MiB
+            },
+          }),
         }),
-      }));
+      );
 
       // File size: 200 MiB - exceeds global config (10 MiB) but within Pro plan limit (500 MiB)
       const fileSizeBytes = 1024 * 1024 * 200; // 200 MiB
       const formData = new FormData();
-      formData.append('file', new File(['a'.repeat(fileSizeBytes)], 'very-large-document.txt', { type: 'text/plain' }));
+      formData.append(
+        'file',
+        new File(['a'.repeat(fileSizeBytes)], 'very-large-document.txt', { type: 'text/plain' }),
+      );
       const body = new Response(formData);
 
       const createDocumentResponse = await app.request(
         '/api/organizations/org_333333333333333333333333/documents',
         {
           method: 'POST',
-          headers: {
-            ...Object.fromEntries(body.headers.entries()),
-          },
+          headers: Object.fromEntries(body.headers.entries()),
           body: await body.arrayBuffer(),
         },
         { loggedInUserId: 'usr_111111111111111111111111' },

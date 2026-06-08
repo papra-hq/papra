@@ -5,9 +5,7 @@ import { stringifySqlQuery } from './database.models';
 describe('database.models', () => {
   describe('stringifySqlQuery', async () => {
     test('works with raw SQL query builder', () => {
-      expect(
-        stringifySqlQuery(sql`select name from users where id = ${'user_1'}`),
-      ).to.eql({
+      expect(stringifySqlQuery(sql`select name from users where id = ${'user_1'}`)).to.eql({
         query: 'select name from users where id = ?',
         params: ['user_1'],
       });

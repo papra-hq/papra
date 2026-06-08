@@ -14,10 +14,14 @@ describe('custom-property api-key e2e', () => {
     const { db } = await createInMemoryDatabase({
       users: [{ id: USER_ID, email: 'user@example.com' }],
       organizations: [{ id: ORG_ID, name: 'Org 1' }],
-      organizationMembers: [{ organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+      organizationMembers: [
+        { organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+      ],
     });
 
-    const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+    const { app } = createServer(
+      createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+    );
 
     const createApiKeyResponse = await app.request(
       '/api/api-keys',
@@ -33,7 +37,7 @@ describe('custom-property api-key e2e', () => {
     );
 
     expect(createApiKeyResponse.status).toBe(200);
-    const { token } = await createApiKeyResponse.json() as { token: string };
+    const { token } = (await createApiKeyResponse.json()) as { token: string };
 
     const createResponse = await app.request(`/api/organizations/${ORG_ID}/custom-properties`, {
       method: 'POST',
@@ -45,7 +49,9 @@ describe('custom-property api-key e2e', () => {
     });
 
     expect(createResponse.status).toBe(200);
-    const { propertyDefinition } = await createResponse.json() as { propertyDefinition: CustomPropertyDefinition };
+    const { propertyDefinition } = (await createResponse.json()) as {
+      propertyDefinition: CustomPropertyDefinition;
+    };
 
     expect(propertyDefinition).to.include({
       organizationId: ORG_ID,
@@ -73,10 +79,14 @@ describe('custom-property api-key e2e', () => {
     const { db } = await createInMemoryDatabase({
       users: [{ id: USER_ID, email: 'user@example.com' }],
       organizations: [{ id: ORG_ID, name: 'Org 1' }],
-      organizationMembers: [{ organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+      organizationMembers: [
+        { organizationId: ORG_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+      ],
     });
 
-    const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+    const { app } = createServer(
+      createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+    );
 
     const createApiKeyResponse = await app.request(
       '/api/api-keys',
@@ -92,7 +102,7 @@ describe('custom-property api-key e2e', () => {
     );
 
     expect(createApiKeyResponse.status).toBe(200);
-    const { token } = await createApiKeyResponse.json() as { token: string };
+    const { token } = (await createApiKeyResponse.json()) as { token: string };
 
     const createResponse = await app.request(`/api/organizations/${ORG_ID}/custom-properties`, {
       method: 'POST',

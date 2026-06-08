@@ -32,23 +32,39 @@ describe('documents e2e', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: USER_ID, email: 'user@example.com' }],
         organizations: [{ id: ORGANIZATION_ID, name: 'Org 1' }],
-        organizationMembers: [{ organizationId: ORGANIZATION_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: ORGANIZATION_ID, userId: USER_ID, role: ORGANIZATION_ROLES.OWNER },
+        ],
         documents: [
           makeDocument({ id: DOC_1, name: 'invoice-1.txt' }),
           makeDocument({ id: DOC_2, name: 'invoice-2.txt' }),
         ],
         tags: [
-          { id: TAG_ADD, name: 'Reviewed', normalizedName: 'reviewed', color: '#000000', organizationId: ORGANIZATION_ID },
-          { id: TAG_REMOVE, name: 'Pending', normalizedName: 'pending', color: '#111111', organizationId: ORGANIZATION_ID },
+          {
+            id: TAG_ADD,
+            name: 'Reviewed',
+            normalizedName: 'reviewed',
+            color: '#000000',
+            organizationId: ORGANIZATION_ID,
+          },
+          {
+            id: TAG_REMOVE,
+            name: 'Pending',
+            normalizedName: 'pending',
+            color: '#111111',
+            organizationId: ORGANIZATION_ID,
+          },
         ],
       });
 
       await db.insert(documentsTagsTable).values([{ documentId: DOC_1, tagId: TAG_REMOVE }]);
 
-      const { app } = createServer(createTestServerDependencies({
-        db,
-        config: overrideConfig({ env: 'test' }),
-      }));
+      const { app } = createServer(
+        createTestServerDependencies({
+          db,
+          config: overrideConfig({ env: 'test' }),
+        }),
+      );
 
       const response = await app.request(
         `/api/organizations/${ORGANIZATION_ID}/documents/batch/tags`,

@@ -9,7 +9,9 @@ import { rollbackLastAppliedMigration, runMigrations } from './migrations.usecas
 const createTableUserMigration: Migration = {
   name: 'create-table-user',
   up: async ({ db }) => {
-    await db.run(sql`CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`);
+    await db.run(
+      sql`CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`,
+    );
   },
   down: async ({ db }) => {
     await db.run(sql`DROP TABLE users`);
@@ -20,8 +22,12 @@ const createTableOrganizationMigration: Migration = {
   name: 'create-table-organization',
   up: async ({ db }) => {
     await db.batch([
-      db.run(sql`CREATE TABLE organizations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`),
-      db.run(sql`CREATE TABLE organization_members (id INTEGER PRIMARY KEY AUTOINCREMENT, organization_id INTEGER NOT NULL, user_id INTEGER NOT NULL, role TEXT NOT NULL, created_at INTEGER NOT NULL)`),
+      db.run(
+        sql`CREATE TABLE organizations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`,
+      ),
+      db.run(
+        sql`CREATE TABLE organization_members (id INTEGER PRIMARY KEY AUTOINCREMENT, organization_id INTEGER NOT NULL, user_id INTEGER NOT NULL, role TEXT NOT NULL, created_at INTEGER NOT NULL)`,
+      ),
     ]);
   },
   down: async ({ db }) => {
@@ -36,7 +42,9 @@ const createTableDocumentMigration: Migration = {
   name: 'create-table-document',
   up: async ({ db }) => {
     await db.batch([
-      db.run(sql`CREATE TABLE documents (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, created_at INTEGER NOT NULL)`),
+      db.run(
+        sql`CREATE TABLE documents (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, created_at INTEGER NOT NULL)`,
+      ),
     ]);
   },
   down: async ({ db }) => {
@@ -72,10 +80,12 @@ describe('migrations usecases', () => {
         { id: 3, name: 'create-table-document' },
       ]);
 
-      const { rows: tables } = await db.run(sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`);
+      const { rows: tables } = await db.run(
+        sql`SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'`,
+      );
 
       // Ensure all tables and indexes are created
-      expect(tables.map(t => t.name)).to.eql([
+      expect(tables.map((t) => t.name)).to.eql([
         'migrations',
         'migrations_name_index',
         'migrations_run_at_index',
@@ -132,11 +142,15 @@ describe('migrations usecases', () => {
     test('when the last migration in the database does not exist in the migrations list, an error is thrown', async () => {
       const { db } = setupDatabase({ url: ':memory:' });
 
-      await runMigrations({ db, migrations: [createTableUserMigration], logger: createNoopLogger() });
+      await runMigrations({
+        db,
+        migrations: [createTableUserMigration],
+        logger: createNoopLogger(),
+      });
 
-      await expect(
-        rollbackLastAppliedMigration({ db, migrations: [] }),
-      ).rejects.toThrow('Migration create-table-user not found');
+      await expect(rollbackLastAppliedMigration({ db, migrations: [] })).rejects.toThrow(
+        'Migration create-table-user not found',
+      );
     });
   });
 });

@@ -1,6 +1,10 @@
 import { isNilOrEmptyString } from '../../../shared/utils';
 
-export function tokenizeStringArguments({ argumentsString }: { argumentsString: string | undefined }): string[] {
+export function tokenizeStringArguments({
+  argumentsString,
+}: {
+  argumentsString: string | undefined;
+}): string[] {
   if (isNilOrEmptyString(argumentsString)) {
     return [];
   }

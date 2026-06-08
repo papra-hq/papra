@@ -22,7 +22,9 @@ export function registerInsertActivityLogOnDocumentUpdatedHandler({
         userId,
         documentActivityRepository,
         eventData: {
-          updatedFields: Object.keys(changes).filter(key => changes[key as keyof typeof changes] !== undefined),
+          updatedFields: Object.keys(changes).filter(
+            (key) => changes[key as keyof typeof changes] !== undefined,
+          ),
         },
       });
     },

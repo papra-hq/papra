@@ -30,7 +30,9 @@ export const organizationsWebhooksMigration = {
         );
       `),
 
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "webhook_events_webhook_id_event_name_unique" ON "webhook_events" ("webhook_id","event_name")`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "webhook_events_webhook_id_event_name_unique" ON "webhook_events" ("webhook_id","event_name")`,
+      ),
 
       db.run(sql`
         CREATE TABLE IF NOT EXISTS "webhooks" (
@@ -47,7 +49,6 @@ export const organizationsWebhooksMigration = {
         FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade
       );  
       `),
-
     ]);
   },
 

@@ -1,9 +1,20 @@
 import type { Buffer } from 'node:buffer';
-import type { ImportPreview, PaperlessCorrespondentItem, PaperlessDocumentItem, PaperlessDocumentTypeItem, PaperlessManifest, PaperlessTagItem } from './paperless.types';
+import type {
+  ImportPreview,
+  PaperlessCorrespondentItem,
+  PaperlessDocumentItem,
+  PaperlessDocumentTypeItem,
+  PaperlessManifest,
+  PaperlessTagItem,
+} from './paperless.types';
 import { readFile } from 'node:fs/promises';
 import JSZip from 'jszip';
 
-export async function extractManifest({ archivePath }: { archivePath: string }): Promise<PaperlessManifest> {
+export async function extractManifest({
+  archivePath,
+}: {
+  archivePath: string;
+}): Promise<PaperlessManifest> {
   const zipData = await readFile(archivePath);
   const zip = await JSZip.loadAsync(zipData);
 

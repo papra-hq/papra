@@ -35,22 +35,17 @@ export const CreateTaggingRulePage: Component = () => {
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold">
-          {t('tagging-rules.create.title')}
-        </h1>
+        <h1 class="text-xl font-bold">{t('tagging-rules.create.title')}</h1>
       </div>
 
       <TaggingRuleForm
         onSubmit={({ taggingRule }) => createTaggingRuleMutation.mutate({ taggingRule })}
         organizationId={params.organizationId}
-        submitButton={(
-          <Button
-            type="submit"
-            isLoading={createTaggingRuleMutation.isPending}
-          >
+        submitButton={
+          <Button type="submit" isLoading={createTaggingRuleMutation.isPending}>
             {t('tagging-rules.create.submit')}
           </Button>
-        )}
+        }
       />
     </div>
   );

@@ -2,26 +2,39 @@ import type { Readable } from 'node:stream';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 
 import { safely } from '@corentinth/chisels';
-import { createFileAlreadyExistsInStorageError, createFileNotFoundError } from '../../document-storage.errors';
+import {
+  createFileAlreadyExistsInStorageError,
+  createFileNotFoundError,
+} from '../../document-storage.errors';
 import { defineStorageDriver } from '../drivers.models';
 import { isAzureBlobAlreadyExistsError, isAzureBlobNotFoundError } from './az-blob.models';
 
 export const AZ_BLOB_STORAGE_DRIVER_NAME = 'azure-blob' as const;
 
 export const azBlobStorageDriverFactory = defineStorageDriver(({ documentStorageConfig }) => {
-  const { accountName, accountKey, containerName, connectionString } = documentStorageConfig.drivers.azureBlob;
+  const { accountName, accountKey, containerName, connectionString } =
+    documentStorageConfig.drivers.azureBlob;
 
-  const blobServiceClient = connectionString !== undefined
-    ? BlobServiceClient.fromConnectionString(connectionString)
-    : new BlobServiceClient(`https://${accountName}.blob.core.windows.net`, new StorageSharedKeyCredential(accountName, accountKey));
+  const blobServiceClient =
+    connectionString !== undefined
+      ? BlobServiceClient.fromConnectionString(connectionString)
+      : new BlobServiceClient(
+          `https://${accountName}.blob.core.windows.net`,
+          new StorageSharedKeyCredential(accountName, accountKey),
+        );
 
-  const getBlockBlobClient = ({ storageKey }: { storageKey: string }) => blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey);
+  const getBlockBlobClient = ({ storageKey }: { storageKey: string }) =>
+    blobServiceClient.getContainerClient(containerName).getBlockBlobClient(storageKey);
 
   return {
     name: AZ_BLOB_STORAGE_DRIVER_NAME,
     getClient: () => blobServiceClient,
     saveFile: async ({ fileStream, storageKey }) => {
-      const [, error] = await safely(getBlockBlobClient({ storageKey }).uploadStream(fileStream, undefined, undefined, { conditions: { ifNoneMatch: '*' } })); // Love those undefined :chef_kiss:
+      const [, error] = await safely(
+        getBlockBlobClient({ storageKey }).uploadStream(fileStream, undefined, undefined, {
+          conditions: { ifNoneMatch: '*' },
+        }),
+      ); // Love those undefined :chef_kiss:
 
       if (error) {
         throw isAzureBlobAlreadyExistsError({ error })

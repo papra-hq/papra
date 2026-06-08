@@ -1,7 +1,10 @@
 import type { TranslationsDictionary } from '../i18n/locales.types';
 import type { CustomPropertyType } from './custom-properties.types';
 
-export const PROPERTY_TYPE_LABEL_I18N_KEYS: Record<CustomPropertyType, keyof TranslationsDictionary> = {
+export const PROPERTY_TYPE_LABEL_I18N_KEYS: Record<
+  CustomPropertyType,
+  keyof TranslationsDictionary
+> = {
   text: 'custom-properties.types.text',
   number: 'custom-properties.types.number',
   date: 'custom-properties.types.date',

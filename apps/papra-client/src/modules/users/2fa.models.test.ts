@@ -6,7 +6,8 @@ describe('2fa models', () => {
     test('in a valid TOTP URI the secret is a query parameter', () => {
       expect(
         getSecretFromTotpUri({
-          totpUri: 'otpauth://totp/Papra:foo.bar%40gmail.com?secret=KFBVEMJQIVFW6RKMJNWTQ42OPBKG63DBK4YWSX2LG4REOQRXGZ3Q&issuer=Papra&digits=6&period=30',
+          totpUri:
+            'otpauth://totp/Papra:foo.bar%40gmail.com?secret=KFBVEMJQIVFW6RKMJNWTQ42OPBKG63DBK4YWSX2LG4REOQRXGZ3Q&issuer=Papra&digits=6&period=30',
         }),
       ).to.equal('KFBVEMJQIVFW6RKMJNWTQ42OPBKG63DBK4YWSX2LG4REOQRXGZ3Q');
     });

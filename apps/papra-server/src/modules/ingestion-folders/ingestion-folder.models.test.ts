@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { addTimestampToFilename, isFileInDoneFolder, isFileInErrorFolder, normalizeFilePathToIngestionFolder } from './ingestion-folder.models';
+import {
+  addTimestampToFilename,
+  isFileInDoneFolder,
+  isFileInErrorFolder,
+  normalizeFilePathToIngestionFolder,
+} from './ingestion-folder.models';
 
 describe('ingestion-folder models', () => {
   describe('normalizeFilePathToIngestionFolder', () => {
@@ -102,7 +107,10 @@ describe('ingestion-folder models', () => {
       ).to.equal('.config_1713096000000');
 
       expect(
-        addTimestampToFilename({ fileName: 'documents.models.tests.ts', now: new Date('2024-04-14T12:00:00.000Z') }),
+        addTimestampToFilename({
+          fileName: 'documents.models.tests.ts',
+          now: new Date('2024-04-14T12:00:00.000Z'),
+        }),
       ).to.equal('documents.models.tests_1713096000000.ts');
     });
   });

@@ -18,14 +18,24 @@ describe('theme models', () => {
 
   describe('getThemeFromPreference', () => {
     test('returns the system theme when preference is "system", otherwise returns the theme preference', () => {
-      expect(getThemeFromPreference({ themePreference: 'light', systemTheme: 'dark' })).toBe('light');
-      expect(getThemeFromPreference({ themePreference: 'light', systemTheme: 'light' })).toBe('light');
+      expect(getThemeFromPreference({ themePreference: 'light', systemTheme: 'dark' })).toBe(
+        'light',
+      );
+      expect(getThemeFromPreference({ themePreference: 'light', systemTheme: 'light' })).toBe(
+        'light',
+      );
 
       expect(getThemeFromPreference({ themePreference: 'dark', systemTheme: 'dark' })).toBe('dark');
-      expect(getThemeFromPreference({ themePreference: 'dark', systemTheme: 'light' })).toBe('dark');
+      expect(getThemeFromPreference({ themePreference: 'dark', systemTheme: 'light' })).toBe(
+        'dark',
+      );
 
-      expect(getThemeFromPreference({ themePreference: 'system', systemTheme: 'dark' })).toBe('dark');
-      expect(getThemeFromPreference({ themePreference: 'system', systemTheme: 'light' })).toBe('light');
+      expect(getThemeFromPreference({ themePreference: 'system', systemTheme: 'dark' })).toBe(
+        'dark',
+      );
+      expect(getThemeFromPreference({ themePreference: 'system', systemTheme: 'light' })).toBe(
+        'light',
+      );
     });
   });
 });

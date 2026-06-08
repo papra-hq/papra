@@ -6,17 +6,17 @@ describe('auth models', () => {
   describe('getEnabledOAuthProviders', () => {
     test('build an ordered list of enabled OAuth providers', () => {
       expect(
-        getEnabledOAuthProviders({ serverConfig: {
-          auth: {
-            providers: {
-              google: { isEnabled: true },
-              github: { isEnabled: true },
-              customs: [
-                { providerId: 'custom1', providerName: 'Custom 1' },
-              ],
+        getEnabledOAuthProviders({
+          serverConfig: {
+            auth: {
+              providers: {
+                google: { isEnabled: true },
+                github: { isEnabled: true },
+                customs: [{ providerId: 'custom1', providerName: 'Custom 1' }],
+              },
             },
-          },
-        } as ServerConfig }),
+          } as ServerConfig,
+        }),
       ).to.eql([
         { providerId: 'google', providerName: 'Google' },
         { providerId: 'github', providerName: 'GitHub' },
@@ -24,48 +24,48 @@ describe('auth models', () => {
       ]);
 
       expect(
-        getEnabledOAuthProviders({ serverConfig: {
-          auth: {
-            providers: {
-              google: { isEnabled: true },
-              github: { isEnabled: false },
-              customs: [
-                { providerId: 'custom1', providerName: 'Custom 1' },
-              ],
+        getEnabledOAuthProviders({
+          serverConfig: {
+            auth: {
+              providers: {
+                google: { isEnabled: true },
+                github: { isEnabled: false },
+                customs: [{ providerId: 'custom1', providerName: 'Custom 1' }],
+              },
             },
-          },
-        } as ServerConfig }),
+          } as ServerConfig,
+        }),
       ).to.eql([
         { providerId: 'google', providerName: 'Google' },
         { providerId: 'custom1', providerName: 'Custom 1' },
       ]);
 
       expect(
-        getEnabledOAuthProviders({ serverConfig: {
-          auth: {
-            providers: {
-              google: { isEnabled: false },
-              github: { isEnabled: false },
-              customs: [
-                { providerId: 'custom1', providerName: 'Custom 1' },
-              ],
+        getEnabledOAuthProviders({
+          serverConfig: {
+            auth: {
+              providers: {
+                google: { isEnabled: false },
+                github: { isEnabled: false },
+                customs: [{ providerId: 'custom1', providerName: 'Custom 1' }],
+              },
             },
-          },
-        } as ServerConfig }),
-      ).to.eql([
-        { providerId: 'custom1', providerName: 'Custom 1' },
-      ]);
+          } as ServerConfig,
+        }),
+      ).to.eql([{ providerId: 'custom1', providerName: 'Custom 1' }]);
 
       expect(
-        getEnabledOAuthProviders({ serverConfig: {
-          auth: {
-            providers: {
-              google: { isEnabled: false },
-              github: { isEnabled: false },
-              customs: [] as { providerId: string; providerName: string }[],
+        getEnabledOAuthProviders({
+          serverConfig: {
+            auth: {
+              providers: {
+                google: { isEnabled: false },
+                github: { isEnabled: false },
+                customs: [] as { providerId: string; providerName: string }[],
+              },
             },
-          },
-        } as ServerConfig }),
+          } as ServerConfig,
+        }),
       ).to.eql([]);
     });
 

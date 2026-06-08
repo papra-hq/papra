@@ -34,8 +34,18 @@ import {
 } from './organizations.errors';
 import { canUserRemoveMemberFromOrganization } from './organizations.models';
 
-export async function createOrganization({ name, userId, organizationsRepository }: { name: string; userId: string; organizationsRepository: OrganizationsRepository }) {
-  const { organization } = await organizationsRepository.saveOrganization({ organization: { name } });
+export async function createOrganization({
+  name,
+  userId,
+  organizationsRepository,
+}: {
+  name: string;
+  userId: string;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { organization } = await organizationsRepository.saveOrganization({
+    organization: { name },
+  });
 
   await organizationsRepository.addUserToOrganization({
     userId,
@@ -55,7 +65,10 @@ export async function ensureUserIsInOrganization({
   organizationId: string;
   organizationsRepository: OrganizationsRepository;
 }) {
-  const { isInOrganization } = await organizationsRepository.isUserInOrganization({ userId, organizationId });
+  const { isInOrganization } = await organizationsRepository.isUserInOrganization({
+    userId,
+    organizationId,
+  });
 
   if (!isInOrganization) {
     throw createUserNotInOrganizationError();
@@ -73,10 +86,13 @@ export async function checkIfUserCanCreateNewOrganization({
   organizationsRepository: OrganizationsRepository;
   usersRepository: UsersRepository;
 }) {
-  const { organizationCount } = await organizationsRepository.getUserOwnedOrganizationCount({ userId });
+  const { organizationCount } = await organizationsRepository.getUserOwnedOrganizationCount({
+    userId,
+  });
   const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-  const maxOrganizationCount = user.maxOrganizationCount ?? config.organizations.maxOrganizationCount;
+  const maxOrganizationCount =
+    user.maxOrganizationCount ?? config.organizations.maxOrganizationCount;
 
   if (organizationCount >= maxOrganizationCount) {
     throw createUserMaxOrganizationCountReachedError();
@@ -102,7 +118,9 @@ export async function getOrCreateOrganizationCustomerId({
     return { customerId: organization.customerId };
   }
 
-  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({ organizationId });
+  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({
+    organizationId,
+  });
 
   const { customerId } = await subscriptionsServices.createCustomer({
     ownerId: organizationOwner.id,
@@ -127,7 +145,9 @@ export async function ensureUserIsOwnerOfOrganization({
   organizationId: string;
   organizationsRepository: OrganizationsRepository;
 }) {
-  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({ organizationId });
+  const { organizationOwner } = await organizationsRepository.getOrganizationOwner({
+    organizationId,
+  });
 
   if (organizationOwner.id !== userId) {
     throw createUserNotOrganizationOwnerError();
@@ -153,7 +173,10 @@ export async function removeMemberFromOrganization({
   ]);
 
   if (!member || !currentUser) {
-    logger.error({ memberId, userId, organizationId }, 'Member or current user not found in organization');
+    logger.error(
+      { memberId, userId, organizationId },
+      'Member or current user not found in organization',
+    );
     throw createForbiddenError();
   }
 
@@ -161,17 +184,23 @@ export async function removeMemberFromOrganization({
   const memberRole = member.role;
 
   if (!canUserRemoveMemberFromOrganization({ userRole, memberRole })) {
-    logger.error({
-      memberId,
-      userId,
-      organizationId,
-      userRole,
-      memberRole,
-    }, 'User does not have permission to remove member from organization');
+    logger.error(
+      {
+        memberId,
+        userId,
+        organizationId,
+        userRole,
+        memberRole,
+      },
+      'User does not have permission to remove member from organization',
+    );
     throw createForbiddenError();
   }
 
-  await organizationsRepository.removeUserFromOrganization({ userId: member.userId, organizationId });
+  await organizationsRepository.removeUserFromOrganization({
+    userId: member.userId,
+    organizationId,
+  });
 }
 
 export async function checkIfUserHasReachedOrganizationInvitationLimit({
@@ -185,7 +214,10 @@ export async function checkIfUserHasReachedOrganizationInvitationLimit({
   organizationsRepository: OrganizationsRepository;
   now?: Date;
 }) {
-  const { userInvitationCount } = await organizationsRepository.getTodayUserInvitationCount({ userId, now });
+  const { userInvitationCount } = await organizationsRepository.getTodayUserInvitationCount({
+    userId,
+    now,
+  });
 
   if (userInvitationCount >= maxInvitationsPerDay) {
     throw createUserOrganizationInvitationLimitReachedError();
@@ -221,7 +253,10 @@ export async function inviteMemberToOrganization({
   emailsServices: EmailsServices;
   config: Config;
 }) {
-  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({ userId: inviterId, organizationId });
+  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({
+    userId: inviterId,
+    organizationId,
+  });
 
   if (!inviterMember) {
     logger.error({ inviterId, organizationId }, 'Inviter not found in organization');
@@ -229,7 +264,10 @@ export async function inviteMemberToOrganization({
   }
 
   if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
-    logger.error({ inviterId, organizationId }, 'Inviter does not have permission to invite members to organization');
+    logger.error(
+      { inviterId, organizationId },
+      'Inviter does not have permission to invite members to organization',
+    );
     throw createForbiddenError();
   }
 
@@ -238,26 +276,56 @@ export async function inviteMemberToOrganization({
     throw createForbiddenError();
   }
 
-  const { member } = await organizationsRepository.getOrganizationMemberByEmail({ email, organizationId });
+  const { member } = await organizationsRepository.getOrganizationMemberByEmail({
+    email,
+    organizationId,
+  });
 
   if (member) {
-    logger.error({ inviterId, organizationId, email, memberId: member.id, memberUserId: member.userId }, 'User already in organization');
+    logger.error(
+      { inviterId, organizationId, email, memberId: member.id, memberUserId: member.userId },
+      'User already in organization',
+    );
     throw createUserAlreadyInOrganizationError();
   }
 
-  const { invitation } = await organizationsRepository.getInvitationForEmailAndOrganization({ email, organizationId });
+  const { invitation } = await organizationsRepository.getInvitationForEmailAndOrganization({
+    email,
+    organizationId,
+  });
 
   if (invitation) {
-    logger.error({ inviterId, organizationId, email, invitationId: invitation.id }, 'Invitation already exists');
+    logger.error(
+      { inviterId, organizationId, email, invitationId: invitation.id },
+      'Invitation already exists',
+    );
     throw createOrganizationInvitationAlreadyExistsError();
   }
 
-  const { membersCount } = await organizationsRepository.getOrganizationMembersCount({ organizationId });
-  const { pendingInvitationsCount } = await organizationsRepository.getOrganizationPendingInvitationsCount({ organizationId });
-  const { organizationPlan } = await getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository });
+  const { membersCount } = await organizationsRepository.getOrganizationMembersCount({
+    organizationId,
+  });
+  const { pendingInvitationsCount } =
+    await organizationsRepository.getOrganizationPendingInvitationsCount({ organizationId });
+  const { organizationPlan } = await getOrganizationPlan({
+    organizationId,
+    subscriptionsRepository,
+    plansRepository,
+  });
 
-  if ((membersCount + pendingInvitationsCount) >= organizationPlan.limits.maxOrganizationsMembersCount) {
-    logger.error({ inviterId, organizationId, membersCount, maxMembers: organizationPlan.limits.maxOrganizationsMembersCount }, 'Organization has reached its maximum number of members');
+  if (
+    membersCount + pendingInvitationsCount >=
+    organizationPlan.limits.maxOrganizationsMembersCount
+  ) {
+    logger.error(
+      {
+        inviterId,
+        organizationId,
+        membersCount,
+        maxMembers: organizationPlan.limits.maxOrganizationsMembersCount,
+      },
+      'Organization has reached its maximum number of members',
+    );
     throw createMaxOrganizationMembersCountReachedError();
   }
 
@@ -340,7 +408,10 @@ export async function updateOrganizationMemberRole({
   organizationsRepository: OrganizationsRepository;
   role: 'admin' | 'member';
 }) {
-  const { member } = await organizationsRepository.getOrganizationMemberByMemberId({ memberId, organizationId });
+  const { member } = await organizationsRepository.getOrganizationMemberByMemberId({
+    memberId,
+    organizationId,
+  });
 
   if (!member) {
     throw createForbiddenError();
@@ -350,7 +421,10 @@ export async function updateOrganizationMemberRole({
     throw createForbiddenError();
   }
 
-  const { member: currentUser } = await organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId });
+  const { member: currentUser } = await organizationsRepository.getOrganizationMemberByUserId({
+    userId,
+    organizationId,
+  });
 
   if (!currentUser) {
     throw createUserNotInOrganizationError();
@@ -360,7 +434,10 @@ export async function updateOrganizationMemberRole({
     throw createForbiddenError();
   }
 
-  const { member: updatedMember } = await organizationsRepository.updateOrganizationMemberRole({ memberId, role });
+  const { member: updatedMember } = await organizationsRepository.updateOrganizationMemberRole({
+    memberId,
+    role,
+  });
 
   return { member: updatedMember };
 }
@@ -382,19 +459,33 @@ export async function resendOrganizationInvitation({
   logger?: Logger;
   now?: Date;
 }) {
-  const { invitation } = await organizationsRepository.getOrganizationInvitationById({ invitationId });
+  const { invitation } = await organizationsRepository.getOrganizationInvitationById({
+    invitationId,
+  });
 
   if (!invitation) {
     logger.error({ invitationId }, 'Invitation not found');
     throw createForbiddenError();
   }
 
-  if (![ORGANIZATION_INVITATION_STATUS.EXPIRED, ORGANIZATION_INVITATION_STATUS.CANCELLED, ORGANIZATION_INVITATION_STATUS.REJECTED].includes(invitation.status)) {
-    logger.error({ invitationId, invitationStatus: invitation.status }, 'Cannot resend invitation that is neither expired, cancelled nor rejected');
+  if (
+    ![
+      ORGANIZATION_INVITATION_STATUS.EXPIRED,
+      ORGANIZATION_INVITATION_STATUS.CANCELLED,
+      ORGANIZATION_INVITATION_STATUS.REJECTED,
+    ].includes(invitation.status)
+  ) {
+    logger.error(
+      { invitationId, invitationStatus: invitation.status },
+      'Cannot resend invitation that is neither expired, cancelled nor rejected',
+    );
     throw createForbiddenError();
   }
 
-  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({ userId, organizationId: invitation.organizationId });
+  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({
+    userId,
+    organizationId: invitation.organizationId,
+  });
 
   if (!inviterMember) {
     logger.error({ invitationId, userId }, 'Inviter not found in organization');
@@ -402,12 +493,15 @@ export async function resendOrganizationInvitation({
   }
 
   if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
-    logger.error({
-      invitationId,
-      userId,
-      memberId: inviterMember.id,
-      memberRole: inviterMember.role,
-    }, 'Inviter does not have permission to resend invitation');
+    logger.error(
+      {
+        invitationId,
+        userId,
+        memberId: inviterMember.id,
+        memberRole: inviterMember.role,
+      },
+      'Inviter does not have permission to resend invitation',
+    );
     throw createForbiddenError();
   }
 
@@ -437,10 +531,7 @@ export async function getOrganizationStorageLimits({
   subscriptionsRepository: SubscriptionsRepository;
   documentsRepository: DocumentsRepository;
 }) {
-  const [
-    { organizationPlan },
-    { totalDocumentsSize },
-  ] = await Promise.all([
+  const [{ organizationPlan }, { totalDocumentsSize }] = await Promise.all([
     getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
     documentsRepository.getOrganizationStats({ organizationId }),
   ]);
@@ -469,10 +560,16 @@ export async function softDeleteOrganization({
   config: Config;
   now?: Date;
 }) {
-  await ensureUserIsOwnerOfOrganization({ userId: deletedBy, organizationId, organizationsRepository });
+  await ensureUserIsOwnerOfOrganization({
+    userId: deletedBy,
+    organizationId,
+    organizationsRepository,
+  });
 
   // Check if organization has a subscription that blocks deletion
-  const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({ organizationId });
+  const { subscription } = await subscriptionsRepository.getActiveOrganizationSubscription({
+    organizationId,
+  });
 
   if (doesSubscriptionBlockDeletion(subscription)) {
     throw createOrganizationHasActiveSubscriptionError();
@@ -543,7 +640,10 @@ export async function purgeExpiredSoftDeletedOrganization({
   logger.info({ organizationId }, 'Starting purge of organization');
 
   // Process documents in batches using an iterator to avoid loading all into memory
-  const documentsIterator = documentsRepository.getAllOrganizationDocumentsIterator({ organizationId, batchSize });
+  const documentsIterator = documentsRepository.getAllOrganizationDocumentsIterator({
+    organizationId,
+    batchSize,
+  });
 
   let deletedCount = 0;
   let failedCount = 0;
@@ -551,16 +651,25 @@ export async function purgeExpiredSoftDeletedOrganization({
   for await (const document of documentsIterator) {
     try {
       await documentsStorageService.deleteFile({ storageKey: document.originalStorageKey });
-      logger.debug({ organizationId, documentId: document.id, storageKey: document.originalStorageKey }, 'Deleted document file from storage');
+      logger.debug(
+        { organizationId, documentId: document.id, storageKey: document.originalStorageKey },
+        'Deleted document file from storage',
+      );
       deletedCount++;
     } catch (error) {
       // Log but don't fail the entire purge if a single file deletion fails
-      logger.error({ organizationId, documentId: document.id, storageKey: document.originalStorageKey, error }, 'Failed to delete document file from storage');
+      logger.error(
+        { organizationId, documentId: document.id, storageKey: document.originalStorageKey, error },
+        'Failed to delete document file from storage',
+      );
       failedCount++;
     }
   }
 
-  logger.info({ organizationId, deletedCount, failedCount }, 'Finished deleting document files from storage');
+  logger.info(
+    { organizationId, deletedCount, failedCount },
+    'Finished deleting document files from storage',
+  );
 
   // Hard delete the organization (cascade will handle all related records)
   await organizationsRepository.deleteOrganization({ organizationId });
@@ -581,9 +690,14 @@ export async function purgeExpiredSoftDeletedOrganizations({
   logger?: Logger;
   now?: Date;
 }) {
-  const { organizationIds } = await organizationsRepository.getExpiredSoftDeletedOrganizations({ now });
+  const { organizationIds } = await organizationsRepository.getExpiredSoftDeletedOrganizations({
+    now,
+  });
 
-  logger.info({ organizationCount: organizationIds.length }, 'Found expired soft-deleted organizations to purge');
+  logger.info(
+    { organizationCount: organizationIds.length },
+    'Found expired soft-deleted organizations to purge',
+  );
 
   let purgedCount = 0;
 

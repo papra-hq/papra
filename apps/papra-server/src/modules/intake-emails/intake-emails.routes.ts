@@ -13,15 +13,27 @@ import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
 import { addLogContext, createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
-import { validateFormData, validateJsonBody, validateParams } from '../shared/validation/validation';
+import {
+  validateFormData,
+  validateJsonBody,
+  validateParams,
+} from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 import { INTAKE_EMAILS_INGEST_ROUTE } from './intake-emails.constants';
 import { getRecipientAddresses } from './intake-emails.models';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
-import { allowedOriginsSchema, intakeEmailIdSchema, intakeEmailIngestionEmailFieldSchema } from './intake-emails.schemas';
+import {
+  allowedOriginsSchema,
+  intakeEmailIdSchema,
+  intakeEmailIngestionEmailFieldSchema,
+} from './intake-emails.schemas';
 import { createIntakeEmailsServices } from './intake-emails.services';
-import { createIntakeEmail, deleteIntakeEmail, processIntakeEmailIngestion } from './intake-emails.usecases';
+import {
+  createIntakeEmail,
+  deleteIntakeEmail,
+  processIntakeEmailIngestion,
+} from './intake-emails.usecases';
 import { createIntakeEmailUsernameServices } from './username-drivers/intake-email-username.services';
 
 const logger = createLogger({ namespace: 'intake-emails.routes' });
@@ -38,9 +50,11 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/intake-emails',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -50,7 +64,9 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { intakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({ organizationId });
+      const { intakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({
+        organizationId,
+      });
 
       return context.json({ intakeEmails });
     },
@@ -61,9 +77,11 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.post(
     '/api/organizations/:organizationId/intake-emails',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -74,7 +92,11 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const intakeEmailsServices = createIntakeEmailsServices({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const intakeEmailUsernameServices = createIntakeEmailUsernameServices({ config, usersRepository, organizationsRepository });
+      const intakeEmailUsernameServices = createIntakeEmailUsernameServices({
+        config,
+        usersRepository,
+        organizationsRepository,
+      });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -97,10 +119,12 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
   app.delete(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      intakeEmailId: intakeEmailIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        intakeEmailId: intakeEmailIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, intakeEmailId } = context.req.valid('param');
@@ -111,7 +135,12 @@ function setupDeleteIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await deleteIntakeEmail({ intakeEmailId, organizationId, intakeEmailsRepository, intakeEmailsServices });
+      await deleteIntakeEmail({
+        intakeEmailId,
+        organizationId,
+        intakeEmailsRepository,
+        intakeEmailsServices,
+      });
 
       return context.body(null, 204);
     },
@@ -122,14 +151,18 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/intake-emails/:intakeEmailId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      intakeEmailId: intakeEmailIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      isEnabled: v.optional(v.boolean()),
-      allowedOrigins: allowedOriginsSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        intakeEmailId: intakeEmailIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        isEnabled: v.optional(v.boolean()),
+        allowedOrigins: allowedOriginsSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, intakeEmailId } = context.req.valid('param');
@@ -152,14 +185,25 @@ function setupUpdateIntakeEmailRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsStorageService, eventServices }: RouteDefinitionContext) {
+function setupIngestIntakeEmailRoute({
+  app,
+  db,
+  config,
+  taskServices,
+  documentsStorageService,
+  eventServices,
+}: RouteDefinitionContext) {
   app.post(
     INTAKE_EMAILS_INGEST_ROUTE,
-    validateFormData(v.object({
-      // email field is a JSON string parsed into ingestion metadata
-      'email': intakeEmailIngestionEmailFieldSchema,
-      'attachments[]': v.optional(v.pipe(v.array(v.instance(File)), v.minLength(1, 'At least one attachment is required'))),
-    })),
+    validateFormData(
+      v.object({
+        // email field is a JSON string parsed into ingestion metadata
+        'email': intakeEmailIngestionEmailFieldSchema,
+        'attachments[]': v.optional(
+          v.pipe(v.array(v.instance(File)), v.minLength(1, 'At least one attachment is required')),
+        ),
+      }),
+    ),
     async (context) => {
       const { email, 'attachments[]': attachments = [] } = context.req.valid('form');
       const fromAddress = email.from.address;
@@ -167,7 +211,10 @@ function setupIngestIntakeEmailRoute({ app, db, config, taskServices, documentsS
 
       addLogContext({ fromAddress, recipientsAddresses });
 
-      logger.info({ attachmentsCount: attachments.length }, 'Received intake email ingestion request');
+      logger.info(
+        { attachmentsCount: attachments.length },
+        'Received intake email ingestion request',
+      );
 
       if (!config.intakeEmails.isEnabled) {
         throw createError({

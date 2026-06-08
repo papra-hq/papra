@@ -19,7 +19,10 @@ import { kvStoreConfig } from '../kv-store/kv-store.config';
 import { organizationsConfig } from '../organizations/organizations.config';
 import { organizationPlansConfig } from '../plans/plans.config';
 import { createLogger } from '../shared/logger/logger';
-import { coercedPositiveIntegerSchema, strictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
+import {
+  coercedPositiveIntegerSchema,
+  strictlyPositiveIntegerSchema,
+} from '../shared/schemas/number.schemas';
 import { IN_MS } from '../shared/units';
 import { subscriptionsConfig } from '../subscriptions/subscriptions.config';
 import { tagsConfig } from '../tags/tags.config';
@@ -27,7 +30,12 @@ import { tasksConfig } from '../tasks/tasks.config';
 import { trackingConfig } from '../tracking/tracking.config';
 import { webhookConfig } from '../webhooks/webhooks.config';
 import { exitProcessDueToConfigError, validateParsedConfig } from './config.models';
-import { appSchemeSchema, booleanishSchema, coercedUrlListSchema, urlSchema } from './config.schemas';
+import {
+  appSchemeSchema,
+  booleanishSchema,
+  coercedUrlListSchema,
+  urlSchema,
+} from './config.schemas';
 import { getCommitInfo } from './config.usecases';
 
 export const configDefinition = {
@@ -167,7 +175,9 @@ export const configDefinition = {
 
 const logger = createLogger({ namespace: 'config' });
 
-export async function parseConfig({ env = process.env }: { env?: Record<string, string | undefined> } = {}) {
+export async function parseConfig({
+  env = process.env,
+}: { env?: Record<string, string | undefined> } = {}) {
   const { config: configFromFile } = await loadConfig({
     name: 'papra',
     rcFile: false,
@@ -180,13 +190,12 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
 
   const { gitCommitSha, gitCommitDate } = await getCommitInfo();
 
-  const [configResult, configError] = safelySync(() => defineConfig(configDefinition, {
-    envSource: env,
-    defaults: [
-      { gitCommitSha, gitCommitDate },
-      configFromFile,
-    ],
-  }));
+  const [configResult, configError] = safelySync(() =>
+    defineConfig(configDefinition, {
+      envSource: env,
+      defaults: [{ gitCommitSha, gitCommitDate }, configFromFile],
+    }),
+  );
 
   if (configError) {
     exitProcessDueToConfigError({ error: configError, logger });
@@ -197,9 +206,7 @@ export async function parseConfig({ env = process.env }: { env?: Record<string, 
   validateParsedConfig({
     config,
     logger,
-    validators: [
-      ensureAuthSecretIsNotDefaultInProduction,
-    ],
+    validators: [ensureAuthSecretIsNotDefaultInProduction],
   });
 
   return { config };

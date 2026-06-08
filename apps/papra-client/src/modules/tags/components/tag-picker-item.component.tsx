@@ -14,16 +14,12 @@ export const TagPickerItem: ParentComponent<TagPickerItemProps> = (props) => {
   const [local, rest] = splitProps(props, ['children', 'selected', 'highlighted']);
 
   return (
-    <li
-      class="px-1 cursor-pointer group"
-      role="option"
-      aria-selected={local.selected}
-      {...rest}
-    >
-      <div class={cn(
-        'flex items-center gap-2 rounded-md cursor-pointer transition-colors',
-        local.highlighted ? 'bg-accent' : 'group-hover:bg-accent/50',
-      )}
+    <li class="px-1 cursor-pointer group" role="option" aria-selected={local.selected} {...rest}>
+      <div
+        class={cn(
+          'flex items-center gap-2 rounded-md cursor-pointer transition-colors',
+          local.highlighted ? 'bg-accent' : 'group-hover:bg-accent/50',
+        )}
       >
         {local.children}
       </div>
@@ -60,7 +56,7 @@ export const TagPickerItemTag: Component<TagPickerItemTagProps> = (props) => {
         <Checkbox
           checked={props.selected}
           onChange={handleCheckboxChange}
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           <CheckboxControl class="border-transparent group-hover:border-border data-[checked]:(border-primary group-hover:border-primary)" />
         </Checkbox>
@@ -85,15 +81,13 @@ export const TagPickerItemCreateNewTag: Component<{
   const { t } = useI18n();
 
   return (
-    <TagPickerItem
-      selected={false}
-      highlighted={props.highlighted}
-      onClick={props.onClick}
-    >
+    <TagPickerItem selected={false} highlighted={props.highlighted} onClick={props.onClick}>
       <div class="flex items-center gap-2 pl-2 py-2 text-muted-foreground">
         <div class="i-tabler-plus size-4" />
         <span class="text-sm">
-          {props.name ? t('tags.picker.create-new-with-name', { name: props.name }) : t('tags.picker.create-new')}
+          {props.name
+            ? t('tags.picker.create-new-with-name', { name: props.name })
+            : t('tags.picker.create-new')}
         </span>
       </div>
     </TagPickerItem>

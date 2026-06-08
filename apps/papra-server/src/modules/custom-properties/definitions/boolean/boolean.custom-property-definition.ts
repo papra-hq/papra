@@ -5,7 +5,6 @@ export const booleanCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'boolean',
 
   value: {
-
     inputSchema: v.boolean(),
 
     toDb: ({ value }) => ({ booleanValue: value }),

@@ -4,8 +4,10 @@ export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Återställ ditt lösenord',
-  'auth.request-password-reset.description': 'Ange din e-postadress för att återställa ditt lösenord.',
-  'auth.request-password-reset.requested': 'Om det finns ett konto för den här e-postadressen har vi skickat ett e-postmeddelande till dig för att återställa ditt lösenord.',
+  'auth.request-password-reset.description':
+    'Ange din e-postadress för att återställa ditt lösenord.',
+  'auth.request-password-reset.requested':
+    'Om det finns ett konto för den här e-postadressen har vi skickat ett e-postmeddelande till dig för att återställa ditt lösenord.',
   'auth.request-password-reset.back-to-login': 'Tillbaka till inloggning',
   'auth.request-password-reset.form.email.label': 'E-post',
   'auth.request-password-reset.form.email.placeholder': 'Exempel: ada@papra.app',
@@ -20,14 +22,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.reset-password.form.new-password.label': 'Nytt lösenord',
   'auth.reset-password.form.new-password.placeholder': 'Exempel: **********',
   'auth.reset-password.form.new-password.required': 'Ange ditt nya lösenord',
-  'auth.reset-password.form.new-password.min-length': 'Lösenordet måste bestå av minst {{ minLength }} tecken',
-  'auth.reset-password.form.new-password.max-length': 'Lösenordet måste vara mindre än {{ maxLength }} tecken',
+  'auth.reset-password.form.new-password.min-length':
+    'Lösenordet måste bestå av minst {{ minLength }} tecken',
+  'auth.reset-password.form.new-password.max-length':
+    'Lösenordet måste vara mindre än {{ maxLength }} tecken',
   'auth.reset-password.form.submit': 'Återställ lösenord',
 
   'auth.email-provider.open': 'Öppna {{ provider }}',
 
   'auth.login.title': 'Logga in på Papra',
-  'auth.login.description': 'Ange din e-postadress eller använd sociala medier-inloggning för att komma åt ditt Papra-konto.',
+  'auth.login.description':
+    'Ange din e-postadress eller använd sociala medier-inloggning för att komma åt ditt Papra-konto.',
   'auth.login.login-with-provider': 'Logga in med {{ provider }}',
   'auth.login.no-account': 'Har du inget konto?',
   'auth.login.register': 'Registrera',
@@ -43,8 +48,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Logga in',
 
   'auth.login.two-factor.title': 'Tvåfaktorsverifiering',
-  'auth.login.two-factor.description.totp': 'Ange den sexsiffriga verifieringskoden från din autentiseringsapp.',
-  'auth.login.two-factor.description.backup-code': 'Ange en av dina reservkoder för att komma åt ditt konto.',
+  'auth.login.two-factor.description.totp':
+    'Ange den sexsiffriga verifieringskoden från din autentiseringsapp.',
+  'auth.login.two-factor.description.backup-code':
+    'Ange en av dina reservkoder för att komma åt ditt konto.',
   'auth.login.two-factor.code.label.totp': 'Verifieringskod',
   'auth.login.two-factor.code.label.backup-code': 'Reservkod',
   'auth.login.two-factor.code.placeholder.backup-code': 'Skriv in reservkod',
@@ -52,7 +59,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.two-factor.trust-device.label': 'Kom ihåg den här enheten i 30 dagar',
   'auth.login.two-factor.back': 'Tillbaka till inloggning',
   'auth.login.two-factor.submit': 'Verifiera',
-  'auth.login.two-factor.verification-failed': 'Verifieringen misslyckades. Kontrollera din kod och försök igen.',
+  'auth.login.two-factor.verification-failed':
+    'Verifieringen misslyckades. Kontrollera din kod och försök igen.',
   'auth.login.two-factor.use-backup-code': 'Använd reservkod istället',
   'auth.login.two-factor.use-totp': 'Använd autentiseringsappen istället',
 
@@ -65,7 +73,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Har redan ett konto?',
   'auth.register.login': 'Inloggning',
   'auth.register.registration-disabled.title': 'Registreringen är inaktiverad',
-  'auth.register.registration-disabled.description': 'Skapandet av nya konton är för närvarande inaktiverat på denna instans av Papra. Endast användare med befintliga konton kan logga in. Om du tror att detta är ett misstag, kontakta administratören för denna instans.',
+  'auth.register.registration-disabled.description':
+    'Skapandet av nya konton är för närvarande inaktiverat på denna instans av Papra. Endast användare med befintliga konton kan logga in. Om du tror att detta är ett misstag, kontakta administratören för denna instans.',
   'auth.register.form.email.label': 'E-post',
   'auth.register.form.email.placeholder': 'Exempel: ada@papra.app',
   'auth.register.form.email.required': 'Ange din e-postadress',
@@ -73,8 +82,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.password.label': 'Lösenord',
   'auth.register.form.password.placeholder': 'Ange ett lösenord',
   'auth.register.form.password.required': 'Ange ditt lösenord',
-  'auth.register.form.password.min-length': 'Lösenordet måste bestå av minst {{ minLength }} tecken',
-  'auth.register.form.password.max-length': 'Lösenordet måste vara mindre än {{ maxLength }} tecken',
+  'auth.register.form.password.min-length':
+    'Lösenordet måste bestå av minst {{ minLength }} tecken',
+  'auth.register.form.password.max-length':
+    'Lösenordet måste vara mindre än {{ maxLength }} tecken',
   'auth.register.form.name.label': 'Namn',
   'auth.register.form.name.placeholder': 'Exempel: Ada Lovelace',
   'auth.register.form.name.required': 'Ange ditt namn',
@@ -82,21 +93,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.submit': 'Registrera',
 
   'auth.email-validation-required.title': 'Verifiera din e-postadress',
-  'auth.email-validation-required.description': 'Ett verifieringsmail har skickats till din e-postadress. Vänligen verifiera din e-postadress genom att klicka på länken i e-postmeddelandet.',
+  'auth.email-validation-required.description':
+    'Ett verifieringsmail har skickats till din e-postadress. Vänligen verifiera din e-postadress genom att klicka på länken i e-postmeddelandet.',
 
   'auth.email-verification.success.title': 'E-post verifierad',
-  'auth.email-verification.success.description': 'Din e-postadress har verifierats. Du kan nu logga in på ditt konto.',
+  'auth.email-verification.success.description':
+    'Din e-postadress har verifierats. Du kan nu logga in på ditt konto.',
   'auth.email-verification.success.login': 'Gå till inlogg',
   'auth.email-verification.error.title': 'Verifiering misslyckades',
-  'auth.email-verification.error.description': 'Verifieringslänken har upphört att gälla eller är ogiltig. Begär ett nytt verifieringsmejl genom att logga in.',
+  'auth.email-verification.error.description':
+    'Verifieringslänken har upphört att gälla eller är ogiltig. Begär ett nytt verifieringsmejl genom att logga in.',
   'auth.email-verification.error.back': 'Tillbaka till inlogg',
 
-  'auth.legal-links.description': 'Genom att fortsätta bekräftar du att du förstår och godkänner {{ terms }} och {{ privacy }}.',
+  'auth.legal-links.description':
+    'Genom att fortsätta bekräftar du att du förstår och godkänner {{ terms }} och {{ privacy }}.',
   'auth.legal-links.terms': 'Användarvillkor',
   'auth.legal-links.privacy': 'Sekretesspolicy',
 
   'auth.no-auth-provider.title': 'Ingen autentiseringsleverantör',
-  'auth.no-auth-provider.description': 'Det finns inga autentiseringsleverantörer aktiverade på denna instans av Papra. Kontakta administratören för denna instans för att aktivera dem.',
+  'auth.no-auth-provider.description':
+    'Det finns inga autentiseringsleverantörer aktiverade på denna instans av Papra. Kontakta administratören för denna instans för att aktivera dem.',
 
   // User settings
 
@@ -108,7 +124,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.email.label': 'E-postadress',
 
   'user.settings.name.title': 'Fullständigt namn',
-  'user.settings.name.description': 'Ditt fullständiga namn visas för andra organisationsmedlemmar.',
+  'user.settings.name.description':
+    'Ditt fullständiga namn visas för andra organisationsmedlemmar.',
   'user.settings.name.label': 'Fullständigt namn',
   'user.settings.name.placeholder': 'T.ex. John Doe',
   'user.settings.name.update': 'Uppdatera namn',
@@ -136,22 +153,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Konfigurera tvåfaktorsverifiering',
   'user.settings.two-factor.setup-dialog.step1.title': 'Steg 1: Skanna QR-koden',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Skanna QR-koden nedan eller ange installationsnyckeln manuellt i din autentiseringsapp.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Skanna QR-koden nedan eller ange installationsnyckeln manuellt i din autentiseringsapp.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Kopiera installationsnyckel',
   'user.settings.two-factor.setup-dialog.step2.title': 'Steg 2: Verifiera koden',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Ange den sexsiffriga koden som genererats av din autentiseringsapp för att verifiera och aktivera tvåfaktorsautentisering.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Ange den sexsiffriga koden som genererats av din autentiseringsapp för att verifiera och aktivera tvåfaktorsautentisering.',
   'user.settings.two-factor.setup-dialog.cancel': 'Avbryt',
   'user.settings.two-factor.setup-dialog.verify': 'Verifiera och aktivera 2FA',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Reservkoder',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Spara dessa reservkoder på ett säkert ställe. Du kan använda dem för att komma åt ditt konto om du förlorar åtkomsten till din autentiseringsapp.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Spara dessa reservkoder på ett säkert ställe. Du kan använda dem för att komma åt ditt konto om du förlorar åtkomsten till din autentiseringsapp.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Kopiera reservkoder',
   'user.settings.two-factor.backup-codes-dialog.download': 'Ladda ner reservkoder',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Jag har sparat mina koder',
 
   'user.settings.two-factor.disable-dialog.title': 'Inaktivera tvåfaktorsverifiering',
-  'user.settings.two-factor.disable-dialog.description': 'Ange ditt lösenord för att inaktivera tvåfaktorsverifiering. Detta kommer göra ditt konto mindre säkert.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Ange ditt lösenord för att inaktivera tvåfaktorsverifiering. Detta kommer göra ditt konto mindre säkert.',
   'user.settings.two-factor.disable-dialog.password.label': 'Lösenord',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Ange ditt lösenord',
   'user.settings.two-factor.disable-dialog.password.required': 'Ange ditt lösenord',
@@ -159,7 +180,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': 'Inaktivera 2FA',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Regenerera reservkoder',
-  'user.settings.two-factor.regenerate-dialog.description': 'Detta kommer att ogiltigförklara alla befintliga reservkoder och generera nya. Ange ditt lösenord för att fortsätta.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Detta kommer att ogiltigförklara alla befintliga reservkoder och generera nya. Ange ditt lösenord för att fortsätta.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Lösenord',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Ange ditt lösenord',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Ange ditt lösenord',
@@ -173,33 +195,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Dina organisationer',
-  'organizations.list.description': 'Organisationer är ett sätt att gruppera dina dokument och hantera åtkomst till dem. Du kan skapa flera organisationer och bjuda in dina teammedlemmar att samarbeta.',
+  'organizations.list.description':
+    'Organisationer är ett sätt att gruppera dina dokument och hantera åtkomst till dem. Du kan skapa flera organisationer och bjuda in dina teammedlemmar att samarbeta.',
   'organizations.list.create-new': 'Skapa ny organisation',
   'organizations.list.back': 'Tillbaka till organisationer',
   'organizations.list.deleted.title': 'Raderade organisationer',
-  'organizations.list.deleted.description': 'Raderade organisationer sparas i {{ days }} dagar innan de tas bort permanent. Du kan återställa dem under denna period.',
+  'organizations.list.deleted.description':
+    'Raderade organisationer sparas i {{ days }} dagar innan de tas bort permanent. Du kan återställa dem under denna period.',
   'organizations.list.deleted.empty': 'Inga raderade organisationer',
-  'organizations.list.deleted.empty-description': 'När du tar bort en organisation kommer den att visas här i {{ days }} dagar innan den raderas permanent.',
+  'organizations.list.deleted.empty-description':
+    'När du tar bort en organisation kommer den att visas här i {{ days }} dagar innan den raderas permanent.',
   'organizations.list.deleted.restore': 'Återställ',
   'organizations.list.deleted.restore-success': 'Organisationen har återställts',
   'organizations.list.deleted.restore-confirm.title': 'Återställ organisation',
-  'organizations.list.deleted.restore-confirm.message': 'Är du säker på att du vill återställa denna organisation? Den kommer att flyttas tillbaka till listan över aktiva organisationer.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Är du säker på att du vill återställa denna organisation? Den kommer att flyttas tillbaka till listan över aktiva organisationer.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Återställ organisation',
   'organizations.list.deleted.deleted-at': 'Raderad {{ date }}',
   'organizations.list.deleted.purge-at': 'Kommer att raderas permanent {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} dag, {daysUntilPurge} dagar }} kvar)',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} dag, {daysUntilPurge} dagar }} kvar)',
 
   'organizations.details.no-documents.title': 'Inga dokument',
-  'organizations.details.no-documents.description': 'Det finns inga dokument i denna organisation ännu. Börja med att ladda upp några dokument.',
+  'organizations.details.no-documents.description':
+    'Det finns inga dokument i denna organisation ännu. Börja med att ladda upp några dokument.',
   'organizations.details.upload-documents': 'Ladda upp dokument',
   'organizations.details.documents-count': 'dokument totalt',
   'organizations.details.total-size': 'total storlek',
   'organizations.details.latest-documents': 'Senast importerade dokument',
 
   'organizations.create.title': 'Skapa en ny organisation',
-  'organizations.create.description': 'Dina dokument kommer att grupperas efter organisation. Du kan skapa flera organisationer för att separera dina dokument, till exempel för personliga dokument och arbetsdokument.',
+  'organizations.create.description':
+    'Dina dokument kommer att grupperas efter organisation. Du kan skapa flera organisationer för att separera dina dokument, till exempel för personliga dokument och arbetsdokument.',
   'organizations.create.back': 'Tillbaka',
-  'organizations.create.error.max-count-reached': 'Du har nått det maximala antalet organisationer du kan skapa. Om du behöver skapa fler, kontakta supporten.',
+  'organizations.create.error.max-count-reached':
+    'Du har nått det maximala antalet organisationer du kan skapa. Om du behöver skapa fler, kontakta supporten.',
   'organizations.create.form.name.label': 'Organisationsnamn',
   'organizations.create.form.name.placeholder': 'T.ex. Acme AB',
   'organizations.create.form.name.required': 'Ange organisationsnamn',
@@ -207,7 +237,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Organisationen har skapats',
 
   'organizations.create-first.title': 'Skapa din organisation',
-  'organizations.create-first.description': 'Dina dokument kommer att grupperas efter organisation. Du kan skapa flera organisationer för att separera dina dokument, till exempel för personliga dokument och arbetsdokument.',
+  'organizations.create-first.description':
+    'Dina dokument kommer att grupperas efter organisation. Du kan skapa flera organisationer för att separera dina dokument, till exempel för personliga dokument och arbetsdokument.',
   'organizations.create-first.default-name': 'Min organisation',
   'organizations.create-first.user-name': '{{ name }}s organisation',
 
@@ -219,18 +250,23 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.name.placeholder': 'T.ex. Acme AB',
   'organization.settings.name.updated': 'Organisationsnamnet har uppdaterats',
   'organization.settings.subscription.title': 'Prenumeration',
-  'organization.settings.subscription.description': 'Hantera fakturering, kvitton och betalningsmetoder.',
+  'organization.settings.subscription.description':
+    'Hantera fakturering, kvitton och betalningsmetoder.',
   'organization.settings.subscription.manage': 'Hantera prenumeration',
   'organization.settings.subscription.error': 'Det gick inte att hämta kundportalens URL',
   'organization.settings.delete.title': 'Radera organisation',
-  'organization.settings.delete.description': 'Om du tar bort den här organisationen tas all data som är kopplad till den permanent bort.',
+  'organization.settings.delete.description':
+    'Om du tar bort den här organisationen tas all data som är kopplad till den permanent bort.',
   'organization.settings.delete.confirm.title': 'Radera organisation',
-  'organization.settings.delete.confirm.message': 'Är du säker på att du vill ta bort den här organisationen? Organisationen kommer att markeras för radering och tas bort permanent efter {{ days }} dagar. Under denna period kan du återställa den från din organisationslista. Alla dokument och data kommer att raderas permanent efter denna fördröjning.',
+  'organization.settings.delete.confirm.message':
+    'Är du säker på att du vill ta bort den här organisationen? Organisationen kommer att markeras för radering och tas bort permanent efter {{ days }} dagar. Under denna period kan du återställa den från din organisationslista. Alla dokument och data kommer att raderas permanent efter denna fördröjning.',
   'organization.settings.delete.confirm.confirm-button': 'Radera organisation',
   'organization.settings.delete.confirm.cancel-button': 'Avbryt',
   'organization.settings.delete.success': 'Organisation raderad',
-  'organization.settings.delete.only-owner': 'Endast organisationens ägare kan ta bort denna organisation.',
-  'organization.settings.delete.has-active-subscription': 'Det går inte att ta bort en organisation med en aktiv prenumeration. Vänligen avsluta prenumerationen ovan först.',
+  'organization.settings.delete.only-owner':
+    'Endast organisationens ägare kan ta bort denna organisation.',
+  'organization.settings.delete.has-active-subscription':
+    'Det går inte att ta bort en organisation med en aktiv prenumeration. Vänligen avsluta prenumerationen ovan först.',
 
   'organization.usage.page.title': 'Användning',
   'organization.usage.page.description': 'Visa din organisations användning och gränser.',
@@ -245,14 +281,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Medlemmar',
   'organizations.members.description': 'Hantera dina organisationsmedlemmar',
   'organizations.members.invite-member': 'Bjud in medlem',
-  'organizations.members.invite-member-disabled-tooltip': 'Endast administratörer eller ägare kan bjuda in medlemmar till organisationen',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Endast administratörer eller ägare kan bjuda in medlemmar till organisationen',
   'organizations.members.remove-from-organization': 'Ta bort från organisation',
   'organizations.members.role': 'Roll',
   'organizations.members.roles.owner': 'Ägare',
   'organizations.members.roles.admin': 'Admin',
   'organizations.members.roles.member': 'Medlem',
   'organizations.members.delete.confirm.title': 'Ta bort medlem',
-  'organizations.members.delete.confirm.message': 'Är du säker på att du vill ta bort den här medlemmen från organisationen?',
+  'organizations.members.delete.confirm.message':
+    'Är du säker på att du vill ta bort den här medlemmen från organisationen?',
   'organizations.members.delete.confirm.confirm-button': 'Ta bort',
   'organizations.members.delete.confirm.cancel-button': 'Avbryt',
   'organizations.members.delete.success': 'Medlem borttagen från organisationen',
@@ -271,14 +309,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invite-member.form.role.label': 'Roll',
   'organizations.invite-member.form.submit': 'Bjud in till organisation',
   'organizations.invite-member.success.message': 'Medlem inbjuden',
-  'organizations.invite-member.success.description': 'E-postadressen har blivit inbjuden till organisationen.',
+  'organizations.invite-member.success.description':
+    'E-postadressen har blivit inbjuden till organisationen.',
   'organizations.invite-member.error.message': 'Det gick inte att bjuda in medlem',
 
   'organizations.invitations.title': 'Inbjudningar',
   'organizations.invitations.description': 'Hantera dina organisationsinbjudningar',
   'organizations.invitations.list.cta': 'Bjud in medlem',
   'organizations.invitations.list.empty.title': 'Inga väntande inbjudningar',
-  'organizations.invitations.list.empty.description': 'Du har inte blivit inbjuden till några organisationer än.',
+  'organizations.invitations.list.empty.description':
+    'Du har inte blivit inbjuden till några organisationer än.',
   'organizations.invitations.status.pending': 'Väntande',
   'organizations.invitations.status.accepted': 'Accepterad',
   'organizations.invitations.status.rejected': 'Avvisad',
@@ -286,11 +326,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.status.cancelled': 'Avbruten',
   'organizations.invitations.resend': 'Skicka inbjudan igen',
   'organizations.invitations.cancel.title': 'Avbryt inbjudan',
-  'organizations.invitations.cancel.description': 'Är du säker på att du vill avbryta denna inbjudan?',
+  'organizations.invitations.cancel.description':
+    'Är du säker på att du vill avbryta denna inbjudan?',
   'organizations.invitations.cancel.confirm': 'Avbryt inbjudan',
   'organizations.invitations.cancel.cancel': 'Avbryt',
   'organizations.invitations.resend.title': 'Skicka inbjudan igen',
-  'organizations.invitations.resend.description': 'Är du säker på att du vill skicka denna inbjudan igen? Ett nytt e-postmeddelande kommer att skickas till mottagaren.',
+  'organizations.invitations.resend.description':
+    'Är du säker på att du vill skicka denna inbjudan igen? Ett nytt e-postmeddelande kommer att skickas till mottagaren.',
   'organizations.invitations.resend.confirm': 'Skicka inbjudan igen',
   'organizations.invitations.resend.cancel': 'Avbryt',
 
@@ -313,7 +355,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Dokument',
   'documents.list.no-documents.title': 'Inga dokument',
-  'documents.list.no-documents.description': 'Det finns inga dokument i denna organisation ännu. Börja med att ladda upp några dokument.',
+  'documents.list.no-documents.description':
+    'Det finns inga dokument i denna organisation ännu. Börja med att ladda upp några dokument.',
   'documents.list.no-results': 'Inga dokument hittades',
   'documents.list.table.headers.file-name': 'Filnamn',
   'documents.list.table.headers.created': 'Skapad',
@@ -321,13 +364,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Åtgärder',
   'documents.list.table.headers.tags': 'Taggar',
   'documents.list.search.placeholder': 'Sök dokument...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:dokument, dokument }} matchar denna sökning',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:dokument, dokument }} totalt',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:dokument, dokument }} matchar denna sökning',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:dokument, dokument }} totalt',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Innehåll',
   'documents.tabs.activity': 'Aktivitet',
-  'documents.deleted.message': 'Detta dokument har tagits bort och kommer att tas bort permanent om {{ days }} dagar.',
+  'documents.deleted.message':
+    'Detta dokument har tagits bort och kommer att tas bort permanent om {{ days }} dagar.',
   'documents.actions.download.title': 'Ladda ner',
   'documents.actions.download.error': 'Det gick inte att ladda ner dokumentet',
   'documents.actions.restore': 'Återställ',
@@ -336,8 +382,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Avbryt',
   'documents.actions.save': 'Spara',
   'documents.actions.saving': 'Sparar...',
-  'documents.content.alert': 'Innehållet i dokumentet extraheras automatiskt från dokumentet vid uppladdning. Det används endast för sökning och indexering.',
-  'documents.content.empty-placeholder': 'Detta dokument har inget extraherat innehåll. Du kan ställa in det manuellt här.',
+  'documents.content.alert':
+    'Innehållet i dokumentet extraheras automatiskt från dokumentet vid uppladdning. Det används endast för sökning och indexering.',
+  'documents.content.empty-placeholder':
+    'Detta dokument har inget extraherat innehåll. Du kan ställa in det manuellt här.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Namn',
   'documents.info.type': 'Typ',
@@ -359,10 +407,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Dokument',
 
   'custom-properties.list.title': 'Anpassade egenskaper',
-  'custom-properties.list.description': 'Definiera anpassade metadatafält för dina dokument. Egenskaper kan vara text, siffror, datum, booleaner eller urvalslistor.',
+  'custom-properties.list.description':
+    'Definiera anpassade metadatafält för dina dokument. Egenskaper kan vara text, siffror, datum, booleaner eller urvalslistor.',
   'custom-properties.list.create-button': 'Skapa egenskap',
   'custom-properties.list.empty.title': 'Anpassade egenskaper',
-  'custom-properties.list.empty.description': 'Med anpassade egenskaper kan du lägga till strukturerad metadata till dina dokument, som utgångsdatum, företagsnamn eller belopp.',
+  'custom-properties.list.empty.description':
+    'Med anpassade egenskaper kan du lägga till strukturerad metadata till dina dokument, som utgångsdatum, företagsnamn eller belopp.',
   'custom-properties.list.table.name': 'Namn',
   'custom-properties.list.table.type': 'Typ',
   'custom-properties.list.table.description': 'Beskrivning',
@@ -370,7 +420,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Åtgärder',
   'custom-properties.list.table.no-description': 'Ingen beskrivning',
   'custom-properties.list.delete.confirm-title': 'Radera anpassad egenskap',
-  'custom-properties.list.delete.confirm-message': 'Är du säker på att du vill ta bort den anpassade egenskapen "{{ name }}"? Denna åtgärd kan inte ångras.',
+  'custom-properties.list.delete.confirm-message':
+    'Är du säker på att du vill ta bort den anpassade egenskapen "{{ name }}"? Denna åtgärd kan inte ångras.',
   'custom-properties.list.delete.confirm-button': 'Radera',
   'custom-properties.list.delete.success': 'Anpassad egenskap raderad',
   'custom-properties.list.delete.error': 'Kunde inte radera anpassad egenskap',
@@ -396,14 +447,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.type.label': 'Typ',
   'custom-properties.form.type.immutable': 'Egenskapstyp kan inte ändras efter skapandet.',
   'custom-properties.form.options.title': 'Alternativ',
-  'custom-properties.form.options.description': 'Definiera de alternativ som är tillgängliga för den här egenskapen.',
+  'custom-properties.form.options.description':
+    'Definiera de alternativ som är tillgängliga för den här egenskapen.',
   'custom-properties.form.options.name.placeholder': 'Namn på alternativ',
   'custom-properties.form.options.name.required': 'Namn på alternativ krävs',
   'custom-properties.form.options.name.max-length': 'Alternativet får inte ha fler än 255 tecken',
   'custom-properties.form.options.validation.required': 'Ange minst ett alternativ',
   'custom-properties.form.options.add': 'Lägg till alternativ',
   'custom-properties.form.cancel': 'Avbryt',
-  'custom-properties.form.save-error': 'Ett fel uppstod när egenskapsdefinitionen skulle sparas. Försök igen.',
+  'custom-properties.form.save-error':
+    'Ett fel uppstod när egenskapsdefinitionen skulle sparas. Försök igen.',
 
   'documents.custom-properties.section-title': 'Egenskaper',
   'documents.custom-properties.no-value': 'Ej satt',
@@ -432,8 +485,10 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': 'Raderade dokument',
   'documents.deleted.empty.title': 'Inga raderade dokument',
-  'documents.deleted.empty.description': 'Du har inga raderade dokument. Dokument som raderas kommer att flyttas till papperskorgen i {{ days }} dagar.',
-  'documents.deleted.retention-notice': 'Alla raderade dokument lagras i papperskorgen i {{ days }} dagar. När denna fördröjning passerats kommer dokumenten att raderas permanent och du kommer inte att kunna återställa dem.',
+  'documents.deleted.empty.description':
+    'Du har inga raderade dokument. Dokument som raderas kommer att flyttas till papperskorgen i {{ days }} dagar.',
+  'documents.deleted.retention-notice':
+    'Alla raderade dokument lagras i papperskorgen i {{ days }} dagar. När denna fördröjning passerats kommer dokumenten att raderas permanent och du kommer inte att kunna återställa dem.',
   'documents.deleted.deleted-at': 'Raderad',
   'documents.deleted.restoring': 'Återställer...',
   'documents.deleted.deleting': 'Raderar...',
@@ -445,7 +500,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.open-with.pdf-viewer': 'PDF-läsare',
 
   'documents.pdf-viewer.loading': 'Laddar PDF',
-  'documents.pdf-viewer.not-a-pdf': 'Detta dokument är inte en PDF och kan inte öppnas i PDF-läsaren.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Detta dokument är inte en PDF och kan inte öppnas i PDF-läsaren.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Dölj sidofältet',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Visa sidofältet',
@@ -508,12 +564,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Radera alla',
   'trash.delete-all.confirm.title': 'Vill du radera alla dokument permanent?',
-  'trash.delete-all.confirm.description': 'Är du säker på att du vill radera alla dokument från papperskorgen permanent? Den här åtgärden kan inte ångras.',
+  'trash.delete-all.confirm.description':
+    'Är du säker på att du vill radera alla dokument från papperskorgen permanent? Den här åtgärden kan inte ångras.',
   'trash.delete-all.confirm.label': 'Radera',
   'trash.delete-all.confirm.cancel': 'Avbryt',
   'trash.delete.button': 'Radera',
   'trash.delete.confirm.title': 'Radera dokument permanent?',
-  'trash.delete.confirm.description': 'Är du säker på att du vill radera det här dokumentet permanent från papperskorgen? Åtgärden kan inte ångras.',
+  'trash.delete.confirm.description':
+    'Är du säker på att du vill radera det här dokumentet permanent från papperskorgen? Åtgärden kan inte ångras.',
   'trash.delete.confirm.label': 'Radera',
   'trash.delete.confirm.cancel': 'Avbryt',
   'trash.deleted.success.title': 'Dokument raderat',
@@ -536,16 +594,19 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Inga taggar än',
-  'tags.no-tags.description': 'Den här organisationen har inga taggar än. Taggar används för att kategorisera dokument. Du kan lägga till taggar i dina dokument för att göra dem lättare att hitta och organisera.',
+  'tags.no-tags.description':
+    'Den här organisationen har inga taggar än. Taggar används för att kategorisera dokument. Du kan lägga till taggar i dina dokument för att göra dem lättare att hitta och organisera.',
   'tags.no-tags.create-tag': 'Skapa tagg',
 
   'tags.title': 'Dokumenttaggar',
-  'tags.description': 'Taggar används för att kategorisera dokument. Du kan lägga till taggar i dina dokument för att göra dem lättare att hitta och organisera.',
+  'tags.description':
+    'Taggar används för att kategorisera dokument. Du kan lägga till taggar i dina dokument för att göra dem lättare att hitta och organisera.',
   'tags.create': 'Skapa tagg',
   'tags.update': 'Uppdatera tagg',
   'tags.delete': 'Radera tagg',
   'tags.delete.confirm.title': 'Radera tagg',
-  'tags.delete.confirm.message': 'Är du säker på att du vill ta bort den här taggen? Om du tar bort en tagg tas den bort från alla dokument.',
+  'tags.delete.confirm.message':
+    'Är du säker på att du vill ta bort den här taggen? Om du tar bort en tagg tas den bort från alla dokument.',
   'tags.delete.confirm.confirm-button': 'Radera',
   'tags.delete.confirm.cancel-button': 'Avbryt',
   'tags.delete.success': 'Tagg raderad',
@@ -584,10 +645,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'börjar med',
   'tagging-rules.operator.ends-with': 'slutar med',
   'tagging-rules.list.title': 'Taggningsregler',
-  'tagging-rules.list.description': 'Hantera organisationens taggningsregler för att automatiskt tagga dokument baserat på villkor som du definierar.',
-  'tagging-rules.list.demo-warning': 'Obs: Eftersom detta är en demomiljö (utan server) kommer taggningsregler inte att tillämpas på nyligen tillagda dokument.',
+  'tagging-rules.list.description':
+    'Hantera organisationens taggningsregler för att automatiskt tagga dokument baserat på villkor som du definierar.',
+  'tagging-rules.list.demo-warning':
+    'Obs: Eftersom detta är en demomiljö (utan server) kommer taggningsregler inte att tillämpas på nyligen tillagda dokument.',
   'tagging-rules.list.no-tagging-rules.title': 'Inga taggningsregler',
-  'tagging-rules.list.no-tagging-rules.description': 'Skapa en taggningsregel för att automatiskt tagga dina tillagda dokument baserat på villkor du definierar.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Skapa en taggningsregel för att automatiskt tagga dina tillagda dokument baserat på villkor du definierar.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Skapa taggningsregel',
   'tagging-rules.list.card.no-conditions': 'Inga villkor',
   'tagging-rules.list.card.one-condition': '1 villkor',
@@ -603,10 +667,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Ange ett namn för regeln',
   'tagging-rules.form.name.max-length': 'Namnet måste vara färre än 64 tecken',
   'tagging-rules.form.description.label': 'Beskrivning',
-  'tagging-rules.form.description.placeholder': 'Exempel: Tagga dokument med \'faktura\' i namnet',
+  'tagging-rules.form.description.placeholder': "Exempel: Tagga dokument med 'faktura' i namnet",
   'tagging-rules.form.description.max-length': 'Beskrivningen måste vara färre än 256 tecken',
   'tagging-rules.form.conditions.label': 'Villkor',
-  'tagging-rules.form.conditions.description': 'Definiera villkoren som måste uppfyllas för att regeln ska gälla. Inga villkor innebär att regeln kommer att gälla för alla dokument',
+  'tagging-rules.form.conditions.description':
+    'Definiera villkoren som måste uppfyllas för att regeln ska gälla. Inga villkor innebär att regeln kommer att gälla för alla dokument',
   'tagging-rules.form.conditions.add-condition': 'Lägg till villkor',
   'tagging-rules.form.conditions.connector.when': 'När',
   'tagging-rules.form.conditions.connector.and': 'och',
@@ -614,13 +679,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Alla villkor måste matcha',
   'tagging-rules.condition-match-mode.any': 'Något villkor måste matcha',
   'tagging-rules.form.conditions.no-conditions.title': 'Inga villkor',
-  'tagging-rules.form.conditions.no-conditions.description': 'Du har inte lagt till några villkor för den här regeln. Denna regel kommer att tillämpa sina taggar på alla dokument.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'Du har inte lagt till några villkor för den här regeln. Denna regel kommer att tillämpa sina taggar på alla dokument.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Tillämpa regeln utan villkor',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Avbryt',
   'tagging-rules.form.conditions.value.placeholder': 'Exempel: faktura',
   'tagging-rules.form.conditions.value.min-length': 'Ange ett värde för villkoret',
   'tagging-rules.form.tags.label': 'Taggar',
-  'tagging-rules.form.tags.description': 'Välj taggar som ska tillämpas på de tillagda dokumenten som matchar villkoren',
+  'tagging-rules.form.tags.description':
+    'Välj taggar som ska tillämpas på de tillagda dokumenten som matchar villkoren',
   'tagging-rules.form.tags.min-length': 'Minst en tagg krävs',
   'tagging-rules.form.tags.add-tag': 'Skapa tagg',
   'tagging-rules.update.title': 'Uppdatera taggningsregel',
@@ -629,7 +696,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Avbryt',
   'tagging-rules.apply.button': 'Tillämpa på befintliga dokument',
   'tagging-rules.apply.confirm.title': 'Tillämpa regel på befintliga dokument?',
-  'tagging-rules.apply.confirm.description': 'Detta kommer att kontrollera alla befintliga dokument i din organisation och tillämpa taggar där villkoren matchar. Bearbetningen kommer att ske i bakgrunden.',
+  'tagging-rules.apply.confirm.description':
+    'Detta kommer att kontrollera alla befintliga dokument i din organisation och tillämpa taggar där villkoren matchar. Bearbetningen kommer att ske i bakgrunden.',
   'tagging-rules.apply.confirm.button': 'Tillämpa regel',
   'tagging-rules.apply.success': 'Regeltillämpning har startats i bakgrunden',
   'tagging-rules.apply.error': 'Kunde inte starta regeltillämpning',
@@ -638,13 +706,17 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'Inmatning av e-post',
-  'intake-emails.description': 'Inmatningsadresser används för att automatiskt mata in e-postmeddelanden i Papra. Vidarebefordra e-postmeddelanden till inmatningsadressen så kommer deras bilagor att läggas till i din organisation.',
+  'intake-emails.description':
+    'Inmatningsadresser används för att automatiskt mata in e-postmeddelanden i Papra. Vidarebefordra e-postmeddelanden till inmatningsadressen så kommer deras bilagor att läggas till i din organisation.',
   'intake-emails.disabled.title': 'Inmatning av e-post är avaktiverat',
-  'intake-emails.disabled.description': 'Inmatning av e-postmeddelanden är inaktiverat på den här instansen. Kontakta din administratör för att aktivera det. Se {{ documentation }} för mer information.',
+  'intake-emails.disabled.description':
+    'Inmatning av e-postmeddelanden är inaktiverat på den här instansen. Kontakta din administratör för att aktivera det. Se {{ documentation }} för mer information.',
   'intake-emails.disabled.documentation': 'dokumentation',
-  'intake-emails.info': 'Endast aktiverade e-postmeddelanden från tillåtna ursprung kommer att behandlas. Du kan när som helst aktivera eller inaktivera ett e-postmeddelande.',
+  'intake-emails.info':
+    'Endast aktiverade e-postmeddelanden från tillåtna ursprung kommer att behandlas. Du kan när som helst aktivera eller inaktivera ett e-postmeddelande.',
   'intake-emails.empty.title': 'Inga e-postmeddelanden',
-  'intake-emails.empty.description': 'Generera en inmatningsadress för att enkelt mata in e-postbilagor.',
+  'intake-emails.empty.description':
+    'Generera en inmatningsadress för att enkelt mata in e-postbilagor.',
   'intake-emails.empty.generate': 'Generera inmatningsadress',
   'intake-emails.count': '{{ count }} inmatningsadresser{{ plural }} för denna organisation',
   'intake-emails.new': 'Ny inmatningsadress',
@@ -656,7 +728,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Hantera adressers ursprung',
   'intake-emails.actions.delete': 'Radera',
   'intake-emails.delete.confirm.title': 'Radera inmatningsadress?',
-  'intake-emails.delete.confirm.message': 'Är du säker på att du vill radera denna inmatningsadress? Denna åtgärd kan inte ångras.',
+  'intake-emails.delete.confirm.message':
+    'Är du säker på att du vill radera denna inmatningsadress? Denna åtgärd kan inte ångras.',
   'intake-emails.delete.confirm.confirm-button': 'Radera inmatningsadress',
   'intake-emails.delete.confirm.cancel-button': 'Avbryt',
   'intake-emails.delete.success': 'Inmatningsadress raderad',
@@ -664,11 +737,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'Inmatningsadress aktiverad',
   'intake-emails.update.success.disabled': 'Inmatningsadress avaktiverad',
   'intake-emails.allowed-origins.title': 'Tillåtna ursprung',
-  'intake-emails.allowed-origins.description': 'Endast e-postmeddelanden som skickas till {{ email }} från dessa ursprung kommer att behandlas. Om inget ursprung anges kommer alla e-postmeddelanden att kasseras.',
+  'intake-emails.allowed-origins.description':
+    'Endast e-postmeddelanden som skickas till {{ email }} från dessa ursprung kommer att behandlas. Om inget ursprung anges kommer alla e-postmeddelanden att kasseras.',
   'intake-emails.allowed-origins.add.label': 'Lägg till tillåten adress',
   'intake-emails.allowed-origins.add.placeholder': 'T.ex. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Lägg till',
-  'intake-emails.allowed-origins.add.error.exists': 'Den här e-postadressen finns redan i listan över tillåtna ursprung för denna inmatningsadress',
+  'intake-emails.allowed-origins.add.error.exists':
+    'Den här e-postadressen finns redan i listan över tillåtna ursprung för denna inmatningsadress',
 
   // API keys
 
@@ -700,7 +775,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Välj minst en behörighet',
   'api-keys.create.form.submit': 'Skapa API-nyckel',
   'api-keys.create.created.title': 'API-nyckel skapad',
-  'api-keys.create.created.description': 'API-nyckeln har skapats. Spara den på en säker plats då den inte kommer att visas igen.',
+  'api-keys.create.created.description':
+    'API-nyckeln har skapats. Spara den på en säker plats då den inte kommer att visas igen.',
   'api-keys.list.title': 'API-nycklar',
   'api-keys.list.description': 'Hantera dina API-nycklar här.',
   'api-keys.list.create': 'Skapa API-nyckel',
@@ -709,7 +785,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Skapad',
   'api-keys.delete.success': 'API-nyckeln har raderats',
   'api-keys.delete.confirm.title': 'Radera API-nyckel',
-  'api-keys.delete.confirm.message': 'Är du säker på att du vill ta bort den här API-nyckeln? Denna åtgärd kan inte ångras.',
+  'api-keys.delete.confirm.message':
+    'Är du säker på att du vill ta bort den här API-nyckeln? Denna åtgärd kan inte ångras.',
   'api-keys.delete.confirm.confirm-button': 'Radera',
   'api-keys.delete.confirm.cancel-button': 'Avbryt',
 
@@ -759,7 +836,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.events.documents.document:deleted.description': 'Dokument raderas',
   'webhooks.events.documents.document:updated.description': 'Dokument uppdateras',
   'webhooks.events.documents.document:tag:added.description': 'En tagg läggs till ett dokument',
-  'webhooks.events.documents.document:tag:removed.description': 'En tagg tas bort från ett dokument',
+  'webhooks.events.documents.document:tag:removed.description':
+    'En tagg tas bort från ett dokument',
 
   // Navigation
 
@@ -814,20 +892,29 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.document.already_exists': 'Dokumentet finns redan',
   'api-errors.document.size_too_large': 'Filstorleken är för stor',
   'api-errors.intake-emails.already_exists': 'En inmatningsadress med denna e-post finns redan',
-  'api-errors.intake_email.limit_reached': 'Det maximala antalet e-postmeddelanden för den här organisationen har uppnåtts. Uppgradera din plan för att skapa fler e-postmeddelanden.',
-  'api-errors.user.max_organization_count_reached': 'Du har nått det maximala antalet organisationer du kan skapa. Om du behöver skapa fler, kontakta supporten.',
+  'api-errors.intake_email.limit_reached':
+    'Det maximala antalet e-postmeddelanden för den här organisationen har uppnåtts. Uppgradera din plan för att skapa fler e-postmeddelanden.',
+  'api-errors.user.max_organization_count_reached':
+    'Du har nått det maximala antalet organisationer du kan skapa. Om du behöver skapa fler, kontakta supporten.',
   'api-errors.default': 'Ett fel uppstod när din begäran bearbetades.',
-  'api-errors.organization.invitation_already_exists': 'En inbjudan med denna e-post finns redan i denna organisation.',
+  'api-errors.organization.invitation_already_exists':
+    'En inbjudan med denna e-post finns redan i denna organisation.',
   'api-errors.user.already_in_organization': 'Den här användaren finns redan i denna organisation.',
-  'api-errors.user.organization_invitation_limit_reached': 'Det maximala antalet inbjudningar har uppnåtts för idag. Försök igen imorgon.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Det maximala antalet inbjudningar har uppnåtts för idag. Försök igen imorgon.',
   'api-errors.demo.not_available': 'Den här funktionen är inte tillgänglig i demot',
   'api-errors.tags.already_exists': 'En tagg med det här namnet finns redan i denna organisation',
-  'api-errors.tags.organization_limit_reached': 'Det maximala antalet taggar för denna organisation har uppnåtts.',
+  'api-errors.tags.organization_limit_reached':
+    'Det maximala antalet taggar för denna organisation har uppnåtts.',
   'api-errors.internal.error': 'Ett fel uppstod när din begäran bearbetades. Försök igen senare.',
-  'api-errors.auth.invalid_origin': 'Ogiltigt applikationsursprung. Om du själv tillhandahåller Papra, se till att din APP_BASE_URL-variabel matchar din nuvarande webbadress. För mer information se https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'Det maximala antalet medlemmar och väntande inbjudningar för den här organisationen har uppnåtts. Uppgradera din plan för att lägga till fler medlemmar.',
-  'api-errors.organization.has_active_subscription': 'Det går inte att ta bort en organisation med en aktiv prenumeration. Avsluta din prenumeration först med knappen Hantera prenumeration ovan.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'Den angivna URL:en är inte tillåten. Webhook-URL:er får inte peka på privata eller reserverade IP-adresser.',
+  'api-errors.auth.invalid_origin':
+    'Ogiltigt applikationsursprung. Om du själv tillhandahåller Papra, se till att din APP_BASE_URL-variabel matchar din nuvarande webbadress. För mer information se https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'Det maximala antalet medlemmar och väntande inbjudningar för den här organisationen har uppnåtts. Uppgradera din plan för att lägga till fler medlemmar.',
+  'api-errors.organization.has_active_subscription':
+    'Det går inte att ta bort en organisation med en aktiv prenumeration. Avsluta din prenumeration först med knappen Hantera prenumeration ovan.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'Den angivna URL:en är inte tillåten. Webhook-URL:er får inte peka på privata eller reserverade IP-adresser.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Användaren hittades ej',
   'api-errors.FAILED_TO_CREATE_USER': 'Kunde inte skapa användare',
@@ -836,7 +923,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.FAILED_TO_GET_SESSION': 'Kunde inte hämta session',
   'api-errors.INVALID_PASSWORD': 'Ogiltigt lösenord',
   'api-errors.INVALID_EMAIL': 'Ogiltig e-post',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'E-postadressen eller lösenordet är felaktigt, eller så finns inte kontot.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'E-postadressen eller lösenordet är felaktigt, eller så finns inte kontot.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Sociala medier-konto redan länkat',
   'api-errors.PROVIDER_NOT_FOUND': 'Leverantören kunde inte hittas',
   'api-errors.INVALID_TOKEN': 'Ogiltig token',
@@ -850,7 +938,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'E-post kunde ej uppdateras',
   'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Uppgiftskontot hittades inte',
   'api-errors.SESSION_EXPIRED': 'Sessionen har löpt ut',
-  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Det gick inte att ta bort länken till det senaste kontot',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT':
+    'Det gick inte att ta bort länken till det senaste kontot',
   'api-errors.ACCOUNT_NOT_FOUND': 'Kontot hittades ej',
   'api-errors.USER_ALREADY_HAS_PASSWORD': 'Användaren har redan ett lösenord',
   'api-errors.INVALID_CODE': 'Den angivna koden är ogiltig eller har gått ut',
@@ -866,12 +955,15 @@ export const translations: Partial<TranslationsDictionary> = {
   // Not found
 
   'not-found.title': '404 - Hittades ej',
-  'not-found.description': 'Tyvärr, sidan du letar efter verkar inte finnas. Kontrollera webbadressen och försök igen.',
+  'not-found.description':
+    'Tyvärr, sidan du letar efter verkar inte finnas. Kontrollera webbadressen och försök igen.',
 
   // Demo
 
-  'demo.popup.description': 'Detta är en demomiljö, all data sparas i din webbläsares lokala lagring.',
-  'demo.popup.discord': 'Gå med i {{ discordLink }} för att få support, föreslå funktioner eller bara chatta.',
+  'demo.popup.description':
+    'Detta är en demomiljö, all data sparas i din webbläsares lokala lagring.',
+  'demo.popup.discord':
+    'Gå med i {{ discordLink }} för att få support, föreslå funktioner eller bara chatta.',
   'demo.popup.discord-link-label': 'Discord-server',
   'demo.popup.reset': 'Nollställ demo-data',
   'demo.popup.hide': 'Dölj',
@@ -889,13 +981,15 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Betalning lyckades!',
   'subscriptions.checkout-success.description': 'Ditt abonnemang har aktiverats.',
-  'subscriptions.checkout-success.thank-you': 'Tack för att du uppgraderade till Papra Plus. Du har nu tillgång till alla premiumfunktioner.',
+  'subscriptions.checkout-success.thank-you':
+    'Tack för att du uppgraderade till Papra Plus. Du har nu tillgång till alla premiumfunktioner.',
   'subscriptions.checkout-success.go-to-organizations': 'Gå till organisationer',
   'subscriptions.checkout-success.redirecting': 'Omdirigerar om {{ count }} sekund{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Betalning avbruten',
   'subscriptions.checkout-cancel.description': 'Din prenumerationsuppgradering avbröts.',
-  'subscriptions.checkout-cancel.no-charges': 'Ingen dragning har gjorts på ditt konto. Du kan försöka igen när du är redo.',
+  'subscriptions.checkout-cancel.no-charges':
+    'Ingen dragning har gjorts på ditt konto. Du kan försöka igen när du är redo.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Tillbaka till organisationer',
   'subscriptions.checkout-cancel.need-help': 'Behöver du hjälp?',
   'subscriptions.checkout-cancel.contact-support': 'Kontakta support',
@@ -908,7 +1002,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} faktureras årsvis',
   'subscriptions.upgrade-dialog.upgrade-now': 'Uppgradera nu',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Begränsat erbjudande',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Få {{ percent }}% rabatt på alla planer för alltid per organisation som en tidig användare! Erbjudandet löper ut om {{ days, >1:{days} dagar, =1:1 dag, mindre än 1 dag }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Få {{ percent }}% rabatt på alla planer för alltid per organisation som en tidig användare! Erbjudandet löper ut om {{ days, >1:{days} dagar, =1:1 dag, mindre än 1 dag }}.',
 
   'subscriptions.plan.free.name': 'Gratisabonnemang',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1024,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Månadsvis',
   'subscriptions.billing-interval.annual': 'Årsvis',
 
-  'subscriptions.usage-warning.message': 'Du har använt {{ percent }}% av din dokumentlagring. Överväg att uppgradera ditt abonnemang för att få mer utrymme.',
+  'subscriptions.usage-warning.message':
+    'Du har använt {{ percent }}% av din dokumentlagring. Överväg att uppgradera ditt abonnemang för att få mer utrymme.',
   'subscriptions.usage-warning.upgrade-button': 'Uppgradera abonnemang',
 
   // Admin
@@ -960,7 +1056,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': 'Medlemmar',
   'admin.organizations.table.created': 'Skapad',
   'admin.organizations.table.updated': 'Uppdaterad',
-  'admin.organizations.pagination.info': 'Visar {{ start }} till {{ end }} av {{ total }} {{ total, =1:organisation, organisationer }}',
+  'admin.organizations.pagination.info':
+    'Visar {{ start }} till {{ end }} av {{ total }} {{ total, =1:organisation, organisationer }}',
   'admin.organizations.pagination.page-info': 'Sida {{ current }} av {{ total }}',
 
   'admin.organization-detail.title': 'Organisationsdetaljer',
@@ -1017,7 +1114,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Overifierad',
   'admin.users.table.orgs': 'Org.',
   'admin.users.table.created': 'Skapad',
-  'admin.users.pagination.info': 'Visar {{ start }} till {{ end }} av {{ total }} {{ total, =1:användare, användare }}',
+  'admin.users.pagination.info':
+    'Visar {{ start }} till {{ end }} av {{ total }} {{ total, =1:användare, användare }}',
   'admin.users.pagination.page-info': 'Sida {{ current }} av {{ total }}',
 
   'admin.user-detail.back': 'Tillbaka till användare',
@@ -1059,7 +1157,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Version',
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Commit-datum',
-  'about.description': 'Papra är ett dokumenthanteringssystem med öppen källkod som hjälper dig att arkivera, organisera, tagga och hantera dina dokument.',
+  'about.description':
+    'Papra är ett dokumenthanteringssystem med öppen källkod som hjälper dig att arkivera, organisera, tagga och hantera dina dokument.',
   'about.links.title': 'Länkar',
   'about.links.documentation': 'Dokumentation',
   'about.links.documentation-description': 'Användarguider och API-referens',

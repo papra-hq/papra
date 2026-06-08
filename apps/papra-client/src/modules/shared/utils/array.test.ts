@@ -21,11 +21,7 @@ describe('array', () => {
 
   describe('toArrayIf', () => {
     test('simple helper to conditionally add stuff to an array', () => {
-      const array = [
-        ...toArrayIf(true, 'a'),
-        ...toArrayIf(false, 'b'),
-        ...toArrayIf(true, 'c'),
-      ];
+      const array = [...toArrayIf(true, 'a'), ...toArrayIf(false, 'b'), ...toArrayIf(true, 'c')];
 
       expect(array).toEqual(['a', 'c']);
     });

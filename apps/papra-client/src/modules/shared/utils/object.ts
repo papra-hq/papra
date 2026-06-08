@@ -9,10 +9,10 @@ export function isObject(value: unknown): value is object {
  */
 export function isRecord(obj: unknown): obj is Record<string, unknown> {
   return (
-    isObject(obj)
-    && !Array.isArray(obj)
+    isObject(obj) &&
+    !Array.isArray(obj) &&
     // Exclude Date objects and RegExp objects, and other built-in types
-    && Object.prototype.toString.call(obj) === '[object Object]'
+    Object.prototype.toString.call(obj) === '[object Object]'
   );
 }
 

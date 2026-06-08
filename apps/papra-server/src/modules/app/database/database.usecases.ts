@@ -6,9 +6,13 @@ import { sql } from 'drizzle-orm';
 export function createIterator<T extends SQLiteSelect>({
   query,
   batchSize = 100,
-}: { query: T; batchSize?: number }): AsyncGenerator<ArrayElement<T['_']['result']>> {
+}: {
+  query: T;
+  batchSize?: number;
+}): AsyncGenerator<ArrayElement<T['_']['result']>> {
   return createBatchedIterator({
-    getBatch: async ({ offset, limit }) => await query.limit(limit).offset(offset) as ArrayElement<T['_']['result']>[],
+    getBatch: async ({ offset, limit }) =>
+      (await query.limit(limit).offset(offset)) as ArrayElement<T['_']['result']>[],
     batchSize,
   });
 }
@@ -40,8 +44,14 @@ export async function* createBatchedIterator<T>({
   }
 }
 
-export async function getRuntimeTableColumns({ tableName, db}: { tableName: string; db: Database }): Promise<string[]> {
+export async function getRuntimeTableColumns({
+  tableName,
+  db,
+}: {
+  tableName: string;
+  db: Database;
+}): Promise<string[]> {
   const { rows } = await db.run(sql`SELECT name FROM pragma_table_info(${tableName})`);
 
-  return rows.map(row => String(row.name));
+  return rows.map((row) => String(row.name));
 }

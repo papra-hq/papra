@@ -53,7 +53,11 @@ export async function getFileStreamFromMultipartForm({
     throw createDocumentSizeTooLargeError();
   }
 
-  const { promise, resolve, reject } = Promise.withResolvers<{ fileStream: Readable; fileName: string; mimeType: string }>();
+  const { promise, resolve, reject } = Promise.withResolvers<{
+    fileStream: Readable;
+    fileName: string;
+    mimeType: string;
+  }>();
 
   const bb = createBusboy({
     headers,
@@ -69,11 +73,13 @@ export async function getFileStreamFromMultipartForm({
           bb.destroy();
         }
 
-        reject(createError({
-          message: 'Invalid file fieldname',
-          code: 'document.invalid_file_fieldname',
-          statusCode: 400,
-        }));
+        reject(
+          createError({
+            message: 'Invalid file fieldname',
+            code: 'document.invalid_file_fieldname',
+            statusCode: 400,
+          }),
+        );
       }
 
       fileStream.on('limit', () => {

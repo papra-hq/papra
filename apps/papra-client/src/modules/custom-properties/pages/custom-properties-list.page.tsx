@@ -2,7 +2,12 @@ import type { Component } from 'solid-js';
 import type { CustomPropertyType } from '../custom-properties.types';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/solid-table';
 import { For, Show, Suspense } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -11,7 +16,14 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { PROPERTY_TYPE_LABEL_I18N_KEYS } from '../custom-properties.constants';
 import {
   deleteCustomPropertyDefinition,
@@ -29,16 +41,25 @@ const TYPE_ICON: Record<CustomPropertyType, string> = {
   document_relation: 'i-tabler-file-symlink',
 };
 
-export const DeleteCustomPropertyButton: Component<{ organizationId: string; propertyDefinitionId: string; propertyDefinitionName: string }> = (props) => {
+export const DeleteCustomPropertyButton: Component<{
+  organizationId: string;
+  propertyDefinitionId: string;
+  propertyDefinitionName: string;
+}> = (props) => {
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
 
   const deleteMutation = useMutation(() => ({
     mutationFn: async () => {
-      await deleteCustomPropertyDefinition({ organizationId: props.organizationId, propertyDefinitionId: props.propertyDefinitionId });
+      await deleteCustomPropertyDefinition({
+        organizationId: props.organizationId,
+        propertyDefinitionId: props.propertyDefinitionId,
+      });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'custom-properties'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'custom-properties'],
+      });
 
       createToast({
         message: t('custom-properties.list.delete.success'),
@@ -56,7 +77,9 @@ export const DeleteCustomPropertyButton: Component<{ organizationId: string; pro
   const handleDelete = async () => {
     const isConfirmed = await confirm({
       title: t('custom-properties.list.delete.confirm-title'),
-      message: t('custom-properties.list.delete.confirm-message', { name: props.propertyDefinitionName }),
+      message: t('custom-properties.list.delete.confirm-message', {
+        name: props.propertyDefinitionName,
+      }),
       confirmButton: {
         text: t('custom-properties.list.delete.confirm-button'),
         variant: 'destructive',
@@ -69,7 +92,14 @@ export const DeleteCustomPropertyButton: Component<{ organizationId: string; pro
   };
 
   return (
-    <Button size="icon" variant="outline" class="size-7 text-red" onClick={handleDelete} disabled={deleteMutation.isPending} aria-label={`Delete custom property ${props.propertyDefinitionName}`}>
+    <Button
+      size="icon"
+      variant="outline"
+      class="size-7 text-red"
+      onClick={handleDelete}
+      disabled={deleteMutation.isPending}
+      aria-label={`Delete custom property ${props.propertyDefinitionName}`}
+    >
       <div class="i-tabler-trash size-4" />
     </Button>
   );
@@ -93,8 +123,13 @@ export const CustomPropertiesPage: Component = () => {
         header: () => t('custom-properties.list.table.name'),
         accessorKey: 'name',
         sortingFn: 'alphanumeric',
-        cell: data => (
-          <A href={`/organizations/${params.organizationId}/custom-properties/${data.row.original.id}`} class="font-medium hover:underline">{data.getValue<string>()}</A>
+        cell: (data) => (
+          <A
+            href={`/organizations/${params.organizationId}/custom-properties/${data.row.original.id}`}
+            class="font-medium hover:underline"
+          >
+            {data.getValue<string>()}
+          </A>
         ),
       },
       {
@@ -115,9 +150,13 @@ export const CustomPropertiesPage: Component = () => {
         header: () => t('custom-properties.list.table.description'),
         accessorKey: 'description',
         sortingFn: 'alphanumeric',
-        cell: data => (
+        cell: (data) => (
           <span class="text-wrap">
-            {data.getValue<string | null>() || <span class="text-muted-foreground">{t('custom-properties.list.table.no-description')}</span>}
+            {data.getValue<string | null>() || (
+              <span class="text-muted-foreground">
+                {t('custom-properties.list.table.no-description')}
+              </span>
+            )}
           </span>
         ),
       },
@@ -125,14 +164,12 @@ export const CustomPropertiesPage: Component = () => {
         header: () => t('custom-properties.list.table.created'),
         accessorKey: 'createdAt',
         sortingFn: 'datetime',
-        cell: data => (
-          <RelativeTime class="text-muted-foreground" date={data.getValue<Date>()} />
-        ),
+        cell: (data) => <RelativeTime class="text-muted-foreground" date={data.getValue<Date>()} />,
       },
       {
         id: 'actions',
         header: () => <span class="text-right">{t('custom-properties.list.table.actions')}</span>,
-        cell: data => (
+        cell: (data) => (
           <div class="flex gap-2 justify-end">
             <Button
               as={A}
@@ -164,28 +201,29 @@ export const CustomPropertiesPage: Component = () => {
     <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
       <Suspense>
         <Show when={query.data?.propertyDefinitions}>
-          {getPropertyDefinitions => (
+          {(getPropertyDefinitions) => (
             <Show
               when={getPropertyDefinitions().length > 0}
-              fallback={(
+              fallback={
                 <EmptyState
                   title={t('custom-properties.list.empty.title')}
                   icon="i-tabler-forms"
                   description={t('custom-properties.list.empty.description')}
-                  cta={(
-                    <Button as={A} href={`/organizations/${params.organizationId}/custom-properties/create`}>
+                  cta={
+                    <Button
+                      as={A}
+                      href={`/organizations/${params.organizationId}/custom-properties/create`}
+                    >
                       <div class="i-tabler-plus size-4 mr-2" />
                       {t('custom-properties.list.create-button')}
                     </Button>
-                  )}
+                  }
                 />
-              )}
+              }
             >
               <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
                 <div>
-                  <h2 class="text-xl font-bold">
-                    {t('custom-properties.list.title')}
-                  </h2>
+                  <h2 class="text-xl font-bold">{t('custom-properties.list.title')}</h2>
 
                   <p class="text-muted-foreground mt-1">
                     {t('custom-properties.list.description')}
@@ -193,7 +231,11 @@ export const CustomPropertiesPage: Component = () => {
                 </div>
 
                 <div class="flex-shrink-0">
-                  <Button as={A} href={`/organizations/${params.organizationId}/custom-properties/create`} class="w-full">
+                  <Button
+                    as={A}
+                    href={`/organizations/${params.organizationId}/custom-properties/create`}
+                    class="w-full"
+                  >
                     <div class="i-tabler-plus size-4 mr-2" />
                     {t('custom-properties.list.create-button')}
                   </Button>
@@ -203,14 +245,17 @@ export const CustomPropertiesPage: Component = () => {
               <Table>
                 <TableHeader>
                   <For each={table.getHeaderGroups()}>
-                    {headerGroup => (
+                    {(headerGroup) => (
                       <TableRow>
                         <For each={headerGroup.headers}>
-                          {header => (
+                          {(header) => (
                             <TableHead>
                               <Show
                                 when={header.column.getCanSort()}
-                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                                fallback={flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                               >
                                 <button
                                   class="flex items-center gap-1 cursor-pointer select-none"
@@ -237,10 +282,10 @@ export const CustomPropertiesPage: Component = () => {
                 </TableHeader>
                 <TableBody>
                   <For each={table.getRowModel().rows}>
-                    {row => (
+                    {(row) => (
                       <TableRow>
                         <For each={row.getVisibleCells()}>
-                          {cell => (
+                          {(cell) => (
                             <TableCell>
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>

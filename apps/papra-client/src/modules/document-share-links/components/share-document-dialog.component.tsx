@@ -20,20 +20,35 @@ export const ShareDocumentDialog: Component<{
   const [getCreatedUrl, setCreatedUrl] = createSignal('');
 
   const shareLinksQuery = useQuery(() => ({
-    queryKey: ['organizations', props.document.organizationId, 'share-links', 'document', props.document.id],
-    queryFn: () => fetchDocumentShareLinks({ organizationId: props.document.organizationId, documentId: props.document.id }),
+    queryKey: [
+      'organizations',
+      props.document.organizationId,
+      'share-links',
+      'document',
+      props.document.id,
+    ],
+    queryFn: () =>
+      fetchDocumentShareLinks({
+        organizationId: props.document.organizationId,
+        documentId: props.document.id,
+      }),
     enabled: props.open,
   }));
 
   const hasExistingLinks = () => (shareLinksQuery.data?.shareLinks.length ?? 0) > 0;
 
   // Reset everything each time the dialog opens.
-  createEffect(on(() => props.open, (open) => {
-    if (open) {
-      setCreatedUrl('');
-      setView('loading');
-    }
-  }));
+  createEffect(
+    on(
+      () => props.open,
+      (open) => {
+        if (open) {
+          setCreatedUrl('');
+          setView('loading');
+        }
+      },
+    ),
+  );
 
   // Once the links have loaded, decide the initial view: the list when links exist, otherwise the create form.
   createEffect(() => {
@@ -96,7 +111,11 @@ export const ShareDocumentDialog: Component<{
 };
 
 const context = createContext<{
-  openShareDialog: (args: { documentId: string; organizationId: string; documentName: string }) => void;
+  openShareDialog: (args: {
+    documentId: string;
+    organizationId: string;
+    documentName: string;
+  }) => void;
 }>();
 
 export function useShareDocumentDialog() {
@@ -130,7 +149,11 @@ export const ShareDocumentDialogProvider: ParentComponent = (props) => {
         <ShareDocumentDialog
           open={getIsOpen()}
           onOpenChange={setIsOpen}
-          document={{ id: getDocumentId() ?? '', organizationId: getOrganizationId() ?? '', name: getDocumentName() ?? '' }}
+          document={{
+            id: getDocumentId() ?? '',
+            organizationId: getOrganizationId() ?? '',
+            name: getDocumentName() ?? '',
+          }}
         />
       </Show>
 

@@ -1,4 +1,7 @@
-import type { CustomPropertySelectOption, CustomPropertyType } from '../../custom-properties/custom-properties.types';
+import type {
+  CustomPropertySelectOption,
+  CustomPropertyType,
+} from '../../custom-properties/custom-properties.types';
 
 export type DemoCustomPropertyDefinitionFixture = {
   name: string;

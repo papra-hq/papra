@@ -1,6 +1,12 @@
 import type { GenericSchema, InferInput, InferOutput } from 'valibot';
 
-export type JsonSerializableValue = string | number | boolean | null | JsonSerializableValue[] | { [key: string]: JsonSerializableValue };
+export type JsonSerializableValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonSerializableValue[]
+  | { [key: string]: JsonSerializableValue };
 
 export type JsonSchema = GenericSchema<JsonSerializableValue, JsonSerializableValue>;
 

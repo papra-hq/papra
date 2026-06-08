@@ -5,13 +5,16 @@ import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID } from './storage-pattern.cons
 import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
 import { tokenizeStringArguments } from './storage-pattern.models';
 
-export function buildStorageKey({ storageKeyPattern, ...context }: { storageKeyPattern: string } & StoragePatternInterpolationContext) {
+export function buildStorageKey({
+  storageKeyPattern,
+  ...context
+}: { storageKeyPattern: string } & StoragePatternInterpolationContext) {
   const storageKey = storageKeyPattern.replace(/\{\{(.*?)\}\}(?!\})/g, (_match, rawExpression) => {
     if (isNil(rawExpression) || typeof rawExpression !== 'string') {
       throw new Error('Expression cannot be empty');
     }
 
-    const [expression, ...transformerParts] = rawExpression.split('|').map(part => part.trim());
+    const [expression, ...transformerParts] = rawExpression.split('|').map((part) => part.trim());
 
     if (isNilOrEmptyString(expression)) {
       throw new Error('Expression cannot be empty');
@@ -42,7 +45,8 @@ export function buildStorageKey({ storageKeyPattern, ...context }: { storageKeyP
       const transformerName = transformerRawName?.trim();
       const argumentsString = transformerArgsParts.join(' ').trim();
 
-      const transformer = expressionTransformers[transformerName as keyof typeof expressionTransformers];
+      const transformer =
+        expressionTransformers[transformerName as keyof typeof expressionTransformers];
 
       if (!transformer) {
         throw new Error(`Unknown transformer: ${transformerName}`);
@@ -57,7 +61,11 @@ export function buildStorageKey({ storageKeyPattern, ...context }: { storageKeyP
   return { storageKey };
 }
 
-export function isStoragePatternValid({ storageKeyPattern }: { storageKeyPattern: string }): { isValid: true } | { isValid: false; error: Error } {
+export function isStoragePatternValid({
+  storageKeyPattern,
+}: {
+  storageKeyPattern: string;
+}): { isValid: true } | { isValid: false; error: Error } {
   const endsWithSlash = storageKeyPattern.endsWith('/');
 
   if (endsWithSlash) {

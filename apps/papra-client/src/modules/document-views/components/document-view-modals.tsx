@@ -11,14 +11,24 @@ import { makeReturnVoidAsync } from '@/modules/shared/functions/void';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/modules/ui/components/dialog';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { createDocumentView, updateDocumentView } from '../document-views.services';
 
 const DocumentViewForm: Component<{
-  onSubmit: (values: { name: string; query: string; description?: string }) => Promise<unknown> | unknown;
+  onSubmit: (values: {
+    name: string;
+    query: string;
+    description?: string;
+  }) => Promise<unknown> | unknown;
   initialValues?: { name?: string; query?: string; description?: string | null };
   submitButton: JSX.Element;
 }> = (props) => {
@@ -38,11 +48,13 @@ const DocumentViewForm: Component<{
         v.nonEmpty(t('document-views.form.query.required')),
         v.maxLength(500, t('document-views.form.query.max-length')),
       ),
-      description: v.optional(v.pipe(
-        v.string(),
-        v.trim(),
-        v.maxLength(256, t('document-views.form.description.max-length')),
-      )),
+      description: v.optional(
+        v.pipe(
+          v.string(),
+          v.trim(),
+          v.maxLength(256, t('document-views.form.description.max-length')),
+        ),
+      ),
     }),
     initialValues: {
       ...props.initialValues,
@@ -56,7 +68,15 @@ const DocumentViewForm: Component<{
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="name">{t('document-views.form.name.label')}</TextFieldLabel>
-            <TextField type="text" id="name" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('document-views.form.name.placeholder')} />
+            <TextField
+              type="text"
+              id="name"
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+              placeholder={t('document-views.form.name.placeholder')}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -66,7 +86,14 @@ const DocumentViewForm: Component<{
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="query">{t('document-views.form.query.label')}</TextFieldLabel>
-            <TextField type="text" id="query" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('document-views.form.query.placeholder')} />
+            <TextField
+              type="text"
+              id="query"
+              {...inputProps}
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+              placeholder={t('document-views.form.query.placeholder')}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
             <div class="text-xs text-muted-foreground">{t('document-views.form.query.hint')}</div>
           </TextFieldRoot>
@@ -78,17 +105,23 @@ const DocumentViewForm: Component<{
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="description">
               {t('document-views.form.description.label')}
-              <span class="font-normal ml-1 text-muted-foreground">{t('document-views.form.description.optional')}</span>
+              <span class="font-normal ml-1 text-muted-foreground">
+                {t('document-views.form.description.optional')}
+              </span>
             </TextFieldLabel>
-            <TextArea id="description" {...inputProps} value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('document-views.form.description.placeholder')} />
+            <TextArea
+              id="description"
+              {...inputProps}
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+              placeholder={t('document-views.form.description.placeholder')}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
-      <div class="flex justify-end mt-6">
-        {props.submitButton}
-      </div>
+      <div class="flex justify-end mt-6">{props.submitButton}</div>
     </Form>
   );
 };
@@ -104,15 +137,22 @@ export const CreateDocumentViewModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const mutation = useMutation(() => ({
-    mutationFn: (data: { name: string; query: string; description?: string }) => createDocumentView({
-      organizationId: props.organizationId,
-      name: data.name,
-      query: data.query,
-      description: data.description,
-    }),
+    mutationFn: (data: { name: string; query: string; description?: string }) =>
+      createDocumentView({
+        organizationId: props.organizationId,
+        name: data.name,
+        query: data.query,
+        description: data.description,
+      }),
     onSuccess: async ({ documentView }, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'document-views'], refetchType: 'all' });
-      createToast({ message: t('document-views.create.success', { name: variables.name }), type: 'success' });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'document-views'],
+        refetchType: 'all',
+      });
+      createToast({
+        message: t('document-views.create.success', { name: variables.name }),
+        type: 'success',
+      });
       setIsOpen(false);
       navigate(`/organizations/${props.organizationId}/views/${documentView.id}`);
     },
@@ -131,11 +171,11 @@ export const CreateDocumentViewModal: Component<{
         <DocumentViewForm
           onSubmit={mutation.mutateAsync}
           initialValues={props.initialValues}
-          submitButton={(
+          submitButton={
             <Button type="submit" isLoading={mutation.isPending} disabled={!getIsOpen()}>
               {t('document-views.create')}
             </Button>
-          )}
+          }
         />
       </DialogContent>
     </Dialog>
@@ -159,16 +199,23 @@ export const UpdateDocumentViewModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const mutation = useMutation(() => ({
-    mutationFn: (data: { name: string; query: string; description?: string }) => updateDocumentView({
-      organizationId: props.organizationId,
-      documentViewId: props.documentView.id,
-      name: data.name,
-      query: data.query,
-      description: data.description ?? null,
-    }),
+    mutationFn: (data: { name: string; query: string; description?: string }) =>
+      updateDocumentView({
+        organizationId: props.organizationId,
+        documentViewId: props.documentView.id,
+        name: data.name,
+        query: data.query,
+        description: data.description ?? null,
+      }),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'document-views'], refetchType: 'all' });
-      createToast({ message: t('document-views.update.success', { name: variables.name }), type: 'success' });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'document-views'],
+        refetchType: 'all',
+      });
+      createToast({
+        message: t('document-views.update.success', { name: variables.name }),
+        type: 'success',
+      });
       setIsOpen(false);
     },
     onError: (error) => {
@@ -186,11 +233,11 @@ export const UpdateDocumentViewModal: Component<{
         <DocumentViewForm
           onSubmit={mutation.mutate}
           initialValues={props.documentView}
-          submitButton={(
+          submitButton={
             <Button type="submit" isLoading={mutation.isPending} disabled={!getIsOpen()}>
               {t('document-views.update')}
             </Button>
-          )}
+          }
         />
       </DialogContent>
     </Dialog>

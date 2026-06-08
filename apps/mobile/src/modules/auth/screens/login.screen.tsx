@@ -49,7 +49,11 @@ export function LoginScreen() {
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
       try {
-        const response = await authClient.signIn.email({ email: value.email, password: value.password, rememberMe: true });
+        const response = await authClient.signIn.email({
+          email: value.email,
+          password: value.password,
+          rememberMe: true,
+        });
 
         if (response.error) {
           throw new Error(response.error.message);
@@ -101,10 +105,7 @@ export function LoginScreen() {
       style={{ ...styles.container, paddingTop: insets.top }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <BackToServerSelectionButton />
 
         <View style={styles.header}>
@@ -115,7 +116,7 @@ export function LoginScreen() {
         {isEmailEnabled && (
           <View style={styles.formContainer}>
             <form.Field name="email">
-              {field => (
+              {(field) => (
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Email</Text>
                   <TextInput
@@ -135,7 +136,7 @@ export function LoginScreen() {
             </form.Field>
 
             <form.Field name="password">
-              {field => (
+              {(field) => (
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>Password</Text>
                   <TextInput
@@ -157,18 +158,16 @@ export function LoginScreen() {
               onPress={async () => form.handleSubmit()}
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? (
-                    <ActivityIndicator color={themeColors.primaryForeground} />
-                  )
-                : (
-                    <Text style={styles.buttonText}>Sign In</Text>
-                  )}
+              {isSubmitting ? (
+                <ActivityIndicator color={themeColors.primaryForeground} />
+              ) : (
+                <Text style={styles.buttonText}>Sign In</Text>
+              )}
             </TouchableOpacity>
           </View>
         )}
 
-        {(oauthProviders.length > 0) && (
+        {oauthProviders.length > 0 && (
           <>
             {isEmailEnabled && (
               <View style={styles.divider}>
@@ -179,7 +178,7 @@ export function LoginScreen() {
             )}
 
             <View style={styles.socialButtons}>
-              {oauthProviders.map(provider => (
+              {oauthProviders.map((provider) => (
                 <TouchableOpacity
                   key={provider.providerId}
                   style={styles.socialButton}
@@ -187,7 +186,6 @@ export function LoginScreen() {
                 >
                   <Text style={styles.socialButtonText}>
                     Continue with
-                    {' '}
                     {provider.providerName}
                   </Text>
                 </TouchableOpacity>
@@ -197,13 +195,8 @@ export function LoginScreen() {
         )}
 
         {authConfig?.isRegistrationEnabled === true && (
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => router.push('/auth/signup')}
-          >
-            <Text style={styles.linkText}>
-              Don&apos;t have an account? Sign up
-            </Text>
+          <TouchableOpacity style={styles.linkButton} onPress={() => router.push('/auth/signup')}>
+            <Text style={styles.linkText}>Don&apos;t have an account? Sign up</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
