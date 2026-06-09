@@ -8,6 +8,7 @@ export default defineConfig({
   rules: {
     'typescript/consistent-type-imports': 'error',
     'no-console': 'error',
+    'typescript/no-redundant-type-constituents': 'error',
   },
   ignorePatterns: [
     '.output/**',

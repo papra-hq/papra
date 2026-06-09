@@ -24,11 +24,7 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { createDocumentView, updateDocumentView } from '../document-views.services';
 
 const DocumentViewForm: Component<{
-  onSubmit: (values: {
-    name: string;
-    query: string;
-    description?: string;
-  }) => Promise<unknown> | unknown;
+  onSubmit: (values: { name: string; query: string; description?: string }) => unknown;
   initialValues?: { name?: string; query?: string; description?: string | null };
   submitButton: JSX.Element;
 }> = (props) => {

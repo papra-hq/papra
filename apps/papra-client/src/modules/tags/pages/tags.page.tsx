@@ -77,11 +77,7 @@ const TagColorPicker: Component<{
 };
 
 const TagForm: Component<{
-  onSubmit: (values: {
-    name: string;
-    color: string;
-    description: string;
-  }) => Promise<unknown> | unknown;
+  onSubmit: (values: { name: string; color: string; description: string }) => unknown;
   initialValues?: { name?: string; color?: string; description?: string | null };
   submitButton: JSX.Element;
 }> = (props) => {
