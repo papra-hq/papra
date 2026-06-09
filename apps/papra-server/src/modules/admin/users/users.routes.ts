@@ -63,9 +63,11 @@ function registerGetUserDetailRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      userId: userIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        userId: userIdSchema,
+      }),
+    ),
     async (context) => {
       const usersRepository = createUsersRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -95,9 +97,11 @@ function registerDeleteUserRoute({ app, db }: RouteDefinitionContext) {
     requirePermissions({
       requiredPermissions: [PERMISSIONS.DELETE_USERS],
     }),
-    validateParams(v.strictObject({
-      userId: userIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        userId: userIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId: actingUserId } = getUser({ context });
       const { userId } = context.req.valid('param');

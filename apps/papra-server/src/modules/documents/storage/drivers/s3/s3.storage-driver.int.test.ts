@@ -13,7 +13,9 @@ describe('s3 storage-driver', () => {
       timeout: 40_000,
       retry: 3,
       createDriver: async () => {
-        const localstackContainer = await new LocalstackContainer(TEST_CONTAINER_IMAGES.LOCALSTACK).start();
+        const localstackContainer = await new LocalstackContainer(
+          TEST_CONTAINER_IMAGES.LOCALSTACK,
+        ).start();
         const bucketName = 'test-bucket';
 
         const driver = s3StorageDriverFactory({

@@ -15,7 +15,11 @@ import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createIntakeEmailLimitReachedError } from './intake-emails.errors';
 import { createIntakeEmailsRepository } from './intake-emails.repository';
 import { intakeEmailsTable } from './intake-emails.tables';
-import { checkIfOrganizationCanCreateNewIntakeEmail, ingestEmailForRecipient, processIntakeEmailIngestion } from './intake-emails.usecases';
+import {
+  checkIfOrganizationCanCreateNewIntakeEmail,
+  ingestEmailForRecipient,
+  processIntakeEmailIngestion,
+} from './intake-emails.usecases';
 
 describe('intake-emails usecases', () => {
   describe('ingestEmailForRecipient', () => {
@@ -24,7 +28,14 @@ describe('intake-emails usecases', () => {
         const taskServices = createInMemoryTaskServices();
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
+          intakeEmails: [
+            {
+              id: 'ie-1',
+              organizationId: 'org-1',
+              allowedOrigins: ['foo@example.fr'],
+              emailAddress: 'email-1@papra.email',
+            },
+          ],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -53,10 +64,20 @@ describe('intake-emails usecases', () => {
         const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.name));
 
         expect(
-          documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
+          documents.map((doc) => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
         ).to.eql([
-          { organizationId: 'org-1', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
-          { organizationId: 'org-1', name: 'file2.txt', mimeType: 'text/plain', originalName: 'file2.txt' },
+          {
+            organizationId: 'org-1',
+            name: 'file1.txt',
+            mimeType: 'text/plain',
+            originalName: 'file1.txt',
+          },
+          {
+            organizationId: 'org-1',
+            name: 'file2.txt',
+            mimeType: 'text/plain',
+            originalName: 'file2.txt',
+          },
         ]);
       });
 
@@ -67,7 +88,14 @@ describe('intake-emails usecases', () => {
         const taskServices = createInMemoryTaskServices();
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', isEnabled: false, emailAddress: 'email-1@papra.email' }],
+          intakeEmails: [
+            {
+              id: 'ie-1',
+              organizationId: 'org-1',
+              isEnabled: false,
+              emailAddress: 'email-1@papra.email',
+            },
+          ],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -126,7 +154,12 @@ describe('intake-emails usecases', () => {
         });
 
         expect(loggerTransport.getLogs({ excludeTimestampMs: true })).to.eql([
-          { level: 'info', message: 'Intake email not found', namespace: 'test', data: { recipientAddress: 'bar@example.fr' } },
+          {
+            level: 'info',
+            message: 'Intake email not found',
+            namespace: 'test',
+            data: { recipientAddress: 'bar@example.fr' },
+          },
         ]);
         expect(await db.select().from(documentsTable)).to.eql([]);
       });
@@ -140,7 +173,14 @@ describe('intake-emails usecases', () => {
 
         const { db } = await createInMemoryDatabase({
           organizations: [{ id: 'org-1', name: 'Organization 1' }],
-          intakeEmails: [{ id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' }],
+          intakeEmails: [
+            {
+              id: 'ie-1',
+              organizationId: 'org-1',
+              allowedOrigins: ['foo@example.fr'],
+              emailAddress: 'email-1@papra.email',
+            },
+          ],
         });
 
         const intakeEmailsRepository = createIntakeEmailsRepository({ db });
@@ -188,8 +228,18 @@ describe('intake-emails usecases', () => {
           { id: 'org-2', name: 'Organization 2' },
         ],
         intakeEmails: [
-          { id: 'ie-1', organizationId: 'org-1', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-1@papra.email' },
-          { id: 'ie-2', organizationId: 'org-2', allowedOrigins: ['foo@example.fr'], emailAddress: 'email-2@papra.email' },
+          {
+            id: 'ie-1',
+            organizationId: 'org-1',
+            allowedOrigins: ['foo@example.fr'],
+            emailAddress: 'email-1@papra.email',
+          },
+          {
+            id: 'ie-2',
+            organizationId: 'org-2',
+            allowedOrigins: ['foo@example.fr'],
+            emailAddress: 'email-2@papra.email',
+          },
         ],
       });
 
@@ -208,20 +258,31 @@ describe('intake-emails usecases', () => {
       await processIntakeEmailIngestion({
         fromAddress: 'foo@example.fr',
         recipientsAddresses: ['email-1@papra.email', 'email-2@papra.email'],
-        attachments: [
-          new File(['content1'], 'file1.txt', { type: 'text/plain' }),
-        ],
+        attachments: [new File(['content1'], 'file1.txt', { type: 'text/plain' })],
         intakeEmailsRepository,
         createDocument,
       });
 
-      const documents = await db.select().from(documentsTable).orderBy(asc(documentsTable.organizationId));
+      const documents = await db
+        .select()
+        .from(documentsTable)
+        .orderBy(asc(documentsTable.organizationId));
 
       expect(
-        documents.map(doc => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
+        documents.map((doc) => pick(doc, ['organizationId', 'name', 'mimeType', 'originalName'])),
       ).to.eql([
-        { organizationId: 'org-1', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
-        { organizationId: 'org-2', name: 'file1.txt', mimeType: 'text/plain', originalName: 'file1.txt' },
+        {
+          organizationId: 'org-1',
+          name: 'file1.txt',
+          mimeType: 'text/plain',
+          originalName: 'file1.txt',
+        },
+        {
+          organizationId: 'org-2',
+          name: 'file1.txt',
+          mimeType: 'text/plain',
+          originalName: 'file1.txt',
+        },
       ]);
     });
   });
@@ -231,16 +292,18 @@ describe('intake-emails usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org-1', name: 'Organization 1' }],
         intakeEmails: [{ organizationId: 'org-1', emailAddress: 'email-1@papra.email' }],
-        organizationSubscriptions: [{
-          id: 'os-1',
-          organizationId: 'org-1',
-          status: 'active',
-          seatsCount: 10,
-          currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
-          currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
-          customerId: 'sc_123',
-          planId: PLUS_PLAN_ID,
-        }],
+        organizationSubscriptions: [
+          {
+            id: 'os-1',
+            organizationId: 'org-1',
+            status: 'active',
+            seatsCount: 10,
+            currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
+            currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
+            customerId: 'sc_123',
+            planId: PLUS_PLAN_ID,
+          },
+        ],
       });
 
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });

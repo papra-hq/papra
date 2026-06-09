@@ -1,8 +1,6 @@
 import type { CustomPropertyType } from '@papra/app-server/customProperties/constants';
 
-export {
-  CustomPropertyType,
-};
+export { CustomPropertyType };
 
 export type DocumentCustomProperty = {
   key: string;

@@ -64,7 +64,7 @@ export const ingestionFolderConfig = {
     schema: v.union([
       v.pipe(
         v.string(),
-        v.transform(value => value.split(',')),
+        v.transform((value) => value.split(',')),
       ),
       v.array(v.string()),
     ]),

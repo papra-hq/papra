@@ -9,12 +9,14 @@ export const documentViewsTable = sqliteTable(
     ...createPrimaryKeyField({ prefix: DOCUMENT_VIEW_ID_PREFIX }),
     ...createTimestampColumns(),
 
-    organizationId: text('organization_id').notNull().references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    organizationId: text('organization_id')
+      .notNull()
+      .references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     name: text('name').notNull(),
     query: text('query').notNull(),
     description: text('description'),
   },
-  table => [
+  (table) => [
     unique('document_views_organization_id_name_unique').on(table.organizationId, table.name),
   ],
 );

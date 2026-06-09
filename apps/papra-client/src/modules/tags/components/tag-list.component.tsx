@@ -37,7 +37,7 @@ export const TagPickerFilter: Component<{
         class="focus-visible:ring-0 rounded-none border-t-none border-x-none"
         placeholder={props.placeholder ?? t('tags.picker.filter-placeholder')}
         value={props.value}
-        onInput={e => props.onInput(e.currentTarget.value)}
+        onInput={(e) => props.onInput(e.currentTarget.value)}
         ref={ref}
         autofocus
       />
@@ -69,7 +69,7 @@ const TagPicker: Component<{
     getNormalizedFilterQuery,
   } = useTagPicker({
     getAvailableTags: () => tagsQuery.data?.tags ?? [],
-    getSelectedTagIds: () => props.selectedTags?.map(tag => tag.id) ?? [],
+    getSelectedTagIds: () => props.selectedTags?.map((tag) => tag.id) ?? [],
   });
 
   // Reset filter and highlight when popover opens
@@ -80,18 +80,26 @@ const TagPicker: Component<{
     }
   });
 
-  const setTagSelection = ({ tagId, setSelection }: { tagId: string; setSelection: (previous: boolean) => boolean }) => {
-    const updatedTagItems = getTagsListItems()
-      .map(tagItem => ({
-        ...tagItem,
-        isSelected: tagItem.tag.id === tagId ? setSelection(tagItem.isSelected) : tagItem.isSelected,
-      }));
+  const setTagSelection = ({
+    tagId,
+    setSelection,
+  }: {
+    tagId: string;
+    setSelection: (previous: boolean) => boolean;
+  }) => {
+    const updatedTagItems = getTagsListItems().map((tagItem) => ({
+      ...tagItem,
+      isSelected: tagItem.tag.id === tagId ? setSelection(tagItem.isSelected) : tagItem.isSelected,
+    }));
 
-    return updatedTagItems.filter(tag => tag.isSelected).map(({ tag }) => tag);
+    return updatedTagItems.filter((tag) => tag.isSelected).map(({ tag }) => tag);
   };
 
   const handleToggle = (tagId: string, selected: boolean | ((old: boolean) => boolean)) => {
-    const updatedTags = setTagSelection({ tagId, setSelection: typeof selected === 'function' ? selected : () => selected });
+    const updatedTags = setTagSelection({
+      tagId,
+      setSelection: typeof selected === 'function' ? selected : () => selected,
+    });
 
     props.onChange?.(updatedTags);
   };
@@ -126,7 +134,7 @@ const TagPicker: Component<{
 
     if (isEnterOrSpace && currentHighlight.tagId) {
       e.preventDefault();
-      handleToggle(currentHighlight.tagId, selected => !selected);
+      handleToggle(currentHighlight.tagId, (selected) => !selected);
       return;
     }
 
@@ -183,35 +191,39 @@ export const TagList: Component<{
 
   return (
     <div ref={containerRef} class="flex flex-wrap items-center gap-1">
-      <For each={props.tags}>
-        {tag => (
-          <TagItem {...tag} class={props.tagClass} />
-        )}
-      </For>
+      <For each={props.tags}>{(tag) => <TagItem {...tag} class={props.tagClass} />}</For>
 
       <Popover anchorRef={() => containerRef} open={isOpen()} onOpenChange={setIsOpen}>
         <PopoverTrigger
           as={(triggerProps: PopoverTriggerProps) => (
-            <Button variant="outline" size="icon" {...triggerProps} class={cn('size-7 text-muted-foreground/30 hover:text-muted-foreground rounded-lg', props.triggerClass)}>
+            <Button
+              variant="outline"
+              size="icon"
+              {...triggerProps}
+              class={cn(
+                'size-7 text-muted-foreground/30 hover:text-muted-foreground rounded-lg',
+                props.triggerClass,
+              )}
+            >
               <div class="i-tabler-plus size-4" />
             </Button>
           )}
         />
         <PopoverContent class="p-0">
-          <Suspense fallback={(
-            <div>
-              <div class="p-1 border-b">
-                <div class="h-26px bg-muted rounded animate-pulse" />
+          <Suspense
+            fallback={
+              <div>
+                <div class="p-1 border-b">
+                  <div class="h-26px bg-muted rounded animate-pulse" />
+                </div>
+                <div class="p-1 flex flex-col gap-1">
+                  <div class="h-26px bg-muted rounded animate-pulse" />
+                  <div class="h-26px bg-muted rounded animate-pulse" />
+                  <div class="h-26px bg-muted rounded animate-pulse" />
+                </div>
               </div>
-              <div class="p-1 flex flex-col gap-1">
-                <div class="h-26px bg-muted rounded animate-pulse" />
-                <div class="h-26px bg-muted rounded animate-pulse" />
-                <div class="h-26px bg-muted rounded animate-pulse" />
-              </div>
-            </div>
-          )}
+            }
           >
-
             <TagPicker
               selectedTags={props.tags}
               onChange={handleTagsChange}
@@ -225,36 +237,42 @@ export const TagList: Component<{
   );
 };
 
-export const DocumentTagsList: Component<{
-  tags: Tag[];
-  documentId: string;
-  organizationId: string;
-} & Pick<ComponentProps<typeof TagList>, 'tagClass' | 'asLink' | 'triggerClass'>> = (props) => {
+export const DocumentTagsList: Component<
+  {
+    tags: Tag[];
+    documentId: string;
+    organizationId: string;
+  } & Pick<ComponentProps<typeof TagList>, 'tagClass' | 'asLink' | 'triggerClass'>
+> = (props) => {
   const [getDocumentsTags, setDocumentsTags] = createSignal<Tag[]>(props.tags);
   const [rest] = splitProps(props, ['tagClass', 'asLink', 'triggerClass']);
 
   const onTagsChange = async (tags: Tag[]) => {
     const currentTags = getDocumentsTags();
-    const addedTags = tags.filter(tag => !currentTags.find(t => t.id === tag.id));
-    const removedTags = currentTags.filter(tag => !tags.find(t => t.id === tag.id));
+    const addedTags = tags.filter((tag) => !currentTags.find((t) => t.id === tag.id));
+    const removedTags = currentTags.filter((tag) => !tags.find((t) => t.id === tag.id));
 
     // Optimistic update
     setDocumentsTags(tags);
 
     await Promise.all(
-      addedTags.map(tag => addTagToDocument({
-        documentId: props.documentId,
-        organizationId: props.organizationId,
-        tagId: tag.id,
-      })),
+      addedTags.map((tag) =>
+        addTagToDocument({
+          documentId: props.documentId,
+          organizationId: props.organizationId,
+          tagId: tag.id,
+        }),
+      ),
     );
 
     await Promise.all(
-      removedTags.map(tag => removeTagFromDocument({
-        documentId: props.documentId,
-        organizationId: props.organizationId,
-        tagId: tag.id,
-      })),
+      removedTags.map((tag) =>
+        removeTagFromDocument({
+          documentId: props.documentId,
+          organizationId: props.organizationId,
+          tagId: tag.id,
+        }),
+      ),
     );
 
     await queryClient.invalidateQueries({

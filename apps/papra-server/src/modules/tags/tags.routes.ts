@@ -30,14 +30,18 @@ function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:create'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      name: tagNameSchema,
-      color: tagColorSchema,
-      description: v.optional(tagDescriptionSchema),
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        name: tagNameSchema,
+        color: tagColorSchema,
+        description: v.optional(tagDescriptionSchema),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -49,7 +53,14 @@ function setupCreateNewTagRoute({ app, db, config }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { tag } = await createTag({ organizationId, name, color, description, config, tagsRepository });
+      const { tag } = await createTag({
+        organizationId,
+        name,
+        color,
+        description,
+        config,
+        tagsRepository,
+      });
 
       return context.json({
         tag,
@@ -62,9 +73,11 @@ function setupGetOrganizationTagsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tags',
     requireAuthentication({ apiKeyPermissions: ['tags:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -88,15 +101,19 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:update'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      tagId: tagIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      name: v.optional(tagNameSchema),
-      color: v.optional(tagColorSchema),
-      description: v.optional(tagDescriptionSchema),
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        tagId: tagIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        name: v.optional(tagNameSchema),
+        color: v.optional(tagColorSchema),
+        description: v.optional(tagDescriptionSchema),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -108,7 +125,13 @@ function setupUpdateTagRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { tag } = await tagsRepository.updateTag({ tagId, organizationId, name, color, description });
+      const { tag } = await tagsRepository.updateTag({
+        tagId,
+        organizationId,
+        name,
+        color,
+        description,
+      });
 
       if (!tag) {
         throw createTagNotFoundError();
@@ -125,10 +148,12 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tags/:tagId',
     requireAuthentication({ apiKeyPermissions: ['tags:delete'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      tagId: tagIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        tagId: tagIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -149,14 +174,20 @@ function setupDeleteTagRoute({ app, db }: RouteDefinitionContext) {
 function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/tags',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      tagId: tagIdSchema,
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        tagId: tagIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -199,15 +230,23 @@ function setupAddTagToDocumentRoute({ app, db, webhookTriggerServices }: RouteDe
   );
 }
 
-function setupRemoveTagFromDocumentRoute({ app, db, webhookTriggerServices }: RouteDefinitionContext) {
+function setupRemoveTagFromDocumentRoute({
+  app,
+  db,
+  webhookTriggerServices,
+}: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/documents/:documentId/tags/:tagId',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-      tagId: tagIdSchema,
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+        tagId: tagIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 

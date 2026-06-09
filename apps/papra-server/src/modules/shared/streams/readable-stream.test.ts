@@ -1,7 +1,12 @@
 import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { describe, expect, test } from 'vitest';
-import { collectReadableStreamToBuffer, collectReadableStreamToString, createReadableStream, fileToReadableStream } from './readable-stream';
+import {
+  collectReadableStreamToBuffer,
+  collectReadableStreamToString,
+  createReadableStream,
+  fileToReadableStream,
+} from './readable-stream';
 
 describe('readable-stream', () => {
   describe('collectReadableStreamToString', () => {

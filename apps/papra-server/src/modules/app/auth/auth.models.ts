@@ -72,7 +72,9 @@ export function isAuthenticationValid({
       return false;
     }
 
-    const allPermissionsMatch = requiredApiKeyPermissions.every(permission => apiKey.permissions.includes(permission));
+    const allPermissionsMatch = requiredApiKeyPermissions.every((permission) =>
+      apiKey.permissions.includes(permission),
+    );
 
     return allPermissionsMatch;
   }

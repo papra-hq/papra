@@ -7,8 +7,12 @@ export const documentsFtsMigration = {
   up: async ({ db }) => {
     await db.batch([
       db.run(sql`DROP TABLE IF EXISTS documents_fts`),
-      db.run(sql`CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(id UNINDEXED, name, original_name, content, prefix='2 3 4')`),
-      db.run(sql`INSERT INTO documents_fts(id, name, original_name, content) SELECT id, name, original_name, content FROM documents`),
+      db.run(
+        sql`CREATE VIRTUAL TABLE IF NOT EXISTS documents_fts USING fts5(id UNINDEXED, name, original_name, content, prefix='2 3 4')`,
+      ),
+      db.run(
+        sql`INSERT INTO documents_fts(id, name, original_name, content) SELECT id, name, original_name, content FROM documents`,
+      ),
       db.run(sql`
         CREATE TRIGGER IF NOT EXISTS trigger_documents_fts_insert AFTER INSERT ON documents BEGIN
           INSERT INTO documents_fts(id, name, original_name, content) VALUES (new.id, new.name, new.original_name, new.content);

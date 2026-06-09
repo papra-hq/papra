@@ -13,18 +13,22 @@ describe('plans usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        organizationSubscriptions: [{
-          id: 'org_sub_1',
-          organizationId: 'organization-1',
-          planId: PLUS_PLAN_ID,
-          customerId: 'cus_123',
-          seatsCount: 10,
-          status: 'active',
-          currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
-          currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
-          cancelAtPeriodEnd: false,
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationSubscriptions: [
+          {
+            id: 'org_sub_1',
+            organizationId: 'organization-1',
+            planId: PLUS_PLAN_ID,
+            customerId: 'cus_123',
+            seatsCount: 10,
+            status: 'active',
+            currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
+            currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
+            cancelAtPeriodEnd: false,
+          },
+        ],
       });
 
       const config = overrideConfig({
@@ -37,7 +41,11 @@ describe('plans usecases', () => {
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
-      const { organizationPlan } = await getOrganizationPlan({ organizationId: 'organization-1', subscriptionsRepository, plansRepository });
+      const { organizationPlan } = await getOrganizationPlan({
+        organizationId: 'organization-1',
+        subscriptionsRepository,
+        plansRepository,
+      });
 
       expect(organizationPlan.id).to.equal(PLUS_PLAN_ID);
     });
@@ -46,7 +54,9 @@ describe('plans usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -59,7 +69,11 @@ describe('plans usecases', () => {
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
-      const { organizationPlan } = await getOrganizationPlan({ organizationId: 'organization-1', subscriptionsRepository, plansRepository });
+      const { organizationPlan } = await getOrganizationPlan({
+        organizationId: 'organization-1',
+        subscriptionsRepository,
+        plansRepository,
+      });
 
       expect(organizationPlan.id).to.equal(FREE_PLAN_ID);
     });

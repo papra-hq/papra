@@ -10,7 +10,9 @@ import { ThumbnailsPanel } from './thumbnails-panel.component';
 const SideBarPanel: ParentComponent<{ active: boolean }> = (props) => {
   return (
     <div
-      class={cn('absolute inset-0 flex flex-col overflow-y-auto transition-opacity z-10', { 'opacity-0 pointer-events-none z-0': !props.active })}
+      class={cn('absolute inset-0 flex flex-col overflow-y-auto transition-opacity z-10', {
+        'opacity-0 pointer-events-none z-0': !props.active,
+      })}
       aria-hidden={!props.active}
     >
       {props.children}
@@ -23,14 +25,9 @@ export const SideBar: Component<ThumbnailsBarProps> = (props) => {
 
   return (
     <div class="h-full w-full flex relative bg-card border-r shrink-0">
-      <SidebarButtonsBar
-        store={props.store}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+      <SidebarButtonsBar store={props.store} activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div class="flex-1 relative overflow-hidden min-h-0">
-
         <SideBarPanel active={activeTab() === 'thumbnails'}>
           <ThumbnailsPanel store={props.store} thumbsRef={props.thumbsRef} />
         </SideBarPanel>
@@ -42,7 +39,6 @@ export const SideBar: Component<ThumbnailsBarProps> = (props) => {
         <SideBarPanel active={activeTab() === 'attachments'}>
           <AttachmentsPanel store={props.store} />
         </SideBarPanel>
-
       </div>
     </div>
   );

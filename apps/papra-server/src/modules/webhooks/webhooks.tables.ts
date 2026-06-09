@@ -13,25 +13,37 @@ export const webhooksTable = sqliteTable('webhooks', {
   url: text('url').notNull(),
   secret: text('secret'),
   enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
-  createdBy: text('created_by').references(() => usersTable.id, { onDelete: 'set null', onUpdate: 'cascade' }),
-  organizationId: text('organization_id').references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  createdBy: text('created_by').references(() => usersTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
+  organizationId: text('organization_id').references(() => organizationsTable.id, {
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+  }),
 });
 
-export const webhookEventsTable = sqliteTable('webhook_events', {
-  ...createPrimaryKeyField({ prefix: 'wbh_ev' }),
-  ...createTimestampColumns(),
+export const webhookEventsTable = sqliteTable(
+  'webhook_events',
+  {
+    ...createPrimaryKeyField({ prefix: 'wbh_ev' }),
+    ...createTimestampColumns(),
 
-  webhookId: text('webhook_id').notNull().references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
-  eventName: text('event_name', { enum: EVENT_NAMES }).notNull(),
-}, t => [
-  unique('webhook_events_webhook_id_event_name_unique').on(t.webhookId, t.eventName),
-]);
+    webhookId: text('webhook_id')
+      .notNull()
+      .references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    eventName: text('event_name', { enum: EVENT_NAMES }).notNull(),
+  },
+  (t) => [unique('webhook_events_webhook_id_event_name_unique').on(t.webhookId, t.eventName)],
+);
 
 export const webhookDeliveriesTable = sqliteTable('webhook_deliveries', {
   ...createPrimaryKeyField({ prefix: 'wbh_dlv' }),
   ...createTimestampColumns(),
 
-  webhookId: text('webhook_id').notNull().references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  webhookId: text('webhook_id')
+    .notNull()
+    .references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   eventName: text('event_name').notNull(),
   requestPayload: text('request_payload').notNull(),
   responsePayload: text('response_payload').notNull(),

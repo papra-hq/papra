@@ -18,7 +18,9 @@ describe('exec services', () => {
 
     test('stdout and stderr are trimmed', async () => {
       expect(
-        await executeCommand('echo "   Hello, World!   " && echo "   This is an error message.   " 1>&2'),
+        await executeCommand(
+          'echo "   Hello, World!   " && echo "   This is an error message.   " 1>&2',
+        ),
       ).to.eql({
         stdout: 'Hello, World!',
         stderr: 'This is an error message.',
@@ -29,28 +31,25 @@ describe('exec services', () => {
   describe('executeCommandSafely', () => {
     test('returns stdout and stderr even if the command fails', async () => {
       expect(
-        await executeCommandSafely('echo "Hello, World!" && echo "This is an error message." 1>&2 && exit 1'),
+        await executeCommandSafely(
+          'echo "Hello, World!" && echo "This is an error message." 1>&2 && exit 1',
+        ),
       ).to.eql({
         stdout: 'Hello, World!',
         stderr: 'This is an error message.',
       });
 
-      expect(
-        await executeCommandSafely('exit 1'),
-      ).to.eql({
+      expect(await executeCommandSafely('exit 1')).to.eql({
         stdout: '',
         stderr: '',
       });
 
-      expect(await executeCommandSafely('echo "Only stdout"'),
-      ).to.eql({
+      expect(await executeCommandSafely('echo "Only stdout"')).to.eql({
         stdout: 'Only stdout',
         stderr: '',
       });
 
-      expect(
-        await executeCommandSafely('echo "Only stderr" 1>&2 && exit 1'),
-      ).to.eql({
+      expect(await executeCommandSafely('echo "Only stderr" 1>&2 && exit 1')).to.eql({
         stdout: '',
         stderr: 'Only stderr',
       });

@@ -24,5 +24,4 @@ Formats:
     default: undefined,
     env: 'DOCUMENT_STORAGE_DOCUMENT_KEY_ENCRYPTION_KEYS',
   },
-
 } as const satisfies ConfigDefinition;

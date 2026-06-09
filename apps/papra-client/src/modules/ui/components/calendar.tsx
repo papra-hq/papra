@@ -21,15 +21,14 @@ export const CalendarHeadCell: Component<ComponentProps<typeof Calendar.HeadCell
   return (
     <Calendar.HeadCell
       {...props}
-      class={cn(
-        'text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]',
-        props.class,
-      )}
+      class={cn('text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]', props.class)}
     />
   );
 };
 
-export const CalendarCellTrigger: Component<ComponentProps<typeof Calendar.CellTrigger>> = (props) => {
+export const CalendarCellTrigger: Component<ComponentProps<typeof Calendar.CellTrigger>> = (
+  props,
+) => {
   return (
     <Calendar.CellTrigger
       {...props}
@@ -59,9 +58,10 @@ export function CalendarGrid(props: {
       <thead>
         <tr class="flex">
           <For each={context.weekdays()}>
-            {weekday => (
+            {(weekday) => (
               <CalendarHeadCell>
-                {props.formatWeekday?.(weekday) ?? weekday.toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2)}
+                {props.formatWeekday?.(weekday) ??
+                  weekday.toLocaleDateString(undefined, { weekday: 'short' }).slice(0, 2)}
               </CalendarHeadCell>
             )}
           </For>
@@ -69,10 +69,10 @@ export function CalendarGrid(props: {
       </thead>
       <tbody>
         <For each={context.weeks()}>
-          {week => (
+          {(week) => (
             <tr class="flex w-full mt-1">
               <For each={week}>
-                {day => (
+                {(day) => (
                   <Calendar.Cell>
                     <CalendarCellTrigger day={day}>
                       {props.formatDay?.(day) ?? day.getDate()}

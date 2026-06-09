@@ -9,5 +9,7 @@ export function coerceDate(date: CoercibleDate): Date {
     return new Date(date);
   }
 
-  throw new Error(`Invalid date: expected Date, string, or number, but received value "${date}" of type "${typeof date}"`);
+  throw new Error(
+    `Invalid date: expected Date, string, or number, but received value "${date}" of type "${typeof date}"`,
+  );
 }

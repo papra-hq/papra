@@ -9,10 +9,7 @@ type TrackingServices = {
 
   reset: () => void;
 
-  identify: (args: {
-    userId: string;
-    email: string;
-  }) => void;
+  identify: (args: { userId: string; email: string }) => void;
 };
 
 const dummyTrackingServices: TrackingServices = {
@@ -34,7 +31,6 @@ function createTrackingServices(): TrackingServices {
   }
 
   if (!apiKey) {
-    console.warn('PostHog API key is not set');
     return dummyTrackingServices;
   }
 

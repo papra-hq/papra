@@ -1,5 +1,8 @@
 import * as v from 'valibot';
-import { customPropertySelectOptionIdSchema, selectCustomPropertyOptionNameSchema } from '../../options/custom-properties-options.schemas';
+import {
+  customPropertySelectOptionIdSchema,
+  selectCustomPropertyOptionNameSchema,
+} from '../../options/custom-properties-options.schemas';
 import { ensureOptionsExist } from '../../options/custom-properties-options.usecases';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
 
@@ -9,9 +12,11 @@ export const multiSelectCustomPropertyDefinition = defineCustomPropertyType({
   definition: {
     createExtraSchema: v.object({
       options: v.pipe(
-        v.array(v.object({
-          name: selectCustomPropertyOptionNameSchema,
-        })),
+        v.array(
+          v.object({
+            name: selectCustomPropertyOptionNameSchema,
+          }),
+        ),
         v.minLength(1, 'At least one option must be provided'),
       ),
     }),
@@ -28,13 +33,17 @@ export const multiSelectCustomPropertyDefinition = defineCustomPropertyType({
     },
 
     updateExtraSchema: v.object({
-      options: v.optional(v.pipe(
-        v.array(v.object({
-          id: v.optional(customPropertySelectOptionIdSchema),
-          name: selectCustomPropertyOptionNameSchema,
-        })),
-        v.minLength(1, 'At least one option must be provided'),
-      )),
+      options: v.optional(
+        v.pipe(
+          v.array(
+            v.object({
+              id: v.optional(customPropertySelectOptionIdSchema),
+              name: selectCustomPropertyOptionNameSchema,
+            }),
+          ),
+          v.minLength(1, 'At least one option must be provided'),
+        ),
+      ),
     }),
 
     onUpdate: async ({
@@ -52,7 +61,6 @@ export const multiSelectCustomPropertyDefinition = defineCustomPropertyType({
   },
 
   value: {
-
     inputSchema: v.array(customPropertySelectOptionIdSchema),
 
     extendInputValidation: async ({ value, customProperty, customPropertiesOptionsRepository }) => {
@@ -63,13 +71,14 @@ export const multiSelectCustomPropertyDefinition = defineCustomPropertyType({
       });
     },
 
-    toDb: ({ value }) => value.map(selectOptionId => ({ selectOptionId })),
+    toDb: ({ value }) => value.map((selectOptionId) => ({ selectOptionId })),
 
-    fromDb: ({ rows }) => rows
-      .filter(r => r.option !== null)
-      .map(r => ({
-        optionId: r.option!.id,
-        name: r.option!.name,
-      })),
+    fromDb: ({ rows }) =>
+      rows
+        .filter((r) => r.option !== null)
+        .map((r) => ({
+          optionId: r.option!.id,
+          name: r.option!.name,
+        })),
   },
 });

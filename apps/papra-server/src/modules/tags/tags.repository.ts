@@ -7,7 +7,11 @@ import { chunkArray } from '../shared/arrays/arrays.utils';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { omitUndefined } from '../shared/objects';
 import { isDefined } from '../shared/utils';
-import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError, createTagNotFoundError } from './tags.errors';
+import {
+  createDocumentAlreadyHasTagError,
+  createTagAlreadyExistsError,
+  createTagNotFoundError,
+} from './tags.errors';
 import { normalizeTagName } from './tags.repository.models';
 import { documentsTagsTable, tagsTable } from './tags.table';
 
@@ -35,11 +39,20 @@ export function createTagsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getOrganizationTags({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationTags({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const tags = await db
     .select({
       ...getTableColumns(tagsTable),
-      documentsCount: sql<number>`COUNT(${documentsTagsTable.documentId}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as('documentsCount'),
+      documentsCount:
+        sql<number>`COUNT(${documentsTagsTable.documentId}) FILTER (WHERE ${documentsTable.isDeleted} = false)`.as(
+          'documentsCount',
+        ),
     })
     .from(tagsTable)
     .leftJoin(documentsTagsTable, eq(tagsTable.id, documentsTagsTable.tagId))
@@ -51,7 +64,13 @@ async function getOrganizationTags({ organizationId, db }: { organizationId: str
   return { tags };
 }
 
-async function getOrganizationTagsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationTagsCount({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [result] = await db
     .select({ tagsCount: count() })
     .from(tagsTable)
@@ -60,7 +79,13 @@ async function getOrganizationTagsCount({ organizationId, db }: { organizationId
   return { tagsCount: result?.tagsCount ?? 0 };
 }
 
-async function getTagsByDocumentIds({ documentIds, db }: { documentIds: string[]; db: Database }): Promise<{ tagsByDocumentId: Record<string, Tag[]> }> {
+async function getTagsByDocumentIds({
+  documentIds,
+  db,
+}: {
+  documentIds: string[];
+  db: Database;
+}): Promise<{ tagsByDocumentId: Record<string, Tag[]> }> {
   if (documentIds.length === 0) {
     return { tagsByDocumentId: {} };
   }
@@ -83,21 +108,32 @@ async function getTagsByDocumentIds({ documentIds, db }: { documentIds: string[]
   return { tagsByDocumentId };
 }
 
-async function getTagById({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {
+async function getTagById({
+  tagId,
+  organizationId,
+  db,
+}: {
+  tagId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [tag] = await db
     .select()
     .from(tagsTable)
-    .where(
-      and(
-        eq(tagsTable.id, tagId),
-        eq(tagsTable.organizationId, organizationId),
-      ),
-    );
+    .where(and(eq(tagsTable.id, tagId), eq(tagsTable.organizationId, organizationId)));
 
   return { tag };
 }
 
-async function getTagsByIds({ tagIds, organizationId, db }: { tagIds: string[]; organizationId: string; db: Database }) {
+async function getTagsByIds({
+  tagIds,
+  organizationId,
+  db,
+}: {
+  tagIds: string[];
+  organizationId: string;
+  db: Database;
+}) {
   if (tagIds.length === 0) {
     return { tags: [] as Tag[] };
   }
@@ -105,17 +141,18 @@ async function getTagsByIds({ tagIds, organizationId, db }: { tagIds: string[]; 
   const tags = await db
     .select()
     .from(tagsTable)
-    .where(
-      and(
-        inArray(tagsTable.id, tagIds),
-        eq(tagsTable.organizationId, organizationId),
-      ),
-    );
+    .where(and(inArray(tagsTable.id, tagIds), eq(tagsTable.organizationId, organizationId)));
 
   return { tags };
 }
 
-async function createTag({ tag, db }: { tag: { name: string; description?: string | null; color: string; organizationId: string }; db: Database }) {
+async function createTag({
+  tag,
+  db,
+}: {
+  tag: { name: string; description?: string | null; color: string; organizationId: string };
+  db: Database;
+}) {
   const [result, error] = await safely(
     db
       .insert(tagsTable)
@@ -139,15 +176,18 @@ async function createTag({ tag, db }: { tag: { name: string; description?: strin
   return { tag: createdTag };
 }
 
-async function deleteTag({ tagId, organizationId, db }: { tagId: string; organizationId: string; db: Database }) {
+async function deleteTag({
+  tagId,
+  organizationId,
+  db,
+}: {
+  tagId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const deleteResult = await db
     .delete(tagsTable)
-    .where(
-      and(
-        eq(tagsTable.id, tagId),
-        eq(tagsTable.organizationId, organizationId),
-      ),
-    )
+    .where(and(eq(tagsTable.id, tagId), eq(tagsTable.organizationId, organizationId)))
     .returning({ id: tagsTable.id });
 
   if (deleteResult.length === 0) {
@@ -155,7 +195,21 @@ async function deleteTag({ tagId, organizationId, db }: { tagId: string; organiz
   }
 }
 
-async function updateTag({ tagId, organizationId, name, description, color, db }: { tagId: string; organizationId: string; name?: string; description?: string; color?: string; db: Database }) {
+async function updateTag({
+  tagId,
+  organizationId,
+  name,
+  description,
+  color,
+  db,
+}: {
+  tagId: string;
+  organizationId: string;
+  name?: string;
+  description?: string;
+  color?: string;
+  db: Database;
+}) {
   const [result, error] = await safely(
     db
       .update(tagsTable)
@@ -167,12 +221,7 @@ async function updateTag({ tagId, organizationId, name, description, color, db }
           normalizedName: isDefined(name) ? normalizeTagName({ name }) : undefined,
         }),
       )
-      .where(
-        and(
-          eq(tagsTable.id, tagId),
-          eq(tagsTable.organizationId, organizationId),
-        ),
-      )
+      .where(and(eq(tagsTable.id, tagId), eq(tagsTable.organizationId, organizationId)))
       .returning(),
   );
 
@@ -189,7 +238,15 @@ async function updateTag({ tagId, organizationId, name, description, color, db }
   return { tag };
 }
 
-async function addTagToDocument({ tagId, documentId, db }: { tagId: string; documentId: string; db: Database }) {
+async function addTagToDocument({
+  tagId,
+  documentId,
+  db,
+}: {
+  tagId: string;
+  documentId: string;
+  db: Database;
+}) {
   const [_, error] = await safely(db.insert(documentsTagsTable).values({ tagId, documentId }));
 
   if (error && isUniqueConstraintError({ error })) {
@@ -201,17 +258,30 @@ async function addTagToDocument({ tagId, documentId, db }: { tagId: string; docu
   }
 }
 
-async function addTagsToDocument({ tagIds, documentId, db }: { tagIds: string[]; documentId: string; db: Database }) {
-  await db.insert(documentsTagsTable).values(tagIds.map(tagId => ({ tagId, documentId })));
+async function addTagsToDocument({
+  tagIds,
+  documentId,
+  db,
+}: {
+  tagIds: string[];
+  documentId: string;
+  db: Database;
+}) {
+  await db.insert(documentsTagsTable).values(tagIds.map((tagId) => ({ tagId, documentId })));
 }
 
-async function removeTagFromDocument({ tagId, documentId, db }: { tagId: string; documentId: string; db: Database }) {
-  await db.delete(documentsTagsTable).where(
-    and(
-      eq(documentsTagsTable.tagId, tagId),
-      eq(documentsTagsTable.documentId, documentId),
-    ),
-  );
+async function removeTagFromDocument({
+  tagId,
+  documentId,
+  db,
+}: {
+  tagId: string;
+  documentId: string;
+  db: Database;
+}) {
+  await db
+    .delete(documentsTagsTable)
+    .where(and(eq(documentsTagsTable.tagId, tagId), eq(documentsTagsTable.documentId, documentId)));
 }
 
 async function removeAllTagsFromDocument({ documentId, db }: { documentId: string; db: Database }) {
@@ -238,7 +308,9 @@ async function addTagsToDocumentsBatch({
 
   // The max tag number per document is expected to be low (50 limited by batch api endpoint)
   // so the cartesian product is acceptable to be stored in memory
-  const allPairs = documentIds.flatMap(documentId => tagIds.map(tagId => ({ documentId, tagId })));
+  const allPairs = documentIds.flatMap((documentId) =>
+    tagIds.map((tagId) => ({ documentId, tagId })),
+  );
 
   const insertedPairs: { documentId: string; tagId: string }[] = [];
 

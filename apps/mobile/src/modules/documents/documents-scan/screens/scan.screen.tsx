@@ -2,7 +2,16 @@ import type { ScanOutputFormat } from '../documents-scan.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
 import { OrganizationPickerDrawer } from '@/modules/organizations/components/organization-picker-drawer';
@@ -144,9 +153,7 @@ export default function ScanReviewScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review Scan</Text>
         <Text style={styles.pageCount}>
-          {pageCount}
-          {' '}
-          page
+          {pageCount} page
           {pageCount > 1 ? 's' : ''}
         </Text>
       </View>
@@ -163,13 +170,13 @@ export default function ScanReviewScreen() {
         >
           <ImagePreviewCarousel imageUris={imageUris} />
 
-          <FormatSelector selectedFormat={format} onFormatChange={setFormat} isSinglePage={pageCount === 1} />
-
-          <DocumentNameInput
-            value={documentName}
-            onChangeText={setDocumentName}
-            format={format}
+          <FormatSelector
+            selectedFormat={format}
+            onFormatChange={setFormat}
+            isSinglePage={pageCount === 1}
           />
+
+          <DocumentNameInput value={documentName} onChangeText={setDocumentName} format={format} />
 
           <View style={styles.orgSection}>
             <Text style={styles.sectionLabel}>Upload to</Text>
@@ -180,11 +187,7 @@ export default function ScanReviewScreen() {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={handleClose}
-          disabled={isProcessing}
-        >
+        <TouchableOpacity style={styles.cancelButton} onPress={handleClose} disabled={isProcessing}>
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
 
@@ -193,16 +196,14 @@ export default function ScanReviewScreen() {
           onPress={() => void handleConfirm()}
           disabled={isProcessing}
         >
-          {isProcessing
-            ? (
-                <ActivityIndicator size="small" color={themeColors.primaryForeground} />
-              )
-            : (
-                <>
-                  <Icon name="upload" size={18} color={themeColors.primaryForeground} />
-                  <Text style={styles.confirmButtonText}>Confirm</Text>
-                </>
-              )}
+          {isProcessing ? (
+            <ActivityIndicator size="small" color={themeColors.primaryForeground} />
+          ) : (
+            <>
+              <Icon name="upload" size={18} color={themeColors.primaryForeground} />
+              <Text style={styles.confirmButtonText}>Confirm</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
 

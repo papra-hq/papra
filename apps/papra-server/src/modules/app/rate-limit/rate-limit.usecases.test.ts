@@ -26,12 +26,28 @@ describe('rate-limit usecases', () => {
       const { clock, kvStore } = setup();
       const config = { maxHits: 3, window: { minutes: 1 }, key: 'user-1' };
 
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 1, hitsRemaining: 2 });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 2, hitsRemaining: 1 });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 3, hitsRemaining: 0 });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 1,
+        hitsRemaining: 2,
+      });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 2,
+        hitsRemaining: 1,
+      });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 3,
+        hitsRemaining: 0,
+      });
 
       // The 4th hit exceeds maxHits: the limit is flagged and the counter is not incremented further.
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: true, hitCount: 3, hitsRemaining: 0 });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: true,
+        hitCount: 3,
+        hitsRemaining: 0,
+      });
     });
 
     test('exposes the window reset instant for response headers and keeps it fixed across hits', async () => {
@@ -53,38 +69,61 @@ describe('rate-limit usecases', () => {
       const { clock, kvStore } = setup();
       const config = { maxHits: 2, window: { minutes: 1 }, key: 'user-1' };
 
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+      });
 
       clock.advanceBy({ seconds: 50 });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: true });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+      });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: true,
+      });
 
       // Past the original reset instant the entry has expired, so the counter starts fresh.
       clock.advanceBy({ seconds: 11 });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 1 });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 1,
+      });
     });
 
     test('counts are tracked independently per key', async () => {
       const { clock, kvStore } = setup();
       const config = { maxHits: 1, window: { minutes: 1 } };
 
-      expect(await getRateLimit({ ...config, key: 'user-1', kvStore, clock })).toMatchObject({ hasExceededLimit: false });
-      expect(await getRateLimit({ ...config, key: 'user-1', kvStore, clock })).toMatchObject({ hasExceededLimit: true });
+      expect(await getRateLimit({ ...config, key: 'user-1', kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+      });
+      expect(await getRateLimit({ ...config, key: 'user-1', kvStore, clock })).toMatchObject({
+        hasExceededLimit: true,
+      });
 
       // A different key is unaffected by user-1 reaching its limit.
-      expect(await getRateLimit({ ...config, key: 'user-2', kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 1 });
+      expect(await getRateLimit({ ...config, key: 'user-2', kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 1,
+      });
     });
 
     test('the counter resets once the window has fully elapsed', async () => {
       const { clock, kvStore } = setup();
       const config = { maxHits: 1, window: { minutes: 1 }, key: 'user-1' };
 
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false });
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: true });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+      });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: true,
+      });
 
       clock.advanceBy({ minutes: 1 });
 
-      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({ hasExceededLimit: false, hitCount: 1 });
+      expect(await getRateLimit({ ...config, kvStore, clock })).toMatchObject({
+        hasExceededLimit: false,
+        hitCount: 1,
+      });
     });
   });
 

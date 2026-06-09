@@ -18,27 +18,46 @@ import { cn } from '@/modules/shared/style/cn';
 import { DocumentTagsList } from '@/modules/tags/components/tag-list.component';
 import { Button } from '@/modules/ui/components/button';
 import { Checkbox, CheckboxControl } from '@/modules/ui/components/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
-import { getDocumentIcon, getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/modules/ui/components/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
+import {
+  getDocumentIcon,
+  getDocumentNameExtension,
+  getDocumentNameWithoutExtension,
+} from '../document.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
 
 const selectionColumn: ColumnDef<Document> = {
   id: 'select',
-  header: props => (
+  header: (props) => (
     <Checkbox
       checked={props.table.getIsAllPageRowsSelected()}
-      indeterminate={props.table.getIsSomePageRowsSelected() && !props.table.getIsAllPageRowsSelected()}
-      onChange={value => props.table.toggleAllPageRowsSelected(value)}
+      indeterminate={
+        props.table.getIsSomePageRowsSelected() && !props.table.getIsAllPageRowsSelected()
+      }
+      onChange={(value) => props.table.toggleAllPageRowsSelected(value)}
       aria-label="Select all rows on this page"
     >
       <CheckboxControl />
     </Checkbox>
   ),
-  cell: props => (
+  cell: (props) => (
     <Checkbox
       checked={props.row.getIsSelected()}
-      onChange={value => props.row.toggleSelected(value)}
+      onChange={(value) => props.row.toggleSelected(value)}
       aria-label="Select row"
     >
       <CheckboxControl />
@@ -55,7 +74,9 @@ export const createdAtColumn: ColumnDef<Document> = {
   },
   accessorKey: 'createdAt',
   enableSorting: true,
-  cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
+  cell: (data) => (
+    <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />
+  ),
 };
 
 export const deletedAtColumn: ColumnDef<Document> = {
@@ -64,7 +85,9 @@ export const deletedAtColumn: ColumnDef<Document> = {
     return <span class="hidden sm:block">{t('documents.list.table.headers.deleted')}</span>;
   },
   accessorKey: 'deletedAt',
-  cell: data => <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />,
+  cell: (data) => (
+    <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />
+  ),
 };
 
 export const standardActionsColumn: ColumnDef<Document> = {
@@ -74,7 +97,7 @@ export const standardActionsColumn: ColumnDef<Document> = {
   },
   id: 'actions',
   enableSorting: false,
-  cell: data => (
+  cell: (data) => (
     <div class="flex items-center justify-end">
       <DocumentManagementDropdown document={data.row.original} />
     </div>
@@ -88,7 +111,7 @@ export const tagsColumn: ColumnDef<Document> = {
   },
   accessorKey: 'tags',
   enableSorting: false,
-  cell: data => (
+  cell: (data) => (
     <DocumentTagsList
       tags={data.getValue<Tag[]>()}
       tagClass="text-xs text-muted-foreground"
@@ -118,22 +141,19 @@ export const DocumentsPaginatedList: Component<{
     get data() {
       return props.documents ?? [];
     },
-    getRowId: row => row.id,
+    getRowId: (row) => row.id,
     columns: [
       ...(props.enableBatchSelection ? [selectionColumn] : []),
       {
         header: () => t('documents.list.table.headers.file-name'),
         id: 'name',
-        accessorFn: row => row.name,
+        accessorFn: (row) => row.name,
         enableSorting: true,
-        cell: data => (
+        cell: (data) => (
           <div class="overflow-hidden flex gap-4 items-center max-w-500px">
             <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
               <div
-                class={cn(
-                  getDocumentIcon({ document: data.row.original }),
-                  'size-6 text-primary',
-                )}
+                class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}
               />
             </div>
 
@@ -149,11 +169,13 @@ export const DocumentsPaginatedList: Component<{
               </A>
 
               <div class="text-xs text-muted-foreground lh-tight">
-                {[formatBytes({ bytes: data.row.original.originalSize, base: 1000 }), getDocumentNameExtension({ name: data.row.original.name })].filter(Boolean).join(' - ')}
-                {' '}
-                -
-                {' '}
-                <RelativeTime date={data.row.original.createdAt} />
+                {[
+                  formatBytes({ bytes: data.row.original.originalSize, base: 1000 }),
+                  getDocumentNameExtension({ name: data.row.original.name }),
+                ]
+                  .filter(Boolean)
+                  .join(' - ')}{' '}
+                - <RelativeTime date={data.row.original.createdAt} />
               </div>
             </div>
           </div>
@@ -193,18 +215,19 @@ export const DocumentsPaginatedList: Component<{
           <Table>
             <TableHeader>
               <For each={table.getHeaderGroups()}>
-                {headerGroup => (
+                {(headerGroup) => (
                   <TableRow>
                     <For each={headerGroup.headers}>
                       {(header) => {
                         return (
                           <TableHead>
-                            <Show
-                              when={!header.isPlaceholder}
-                            >
+                            <Show when={!header.isPlaceholder}>
                               <Show
                                 when={header.column.getCanSort()}
-                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                                fallback={flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                               >
                                 <button
                                   type="button"
@@ -236,15 +259,12 @@ export const DocumentsPaginatedList: Component<{
             <TableBody>
               <Show when={table.getRowModel().rows?.length}>
                 <For each={table.getRowModel().rows}>
-                  {row => (
+                  {(row) => (
                     <TableRow data-state={row.getIsSelected() && 'selected'}>
                       <For each={row.getVisibleCells()}>
-                        {cell => (
+                        {(cell) => (
                           <TableCell>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         )}
                       </For>
@@ -263,18 +283,14 @@ export const DocumentsPaginatedList: Component<{
                 </p>
                 <Select
                   value={table.getState().pagination.pageSize}
-                  onChange={value => value && table.setPageSize(value)}
+                  onChange={(value) => value && table.setPageSize(value)}
                   options={[15, 50, 100]}
-                  itemComponent={props => (
-                    <SelectItem item={props.item}>
-                      {props.item.rawValue}
-                    </SelectItem>
+                  itemComponent={(props) => (
+                    <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
                   )}
                 >
                   <SelectTrigger class="h-8 w-[4.5rem]">
-                    <SelectValue<string>>
-                      {state => state.selectedOption()}
-                    </SelectValue>
+                    <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
                   </SelectTrigger>
                   <SelectContent />
                 </Select>

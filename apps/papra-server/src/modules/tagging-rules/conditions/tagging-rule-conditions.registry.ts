@@ -17,9 +17,16 @@ export const taggingRuleOperatorDefinitions = [
   endsWithTaggingRuleCondition,
 ];
 
-const taggingRuleOperatorDefinitionsByOperator = Object.fromEntries(taggingRuleOperatorDefinitions.map(taggingRuleOperatorDefinition => [taggingRuleOperatorDefinition.operator, taggingRuleOperatorDefinition]));
+const taggingRuleOperatorDefinitionsByOperator = Object.fromEntries(
+  taggingRuleOperatorDefinitions.map((taggingRuleOperatorDefinition) => [
+    taggingRuleOperatorDefinition.operator,
+    taggingRuleOperatorDefinition,
+  ]),
+);
 
-export type TaggingRuleOperatorValidatorRegistry = ReturnType<typeof createTaggingRuleOperatorValidatorRegistry>;
+export type TaggingRuleOperatorValidatorRegistry = ReturnType<
+  typeof createTaggingRuleOperatorValidatorRegistry
+>;
 
 export function createTaggingRuleOperatorValidatorRegistry() {
   return {

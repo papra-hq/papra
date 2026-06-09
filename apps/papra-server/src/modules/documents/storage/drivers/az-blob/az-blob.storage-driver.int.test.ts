@@ -10,10 +10,16 @@ describe('az-blob storage-driver', () => {
     runDriverTestSuites({
       timeout: 30_000,
       createDriver: async () => {
-        const azuriteContainer = await new AzuriteContainer(TEST_CONTAINER_IMAGES.AZURITE).withInMemoryPersistence().start();
+        const azuriteContainer = await new AzuriteContainer(TEST_CONTAINER_IMAGES.AZURITE)
+          .withInMemoryPersistence()
+          .start();
         const connectionString = azuriteContainer.getConnectionString();
 
-        const driver = azBlobStorageDriverFactory({ documentStorageConfig: { drivers: { azureBlob: { connectionString, containerName: 'test-container' } } } as DocumentStorageConfig });
+        const driver = azBlobStorageDriverFactory({
+          documentStorageConfig: {
+            drivers: { azureBlob: { connectionString, containerName: 'test-container' } },
+          } as DocumentStorageConfig,
+        });
         const client = driver.getClient();
         await client.createContainer('test-container');
 

@@ -12,17 +12,32 @@ import { isHttpErrorWithStatusCode } from '@/modules/shared/http/http-errors';
 import { cn } from '@/modules/shared/style/cn';
 import { ThemeSwitcher } from '@/modules/theme/theme-switcher.component';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/modules/ui/components/dropdown-menu';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { LanguageSwitcher } from '@/modules/ui/layouts/sidenav.layout';
-import { fetchSharedDocument, fetchSharedDocumentFile, verifySharePassword } from '../document-share-links.services';
+import {
+  fetchSharedDocument,
+  fetchSharedDocumentFile,
+  verifySharePassword,
+} from '../document-share-links.services';
 
 function isPreviewable(mimeType: string) {
   return mimeType.startsWith('image/') || mimeType === 'application/pdf';
 }
 
-const PasswordGate: Component<{ token: string; onUnlocked: (args: { accessToken: string }) => void }> = (props) => {
+const PasswordGate: Component<{
+  token: string;
+  onUnlocked: (args: { accessToken: string }) => void;
+}> = (props) => {
   const { t } = useI18n();
   const [getPassword, setPassword] = createSignal('');
 
@@ -43,7 +58,9 @@ const PasswordGate: Component<{ token: string; onUnlocked: (args: { accessToken:
       <div class="flex flex-col items-center gap-2 text-center">
         <div class="i-tabler-lock size-8 text-muted-foreground" />
         <h1 class="text-lg font-semibold">{t('document-share-links.public.password.title')}</h1>
-        <p class="text-sm text-muted-foreground">{t('document-share-links.public.password.description')}</p>
+        <p class="text-sm text-muted-foreground">
+          {t('document-share-links.public.password.description')}
+        </p>
       </div>
 
       <form
@@ -54,8 +71,18 @@ const PasswordGate: Component<{ token: string; onUnlocked: (args: { accessToken:
         }}
       >
         <TextFieldRoot class="flex flex-col gap-1">
-          <TextFieldLabel class="sr-only" for="share-password">{t('document-share-links.public.password.label')}</TextFieldLabel>
-          <TextField type="password" id="share-password" autofocus autocomplete="current-password" placeholder={t('document-share-links.public.password.placeholder')} value={getPassword()} onInput={e => setPassword(e.currentTarget.value)} />
+          <TextFieldLabel class="sr-only" for="share-password">
+            {t('document-share-links.public.password.label')}
+          </TextFieldLabel>
+          <TextField
+            type="password"
+            id="share-password"
+            autofocus
+            autocomplete="current-password"
+            placeholder={t('document-share-links.public.password.placeholder')}
+            value={getPassword()}
+            onInput={(e) => setPassword(e.currentTarget.value)}
+          />
         </TextFieldRoot>
 
         <Button type="submit" isLoading={verifyMutation.isPending} disabled={getPassword() === ''}>
@@ -66,17 +93,23 @@ const PasswordGate: Component<{ token: string; onUnlocked: (args: { accessToken:
   );
 };
 
-const SharedDocumentCard: Component<{ token: string; accessToken: string | undefined; document: { name: string; size: number; mimeType: string } }> = (props) => {
+const SharedDocumentCard: Component<{
+  token: string;
+  accessToken: string | undefined;
+  document: { name: string; size: number; mimeType: string };
+}> = (props) => {
   const { t } = useI18n();
 
   const downloadMutation = useMutation(() => ({
-    mutationFn: () => fetchSharedDocumentFile({ token: props.token, accessToken: props.accessToken }),
+    mutationFn: () =>
+      fetchSharedDocumentFile({ token: props.token, accessToken: props.accessToken }),
     onSuccess: ({ blob }) => {
       const url = URL.createObjectURL(blob);
       downloadFile({ url, fileName: props.document.name });
       URL.revokeObjectURL(url);
     },
-    onError: () => createToast({ type: 'error', message: t('document-share-links.public.download-error') }),
+    onError: () =>
+      createToast({ type: 'error', message: t('document-share-links.public.download-error') }),
   }));
 
   const previewQuery = useQuery(() => ({
@@ -90,14 +123,8 @@ const SharedDocumentCard: Component<{ token: string; accessToken: string | undef
   return (
     <div>
       <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 max-w-5xl px-6 w-full mx-auto py-12 border-b">
-
         <div class="bg-muted flex items-center justify-center size-12 rounded-lg shrink-0">
-          <div
-            class={cn(
-              getDocumentIcon({ document: props.document }),
-              'size-7 text-primary',
-            )}
-          />
+          <div class={cn(getDocumentIcon({ document: props.document }), 'size-7 text-primary')} />
         </div>
 
         <div class="text-center md:text-left">
@@ -116,22 +143,19 @@ const SharedDocumentCard: Component<{ token: string; accessToken: string | undef
       </div>
 
       <div class="p-6 flex justify-center max-w-5xl mx-auto w-full">
-        <Show
-          when={previewQuery.data?.blob}
-        >
-          {getBlob => (
+        <Show when={previewQuery.data?.blob}>
+          {(getBlob) => (
             <div class="rounded-md overflow-hidden w-full min-h-1200px">
               <DocumentBlobPreview blob={getBlob()} mimeType={props.document.mimeType} />
             </div>
           )}
         </Show>
       </div>
-
     </div>
   );
 };
 
-const StatusMessage: Component<{ icon: string; title: string; description: string }> = props => (
+const StatusMessage: Component<{ icon: string; title: string; description: string }> = (props) => (
   <div class="flex flex-col items-center gap-2 text-center mt-12 px-6">
     <div class={`${props.icon} size-8 text-muted-foreground`} />
     <h1 class="text-lg font-semibold">{props.title}</h1>
@@ -153,12 +177,13 @@ export const SharedDocumentPage: Component = () => {
 
   return (
     <div>
-
       <div class="border-b">
         <div class="px-6 py-4 flex items-center justify-between gap-2 max-w-5xl mx-auto">
-          <A href="/" class="group text-base text-muted-foreground flex gap-2 font-semibold hover:text-foreground transition">
+          <A
+            href="/"
+            class="group text-base text-muted-foreground flex gap-2 font-semibold hover:text-foreground transition"
+          >
             <div class="i-tabler-file-text size-6 text-primary transform rotate-12deg group-hover:rotate-25deg transition" />
-
             Papra
           </A>
 
@@ -168,7 +193,6 @@ export const SharedDocumentPage: Component = () => {
                 <div class="i-tabler-dots size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent class="min-w-48">
-
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger class="flex items-center gap-2 cursor-pointer">
                     <div class="i-tabler-language size-4 text-muted-foreground" />
@@ -196,10 +220,8 @@ export const SharedDocumentPage: Component = () => {
                   <div class="i-tabler-info-circle size-4 text-muted-foreground" />
                   {t('user-menu.about')}
                 </DropdownMenuItem>
-
               </DropdownMenuContent>
             </DropdownMenu>
-
           </div>
         </div>
       </div>
@@ -212,19 +234,44 @@ export const SharedDocumentPage: Component = () => {
         </Match>
 
         <Match when={documentQuery.isSuccess}>
-          <SharedDocumentCard token={params.token} accessToken={getAccessToken()} document={documentQuery.data!.document} />
+          <SharedDocumentCard
+            token={params.token}
+            accessToken={getAccessToken()}
+            document={documentQuery.data!.document}
+          />
         </Match>
 
-        <Match when={documentQuery.isError && isHttpErrorWithStatusCode({ error: documentQuery.error, statusCode: 401 })}>
-          <PasswordGate token={params.token} onUnlocked={({ accessToken }) => setAccessToken(accessToken)} />
+        <Match
+          when={
+            documentQuery.isError &&
+            isHttpErrorWithStatusCode({ error: documentQuery.error, statusCode: 401 })
+          }
+        >
+          <PasswordGate
+            token={params.token}
+            onUnlocked={({ accessToken }) => setAccessToken(accessToken)}
+          />
         </Match>
 
-        <Match when={documentQuery.isError && isHttpErrorWithStatusCode({ error: documentQuery.error, statusCode: 410 })}>
-          <StatusMessage icon="i-tabler-link-off" title={t('document-share-links.public.gone.title')} description={t('document-share-links.public.gone.description')} />
+        <Match
+          when={
+            documentQuery.isError &&
+            isHttpErrorWithStatusCode({ error: documentQuery.error, statusCode: 410 })
+          }
+        >
+          <StatusMessage
+            icon="i-tabler-link-off"
+            title={t('document-share-links.public.gone.title')}
+            description={t('document-share-links.public.gone.description')}
+          />
         </Match>
 
         <Match when={documentQuery.isError}>
-          <StatusMessage icon="i-tabler-file-off" title={t('document-share-links.public.not-found.title')} description={t('document-share-links.public.not-found.description')} />
+          <StatusMessage
+            icon="i-tabler-file-off"
+            title={t('document-share-links.public.not-found.title')}
+            description={t('document-share-links.public.not-found.description')}
+          />
         </Match>
       </Switch>
     </div>

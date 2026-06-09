@@ -84,7 +84,10 @@ function cleanDemoAssetsPlugin(): Plugin {
           }
         });
         const duration = Date.now() - startedAt;
-        console.log(`[clean-demo-assets] Removed demo documents from build output in ${duration}ms`);
+        // oxlint-disable-next-line no-console
+        console.log(
+          `[clean-demo-assets] Removed demo documents from build output in ${duration}ms`,
+        );
       }
     },
   };

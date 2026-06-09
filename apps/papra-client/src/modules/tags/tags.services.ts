@@ -14,7 +14,17 @@ export async function fetchTags({ organizationId }: { organizationId: string }) 
   };
 }
 
-export async function createTag({ organizationId, name, color, description }: { organizationId: string; name: string; color: string; description: string }) {
+export async function createTag({
+  organizationId,
+  name,
+  color,
+  description,
+}: {
+  organizationId: string;
+  name: string;
+  color: string;
+  description: string;
+}) {
   const { tag } = await apiClient<{ tag: AsDto<Tag> }>({
     path: `/api/organizations/${organizationId}/tags`,
     method: 'POST',
@@ -26,7 +36,19 @@ export async function createTag({ organizationId, name, color, description }: { 
   };
 }
 
-export async function updateTag({ organizationId, tagId, name, color, description }: { organizationId: string; tagId: string; name: string; color: string; description: string }) {
+export async function updateTag({
+  organizationId,
+  tagId,
+  name,
+  color,
+  description,
+}: {
+  organizationId: string;
+  tagId: string;
+  name: string;
+  color: string;
+  description: string;
+}) {
   const { tag } = await apiClient<{ tag: AsDto<Tag> }>({
     path: `/api/organizations/${organizationId}/tags/${tagId}`,
     method: 'PUT',
@@ -38,14 +60,28 @@ export async function updateTag({ organizationId, tagId, name, color, descriptio
   };
 }
 
-export async function deleteTag({ organizationId, tagId }: { organizationId: string; tagId: string }) {
+export async function deleteTag({
+  organizationId,
+  tagId,
+}: {
+  organizationId: string;
+  tagId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/tags/${tagId}`,
     method: 'DELETE',
   });
 }
 
-export async function addTagToDocument({ organizationId, documentId, tagId }: { organizationId: string; documentId: string; tagId: string }) {
+export async function addTagToDocument({
+  organizationId,
+  documentId,
+  tagId,
+}: {
+  organizationId: string;
+  documentId: string;
+  tagId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/documents/${documentId}/tags`,
     method: 'POST',
@@ -53,7 +89,15 @@ export async function addTagToDocument({ organizationId, documentId, tagId }: { 
   });
 }
 
-export async function removeTagFromDocument({ organizationId, documentId, tagId }: { organizationId: string; documentId: string; tagId: string }) {
+export async function removeTagFromDocument({
+  organizationId,
+  documentId,
+  tagId,
+}: {
+  organizationId: string;
+  documentId: string;
+  tagId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/documents/${documentId}/tags/${tagId}`,
     method: 'DELETE',

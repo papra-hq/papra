@@ -1,4 +1,7 @@
-export function memoize<F extends (...args: any[]) => any>(fn: F, keyResolver?: (...args: Parameters<F>) => string): F {
+export function memoize<F extends (...args: any[]) => any>(
+  fn: F,
+  keyResolver?: (...args: Parameters<F>) => string,
+): F {
   const cache: { [key: string]: ReturnType<F> } = {};
 
   const memoizedFn = (...args: Parameters<F>): ReturnType<F> => {

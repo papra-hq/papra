@@ -58,17 +58,14 @@ describe('server routes', () => {
     const authRoutesPrefix = '/api/auth';
 
     const routes = inspectRoutes(app)
-      .filter(route => !route.isMiddleware)
-      .filter(route => !publicRoutes.includes(`${route.method} ${route.path}`))
-      .filter(route => !route.path.startsWith(authRoutesPrefix));
+      .filter((route) => !route.isMiddleware)
+      .filter((route) => !publicRoutes.includes(`${route.method} ${route.path}`))
+      .filter((route) => !route.path.startsWith(authRoutesPrefix));
 
     for (const route of routes) {
-      const response = await app.request(
-        setValidParams(route.path),
-        {
-          method: route.method,
-        },
-      );
+      const response = await app.request(setValidParams(route.path), {
+        method: route.method,
+      });
 
       expect(response.status).to.eql(
         401,

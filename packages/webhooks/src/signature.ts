@@ -1,4 +1,7 @@
-import { createInvalidSignatureFormatError, createUnsupportedSignatureVersionError } from './handler/handler.errors';
+import {
+  createInvalidSignatureFormatError,
+  createUnsupportedSignatureVersionError,
+} from './handler/handler.errors';
 
 const WEBHOOK_SIGNATURE_HMAC_VERSION = 'v1';
 
@@ -7,7 +10,11 @@ export function arrayBufferToBase64(arrayBuffer: ArrayBuffer) {
 }
 
 export function base64ToArrayBuffer(base64: string) {
-  return new Uint8Array(atob(base64).split('').map(char => char.charCodeAt(0))).buffer;
+  return new Uint8Array(
+    atob(base64)
+      .split('')
+      .map((char) => char.charCodeAt(0)),
+  ).buffer;
 }
 
 function createSignaturePayload({
@@ -24,7 +31,13 @@ function createSignaturePayload({
 
 async function hmacSign({ secret, payload }: { secret: string; payload: string }) {
   const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
   return crypto.subtle.sign('HMAC', key, encoder.encode(payload));
 }
 
@@ -77,7 +90,13 @@ export async function verifySignature({
 
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secret);
-  const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['verify'],
+  );
 
   return crypto.subtle.verify('HMAC', key, signatureBuffer, encoder.encode(payload));
 }

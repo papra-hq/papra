@@ -18,7 +18,16 @@ export function createAuthEmailsServices({ emailsServices }: { emailsServices: E
   );
 }
 
-export async function sendVerificationEmail({ user, url, emailsServices }: { user: User; url: string; token: string; emailsServices: EmailsServices }) {
+export async function sendVerificationEmail({
+  user,
+  url,
+  emailsServices,
+}: {
+  user: User;
+  url: string;
+  token: string;
+  emailsServices: EmailsServices;
+}) {
   logger.info({ userId: user.id }, 'Sending verification email');
 
   await emailsServices.sendEmail({
@@ -34,7 +43,16 @@ export async function sendVerificationEmail({ user, url, emailsServices }: { use
   });
 }
 
-export async function sendPasswordResetEmail({ user, url, emailsServices }: { user: User; url: string; token: string; emailsServices: EmailsServices }) {
+export async function sendPasswordResetEmail({
+  user,
+  url,
+  emailsServices,
+}: {
+  user: User;
+  url: string;
+  token: string;
+  emailsServices: EmailsServices;
+}) {
   logger.info({ userId: user.id }, 'Sending password reset email');
 
   await emailsServices.sendEmail({

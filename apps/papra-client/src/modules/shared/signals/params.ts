@@ -5,8 +5,8 @@ import { resolveSetterValue } from './setters';
 export function createParamSynchronizedSignal<T extends string | number | boolean>({
   paramKey,
   defaultValue,
-  serialize = value => String(value),
-  deserialize = value => value as unknown as T,
+  serialize = (value) => String(value),
+  deserialize = (value) => value as unknown as T,
 }: {
   paramKey: string;
   defaultValue: T;

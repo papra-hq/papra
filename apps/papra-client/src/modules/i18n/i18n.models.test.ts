@@ -1,43 +1,48 @@
 import { describe, expect, test } from 'vitest';
-import { createDateFormatter, createRelativeTimeFormatter, createTranslator, findMatchingLocale } from './i18n.models';
+import {
+  createDateFormatter,
+  createRelativeTimeFormatter,
+  createTranslator,
+  findMatchingLocale,
+} from './i18n.models';
 
 describe('i18n models', () => {
   describe('findMatchingLocale', () => {
     test('preferred regional language to regional language', () => {
-      const preferredLocales = ['pt-BR'].map(x => new Intl.Locale(x));
-      const supportedLocales = ['en', 'pt-BR'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['pt-BR'].map((x) => new Intl.Locale(x));
+      const supportedLocales = ['en', 'pt-BR'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('pt-BR');
     });
 
     test('preferred non-regional language to non-regional language', () => {
-      const preferredLocales = ['pt'].map(x => new Intl.Locale(x));
-      const supportedLocales = ['pt-BR', 'pt'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['pt'].map((x) => new Intl.Locale(x));
+      const supportedLocales = ['pt-BR', 'pt'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('pt');
     });
 
     test('preferred regional language to non-regional language', () => {
-      const preferredLocales = ['en-GB'].map(x => new Intl.Locale(x));
-      const supportedLocales = ['pt-BR', 'en'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['en-GB'].map((x) => new Intl.Locale(x));
+      const supportedLocales = ['pt-BR', 'en'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('en');
     });
 
     test('preferred language with different region to supported language', () => {
-      const preferredLocales = ['en-CA'].map(x => new Intl.Locale(x));
-      const supportedLocales = ['fr-FR', 'en-US'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['en-CA'].map((x) => new Intl.Locale(x));
+      const supportedLocales = ['fr-FR', 'en-US'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('en-US');
     });
 
     test('preferred language not in supported locales', () => {
-      const preferredLocales = ['it-IT'].map(x => new Intl.Locale(x));
-      const supportedLocales = ['es-ES', 'de-DE'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['it-IT'].map((x) => new Intl.Locale(x));
+      const supportedLocales = ['es-ES', 'de-DE'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('en');
@@ -45,14 +50,14 @@ describe('i18n models', () => {
 
     test('empty preferred locales', () => {
       const preferredLocales: Intl.Locale[] = [];
-      const supportedLocales = ['en', 'pt-BR'].map(x => new Intl.Locale(x));
+      const supportedLocales = ['en', 'pt-BR'].map((x) => new Intl.Locale(x));
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
       expect(locale).to.eql('en');
     });
 
     test('empty supported locales', () => {
-      const preferredLocales = ['en-GB', 'pt-BR'].map(x => new Intl.Locale(x));
+      const preferredLocales = ['en-GB', 'pt-BR'].map((x) => new Intl.Locale(x));
       const supportedLocales: Intl.Locale[] = [];
       const locale = findMatchingLocale({ preferredLocales, supportedLocales });
 
@@ -128,36 +133,45 @@ describe('i18n models', () => {
 
   describe('createDateFormatter', () => {
     test('formats date according to locale, by default in short format', () => {
-      expect(
-        createDateFormatter({ getLocale: () => 'en' })(new Date('2025-01-15')),
-      ).to.eql('Jan 15, 2025');
+      expect(createDateFormatter({ getLocale: () => 'en' })(new Date('2025-01-15'))).to.eql(
+        'Jan 15, 2025',
+      );
 
-      expect(
-        createDateFormatter({ getLocale: () => 'fr' })(new Date('2025-01-15')),
-      ).to.eql('15 janv. 2025');
+      expect(createDateFormatter({ getLocale: () => 'fr' })(new Date('2025-01-15'))).to.eql(
+        '15 janv. 2025',
+      );
 
-      expect(
-        createDateFormatter({ getLocale: () => 'pt-BR' })(new Date('2025-01-15')),
-      ).to.eql('15 de jan. de 2025');
+      expect(createDateFormatter({ getLocale: () => 'pt-BR' })(new Date('2025-01-15'))).to.eql(
+        '15 de jan. de 2025',
+      );
     });
   });
 
   describe('createRelativeTimeFormatter', () => {
     test('formats relative time according to locale', () => {
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:00:00Z'), { now: new Date('2021-01-01T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:00:00Z'), {
+          now: new Date('2021-01-01T00:00:00Z'),
+        }),
       ).to.eql('now');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:00:00Z'), { now: new Date('2021-01-01T00:00:06Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:00:00Z'), {
+          now: new Date('2021-01-01T00:00:06Z'),
+        }),
       ).to.eql('6 seconds ago');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'fr' })(new Date('2021-01-01T00:00:00Z'), { now: new Date('2021-01-01T00:02:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'fr' })(new Date('2021-01-01T00:00:00Z'), {
+          now: new Date('2021-01-01T00:02:00Z'),
+        }),
       ).to.eql('il y a 2 minutes');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'pt-BR' })(new Date('2021-01-01T00:00:00Z'), { now: new Date('2021-01-03T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'pt-BR' })(
+          new Date('2021-01-01T00:00:00Z'),
+          { now: new Date('2021-01-03T00:00:00Z') },
+        ),
       ).to.eql('anteontem');
     });
 
@@ -198,25 +212,36 @@ describe('i18n models', () => {
 
     test('formats future dates according to locale', () => {
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:02:00Z'), { now: new Date('2021-01-01T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'en' })(new Date('2021-01-01T00:02:00Z'), {
+          now: new Date('2021-01-01T00:00:00Z'),
+        }),
       ).to.eql('in 2 minutes');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'fr' })(new Date('2021-01-01T00:02:00Z'), { now: new Date('2021-01-01T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'fr' })(new Date('2021-01-01T00:02:00Z'), {
+          now: new Date('2021-01-01T00:00:00Z'),
+        }),
       ).to.eql('dans 2 minutes');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'pt-BR' })(new Date('2021-01-03T00:00:00Z'), { now: new Date('2021-01-01T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'pt-BR' })(
+          new Date('2021-01-03T00:00:00Z'),
+          { now: new Date('2021-01-01T00:00:00Z') },
+        ),
       ).to.eql('depois de amanhã');
     });
 
     test('the date can be a parsable string', () => {
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'en' })('2021-01-01T00:00:00Z', { now: new Date('2021-01-01T00:00:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'en' })('2021-01-01T00:00:00Z', {
+          now: new Date('2021-01-01T00:00:00Z'),
+        }),
       ).to.eql('now');
 
       expect(
-        createRelativeTimeFormatter({ getLocale: () => 'en' })('2021-01-01', { now: new Date('2021-01-01T00:02:00Z') }),
+        createRelativeTimeFormatter({ getLocale: () => 'en' })('2021-01-01', {
+          now: new Date('2021-01-01T00:02:00Z'),
+        }),
       ).to.eql('2 minutes ago');
     });
   });

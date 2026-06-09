@@ -34,7 +34,11 @@ export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
   const handlePageSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     const newPageNumber = Number.parseInt(pageInputValue(), 10);
-    if (Number.isInteger(newPageNumber) && newPageNumber > 0 && newPageNumber <= props.store.numPages) {
+    if (
+      Number.isInteger(newPageNumber) &&
+      newPageNumber > 0 &&
+      newPageNumber <= props.store.numPages
+    ) {
       props.store.pdfSlick?.linkService.goToPage(newPageNumber);
     } else {
       setPageInputValue(String(props.store.pageNumber));
@@ -65,7 +69,7 @@ export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
                 variant="ghost"
                 size="icon"
                 class="size-8"
-                onClick={() => props.setIsSidebarOpen(prev => !prev)}
+                onClick={() => props.setIsSidebarOpen((prev) => !prev)}
               >
                 <Show
                   when={props.isSidebarOpen()}
@@ -77,7 +81,9 @@ export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
             )}
           />
           <TooltipContent>
-            {props.isSidebarOpen() ? t('documents.pdf-viewer.toolbar.hide-sidebar') : t('documents.pdf-viewer.toolbar.show-sidebar')}
+            {props.isSidebarOpen()
+              ? t('documents.pdf-viewer.toolbar.hide-sidebar')
+              : t('documents.pdf-viewer.toolbar.show-sidebar')}
           </TooltipContent>
         </Tooltip>
 
@@ -135,15 +141,11 @@ export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
                 value={pageInputValue()}
                 class="w-10 text-center rounded-md border border-input bg-background px-1 h-32px text-xs outline-none focus:(ring-1.5 ring-ring)"
                 onFocus={() => pageNumberRef.select()}
-                onInput={e => setPageInputValue(e.currentTarget.value)}
+                onInput={(e) => setPageInputValue(e.currentTarget.value)}
                 onKeyDown={handlePageKeyDown}
               />
             </form>
-            <span class="text-muted-foreground whitespace-nowrap">
-              /
-              {' '}
-              {props.store.numPages}
-            </span>
+            <span class="text-muted-foreground whitespace-nowrap">/{props.store.numPages}</span>
           </div>
         </div>
       </div>

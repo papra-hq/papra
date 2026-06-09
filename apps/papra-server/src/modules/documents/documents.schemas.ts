@@ -1,6 +1,9 @@
 import * as v from 'valibot';
 import { createRegexSchema } from '../shared/schemas/string.schemas';
-import { documentSearchSortFields, documentSearchSortOrders } from './document-search/document-search.constants';
+import {
+  documentSearchSortFields,
+  documentSearchSortOrders,
+} from './document-search/document-search.constants';
 import { DOCUMENT_ID_REGEX, OCR_LANGUAGES } from './documents.constants';
 
 export const documentIdSchema = createRegexSchema(DOCUMENT_ID_REGEX);
@@ -13,15 +16,19 @@ export const updateDocumentBodySchema = v.pipe(
     notes: v.optional(v.pipe(v.string(), v.maxLength(2048))),
   }),
   v.check(
-    data => data.name !== undefined || data.content !== undefined || data.documentDate !== undefined || data.notes !== undefined,
-    'At least one of \'name\', \'content\', \'documentDate\' or \'notes\' must be provided',
+    (data) =>
+      data.name !== undefined ||
+      data.content !== undefined ||
+      data.documentDate !== undefined ||
+      data.notes !== undefined,
+    "At least one of 'name', 'content', 'documentDate' or 'notes' must be provided",
   ),
 );
 
 export const ocrLanguagesSchema = v.array(v.picklist(OCR_LANGUAGES));
 export const stringCoercedOcrLanguagesSchema = v.pipe(
   v.string(),
-  v.transform(value => value.split(',').map(lang => lang.trim())),
+  v.transform((value) => value.split(',').map((lang) => lang.trim())),
   ocrLanguagesSchema,
 );
 

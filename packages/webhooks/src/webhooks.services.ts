@@ -55,7 +55,12 @@ export async function triggerWebhook<T extends WebhookPayloads>({
   const body = serializeBody({ event, payload, now });
 
   if (webhookSecret) {
-    const { signature } = await signBody({ serializedPayload: body, webhookId, timestamp, secret: webhookSecret });
+    const { signature } = await signBody({
+      serializedPayload: body,
+      webhookId,
+      timestamp,
+      secret: webhookSecret,
+    });
     headers['webhook-signature'] = signature;
   }
 

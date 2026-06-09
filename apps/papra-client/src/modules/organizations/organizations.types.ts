@@ -20,7 +20,7 @@ export type OrganizationMember = {
 
 export type OrganizationMemberRole = 'owner' | 'admin' | 'member';
 
-export type OrganizationInvitationStatus = typeof ORGANIZATION_INVITATION_STATUS_LIST[number];
+export type OrganizationInvitationStatus = (typeof ORGANIZATION_INVITATION_STATUS_LIST)[number];
 
 export type OrganizationInvitation = {
   id: string;

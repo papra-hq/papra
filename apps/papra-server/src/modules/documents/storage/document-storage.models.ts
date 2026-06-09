@@ -1,4 +1,10 @@
-export function addSuffixToFileName({ storageKey, suffix }: { storageKey: string; suffix: string | number }) {
+export function addSuffixToFileName({
+  storageKey,
+  suffix,
+}: {
+  storageKey: string;
+  suffix: string | number;
+}) {
   const lastSlashIndex = storageKey.lastIndexOf('/');
   const dir = lastSlashIndex === -1 ? '' : storageKey.slice(0, lastSlashIndex + 1);
   const fileName = lastSlashIndex === -1 ? storageKey : storageKey.slice(lastSlashIndex + 1);

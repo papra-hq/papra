@@ -1,12 +1,24 @@
 import type { Component } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+} from '@tanstack/solid-table';
 import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { listOrganizations } from '../organizations.services';
 
@@ -17,11 +29,12 @@ export const AdminListOrganizationsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', search(), pagination()],
-    queryFn: () => listOrganizations({
-      search: search() || undefined,
-      pageIndex: pagination().pageIndex,
-      pageSize: pagination().pageSize,
-    }),
+    queryFn: () =>
+      listOrganizations({
+        search: search() || undefined,
+        pageIndex: pagination().pageIndex,
+        pageSize: pagination().pageSize,
+      }),
   }));
 
   const table = createSolidTable({
@@ -32,7 +45,7 @@ export const AdminListOrganizationsPage: Component = () => {
       {
         header: t('admin.organizations.table.id'),
         accessorKey: 'id',
-        cell: data => (
+        cell: (data) => (
           <A
             href={`/admin/organizations/${data.getValue<string>()}`}
             class="font-mono hover:underline text-primary"
@@ -44,30 +57,32 @@ export const AdminListOrganizationsPage: Component = () => {
       {
         header: t('admin.organizations.table.name'),
         accessorKey: 'name',
-        cell: data => (
-          <div class="font-medium">
-            {data.getValue<string>()}
-          </div>
-        ),
+        cell: (data) => <div class="font-medium">{data.getValue<string>()}</div>,
       },
       {
         header: t('admin.organizations.table.members'),
         accessorKey: 'memberCount',
-        cell: data => (
-          <div class="text-center">
-            {data.getValue<number>()}
-          </div>
-        ),
+        cell: (data) => <div class="text-center">{data.getValue<number>()}</div>,
       },
       {
         header: t('admin.organizations.table.created'),
         accessorKey: 'createdAt',
-        cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
+        cell: (data) => (
+          <RelativeTime
+            class="text-muted-foreground text-sm"
+            date={new Date(data.getValue<string>())}
+          />
+        ),
       },
       {
         header: t('admin.organizations.table.updated'),
         accessorKey: 'updatedAt',
-        cell: data => <RelativeTime class="text-muted-foreground text-sm" date={new Date(data.getValue<string>())} />,
+        cell: (data) => (
+          <RelativeTime
+            class="text-muted-foreground text-sm"
+            date={new Date(data.getValue<string>())}
+          />
+        ),
       },
     ],
     get rowCount() {
@@ -93,12 +108,8 @@ export const AdminListOrganizationsPage: Component = () => {
   return (
     <div class="p-6">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold mb-1">
-          {t('admin.organizations.title')}
-        </h1>
-        <p class="text-sm text-muted-foreground">
-          {t('admin.organizations.description')}
-        </p>
+        <h1 class="text-xl font-bold mb-1">{t('admin.organizations.title')}</h1>
+        <p class="text-sm text-muted-foreground">{t('admin.organizations.description')}</p>
       </div>
 
       <div class="mb-4">
@@ -114,24 +125,28 @@ export const AdminListOrganizationsPage: Component = () => {
 
       <Show
         when={!query.isLoading}
-        fallback={<div class="text-center py-8 text-muted-foreground">{t('admin.organizations.loading')}</div>}
+        fallback={
+          <div class="text-center py-8 text-muted-foreground">
+            {t('admin.organizations.loading')}
+          </div>
+        }
       >
         <Show
           when={(query.data?.organizations.length ?? 0) > 0}
-          fallback={(
+          fallback={
             <div class="text-center py-8 text-muted-foreground">
               {search() ? t('admin.organizations.no-results') : t('admin.organizations.empty')}
             </div>
-          )}
+          }
         >
           <div class="border-y">
             <Table>
               <TableHeader>
                 <For each={table.getHeaderGroups()}>
-                  {headerGroup => (
+                  {(headerGroup) => (
                     <TableRow>
                       <For each={headerGroup.headers}>
-                        {header => (
+                        {(header) => (
                           <TableHead>
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </TableHead>
@@ -143,10 +158,10 @@ export const AdminListOrganizationsPage: Component = () => {
               </TableHeader>
               <TableBody>
                 <For each={table.getRowModel().rows}>
-                  {row => (
+                  {(row) => (
                     <TableRow>
                       <For each={row.getVisibleCells()}>
-                        {cell => (
+                        {(cell) => (
                           <TableCell>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
@@ -162,8 +177,13 @@ export const AdminListOrganizationsPage: Component = () => {
           <div class="flex flex-col items-center justify-between mt-4 md:flex-row">
             <div class="text-sm text-muted-foreground">
               {t('admin.organizations.pagination.info', {
-                start: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
-                end: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, query.data?.totalCount ?? 0),
+                start:
+                  table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                end: Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  query.data?.totalCount ?? 0,
+                ),
                 total: query.data?.totalCount ?? 0,
               })}
             </div>

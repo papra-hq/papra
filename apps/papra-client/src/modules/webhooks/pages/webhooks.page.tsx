@@ -43,7 +43,10 @@ export const WebhookCard: Component<{ webhook: Webhook }> = (props) => {
       return;
     }
 
-    deleteWebhookMutation.mutate({ webhookId: props.webhook.id, organizationId: params.organizationId });
+    deleteWebhookMutation.mutate({
+      webhookId: props.webhook.id,
+      organizationId: params.organizationId,
+    });
   };
 
   return (
@@ -58,14 +61,13 @@ export const WebhookCard: Component<{ webhook: Webhook }> = (props) => {
 
       <div>
         <p class="text-muted-foreground text-xs">
-          {t('webhooks.list.card.last-triggered')}
-          {' '}
-          {props.webhook.lastTriggeredAt ? formatRelativeTime(props.webhook.lastTriggeredAt) : t('webhooks.list.card.never')}
+          {t('webhooks.list.card.last-triggered')}{' '}
+          {props.webhook.lastTriggeredAt
+            ? formatRelativeTime(props.webhook.lastTriggeredAt)
+            : t('webhooks.list.card.never')}
         </p>
         <p class="text-muted-foreground text-xs">
-          {t('webhooks.list.card.created')}
-          {' '}
-          {formatRelativeTime(props.webhook.createdAt)}
+          {t('webhooks.list.card.created')} {formatRelativeTime(props.webhook.createdAt)}
         </p>
       </div>
 
@@ -101,20 +103,19 @@ export const WebhooksPage: Component = () => {
 
   return (
     <div class="p-6 mt-10 pb-32 mx-auto max-w-screen-md w-full">
-
       <div class="flex gap-4 items-center justify-between">
         <div>
-          <h1 class="text-xl font-semibold mb-2">
-            {t('webhooks.list.title')}
-          </h1>
+          <h1 class="text-xl font-semibold mb-2">{t('webhooks.list.title')}</h1>
 
-          <p class="text-muted-foreground">
-            {t('webhooks.list.description')}
-          </p>
+          <p class="text-muted-foreground">{t('webhooks.list.description')}</p>
         </div>
 
         <Show when={query.data?.webhooks?.length}>
-          <Button as={A} href={`/organizations/${params.organizationId}/settings/webhooks/create`} class="gap-2">
+          <Button
+            as={A}
+            href={`/organizations/${params.organizationId}/settings/webhooks/create`}
+            class="gap-2"
+          >
             <div class="i-tabler-plus size-4" />
             {t('webhooks.list.create')}
           </Button>
@@ -130,12 +131,16 @@ export const WebhooksPage: Component = () => {
                 description={t('webhooks.list.empty.description')}
                 icon="i-tabler-webhook"
                 class="p-0"
-                cta={(
-                  <Button as={A} href={`/organizations/${params.organizationId}/settings/webhooks/create`} class="gap-2">
+                cta={
+                  <Button
+                    as={A}
+                    href={`/organizations/${params.organizationId}/settings/webhooks/create`}
+                    class="gap-2"
+                  >
                     <div class="i-tabler-plus size-4" />
                     {t('webhooks.list.create')}
                   </Button>
-                )}
+                }
               />
             </div>
           </Match>
@@ -143,9 +148,7 @@ export const WebhooksPage: Component = () => {
           <Match when={query.data?.webhooks?.length}>
             <div class="mt-6 flex flex-col gap-2">
               <For each={query.data?.webhooks}>
-                {webhook => (
-                  <WebhookCard webhook={webhook} />
-                )}
+                {(webhook) => <WebhookCard webhook={webhook} />}
               </For>
             </div>
           </Match>

@@ -15,11 +15,14 @@ export const TotpField: Component<{
   return (
     <OTPField
       maxLength={6}
-      onComplete={totpCode => props.onComplete?.({ totpCode })}
+      onComplete={(totpCode) => props.onComplete?.({ totpCode })}
       value={props.value}
       onValueChange={props.onValueChange}
     >
-      <OTPFieldInput pattern={REGEXP_ONLY_DIGITS} aria-label="Enter the 6-digit verification code" />
+      <OTPFieldInput
+        pattern={REGEXP_ONLY_DIGITS}
+        aria-label="Enter the 6-digit verification code"
+      />
       <OTPFieldGroup>
         <OTPFieldSlot index={0} />
         <OTPFieldSlot index={1} />

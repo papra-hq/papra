@@ -11,7 +11,11 @@ import { Alert } from '@/modules/ui/components/alert';
 import { Button } from '@/modules/ui/components/button';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
-import { applyTaggingRuleToExistingDocuments, deleteTaggingRule, fetchTaggingRules } from '../tagging-rules.services';
+import {
+  applyTaggingRuleToExistingDocuments,
+  deleteTaggingRule,
+  fetchTaggingRules,
+} from '../tagging-rules.services';
 
 const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
   const { t } = useI18n();
@@ -33,10 +37,15 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
 
   const deleteTaggingRuleMutation = useMutation(() => ({
     mutationFn: async () => {
-      await deleteTaggingRule({ organizationId: props.taggingRule.organizationId, taggingRuleId: props.taggingRule.id });
+      await deleteTaggingRule({
+        organizationId: props.taggingRule.organizationId,
+        taggingRuleId: props.taggingRule.id,
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations', props.taggingRule.organizationId, 'tagging-rules'] });
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', props.taggingRule.organizationId, 'tagging-rules'],
+      });
     },
   }));
 
@@ -79,12 +88,19 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
 
   return (
     <div class="flex items-center gap-2 bg-card py-4 px-6 rounded-md border">
-      <A href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`}>
+      <A
+        href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`}
+      >
         <div class="i-tabler-list-check size-8 opacity-30 mr-2" />
       </A>
 
       <div class="flex-1">
-        <A href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`} class="text-base font-bold">{props.taggingRule.name}</A>
+        <A
+          href={`/organizations/${props.taggingRule.organizationId}/tagging-rules/${props.taggingRule.id}`}
+          class="text-base font-bold"
+        >
+          {props.taggingRule.name}
+        </A>
 
         <p class="text-xs text-muted-foreground">
           {[getConditionsLabel(), props.taggingRule.description].filter(Boolean).join(' - ')}
@@ -100,7 +116,9 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
           aria-label={t('tagging-rules.apply.button')}
         >
           <div class="i-tabler-player-play size-4 mr-1" />
-          {applyRuleMutation.isPending ? t('tagging-rules.apply.processing') : t('tagging-rules.apply.button')}
+          {applyRuleMutation.isPending
+            ? t('tagging-rules.apply.processing')
+            : t('tagging-rules.apply.button')}
         </Button>
 
         <Button
@@ -125,7 +143,6 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
           <div class="i-tabler-trash size-4" />
         </Button>
       </div>
-
     </div>
   );
 };
@@ -143,17 +160,17 @@ export const TaggingRulesPage: Component = () => {
     <div class="p-6 max-w-screen-lg mx-auto mt-4">
       <div class="border-b mb-6 pb-4 flex items-center justify-between gap-4 sm:flex-row flex-col">
         <div>
-          <h1 class="text-xl font-bold">
-            {t('tagging-rules.list.title')}
-          </h1>
+          <h1 class="text-xl font-bold">{t('tagging-rules.list.title')}</h1>
 
-          <p class="text-muted-foreground mt-1">
-            {t('tagging-rules.list.description')}
-          </p>
+          <p class="text-muted-foreground mt-1">{t('tagging-rules.list.description')}</p>
         </div>
 
         <Show when={query.data?.taggingRules.length}>
-          <Button as={A} href={`/organizations/${params.organizationId}/tagging-rules/create`} class="flex items-center gap-2 flex-shrink-0 sm:w-auto w-full">
+          <Button
+            as={A}
+            href={`/organizations/${params.organizationId}/tagging-rules/create`}
+            class="flex items-center gap-2 flex-shrink-0 sm:w-auto w-full"
+          >
             <div class="i-tabler-plus size-4" />
             {t('tagging-rules.list.no-tagging-rules.create-tagging-rule')}
           </Button>
@@ -174,12 +191,15 @@ export const TaggingRulesPage: Component = () => {
               description={t('tagging-rules.list.no-tagging-rules.description')}
               class="pt-0"
               icon="i-tabler-list-check"
-              cta={(
-                <Button as={A} href={`/organizations/${params.organizationId}/tagging-rules/create`}>
+              cta={
+                <Button
+                  as={A}
+                  href={`/organizations/${params.organizationId}/tagging-rules/create`}
+                >
                   <div class="i-tabler-plus size-4 mr-2" />
                   {t('tagging-rules.list.no-tagging-rules.create-tagging-rule')}
                 </Button>
-              )}
+              }
             />
           </div>
         </Match>
@@ -187,13 +207,11 @@ export const TaggingRulesPage: Component = () => {
         <Match when={query.data?.taggingRules.length}>
           <div class="flex flex-col gap-2">
             <For each={query.data?.taggingRules}>
-              {taggingRule => <TaggingRuleCard taggingRule={taggingRule} />}
+              {(taggingRule) => <TaggingRuleCard taggingRule={taggingRule} />}
             </For>
           </div>
         </Match>
-
       </Switch>
-
     </div>
   );
 };

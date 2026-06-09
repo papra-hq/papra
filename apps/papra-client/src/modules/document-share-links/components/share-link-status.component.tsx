@@ -4,11 +4,13 @@ import { Match, Switch } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 
 type ShareLinkStatusType = 'trashed' | 'expired' | 'enabled' | 'disabled';
-type ShareLinkStatusProps = {
-  shareLink: ShareLink;
-} | {
-  status: ShareLinkStatusType;
-};
+type ShareLinkStatusProps =
+  | {
+      shareLink: ShareLink;
+    }
+  | {
+      status: ShareLinkStatusType;
+    };
 
 export function getShareLinkStatus({ shareLink }: { shareLink: ShareLink }): ShareLinkStatusType {
   // A trashed document makes the link unusable (410) regardless of its own enabled/expiry state.
@@ -25,7 +27,8 @@ export function getShareLinkStatus({ shareLink }: { shareLink: ShareLink }): Sha
 
 export const ShareLinkStatus: Component<ShareLinkStatusProps> = (props) => {
   const { t } = useI18n();
-  const getStatus = () => 'shareLink' in props ? getShareLinkStatus({ shareLink: props.shareLink }) : props.status;
+  const getStatus = () =>
+    'shareLink' in props ? getShareLinkStatus({ shareLink: props.shareLink }) : props.status;
 
   return (
     <Switch>

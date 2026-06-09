@@ -39,13 +39,19 @@ export async function ensureStorageKeyIsAvailable({
 
     logger.warn({ ...logMeta, proposedStorageKey, counter }, 'Storage key is already taken');
 
-    proposedStorageKey = addSuffixToFileName({ storageKey: initialStorageKey, suffix: counter + 1 }); // Suffixes start at 1
+    proposedStorageKey = addSuffixToFileName({
+      storageKey: initialStorageKey,
+      suffix: counter + 1,
+    }); // Suffixes start at 1
     counter++;
   }
 
   if (enableRandomSuffixFallback) {
     const randomSuffix = generateRandomSuffix();
-    proposedStorageKey = addSuffixToFileName({ storageKey: initialStorageKey, suffix: randomSuffix });
+    proposedStorageKey = addSuffixToFileName({
+      storageKey: initialStorageKey,
+      suffix: randomSuffix,
+    });
 
     logger.warn({ ...logMeta, proposedStorageKey, randomSuffix }, 'Falling back to random suffix');
 
@@ -86,12 +92,22 @@ export async function createStorageKey({
   } = storagePatternConfig;
 
   if (useLegacyStorageKeyDefinitionSystem) {
-    const { originalDocumentStorageKey } = buildOriginalDocumentKey({ documentId, fileName: documentName, organizationId });
+    const { originalDocumentStorageKey } = buildOriginalDocumentKey({
+      documentId,
+      fileName: documentName,
+      organizationId,
+    });
 
     return { storageKey: originalDocumentStorageKey };
   }
 
-  const { storageKey: initialStorageKey } = buildStorageKey({ storageKeyPattern, documentId, documentName, organizationId, now });
+  const { storageKey: initialStorageKey } = buildStorageKey({
+    storageKeyPattern,
+    documentId,
+    documentName,
+    organizationId,
+    now,
+  });
 
   const { storageKey } = await ensureStorageKeyIsAvailable({
     initialStorageKey,

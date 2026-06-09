@@ -52,7 +52,10 @@ describe('encryption', () => {
     describe('the chunks can be of different sizes', () => {
       const key = Buffer.from('u+aFUIt/XEO5mhqB8tLVCiFyiFK/k7AxZD2TAvO0x0k=', 'base64');
       // Encrypted "foobar" with key above
-      const encryptedData = Buffer.from('UFAwMUAZw/UfMg5ysSJA53QuaBgdRg9LFNnKK5lV0/eCn6PD60o=', 'base64url');
+      const encryptedData = Buffer.from(
+        'UFAwMUAZw/UfMg5ysSJA53QuaBgdRg9LFNnKK5lV0/eCn6PD60o=',
+        'base64url',
+      );
 
       // Some variations of the encrypted data
       const variants: { name: string; data: Buffer[] }[] = [
@@ -62,7 +65,7 @@ describe('encryption', () => {
         },
         {
           name: 'a chunk per byte',
-          data: Array.from(encryptedData).map(byte => Buffer.from([byte])),
+          data: Array.from(encryptedData).map((byte) => Buffer.from([byte])),
         },
         {
           name: '15 bytes (incomplete header), then the rest',
@@ -70,7 +73,10 @@ describe('encryption', () => {
         },
         {
           name: 'whole encrypted data, but last 10 bytes (incomplete tag), then the rest',
-          data: [encryptedData.subarray(0, encryptedData.length - 10), encryptedData.subarray(encryptedData.length - 10)],
+          data: [
+            encryptedData.subarray(0, encryptedData.length - 10),
+            encryptedData.subarray(encryptedData.length - 10),
+          ],
         },
       ] as const;
 

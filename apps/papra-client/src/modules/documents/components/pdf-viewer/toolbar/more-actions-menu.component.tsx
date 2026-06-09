@@ -111,7 +111,9 @@ export const MoreActionsMenu: Component<PdfViewerStoreProps> = (props) => {
             </Show>
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.VERTICAL)}>
+          <DropdownMenuItem
+            onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.VERTICAL)}
+          >
             <div class="i-tabler-arrows-vertical size-4 mr-2" />
             <span class="flex-1">{t('documents.pdf-viewer.more-actions.vertical-scrolling')}</span>
             <Show when={props.store.scrollMode === ScrollMode.VERTICAL}>
@@ -119,15 +121,21 @@ export const MoreActionsMenu: Component<PdfViewerStoreProps> = (props) => {
             </Show>
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.HORIZONTAL)}>
+          <DropdownMenuItem
+            onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.HORIZONTAL)}
+          >
             <div class="i-tabler-arrows-horizontal size-4 mr-2" />
-            <span class="flex-1">{t('documents.pdf-viewer.more-actions.horizontal-scrolling')}</span>
+            <span class="flex-1">
+              {t('documents.pdf-viewer.more-actions.horizontal-scrolling')}
+            </span>
             <Show when={props.store.scrollMode === ScrollMode.HORIZONTAL}>
               <div class="i-tabler-check size-4 ml-2 text-primary" />
             </Show>
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.WRAPPED)}>
+          <DropdownMenuItem
+            onSelect={() => props.store.pdfSlick?.setScrollMode(ScrollMode.WRAPPED)}
+          >
             <div class="i-tabler-layout-grid size-4 mr-2" />
             <span class="flex-1">{t('documents.pdf-viewer.more-actions.wrapped-scrolling')}</span>
             <Show when={props.store.scrollMode === ScrollMode.WRAPPED}>

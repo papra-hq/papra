@@ -31,7 +31,7 @@ export async function exitOnError<T>(
      * Additional context to display with the error message.
      */
     errorContext?: string;
-  } = { },
+  } = {},
 ): Promise<T> {
   try {
     return await promise;

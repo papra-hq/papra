@@ -3,7 +3,19 @@ import type { ShutdownServices } from './graceful-shutdown.services';
 import process from 'node:process';
 import { createLogger } from '../../shared/logger/logger';
 
-async function gracefulShutdown({ signal, cause, shutdownServices, logger, exitCode = 0 }: { signal?: string; cause: string; shutdownServices: ShutdownServices; logger: Logger; exitCode?: number }) {
+async function gracefulShutdown({
+  signal,
+  cause,
+  shutdownServices,
+  logger,
+  exitCode = 0,
+}: {
+  signal?: string;
+  cause: string;
+  shutdownServices: ShutdownServices;
+  logger: Logger;
+  exitCode?: number;
+}) {
   logger.info({ signal, cause }, 'Shutting down gracefully...');
 
   await shutdownServices.executeShutdownHandlers();
@@ -14,7 +26,13 @@ async function gracefulShutdown({ signal, cause, shutdownServices, logger, exitC
   setTimeout(() => process.exit(exitCode), 500);
 }
 
-export function registerShutdownHooks({ shutdownServices, logger = createLogger({ namespace: 'graceful-shutdown' }) }: { shutdownServices: ShutdownServices; logger?: Logger }) {
+export function registerShutdownHooks({
+  shutdownServices,
+  logger = createLogger({ namespace: 'graceful-shutdown' }),
+}: {
+  shutdownServices: ShutdownServices;
+  logger?: Logger;
+}) {
   process.on('uncaughtException', (error) => {
     logger.error({ error }, 'Uncaught exception');
     void gracefulShutdown({ cause: 'uncaughtException', shutdownServices, logger, exitCode: 1 });
@@ -25,6 +43,24 @@ export function registerShutdownHooks({ shutdownServices, logger = createLogger(
     void gracefulShutdown({ cause: 'unhandledRejection', shutdownServices, logger, exitCode: 1 });
   });
 
-  process.on('SIGINT', () => void gracefulShutdown({ cause: 'Interrupt signal', signal: 'SIGINT', shutdownServices, logger }));
-  process.on('SIGTERM', () => void gracefulShutdown({ cause: 'Termination signal', signal: 'SIGTERM', shutdownServices, logger }));
+  process.on(
+    'SIGINT',
+    () =>
+      void gracefulShutdown({
+        cause: 'Interrupt signal',
+        signal: 'SIGINT',
+        shutdownServices,
+        logger,
+      }),
+  );
+  process.on(
+    'SIGTERM',
+    () =>
+      void gracefulShutdown({
+        cause: 'Termination signal',
+        signal: 'SIGTERM',
+        shutdownServices,
+        logger,
+      }),
+  );
 }

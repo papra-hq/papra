@@ -1,4 +1,11 @@
-type DateKeys = 'createdAt' | 'updatedAt' | 'deletedAt' | 'expiresAt' | 'lastTriggeredAt' | 'lastUsedAt' | 'scheduledPurgeAt';
+type DateKeys =
+  | 'createdAt'
+  | 'updatedAt'
+  | 'deletedAt'
+  | 'expiresAt'
+  | 'lastTriggeredAt'
+  | 'lastUsedAt'
+  | 'scheduledPurgeAt';
 
 export type CoerceDate<T> = T extends string | Date
   ? Date
@@ -19,7 +26,9 @@ export function coerceDate(date: unknown): Date {
     return new Date(date);
   }
 
-  throw new Error(`Invalid date: expected Date, string, or number, but received value "${String(date)}" of type "${typeof date}"`);
+  throw new Error(
+    `Invalid date: expected Date, string, or number, but received value "${String(date)}" of type "${typeof date}"`,
+  );
 }
 
 export function coerceDateOrUndefined(date: unknown): Date | undefined {
@@ -36,9 +45,13 @@ export function coerceDates<T extends Record<string, unknown>>(obj: T): CoerceDa
     ...('updatedAt' in obj ? { updatedAt: coerceDateOrUndefined(obj.updatedAt) } : {}),
     ...('deletedAt' in obj ? { deletedAt: coerceDateOrUndefined(obj.deletedAt) } : {}),
     ...('expiresAt' in obj ? { expiresAt: coerceDateOrUndefined(obj.expiresAt) } : {}),
-    ...('lastTriggeredAt' in obj ? { lastTriggeredAt: coerceDateOrUndefined(obj.lastTriggeredAt) } : {}),
+    ...('lastTriggeredAt' in obj
+      ? { lastTriggeredAt: coerceDateOrUndefined(obj.lastTriggeredAt) }
+      : {}),
     ...('lastUsedAt' in obj ? { lastUsedAt: coerceDateOrUndefined(obj.lastUsedAt) } : {}),
-    ...('scheduledPurgeAt' in obj ? { scheduledPurgeAt: coerceDateOrUndefined(obj.scheduledPurgeAt) } : {}),
+    ...('scheduledPurgeAt' in obj
+      ? { scheduledPurgeAt: coerceDateOrUndefined(obj.scheduledPurgeAt) }
+      : {}),
   } as CoerceDates<T>;
 }
 

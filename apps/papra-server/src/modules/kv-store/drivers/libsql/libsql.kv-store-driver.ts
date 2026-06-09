@@ -6,7 +6,13 @@ import { createKvStoreRepository } from './libsql.kv-store-driver.repository';
 
 export const LIBSQL_KV_STORE_DRIVER_NAME = 'libsql';
 
-export function createLibsqlKvStoreDriver({ db, clock = systemClock }: { db: Database; clock?: Clock }): KvStoreDriver {
+export function createLibsqlKvStoreDriver({
+  db,
+  clock = systemClock,
+}: {
+  db: Database;
+  clock?: Clock;
+}): KvStoreDriver {
   const repository = createKvStoreRepository({ db });
 
   return {
@@ -37,7 +43,11 @@ export function createLibsqlKvStoreDriver({ db, clock = systemClock }: { db: Dat
         return;
       }
 
-      await repository.upsertEntry({ key, value, expiresAtMsEpoch: expiresAt?.epochMilliseconds ?? null });
+      await repository.upsertEntry({
+        key,
+        value,
+        expiresAtMsEpoch: expiresAt?.epochMilliseconds ?? null,
+      });
     },
 
     delete: async ({ key }) => {
@@ -47,6 +57,5 @@ export function createLibsqlKvStoreDriver({ db, clock = systemClock }: { db: Dat
     deleteExpired: async () => {
       return repository.deleteAllExpiredEntries({ nowMsEpoch: clock.now().epochMilliseconds });
     },
-
   };
 }

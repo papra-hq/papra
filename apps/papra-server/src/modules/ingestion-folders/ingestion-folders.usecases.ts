@@ -21,7 +21,14 @@ import { createFsServices } from '../shared/fs/fs.services';
 import { createLogger } from '../shared/logger/logger';
 import { getRootDirPath } from '../shared/path';
 import { isNil, uniq } from '../shared/utils';
-import { addTimestampToFilename, getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder, getOrganizationIdFromFilePath, isFileInDoneFolder, isFileInErrorFolder, normalizeFilePathToIngestionFolder } from './ingestion-folder.models';
+import {
+  addTimestampToFilename,
+  getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder,
+  getOrganizationIdFromFilePath,
+  isFileInDoneFolder,
+  isFileInErrorFolder,
+  normalizeFilePathToIngestionFolder,
+} from './ingestion-folder.models';
 import { createInvalidPostProcessingStrategyError } from './ingestion-folders.errors';
 import { getFile } from './ingestion-folders.services';
 
@@ -40,40 +47,61 @@ export function createIngestionFolderWatcher({
   documentsStorageService: DocumentStorageService;
   eventServices: EventServices;
 }) {
-  const { folderRootPath, watcher: { usePolling, pollingInterval }, processingConcurrency } = config.ingestionFolder;
+  const {
+    folderRootPath,
+    watcher: { usePolling, pollingInterval },
+    processingConcurrency,
+  } = config.ingestionFolder;
 
   const processingQueue = new PQueue({ concurrency: processingConcurrency });
   const cwd = getRootDirPath();
-  const ingestionFolderPath = isAbsolute(folderRootPath) ? folderRootPath : join(cwd, folderRootPath);
+  const ingestionFolderPath = isAbsolute(folderRootPath)
+    ? folderRootPath
+    : join(cwd, folderRootPath);
 
   return {
     startWatchingIngestionFolders: async () => {
       const organizationsRepository = createOrganizationsRepository({ db });
-      const createDocument = createDocumentCreationUsecase({ db, config, logger, taskServices, documentsStorageService, eventServices });
+      const createDocument = createDocumentCreationUsecase({
+        db,
+        config,
+        logger,
+        taskServices,
+        documentsStorageService,
+        eventServices,
+      });
 
       const ignored = await buildPathIgnoreFunction({ config, cwd, organizationsRepository });
 
       chokidar
-        .watch(
-          folderRootPath,
-          {
-            persistent: true,
-            followSymlinks: true,
-            awaitWriteFinish: true,
-            atomic: true,
-            cwd,
-            usePolling,
-            interval: pollingInterval,
-            ignored,
-          },
-        )
+        .watch(folderRootPath, {
+          persistent: true,
+          followSymlinks: true,
+          awaitWriteFinish: true,
+          atomic: true,
+          cwd,
+          usePolling,
+          interval: pollingInterval,
+          ignored,
+        })
         .on('add', async (fileMaybeCwdRelativePath) => {
           await processingQueue.add(async () => {
-            const filePath = isAbsolute(fileMaybeCwdRelativePath) ? fileMaybeCwdRelativePath : join(cwd, fileMaybeCwdRelativePath);
+            const filePath = isAbsolute(fileMaybeCwdRelativePath)
+              ? fileMaybeCwdRelativePath
+              : join(cwd, fileMaybeCwdRelativePath);
 
             logger.info({ filePath }, 'Processing file');
 
-            const [, error] = await safely(processFile({ filePath, ingestionFolderPath, createDocument, logger, config, organizationsRepository }));
+            const [, error] = await safely(
+              processFile({
+                filePath,
+                ingestionFolderPath,
+                createDocument,
+                logger,
+                config,
+                organizationsRepository,
+              }),
+            );
 
             if (error) {
               logger.error({ filePath, error }, 'Error processing file');
@@ -111,7 +139,10 @@ export async function processFile({
   organizationsRepository: OrganizationsRepository;
   fs?: FsServices;
 }) {
-  const { postProcessing: { moveToFolderPath: doneFolder }, errorFolder } = config.ingestionFolder;
+  const {
+    postProcessing: { moveToFolderPath: doneFolder },
+    errorFolder,
+  } = config.ingestionFolder;
 
   // Get the file from the ingestion folder as a File Instance
   const [getFileResult, getFileError] = safelySync(() => getFile({ filePath, fs }));
@@ -123,10 +154,17 @@ export async function processFile({
 
   const { fileStream, mimeType, fileName } = getFileResult;
 
-  const { organizationId } = await getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository });
+  const { organizationId } = await getFileOrganizationId({
+    filePath,
+    ingestionFolderPath,
+    organizationsRepository,
+  });
 
   if (isNil(organizationId)) {
-    logger.warn({ filePath }, 'A file in the ingestion folder is not located in an organization ingestion folder, skipping');
+    logger.warn(
+      { filePath },
+      'A file in the ingestion folder is not located in an organization ingestion folder, skipping',
+    );
     return;
   }
 
@@ -143,18 +181,26 @@ export async function processFile({
   }
 
   // TODO: switch to native stream
-  const [result, error] = await safely(createDocument({
-    fileStream,
-    fileName,
-    mimeType,
-    organizationId,
-  }));
+  const [result, error] = await safely(
+    createDocument({
+      fileStream,
+      fileName,
+      mimeType,
+      organizationId,
+    }),
+  );
 
-  const isNotInsertedBecauseAlreadyExists = isErrorWithCode({ error, code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE });
+  const isNotInsertedBecauseAlreadyExists = isErrorWithCode({
+    error,
+    code: DOCUMENT_ALREADY_EXISTS_ERROR_CODE,
+  });
 
   if (error && !isNotInsertedBecauseAlreadyExists) {
     logger.error({ filePath, error }, 'Error creating document');
-    const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({ path: errorFolder, organizationIngestionFolderPath });
+    const errorFolderPath = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+      path: errorFolder,
+      organizationIngestionFolderPath,
+    });
 
     await moveIngestionFile({ filePath, moveToFolder: errorFolderPath, fs });
     return;
@@ -186,7 +232,9 @@ async function postProcessFile({
   config: Config;
   fs?: FsServices;
 }) {
-  const { postProcessing: { strategy, moveToFolderPath } } = config.ingestionFolder;
+  const {
+    postProcessing: { strategy, moveToFolderPath },
+  } = config.ingestionFolder;
 
   if (strategy === 'delete') {
     await fs.deleteFile({ filePath });
@@ -195,7 +243,10 @@ async function postProcessFile({
   }
 
   if (strategy === 'move') {
-    const path = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({ path: moveToFolderPath, organizationIngestionFolderPath });
+    const path = getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
+      path: moveToFolderPath,
+      organizationIngestionFolderPath,
+    });
 
     await moveIngestionFile({ filePath, moveToFolder: path, fs });
     logger.info({ filePath }, 'File moved after ingestion');
@@ -205,8 +256,19 @@ async function postProcessFile({
   throw createInvalidPostProcessingStrategyError({ strategy });
 }
 
-async function getFileOrganizationId({ filePath, ingestionFolderPath, organizationsRepository }: { filePath: string; ingestionFolderPath: string; organizationsRepository: OrganizationsRepository }) {
-  const { relativeFilePath } = normalizeFilePathToIngestionFolder({ filePath, ingestionFolderPath });
+async function getFileOrganizationId({
+  filePath,
+  ingestionFolderPath,
+  organizationsRepository,
+}: {
+  filePath: string;
+  ingestionFolderPath: string;
+  organizationsRepository: OrganizationsRepository;
+}) {
+  const { relativeFilePath } = normalizeFilePathToIngestionFolder({
+    filePath,
+    ingestionFolderPath,
+  });
 
   const { organizationId } = getOrganizationIdFromFilePath({ relativeFilePath });
 
@@ -232,15 +294,27 @@ async function buildPathIgnoreFunction({
   cwd?: string;
   organizationsRepository: OrganizationsRepository;
 }) {
-  const { ingestionFolder: { postProcessing: { strategy, moveToFolderPath }, errorFolder, ignoredPatterns, folderRootPath } } = config;
+  const {
+    ingestionFolder: {
+      postProcessing: { strategy, moveToFolderPath },
+      errorFolder,
+      ignoredPatterns,
+      folderRootPath,
+    },
+  } = config;
 
   const { organizationIds } = await organizationsRepository.getAllOrganizationIds();
 
-  const doneFolders = strategy === 'move'
-    ? isAbsolute(moveToFolderPath) ? [moveToFolderPath] : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, moveToFolderPath)))
-    : [];
+  const doneFolders =
+    strategy === 'move'
+      ? isAbsolute(moveToFolderPath)
+        ? [moveToFolderPath]
+        : uniq(organizationIds.map((id) => join(cwd, folderRootPath, id, moveToFolderPath)))
+      : [];
 
-  const errorFolders = isAbsolute(errorFolder) ? [errorFolder] : uniq(organizationIds.map(id => join(cwd, folderRootPath, id, errorFolder)));
+  const errorFolders = isAbsolute(errorFolder)
+    ? [errorFolder]
+    : uniq(organizationIds.map((id) => join(cwd, folderRootPath, id, errorFolder)));
 
   const ignoredFolders = [...doneFolders, ...errorFolders];
   const matchExcludedPatterns = picomatch(ignoredPatterns);
@@ -248,7 +322,11 @@ async function buildPathIgnoreFunction({
   return (path: string, stats?: Stats) => {
     const normalizedPath = isAbsolute(path) ? path : join(cwd, path);
 
-    return Boolean(stats?.isFile()) && (ignoredFolders.some(folder => normalizedPath.startsWith(folder)) || matchExcludedPatterns(normalizedPath));
+    return (
+      Boolean(stats?.isFile()) &&
+      (ignoredFolders.some((folder) => normalizedPath.startsWith(folder)) ||
+        matchExcludedPatterns(normalizedPath))
+    );
   };
 }
 

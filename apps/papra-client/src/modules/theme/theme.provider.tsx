@@ -23,7 +23,9 @@ export function useTheme() {
 export const ThemeProvider: ParentComponent = (props) => {
   const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-  const [systemTheme, setSystemTheme] = createSignal<Theme>(themeMediaQuery.matches ? 'dark' : 'light');
+  const [systemTheme, setSystemTheme] = createSignal<Theme>(
+    themeMediaQuery.matches ? 'dark' : 'light',
+  );
 
   const getInitialThemePreference = (): ThemePreference => {
     const storedPreference = localStorage.getItem(THEME_STORAGE_KEY);
@@ -35,9 +37,15 @@ export const ThemeProvider: ParentComponent = (props) => {
     return DEFAULT_THEME_PREFERENCE;
   };
 
-  const [getLocalThemePreference, setLocalThemePreference] = createSignal<ThemePreference>(getInitialThemePreference());
+  const [getLocalThemePreference, setLocalThemePreference] = createSignal<ThemePreference>(
+    getInitialThemePreference(),
+  );
 
-  const getTheme = () => getThemeFromPreference({ themePreference: getLocalThemePreference(), systemTheme: systemTheme() });
+  const getTheme = () =>
+    getThemeFromPreference({
+      themePreference: getLocalThemePreference(),
+      systemTheme: systemTheme(),
+    });
 
   const applyTheme = (theme: Theme) => {
     document.documentElement.setAttribute(THEME_ATTRIBUTE, theme);
@@ -47,7 +55,10 @@ export const ThemeProvider: ParentComponent = (props) => {
     setLocalThemePreference(newPreference);
     localStorage.setItem(THEME_STORAGE_KEY, newPreference);
 
-    const newTheme = getThemeFromPreference({ themePreference: newPreference, systemTheme: systemTheme() });
+    const newTheme = getThemeFromPreference({
+      themePreference: newPreference,
+      systemTheme: systemTheme(),
+    });
     applyTheme(newTheme);
   };
 

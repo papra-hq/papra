@@ -1,6 +1,9 @@
 import type { EventName } from './webhooks.constants';
 
-export type WebhookPayload<T extends EventName, D extends Record<string, unknown>> = { event: T; payload: D };
+export type WebhookPayload<T extends EventName, D extends Record<string, unknown>> = {
+  event: T;
+  payload: D;
+};
 
 export type DocumentCreatedPayload = WebhookPayload<
   'document:created',
@@ -51,11 +54,22 @@ export type DocumentTagRemovedPayload = WebhookPayload<
   }
 >;
 
-export type WebhookPayloads = DocumentCreatedPayload | DocumentDeletedPayload | DocumentUpdatedPayload | DocumentTagAddedPayload | DocumentTagRemovedPayload;
+export type WebhookPayloads =
+  | DocumentCreatedPayload
+  | DocumentDeletedPayload
+  | DocumentUpdatedPayload
+  | DocumentTagAddedPayload
+  | DocumentTagRemovedPayload;
 type ExtractEventName<T> = T extends WebhookPayload<infer E, any> ? E : never;
-export type BuildStandardWebhookEventPayload<T extends WebhookPayloads> = { type: T['event']; timestamp: string; data: T['payload'] };
+export type BuildStandardWebhookEventPayload<T extends WebhookPayloads> = {
+  type: T['event'];
+  timestamp: string;
+  data: T['payload'];
+};
 export type BuildWebhookEvents<T extends WebhookPayloads> = {
-  [K in ExtractEventName<T>]: (args: BuildStandardWebhookEventPayload<Extract<T, WebhookPayload<K, any>>>) => void;
+  [K in ExtractEventName<T>]: (
+    args: BuildStandardWebhookEventPayload<Extract<T, WebhookPayload<K, any>>>,
+  ) => void;
 };
 
 export type WebhookEvents = BuildWebhookEvents<WebhookPayloads>;

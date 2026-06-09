@@ -7,7 +7,7 @@ export function registerHealthCheckRoutes(context: RouteDefinitionContext) {
 }
 
 function setupPingRoute({ app }: RouteDefinitionContext) {
-  app.get('/api/ping', context => context.json({ status: 'ok' }));
+  app.get('/api/ping', (context) => context.json({ status: 'ok' }));
 }
 
 function setupHealthCheckRoute({ app, db }: RouteDefinitionContext) {

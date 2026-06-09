@@ -28,8 +28,14 @@ export function createShareLinksRepository({ db }: { db: Database }) {
   );
 }
 
-async function createShareLink({ db, ...shareLinkToInsert }: { db: Database } & DbInsertableShareLink) {
-  const [shareLink] = await db.insert(documentShareLinksTable).values(shareLinkToInsert).returning();
+async function createShareLink({
+  db,
+  ...shareLinkToInsert
+}: { db: Database } & DbInsertableShareLink) {
+  const [shareLink] = await db
+    .insert(documentShareLinksTable)
+    .values(shareLinkToInsert)
+    .returning();
 
   if (isNil(shareLink)) {
     // shouldn't happen because of the returning, but for type safety
@@ -54,7 +60,15 @@ async function getShareLinkByToken({ token, db }: { token: string; db: Database 
   return { shareLink };
 }
 
-async function getShareLinkById({ shareLinkId, organizationId, db }: { shareLinkId: string; organizationId: string; db: Database }) {
+async function getShareLinkById({
+  shareLinkId,
+  organizationId,
+  db,
+}: {
+  shareLinkId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [shareLink] = await db
     .select()
     .from(documentShareLinksTable)
@@ -68,7 +82,15 @@ async function getShareLinkById({ shareLinkId, organizationId, db }: { shareLink
   return { shareLink };
 }
 
-async function getDocumentShareLinks({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
+async function getDocumentShareLinks({
+  documentId,
+  organizationId,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const shareLinks = await db
     .select()
     .from(documentShareLinksTable)
@@ -83,10 +105,20 @@ async function getDocumentShareLinks({ documentId, organizationId, db }: { docum
   return { shareLinks };
 }
 
-async function getOrganizationShareLinks({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationShareLinks({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   // Joins the document name (and trashed state) so the management UI can display it without a second round-trip.
   const shareLinks = await db
-    .select({ ...getTableColumns(documentShareLinksTable), documentName: documentsTable.name, isDocumentDeleted: documentsTable.isDeleted })
+    .select({
+      ...getTableColumns(documentShareLinksTable),
+      documentName: documentsTable.name,
+      isDocumentDeleted: documentsTable.isDeleted,
+    })
     .from(documentShareLinksTable)
     .innerJoin(documentsTable, eq(documentShareLinksTable.documentId, documentsTable.id))
     .where(eq(documentShareLinksTable.organizationId, organizationId))
@@ -95,7 +127,15 @@ async function getOrganizationShareLinks({ organizationId, db }: { organizationI
   return { shareLinks };
 }
 
-async function countDocumentShareLinks({ documentId, organizationId, db }: { documentId: string; organizationId: string; db: Database }) {
+async function countDocumentShareLinks({
+  documentId,
+  organizationId,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [record] = await db
     .select({ shareLinksCount: count(documentShareLinksTable.id) })
     .from(documentShareLinksTable)
@@ -142,7 +182,15 @@ async function updateShareLink({
   return { shareLink };
 }
 
-async function deleteShareLink({ shareLinkId, organizationId, db }: { shareLinkId: string; organizationId: string; db: Database }) {
+async function deleteShareLink({
+  shareLinkId,
+  organizationId,
+  db,
+}: {
+  shareLinkId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const deleted = await db
     .delete(documentShareLinksTable)
     .where(
@@ -158,7 +206,15 @@ async function deleteShareLink({ shareLinkId, organizationId, db }: { shareLinkI
   }
 }
 
-async function touchLastAccessedAt({ shareLinkId, lastAccessedAt, db }: { shareLinkId: string; lastAccessedAt: Date; db: Database }) {
+async function touchLastAccessedAt({
+  shareLinkId,
+  lastAccessedAt,
+  db,
+}: {
+  shareLinkId: string;
+  lastAccessedAt: Date;
+  db: Database;
+}) {
   await db
     .update(documentShareLinksTable)
     .set({ lastAccessedAt })

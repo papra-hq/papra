@@ -2,7 +2,11 @@ import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { isNil } from '../shared/utils';
-import { createDocumentAlreadyHasTagError, createTagAlreadyExistsError, createTagNotFoundError } from './tags.errors';
+import {
+  createDocumentAlreadyHasTagError,
+  createTagAlreadyExistsError,
+  createTagNotFoundError,
+} from './tags.errors';
 import { createTagsRepository } from './tags.repository';
 import { tagsTable } from './tags.table';
 
@@ -31,7 +35,9 @@ describe('tags repository', () => {
         color: '#aa0000',
       });
 
-      const { tags } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+      const { tags } = await tagsRepository.getOrganizationTags({
+        organizationId: 'organization-1',
+      });
 
       expect(tags).to.have.length(1);
       expect(tags[0]).to.include({
@@ -56,7 +62,9 @@ describe('tags repository', () => {
         color: '#00aa00',
       });
 
-      const { tags: tagsAfterUpdate } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+      const { tags: tagsAfterUpdate } = await tagsRepository.getOrganizationTags({
+        organizationId: 'organization-1',
+      });
 
       expect(tagsAfterUpdate).to.have.length(1);
       expect(tagsAfterUpdate[0]).to.include({
@@ -68,7 +76,9 @@ describe('tags repository', () => {
 
       await tagsRepository.deleteTag({ tagId: tag1.id, organizationId: 'organization-1' });
 
-      const { tags: tagsAfterDelete } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+      const { tags: tagsAfterDelete } = await tagsRepository.getOrganizationTags({
+        organizationId: 'organization-1',
+      });
 
       expect(tagsAfterDelete).to.have.length(0);
     });
@@ -82,7 +92,13 @@ describe('tags repository', () => {
           { id: 'organization-2', name: 'Organization 2' },
         ],
         tags: [
-          { id: 'tag-1', organizationId: 'organization-2', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+          {
+            id: 'tag-1',
+            organizationId: 'organization-2',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
         ],
       });
 
@@ -103,11 +119,31 @@ describe('tags repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash' },
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
         ],
-        tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' }],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'Document 1',
+            originalName: 'document-1.pdf',
+            content: 'lorem ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'hash',
+          },
+        ],
+        tags: [
+          {
+            id: 'tag-1',
+            organizationId: 'organization-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
+        ],
       });
 
       const tagsRepository = createTagsRepository({ db });
@@ -128,15 +164,62 @@ describe('tags repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
         documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1' },
-          { id: 'document-2', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 2', originalName: 'document-2.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-2', isDeleted: true },
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'Document 1',
+            originalName: 'document-1.pdf',
+            content: 'lorem ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'hash-1',
+          },
+          {
+            id: 'document-2',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'Document 2',
+            originalName: 'document-2.pdf',
+            content: 'lorem ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'hash-2',
+            isDeleted: true,
+          },
         ],
         tags: [
-          { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000', createdAt: new Date('2021-01-01'), updatedAt: new Date('2021-01-01') },
-          { id: 'tag-2', organizationId: 'organization-1', name: 'Tag 2', normalizedName: 'tag 2', color: '#00aa00', createdAt: new Date('2021-01-02'), updatedAt: new Date('2021-01-02') },
-          { id: 'tag-3', organizationId: 'organization-1', name: 'Tag 3', normalizedName: 'tag 3', color: '#0000aa', createdAt: new Date('2021-01-03'), updatedAt: new Date('2021-01-03') },
+          {
+            id: 'tag-1',
+            organizationId: 'organization-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+            createdAt: new Date('2021-01-01'),
+            updatedAt: new Date('2021-01-01'),
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'organization-1',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#00aa00',
+            createdAt: new Date('2021-01-02'),
+            updatedAt: new Date('2021-01-02'),
+          },
+          {
+            id: 'tag-3',
+            organizationId: 'organization-1',
+            name: 'Tag 3',
+            normalizedName: 'tag 3',
+            color: '#0000aa',
+            createdAt: new Date('2021-01-03'),
+            updatedAt: new Date('2021-01-03'),
+          },
         ],
         documentsTags: [
           { documentId: 'document-1', tagId: 'tag-1' },
@@ -147,10 +230,11 @@ describe('tags repository', () => {
 
       const tagsRepository = createTagsRepository({ db });
 
-      const { tags } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+      const { tags } = await tagsRepository.getOrganizationTags({
+        organizationId: 'organization-1',
+      });
 
       expect(tags).to.eql([
-
         {
           id: 'tag-3',
           organizationId: 'organization-1',
@@ -191,19 +275,44 @@ describe('tags repository', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [
-          { id: 'document-1', organizationId: 'organization-1', createdBy: 'user-1', name: 'Document 1', originalName: 'document-1.pdf', content: 'lorem ipsum', originalStorageKey: '', mimeType: 'application/pdf', originalSha256Hash: 'hash-1', isDeleted: true },
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
         ],
-        tags: [{ id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' }],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            createdBy: 'user-1',
+            name: 'Document 1',
+            originalName: 'document-1.pdf',
+            content: 'lorem ipsum',
+            originalStorageKey: '',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'hash-1',
+            isDeleted: true,
+          },
+        ],
+        tags: [
+          {
+            id: 'tag-1',
+            organizationId: 'organization-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
+        ],
         documentsTags: [{ documentId: 'document-1', tagId: 'tag-1' }],
       });
 
       const tagsRepository = createTagsRepository({ db });
 
-      const { tags } = await tagsRepository.getOrganizationTags({ organizationId: 'organization-1' });
+      const { tags } = await tagsRepository.getOrganizationTags({
+        organizationId: 'organization-1',
+      });
 
-      expect(tags.map(({ documentsCount, id }) => ({ documentsCount, id }))).to.eql([{ documentsCount: 0, id: 'tag-1' }]);
+      expect(tags.map(({ documentsCount, id }) => ({ documentsCount, id }))).to.eql([
+        { documentsCount: 0, id: 'tag-1' },
+      ]);
     });
   });
 
@@ -220,7 +329,9 @@ describe('tags repository', () => {
       });
 
       await expect(
-        tagsRepository.createTag({ tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' } }),
+        tagsRepository.createTag({
+          tag: { organizationId: 'organization-1', name: 'Tag 1', color: '#aa0000' },
+        }),
       ).rejects.toThrow(createTagAlreadyExistsError());
     });
 
@@ -247,15 +358,31 @@ describe('tags repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         tags: [
-          { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
-          { id: 'tag-2', organizationId: 'organization-1', name: 'Tag 2', normalizedName: 'tag 2', color: '#00aa00' },
+          {
+            id: 'tag-1',
+            organizationId: 'organization-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'organization-1',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#00aa00',
+          },
         ],
       });
 
       const tagsRepository = createTagsRepository({ db });
 
       await expect(
-        tagsRepository.updateTag({ tagId: 'tag-2', organizationId: 'organization-1', name: 'Tag 1' }),
+        tagsRepository.updateTag({
+          tagId: 'tag-2',
+          organizationId: 'organization-1',
+          name: 'Tag 1',
+        }),
       ).rejects.toThrow(createTagAlreadyExistsError());
     });
 
@@ -266,31 +393,55 @@ describe('tags repository', () => {
           { id: 'organization-2', name: 'Organization 2' },
         ],
         tags: [
-          { id: 'tag-1', organizationId: 'organization-2', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+          {
+            id: 'tag-1',
+            organizationId: 'organization-2',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
         ],
       });
 
       const tagsRepository = createTagsRepository({ db });
 
-      const { tag } = await tagsRepository.updateTag({ tagId: 'tag-1', organizationId: 'organization-1', name: 'Hijacked' });
+      const { tag } = await tagsRepository.updateTag({
+        tagId: 'tag-1',
+        organizationId: 'organization-1',
+        name: 'Hijacked',
+      });
 
       expect(tag).to.equal(undefined);
 
       const [storedTag] = await db.select().from(tagsTable);
-      expect(storedTag).to.include({ id: 'tag-1', name: 'Tag 1', organizationId: 'organization-2' });
+      expect(storedTag).to.include({
+        id: 'tag-1',
+        name: 'Tag 1',
+        organizationId: 'organization-2',
+      });
     });
 
     test('when updating a tag name, the normalized name is also updated for uniqueness checks', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         tags: [
-          { id: 'tag-1', organizationId: 'organization-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#aa0000' },
+          {
+            id: 'tag-1',
+            organizationId: 'organization-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#aa0000',
+          },
         ],
       });
 
       const tagsRepository = createTagsRepository({ db });
 
-      await tagsRepository.updateTag({ tagId: 'tag-1', organizationId: 'organization-1', name: 'New Tag Name' });
+      await tagsRepository.updateTag({
+        tagId: 'tag-1',
+        organizationId: 'organization-1',
+        name: 'New Tag Name',
+      });
 
       const tags = await db.select().from(tagsTable);
 

@@ -2,10 +2,7 @@ import type { ApiKey } from '../api-keys/api-keys.types';
 import type { CustomPropertyDefinition } from '../custom-properties/custom-properties.types';
 import type { Document } from '../documents/documents.types';
 import type { Webhook } from '../webhooks/webhooks.types';
-import type {
-  DocumentCustomPropertyValueStorage,
-  DocumentFile,
-} from './demo.storage';
+import type { DocumentCustomPropertyValueStorage, DocumentFile } from './demo.storage';
 import { FetchError } from 'ofetch';
 import { createRouter } from 'radix3';
 import { get } from '../shared/utils/get';
@@ -28,7 +25,10 @@ import { findMany, getValues } from './demo.storage.models';
 import { generatePropertyKey, searchDemoDocuments } from './search/demo.search.services';
 import { demoUser } from './seed/users.fixtures';
 
-function assert(condition: unknown, { message = 'Error', status }: { message?: string; status?: number } = {}): asserts condition {
+function assert(
+  condition: unknown,
+  { message = 'Error', status }: { message?: string; status?: number } = {},
+): asserts condition {
   if (!condition) {
     throw Object.assign(new FetchError(message), { status });
   }
@@ -44,7 +44,7 @@ function toBase64(file: File): Promise<string> {
 }
 
 function fromBase64(base64: string) {
-  return fetch(base64).then(res => res.blob());
+  return fetch(base64).then((res) => res.blob());
 }
 
 async function serializeFile(file: File): Promise<DocumentFile> {
@@ -70,14 +70,20 @@ async function deserializeFile(storageInfo: DocumentFile): Promise<File> {
   return new File([await fromBase64(base64Content)], name, { type });
 }
 
-function hydratePropertyValue({ value, definition }: { value: unknown; definition: CustomPropertyDefinition }): unknown {
+function hydratePropertyValue({
+  value,
+  definition,
+}: {
+  value: unknown;
+  definition: CustomPropertyDefinition;
+}): unknown {
   if (value == null) {
     return null;
   }
 
   if (definition.type === 'select') {
     const optionId = String(value);
-    const option = definition.options.find(o => o.id === optionId || o.key === optionId);
+    const option = definition.options.find((o) => o.id === optionId || o.key === optionId);
 
     if (!option) {
       return null;
@@ -91,11 +97,11 @@ function hydratePropertyValue({ value, definition }: { value: unknown; definitio
 
     return ids
       .map((id) => {
-        const option = definition.options.find(o => o.id === id || o.key === id);
+        const option = definition.options.find((o) => o.id === id || o.key === id);
 
         return option ? { optionId: option.id, name: option.name } : null;
       })
-      .filter(v => v !== null);
+      .filter((v) => v !== null);
   }
 
   return value;
@@ -110,12 +116,14 @@ function buildCustomPropertiesResponse({
   storedValues: DocumentCustomPropertyValueStorage[];
   documentId: string;
 }) {
-  const documentValues = storedValues.filter(v => v.documentId === documentId);
-  const valuesByDefinitionId = Object.fromEntries(documentValues.map(v => [v.propertyDefinitionId, v.value]));
+  const documentValues = storedValues.filter((v) => v.documentId === documentId);
+  const valuesByDefinitionId = Object.fromEntries(
+    documentValues.map((v) => [v.propertyDefinitionId, v.value]),
+  );
 
   return definitions
     .toSorted((a, b) => a.displayOrder - b.displayOrder)
-    .map(def => ({
+    .map((def) => ({
       propertyDefinitionId: def.id,
       key: def.key,
       name: def.name,
@@ -134,25 +142,36 @@ async function resolveBatchTargetDocumentIds({
 }): Promise<string[]> {
   if ('documentIds' in filter) {
     const documents = await Promise.all(
-      filter.documentIds.map(id => documentStorage.getItem(`${organizationId}:${id}`)),
+      filter.documentIds.map((id) => documentStorage.getItem(`${organizationId}:${id}`)),
     );
 
-    assert(documents.every(doc => doc?.organizationId === organizationId), { status: 403 });
+    assert(
+      documents.every((doc) => doc?.organizationId === organizationId),
+      { status: 403 },
+    );
 
     return filter.documentIds;
   }
 
-  const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
-    findMany(documentStorage, document => document?.organizationId === organizationId && !document?.deletedAt),
-    getValues(tagStorage),
-    getValues(tagDocumentStorage),
-    findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
-    getValues(documentCustomPropertyValueStorage),
-  ]);
+  const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] =
+    await Promise.all([
+      findMany(
+        documentStorage,
+        (document) => document?.organizationId === organizationId && !document?.deletedAt,
+      ),
+      getValues(tagStorage),
+      getValues(tagDocumentStorage),
+      findMany(customPropertyDefinitionStorage, (def) => def.organizationId === organizationId),
+      getValues(documentCustomPropertyValueStorage),
+    ]);
 
   const documentsWithTagsAndProperties = organizationDocuments.map((document) => {
-    const documentTagDocuments = tagDocuments.filter(tagDocument => tagDocument?.documentId === document?.id);
-    const tags = allTags.filter(tag => documentTagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
+    const documentTagDocuments = tagDocuments.filter(
+      (tagDocument) => tagDocument?.documentId === document?.id,
+    );
+    const tags = allTags.filter((tag) =>
+      documentTagDocuments.some((tagDocument) => tagDocument?.tagId === tag?.id),
+    );
 
     const customProperties = buildCustomPropertiesResponse({
       definitions: allDefinitions,
@@ -163,8 +182,10 @@ async function resolveBatchTargetDocumentIds({
     return { ...document, tags, customProperties };
   });
 
-  return searchDemoDocuments({ query: filter.query, documents: documentsWithTagsAndProperties as unknown as Document[] })
-    .map(document => document.id);
+  return searchDemoDocuments({
+    query: filter.query,
+    documents: documentsWithTagsAndProperties as unknown as Document[],
+  }).map((document) => document.id);
 }
 
 const inMemoryApiMock: Record<string, { handler: any }> = {
@@ -221,7 +242,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await documentStorage.setItem(key, document);
 
       // Simulate a slow response
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       return { document };
     },
@@ -243,7 +264,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+      const documents = await findMany(
+        documentStorage,
+        (document) => document.organizationId === organizationId,
+      );
 
       return {
         organizationStats: {
@@ -270,17 +294,25 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       const searchQuery = rawSearchQuery.trim();
-      const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
-        findMany(documentStorage, document => document?.organizationId === organizationId && !document?.deletedAt),
-        getValues(tagStorage),
-        getValues(tagDocumentStorage),
-        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
-        getValues(documentCustomPropertyValueStorage),
-      ]);
+      const [organizationDocuments, allTags, tagDocuments, allDefinitions, allPropertyValues] =
+        await Promise.all([
+          findMany(
+            documentStorage,
+            (document) => document?.organizationId === organizationId && !document?.deletedAt,
+          ),
+          getValues(tagStorage),
+          getValues(tagDocumentStorage),
+          findMany(customPropertyDefinitionStorage, (def) => def.organizationId === organizationId),
+          getValues(documentCustomPropertyValueStorage),
+        ]);
 
       const documentsWithTagsAndProperties = organizationDocuments.map((document) => {
-        const documentTagDocuments = tagDocuments.filter(tagDocument => tagDocument?.documentId === document?.id);
-        const tags = allTags.filter(tag => documentTagDocuments.some(tagDocument => tagDocument?.tagId === tag?.id));
+        const documentTagDocuments = tagDocuments.filter(
+          (tagDocument) => tagDocument?.documentId === document?.id,
+        );
+        const tags = allTags.filter((tag) =>
+          documentTagDocuments.some((tagDocument) => tagDocument?.tagId === tag?.id),
+        );
 
         const customProperties = buildCustomPropertiesResponse({
           definitions: allDefinitions,
@@ -295,7 +327,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         };
       });
 
-      const filteredDocuments = searchDemoDocuments({ query: searchQuery, documents: documentsWithTagsAndProperties as unknown as Document[] });
+      const filteredDocuments = searchDemoDocuments({
+        query: searchQuery,
+        documents: documentsWithTagsAndProperties as unknown as Document[],
+      });
 
       const getSortValue = (document: Document) => {
         if (sortField === 'name') {
@@ -341,7 +376,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const deletedDocuments = await findMany(
         documentStorage,
-        document => document.organizationId === organizationId && document.deletedAt !== undefined,
+        (document) =>
+          document.organizationId === organizationId && document.deletedAt !== undefined,
       );
 
       return {
@@ -361,12 +397,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(document, { status: 404 });
 
       const [tagDocuments, allDefinitions, allPropertyValues] = await Promise.all([
-        findMany(tagDocumentStorage, tagDocument => tagDocument.documentId === documentId),
-        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
-        findMany(documentCustomPropertyValueStorage, v => v.documentId === documentId),
+        findMany(tagDocumentStorage, (tagDocument) => tagDocument.documentId === documentId),
+        findMany(customPropertyDefinitionStorage, (def) => def.organizationId === organizationId),
+        findMany(documentCustomPropertyValueStorage, (v) => v.documentId === documentId),
       ]);
 
-      const tags = await findMany(tagStorage, tag => tagDocuments.some(tagDocument => tagDocument.tagId === tag.id));
+      const tags = await findMany(tagStorage, (tag) =>
+        tagDocuments.some((tagDocument) => tagDocument.tagId === tag.id),
+      );
 
       const customProperties = buildCustomPropertiesResponse({
         definitions: allDefinitions,
@@ -443,12 +481,12 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const tags = await findMany(tagStorage, tag => tag.organizationId === organizationId);
+      const tags = await findMany(tagStorage, (tag) => tag.organizationId === organizationId);
       const tagDocuments = await getValues(tagDocumentStorage);
 
-      const tagsWithDocumentsCount = tags.map(tag => ({
+      const tagsWithDocumentsCount = tags.map((tag) => ({
         ...tag,
-        documentsCount: tagDocuments.filter(tagDocument => tagDocument.tagId === tag.id).length,
+        documentsCount: tagDocuments.filter((tagDocument) => tagDocument.tagId === tag.id).length,
       }));
 
       return {
@@ -466,7 +504,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       const name = get(body, ['name']) as string;
-      const existingTagsWithSameName = await findMany(tagStorage, tag => tag.organizationId === organizationId && tag.name.toLowerCase() === name.toLowerCase());
+      const existingTagsWithSameName = await findMany(
+        tagStorage,
+        (tag) =>
+          tag.organizationId === organizationId && tag.name.toLowerCase() === name.toLowerCase(),
+      );
 
       if (existingTagsWithSameName.length > 0) {
         throw Object.assign(new FetchError('Tag already exists'), {
@@ -507,10 +549,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       if (newName) {
         const existingTagsWithSameName = await findMany(
           tagStorage,
-          t =>
-            t.organizationId === organizationId
-            && t.id !== tagId
-            && t.name.toLowerCase() === newName.toLowerCase(),
+          (t) =>
+            t.organizationId === organizationId &&
+            t.id !== tagId &&
+            t.name.toLowerCase() === newName.toLowerCase(),
         );
 
         if (existingTagsWithSameName.length > 0) {
@@ -537,9 +579,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       await tagStorage.removeItem(tagId);
 
-      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.tagId === tagId);
+      const tagDocuments = await findMany(
+        tagDocumentStorage,
+        (tagDocument) => tagDocument.tagId === tagId,
+      );
 
-      await Promise.all(tagDocuments.map(tagDocument => tagDocumentStorage.removeItem(tagDocument.id)));
+      await Promise.all(
+        tagDocuments.map((tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
+      );
     },
   }),
 
@@ -574,9 +621,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const tagDocuments = await findMany(tagDocumentStorage, tagDocument => tagDocument.tagId === tagId && tagDocument.documentId === documentId);
+      const tagDocuments = await findMany(
+        tagDocumentStorage,
+        (tagDocument) => tagDocument.tagId === tagId && tagDocument.documentId === documentId,
+      );
 
-      await Promise.all(tagDocuments.map(tagDocument => tagDocumentStorage.removeItem(tagDocument.id)));
+      await Promise.all(
+        tagDocuments.map((tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
+      );
     },
   }),
 
@@ -648,7 +700,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/tagging-rules',
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
-      const taggingRules = await findMany(taggingRuleStorage, taggingRule => taggingRule.organizationId === organizationId);
+      const taggingRules = await findMany(
+        taggingRuleStorage,
+        (taggingRule) => taggingRule.organizationId === organizationId,
+      );
 
       return { taggingRules };
     },
@@ -703,7 +758,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(taggingRule, { status: 404 });
 
-      await taggingRuleStorage.setItem(taggingRuleId, Object.assign(taggingRule, body, { updatedAt: new Date() }));
+      await taggingRuleStorage.setItem(
+        taggingRuleId,
+        Object.assign(taggingRule, body, { updatedAt: new Date() }),
+      );
 
       return { taggingRule };
     },
@@ -724,21 +782,23 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       const now = new Date();
       const trashedDocumentIds: string[] = [];
 
-      await Promise.all(documentIds.map(async (documentId) => {
-        const key = `${organizationId}:${documentId}`;
-        const document = await documentStorage.getItem(key);
+      await Promise.all(
+        documentIds.map(async (documentId) => {
+          const key = `${organizationId}:${documentId}`;
+          const document = await documentStorage.getItem(key);
 
-        if (!document || document.deletedAt) {
-          return;
-        }
+          if (!document || document.deletedAt) {
+            return;
+          }
 
-        document.deletedAt = now;
-        document.updatedAt = now;
-        document.deletedBy = 'usr_1';
+          document.deletedAt = now;
+          document.updatedAt = now;
+          document.deletedBy = 'usr_1';
 
-        await documentStorage.setItem(key, document);
-        trashedDocumentIds.push(documentId);
-      }));
+          await documentStorage.setItem(key, document);
+          trashedDocumentIds.push(documentId);
+        }),
+      );
 
       return { trashedDocumentIds, trashedCount: trashedDocumentIds.length };
     },
@@ -759,10 +819,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(addTagIds.length + removeTagIds.length > 0, { status: 400 });
 
       const requestedTagIds = [...new Set([...addTagIds, ...removeTagIds])];
-      const requestedTags = await Promise.all(requestedTagIds.map(id => tagStorage.getItem(id)));
+      const requestedTags = await Promise.all(requestedTagIds.map((id) => tagStorage.getItem(id)));
 
       assert(
-        requestedTags.every(tag => tag?.organizationId === organizationId),
+        requestedTags.every((tag) => tag?.organizationId === organizationId),
         { status: 404, message: 'Tag not found' },
       );
 
@@ -778,7 +838,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       for (const documentId of documentIds) {
         for (const tagId of addTagIds) {
-          const alreadyExists = existingTagDocuments.some(td => td.documentId === documentId && td.tagId === tagId);
+          const alreadyExists = existingTagDocuments.some(
+            (td) => td.documentId === documentId && td.tagId === tagId,
+          );
           if (alreadyExists) {
             continue;
           }
@@ -795,9 +857,11 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         }
 
         for (const tagId of removeTagIds) {
-          const toRemove = existingTagDocuments.filter(td => td.documentId === documentId && td.tagId === tagId);
+          const toRemove = existingTagDocuments.filter(
+            (td) => td.documentId === documentId && td.tagId === tagId,
+          );
 
-          await Promise.all(toRemove.map(td => tagDocumentStorage.removeItem(td.id)));
+          await Promise.all(toRemove.map((td) => tagDocumentStorage.removeItem(td.id)));
 
           if (toRemove.length > 0) {
             removedPairs.push({ documentId, tagId });
@@ -818,9 +882,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/documents/trash',
     method: 'DELETE',
     handler: async ({ params: { organizationId } }) => {
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId && Boolean(document.deletedAt));
+      const documents = await findMany(
+        documentStorage,
+        (document) => document.organizationId === organizationId && Boolean(document.deletedAt),
+      );
 
-      await Promise.all(documents.map(document => documentStorage.removeItem(`${organizationId}:${document.id}`)));
+      await Promise.all(
+        documents.map((document) => documentStorage.removeItem(`${organizationId}:${document.id}`)),
+      );
     },
   }),
 
@@ -839,12 +908,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
       return {
-        members: [{
-          id: 'mem_1',
-          user: demoUser,
-          role: 'owner',
-          organizationId,
-        }],
+        members: [
+          {
+            id: 'mem_1',
+            user: demoUser,
+            role: 'owner',
+            organizationId,
+          },
+        ],
       };
     },
   }),
@@ -937,7 +1008,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
     path: '/api/organizations/:organizationId/webhooks',
     method: 'GET',
     handler: async ({ params: { organizationId } }) => {
-      const webhooks = await findMany(webhooksStorage, webhook => webhook.organizationId === organizationId);
+      const webhooks = await findMany(
+        webhooksStorage,
+        (webhook) => webhook.organizationId === organizationId,
+      );
 
       return { webhooks };
     },
@@ -989,7 +1063,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(webhook, { status: 404 });
 
-      await webhooksStorage.setItem(webhookId, Object.assign(webhook, body, { updatedAt: new Date() }));
+      await webhooksStorage.setItem(
+        webhookId,
+        Object.assign(webhook, body, { updatedAt: new Date() }),
+      );
 
       return { webhook };
     },
@@ -1003,13 +1080,20 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(document, { status: 404 });
 
-      const { name, content, documentDate, notes } = body as { name?: string; content?: string; documentDate?: string; notes?: string };
+      const { name, content, documentDate, notes } = body as {
+        name?: string;
+        content?: string;
+        documentDate?: string;
+        notes?: string;
+      };
 
       const newDocument = {
         ...document,
         ...(name !== undefined && { name }),
         ...(content !== undefined && { content }),
-        ...(documentDate !== undefined && { documentDate: documentDate === null ? null : new Date(documentDate) }),
+        ...(documentDate !== undefined && {
+          documentDate: documentDate === null ? null : new Date(documentDate),
+        }),
         ...(notes !== undefined && { notes }),
         updatedAt: new Date(),
       };
@@ -1029,24 +1113,25 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(document, { status: 404 });
 
-      const {
-        pageIndex = 0,
-      } = query ?? {};
+      const { pageIndex = 0 } = query ?? {};
 
       // Return mock activity for demo - just a created event
-      const activities = pageIndex === 0
-        ? [{
-            id: 'activity_1',
-            documentId,
-            event: 'created',
-            eventData: {},
-            createdAt: document.createdAt,
-            user: {
-              id: 'usr_1',
-              name: 'Sherlock Holmes',
-            },
-          }]
-        : [];
+      const activities =
+        pageIndex === 0
+          ? [
+              {
+                id: 'activity_1',
+                documentId,
+                event: 'created',
+                eventData: {},
+                createdAt: document.createdAt,
+                user: {
+                  id: 'usr_1',
+                  name: 'Sherlock Holmes',
+                },
+              },
+            ]
+          : [];
 
       return { activities };
     },
@@ -1085,11 +1170,14 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const documents = await findMany(documentStorage, document => document.organizationId === organizationId);
+      const documents = await findMany(
+        documentStorage,
+        (document) => document.organizationId === organizationId,
+      );
 
       const totalDocumentsSize = documents.reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
       const deletedDocumentsSize = documents
-        .filter(doc => doc.deletedAt)
+        .filter((doc) => doc.deletedAt)
         .reduce((acc, doc) => acc + (doc.originalSize ?? 0), 0);
 
       return {
@@ -1126,7 +1214,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const propertyDefinitions = await findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId);
+      const propertyDefinitions = await findMany(
+        customPropertyDefinitionStorage,
+        (def) => def.organizationId === organizationId,
+      );
 
       return { propertyDefinitions };
     },
@@ -1140,7 +1231,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const existingDefinitions = await findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId);
+      const existingDefinitions = await findMany(
+        customPropertyDefinitionStorage,
+        (def) => def.organizationId === organizationId,
+      );
 
       const propertyDefinition = {
         id: createId({ prefix: 'cpd' }),
@@ -1150,7 +1244,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         description: (get(body, ['description']) ?? null) as string | null,
         type: get(body, ['type']) as string,
         displayOrder: existingDefinitions.length,
-        options: (get(body, ['options']) as { name: string }[] ?? []).map((option, index) => ({
+        options: ((get(body, ['options']) as { name: string }[]) ?? []).map((option, index) => ({
           id: createId({ prefix: 'opt' }),
           name: option.name,
           key: generatePropertyKey({ name: option.name }),
@@ -1160,7 +1254,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
         updatedAt: new Date(),
       };
 
-      await customPropertyDefinitionStorage.setItem(propertyDefinition.id, propertyDefinition as any);
+      await customPropertyDefinitionStorage.setItem(
+        propertyDefinition.id,
+        propertyDefinition as any,
+      );
 
       return { propertyDefinition };
     },
@@ -1190,7 +1287,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const propertyDefinition = await customPropertyDefinitionStorage.getItem(propertyDefinitionId);
+      const propertyDefinition =
+        await customPropertyDefinitionStorage.getItem(propertyDefinitionId);
 
       assert(propertyDefinition, { status: 404 });
 
@@ -1213,9 +1311,16 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       await customPropertyDefinitionStorage.removeItem(propertyDefinitionId);
 
       // Remove all values associated with this definition
-      const values = await findMany(documentCustomPropertyValueStorage, v => v.propertyDefinitionId === propertyDefinitionId);
+      const values = await findMany(
+        documentCustomPropertyValueStorage,
+        (v) => v.propertyDefinitionId === propertyDefinitionId,
+      );
 
-      await Promise.all(values.map(v => documentCustomPropertyValueStorage.removeItem(`${v.documentId}:${propertyDefinitionId}`)));
+      await Promise.all(
+        values.map((v) =>
+          documentCustomPropertyValueStorage.removeItem(`${v.documentId}:${propertyDefinitionId}`),
+        ),
+      );
     },
   }),
 
@@ -1229,8 +1334,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(document, { status: 404 });
 
       const [allDefinitions, allValues] = await Promise.all([
-        findMany(customPropertyDefinitionStorage, def => def.organizationId === organizationId),
-        findMany(documentCustomPropertyValueStorage, v => v.documentId === documentId),
+        findMany(customPropertyDefinitionStorage, (def) => def.organizationId === organizationId),
+        findMany(documentCustomPropertyValueStorage, (v) => v.documentId === documentId),
       ]);
 
       const customProperties = buildCustomPropertiesResponse({
@@ -1293,10 +1398,15 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       assert(organization, { status: 403 });
 
-      const documentViews = await findMany(documentViewStorage, view => view.organizationId === organizationId);
+      const documentViews = await findMany(
+        documentViewStorage,
+        (view) => view.organizationId === organizationId,
+      );
 
       return {
-        documentViews: documentViews.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        documentViews: documentViews.toSorted(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
       };
     },
   }),
@@ -1315,7 +1425,8 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
 
       const existingViewsWithSameName = await findMany(
         documentViewStorage,
-        view => view.organizationId === organizationId && view.name.toLowerCase() === name.toLowerCase(),
+        (view) =>
+          view.organizationId === organizationId && view.name.toLowerCase() === name.toLowerCase(),
       );
 
       if (existingViewsWithSameName.length > 0) {
@@ -1361,10 +1472,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       if (newName) {
         const existingViewsWithSameName = await findMany(
           documentViewStorage,
-          view =>
-            view.organizationId === organizationId
-            && view.id !== documentViewId
-            && view.name.toLowerCase() === newName.toLowerCase(),
+          (view) =>
+            view.organizationId === organizationId &&
+            view.id !== documentViewId &&
+            view.name.toLowerCase() === newName.toLowerCase(),
         );
 
         if (existingViewsWithSameName.length > 0) {

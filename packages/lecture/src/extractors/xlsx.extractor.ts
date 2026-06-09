@@ -36,12 +36,15 @@ function extractTText(t: unknown): string {
 
 export const xlsxExtractorDefinition = defineTextExtractor({
   name: 'xlsx',
-  mimeTypes: [
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  ],
+  mimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
   extract: async ({ arrayBuffer }) => {
     const zip = await JSZip.loadAsync(arrayBuffer);
-    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', textNodeName: '#text', isArray: () => false });
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      textNodeName: '#text',
+      isArray: () => false,
+    });
 
     // Load shared strings (may not exist in all xlsx files)
     const sharedStrings: string[] = [];
@@ -94,13 +97,13 @@ export const xlsxExtractorDefinition = defineTextExtractor({
     // Fallback: discover sheets from zip if rels resolution yielded nothing
     if (sheetPaths.length === 0) {
       Object.keys(zip.files)
-        .filter(name => name.match(/^xl\/worksheets\/sheet\d+\.xml$/))
+        .filter((name) => name.match(/^xl\/worksheets\/sheet\d+\.xml$/))
         .sort((a, b) => {
           const numA = Number.parseInt(a.match(/sheet(\d+)\.xml$/)?.[1] ?? '0', 10);
           const numB = Number.parseInt(b.match(/sheet(\d+)\.xml$/)?.[1] ?? '0', 10);
           return numA - numB;
         })
-        .forEach(name => sheetPaths.push(name));
+        .forEach((name) => sheetPaths.push(name));
     }
 
     const sheets: string[] = [];

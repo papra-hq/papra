@@ -4,14 +4,21 @@ import { decrypt, encrypt } from '../../../shared/crypto/encryption';
 import { createError } from '../../../shared/errors/errors';
 import { isNil } from '../../../shared/utils';
 import { WRAPPED_ENCRYPTION_KEY_ENCODING } from './document-encryption.constants';
-import { createDocumentKekNotFoundError, createDocumentKekRequiredError } from './document-encryptions.errors';
+import {
+  createDocumentKekNotFoundError,
+  createDocumentKekRequiredError,
+} from './document-encryptions.errors';
 
 type DocumentKeyEncryptionKey = {
   version: string;
   key: Buffer;
 };
 
-export function getMostRecentDocumentKek({ documentKeyEncryptionKeys = [] }: { documentKeyEncryptionKeys?: DocumentKeyEncryptionKey[] }): DocumentKeyEncryptionKey {
+export function getMostRecentDocumentKek({
+  documentKeyEncryptionKeys = [],
+}: {
+  documentKeyEncryptionKeys?: DocumentKeyEncryptionKey[];
+}): DocumentKeyEncryptionKey {
   const sortedKeys = documentKeyEncryptionKeys.sort((a, b) => a.version.localeCompare(b.version));
   const mostRecentKey = sortedKeys[sortedKeys.length - 1];
 
@@ -22,8 +29,14 @@ export function getMostRecentDocumentKek({ documentKeyEncryptionKeys = [] }: { d
   return mostRecentKey;
 }
 
-export function getKekByVersion({ documentKeyEncryptionKeys = [], version }: { documentKeyEncryptionKeys?: DocumentKeyEncryptionKey[]; version: string }): DocumentKeyEncryptionKey {
-  const kek = documentKeyEncryptionKeys.find(kek => kek.version === version);
+export function getKekByVersion({
+  documentKeyEncryptionKeys = [],
+  version,
+}: {
+  documentKeyEncryptionKeys?: DocumentKeyEncryptionKey[];
+  version: string;
+}): DocumentKeyEncryptionKey {
+  const kek = documentKeyEncryptionKeys.find((kek) => kek.version === version);
 
   if (isNil(kek)) {
     throw createDocumentKekNotFoundError();
@@ -36,9 +49,17 @@ export function createNewEncryptionKey() {
   return crypto.randomBytes(32);
 }
 
-export function wrapEncryptionKey({ encryptionKey, kek }: { encryptionKey: Buffer; kek: DocumentKeyEncryptionKey }): string {
+export function wrapEncryptionKey({
+  encryptionKey,
+  kek,
+}: {
+  encryptionKey: Buffer;
+  kek: DocumentKeyEncryptionKey;
+}): string {
   try {
-    return encrypt({ key: kek.key, value: encryptionKey }).toString(WRAPPED_ENCRYPTION_KEY_ENCODING);
+    return encrypt({ key: kek.key, value: encryptionKey }).toString(
+      WRAPPED_ENCRYPTION_KEY_ENCODING,
+    );
   } catch (error) {
     throw createError({
       message: 'Unable to wrap encryption key',
@@ -50,9 +71,18 @@ export function wrapEncryptionKey({ encryptionKey, kek }: { encryptionKey: Buffe
   }
 }
 
-export function unwrapEncryptionKey({ wrappedEncryptionKey, kek }: { wrappedEncryptionKey: string; kek: DocumentKeyEncryptionKey }): Buffer {
+export function unwrapEncryptionKey({
+  wrappedEncryptionKey,
+  kek,
+}: {
+  wrappedEncryptionKey: string;
+  kek: DocumentKeyEncryptionKey;
+}): Buffer {
   try {
-    return decrypt({ encryptedValue: Buffer.from(wrappedEncryptionKey, WRAPPED_ENCRYPTION_KEY_ENCODING), key: kek.key });
+    return decrypt({
+      encryptedValue: Buffer.from(wrappedEncryptionKey, WRAPPED_ENCRYPTION_KEY_ENCODING),
+      key: kek.key,
+    });
   } catch (error) {
     throw createError({
       message: 'Unable to unwrap encryption key, the key might be invalid',

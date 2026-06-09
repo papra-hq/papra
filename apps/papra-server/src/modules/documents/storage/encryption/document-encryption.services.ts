@@ -1,12 +1,27 @@
 import type { Config } from '../../../config/config.types';
 import type { StorageDriver, StorageServices } from '../drivers/drivers.models';
-import { createDecryptTransformer, createEncryptTransformer } from '../../../shared/crypto/encryption';
+import {
+  createDecryptTransformer,
+  createEncryptTransformer,
+} from '../../../shared/crypto/encryption';
 import { isNil } from '../../../shared/utils';
 import { ENCRYPTION_ALGORITHMS } from './document-encryption.constants';
-import { createNewEncryptionKey, getKekByVersion, getMostRecentDocumentKek, unwrapEncryptionKey, wrapEncryptionKey } from './document-encryption.models';
+import {
+  createNewEncryptionKey,
+  getKekByVersion,
+  getMostRecentDocumentKek,
+  unwrapEncryptionKey,
+  wrapEncryptionKey,
+} from './document-encryption.models';
 import { createUnsupportedEncryptionAlgorithmError } from './document-encryptions.errors';
 
-export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { storageDriver: StorageDriver; encryptionConfig: Config['documentsStorage']['encryption'] }): StorageServices {
+export function wrapWithEncryptionLayer({
+  storageDriver,
+  encryptionConfig,
+}: {
+  storageDriver: StorageDriver;
+  encryptionConfig: Config['documentsStorage']['encryption'];
+}): StorageServices {
   const { isEncryptionEnabled, documentKeyEncryptionKeys } = encryptionConfig;
 
   return {
@@ -38,10 +53,19 @@ export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { s
         fileEncryptionKekVersion: kek.version,
       };
     },
-    getFileStream: async ({ fileEncryptionKeyWrapped, fileEncryptionKekVersion, fileEncryptionAlgorithm, ...driverArgs }) => {
+    getFileStream: async ({
+      fileEncryptionKeyWrapped,
+      fileEncryptionKekVersion,
+      fileEncryptionAlgorithm,
+      ...driverArgs
+    }) => {
       const { fileStream } = await storageDriver.getFileStream(driverArgs);
 
-      if (isNil(fileEncryptionKeyWrapped) || isNil(fileEncryptionKekVersion) || isNil(fileEncryptionAlgorithm)) {
+      if (
+        isNil(fileEncryptionKeyWrapped) ||
+        isNil(fileEncryptionKekVersion) ||
+        isNil(fileEncryptionAlgorithm)
+      ) {
         // If the file is not encrypted, we return the file stream as is
         return { fileStream };
       }
@@ -52,7 +76,10 @@ export function wrapWithEncryptionLayer({ storageDriver, encryptionConfig }: { s
 
       const kek = getKekByVersion({ documentKeyEncryptionKeys, version: fileEncryptionKekVersion });
 
-      const encryptionKey = unwrapEncryptionKey({ wrappedEncryptionKey: fileEncryptionKeyWrapped, kek });
+      const encryptionKey = unwrapEncryptionKey({
+        wrappedEncryptionKey: fileEncryptionKeyWrapped,
+        kek,
+      });
 
       return {
         fileStream: fileStream.pipe(createDecryptTransformer({ key: encryptionKey })),

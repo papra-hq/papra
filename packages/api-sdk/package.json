@@ -1,39 +1,37 @@
 {
   "name": "@papra/api-sdk",
-  "type": "module",
   "version": "1.3.0",
   "description": "Api SDK for Papra, the document archiving platform.",
-  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "keywords": [
+    "api",
+    "archiving",
+    "document",
+    "papra",
+    "sdk",
+    "storage"
+  ],
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
   "license": "AGPL-3.0-or-later",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra",
     "directory": "packages/api-sdk"
   },
-  "bugs": {
-    "url": "https://github.com/papra-hq/papra/issues"
-  },
-  "keywords": [
-    "papra",
-    "api",
-    "sdk",
-    "document",
-    "archiving",
-    "storage"
+  "files": [
+    "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
@@ -47,8 +45,6 @@
     "ofetch": "catalog:"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
-    "eslint": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

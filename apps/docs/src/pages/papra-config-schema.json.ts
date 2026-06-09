@@ -4,7 +4,11 @@ import { toJsonSchema } from '@valibot/to-json-schema';
 import * as v from 'valibot';
 import { configDefinition } from '../../../papra-server/src/modules/config/config';
 
-function buildConfigSchema({ configDefinition }: { configDefinition: ConfigDefinition }): v.GenericSchema {
+function buildConfigSchema({
+  configDefinition,
+}: {
+  configDefinition: ConfigDefinition;
+}): v.GenericSchema {
   const entries: Record<string, v.GenericSchema> = {};
 
   for (const [key, value] of Object.entries(configDefinition)) {
@@ -24,7 +28,8 @@ function getConfigSchema() {
 
   (jsonSchema.properties ??= {}).$schema = {
     type: 'string',
-    description: 'The schema of the configuration file, to be used by IDEs to provide autocompletion and validation',
+    description:
+      'The schema of the configuration file, to be used by IDEs to provide autocompletion and validation',
   };
 
   return jsonSchema;

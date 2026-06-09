@@ -7,7 +7,13 @@ import { getOrganizationId } from '../../../organizations/organizations.usecases
 import { exit } from '../../../prompts/utils';
 import { getConfig } from '../../config/config.services';
 import { organizationIdArgument } from '../../documents/documents.arguments';
-import { analyzeAndHandleTags, analyzeExport, displayImportSummary, importDocuments, selectDocumentStrategy } from './paperless.wizard';
+import {
+  analyzeAndHandleTags,
+  analyzeExport,
+  displayImportSummary,
+  importDocuments,
+  selectDocumentStrategy,
+} from './paperless.wizard';
 
 export const paperlessCommand = defineCommand({
   meta: {
@@ -27,7 +33,9 @@ export const paperlessCommand = defineCommand({
     const { apiKey, apiUrl } = await getConfig();
 
     if (!apiKey) {
-      exit(`API key not found. Please create an api key in your Papra account and set it using the ${pc.bold('papra config init')} command.`);
+      exit(
+        `API key not found. Please create an api key in your Papra account and set it using the ${pc.bold('papra config init')} command.`,
+      );
     }
 
     if (!fileExists(args.archivePath)) {

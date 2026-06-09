@@ -20,14 +20,9 @@ export const CreateOrganizationPage: Component = () => {
       </div>
 
       <div class="max-w-md mx-auto pt-12 sm:pt-24 px-6">
+        <h1 class="text-xl font-bold">{t('organizations.create.title')}</h1>
 
-        <h1 class="text-xl font-bold">
-          {t('organizations.create.title')}
-        </h1>
-
-        <p class="text-muted-foreground mb-6">
-          {t('organizations.create.description')}
-        </p>
+        <p class="text-muted-foreground mb-6">{t('organizations.create.description')}</p>
 
         <CreateOrganizationForm onSubmit={createOrganization} />
         <Button as={A} href="/" class="mb-4 w-full" variant="outline">

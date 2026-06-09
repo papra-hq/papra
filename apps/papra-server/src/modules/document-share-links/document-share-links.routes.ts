@@ -13,9 +13,19 @@ import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { formatPublicSharedDocument, formatShareLinkForApi, formatShareLinksForApi } from './document-share-links.models';
+import {
+  formatPublicSharedDocument,
+  formatShareLinkForApi,
+  formatShareLinksForApi,
+} from './document-share-links.models';
 import { createShareLinksRepository } from './document-share-links.repository';
-import { createShareLinkBodySchema, shareLinkIdSchema, shareLinkTokenSchema, updateShareLinkBodySchema, verifySharePasswordBodySchema } from './document-share-links.schemas';
+import {
+  createShareLinkBodySchema,
+  shareLinkIdSchema,
+  shareLinkTokenSchema,
+  updateShareLinkBodySchema,
+  verifySharePasswordBodySchema,
+} from './document-share-links.schemas';
 import {
   createShareLink,
   ensureShareLinkAccessGranted,
@@ -55,7 +65,9 @@ function setupCreateShareLinkRoute({ app, db, config }: RouteDefinitionContext) 
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/share-links',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, documentId: documentIdSchema })),
+    validateParams(
+      v.strictObject({ organizationId: organizationIdSchema, documentId: documentIdSchema }),
+    ),
     validateJsonBody(createShareLinkBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
@@ -88,7 +100,9 @@ function setupGetDocumentShareLinksRoute({ app, db, config }: RouteDefinitionCon
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/share-links',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, documentId: documentIdSchema })),
+    validateParams(
+      v.strictObject({ organizationId: organizationIdSchema, documentId: documentIdSchema }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
@@ -100,7 +114,10 @@ function setupGetDocumentShareLinksRoute({ app, db, config }: RouteDefinitionCon
       await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { shareLinks } = await shareLinksRepository.getDocumentShareLinks({ documentId, organizationId });
+      const { shareLinks } = await shareLinksRepository.getDocumentShareLinks({
+        documentId,
+        organizationId,
+      });
 
       return context.json({ shareLinks: formatShareLinksForApi({ shareLinks, config }) });
     },
@@ -120,7 +137,9 @@ function setupGetOrganizationShareLinksRoute({ app, db, config }: RouteDefinitio
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { shareLinks } = await shareLinksRepository.getOrganizationShareLinks({ organizationId });
+      const { shareLinks } = await shareLinksRepository.getOrganizationShareLinks({
+        organizationId,
+      });
 
       return context.json({ shareLinks: formatShareLinksForApi({ shareLinks, config }) });
     },
@@ -131,7 +150,9 @@ function setupUpdateShareLinkRoute({ app, db, config }: RouteDefinitionContext) 
   app.patch(
     '/api/organizations/:organizationId/share-links/:shareLinkId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, shareLinkId: shareLinkIdSchema })),
+    validateParams(
+      v.strictObject({ organizationId: organizationIdSchema, shareLinkId: shareLinkIdSchema }),
+    ),
     validateJsonBody(updateShareLinkBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
@@ -142,7 +163,14 @@ function setupUpdateShareLinkRoute({ app, db, config }: RouteDefinitionContext) 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { shareLink } = await updateShareLink({ shareLinkId, organizationId, expiresAt, password, isEnabled, shareLinksRepository });
+      const { shareLink } = await updateShareLink({
+        shareLinkId,
+        organizationId,
+        expiresAt,
+        password,
+        isEnabled,
+        shareLinksRepository,
+      });
 
       return context.json({ shareLink: formatShareLinkForApi({ shareLink, config }) });
     },
@@ -153,7 +181,9 @@ function setupDeleteShareLinkRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/share-links/:shareLinkId',
     requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, shareLinkId: shareLinkIdSchema })),
+    validateParams(
+      v.strictObject({ organizationId: organizationIdSchema, shareLinkId: shareLinkIdSchema }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, shareLinkId } = context.req.valid('param');
@@ -186,7 +216,13 @@ function setupGetSharedDocumentRoute({ app, db, config, kvStore }: RouteDefiniti
       const shareLinksRepository = createShareLinksRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
 
-      const { document } = await getSharedDocument({ shareLinkToken, accessToken, shareLinksRepository, documentsRepository, config });
+      const { document } = await getSharedDocument({
+        shareLinkToken,
+        accessToken,
+        shareLinksRepository,
+        documentsRepository,
+        config,
+      });
 
       return context.json({ document: formatPublicSharedDocument({ document }) });
     },
@@ -210,14 +246,25 @@ function setupVerifySharePasswordRoute({ app, db, config, kvStore }: RouteDefini
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { accessToken } = await verifySharePassword({ shareLinkToken, password, shareLinksRepository, config });
+      const { accessToken } = await verifySharePassword({
+        shareLinkToken,
+        password,
+        shareLinksRepository,
+        config,
+      });
 
       return context.json({ accessToken });
     },
   );
 }
 
-function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageService, kvStore }: RouteDefinitionContext) {
+function setupGetSharedDocumentFileRoute({
+  app,
+  db,
+  config,
+  documentsStorageService,
+  kvStore,
+}: RouteDefinitionContext) {
   app.get(
     '/api/share-links/:shareLinkToken/document/file',
     validateParams(v.strictObject({ shareLinkToken: shareLinkTokenSchema })),
@@ -233,7 +280,10 @@ function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageServ
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
-      const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository });
+      const { shareLink } = await resolveUsableShareLinkByToken({
+        shareLinkToken,
+        shareLinksRepository,
+      });
 
       await ensureShareLinkAccessGranted({ shareLink, accessToken, config });
 
@@ -249,20 +299,16 @@ function setupGetSharedDocumentFileRoute({ app, db, config, documentsStorageServ
 
       await touchShareLinkLastAccessedAt({ shareLink, shareLinksRepository });
 
-      return context.body(
-        Readable.toWeb(fileStream),
-        200,
-        {
-          // Serve as an opaque attachment to prevent the browser from rendering potentially dangerous files.
-          'Content-Type': 'application/octet-stream',
-          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
-          'Content-Length': String(document.originalSize),
-          'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'DENY',
-          'X-Robots-Tag': 'noindex, nofollow',
-          'Referrer-Policy': 'no-referrer',
-        },
-      );
+      return context.body(Readable.toWeb(fileStream), 200, {
+        // Serve as an opaque attachment to prevent the browser from rendering potentially dangerous files.
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(document.name)}`,
+        'Content-Length': String(document.originalSize),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-Robots-Tag': 'noindex, nofollow',
+        'Referrer-Policy': 'no-referrer',
+      });
     },
   );
 }

@@ -72,7 +72,10 @@ export async function updateWebhook({
   organizationId: string;
   webhooksConfig: WebhooksConfig;
 }) {
-  const { webhook: existingWebhook } = await webhookRepository.getOrganizationWebhookById({ webhookId, organizationId });
+  const { webhook: existingWebhook } = await webhookRepository.getOrganizationWebhookById({
+    webhookId,
+    organizationId,
+  });
 
   if (!existingWebhook) {
     throw createWebhookNotFoundError();
@@ -116,15 +119,21 @@ export async function triggerWebhooks({
   const { event } = multiplePayloadsData;
   const singlePayloads = splitMultiplePayloads(multiplePayloadsData);
 
-  const { webhooks } = await webhookRepository.getOrganizationEnabledWebhooksForEvent({ organizationId, event });
+  const { webhooks } = await webhookRepository.getOrganizationEnabledWebhooksForEvent({
+    organizationId,
+    event,
+  });
 
-  logger.info({ webhooksCount: webhooks.length, organizationId, event, payloadsCount: singlePayloads.length }, 'Triggering webhooks');
+  logger.info(
+    { webhooksCount: webhooks.length, organizationId, event, payloadsCount: singlePayloads.length },
+    'Triggering webhooks',
+  );
 
   const limit = pLimit(10);
 
   await Promise.all(
-    webhooks.flatMap(webhook =>
-      singlePayloads.map(async webhookData =>
+    webhooks.flatMap((webhook) =>
+      singlePayloads.map(async (webhookData) =>
         limit(async () =>
           triggerWebhook({ webhook, webhookRepository, now, ...webhookData, logger, httpClient }),
         ),
@@ -134,7 +143,7 @@ export async function triggerWebhooks({
 }
 
 function splitMultiplePayloads(data: WebhookMultiplePayloads): WebhookPayloads[] {
-  return data.payloads.map(payload => ({ event: data.event, payload })) as WebhookPayloads[];
+  return data.payloads.map((payload) => ({ event: data.event, payload })) as WebhookPayloads[];
 }
 
 export const deferTriggerWebhooks = createDeferable(triggerWebhooks);
@@ -167,7 +176,10 @@ async function triggerWebhook({
       ...webhookData,
     });
 
-    logger.info({ webhookId: webhook.id, event, responseStatus, organizationId }, 'Webhook triggered');
+    logger.info(
+      { webhookId: webhook.id, event, responseStatus, organizationId },
+      'Webhook triggered',
+    );
 
     await webhookRepository.saveWebhookDelivery({
       webhookId: webhook.id,
@@ -182,7 +194,10 @@ async function triggerWebhook({
     if (blockedBySsrf) {
       reportNonSsrfSafeWebhookUrl({ url, logger });
     } else {
-      logger.error({ webhookId: webhook.id, event, organizationId, error }, 'Webhook delivery failed');
+      logger.error(
+        { webhookId: webhook.id, event, organizationId, error },
+        'Webhook delivery failed',
+      );
     }
   }
 }
@@ -190,7 +205,10 @@ async function triggerWebhook({
 function reportNonSsrfSafeWebhookUrl({ url, logger }: { url: string; logger: Logger }) {
   try {
     const { hostname } = new URL(url);
-    logger.warn({ hostname }, `Webhook URL is not SSRF safe, if the hostname (${hostname}) is expected to be SSRF safe, consider adding it to the allowed hostnames list in the configuration (${WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR}=${hostname})`);
+    logger.warn(
+      { hostname },
+      `Webhook URL is not SSRF safe, if the hostname (${hostname}) is expected to be SSRF safe, consider adding it to the allowed hostnames list in the configuration (${WEBHOOK_URL_ALLOWED_HOSTNAMES_ENV_VAR}=${hostname})`,
+    );
   } catch {
     logger.error('Webhook URL is not SSRF safe and is also an invalid URL');
   }

@@ -39,7 +39,9 @@ export async function createTag({
 }) {
   await checkIfOrganizationCanCreateNewTag({ organizationId, config, tagsRepository });
 
-  const { tag } = await tagsRepository.createTag({ tag: { organizationId, name, color, description } });
+  const { tag } = await tagsRepository.createTag({
+    tag: { organizationId, name, color, description },
+  });
 
   return { tag };
 }

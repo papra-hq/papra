@@ -11,7 +11,13 @@ import { apiKeyOrganizationsTable, apiKeysTable } from './api-keys.tables';
 
 export type ApiKeysRepository = ReturnType<typeof createApiKeysRepository>;
 
-export function createApiKeysRepository({ db, logger = createLogger({ namespace: 'api-keys.repository' }) }: { db: Database; logger?: Logger }) {
+export function createApiKeysRepository({
+  db,
+  logger = createLogger({ namespace: 'api-keys.repository' }),
+}: {
+  db: Database;
+  logger?: Logger;
+}) {
   return injectArguments(
     {
       saveApiKey,
@@ -82,19 +88,27 @@ async function saveApiKey({
         ),
       );
 
-    if (!organizationIds.every(id => organizationMembers.some(om => om.organizationId === id))) {
-      logger.warn({
-        userId,
-        organizationIds,
-        organizationMembers: organizationMembers.map(om => pick(om, ['id', 'organizationId', 'userId', 'role'])),
-      }, 'Api key created for organization that the user is not part of');
+    if (
+      !organizationIds.every((id) => organizationMembers.some((om) => om.organizationId === id))
+    ) {
+      logger.warn(
+        {
+          userId,
+          organizationIds,
+          organizationMembers: organizationMembers.map((om) =>
+            pick(om, ['id', 'organizationId', 'userId', 'role']),
+          ),
+        },
+        'Api key created for organization that the user is not part of',
+      );
     }
 
-    await db
-      .insert(apiKeyOrganizationsTable)
-      .values(
-        organizationMembers.map(({ id: organizationMemberId }) => ({ apiKeyId, organizationMemberId })),
-      );
+    await db.insert(apiKeyOrganizationsTable).values(
+      organizationMembers.map(({ id: organizationMemberId }) => ({
+        apiKeyId,
+        organizationMemberId,
+      })),
+    );
   }
 
   return { apiKey };
@@ -106,9 +120,7 @@ async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) 
       ...omit(getTableColumns(apiKeysTable), ['keyHash']),
     })
     .from(apiKeysTable)
-    .where(
-      eq(apiKeysTable.userId, userId),
-    );
+    .where(eq(apiKeysTable.userId, userId));
 
   const relatedOrganizations = await db
     .select({
@@ -116,19 +128,28 @@ async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) 
       apiKeyId: apiKeyOrganizationsTable.apiKeyId,
     })
     .from(apiKeyOrganizationsTable)
-    .leftJoin(organizationMembersTable, eq(apiKeyOrganizationsTable.organizationMemberId, organizationMembersTable.id))
-    .leftJoin(organizationsTable, eq(organizationMembersTable.organizationId, organizationsTable.id))
+    .leftJoin(
+      organizationMembersTable,
+      eq(apiKeyOrganizationsTable.organizationMemberId, organizationMembersTable.id),
+    )
+    .leftJoin(
+      organizationsTable,
+      eq(organizationMembersTable.organizationId, organizationsTable.id),
+    )
     .where(
       and(
-        inArray(apiKeyOrganizationsTable.apiKeyId, apiKeys.map(apiKey => apiKey.id)),
+        inArray(
+          apiKeyOrganizationsTable.apiKeyId,
+          apiKeys.map((apiKey) => apiKey.id),
+        ),
         eq(organizationMembersTable.userId, userId),
       ),
     );
 
-  const apiKeysWithOrganizations = apiKeys.map(apiKey => ({
+  const apiKeysWithOrganizations = apiKeys.map((apiKey) => ({
     ...apiKey,
     organizations: relatedOrganizations
-      .filter(organization => organization.apiKeyId === apiKey.id)
+      .filter((organization) => organization.apiKeyId === apiKey.id)
       .map(({ apiKeyId: _, ...organization }) => organization),
   }));
 
@@ -137,28 +158,36 @@ async function getUserApiKeys({ userId, db }: { userId: string; db: Database }) 
   };
 }
 
-async function deleteUserApiKey({ apiKeyId, userId, db }: { apiKeyId: string; userId: string; db: Database }) {
+async function deleteUserApiKey({
+  apiKeyId,
+  userId,
+  db,
+}: {
+  apiKeyId: string;
+  userId: string;
+  db: Database;
+}) {
   await db
     .delete(apiKeysTable)
-    .where(
-      and(
-        eq(apiKeysTable.id, apiKeyId),
-        eq(apiKeysTable.userId, userId),
-      ),
-    );
+    .where(and(eq(apiKeysTable.id, apiKeyId), eq(apiKeysTable.userId, userId)));
 }
 
-async function getApiKeyByHash({ keyHash, db, now = new Date() }: { keyHash: string; db: Database; now?: Date }) {
+async function getApiKeyByHash({
+  keyHash,
+  db,
+  now = new Date(),
+}: {
+  keyHash: string;
+  db: Database;
+  now?: Date;
+}) {
   const [apiKey] = await db
     .select()
     .from(apiKeysTable)
     .where(
       and(
         eq(apiKeysTable.keyHash, keyHash),
-        or(
-          gt(apiKeysTable.expiresAt, now),
-          isNull(apiKeysTable.expiresAt),
-        ),
+        or(gt(apiKeysTable.expiresAt, now), isNull(apiKeysTable.expiresAt)),
       ),
     );
 

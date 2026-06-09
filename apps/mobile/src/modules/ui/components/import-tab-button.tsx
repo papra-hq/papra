@@ -20,10 +20,7 @@ export function ImportTabButton() {
         <Icon name="plus" size={30} style={{ height: 30 }} color={themeColors.mutedForeground} />
       </HapticTab>
 
-      <ImportDrawer
-        visible={isDrawerVisible}
-        onClose={() => setIsDrawerVisible(false)}
-      />
+      <ImportDrawer visible={isDrawerVisible} onClose={() => setIsDrawerVisible(false)} />
     </>
   );
 }

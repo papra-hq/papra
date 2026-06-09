@@ -22,7 +22,10 @@ export function useCurrentOrganization() {
 }
 
 export const CurrentOrganizationProvider: ParentComponent = (props) => {
-  const [getCurrentOrganizationId, setCurrentOrganizationId] = makePersisted(createSignal<string | null>(null), { name: 'papra_current_organization_id', storage: localStorage });
+  const [getCurrentOrganizationId, setCurrentOrganizationId] = makePersisted(
+    createSignal<string | null>(null),
+    { name: 'papra_current_organization_id', storage: localStorage },
+  );
 
   const query = useQuery(() => ({
     queryKey: ['organizations'],
@@ -31,11 +34,14 @@ export const CurrentOrganizationProvider: ParentComponent = (props) => {
 
   return (
     <Show when={query.data}>
-      {getData => (
+      {(getData) => (
         <currentOrganizationContext.Provider
           value={{
             organizations: getData().organizations,
-            getCurrentOrganization: () => getData().organizations.find(organization => organization.id === getCurrentOrganizationId()) ?? getData().organizations[0],
+            getCurrentOrganization: () =>
+              getData().organizations.find(
+                (organization) => organization.id === getCurrentOrganizationId(),
+              ) ?? getData().organizations[0],
             setCurrentOrganization: ({ organizationId }) => {
               setCurrentOrganizationId(organizationId);
             },

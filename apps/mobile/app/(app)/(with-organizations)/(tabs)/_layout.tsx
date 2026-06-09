@@ -30,9 +30,10 @@ export default function TabLayout() {
         name="list"
         options={{
           title: 'Documents',
-          tabBarIcon: ({ color }) => <Icon name="home" size={30} color={color} style={{ height: 30 }} />,
+          tabBarIcon: ({ color }) => (
+            <Icon name="home" size={30} color={color} style={{ height: 30 }} />
+          ),
           tabBarLabel: () => null,
-
         }}
       />
       <Tabs.Screen
@@ -41,16 +42,16 @@ export default function TabLayout() {
           title: 'Import',
           tabBarButton: () => <ImportTabButton />,
           tabBarLabel: () => null,
-
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <Icon name="settings" size={30} color={color} style={{ height: 30 }} />,
+          tabBarIcon: ({ color }) => (
+            <Icon name="settings" size={30} color={color} style={{ height: 30 }} />
+          ),
           tabBarLabel: () => null,
-
         }}
       />
     </Tabs>

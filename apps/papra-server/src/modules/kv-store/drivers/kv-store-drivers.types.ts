@@ -6,10 +6,18 @@ import type { JsonSerializableValue } from '../kv-store.types';
 export type KvStoreDriver = {
   name: string;
   get: (args: { key: string }) => Promise<JsonSerializableValue | undefined>;
-  set: (args: { key: string; value: JsonSerializableValue; expiresAt?: Temporal.Instant }) => Promise<void>;
+  set: (args: {
+    key: string;
+    value: JsonSerializableValue;
+    expiresAt?: Temporal.Instant;
+  }) => Promise<void>;
   delete: (args: { key: string }) => Promise<void>;
   // Optional bulk purge of expired entries, only implemented by lazy-delete drivers (e.g. libsql) that would otherwise accumulate expired rows.
   deleteExpired?: () => Promise<{ deletedCount: number }>;
 };
 
-export type KvStoreDriverFactory = (args: { config: Config; db: Database; clock?: Clock }) => KvStoreDriver;
+export type KvStoreDriverFactory = (args: {
+  config: Config;
+  db: Database;
+  clock?: Clock;
+}) => KvStoreDriver;

@@ -72,49 +72,64 @@ describe('storage-pattern usecases', () => {
 
       for (const { label, storageKeyPattern, expected: storageKey } of patterns) {
         test(label, () => {
-          expect(
-            buildStorageKey({ storageKeyPattern, ...context }),
-          ).to.eql(
-            { storageKey },
-          );
+          expect(buildStorageKey({ storageKeyPattern, ...context })).to.eql({ storageKey });
         });
       }
     });
 
     test('unrecognized expressions throw an error', () => {
-      expect(
-        () => buildStorageKey({ storageKeyPattern: '{{unknown.expression}}/{{document.name}}', ...context }),
+      expect(() =>
+        buildStorageKey({
+          storageKeyPattern: '{{unknown.expression}}/{{document.name}}',
+          ...context,
+        }),
       ).to.throw('Unknown expression: unknown.expression');
     });
 
     test('unrecognized transformers throw an error', () => {
-      expect(
-        () => buildStorageKey({ storageKeyPattern: '{{document.name | unknownTransformer}}', ...context }),
+      expect(() =>
+        buildStorageKey({
+          storageKeyPattern: '{{document.name | unknownTransformer}}',
+          ...context,
+        }),
       ).to.throw('Unknown transformer: unknownTransformer');
     });
 
     test('transformers without arguments called with arguments are ok', () => {
       expect(
-        buildStorageKey({ storageKeyPattern: '{{document.name | uppercase "unexpected argument"}}', ...context }),
+        buildStorageKey({
+          storageKeyPattern: '{{document.name | uppercase "unexpected argument"}}',
+          ...context,
+        }),
       ).to.eql({ storageKey: 'MY DOCUMENT.PDF' });
     });
   });
 
   describe('isStoragePatternValid', () => {
     test('a pattern is invalid if it contains an unrecognized expression', () => {
-      expect(isStoragePatternValid({ storageKeyPattern: '{{unknown.expression}}/{{document.name}}' })).to.eql({ isValid: false, error: new Error('Unknown expression: unknown.expression') });
+      expect(
+        isStoragePatternValid({ storageKeyPattern: '{{unknown.expression}}/{{document.name}}' }),
+      ).to.eql({ isValid: false, error: new Error('Unknown expression: unknown.expression') });
     });
 
     test('a pattern is invalid if it contains an unrecognized transformer', () => {
-      expect(isStoragePatternValid({ storageKeyPattern: '{{document.name | unknownTransformer}}' })).to.eql({ isValid: false, error: new Error('Unknown transformer: unknownTransformer') });
+      expect(
+        isStoragePatternValid({ storageKeyPattern: '{{document.name | unknownTransformer}}' }),
+      ).to.eql({ isValid: false, error: new Error('Unknown transformer: unknownTransformer') });
     });
 
     test('a pattern is valid if it only contains recognized expressions and transformers', () => {
-      expect(isStoragePatternValid({ storageKeyPattern: '{{organization.id}}/{{document.name | uppercase}}' })).to.eql({ isValid: true });
+      expect(
+        isStoragePatternValid({
+          storageKeyPattern: '{{organization.id}}/{{document.name | uppercase}}',
+        }),
+      ).to.eql({ isValid: true });
     });
 
     test('a pattern is invalid if it ends with a slash', () => {
-      expect(isStoragePatternValid({ storageKeyPattern: '{{organization.id}}/{{document.name}}/' })).to.eql({ isValid: false, error: new Error('Pattern cannot end with a slash') });
+      expect(
+        isStoragePatternValid({ storageKeyPattern: '{{organization.id}}/{{document.name}}/' }),
+      ).to.eql({ isValid: false, error: new Error('Pattern cannot end with a slash') });
     });
   });
 });

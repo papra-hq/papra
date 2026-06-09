@@ -1,6 +1,14 @@
 import type { StandardWebhookEventPayload, WebhookPayloads } from './webhooks.types';
 
-export function serializeBody<T extends WebhookPayloads>({ now = new Date(), payload, event }: { now?: Date; payload: T['payload']; event: T['event'] }) {
+export function serializeBody<T extends WebhookPayloads>({
+  now = new Date(),
+  payload,
+  event,
+}: {
+  now?: Date;
+  payload: T['payload'];
+  event: T['event'];
+}) {
   const body: StandardWebhookEventPayload = {
     data: payload,
     type: event,

@@ -28,7 +28,9 @@ export async function deleteUser({
   await usersRepository.getUserByIdOrThrow({ userId });
 
   // Block deletion if the user still owns any organization
-  const { organizationCount } = await organizationsRepository.getUserOwnedOrganizationCount({ userId });
+  const { organizationCount } = await organizationsRepository.getUserOwnedOrganizationCount({
+    userId,
+  });
 
   if (organizationCount > 0) {
     throw createUserStillOwnsOrganizationsError();

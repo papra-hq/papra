@@ -8,5 +8,4 @@ export const dropLegacyMigrationsMigration = {
   up: async ({ db }) => {
     await db.run(sql`DROP TABLE IF EXISTS "__drizzle_migrations"`);
   },
-
 } satisfies Migration;

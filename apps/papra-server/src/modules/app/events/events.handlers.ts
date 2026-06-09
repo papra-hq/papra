@@ -16,7 +16,14 @@ import { registerTriggerWebhooksOnDocumentsTrashedHandler } from '../../document
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
 import { registerTrackingUserCreatedEventHandler } from '../../users/event-handlers/tracking.user-created';
 
-export function registerEventHandlers(deps: { trackingServices: TrackingServices; eventServices: EventServices; db: Database; documentSearchServices: DocumentSearchServices; config: Config; webhookTriggerServices: WebhookTriggerServices }) {
+export function registerEventHandlers(deps: {
+  trackingServices: TrackingServices;
+  eventServices: EventServices;
+  db: Database;
+  documentSearchServices: DocumentSearchServices;
+  config: Config;
+  webhookTriggerServices: WebhookTriggerServices;
+}) {
   registerFirstUserAdminEventHandler(deps);
   registerTrackingUserCreatedEventHandler(deps);
   registerTriggerWebhooksOnDocumentCreatedHandler(deps);

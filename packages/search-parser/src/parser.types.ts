@@ -8,13 +8,13 @@ export type ParsedQuery = {
   issues: Issue[];
 };
 
-export type Expression
-  = | AndExpression
-    | OrExpression
-    | NotExpression
-    | FilterExpression
-    | TextExpression
-    | EmptyExpression;
+export type Expression =
+  | AndExpression
+  | OrExpression
+  | NotExpression
+  | FilterExpression
+  | TextExpression
+  | EmptyExpression;
 
 export type EmptyExpression = {
   type: 'empty';

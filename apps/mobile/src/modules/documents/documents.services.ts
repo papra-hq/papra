@@ -57,10 +57,10 @@ export async function fetchOrganizationDocuments({
 
   apiClient: ApiClient;
 }) {
-  const {
-    documents: apiDocuments,
-    documentsCount,
-  } = await apiClient<{ documents: Document[]; documentsCount: number }>({
+  const { documents: apiDocuments, documentsCount } = await apiClient<{
+    documents: Document[];
+    documentsCount: number;
+  }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents`,
     query: {
@@ -70,18 +70,13 @@ export async function fetchOrganizationDocuments({
     },
   });
 
-  try {
-    const remote = apiDocuments.map(coerceDates);
-    const local = await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId);
-    const documents = [...local, ...remote];
-    return {
-      documentsCount: documentsCount + local.length,
-      documents: documents.map(coerceDates),
-    };
-  } catch (error) {
-    console.error('Error fetching documents:', error);
-    throw error;
-  }
+  const remote = apiDocuments.map(coerceDates);
+  const local = await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId);
+  const documents = [...local, ...remote];
+  return {
+    documentsCount: documentsCount + local.length,
+    documents: documents.map(coerceDates),
+  };
 }
 
 export async function fetchDocument({

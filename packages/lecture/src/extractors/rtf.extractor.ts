@@ -3,10 +3,7 @@ import { defineTextExtractor } from '../extractors.models';
 
 export const rtfExtractorDefinition = defineTextExtractor({
   name: 'rtf',
-  mimeTypes: [
-    'text/rtf',
-    'application/rtf',
-  ],
+  mimeTypes: ['text/rtf', 'application/rtf'],
   extract: async ({ arrayBuffer }) => {
     const text = new TextDecoder().decode(arrayBuffer);
 

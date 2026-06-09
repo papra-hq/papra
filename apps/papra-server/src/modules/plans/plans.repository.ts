@@ -31,10 +31,14 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       id: FREE_PLAN_ID,
       name: 'Free',
       limits: {
-        maxDocumentStorageBytes: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 500 * IN_BYTES.MEGABYTE,
+        maxDocumentStorageBytes: isFreePlanUnlimited
+          ? Number.POSITIVE_INFINITY
+          : 500 * IN_BYTES.MEGABYTE,
         maxIntakeEmailsCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1,
         maxOrganizationsMembersCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 3,
-        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize }) ? maxUploadSize : Number.POSITIVE_INFINITY,
+        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize })
+          ? maxUploadSize
+          : Number.POSITIVE_INFINITY,
       },
     },
     [PLUS_PLAN_ID]: {
@@ -66,7 +70,13 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
   return { organizationPlans };
 }
 
-async function getOrganizationPlanById({ planId, organizationPlans }: { planId: string; organizationPlans: Record<string, OrganizationPlanRecord> }) {
+async function getOrganizationPlanById({
+  planId,
+  organizationPlans,
+}: {
+  planId: string;
+  organizationPlans: Record<string, OrganizationPlanRecord>;
+}) {
   const organizationPlan = organizationPlans[planId];
 
   if (!organizationPlan) {
@@ -76,8 +86,16 @@ async function getOrganizationPlanById({ planId, organizationPlans }: { planId: 
   return { organizationPlan };
 }
 
-async function getOrganizationPlanByPriceId({ priceId, organizationPlans }: { priceId: string; organizationPlans: Record<string, OrganizationPlanRecord> }) {
-  const organizationPlan = Object.values(organizationPlans).find(plan => plan.monthlyPriceId === priceId || plan.annualPriceId === priceId);
+async function getOrganizationPlanByPriceId({
+  priceId,
+  organizationPlans,
+}: {
+  priceId: string;
+  organizationPlans: Record<string, OrganizationPlanRecord>;
+}) {
+  const organizationPlan = Object.values(organizationPlans).find(
+    (plan) => plan.monthlyPriceId === priceId || plan.annualPriceId === priceId,
+  );
 
   if (!organizationPlan) {
     throw createPlanNotFoundError();

@@ -1,26 +1,28 @@
-import type { StoragePatternExpressionTransformer, StoragePatternInterpolationContext } from './storage-pattern.types';
+import type {
+  StoragePatternExpressionTransformer,
+  StoragePatternInterpolationContext,
+} from './storage-pattern.types';
 import { formatDate, isValidDate } from '../../../shared/date';
 import { generateRandomString } from '../../../shared/random/random.services';
 import { ensureSafeFileName } from '../../documents.models';
 
-export const expressionsDefinitions: Record<string, (context: StoragePatternInterpolationContext) => string> = {
-  'document.id': context => context.documentId,
-  'document.name': context => ensureSafeFileName(context.documentName),
-  'organization.id': context => context.organizationId,
-  'currentDate': context => context.now.toISOString(),
+export const expressionsDefinitions: Record<
+  string,
+  (context: StoragePatternInterpolationContext) => string
+> = {
+  'document.id': (context) => context.documentId,
+  'document.name': (context) => ensureSafeFileName(context.documentName),
+  'organization.id': (context) => context.organizationId,
+  'currentDate': (context) => context.now.toISOString(),
   'random': () => generateRandomString({ length: 8 }),
-  ...[
-    'yyyy',
-    'MM',
-    'dd',
-    'HH',
-    'mm',
-    'ss',
-    'SSS',
-  ].reduce((acc, token) => ({
-    ...acc,
-    [`currentDate.${token}`]: (context: StoragePatternInterpolationContext) => formatDate(context.now, `{${token}}`),
-  }), {}),
+  ...['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss', 'SSS'].reduce(
+    (acc, token) => ({
+      ...acc,
+      [`currentDate.${token}`]: (context: StoragePatternInterpolationContext) =>
+        formatDate(context.now, `{${token}}`),
+    }),
+    {},
+  ),
 };
 
 export const expressionTransformers: Record<string, StoragePatternExpressionTransformer> = {

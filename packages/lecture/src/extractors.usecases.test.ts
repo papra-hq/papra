@@ -10,7 +10,7 @@ const packageRoot = join(dirname(currentFile), '..');
 
 const fixturesDir = await Array.fromAsync(
   glob('fixtures/*', { cwd: packageRoot, exclude: ['fixtures/_*'] }),
-  name => join(packageRoot, name),
+  (name) => join(packageRoot, name),
 );
 
 describe('extractors usecases', () => {
@@ -47,41 +47,52 @@ describe('extractors usecases', () => {
         const fixtureName = fixtureDir.split('/').filter(Boolean).pop();
 
         // use test.concurrent to run the tests in parallel -> need to use the provided expect
-        test(`fixture ${fixtureName}`, { timeout: 20_000, concurrent: true }, async ({ expect }) => {
-          const fixtureFilesPaths = await Array.fromAsync(
-            glob('*', { cwd: fixtureDir }),
-            name => join(fixtureDir, name),
-          );
+        test(
+          `fixture ${fixtureName}`,
+          { timeout: 20_000, concurrent: true },
+          async ({ expect }) => {
+            const fixtureFilesPaths = await Array.fromAsync(
+              glob('*', { cwd: fixtureDir }),
+              (name) => join(fixtureDir, name),
+            );
 
-          const inputFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.input\.\w+$/));
-          const configFilePath = fixtureFilesPaths.find(name => name.match(/\/\d{3}\.config\.ts$/));
+            const inputFilePath = fixtureFilesPaths.find((name) =>
+              name.match(/\/\d{3}\.input\.\w+$/),
+            );
+            const configFilePath = fixtureFilesPaths.find((name) =>
+              name.match(/\/\d{3}\.config\.ts$/),
+            );
 
-          const config = configFilePath ? (await import(configFilePath)).config : undefined;
+            const config = configFilePath ? (await import(configFilePath)).config : undefined;
 
-          const arrayBuffer = (await fs.readFile(inputFilePath!)).buffer as ArrayBuffer;
-          const mimeType = mime.getType(inputFilePath!)!;
+            const arrayBuffer = (await fs.readFile(inputFilePath!)).buffer as ArrayBuffer;
+            const mimeType = mime.getType(inputFilePath!)!;
 
-          const { textContent, error, extractorName, extractorType } = await extractText({
-            arrayBuffer,
-            mimeType,
-            config: {
-              ...config,
-              tesseract: {
-                forceJs: true,
-                ...config?.tesseract,
+            const { textContent, error, extractorName, extractorType } = await extractText({
+              arrayBuffer,
+              mimeType,
+              config: {
+                ...config,
+                tesseract: {
+                  forceJs: true,
+                  ...config?.tesseract,
+                },
               },
-            },
-          });
+            });
 
-          expect(error).to.eql(undefined);
-          expect(extractorName).to.not.eql(undefined, 'No extractor found for the fixture file');
-          expect(extractorType).to.not.eql(undefined);
+            expect(error).to.eql(undefined);
+            expect(extractorName).to.not.eql(undefined, 'No extractor found for the fixture file');
+            expect(extractorType).to.not.eql(undefined);
 
-          const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop()!.slice(0, 3);
-          const expectedFilePath = join(fixtureDir, `${fixtureNumber}.expected.txt`);
+            const fixtureNumber = fixtureDir.split('/').filter(Boolean).pop()!.slice(0, 3);
+            const expectedFilePath = join(fixtureDir, `${fixtureNumber}.expected.txt`);
 
-          await expect(textContent).toMatchFileSnapshot(expectedFilePath, 'Fixture does not match snapshot');
-        });
+            await expect(textContent).toMatchFileSnapshot(
+              expectedFilePath,
+              'Fixture does not match snapshot',
+            );
+          },
+        );
       }
     });
   });

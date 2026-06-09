@@ -12,12 +12,13 @@ import { cva } from 'class-variance-authority';
 import { splitProps } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
 
-type textFieldProps<T extends ValidComponent = 'div'>
-  = TextFieldRootProps<T> & {
-    class?: string;
-  };
+type textFieldProps<T extends ValidComponent = 'div'> = TextFieldRootProps<T> & {
+  class?: string;
+};
 
-export function TextFieldRoot<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, textFieldProps<T>>) {
+export function TextFieldRoot<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, textFieldProps<T>>,
+) {
   const [local, rest] = splitProps(props as textFieldProps, ['class']);
 
   return <TextFieldPrimitive class={cn('space-y-1', local.class)} {...rest} />;
@@ -43,31 +44,27 @@ export const textfieldLabel = cva(
   },
 );
 
-type textFieldLabelProps<T extends ValidComponent = 'label'>
-  = TextFieldLabelProps<T> & {
-    class?: string;
-  };
+type textFieldLabelProps<T extends ValidComponent = 'label'> = TextFieldLabelProps<T> & {
+  class?: string;
+};
 
-export function TextFieldLabel<T extends ValidComponent = 'label'>(props: PolymorphicProps<T, textFieldLabelProps<T>>) {
+export function TextFieldLabel<T extends ValidComponent = 'label'>(
+  props: PolymorphicProps<T, textFieldLabelProps<T>>,
+) {
   const [local, rest] = splitProps(props as textFieldLabelProps, ['class']);
 
-  return (
-    <TextFieldPrimitive.Label
-      class={cn(textfieldLabel(), local.class)}
-      {...rest}
-    />
-  );
+  return <TextFieldPrimitive.Label class={cn(textfieldLabel(), local.class)} {...rest} />;
 }
 
-type textFieldErrorMessageProps<T extends ValidComponent = 'div'>
-  = TextFieldErrorMessageProps<T> & {
+type textFieldErrorMessageProps<T extends ValidComponent = 'div'> =
+  TextFieldErrorMessageProps<T> & {
     class?: string;
   };
 
-export function TextFieldErrorMessage<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, textFieldErrorMessageProps<T>>) {
-  const [local, rest] = splitProps(props as textFieldErrorMessageProps, [
-    'class',
-  ]);
+export function TextFieldErrorMessage<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, textFieldErrorMessageProps<T>>,
+) {
+  const [local, rest] = splitProps(props as textFieldErrorMessageProps, ['class']);
 
   return (
     <TextFieldPrimitive.ErrorMessage
@@ -77,15 +74,14 @@ export function TextFieldErrorMessage<T extends ValidComponent = 'div'>(props: P
   );
 }
 
-type textFieldDescriptionProps<T extends ValidComponent = 'div'>
-  = TextFieldDescriptionProps<T> & {
-    class?: string;
-  };
+type textFieldDescriptionProps<T extends ValidComponent = 'div'> = TextFieldDescriptionProps<T> & {
+  class?: string;
+};
 
-export function TextFieldDescription<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, textFieldDescriptionProps<T>>) {
-  const [local, rest] = splitProps(props as textFieldDescriptionProps, [
-    'class',
-  ]);
+export function TextFieldDescription<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, textFieldDescriptionProps<T>>,
+) {
+  const [local, rest] = splitProps(props as textFieldDescriptionProps, ['class']);
 
   return (
     <TextFieldPrimitive.Description
@@ -101,7 +97,9 @@ type textFieldInputProps<T extends ValidComponent = 'input'> = VoidProps<
   }
 >;
 
-export function TextField<T extends ValidComponent = 'input'>(props: PolymorphicProps<T, textFieldInputProps<T>>) {
+export function TextField<T extends ValidComponent = 'input'>(
+  props: PolymorphicProps<T, textFieldInputProps<T>>,
+) {
   const [local, rest] = splitProps(props as textFieldInputProps, ['class']);
 
   return (

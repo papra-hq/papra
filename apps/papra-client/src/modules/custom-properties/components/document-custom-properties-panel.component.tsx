@@ -5,7 +5,15 @@ import Calendar from '@corvu/calendar';
 import { A } from '@solidjs/router';
 
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createMemo, createSignal, For, Match, Show, Switch as SolidSwitch, Suspense } from 'solid-js';
+import {
+  createMemo,
+  createSignal,
+  For,
+  Match,
+  Show,
+  Switch as SolidSwitch,
+  Suspense,
+} from 'solid-js';
 import { fetchOrganizationDocuments } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganizationMembers } from '@/modules/organizations/organizations.services';
@@ -15,14 +23,28 @@ import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { CalendarGrid } from '@/modules/ui/components/calendar';
 import { CalendarMonthYearHeader } from '@/modules/ui/components/calendar-month-year-header';
-import { NumberField, NumberFieldDecrementTrigger, NumberFieldGroup, NumberFieldIncrementTrigger, NumberFieldInput } from '@/modules/ui/components/number-field';
+import {
+  NumberField,
+  NumberFieldDecrementTrigger,
+  NumberFieldGroup,
+  NumberFieldIncrementTrigger,
+  NumberFieldInput,
+} from '@/modules/ui/components/number-field';
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/ui/components/popover';
 import { Separator } from '@/modules/ui/components/separator';
 import { createToast } from '@/modules/ui/components/sonner';
 import { Switch, SwitchControl, SwitchThumb } from '@/modules/ui/components/switch';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { rawPropertyValueAsOption, rawPropertyValueAsOptionArray, rawPropertyValueAsRelatedDocumentArray, rawPropertyValueAsUserArray } from '../custom-properties.models';
-import { deleteDocumentCustomPropertyValue, setDocumentCustomPropertyValue } from '../custom-properties.services';
+import {
+  rawPropertyValueAsOption,
+  rawPropertyValueAsOptionArray,
+  rawPropertyValueAsRelatedDocumentArray,
+  rawPropertyValueAsUserArray,
+} from '../custom-properties.models';
+import {
+  deleteDocumentCustomPropertyValue,
+  setDocumentCustomPropertyValue,
+} from '../custom-properties.services';
 
 type SelectOption = { optionId: string; name: string };
 
@@ -75,9 +97,11 @@ const TextPropertyEditor: Component<{
         <Show
           when={props.value}
           keyed
-          fallback={<span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>}
+          fallback={
+            <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
+          }
         >
-          {v => <span>{v}</span>}
+          {(v) => <span>{v}</span>}
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
       </PopoverTrigger>
@@ -86,8 +110,8 @@ const TextPropertyEditor: Component<{
           <TextFieldRoot>
             <TextField
               value={draft()}
-              onInput={e => setDraft(e.currentTarget.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSave()}
+              onInput={(e) => setDraft(e.currentTarget.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
               placeholder={t('documents.custom-properties.text-placeholder')}
             />
           </TextFieldRoot>
@@ -144,7 +168,12 @@ const NumberPropertyEditor: Component<{
         class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
         disabled={props.isPending}
       >
-        <Show when={props.value != null} fallback={<span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>}>
+        <Show
+          when={props.value != null}
+          fallback={
+            <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
+          }
+        >
           <span>{props.value}</span>
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
@@ -153,7 +182,7 @@ const NumberPropertyEditor: Component<{
         <div class="flex flex-col gap-2">
           <NumberField rawValue={draft()} onRawValueChange={onChange}>
             <NumberFieldGroup>
-              <NumberFieldInput onKeyDown={e => e.key === 'Enter' && handleSave()} />
+              <NumberFieldInput onKeyDown={(e) => e.key === 'Enter' && handleSave()} />
               <NumberFieldDecrementTrigger />
               <NumberFieldIncrementTrigger />
             </NumberFieldGroup>
@@ -193,18 +222,19 @@ const DatePropertyEditor: Component<{
         class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
         disabled={props.isPending}
       >
-        <Show when={props.value} keyed fallback={<span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>}>
-          {d => formatDate(d, { dateStyle: 'medium' })}
+        <Show
+          when={props.value}
+          keyed
+          fallback={
+            <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
+          }
+        >
+          {(d) => formatDate(d, { dateStyle: 'medium' })}
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
       </PopoverTrigger>
       <PopoverContent class="w-auto p-3">
-        <Calendar
-          mode="single"
-          value={props.value ?? null}
-          onValueChange={handleSave}
-          fixedWeeks
-        >
+        <Calendar mode="single" value={props.value ?? null} onValueChange={handleSave} fixedWeeks>
           {() => (
             <div class="flex">
               <div class="flex flex-col gap-2">
@@ -249,7 +279,7 @@ const BooleanPropertyEditor: Component<{
   return (
     <Switch
       checked={props.value ?? false}
-      onChange={checked => props.onSave(checked)}
+      onChange={(checked) => props.onSave(checked)}
       disabled={props.isPending}
     >
       <SwitchControl>
@@ -286,15 +316,21 @@ const SelectPropertyEditor: Component<{
         class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
         disabled={props.isPending}
       >
-        <Show when={props.value?.name} keyed fallback={<span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>}>
-          {name => <span>{name}</span>}
+        <Show
+          when={props.value?.name}
+          keyed
+          fallback={
+            <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
+          }
+        >
+          {(name) => <span>{name}</span>}
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
       </PopoverTrigger>
       <PopoverContent class="w-48 p-2">
         <div class="flex flex-col gap-1">
           <For each={props.options}>
-            {option => (
+            {(option) => (
               <button
                 type="button"
                 class={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors text-left w-full${props.value?.optionId === option.id ? ' bg-accent' : ''}`}
@@ -330,16 +366,16 @@ const MultiSelectPropertyEditor: Component<{
   const { t } = useI18n();
   const [open, setOpen] = createSignal(false);
 
-  const selectedIds = createMemo(() => (props.value ?? []).map(v => v.optionId));
+  const selectedIds = createMemo(() => (props.value ?? []).map((v) => v.optionId));
   const displayText = createMemo(() => {
     const selected = props.value ?? [];
-    return selected.length === 0 ? null : selected.map(v => v.name ?? v.optionId).join(', ');
+    return selected.length === 0 ? null : selected.map((v) => v.name ?? v.optionId).join(', ');
   });
 
   const toggleOption = (optionId: string) => {
     const current = selectedIds();
     const next = current.includes(optionId)
-      ? current.filter(id => id !== optionId)
+      ? current.filter((id) => id !== optionId)
       : [...current, optionId];
     props.onSave(next);
   };
@@ -357,8 +393,14 @@ const MultiSelectPropertyEditor: Component<{
         class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
         disabled={props.isPending}
       >
-        <Show when={displayText()} keyed fallback={<span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>}>
-          {text => <span class="max-w-40 truncate">{text}</span>}
+        <Show
+          when={displayText()}
+          keyed
+          fallback={
+            <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
+          }
+        >
+          {(text) => <span class="max-w-40 truncate">{text}</span>}
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
       </PopoverTrigger>
@@ -373,7 +415,9 @@ const MultiSelectPropertyEditor: Component<{
                   class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors text-left w-full"
                   onClick={() => toggleOption(option.id)}
                 >
-                  <div class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}>
+                  <div
+                    class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}
+                  >
                     <Show when={isSelected()}>
                       <div class="i-tabler-check size-3 text-primary-foreground" />
                     </Show>
@@ -418,12 +462,12 @@ const UserRelationPropertyEditor: Component<{
   }));
 
   const members = () => membersQuery.data?.members ?? [];
-  const selectedUserIds = createMemo(() => props.value.map(u => u.userId));
+  const selectedUserIds = createMemo(() => props.value.map((u) => u.userId));
 
   const toggleUser = (userId: string) => {
     const current = selectedUserIds();
     const next = current.includes(userId)
-      ? current.filter(id => id !== userId)
+      ? current.filter((id) => id !== userId)
       : [...current, userId];
     props.onSave(next);
   };
@@ -438,11 +482,7 @@ const UserRelationPropertyEditor: Component<{
       <div class="flex flex-col gap-0.5 min-w-0">
         <Show when={props.value.length > 0}>
           <For each={props.value}>
-            {user => (
-              <span class="text-sm truncate">
-                {user.name ?? user.email}
-              </span>
-            )}
+            {(user) => <span class="text-sm truncate">{user.name ?? user.email}</span>}
           </For>
         </Show>
         <PopoverTrigger
@@ -453,7 +493,11 @@ const UserRelationPropertyEditor: Component<{
         >
           <Show
             when={props.value.length === 0}
-            fallback={<span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{t('documents.custom-properties.user-relation-manage')}</span>}
+            fallback={
+              <span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                {t('documents.custom-properties.user-relation-manage')}
+              </span>
+            }
           >
             <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
           </Show>
@@ -474,7 +518,9 @@ const UserRelationPropertyEditor: Component<{
                     class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors text-left w-full"
                     onClick={() => toggleUser(userId)}
                   >
-                    <div class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}>
+                    <div
+                      class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}
+                    >
                       <Show when={isSelected()}>
                         <div class="i-tabler-check size-3 text-primary-foreground" />
                       </Show>
@@ -482,7 +528,9 @@ const UserRelationPropertyEditor: Component<{
                     <div class="flex flex-col min-w-0">
                       <span class="truncate">{displayName}</span>
                       <Show when={member.user?.name}>
-                        <span class="text-xs text-muted-foreground truncate">{member.user?.email}</span>
+                        <span class="text-xs text-muted-foreground truncate">
+                          {member.user?.email}
+                        </span>
                       </Show>
                     </div>
                   </button>
@@ -523,18 +571,29 @@ const DocumentRelationPropertyEditor: Component<{
   const isSearchActive = () => debouncedSearch().length > 0;
 
   const documentsQuery = useQuery(() => ({
-    queryKey: ['organizations', props.organizationId, 'documents', { searchQuery: debouncedSearch() }],
-    queryFn: () => fetchOrganizationDocuments({ organizationId: props.organizationId, searchQuery: debouncedSearch(), pageIndex: 0, pageSize: 10 }),
+    queryKey: [
+      'organizations',
+      props.organizationId,
+      'documents',
+      { searchQuery: debouncedSearch() },
+    ],
+    queryFn: () =>
+      fetchOrganizationDocuments({
+        organizationId: props.organizationId,
+        searchQuery: debouncedSearch(),
+        pageIndex: 0,
+        pageSize: 10,
+      }),
     enabled: open() && isSearchActive(),
   }));
 
   const searchResults = () => documentsQuery.data?.documents ?? [];
-  const selectedDocumentIds = createMemo(() => props.value.map(d => d.documentId));
+  const selectedDocumentIds = createMemo(() => props.value.map((d) => d.documentId));
 
   const toggleDocument = (documentId: string) => {
     const current = selectedDocumentIds();
     const next = current.includes(documentId)
-      ? current.filter(id => id !== documentId)
+      ? current.filter((id) => id !== documentId)
       : [...current, documentId];
     props.onSave(next);
   };
@@ -558,7 +617,7 @@ const DocumentRelationPropertyEditor: Component<{
       <div class="flex flex-col gap-0.5 min-w-0">
         <Show when={props.value.length > 0}>
           <For each={props.value}>
-            {doc => (
+            {(doc) => (
               <A
                 href={`/organizations/${props.organizationId}/documents/${doc.documentId}`}
                 class="text-sm hover:underline truncate"
@@ -576,7 +635,11 @@ const DocumentRelationPropertyEditor: Component<{
         >
           <Show
             when={props.value.length === 0}
-            fallback={<span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{t('documents.custom-properties.document-relation-manage')}</span>}
+            fallback={
+              <span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                {t('documents.custom-properties.document-relation-manage')}
+              </span>
+            }
           >
             <span class="text-muted-foreground">{t('documents.custom-properties.no-value')}</span>
           </Show>
@@ -588,20 +651,24 @@ const DocumentRelationPropertyEditor: Component<{
           <TextFieldRoot class="mb-1">
             <TextField
               value={search()}
-              onInput={e => setSearch(e.currentTarget.value)}
+              onInput={(e) => setSearch(e.currentTarget.value)}
               placeholder={t('documents.custom-properties.document-relation-search-placeholder')}
             />
           </TextFieldRoot>
           <Suspense>
             <Show
               when={isSearchActive()}
-              fallback={(
+              fallback={
                 <Show
                   when={props.value.length > 0}
-                  fallback={<span class="text-sm text-muted-foreground px-2 py-1.5">{t('documents.custom-properties.no-results')}</span>}
+                  fallback={
+                    <span class="text-sm text-muted-foreground px-2 py-1.5">
+                      {t('documents.custom-properties.no-results')}
+                    </span>
+                  }
                 >
                   <For each={props.value}>
-                    {doc => (
+                    {(doc) => (
                       <button
                         type="button"
                         class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors text-left w-full"
@@ -615,11 +682,15 @@ const DocumentRelationPropertyEditor: Component<{
                     )}
                   </For>
                 </Show>
-              )}
+              }
             >
               <Show
                 when={searchResults().length > 0}
-                fallback={<span class="text-sm text-muted-foreground px-2 py-1.5">{t('documents.custom-properties.no-results')}</span>}
+                fallback={
+                  <span class="text-sm text-muted-foreground px-2 py-1.5">
+                    {t('documents.custom-properties.no-results')}
+                  </span>
+                }
               >
                 <For each={searchResults()}>
                   {(doc) => {
@@ -630,7 +701,9 @@ const DocumentRelationPropertyEditor: Component<{
                         class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors text-left w-full"
                         onClick={() => toggleDocument(doc.id)}
                       >
-                        <div class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}>
+                        <div
+                          class={`size-4 rounded border flex-shrink-0 flex items-center justify-center ${isSelected() ? 'bg-primary border-primary' : 'border-input'}`}
+                        >
                           <Show when={isSelected()}>
                             <div class="i-tabler-check size-3 text-primary-foreground" />
                           </Show>
@@ -684,9 +757,10 @@ const PropertyValueEditor: Component<{
         value,
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({
-      queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
-    }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
+      }),
     onError: (error: unknown) => {
       createToast({ message: getErrorMessage({ error }), type: 'error' });
     },
@@ -715,7 +789,7 @@ const PropertyValueEditor: Component<{
       <Match when={props.definition.type === 'date'}>
         <DatePropertyEditor
           value={getDateValue(props.rawValue)}
-          onSave={date => save(date ? date.toISOString() : null)}
+          onSave={(date) => save(date ? date.toISOString() : null)}
           isPending={mutation.isPending}
         />
       </Match>
@@ -730,7 +804,7 @@ const PropertyValueEditor: Component<{
         <SelectPropertyEditor
           value={rawPropertyValueAsOption(props.rawValue)}
           options={props.definition.options}
-          onSave={optionId => save(optionId)}
+          onSave={(optionId) => save(optionId)}
           isPending={mutation.isPending}
         />
       </Match>
@@ -738,7 +812,7 @@ const PropertyValueEditor: Component<{
         <MultiSelectPropertyEditor
           value={rawPropertyValueAsOptionArray(props.rawValue)}
           options={props.definition.options}
-          onSave={ids => save(ids)}
+          onSave={(ids) => save(ids)}
           isPending={mutation.isPending}
         />
       </Match>
@@ -746,7 +820,7 @@ const PropertyValueEditor: Component<{
         <UserRelationPropertyEditor
           value={rawPropertyValueAsUserArray(props.rawValue)}
           organizationId={props.organizationId}
-          onSave={ids => save(ids)}
+          onSave={(ids) => save(ids)}
           isPending={mutation.isPending}
         />
       </Match>
@@ -754,7 +828,7 @@ const PropertyValueEditor: Component<{
         <DocumentRelationPropertyEditor
           value={rawPropertyValueAsRelatedDocumentArray(props.rawValue)}
           organizationId={props.organizationId}
-          onSave={ids => save(ids)}
+          onSave={(ids) => save(ids)}
           isPending={mutation.isPending}
         />
       </Match>
@@ -769,8 +843,12 @@ export const DocumentCustomPropertiesPanel: Component<{
 }> = (props) => {
   const { t } = useI18n();
 
-  const definitions = createMemo(() => props.propertyDefinitions.toSorted((a, b) => a.displayOrder - b.displayOrder));
-  const getPropertyValueByKey = createMemo(() => Object.fromEntries(props.document.customProperties?.map(p => [p.key, p.value]) ?? []));
+  const definitions = createMemo(() =>
+    props.propertyDefinitions.toSorted((a, b) => a.displayOrder - b.displayOrder),
+  );
+  const getPropertyValueByKey = createMemo(() =>
+    Object.fromEntries(props.document.customProperties?.map((p) => [p.key, p.value]) ?? []),
+  );
   const getPropertyValue = (key: string) => getPropertyValueByKey()[key] ?? null;
 
   return (
@@ -783,14 +861,13 @@ export const DocumentCustomPropertiesPanel: Component<{
           </p>
         </div>
         <For each={definitions()}>
-          {definition => (
+          {(definition) => (
             <>
               <div class="py-1 pr-2 text-sm text-muted-foreground flex items-start">
                 <div class="flex items-center gap-2 whitespace-nowrap">
                   <div class="i-tabler-tag size-4" />
                   {definition.name}
                 </div>
-
               </div>
               <div class="py-1 pl-2 text-sm">
                 <PropertyValueEditor

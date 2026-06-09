@@ -1,8 +1,8 @@
 {
   "name": "@papra/mobile",
-  "type": "module",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "expo-router/entry",
   "scripts": {
     "dev": "pnpm start",
@@ -10,8 +10,6 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest watch"
@@ -60,11 +58,8 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@types/react": "~19.1.0",
     "eas-cli": "^16.27.0",
-    "eslint": "catalog:",
-    "eslint-config-expo": "~10.0.0",
     "reactotron-react-native": "^5.1.18",
     "typescript": "catalog:",
     "vitest": "catalog:"

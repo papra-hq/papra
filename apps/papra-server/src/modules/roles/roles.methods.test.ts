@@ -14,11 +14,12 @@ describe('roles methods', () => {
       const roles = ['admin', 'moderator'] as Role[];
       const result = getPermissionsForRoles({ roles, permissionsByRole });
 
-      expect(
-        result.permissions,
-      ).to.eql(
-        ['users:list', 'users:delete', 'bo:access', 'tickets:read'],
-      );
+      expect(result.permissions).to.eql([
+        'users:list',
+        'users:delete',
+        'bo:access',
+        'tickets:read',
+      ]);
     });
   });
 });

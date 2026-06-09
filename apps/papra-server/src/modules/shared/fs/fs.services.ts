@@ -20,8 +20,19 @@ export type FsNative = {
 };
 
 const fsNative = {
-  ...pick(fsPromisesNative, ['mkdir', 'unlink', 'rename', 'readFile', 'access', 'constants', 'stat', 'copyFile']),
-  createReadStream: fsSyncNative.createReadStream.bind(fsSyncNative) as (filePath: string) => Readable,
+  ...pick(fsPromisesNative, [
+    'mkdir',
+    'unlink',
+    'rename',
+    'readFile',
+    'access',
+    'constants',
+    'stat',
+    'copyFile',
+  ]),
+  createReadStream: fsSyncNative.createReadStream.bind(fsSyncNative) as (
+    filePath: string,
+  ) => Readable,
 } as FsNative;
 
 export type FsServices = ReturnType<typeof createFsServices>;
@@ -42,8 +53,17 @@ export function createFsServices({ fs = fsNative }: { fs?: FsNative } = {}) {
   );
 }
 
-export async function ensureDirectoryExists({ path, fs = fsNative }: { path: string; fs?: FsNative }): Promise<{ hasBeenCreated: boolean }> {
-  const exists = await fs.access(path, fs.constants.F_OK).then(() => true).catch(() => false);
+export async function ensureDirectoryExists({
+  path,
+  fs = fsNative,
+}: {
+  path: string;
+  fs?: FsNative;
+}): Promise<{ hasBeenCreated: boolean }> {
+  const exists = await fs
+    .access(path, fs.constants.F_OK)
+    .then(() => true)
+    .catch(() => false);
 
   if (exists) {
     return { hasBeenCreated: false };
@@ -67,7 +87,15 @@ export async function deleteFile({ filePath, fs = fsNative }: { filePath: string
   await fs.unlink(filePath);
 }
 
-export async function moveFile({ sourceFilePath, destinationFilePath, fs = fsNative }: { sourceFilePath: string; destinationFilePath: string; fs?: FsNative }) {
+export async function moveFile({
+  sourceFilePath,
+  destinationFilePath,
+  fs = fsNative,
+}: {
+  sourceFilePath: string;
+  destinationFilePath: string;
+  fs?: FsNative;
+}) {
   const [, error] = await safely(fs.rename(sourceFilePath, destinationFilePath));
 
   // With different docker volumes, the rename operation fails with an EXDEV error,
@@ -91,7 +119,15 @@ export function createReadStream({ filePath, fs = fsNative }: { filePath: string
   return fs.createReadStream(filePath);
 }
 
-export async function areFilesContentIdentical({ file1, file2, fs = fsNative }: { file1: string; file2: string; fs?: FsNative }): Promise<boolean> {
+export async function areFilesContentIdentical({
+  file1,
+  file2,
+  fs = fsNative,
+}: {
+  file1: string;
+  file2: string;
+  fs?: FsNative;
+}): Promise<boolean> {
   try {
     // Check if file sizes are different (quick check before comparing content)
     const stats1 = await fs.stat(file1);

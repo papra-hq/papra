@@ -1,11 +1,16 @@
-import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpression, TextExpression } from '@papra/search-parser';
+import type {
+  AndExpression,
+  Expression,
+  FilterExpression,
+  NotExpression,
+  OrExpression,
+  TextExpression,
+} from '@papra/search-parser';
 import type { Document } from '../../documents/documents.types';
 import { parseSearchQuery } from '@papra/search-parser';
 
 export function generatePropertyKey({ name }: { name: string }): string {
-  return name
-    .replace(/[^\p{L}\p{N}]/gu, '')
-    .toLowerCase();
+  return name.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
 }
 
 type DocumentCondition = (params: { document: Document }) => boolean;
@@ -13,35 +18,45 @@ type DocumentCondition = (params: { document: Document }) => boolean;
 const falseCondition: DocumentCondition = () => false;
 const trueCondition: DocumentCondition = () => true;
 
-export function someCorpusTokenStartsWith({ corpus, prefix }: { corpus: string | string []; prefix: string }): boolean {
+export function someCorpusTokenStartsWith({
+  corpus,
+  prefix,
+}: {
+  corpus: string | string[];
+  prefix: string;
+}): boolean {
   const lowerPrefix = prefix.toLowerCase();
   const corpusString = Array.isArray(corpus) ? corpus.join(' ') : corpus;
   const prefixLength = lowerPrefix.length;
 
-  return corpusString
-    .split(/[\W_]+/)
-    .some(token =>
-      token.length >= prefixLength // early exit for faster checks
-      && token.toLowerCase().startsWith(lowerPrefix),
-    );
+  return corpusString.split(/[\W_]+/).some(
+    (token) =>
+      token.length >= prefixLength && // early exit for faster checks
+      token.toLowerCase().startsWith(lowerPrefix),
+  );
 }
 
 function buildTextCondition({ expression }: { expression: TextExpression }): DocumentCondition {
   const searchText = expression.value.trim().toLowerCase();
 
-  return ({ document }) => someCorpusTokenStartsWith({ corpus: [document.name, document.content], prefix: searchText });
+  return ({ document }) =>
+    someCorpusTokenStartsWith({ corpus: [document.name, document.content], prefix: searchText });
 }
 
 function buildAndCondition({ expression }: { expression: AndExpression }): DocumentCondition {
-  const conditions = expression.operands.map(operand => buildExpressionCondition({ expression: operand }));
+  const conditions = expression.operands.map((operand) =>
+    buildExpressionCondition({ expression: operand }),
+  );
 
-  return ({ document }) => conditions.every(condition => condition({ document }));
+  return ({ document }) => conditions.every((condition) => condition({ document }));
 }
 
 function buildOrCondition({ expression }: { expression: OrExpression }): DocumentCondition {
-  const conditions = expression.operands.map(operand => buildExpressionCondition({ expression: operand }));
+  const conditions = expression.operands.map((operand) =>
+    buildExpressionCondition({ expression: operand }),
+  );
 
-  return ({ document }) => conditions.some(condition => condition({ document }));
+  return ({ document }) => conditions.some((condition) => condition({ document }));
 }
 
 function buildNotCondition({ expression }: { expression: NotExpression }): DocumentCondition {
@@ -50,17 +65,28 @@ function buildNotCondition({ expression }: { expression: NotExpression }): Docum
   return ({ document }) => !condition({ document });
 }
 
-function buildTagFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+function buildTagFilterCondition({
+  expression,
+}: {
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
 
   if (operator !== '=') {
     return falseCondition;
   }
 
-  return ({ document }) => document.tags.find(tag => tag.name.toLowerCase() === value.toLowerCase() || tag.id === value) !== undefined;
+  return ({ document }) =>
+    document.tags.find(
+      (tag) => tag.name.toLowerCase() === value.toLowerCase() || tag.id === value,
+    ) !== undefined;
 }
 
-function buildNameFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+function buildNameFilterCondition({
+  expression,
+}: {
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
 
   if (operator !== '=') {
@@ -70,7 +96,11 @@ function buildNameFilterCondition({ expression }: { expression: FilterExpression
   return ({ document }) => someCorpusTokenStartsWith({ corpus: document.name, prefix: value });
 }
 
-function buildContentFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+function buildContentFilterCondition({
+  expression,
+}: {
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
 
   if (operator !== '=') {
@@ -80,7 +110,11 @@ function buildContentFilterCondition({ expression }: { expression: FilterExpress
   return ({ document }) => someCorpusTokenStartsWith({ corpus: document.content, prefix: value });
 }
 
-function buildCreatedFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+function buildCreatedFilterCondition({
+  expression,
+}: {
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
   const dateValue = getDateValue({ value });
 
@@ -92,12 +126,18 @@ function buildCreatedFilterCondition({ expression }: { expression: FilterExpress
     const documentDate = new Date(document.createdAt);
 
     switch (operator) {
-      case '=': return documentDate.toDateString() === dateValue.toDateString();
-      case '<': return documentDate < dateValue;
-      case '<=': return documentDate <= dateValue;
-      case '>': return documentDate > dateValue;
-      case '>=': return documentDate >= dateValue;
-      default: return false;
+      case '=':
+        return documentDate.toDateString() === dateValue.toDateString();
+      case '<':
+        return documentDate < dateValue;
+      case '<=':
+        return documentDate <= dateValue;
+      case '>':
+        return documentDate > dateValue;
+      case '>=':
+        return documentDate >= dateValue;
+      default:
+        return false;
     }
   };
 }
@@ -120,7 +160,11 @@ function getDateValue({ value, now = new Date() }: { value: string; now?: Date }
   return new Date(value);
 }
 
-function buildDateFilterCondition({ expression }: { expression: FilterExpression }): DocumentCondition {
+function buildDateFilterCondition({
+  expression,
+}: {
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
   const dateValue = getDateValue({ value });
 
@@ -136,12 +180,18 @@ function buildDateFilterCondition({ expression }: { expression: FilterExpression
     const docDate = new Date(document.documentDate);
 
     switch (operator) {
-      case '=': return docDate.toDateString() === dateValue.toDateString();
-      case '<': return docDate < dateValue;
-      case '<=': return docDate <= dateValue;
-      case '>': return docDate > dateValue;
-      case '>=': return docDate >= dateValue;
-      default: return false;
+      case '=':
+        return docDate.toDateString() === dateValue.toDateString();
+      case '<':
+        return docDate < dateValue;
+      case '<=':
+        return docDate <= dateValue;
+      case '>':
+        return docDate > dateValue;
+      case '>=':
+        return docDate >= dateValue;
+      default:
+        return false;
     }
   };
 }
@@ -160,18 +210,24 @@ function buildHasCustomPropertyFilter({ propertyKey }: { propertyKey: string }):
   const normalizedKey = generatePropertyKey({ name: propertyKey });
 
   return ({ document }) => {
-    const prop = document.customProperties?.find(p => p.key === normalizedKey);
+    const prop = document.customProperties?.find((p) => p.key === normalizedKey);
 
     return prop !== undefined && prop.value != null;
   };
 }
 
-function buildCustomPropertyFilterCondition({ field, expression }: { field: string; expression: FilterExpression }): DocumentCondition {
+function buildCustomPropertyFilterCondition({
+  field,
+  expression,
+}: {
+  field: string;
+  expression: FilterExpression;
+}): DocumentCondition {
   const { value, operator } = expression;
   const normalizedField = generatePropertyKey({ name: field });
 
   return ({ document }) => {
-    const prop = document.customProperties?.find(p => p.key === normalizedField);
+    const prop = document.customProperties?.find((p) => p.key === normalizedField);
 
     if (!prop || prop.value == null) {
       return false;
@@ -197,12 +253,18 @@ function buildCustomPropertyFilterCondition({ field, expression }: { field: stri
         const propNum = Number(prop.value);
 
         switch (operator) {
-          case '=': return propNum === numValue;
-          case '<': return propNum < numValue;
-          case '<=': return propNum <= numValue;
-          case '>': return propNum > numValue;
-          case '>=': return propNum >= numValue;
-          default: return false;
+          case '=':
+            return propNum === numValue;
+          case '<':
+            return propNum < numValue;
+          case '<=':
+            return propNum <= numValue;
+          case '>':
+            return propNum > numValue;
+          case '>=':
+            return propNum >= numValue;
+          default:
+            return false;
         }
       }
       case 'date': {
@@ -215,12 +277,18 @@ function buildCustomPropertyFilterCondition({ field, expression }: { field: stri
         const propDate = new Date(prop.value as string);
 
         switch (operator) {
-          case '=': return propDate.toDateString() === dateValue.toDateString();
-          case '<': return propDate < dateValue;
-          case '<=': return propDate <= dateValue;
-          case '>': return propDate > dateValue;
-          case '>=': return propDate >= dateValue;
-          default: return false;
+          case '=':
+            return propDate.toDateString() === dateValue.toDateString();
+          case '<':
+            return propDate < dateValue;
+          case '<=':
+            return propDate <= dateValue;
+          case '>':
+            return propDate > dateValue;
+          case '>=':
+            return propDate >= dateValue;
+          default:
+            return false;
         }
       }
       case 'text': {
@@ -268,21 +336,32 @@ const KNOWN_FILTER_FIELDS = new Set(['tag', 'name', 'content', 'created', 'date'
 
 function buildExpressionCondition({ expression }: { expression: Expression }): DocumentCondition {
   switch (expression.type) {
-    case 'text': return buildTextCondition({ expression });
-    case 'and': return buildAndCondition({ expression });
-    case 'or': return buildOrCondition({ expression });
-    case 'not': return buildNotCondition({ expression });
+    case 'text':
+      return buildTextCondition({ expression });
+    case 'and':
+      return buildAndCondition({ expression });
+    case 'or':
+      return buildOrCondition({ expression });
+    case 'not':
+      return buildNotCondition({ expression });
     case 'filter':
       switch (expression.field) {
-        case 'tag': return buildTagFilterCondition({ expression });
-        case 'name': return buildNameFilterCondition({ expression });
-        case 'content': return buildContentFilterCondition({ expression });
-        case 'created': return buildCreatedFilterCondition({ expression });
-        case 'date': return buildDateFilterCondition({ expression });
+        case 'tag':
+          return buildTagFilterCondition({ expression });
+        case 'name':
+          return buildNameFilterCondition({ expression });
+        case 'content':
+          return buildContentFilterCondition({ expression });
+        case 'created':
+          return buildCreatedFilterCondition({ expression });
+        case 'date':
+          return buildDateFilterCondition({ expression });
         case 'has':
           switch (expression.value) {
-            case 'tags': return buildHasTagsFilter({ expression });
-            case 'date': return buildHasDateFilter({ expression });
+            case 'tags':
+              return buildHasTagsFilter({ expression });
+            case 'date':
+              return buildHasDateFilter({ expression });
             default:
               // has:<customPropertyKey> — check if document has a non-null value for this property
               return buildHasCustomPropertyFilter({ propertyKey: expression.value });
@@ -295,12 +374,20 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
 
           return falseCondition;
       }
-    case 'empty': return trueCondition;
-    default: return falseCondition;
+    case 'empty':
+      return trueCondition;
+    default:
+      return falseCondition;
   }
 }
 
-export function searchDemoDocuments({ query, documents }: { query: string; documents: Document[] }) {
+export function searchDemoDocuments({
+  query,
+  documents,
+}: {
+  query: string;
+  documents: Document[];
+}) {
   if (query.trim() === '') {
     return documents;
   }
@@ -309,5 +396,5 @@ export function searchDemoDocuments({ query, documents }: { query: string; docum
 
   const condition = buildExpressionCondition({ expression });
 
-  return documents.filter(document => condition({ document }));
+  return documents.filter((document) => condition({ document }));
 }

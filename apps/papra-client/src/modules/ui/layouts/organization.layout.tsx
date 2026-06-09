@@ -9,7 +9,10 @@ import { useConfig } from '@/modules/config/config.provider';
 import { fetchDocumentViews } from '@/modules/document-views/document-views.services';
 import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { fetchOrganization, fetchOrganizations } from '@/modules/organizations/organizations.services';
+import {
+  fetchOrganization,
+  fetchOrganizations,
+} from '@/modules/organizations/organizations.services';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { getErrorStatus } from '@/modules/shared/utils/errors';
 import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog.component';
@@ -45,7 +48,6 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   return (
     <div>
       <Show when={shouldShowUpgradeCTA()}>
-
         <div class="p-4 mx-4 mt-4 bg-background bg-gradient-to-br from-primary/15 to-transparent rounded-lg">
           <div class="flex items-center gap-2 text-sm font-medium">
             <div class="i-tabler-sparkles size-4 text-primary" />
@@ -55,7 +57,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
             {t('layout.upgrade-cta.description')}
           </div>
           <UpgradeDialog organizationId={props.organizationId}>
-            {dialogProps => (
+            {(dialogProps) => (
               <Button size="sm" class="w-full font-semibold" {...dialogProps}>
                 {t('layout.upgrade-cta.button')}
                 <div class="i-tabler-arrow-right size-4 ml-1" />
@@ -88,7 +90,7 @@ const OrganizationLayoutSideNav: Component = () => {
     return [
       {
         label: t('layout.menu.document-views'),
-        items: documentViews.map(documentView => ({
+        items: documentViews.map((documentView) => ({
           label: documentView.name,
           icon: 'i-tabler-layout-list',
           href: `/organizations/${params.organizationId}/views/${documentView.id}`,
@@ -163,83 +165,93 @@ const OrganizationLayoutSideNav: Component = () => {
     queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
-  createEffect(on(
-    () => organizationQuery.error,
-    (error) => {
-      if (error) {
-        const status = getErrorStatus(error);
+  createEffect(
+    on(
+      () => organizationQuery.error,
+      (error) => {
+        if (error) {
+          const status = getErrorStatus(error);
 
-        if (status && [
-          400, // when the id of the organization is not valid
-          403, // when the user does not have access to the organization or the organization does not exist
-        ].includes(status)) {
-          navigate('/');
+          if (
+            status &&
+            [
+              400, // when the id of the organization is not valid
+              403, // when the user does not have access to the organization or the organization does not exist
+            ].includes(status)
+          ) {
+            navigate('/');
+          }
         }
-      }
-    },
-  ));
+      },
+    ),
+  );
 
   return (
     <SideNav
       mainMenu={getMainMenuItems()}
       footerMenu={getFooterMenuItems()}
       footer={() => <UpgradeCTAFooter organizationId={params.organizationId} />}
-      header={() =>
-        (
-          <div class="p-4 pb-0 min-w-0 max-w-full">
-            <Select
-              class="w-full"
-              options={[...organizationsQuery.data?.organizations ?? [], { id: 'create' }]}
-              optionValue="id"
-              optionTextValue="name"
-              value={organizationsQuery.data?.organizations.find(organization => organization.id === params.organizationId)}
-              onChange={(value) => {
-                if (!value || value.id === params.organizationId) {
-                  return;
-                }
+      header={() => (
+        <div class="p-4 pb-0 min-w-0 max-w-full">
+          <Select
+            class="w-full"
+            options={[...(organizationsQuery.data?.organizations ?? []), { id: 'create' }]}
+            optionValue="id"
+            optionTextValue="name"
+            value={organizationsQuery.data?.organizations.find(
+              (organization) => organization.id === params.organizationId,
+            )}
+            onChange={(value) => {
+              if (!value || value.id === params.organizationId) {
+                return;
+              }
 
-                return value && (
-                  value.id === 'create'
-                    ? navigate('/organizations/create')
-                    : navigate(`/organizations/${value.id}`));
-              }}
-              itemComponent={props => props.item.rawValue.id === 'create'
-                ? (
-                    <SelectItem class="cursor-pointer" item={props.item}>
-                      <div class="flex items-center gap-2 text-muted-foreground">
-                        <div class="i-tabler-plus size-4" />
-                        <div>Create new organization</div>
-                      </div>
-                    </SelectItem>
-                  )
-                : (
-                    <SelectItem class="cursor-pointer" item={props.item}>{props.item.rawValue.name}</SelectItem>
-                  )}
+              return (
+                value &&
+                (value.id === 'create'
+                  ? navigate('/organizations/create')
+                  : navigate(`/organizations/${value.id}`))
+              );
+            }}
+            itemComponent={(props) =>
+              props.item.rawValue.id === 'create' ? (
+                <SelectItem class="cursor-pointer" item={props.item}>
+                  <div class="flex items-center gap-2 text-muted-foreground">
+                    <div class="i-tabler-plus size-4" />
+                    <div>Create new organization</div>
+                  </div>
+                </SelectItem>
+              ) : (
+                <SelectItem class="cursor-pointer" item={props.item}>
+                  {props.item.rawValue.name}
+                </SelectItem>
+              )
+            }
+          >
+            <SelectTrigger
+              class="hover:bg-accent/50 transition rounded-lg h-auto pl-2"
+              caretIcon={<div class="i-tabler-chevron-down size-4 opacity-50 ml-2 flex-shrink-0" />}
             >
-              <SelectTrigger class="hover:bg-accent/50 transition rounded-lg h-auto pl-2" caretIcon={<div class="i-tabler-chevron-down size-4 opacity-50 ml-2 flex-shrink-0" />}>
-                <SelectValue<Organization | undefined> class="flex items-center gap-2 min-w-0">
-                  {state => (
-                    <>
-                      <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
-                        <div class="i-tabler-file-text size-5.5" />
-                      </span>
+              <SelectValue<Organization | undefined> class="flex items-center gap-2 min-w-0">
+                {(state) => (
+                  <>
+                    <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
+                      <div class="i-tabler-file-text size-5.5" />
+                    </span>
 
-                      <span class="truncate text-base font-medium">
-                        {state.selectedOption()?.name}
-                      </span>
-                    </>
-                  )}
+                    <span class="truncate text-base font-medium">
+                      {state.selectedOption()?.name}
+                    </span>
+                  </>
+                )}
+              </SelectValue>
+            </SelectTrigger>
 
-                </SelectValue>
-              </SelectTrigger>
-
-              <SelectContent />
-            </Select>
-
-          </div>
-        )}
+            <SelectContent />
+          </Select>
+        </div>
+      )}
     />
-
   );
 };
 
@@ -252,26 +264,25 @@ export const OrganizationLayout: ParentComponent = (props) => {
     queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
-  createEffect(on(
-    () => query.error,
-    (error) => {
-      if (error) {
-        const status = getErrorStatus(error);
+  createEffect(
+    on(
+      () => query.error,
+      (error) => {
+        if (error) {
+          const status = getErrorStatus(error);
 
-        if (status && [401, 403].includes(status)) {
-          queryClient.invalidateQueries({ queryKey: ['organizations'] });
-          navigate('/');
+          if (status && [401, 403].includes(status)) {
+            queryClient.invalidateQueries({ queryKey: ['organizations'] });
+            navigate('/');
+          }
         }
-      }
-    },
-  ));
+      },
+    ),
+  );
 
   return (
     <DocumentUploadProvider organizationId={params.organizationId}>
-      <SidenavLayout
-        children={props.children}
-        sideNav={OrganizationLayoutSideNav}
-      />
+      <SidenavLayout children={props.children} sideNav={OrganizationLayoutSideNav} />
     </DocumentUploadProvider>
   );
 };

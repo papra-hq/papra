@@ -14,7 +14,7 @@ export function OrganizationPickerButton({ onPress }: OrganizationPickerButtonPr
 
   const styles = createStyles({ themeColors });
 
-  const currentOrganization = organizations.find(org => org.id === currentOrganizationId);
+  const currentOrganization = organizations.find((org) => org.id === currentOrganizationId);
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>

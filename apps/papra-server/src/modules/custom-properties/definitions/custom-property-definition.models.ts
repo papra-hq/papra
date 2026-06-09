@@ -2,11 +2,18 @@ import type { Expand } from '@corentinth/chisels';
 import type { DocumentsRepository } from '../../documents/documents.repository';
 import type { OrganizationsRepository } from '../../organizations/organizations.repository';
 import type { CustomPropertiesRepository } from '../custom-properties.repository';
-import type { CustomPropertyDefinition, DbInsertableDocumentCustomPropertyValue } from '../custom-properties.types';
+import type {
+  CustomPropertyDefinition,
+  DbInsertableDocumentCustomPropertyValue,
+} from '../custom-properties.types';
 import type { CustomPropertiesOptionsRepository } from '../options/custom-properties-options.repository';
 import * as v from 'valibot';
 import { isNil } from '../../shared/utils';
-import { customPropertyDefinitionDescriptionSchema, customPropertyDefinitionDisplayOrderSchema, customPropertyDefinitionNameSchema } from './custom-property-definition.schema';
+import {
+  customPropertyDefinitionDescriptionSchema,
+  customPropertyDefinitionDisplayOrderSchema,
+  customPropertyDefinitionNameSchema,
+} from './custom-property-definition.schema';
 
 // Type from ../custom-properties.repository.ts getDocumentCustomPropertyValues query
 export type DocumentCustomPropertyValueWithRelatedInfo = {
@@ -42,7 +49,12 @@ export type DocumentCustomPropertyValueWithRelatedInfo = {
   } | null;
 };
 
-type InsertableCustomPropertyValue = Expand<Omit<DbInsertableDocumentCustomPropertyValue, 'id' | 'createdAt' | 'updatedAt' | 'documentId' | 'propertyDefinitionId'>>;
+type InsertableCustomPropertyValue = Expand<
+  Omit<
+    DbInsertableDocumentCustomPropertyValue,
+    'id' | 'createdAt' | 'updatedAt' | 'documentId' | 'propertyDefinitionId'
+  >
+>;
 
 type BaseCreateFields<TypeName extends string> = {
   type: TypeName;
@@ -103,9 +115,7 @@ export type CustomPropertyTypeDefinitionInput<
       value: ValueInput;
     }) => InsertableCustomPropertyValue | InsertableCustomPropertyValue[];
 
-    fromDb: (args: {
-      rows: DocumentCustomPropertyValueWithRelatedInfo[];
-    }) => unknown;
+    fromDb: (args: { rows: DocumentCustomPropertyValueWithRelatedInfo[] }) => unknown;
   };
 };
 
@@ -139,7 +149,9 @@ export type CustomPropertyTypeDefinition = {
       organizationsRepository: OrganizationsRepository;
       documentsRepository: DocumentsRepository;
     }) => Promise<void>;
-    toDb: (args: { value: unknown }) => InsertableCustomPropertyValue | InsertableCustomPropertyValue[];
+    toDb: (args: {
+      value: unknown;
+    }) => InsertableCustomPropertyValue | InsertableCustomPropertyValue[];
     fromDb: (args: { rows: DocumentCustomPropertyValueWithRelatedInfo[] }) => unknown;
   };
 };
@@ -161,24 +173,32 @@ const baseUpdatePropertySchema = v.object({
 type BaseCreateEntries = typeof baseCreatePropertySchema.entries;
 type BaseUpdateEntries = typeof baseUpdatePropertySchema.entries;
 
-type CreatePropertySchemaFor<T extends string, Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined>
-  = Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
+type CreatePropertySchemaFor<
+  T extends string,
+  Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined,
+> =
+  Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
     ? v.ObjectSchema<{ type: v.LiteralSchema<T, undefined> } & BaseCreateEntries & E, undefined>
     : v.ObjectSchema<{ type: v.LiteralSchema<T, undefined> } & BaseCreateEntries, undefined>;
 
-type UpdatePropertySchemaFor<Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined>
-  = Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
+type UpdatePropertySchemaFor<Extra extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined> =
+  Extra extends v.ObjectSchema<infer E extends v.ObjectEntries, undefined>
     ? v.ObjectSchema<BaseUpdateEntries & E, undefined>
     : v.ObjectSchema<BaseUpdateEntries, undefined>;
 
-function buildCreatePropertySchema(typeName: string, extraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>) {
+function buildCreatePropertySchema(
+  typeName: string,
+  extraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>,
+) {
   const schema = v.object({ type: v.literal(typeName), ...baseCreatePropertySchema.entries });
 
   return extraSchema ? v.object({ ...schema.entries, ...extraSchema.entries }) : schema;
 }
 
 function buildUpdatePropertySchema(extraSchema?: v.ObjectSchema<v.ObjectEntries, undefined>) {
-  return extraSchema ? v.object({ ...baseUpdatePropertySchema.entries, ...extraSchema.entries }) : baseUpdatePropertySchema;
+  return extraSchema
+    ? v.object({ ...baseUpdatePropertySchema.entries, ...extraSchema.entries })
+    : baseUpdatePropertySchema;
 }
 
 export function defineCustomPropertyType<
@@ -186,13 +206,25 @@ export function defineCustomPropertyType<
   ValueInput,
   CreateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
   UpdateExtraSchema extends v.ObjectSchema<v.ObjectEntries, undefined> | undefined = undefined,
->(config: CustomPropertyTypeDefinitionInput<TypeName, ValueInput, CreateExtraSchema, UpdateExtraSchema>) {
+>(
+  config: CustomPropertyTypeDefinitionInput<
+    TypeName,
+    ValueInput,
+    CreateExtraSchema,
+    UpdateExtraSchema
+  >,
+) {
   return {
     ...config,
     definition: {
       ...config.definition,
-      createPropertySchema: buildCreatePropertySchema(config.typeName, config.definition?.createExtraSchema) as CreatePropertySchemaFor<TypeName, CreateExtraSchema>,
-      updatePropertySchema: buildUpdatePropertySchema(config.definition?.updateExtraSchema) as UpdatePropertySchemaFor<UpdateExtraSchema>,
+      createPropertySchema: buildCreatePropertySchema(
+        config.typeName,
+        config.definition?.createExtraSchema,
+      ) as CreatePropertySchemaFor<TypeName, CreateExtraSchema>,
+      updatePropertySchema: buildUpdatePropertySchema(
+        config.definition?.updateExtraSchema,
+      ) as UpdatePropertySchemaFor<UpdateExtraSchema>,
     },
   };
 }

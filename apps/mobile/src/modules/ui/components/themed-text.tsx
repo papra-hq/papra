@@ -31,11 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export function ThemedText({
-  style,
-  type = 'default',
-  ...rest
-}: ThemedTextProps) {
+export function ThemedText({ style, type = 'default', ...rest }: ThemedTextProps) {
   return (
     <Text
       style={[

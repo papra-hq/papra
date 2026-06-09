@@ -16,10 +16,15 @@ export const CreateCustomPropertyPage: Component = () => {
 
   const createMutation = useMutation(() => ({
     mutationFn: async ({ propertyDefinition }: { propertyDefinition: PropertyDefinitionDraft }) => {
-      await createCustomPropertyDefinition({ organizationId: params.organizationId, propertyDefinition });
+      await createCustomPropertyDefinition({
+        organizationId: params.organizationId,
+        propertyDefinition,
+      });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'custom-properties'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'custom-properties'],
+      });
 
       createToast({
         message: t('custom-properties.create.success'),
@@ -38,19 +43,17 @@ export const CreateCustomPropertyPage: Component = () => {
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold">
-          {t('custom-properties.create.title')}
-        </h1>
+        <h1 class="text-xl font-bold">{t('custom-properties.create.title')}</h1>
       </div>
 
       <CustomPropertyDefinitionForm
         organizationId={params.organizationId}
         onSubmit={({ propertyDefinition }) => createMutation.mutateAsync({ propertyDefinition })}
-        submitButton={(
+        submitButton={
           <Button type="submit" isLoading={createMutation.isPending}>
             {t('custom-properties.create.submit')}
           </Button>
-        )}
+        }
       />
     </div>
   );

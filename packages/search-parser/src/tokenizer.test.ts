@@ -7,18 +7,11 @@ describe('tokenizer', () => {
       const queries: { query: string; expectedTokens: unknown[]; maxTokens?: number }[] = [
         {
           query: 'foobar',
-          expectedTokens: [
-            { type: 'TEXT', value: 'foobar' },
-            { type: 'EOF' },
-          ],
+          expectedTokens: [{ type: 'TEXT', value: 'foobar' }, { type: 'EOF' }],
         },
         {
           query: '-foobar',
-          expectedTokens: [
-            { type: 'NOT' },
-            { type: 'TEXT', value: 'foobar' },
-            { type: 'EOF' },
-          ],
+          expectedTokens: [{ type: 'NOT' }, { type: 'TEXT', value: 'foobar' }, { type: 'EOF' }],
         },
         {
           query: 'status:open AND priority:high',
@@ -101,24 +94,15 @@ describe('tokenizer', () => {
         },
         {
           query: `"AND"`,
-          expectedTokens: [
-            { type: 'TEXT', value: 'AND' },
-            { type: 'EOF' },
-          ],
+          expectedTokens: [{ type: 'TEXT', value: 'AND' }, { type: 'EOF' }],
         },
         {
           query: `"OR"`,
-          expectedTokens: [
-            { type: 'TEXT', value: 'OR' },
-            { type: 'EOF' },
-          ],
+          expectedTokens: [{ type: 'TEXT', value: 'OR' }, { type: 'EOF' }],
         },
         {
           query: `"NOT"`,
-          expectedTokens: [
-            { type: 'TEXT', value: 'NOT' },
-            { type: 'EOF' },
-          ],
+          expectedTokens: [{ type: 'TEXT', value: 'NOT' }, { type: 'EOF' }],
         },
         {
           query: `"or":foo`,

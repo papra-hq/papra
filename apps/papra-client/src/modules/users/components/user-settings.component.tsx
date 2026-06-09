@@ -8,7 +8,15 @@ import { useAboutDialog } from '@/modules/shared/components/about-dialog';
 import { cn } from '@/modules/shared/style/cn';
 import { ThemeSwitcher } from '@/modules/theme/theme-switcher.component';
 import { Button } from '@/modules/ui/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/modules/ui/components/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/modules/ui/components/dropdown-menu';
 import { LanguageSwitcher } from '@/modules/ui/layouts/sidenav.layout';
 
 export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
@@ -19,7 +27,13 @@ export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger as={Button} class={cn('relative', props.class)} variant="outline" aria-label="User menu" size="icon">
+      <DropdownMenuTrigger
+        as={Button}
+        class={cn('relative', props.class)}
+        variant="outline"
+        aria-label="User menu"
+        size="icon"
+      >
         <div class="i-tabler-user size-4" />
         <Show when={getPendingInvitationsCount() > 0}>
           <div class="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-xl text-xs px-1.5 py-0.8 font-bold leading-none">

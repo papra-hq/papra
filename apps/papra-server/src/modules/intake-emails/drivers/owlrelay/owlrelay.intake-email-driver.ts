@@ -14,21 +14,28 @@ const logger = createLogger({ namespace: 'intake-emails.drivers.owlrelay' });
 export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ config }) => {
   const { serverBaseUrl } = getServerBaseUrl({ config });
   const { webhookSecret } = config.intakeEmails;
-  const { owlrelayApiKey, webhookUrl: configuredWebhookUrl, domain } = config.intakeEmails.drivers.owlrelay;
+  const {
+    owlrelayApiKey,
+    webhookUrl: configuredWebhookUrl,
+    domain,
+  } = config.intakeEmails.drivers.owlrelay;
 
   const client = createClient({ apiKey: owlrelayApiKey });
 
-  const webhookUrl = configuredWebhookUrl ?? buildUrl({ baseUrl: serverBaseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
+  const webhookUrl =
+    configuredWebhookUrl ?? buildUrl({ baseUrl: serverBaseUrl, path: INTAKE_EMAILS_INGEST_ROUTE });
 
   return {
     name: OWLRELAY_INTAKE_EMAIL_DRIVER_NAME,
     createEmailAddress: async ({ username }) => {
-      const [result, error] = await safely(client.createEmail({
-        username,
-        webhookUrl,
-        webhookSecret,
-        domain,
-      }));
+      const [result, error] = await safely(
+        client.createEmail({
+          username,
+          webhookUrl,
+          webhookSecret,
+          domain,
+        }),
+      );
 
       if (error) {
         logger.error({ error, username }, 'Failed to create email address in OwlRelay');
@@ -41,8 +48,15 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
         });
       }
 
-      const { id: owlrelayEmailId, username: createdAddressUsername, domain: createdAddressDomain } = result;
-      const emailAddress = buildEmailAddress({ username: createdAddressUsername, domain: createdAddressDomain });
+      const {
+        id: owlrelayEmailId,
+        username: createdAddressUsername,
+        domain: createdAddressDomain,
+      } = result;
+      const emailAddress = buildEmailAddress({
+        username: createdAddressUsername,
+        domain: createdAddressDomain,
+      });
 
       logger.info({ emailAddress, owlrelayEmailId }, 'Created email address in OwlRelay');
 

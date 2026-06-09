@@ -14,7 +14,11 @@ import { createDatabaseFts5DocumentSearchServices } from '../document-search/dat
 import { createDocumentsRepository } from '../documents.repository';
 import { documentsTable } from '../documents.table';
 import { createDocumentIdsNotFromOrganizationError } from './documents-batch.errors';
-import { resolveBatchTargetDocumentIds, tagDocumentsBatch, trashDocumentsBatch } from './documents-batch.usecases';
+import {
+  resolveBatchTargetDocumentIds,
+  tagDocumentsBatch,
+  trashDocumentsBatch,
+} from './documents-batch.usecases';
 
 function createStubSearchServices({ documentIds = [] }: { documentIds?: string[] } = {}) {
   const calls: Parameters<DocumentSearchServices['getDocumentIdsMatchingQuery']>[0][] = [];
@@ -39,7 +43,9 @@ function createStubWebhookTriggerServices() {
 
   const services = {
     triggerWebhooks: (async () => {}) as WebhookTriggerServices['triggerWebhooks'],
-    deferTriggerWebhooks: ((args: Parameters<WebhookTriggerServices['deferTriggerWebhooks']>[0]) => {
+    deferTriggerWebhooks: ((
+      args: Parameters<WebhookTriggerServices['deferTriggerWebhooks']>[0],
+    ) => {
       calls.push(args);
     }) as WebhookTriggerServices['deferTriggerWebhooks'],
   } as WebhookTriggerServices;
@@ -61,8 +67,20 @@ describe('documents-batch usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
-          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
-          { ...baseDocument, id: 'doc-2', organizationId: 'organization-1', name: 'doc 2', originalSha256Hash: 'h2' },
+          {
+            ...baseDocument,
+            id: 'doc-1',
+            organizationId: 'organization-1',
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+          },
+          {
+            ...baseDocument,
+            id: 'doc-2',
+            organizationId: 'organization-1',
+            name: 'doc 2',
+            originalSha256Hash: 'h2',
+          },
         ],
       });
 
@@ -85,17 +103,31 @@ describe('documents-batch usecases', () => {
           { id: 'organization-2', name: 'Organization 2' },
         ],
         documents: [
-          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
-          { ...baseDocument, id: 'doc-2', organizationId: 'organization-2', name: 'doc 2', originalSha256Hash: 'h2' },
+          {
+            ...baseDocument,
+            id: 'doc-1',
+            organizationId: 'organization-1',
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+          },
+          {
+            ...baseDocument,
+            id: 'doc-2',
+            organizationId: 'organization-2',
+            name: 'doc 2',
+            originalSha256Hash: 'h2',
+          },
         ],
       });
 
-      await expect(resolveBatchTargetDocumentIds({
-        filter: { documentIds: ['doc-1', 'doc-2'] },
-        organizationId: 'organization-1',
-        documentSearchServices: services,
-        documentsRepository: createDocumentsRepository({ db }),
-      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+      await expect(
+        resolveBatchTargetDocumentIds({
+          filter: { documentIds: ['doc-1', 'doc-2'] },
+          organizationId: 'organization-1',
+          documentSearchServices: services,
+          documentsRepository: createDocumentsRepository({ db }),
+        }),
+      ).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
     });
 
     test('throws an error if a document id does not exist', async () => {
@@ -103,16 +135,24 @@ describe('documents-batch usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
-          { ...baseDocument, id: 'doc-1', organizationId: 'organization-1', name: 'doc 1', originalSha256Hash: 'h1' },
+          {
+            ...baseDocument,
+            id: 'doc-1',
+            organizationId: 'organization-1',
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+          },
         ],
       });
 
-      await expect(resolveBatchTargetDocumentIds({
-        filter: { documentIds: ['doc-1', 'doc-2'] },
-        organizationId: 'organization-1',
-        documentSearchServices: services,
-        documentsRepository: createDocumentsRepository({ db }),
-      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+      await expect(
+        resolveBatchTargetDocumentIds({
+          filter: { documentIds: ['doc-1', 'doc-2'] },
+          organizationId: 'organization-1',
+          documentSearchServices: services,
+          documentsRepository: createDocumentsRepository({ db }),
+        }),
+      ).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
     });
 
     test('on the query path, delegates to the search service without enforcing a cap', async () => {
@@ -124,7 +164,15 @@ describe('documents-batch usecases', () => {
         ],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
-          { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1', isDeleted: true, deletedBy: 'user-1', deletedAt: new Date('2026-01-01') },
+          {
+            id: 'doc-1',
+            ...baseDocument,
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+            isDeleted: true,
+            deletedBy: 'user-1',
+            deletedAt: new Date('2026-01-01'),
+          },
           { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2' },
         ],
       });
@@ -137,10 +185,12 @@ describe('documents-batch usecases', () => {
       });
 
       expect(documentIds).to.eql(['doc-1', 'doc-2']);
-      expect(calls).to.eql([{
-        organizationId: 'organization-1',
-        searchQuery: 'tag:invoice',
-      }]);
+      expect(calls).to.eql([
+        {
+          organizationId: 'organization-1',
+          searchQuery: 'tag:invoice',
+        },
+      ]);
     });
   });
 
@@ -152,28 +202,42 @@ describe('documents-batch usecases', () => {
           { id: 'organization-1', name: 'Organization 1' },
           { id: 'organization-2', name: 'Organization 2' },
         ],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
         documents: [
           { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1' },
           { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2' },
-          { id: 'doc-3', organizationId: 'organization-2', mimeType: 'text/plain', originalStorageKey: 's3', originalName: 'doc 3', name: 'doc 3', originalSha256Hash: 'h3' },
+          {
+            id: 'doc-3',
+            organizationId: 'organization-2',
+            mimeType: 'text/plain',
+            originalStorageKey: 's3',
+            originalName: 'doc 3',
+            name: 'doc 3',
+            originalSha256Hash: 'h3',
+          },
         ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
       const { services } = createStubSearchServices();
 
-      await expect(trashDocumentsBatch({
-        filter: { documentIds: ['doc-1', 'doc-3'] },
-        organizationId: 'organization-1',
-        userId: 'user-1',
-        documentsRepository,
-        documentSearchServices: services,
-        eventServices: createTestEventServices(),
-      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+      await expect(
+        trashDocumentsBatch({
+          filter: { documentIds: ['doc-1', 'doc-3'] },
+          organizationId: 'organization-1',
+          userId: 'user-1',
+          documentsRepository,
+          documentSearchServices: services,
+          eventServices: createTestEventServices(),
+        }),
+      ).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
 
       const records = await db.select().from(documentsTable);
-      const byId = Object.fromEntries(records.map(r => [r.id, pick(r, ['id', 'isDeleted', 'deletedBy', 'deletedAt'])]));
+      const byId = Object.fromEntries(
+        records.map((r) => [r.id, pick(r, ['id', 'isDeleted', 'deletedBy', 'deletedAt'])]),
+      );
       expect(byId).to.eql({
         'doc-1': { id: 'doc-1', isDeleted: false, deletedBy: null, deletedAt: null },
         'doc-2': { id: 'doc-2', isDeleted: false, deletedBy: null, deletedAt: null },
@@ -189,7 +253,15 @@ describe('documents-batch usecases', () => {
         ],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
-          { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1', isDeleted: true, deletedBy: 'user-1', deletedAt: new Date('2026-01-01') },
+          {
+            id: 'doc-1',
+            ...baseDocument,
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+            isDeleted: true,
+            deletedBy: 'user-1',
+            deletedAt: new Date('2026-01-01'),
+          },
           { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2' },
         ],
       });
@@ -209,7 +281,7 @@ describe('documents-batch usecases', () => {
       expect(trashedDocumentIds).to.eql(['doc-2']);
 
       const records = await db.select().from(documentsTable);
-      const byId = Object.fromEntries(records.map(r => [r.id, r]));
+      const byId = Object.fromEntries(records.map((r) => [r.id, r]));
       // doc-1 keeps its original deletedBy / deletedAt, untouched
       expect(byId['doc-1']?.deletedBy).to.eql('user-1');
       expect(byId['doc-1']?.deletedAt).to.eql(new Date('2026-01-01'));
@@ -223,7 +295,14 @@ describe('documents-batch usecases', () => {
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
           { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1' },
-          { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2', isDeleted: true, deletedBy: 'user-1' },
+          {
+            id: 'doc-2',
+            ...baseDocument,
+            name: 'doc 2',
+            originalSha256Hash: 'h2',
+            isDeleted: true,
+            deletedBy: 'user-1',
+          },
         ],
       });
 
@@ -240,14 +319,16 @@ describe('documents-batch usecases', () => {
         eventServices,
       });
 
-      expect(eventServices.getEmittedEvents()).to.eql([{
-        eventName: 'documents.trashed',
-        payload: {
-          documentIds: ['doc-1'],
-          organizationId: 'organization-1',
-          trashedBy: 'user-1',
+      expect(eventServices.getEmittedEvents()).to.eql([
+        {
+          eventName: 'documents.trashed',
+          payload: {
+            documentIds: ['doc-1'],
+            organizationId: 'organization-1',
+            trashedBy: 'user-1',
+          },
         },
-      }]);
+      ]);
     });
 
     test('does not emit an event when no documents were trashed', async () => {
@@ -255,7 +336,14 @@ describe('documents-batch usecases', () => {
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
         documents: [
-          { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1', isDeleted: true, deletedBy: 'user-1' },
+          {
+            id: 'doc-1',
+            ...baseDocument,
+            name: 'doc 1',
+            originalSha256Hash: 'h1',
+            isDeleted: true,
+            deletedBy: 'user-1',
+          },
         ],
       });
 
@@ -278,9 +366,39 @@ describe('documents-batch usecases', () => {
 
     test('resolves a search query to the matching documents and trashes them', async () => {
       const documents = [
-        { id: 'doc-1', organizationId: 'organization-1', mimeType: 'application/pdf', originalStorageKey: '', originalName: 'invoice-1.pdf', name: 'invoice 1', originalSha256Hash: 'h1', content: 'tax invoice', isDeleted: false },
-        { id: 'doc-2', organizationId: 'organization-1', mimeType: 'application/pdf', originalStorageKey: '', originalName: 'invoice-2.pdf', name: 'invoice 2', originalSha256Hash: 'h2', content: 'tax invoice', isDeleted: false },
-        { id: 'doc-3', organizationId: 'organization-1', mimeType: 'application/pdf', originalStorageKey: '', originalName: 'memo.pdf', name: 'memo', originalSha256Hash: 'h3', content: 'meeting memo', isDeleted: false },
+        {
+          id: 'doc-1',
+          organizationId: 'organization-1',
+          mimeType: 'application/pdf',
+          originalStorageKey: '',
+          originalName: 'invoice-1.pdf',
+          name: 'invoice 1',
+          originalSha256Hash: 'h1',
+          content: 'tax invoice',
+          isDeleted: false,
+        },
+        {
+          id: 'doc-2',
+          organizationId: 'organization-1',
+          mimeType: 'application/pdf',
+          originalStorageKey: '',
+          originalName: 'invoice-2.pdf',
+          name: 'invoice 2',
+          originalSha256Hash: 'h2',
+          content: 'tax invoice',
+          isDeleted: false,
+        },
+        {
+          id: 'doc-3',
+          organizationId: 'organization-1',
+          mimeType: 'application/pdf',
+          originalStorageKey: '',
+          originalName: 'memo.pdf',
+          name: 'memo',
+          originalSha256Hash: 'h3',
+          content: 'meeting memo',
+          isDeleted: false,
+        },
       ];
 
       const { db } = await createInMemoryDatabase({
@@ -306,7 +424,7 @@ describe('documents-batch usecases', () => {
       expect(trashedDocumentIds.toSorted()).to.eql(['doc-1', 'doc-2']);
 
       const records = await db.select().from(documentsTable);
-      const byId = Object.fromEntries(records.map(r => [r.id, r]));
+      const byId = Object.fromEntries(records.map((r) => [r.id, r]));
       expect(byId['doc-1']?.isDeleted).to.eql(true);
       expect(byId['doc-2']?.isDeleted).to.eql(true);
       expect(byId['doc-3']?.isDeleted).to.eql(false);
@@ -333,7 +451,7 @@ describe('documents-batch usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const { services } = createStubSearchServices({ documentIds: documents.map(d => d.id) });
+      const { services } = createStubSearchServices({ documentIds: documents.map((d) => d.id) });
 
       const { trashedDocumentIds, trashedCount } = await trashDocumentsBatch({
         filter: { query: 'irrelevant' },
@@ -348,21 +466,35 @@ describe('documents-batch usecases', () => {
       expect(trashedDocumentIds).to.have.length(documentCount);
 
       const records = await db.select().from(documentsTable);
-      expect(records.every(r => r.isDeleted === true)).to.eql(true);
+      expect(records.every((r) => r.isDeleted === true)).to.eql(true);
     });
   });
 
   describe('tagDocumentsBatch', () => {
     const orgTags = [
-      { id: 'tag-1', name: 'Tag One', normalizedName: 'tag one', color: '#000000', organizationId: 'organization-1' },
-      { id: 'tag-2', name: 'Tag Two', normalizedName: 'tag two', color: '#111111', organizationId: 'organization-1' },
+      {
+        id: 'tag-1',
+        name: 'Tag One',
+        normalizedName: 'tag one',
+        color: '#000000',
+        organizationId: 'organization-1',
+      },
+      {
+        id: 'tag-2',
+        name: 'Tag Two',
+        normalizedName: 'tag two',
+        color: '#111111',
+        organizationId: 'organization-1',
+      },
     ];
 
     test('adds the tag to every resolved document', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
         documents: [
           { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1' },
           { id: 'doc-2', ...baseDocument, name: 'doc 2', originalSha256Hash: 'h2' },
@@ -390,7 +522,10 @@ describe('documents-batch usecases', () => {
       expect(untaggedCount).to.eql(0);
 
       const pairs = await db.select().from(documentsTagsTable);
-      expect(pairs.map(p => `${p.documentId}:${p.tagId}`).toSorted()).to.eql(['doc-1:tag-1', 'doc-2:tag-1']);
+      expect(pairs.map((p) => `${p.documentId}:${p.tagId}`).toSorted()).to.eql([
+        'doc-1:tag-1',
+        'doc-2:tag-1',
+      ]);
     });
 
     test('rejects the request if any documentId does not belong to the organization', async () => {
@@ -402,7 +537,15 @@ describe('documents-batch usecases', () => {
         ],
         documents: [
           { id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1' },
-          { id: 'doc-foreign', organizationId: 'organization-2', mimeType: 'text/plain', originalStorageKey: 's', originalName: 'foreign', name: 'foreign', originalSha256Hash: 'hf' },
+          {
+            id: 'doc-foreign',
+            organizationId: 'organization-2',
+            mimeType: 'text/plain',
+            originalStorageKey: 's',
+            originalName: 'foreign',
+            name: 'foreign',
+            originalSha256Hash: 'hf',
+          },
         ],
         tags: orgTags,
       });
@@ -410,18 +553,20 @@ describe('documents-batch usecases', () => {
       const { services: searchServices } = createStubSearchServices();
       const { services: webhookServices } = createStubWebhookTriggerServices();
 
-      await expect(tagDocumentsBatch({
-        filter: { documentIds: ['doc-1', 'doc-foreign'] },
-        addTagIds: ['tag-1'],
-        removeTagIds: [],
-        organizationId: 'organization-1',
-        userId: 'user-1',
-        documentsRepository: createDocumentsRepository({ db }),
-        tagsRepository: createTagsRepository({ db }),
-        documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
-      })).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
+      await expect(
+        tagDocumentsBatch({
+          filter: { documentIds: ['doc-1', 'doc-foreign'] },
+          addTagIds: ['tag-1'],
+          removeTagIds: [],
+          organizationId: 'organization-1',
+          userId: 'user-1',
+          documentsRepository: createDocumentsRepository({ db }),
+          tagsRepository: createTagsRepository({ db }),
+          documentSearchServices: searchServices,
+          webhookTriggerServices: webhookServices,
+          documentActivityRepository: createDocumentActivityRepository({ db }),
+        }),
+      ).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
 
       const pairs = await db.select().from(documentsTagsTable);
       expect(pairs).to.eql([]);
@@ -457,8 +602,13 @@ describe('documents-batch usecases', () => {
 
       expect(taggedCount).to.eql(1);
       const pairs = await db.select().from(documentsTagsTable);
-      expect(pairs.map(p => `${p.documentId}:${p.tagId}`).toSorted()).to.eql(['doc-1:tag-1', 'doc-2:tag-1']);
-      expect(webhookCalls.find(c => c.event === 'document:tag:added')?.payloads).to.have.length(1);
+      expect(pairs.map((p) => `${p.documentId}:${p.tagId}`).toSorted()).to.eql([
+        'doc-1:tag-1',
+        'doc-2:tag-1',
+      ]);
+      expect(webhookCalls.find((c) => c.event === 'document:tag:added')?.payloads).to.have.length(
+        1,
+      );
     });
 
     test('removes only existing tag pairs', async () => {
@@ -496,7 +646,7 @@ describe('documents-batch usecases', () => {
       expect(untaggedCount).to.eql(1);
 
       const pairs = await db.select().from(documentsTagsTable);
-      expect(pairs.map(p => `${p.documentId}:${p.tagId}`).toSorted()).to.eql(['doc-2:tag-2']);
+      expect(pairs.map((p) => `${p.documentId}:${p.tagId}`).toSorted()).to.eql(['doc-2:tag-2']);
     });
 
     test('combined add and remove in one call', async () => {
@@ -531,7 +681,10 @@ describe('documents-batch usecases', () => {
       expect(untaggedCount).to.eql(1);
 
       const pairs = await db.select().from(documentsTagsTable);
-      expect(pairs.map(p => `${p.documentId}:${p.tagId}`).toSorted()).to.eql(['doc-1:tag-2', 'doc-2:tag-2']);
+      expect(pairs.map((p) => `${p.documentId}:${p.tagId}`).toSorted()).to.eql([
+        'doc-1:tag-2',
+        'doc-2:tag-2',
+      ]);
     });
 
     test('throws TagNotFoundError when a tag id does not belong to the org', async () => {
@@ -544,25 +697,33 @@ describe('documents-batch usecases', () => {
         documents: [{ id: 'doc-1', ...baseDocument, name: 'doc 1', originalSha256Hash: 'h1' }],
         tags: [
           ...orgTags,
-          { id: 'tag-other-org', name: 'Other', normalizedName: 'other', color: '#222222', organizationId: 'organization-2' },
+          {
+            id: 'tag-other-org',
+            name: 'Other',
+            normalizedName: 'other',
+            color: '#222222',
+            organizationId: 'organization-2',
+          },
         ],
       });
 
       const { services: searchServices } = createStubSearchServices();
       const { services: webhookServices } = createStubWebhookTriggerServices();
 
-      await expect(tagDocumentsBatch({
-        filter: { documentIds: ['doc-1'] },
-        addTagIds: ['tag-other-org'],
-        removeTagIds: [],
-        organizationId: 'organization-1',
-        userId: 'user-1',
-        documentsRepository: createDocumentsRepository({ db }),
-        tagsRepository: createTagsRepository({ db }),
-        documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
-      })).rejects.toThrow();
+      await expect(
+        tagDocumentsBatch({
+          filter: { documentIds: ['doc-1'] },
+          addTagIds: ['tag-other-org'],
+          removeTagIds: [],
+          organizationId: 'organization-1',
+          userId: 'user-1',
+          documentsRepository: createDocumentsRepository({ db }),
+          tagsRepository: createTagsRepository({ db }),
+          documentSearchServices: searchServices,
+          webhookTriggerServices: webhookServices,
+          documentActivityRepository: createDocumentActivityRepository({ db }),
+        }),
+      ).rejects.toThrow();
 
       const pairs = await db.select().from(documentsTagsTable);
       expect(pairs).to.eql([]);
@@ -576,7 +737,9 @@ describe('documents-batch usecases', () => {
         tags: orgTags,
       });
 
-      const { services: searchServices, calls: searchCalls } = createStubSearchServices({ documentIds: ['doc-1'] });
+      const { services: searchServices, calls: searchCalls } = createStubSearchServices({
+        documentIds: ['doc-1'],
+      });
       const { services: webhookServices } = createStubWebhookTriggerServices();
 
       const { taggedCount } = await tagDocumentsBatch({
@@ -593,7 +756,9 @@ describe('documents-batch usecases', () => {
       });
 
       expect(taggedCount).to.eql(1);
-      expect(searchCalls).to.eql([{ organizationId: 'organization-1', searchQuery: 'tag:invoice' }]);
+      expect(searchCalls).to.eql([
+        { organizationId: 'organization-1', searchQuery: 'tag:invoice' },
+      ]);
     });
 
     test('emits batched webhook trigger calls and writes activity logs in one bulk insert', async () => {
@@ -624,16 +789,33 @@ describe('documents-batch usecases', () => {
         documentActivityRepository: createDocumentActivityRepository({ db }),
       });
 
-      const addedPayloads = webhookCalls.find(c => c.event === 'document:tag:added')?.payloads as Extract<WebhookPayloads, { event: 'document:tag:added' }>['payload'][] | undefined;
-      const removedPayloads = webhookCalls.find(c => c.event === 'document:tag:removed')?.payloads as Extract<WebhookPayloads, { event: 'document:tag:removed' }>['payload'][] | undefined;
+      const addedPayloads = webhookCalls.find((c) => c.event === 'document:tag:added')?.payloads as
+        | Extract<WebhookPayloads, { event: 'document:tag:added' }>['payload'][]
+        | undefined;
+      const removedPayloads = webhookCalls.find((c) => c.event === 'document:tag:removed')
+        ?.payloads as
+        | Extract<WebhookPayloads, { event: 'document:tag:removed' }>['payload'][]
+        | undefined;
 
       expect(addedPayloads).to.have.length(2);
-      expect(addedPayloads?.every(p => p.tagId === 'tag-1' && p.tagName === 'Tag One' && p.organizationId === 'organization-1')).to.eql(true);
+      expect(
+        addedPayloads?.every(
+          (p) =>
+            p.tagId === 'tag-1' && p.tagName === 'Tag One' && p.organizationId === 'organization-1',
+        ),
+      ).to.eql(true);
 
-      expect(removedPayloads).to.eql([{ documentId: 'doc-1', organizationId: 'organization-1', tagId: 'tag-2', tagName: 'Tag Two' }]);
+      expect(removedPayloads).to.eql([
+        {
+          documentId: 'doc-1',
+          organizationId: 'organization-1',
+          tagId: 'tag-2',
+          tagName: 'Tag Two',
+        },
+      ]);
 
       const activityRows = await db.select().from(documentActivityLogTable);
-      const events = activityRows.map(r => `${r.documentId}:${r.event}:${r.tagId}`).toSorted();
+      const events = activityRows.map((r) => `${r.documentId}:${r.event}:${r.tagId}`).toSorted();
       expect(events).to.eql(['doc-1:tagged:tag-1', 'doc-1:untagged:tag-2', 'doc-2:tagged:tag-1']);
     });
 

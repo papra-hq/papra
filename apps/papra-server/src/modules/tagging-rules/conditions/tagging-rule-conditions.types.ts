@@ -6,7 +6,9 @@ export type TaggingRuleConditionDefinitionValidatorArguments = {
   isCaseSensitive: boolean;
 };
 
-export type TaggingRuleConditionDefinitionValidator = (args: TaggingRuleConditionDefinitionValidatorArguments) => boolean;
+export type TaggingRuleConditionDefinitionValidator = (
+  args: TaggingRuleConditionDefinitionValidatorArguments,
+) => boolean;
 
 export type TaggingRuleConditionDefinition = {
   operator: TaggingRuleOperator;

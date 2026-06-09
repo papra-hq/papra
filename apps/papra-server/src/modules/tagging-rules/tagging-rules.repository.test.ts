@@ -8,25 +8,78 @@ describe('tagging-rules repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1', createdAt: new Date('2023-01-01'), updatedAt: new Date('2023-02-01') },
-          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_1', createdAt: new Date('2023-01-02'), updatedAt: new Date('2023-02-02') },
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+            createdAt: new Date('2023-01-01'),
+            updatedAt: new Date('2023-02-01'),
+          },
+          {
+            id: 'tag_2',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#111111',
+            organizationId: 'org_1',
+            createdAt: new Date('2023-01-02'),
+            updatedAt: new Date('2023-02-02'),
+          },
         ],
         taggingRules: [
-          { id: 'tr_1', organizationId: 'org_1', name: 'Enabled Rule 1', enabled: true, createdAt: new Date('2023-03-01'), updatedAt: new Date('2023-04-01') },
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Enabled Rule 1',
+            enabled: true,
+            createdAt: new Date('2023-03-01'),
+            updatedAt: new Date('2023-04-01'),
+          },
         ],
         taggingRuleConditions: [
-          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'equal', value: 'Doc 1', createdAt: new Date('2023-05-01'), updatedAt: new Date('2023-06-01') },
-          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'content', operator: 'contains', value: 'invoice', createdAt: new Date('2023-05-01'), updatedAt: new Date('2023-06-01') },
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'equal',
+            value: 'Doc 1',
+            createdAt: new Date('2023-05-01'),
+            updatedAt: new Date('2023-06-01'),
+          },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_1',
+            field: 'content',
+            operator: 'contains',
+            value: 'invoice',
+            createdAt: new Date('2023-05-01'),
+            updatedAt: new Date('2023-06-01'),
+          },
         ],
         taggingRuleActions: [
-          { id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1', createdAt: new Date('2023-07-01'), updatedAt: new Date('2023-08-01') },
-          { id: 'tra_2', taggingRuleId: 'tr_1', tagId: 'tag_2', createdAt: new Date('2023-07-01'), updatedAt: new Date('2023-08-01') },
+          {
+            id: 'tra_1',
+            taggingRuleId: 'tr_1',
+            tagId: 'tag_1',
+            createdAt: new Date('2023-07-01'),
+            updatedAt: new Date('2023-08-01'),
+          },
+          {
+            id: 'tra_2',
+            taggingRuleId: 'tr_1',
+            tagId: 'tag_2',
+            createdAt: new Date('2023-07-01'),
+            updatedAt: new Date('2023-08-01'),
+          },
         ],
       });
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).to.eql([
         {
@@ -96,7 +149,6 @@ describe('tagging-rules repository', () => {
               value: 'invoice',
             },
           ],
-
         },
       ]);
     });
@@ -104,7 +156,15 @@ describe('tagging-rules repository', () => {
     test('disabled tagging rules are excluded from the results', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Enabled Rule', enabled: true },
           { id: 'tr_2', organizationId: 'org_1', name: 'Disabled Rule', enabled: false },
@@ -121,7 +181,9 @@ describe('tagging-rules repository', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toHaveLength(1);
       expect(taggingRules[0]?.id).toBe('tr_1');
@@ -135,8 +197,20 @@ describe('tagging-rules repository', () => {
           { id: 'org_2', name: 'Org 2' },
         ],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' },
-          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_2' },
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+          {
+            id: 'tag_2',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#111111',
+            organizationId: 'org_2',
+          },
         ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule Org 1', enabled: true },
@@ -150,7 +224,9 @@ describe('tagging-rules repository', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toHaveLength(1);
       expect(taggingRules[0]?.id).toBe('tr_1');
@@ -160,18 +236,26 @@ describe('tagging-rules repository', () => {
     test('organizations with only disabled rules get an empty result', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Disabled Rule', enabled: false },
         ],
-        taggingRuleActions: [
-          { id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' },
-        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toEqual([]);
     });
@@ -183,7 +267,9 @@ describe('tagging-rules repository', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toEqual([]);
     });
@@ -191,18 +277,26 @@ describe('tagging-rules repository', () => {
     test('tagging rules without conditions are properly retrieved with empty conditions array', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule Without Conditions', enabled: true },
         ],
-        taggingRuleActions: [
-          { id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' },
-        ],
+        taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toHaveLength(1);
       expect(taggingRules[0]?.conditions).toEqual([]);
@@ -213,8 +307,20 @@ describe('tagging-rules repository', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         tags: [
-          { id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' },
-          { id: 'tag_2', name: 'Tag 2', normalizedName: 'tag 2', color: '#111111', organizationId: 'org_1' },
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+          {
+            id: 'tag_2',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#111111',
+            organizationId: 'org_1',
+          },
         ],
         taggingRules: [
           { id: 'tr_1', organizationId: 'org_1', name: 'Rule 1', enabled: true },
@@ -223,7 +329,13 @@ describe('tagging-rules repository', () => {
         ],
         taggingRuleConditions: [
           { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'equal', value: 'Doc 1' },
-          { id: 'trc_2', taggingRuleId: 'tr_2', field: 'name', operator: 'contains', value: 'Invoice' },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_2',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
         ],
         taggingRuleActions: [
           { id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' },
@@ -234,12 +346,14 @@ describe('tagging-rules repository', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({ organizationId: 'org_1' });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
+        organizationId: 'org_1',
+      });
 
       expect(taggingRules).toHaveLength(2);
 
-      const rule1 = taggingRules.find(r => r.id === 'tr_1');
-      const rule2 = taggingRules.find(r => r.id === 'tr_2');
+      const rule1 = taggingRules.find((r) => r.id === 'tr_1');
+      const rule2 = taggingRules.find((r) => r.id === 'tr_2');
 
       expect(rule1).toBeDefined();
       expect(rule1?.conditions).toHaveLength(1);

@@ -29,8 +29,6 @@ export default defineConfig({
       'border': '#e3e1de',
       'muted': '#6b6965',
     },
-
   },
-  shortcuts: {
-  },
+  shortcuts: {},
 });

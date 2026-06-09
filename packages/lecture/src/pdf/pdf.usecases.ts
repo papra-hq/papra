@@ -15,7 +15,7 @@ export function getNormalizedImageData(image: PdfRawImage): Uint8Array {
       const rowOffset = y * rowBytes;
       for (let x = 0; x < image.width; x++) {
         const byte = image.data[rowOffset + (x >> 3)] ?? 0;
-        unpacked[y * image.width + x] = ((byte >> (7 - (x & 7))) & 1) ? 255 : 0;
+        unpacked[y * image.width + x] = (byte >> (7 - (x & 7))) & 1 ? 255 : 0;
       }
     }
     return unpacked;

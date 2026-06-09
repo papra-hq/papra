@@ -1,14 +1,20 @@
 import * as v from 'valibot';
 import { describe, expect, test } from 'vitest';
-import { allowedOriginsSchema, intakeEmailIngestionEmailFieldSchema, intakeEmailsIngestionMetaSchema } from './intake-emails.schemas';
+import {
+  allowedOriginsSchema,
+  intakeEmailIngestionEmailFieldSchema,
+  intakeEmailsIngestionMetaSchema,
+} from './intake-emails.schemas';
 
 describe('intake-emails.schemas', () => {
   describe('intakeEmailsIngestionMetaSchema', () => {
     test('parses a valid ingestion meta object', () => {
-      expect(v.parse(intakeEmailsIngestionMetaSchema, {
-        from: { address: 'sender@example.com' },
-        to: [{ address: 'recipient@example.com' }],
-      })).toMatchObject({
+      expect(
+        v.parse(intakeEmailsIngestionMetaSchema, {
+          from: { address: 'sender@example.com' },
+          to: [{ address: 'recipient@example.com' }],
+        }),
+      ).toMatchObject({
         from: { address: 'sender@example.com' },
         to: [{ address: 'recipient@example.com' }],
         originalTo: [],
@@ -32,10 +38,12 @@ describe('intake-emails.schemas', () => {
     });
 
     test('fails if from address is not a valid email', () => {
-      expect(() => v.parse(intakeEmailsIngestionMetaSchema, {
-        from: { address: 'not-an-email' },
-        to: [{ address: 'c@d.com' }],
-      })).toThrow();
+      expect(() =>
+        v.parse(intakeEmailsIngestionMetaSchema, {
+          from: { address: 'not-an-email' },
+          to: [{ address: 'c@d.com' }],
+        }),
+      ).toThrow();
     });
   });
 
@@ -54,13 +62,18 @@ describe('intake-emails.schemas', () => {
     });
 
     test('fails if the parsed JSON does not match the meta schema', () => {
-      expect(() => v.parse(intakeEmailIngestionEmailFieldSchema, JSON.stringify({ foo: 'bar' }))).toThrow();
+      expect(() =>
+        v.parse(intakeEmailIngestionEmailFieldSchema, JSON.stringify({ foo: 'bar' })),
+      ).toThrow();
     });
   });
 
   describe('allowedOriginsSchema', () => {
     test('parses an array of valid email addresses and lowercases them', () => {
-      expect(v.parse(allowedOriginsSchema, ['User@Example.COM', 'other@test.org'])).toEqual(['user@example.com', 'other@test.org']);
+      expect(v.parse(allowedOriginsSchema, ['User@Example.COM', 'other@test.org'])).toEqual([
+        'user@example.com',
+        'other@test.org',
+      ]);
     });
 
     test('returns undefined when the value is absent', () => {

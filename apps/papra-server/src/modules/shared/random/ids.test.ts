@@ -26,10 +26,16 @@ describe('database models', () => {
         expect(generateDeterministicId().length).to.eql(ID_RANDOM_PART_LENGTH);
         expect(generateDeterministicId().length).to.eql(generateId().length);
 
-        const generateDeterministicIdWithPrefix = createDeterministicIdGenerator({ prefix: 'test' });
+        const generateDeterministicIdWithPrefix = createDeterministicIdGenerator({
+          prefix: 'test',
+        });
 
-        expect(generateDeterministicIdWithPrefix().length).to.eql('test_'.length + ID_RANDOM_PART_LENGTH);
-        expect(generateDeterministicIdWithPrefix().length).to.eql(generateId({ prefix: 'test' }).length);
+        expect(generateDeterministicIdWithPrefix().length).to.eql(
+          'test_'.length + ID_RANDOM_PART_LENGTH,
+        );
+        expect(generateDeterministicIdWithPrefix().length).to.eql(
+          generateId({ prefix: 'test' }).length,
+        );
       });
     });
   });

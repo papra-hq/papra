@@ -18,10 +18,12 @@ function setupGetOrganizationDocumentActivitiesRoute({ app, db }: RouteDefinitio
   app.get(
     '/api/organizations/:organizationId/documents/:documentId/activity',
     requireAuthentication({ apiKeyPermissions: ['documents:read'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      documentId: documentIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
     validateQuery(
       v.strictObject({
         ...createQueryPaginationSchemaKeys({ maxPageSize: 100, defaultPageSize: 100 }),

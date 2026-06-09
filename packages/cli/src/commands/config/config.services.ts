@@ -7,7 +7,10 @@ import { cliConfigSchema } from './config.schemas';
 
 export async function getConfig(): Promise<CliConfig> {
   const configFilePath = getConfigFilePath();
-  const fileExists = await fs.access(configFilePath).then(() => true).catch(() => false);
+  const fileExists = await fs
+    .access(configFilePath)
+    .then(() => true)
+    .catch(() => false);
 
   if (!fileExists) {
     return {};

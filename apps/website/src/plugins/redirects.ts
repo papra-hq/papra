@@ -9,8 +9,7 @@ function buildRedirects({ redirects }: { redirects?: Redirects }) {
     return;
   }
 
-  return Object
-    .entries(redirects)
+  return Object.entries(redirects)
     .map(([from, to]) => {
       const toPath = typeof to === 'string' ? to : to.destination;
       const status = typeof to === 'string' ? '' : to.status;

@@ -12,13 +12,29 @@ export async function fetchDocumentViews({ organizationId }: { organizationId: s
   return { documentViews: documentViews.map(coerceDates) };
 }
 
-export async function fetchDocumentView({ organizationId, documentViewId }: { organizationId: string; documentViewId: string }) {
+export async function fetchDocumentView({
+  organizationId,
+  documentViewId,
+}: {
+  organizationId: string;
+  documentViewId: string;
+}) {
   const { documentViews } = await fetchDocumentViews({ organizationId });
-  const documentView = documentViews.find(d => d.id === documentViewId);
+  const documentView = documentViews.find((d) => d.id === documentViewId);
   return { documentView };
 }
 
-export async function createDocumentView({ organizationId, name, query, description }: { organizationId: string; name: string; query: string; description?: string | null }) {
+export async function createDocumentView({
+  organizationId,
+  name,
+  query,
+  description,
+}: {
+  organizationId: string;
+  name: string;
+  query: string;
+  description?: string | null;
+}) {
   const { documentView } = await apiClient<{ documentView: AsDto<DocumentView> }>({
     path: `/api/organizations/${organizationId}/document-views`,
     method: 'POST',
@@ -28,7 +44,19 @@ export async function createDocumentView({ organizationId, name, query, descript
   return { documentView: coerceDates(documentView) };
 }
 
-export async function updateDocumentView({ organizationId, documentViewId, name, query, description }: { organizationId: string; documentViewId: string; name?: string; query?: string; description?: string | null }) {
+export async function updateDocumentView({
+  organizationId,
+  documentViewId,
+  name,
+  query,
+  description,
+}: {
+  organizationId: string;
+  documentViewId: string;
+  name?: string;
+  query?: string;
+  description?: string | null;
+}) {
   const { documentView } = await apiClient<{ documentView: AsDto<DocumentView> }>({
     path: `/api/organizations/${organizationId}/document-views/${documentViewId}`,
     method: 'PUT',
@@ -38,7 +66,13 @@ export async function updateDocumentView({ organizationId, documentViewId, name,
   return { documentView: coerceDates(documentView) };
 }
 
-export async function deleteDocumentView({ organizationId, documentViewId }: { organizationId: string; documentViewId: string }) {
+export async function deleteDocumentView({
+  organizationId,
+  documentViewId,
+}: {
+  organizationId: string;
+  documentViewId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/document-views/${documentViewId}`,
     method: 'DELETE',

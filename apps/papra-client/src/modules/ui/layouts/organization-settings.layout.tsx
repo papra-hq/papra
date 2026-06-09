@@ -11,7 +11,6 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
   const getNavigationItems = () => [
     {
       items: [
-
         {
           label: t('layout.menu.general-settings'),
           href: `/organizations/${params.organizationId}/settings`,
@@ -39,25 +38,25 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
   return (
     <div class="flex flex-row h-screen min-h-0">
       <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
-
         <SideNav
           mainMenu={getNavigationItems()}
           header={() => (
             <div class="pl-6 py-3 border-b border-b-border flex items-center gap-1">
-              <Button variant="ghost" size="icon" class="text-muted-foreground" as={A} href={`/organizations/${params.organizationId}`}>
+              <Button
+                variant="ghost"
+                size="icon"
+                class="text-muted-foreground"
+                as={A}
+                href={`/organizations/${params.organizationId}`}
+              >
                 <div class="i-tabler-arrow-left size-5" />
               </Button>
-              <h1 class="text-base font-bold">
-                {t('organization.settings.title')}
-              </h1>
+              <h1 class="text-base font-bold">{t('organization.settings.title')}</h1>
             </div>
           )}
         />
-
       </div>
-      <div class="flex-1 min-h-0 flex flex-col">
-        {props.children}
-      </div>
+      <div class="flex-1 min-h-0 flex flex-col">{props.children}</div>
     </div>
   );
 };

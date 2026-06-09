@@ -1,25 +1,20 @@
 {
   "name": "@papra/app-client",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "description": "Papra frontend client",
-  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "license": "AGPL-3.0-or-later",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra"
   },
-  "engines": {
-    "node": ">=26.0.0"
-  },
+  "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
@@ -57,13 +52,10 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@iconify-json/tabler": "catalog:",
     "@papra/app-server": "workspace:*",
     "@papra/lecture": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
-    "eslint-plugin-solid": "^0.14.5",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "unocss": "catalog:",
@@ -71,5 +63,8 @@
     "vite-plugin-solid": "^2.11.9",
     "vite-plugin-static-copy": "^4.1.0",
     "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=26.0.0"
   }
 }

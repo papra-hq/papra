@@ -12,13 +12,56 @@ describe('demo search services', () => {
     } as unknown as Record<string, Tag>;
 
     const documents = [
-      { id: 'doc_1', name: 'Recipe for Pancakes', content: 'Mix flour, eggs, and milk to make pancakes.', tags: [tags.cooking], createdAt: new Date('2023-01-01') },
-      { id: 'doc_2', name: 'Work Meeting Notes', content: 'Discuss project timeline and deliverables.', tags: [tags.work], createdAt: new Date('2023-02-15') },
-      { id: 'doc_3', name: 'Personal Journal', content: 'Today I went for a walk in the park.', tags: [tags.personal], createdAt: new Date('2023-03-10') },
-      { id: 'doc_4', name: 'Grocery List', content: 'Eggs, milk, bread, and butter.', tags: [tags.cooking, tags.personal], createdAt: new Date('2023-04-05') },
-      { id: 'doc_5', name: 'Project Plan', content: 'Outline project goals and milestones.', tags: [tags.work], createdAt: new Date('2023-05-20') },
-      { id: 'doc_6', name: 'Vacation Ideas', content: 'Consider visiting the beach or mountains.', tags: [], createdAt: new Date('2023-06-15') },
-      { id: 'doc_7', name: 'Invoice 001', content: 'Invoice for services.', tags: [tags.work], createdAt: new Date('2023-07-01'), customProperties: [{ key: 'invoicenumber', type: 'text', value: 'INV-001' }] },
+      {
+        id: 'doc_1',
+        name: 'Recipe for Pancakes',
+        content: 'Mix flour, eggs, and milk to make pancakes.',
+        tags: [tags.cooking],
+        createdAt: new Date('2023-01-01'),
+      },
+      {
+        id: 'doc_2',
+        name: 'Work Meeting Notes',
+        content: 'Discuss project timeline and deliverables.',
+        tags: [tags.work],
+        createdAt: new Date('2023-02-15'),
+      },
+      {
+        id: 'doc_3',
+        name: 'Personal Journal',
+        content: 'Today I went for a walk in the park.',
+        tags: [tags.personal],
+        createdAt: new Date('2023-03-10'),
+      },
+      {
+        id: 'doc_4',
+        name: 'Grocery List',
+        content: 'Eggs, milk, bread, and butter.',
+        tags: [tags.cooking, tags.personal],
+        createdAt: new Date('2023-04-05'),
+      },
+      {
+        id: 'doc_5',
+        name: 'Project Plan',
+        content: 'Outline project goals and milestones.',
+        tags: [tags.work],
+        createdAt: new Date('2023-05-20'),
+      },
+      {
+        id: 'doc_6',
+        name: 'Vacation Ideas',
+        content: 'Consider visiting the beach or mountains.',
+        tags: [],
+        createdAt: new Date('2023-06-15'),
+      },
+      {
+        id: 'doc_7',
+        name: 'Invoice 001',
+        content: 'Invoice for services.',
+        tags: [tags.work],
+        createdAt: new Date('2023-07-01'),
+        customProperties: [{ key: 'invoicenumber', type: 'text', value: 'INV-001' }],
+      },
     ] as unknown as Document[];
 
     const queries = [
@@ -43,11 +86,7 @@ describe('demo search services', () => {
 
     for (const { query, expectedIds } of queries) {
       test(`search query "${query}"`, () => {
-        expect(
-          searchDemoDocuments({ query, documents }).map(doc => doc.id),
-        ).toEqual(
-          expectedIds,
-        );
+        expect(searchDemoDocuments({ query, documents }).map((doc) => doc.id)).toEqual(expectedIds);
       });
     }
   });
@@ -55,14 +94,24 @@ describe('demo search services', () => {
   describe('someCorpusTokenStartsWith', () => {
     test('simulate FTS search behavior by checking if a word starts with the search text, like `name:"foo"*`', () => {
       expect(someCorpusTokenStartsWith({ corpus: 'The quick brown fox', prefix: 'qu' })).toBe(true);
-      expect(someCorpusTokenStartsWith({ corpus: 'The quick brown fox', prefix: 'ick' })).toBe(false);
+      expect(someCorpusTokenStartsWith({ corpus: 'The quick brown fox', prefix: 'ick' })).toBe(
+        false,
+      );
     });
 
     test('works with punctuation', () => {
-      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'wo' })).toBe(true);
-      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'is' })).toBe(true);
-      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'te' })).toBe(true);
-      expect(someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'lo' })).toBe(false);
+      expect(
+        someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'wo' }),
+      ).toBe(true);
+      expect(
+        someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'is' }),
+      ).toBe(true);
+      expect(
+        someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'te' }),
+      ).toBe(true);
+      expect(
+        someCorpusTokenStartsWith({ corpus: 'Hello, world! This is a test.', prefix: 'lo' }),
+      ).toBe(false);
       expect(someCorpusTokenStartsWith({ corpus: 'Hello-world', prefix: 'worl' })).toBe(true);
     });
   });

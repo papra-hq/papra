@@ -21,7 +21,10 @@ export async function handleStripeWebhookEvent({
   subscriptionsServices: SubscriptionsServices;
   logger?: Logger;
 }) {
-  if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
+  if (
+    event.type === 'customer.subscription.created' ||
+    event.type === 'customer.subscription.updated'
+  ) {
     const subscriptionId = event.data.object.id;
     const organizationId = event.data.object.metadata.organizationId;
 
@@ -37,18 +40,24 @@ export async function handleStripeWebhookEvent({
       const { subscription } = await subscriptionsServices.getSubscription({ subscriptionId });
       stripeSubscription = subscription;
 
-      logger.info({
-        subscriptionId,
-        status: subscription.status,
-        eventType: event.type,
-      }, 'Fetched current subscription state from Stripe');
+      logger.info(
+        {
+          subscriptionId,
+          status: subscription.status,
+          eventType: event.type,
+        },
+        'Fetched current subscription state from Stripe',
+      );
     } catch (error) {
       // Fallback to webhook data if Stripe API fails
-      logger.warn({
-        subscriptionId,
-        error,
-        eventType: event.type,
-      }, 'Failed to fetch subscription from Stripe, using webhook data as fallback');
+      logger.warn(
+        {
+          subscriptionId,
+          error,
+          eventType: event.type,
+        },
+        'Failed to fetch subscription from Stripe, using webhook data as fallback',
+      );
 
       stripeSubscription = event.data.object;
     }
@@ -60,16 +69,19 @@ export async function handleStripeWebhookEvent({
       throw new Error(`Subscription ${subscriptionId} has no items`);
     }
 
-    const customerId = typeof stripeSubscription.customer === 'string'
-      ? stripeSubscription.customer
-      : stripeSubscription.customer.id;
+    const customerId =
+      typeof stripeSubscription.customer === 'string'
+        ? stripeSubscription.customer
+        : stripeSubscription.customer.id;
     const currentPeriodEnd = coerceStripeTimestampToDate(stripeSubscription.current_period_end);
     const currentPeriodStart = coerceStripeTimestampToDate(stripeSubscription.current_period_start);
     const cancelAtPeriodEnd = stripeSubscription.cancel_at_period_end;
     const status = stripeSubscription.status;
 
     // Look up the plan - this might fail if price ID is misconfigured
-    const { organizationPlan } = await plansRepository.getOrganizationPlanByPriceId({ priceId: subscriptionItem.price.id });
+    const { organizationPlan } = await plansRepository.getOrganizationPlanByPriceId({
+      priceId: subscriptionItem.price.id,
+    });
 
     // Upsert subscription with current state from Stripe
     await subscriptionsRepository.upsertSubscription({
@@ -84,13 +96,16 @@ export async function handleStripeWebhookEvent({
       cancelAtPeriodEnd,
     });
 
-    logger.info({
-      subscriptionId,
-      customerId,
-      status,
-      planId: organizationPlan.id,
-      eventType: event.type,
-    }, 'Subscription synced from Stripe current state');
+    logger.info(
+      {
+        subscriptionId,
+        customerId,
+        status,
+        planId: organizationPlan.id,
+        eventType: event.type,
+      },
+      'Subscription synced from Stripe current state',
+    );
 
     return;
   }

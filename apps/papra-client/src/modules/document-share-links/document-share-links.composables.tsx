@@ -5,7 +5,9 @@ import { createToast } from '../ui/components/sonner';
 import { deleteShareLink, updateShareLink } from './document-share-links.services';
 
 export function invalidateShareLinksQueries({ organizationId }: { organizationId: string }) {
-  return queryClient.invalidateQueries({ queryKey: ['organizations', organizationId, 'share-links'] });
+  return queryClient.invalidateQueries({
+    queryKey: ['organizations', organizationId, 'share-links'],
+  });
 }
 
 export function useCopyShareLink() {
@@ -27,10 +29,21 @@ export function useToggleShareLink() {
   const { t } = useI18n();
 
   return {
-    async toggleShareLink({ organizationId, shareLinkId, isEnabled }: { organizationId: string; shareLinkId: string; isEnabled: boolean }) {
+    async toggleShareLink({
+      organizationId,
+      shareLinkId,
+      isEnabled,
+    }: {
+      organizationId: string;
+      shareLinkId: string;
+      isEnabled: boolean;
+    }) {
       await updateShareLink({ organizationId, shareLinkId, isEnabled });
       await invalidateShareLinksQueries({ organizationId });
-      createToast({ type: 'success', message: isEnabled ? t('document-share-links.enabled') : t('document-share-links.disabled') });
+      createToast({
+        type: 'success',
+        message: isEnabled ? t('document-share-links.enabled') : t('document-share-links.disabled'),
+      });
     },
   };
 }
@@ -40,11 +53,20 @@ export function useDeleteShareLink() {
   const { t } = useI18n();
 
   return {
-    async deleteShareLink({ organizationId, shareLinkId }: { organizationId: string; shareLinkId: string }): Promise<{ hasDeleted: boolean }> {
+    async deleteShareLink({
+      organizationId,
+      shareLinkId,
+    }: {
+      organizationId: string;
+      shareLinkId: string;
+    }): Promise<{ hasDeleted: boolean }> {
       const isConfirmed = await confirm({
         title: t('document-share-links.delete.confirm.title'),
         message: t('document-share-links.delete.confirm.message'),
-        confirmButton: { text: t('document-share-links.delete.confirm.confirm-button'), variant: 'destructive' },
+        confirmButton: {
+          text: t('document-share-links.delete.confirm.confirm-button'),
+          variant: 'destructive',
+        },
         cancelButton: { text: t('document-share-links.delete.confirm.cancel-button') },
       });
 

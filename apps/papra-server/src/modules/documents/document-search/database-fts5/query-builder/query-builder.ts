@@ -1,4 +1,11 @@
-import type { AndExpression, Expression, FilterExpression, NotExpression, OrExpression, TextExpression } from '@papra/search-parser';
+import type {
+  AndExpression,
+  Expression,
+  FilterExpression,
+  NotExpression,
+  OrExpression,
+  TextExpression,
+} from '@papra/search-parser';
 import type { Database } from '../../../../app/database/database.types';
 import type { CustomPropertyDefinitionsByKey } from './query-builder.custom-properties';
 import type { QueryResult } from './query-builder.types';
@@ -9,7 +16,10 @@ import { normalizeTagName } from '../../../../tags/tags.repository.models';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
 import { documentsTable } from '../../../documents.table';
 import { documentsFtsTable } from '../database-fts5.tables';
-import { handleCustomPropertyFilter, handleHasCustomPropertyFilter } from './query-builder.custom-properties';
+import {
+  handleCustomPropertyFilter,
+  handleHasCustomPropertyFilter,
+} from './query-builder.custom-properties';
 import { getCustomPropertyDefinition } from './query-builder.custom-properties.models';
 import {
   createInvalidDateFormatQueryResult,
@@ -26,7 +36,15 @@ export function handleEmptyExpression(): QueryResult {
   };
 }
 
-export function handleNameFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+export function handleNameFilter({
+  expression,
+  organizationId,
+  db,
+}: {
+  expression: FilterExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -36,21 +54,30 @@ export function handleNameFilter({ expression, organizationId, db }: { expressio
   const { queryString } = formatFts5QueryValue({
     value,
     organizationId,
-    matchingColumns: [
-      documentsFtsTable.name.name,
-    ],
+    matchingColumns: [documentsFtsTable.name.name],
   });
 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.selectDistinct({ documentId: documentsFtsTable.documentId }).from(documentsFtsTable).where(eq(documentsFtsTable, queryString)),
+      db
+        .selectDistinct({ documentId: documentsFtsTable.documentId })
+        .from(documentsFtsTable)
+        .where(eq(documentsFtsTable, queryString)),
     ),
     issues: [],
   };
 }
 
-export function handleContentFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+export function handleContentFilter({
+  expression,
+  organizationId,
+  db,
+}: {
+  expression: FilterExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   if (operator !== '=') {
@@ -60,60 +87,127 @@ export function handleContentFilter({ expression, organizationId, db }: { expres
   const { queryString } = formatFts5QueryValue({
     value,
     organizationId,
-    matchingColumns: [
-      documentsFtsTable.content.name,
-    ],
+    matchingColumns: [documentsFtsTable.content.name],
   });
 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.selectDistinct({ documentId: documentsFtsTable.documentId }).from(documentsFtsTable).where(eq(documentsFtsTable, queryString)),
+      db
+        .selectDistinct({ documentId: documentsFtsTable.documentId })
+        .from(documentsFtsTable)
+        .where(eq(documentsFtsTable, queryString)),
     ),
     issues: [],
   };
 }
 
-export function handleTextExpression({ expression, organizationId, db }: { expression: TextExpression; organizationId: string; db: Database }): QueryResult {
+export function handleTextExpression({
+  expression,
+  organizationId,
+  db,
+}: {
+  expression: TextExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { value } = expression;
   const { queryString } = formatFts5QueryValue({
     value,
     organizationId,
-    matchingColumns: [
-      documentsFtsTable.name.name,
-      documentsFtsTable.content.name,
-    ],
+    matchingColumns: [documentsFtsTable.name.name, documentsFtsTable.content.name],
   });
 
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.selectDistinct({ documentId: documentsFtsTable.documentId }).from(documentsFtsTable).where(eq(documentsFtsTable, queryString)),
+      db
+        .selectDistinct({ documentId: documentsFtsTable.documentId })
+        .from(documentsFtsTable)
+        .where(eq(documentsFtsTable, queryString)),
     ),
     issues: [],
   };
 }
 
-export function handleAndExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: AndExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey }));
+export function handleAndExpression({
+  expression,
+  organizationId,
+  db,
+  now,
+  customPropertyDefinitionsByKey = {},
+}: {
+  expression: AndExpression;
+  organizationId: string;
+  db: Database;
+  now: Date;
+  customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey;
+}): QueryResult {
+  const subQueries = expression.operands.map((expression) =>
+    buildQueryFromExpression({
+      expression,
+      organizationId,
+      db,
+      now,
+      customPropertyDefinitionsByKey,
+    }),
+  );
 
   return {
-    sqlQuery: and(...subQueries.map(sq => sq.sqlQuery)),
-    issues: subQueries.flatMap(sq => sq.issues),
+    sqlQuery: and(...subQueries.map((sq) => sq.sqlQuery)),
+    issues: subQueries.flatMap((sq) => sq.issues),
   };
 }
 
-export function handleOrExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: OrExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
-  const subQueries = expression.operands.map(expression => buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey }));
+export function handleOrExpression({
+  expression,
+  organizationId,
+  db,
+  now,
+  customPropertyDefinitionsByKey = {},
+}: {
+  expression: OrExpression;
+  organizationId: string;
+  db: Database;
+  now: Date;
+  customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey;
+}): QueryResult {
+  const subQueries = expression.operands.map((expression) =>
+    buildQueryFromExpression({
+      expression,
+      organizationId,
+      db,
+      now,
+      customPropertyDefinitionsByKey,
+    }),
+  );
 
   return {
-    sqlQuery: or(...subQueries.map(sq => sq.sqlQuery)),
-    issues: subQueries.flatMap(sq => sq.issues),
+    sqlQuery: or(...subQueries.map((sq) => sq.sqlQuery)),
+    issues: subQueries.flatMap((sq) => sq.issues),
   };
 }
 
-export function handleNotExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: NotExpression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
-  const subQuery = buildQueryFromExpression({ expression: expression.operand, organizationId, db, now, customPropertyDefinitionsByKey });
+export function handleNotExpression({
+  expression,
+  organizationId,
+  db,
+  now,
+  customPropertyDefinitionsByKey = {},
+}: {
+  expression: NotExpression;
+  organizationId: string;
+  db: Database;
+  now: Date;
+  customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey;
+}): QueryResult {
+  const subQuery = buildQueryFromExpression({
+    expression: expression.operand,
+    organizationId,
+    db,
+    now,
+    customPropertyDefinitionsByKey,
+  });
 
   if (!subQuery.sqlQuery) {
     // Should not happen, but just for type safety
@@ -135,7 +229,15 @@ export function handleNotExpression({ expression, organizationId, db, now, custo
   };
 }
 
-export function handleTagFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+export function handleTagFilter({
+  expression,
+  organizationId,
+  db,
+}: {
+  expression: FilterExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { value } = expression;
 
   const query = tagIdRegex.test(value)
@@ -145,20 +247,31 @@ export function handleTagFilter({ expression, organizationId, db }: { expression
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.selectDistinct({ documentId: documentsTagsTable.documentId })
+      db
+        .selectDistinct({ documentId: documentsTagsTable.documentId })
         .from(documentsTagsTable)
         .innerJoin(tagsTable, eq(documentsTagsTable.tagId, tagsTable.id))
-        .where(and(
-          // Ensure tag belongs to the same organization + helps performance as there is an index on (organizationId + name)
-          eq(tagsTable.organizationId, organizationId),
-          query,
-        )),
+        .where(
+          and(
+            // Ensure tag belongs to the same organization + helps performance as there is an index on (organizationId + name)
+            eq(tagsTable.organizationId, organizationId),
+            query,
+          ),
+        ),
     ),
     issues: [],
   };
 }
 
-export function handleHasTagsFilter({ expression, organizationId, db }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+export function handleHasTagsFilter({
+  expression,
+  organizationId,
+  db,
+}: {
+  expression: FilterExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { operator, field } = expression;
 
   if (operator !== '=') {
@@ -168,7 +281,8 @@ export function handleHasTagsFilter({ expression, organizationId, db }: { expres
   return {
     sqlQuery: inArray(
       documentsTable.id,
-      db.selectDistinct({ documentId: documentsTagsTable.documentId })
+      db
+        .selectDistinct({ documentId: documentsTagsTable.documentId })
         .from(documentsTagsTable)
         .innerJoin(tagsTable, eq(documentsTagsTable.tagId, tagsTable.id))
         .where(eq(tagsTable.organizationId, organizationId)),
@@ -185,7 +299,13 @@ function getDateValue({ value, now }: { value: string; now: Date }): Date {
   return new Date(value);
 }
 
-export function handleDocumentDateFilter({ expression, now }: { expression: FilterExpression; now: Date }): QueryResult {
+export function handleDocumentDateFilter({
+  expression,
+  now,
+}: {
+  expression: FilterExpression;
+  now: Date;
+}): QueryResult {
   const { value, operator, field } = expression;
 
   const dateValue = getDateValue({ value, now });
@@ -201,7 +321,13 @@ export function handleDocumentDateFilter({ expression, now }: { expression: Filt
   };
 }
 
-export function handleDocumentHasDateFilter({ expression }: { expression: FilterExpression; organizationId: string; db: Database }): QueryResult {
+export function handleDocumentHasDateFilter({
+  expression,
+}: {
+  expression: FilterExpression;
+  organizationId: string;
+  db: Database;
+}): QueryResult {
   const { operator, field } = expression;
 
   if (operator !== '=') {
@@ -214,7 +340,13 @@ export function handleDocumentHasDateFilter({ expression }: { expression: Filter
   };
 }
 
-export function handleCreatedFilter({ expression, now }: { expression: FilterExpression; now: Date }): QueryResult {
+export function handleCreatedFilter({
+  expression,
+  now,
+}: {
+  expression: FilterExpression;
+  now: Date;
+}): QueryResult {
   const { value, operator } = expression;
 
   const dateValue = getDateValue({ value, now });
@@ -238,34 +370,83 @@ export function handleUnsupportedExpression(): QueryResult {
   });
 }
 
-export function handleInvalidHasValue({ expression }: { expression: FilterExpression }): QueryResult {
+export function handleInvalidHasValue({
+  expression,
+}: {
+  expression: FilterExpression;
+}): QueryResult {
   return createInvalidQueryResult({
     message: `Unsupported value "${expression.value}" for has filter`,
     code: 'UNSUPPORTED_HAS_VALUE',
   });
 }
 
-export function buildQueryFromExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey = {} }: { expression: Expression; organizationId: string; db: Database; now: Date; customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey }): QueryResult {
+export function buildQueryFromExpression({
+  expression,
+  organizationId,
+  db,
+  now,
+  customPropertyDefinitionsByKey = {},
+}: {
+  expression: Expression;
+  organizationId: string;
+  db: Database;
+  now: Date;
+  customPropertyDefinitionsByKey?: CustomPropertyDefinitionsByKey;
+}): QueryResult {
   // I usually prefer a LUT, but for type narrowing, switch is more convenient and avoids casting
   switch (expression.type) {
-    case 'empty': return handleEmptyExpression();
-    case 'text': return handleTextExpression({ expression, organizationId, db });
-    case 'and': return handleAndExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
-    case 'or': return handleOrExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
-    case 'not': return handleNotExpression({ expression, organizationId, db, now, customPropertyDefinitionsByKey });
+    case 'empty':
+      return handleEmptyExpression();
+    case 'text':
+      return handleTextExpression({ expression, organizationId, db });
+    case 'and':
+      return handleAndExpression({
+        expression,
+        organizationId,
+        db,
+        now,
+        customPropertyDefinitionsByKey,
+      });
+    case 'or':
+      return handleOrExpression({
+        expression,
+        organizationId,
+        db,
+        now,
+        customPropertyDefinitionsByKey,
+      });
+    case 'not':
+      return handleNotExpression({
+        expression,
+        organizationId,
+        db,
+        now,
+        customPropertyDefinitionsByKey,
+      });
     case 'filter':
       switch (expression.field) {
-        case 'tag': return handleTagFilter({ expression, organizationId, db });
-        case 'name': return handleNameFilter({ expression, organizationId, db });
-        case 'content': return handleContentFilter({ expression, organizationId, db });
-        case 'created': return handleCreatedFilter({ expression, now });
-        case 'date': return handleDocumentDateFilter({ expression, now });
+        case 'tag':
+          return handleTagFilter({ expression, organizationId, db });
+        case 'name':
+          return handleNameFilter({ expression, organizationId, db });
+        case 'content':
+          return handleContentFilter({ expression, organizationId, db });
+        case 'created':
+          return handleCreatedFilter({ expression, now });
+        case 'date':
+          return handleDocumentDateFilter({ expression, now });
         case 'has':
           switch (expression.value) {
-            case 'tags': return handleHasTagsFilter({ expression, organizationId, db });
-            case 'date': return handleDocumentHasDateFilter({ expression, organizationId, db });
+            case 'tags':
+              return handleHasTagsFilter({ expression, organizationId, db });
+            case 'date':
+              return handleDocumentHasDateFilter({ expression, organizationId, db });
             default: {
-              const hasDefinition = getCustomPropertyDefinition({ name: expression.value, customPropertyDefinitionsByKey });
+              const hasDefinition = getCustomPropertyDefinition({
+                name: expression.value,
+                customPropertyDefinitionsByKey,
+              });
 
               if (hasDefinition) {
                 return handleHasCustomPropertyFilter({ definition: hasDefinition, db });
@@ -275,7 +456,10 @@ export function buildQueryFromExpression({ expression, organizationId, db, now, 
             }
           }
         default: {
-          const definition = getCustomPropertyDefinition({ name: expression.field, customPropertyDefinitionsByKey });
+          const definition = getCustomPropertyDefinition({
+            name: expression.field,
+            customPropertyDefinitionsByKey,
+          });
 
           if (definition) {
             return handleCustomPropertyFilter({ expression, definition, db, now });
@@ -284,6 +468,7 @@ export function buildQueryFromExpression({ expression, organizationId, db, now, 
           return handleUnsupportedExpression();
         }
       }
-    default: return handleUnsupportedExpression();
+    default:
+      return handleUnsupportedExpression();
   }
 }

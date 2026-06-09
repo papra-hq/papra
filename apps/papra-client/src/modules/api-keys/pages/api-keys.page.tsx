@@ -56,10 +56,11 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = (props) => {
       </div>
 
       <div>
-        <p class="text-muted-foreground text-xs" title={formatDate(props.apiKey.createdAt, { dateStyle: 'short', timeStyle: 'long' })}>
-          {t('api-keys.list.card.created')}
-          {' '}
-          {formatRelativeTime(props.apiKey.createdAt)}
+        <p
+          class="text-muted-foreground text-xs"
+          title={formatDate(props.apiKey.createdAt, { dateStyle: 'short', timeStyle: 'long' })}
+        >
+          {t('api-keys.list.card.created')} {formatRelativeTime(props.apiKey.createdAt)}
         </p>
       </div>
 
@@ -108,23 +109,18 @@ export const ApiKeysPage: Component = () => {
               title={t('api-keys.list.empty.title')}
               description={t('api-keys.list.empty.description')}
               icon="i-tabler-key"
-              cta={(
+              cta={
                 <Button as={A} href="/api-keys/create" class="gap-2">
                   <div class="i-tabler-plus size-4" />
                   {t('api-keys.list.create')}
                 </Button>
-              )}
+              }
             />
           </Match>
 
           <Match when={query.data?.apiKeys?.length}>
-
             <div class="mt-6 flex flex-col gap-2">
-              <For each={query.data?.apiKeys}>
-                {apiKey => (
-                  <ApiKeyCard apiKey={apiKey} />
-                )}
-              </For>
+              <For each={query.data?.apiKeys}>{(apiKey) => <ApiKeyCard apiKey={apiKey} />}</For>
             </div>
           </Match>
         </Switch>

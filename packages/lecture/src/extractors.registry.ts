@@ -31,7 +31,10 @@ export function getExtractor({
   extractors?: ExtractorDefinition[];
 }) {
   const wilcardedMimeType = mimeType.replace(/\/.*/, '/*');
-  const extractor = extractors.find(extractor => extractor.mimeTypes.includes(mimeType) || extractor.mimeTypes.includes(wilcardedMimeType));
+  const extractor = extractors.find(
+    (extractor) =>
+      extractor.mimeTypes.includes(mimeType) || extractor.mimeTypes.includes(wilcardedMimeType),
+  );
 
   return {
     extractor,

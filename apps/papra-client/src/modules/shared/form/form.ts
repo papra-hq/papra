@@ -25,11 +25,18 @@ export function createForm<Schema extends v.ObjectSchema<any, any>>({
 
   return {
     form,
-    Form: (props: Omit<FormProps<v.InferInput<Schema>, undefined>, 'of'>) => Form({ ...props, onSubmit: submitHook.trigger }),
+    Form: (props: Omit<FormProps<v.InferInput<Schema>, undefined>, 'of'>) =>
+      Form({ ...props, onSubmit: submitHook.trigger }),
     Field,
     FieldArray,
     onSubmit: submitHook.on,
     submit: submitHook.trigger,
-    createFormError: ({ message, fields }: { message: string; fields?: FormErrors<v.InferInput<Schema>> }) => new FormError<v.InferInput<Schema>>(message, fields),
+    createFormError: ({
+      message,
+      fields,
+    }: {
+      message: string;
+      fields?: FormErrors<v.InferInput<Schema>>;
+    }) => new FormError<v.InferInput<Schema>>(message, fields),
   };
 }

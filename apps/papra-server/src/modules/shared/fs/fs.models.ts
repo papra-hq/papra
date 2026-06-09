@@ -11,11 +11,15 @@ export function isCrossDeviceError({ error }: { error: Error & { code?: unknown 
   ].includes(error.code);
 }
 
-export function isFileAlreadyExistsError({ error }: { error: Error & { code?: unknown; errno?: unknown } }) {
+export function isFileAlreadyExistsError({
+  error,
+}: {
+  error: Error & { code?: unknown; errno?: unknown };
+}) {
   if (
-    'code' in error
-    && isString(error.code)
-    && ['EEXIST', 'ERROR_FILE_EXISTS'].includes(error.code)
+    'code' in error &&
+    isString(error.code) &&
+    ['EEXIST', 'ERROR_FILE_EXISTS'].includes(error.code)
   ) {
     return true;
   }

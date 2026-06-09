@@ -59,25 +59,23 @@ const ProgressCircle: Component<ProgressCircleProps> = (rawProps) => {
           stroke-linecap="round"
           class={cn('stroke-secondary transition-colors ease-linear')}
         />
-        {value() >= 0
-          ? (
-              <circle
-                r={normalizedRadius()}
-                cx={radius()}
-                cy={radius()}
-                stroke-width={strokeWidth()}
-                stroke-dasharray={`${circumference()} ${circumference()}`}
-                stroke-dashoffset={offset()}
-                fill="transparent"
-                stroke=""
-                stroke-linecap="round"
-                class={cn(
-                  'stroke-primary transition-colors ease-linear',
-                  local.showAnimation ? 'transition-all duration-300 ease-in-out' : '',
-                )}
-              />
-            )
-          : null}
+        {value() >= 0 ? (
+          <circle
+            r={normalizedRadius()}
+            cx={radius()}
+            cy={radius()}
+            stroke-width={strokeWidth()}
+            stroke-dasharray={`${circumference()} ${circumference()}`}
+            stroke-dashoffset={offset()}
+            fill="transparent"
+            stroke=""
+            stroke-linecap="round"
+            class={cn(
+              'stroke-primary transition-colors ease-linear',
+              local.showAnimation ? 'transition-all duration-300 ease-in-out' : '',
+            )}
+          />
+        ) : null}
       </svg>
       <div class={cn('absolute flex')}>{local.children}</div>
     </div>

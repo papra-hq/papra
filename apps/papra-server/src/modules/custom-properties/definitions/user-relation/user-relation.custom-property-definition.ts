@@ -9,8 +9,10 @@ export const userRelationCustomPropertyDefinition = defineCustomPropertyType({
     inputSchema: v.array(v.string()),
 
     extendInputValidation: async ({ value: userIds, customProperty, organizationsRepository }) => {
-      const { members } = await organizationsRepository.getOrganizationMembers({ organizationId: customProperty.organizationId });
-      const memberUserIds = new Set(members.map(m => m.userId));
+      const { members } = await organizationsRepository.getOrganizationMembers({
+        organizationId: customProperty.organizationId,
+      });
+      const memberUserIds = new Set(members.map((m) => m.userId));
 
       for (const userId of userIds) {
         if (!memberUserIds.has(userId)) {
@@ -19,14 +21,15 @@ export const userRelationCustomPropertyDefinition = defineCustomPropertyType({
       }
     },
 
-    toDb: ({ value }) => value.map(userId => ({ userId })),
+    toDb: ({ value }) => value.map((userId) => ({ userId })),
 
-    fromDb: ({ rows }) => rows
-      .filter(r => r.relatedUser !== null)
-      .map(r => ({
-        userId: r.relatedUser!.id,
-        name: r.relatedUser!.name,
-        email: r.relatedUser!.email,
-      })),
+    fromDb: ({ rows }) =>
+      rows
+        .filter((r) => r.relatedUser !== null)
+        .map((r) => ({
+          userId: r.relatedUser!.id,
+          name: r.relatedUser!.name,
+          email: r.relatedUser!.email,
+        })),
   },
 });

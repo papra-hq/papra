@@ -31,9 +31,5 @@ export default function Index() {
     return <Redirect href="/auth/login" />;
   };
 
-  return (
-    <>
-      {getRedirection()}
-    </>
-  );
+  return <>{getRedirection()}</>;
 }

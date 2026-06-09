@@ -21,7 +21,11 @@ export const intakeEmailsConfig = {
     env: 'INTAKE_EMAILS_WEBHOOK_SECRET',
   },
   driver: {
-    doc: `The driver to use when generating email addresses for intake emails, value can be one of: ${Object.keys(intakeEmailDrivers).map(x => `\`${x}\``).join(', ')}.`,
+    doc: `The driver to use when generating email addresses for intake emails, value can be one of: ${Object.keys(
+      intakeEmailDrivers,
+    )
+      .map((x) => `\`${x}\``)
+      .join(', ')}.`,
     schema: v.picklist(Object.keys(intakeEmailDrivers)),
     default: CATCH_ALL_INTAKE_EMAIL_DRIVER_NAME,
     env: 'INTAKE_EMAILS_DRIVER',

@@ -22,7 +22,13 @@ export function createSubscriptionsRepository({ db }: { db: Database }) {
   );
 }
 
-async function getActiveOrganizationSubscription({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getActiveOrganizationSubscription({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   // Allowlist approach: explicitly include only statuses that grant access
   // - active: paid and active subscription
   // - trialing: in trial period (has access)
@@ -40,42 +46,55 @@ async function getActiveOrganizationSubscription({ organizationId, db }: { organ
   return { subscription };
 }
 
-async function getAllOrganizationSubscriptions({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getAllOrganizationSubscriptions({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const subscriptions = await db
     .select()
     .from(organizationSubscriptionsTable)
-    .where(
-      eq(organizationSubscriptionsTable.organizationId, organizationId),
-    );
+    .where(eq(organizationSubscriptionsTable.organizationId, organizationId));
 
   return { subscriptions };
 }
 
-async function getSubscriptionById({ subscriptionId, db }: { subscriptionId: string; db: Database }) {
+async function getSubscriptionById({
+  subscriptionId,
+  db,
+}: {
+  subscriptionId: string;
+  db: Database;
+}) {
   const [subscription] = await db
     .select()
     .from(organizationSubscriptionsTable)
-    .where(
-      eq(organizationSubscriptionsTable.id, subscriptionId),
-    );
+    .where(eq(organizationSubscriptionsTable.id, subscriptionId));
 
   return { subscription };
 }
 
-async function updateSubscription({ subscriptionId, db, ...subscription }: { subscriptionId: string; db: Database } & Omit<Partial<DbInsertableSubscription>, 'id'>) {
+async function updateSubscription({
+  subscriptionId,
+  db,
+  ...subscription
+}: { subscriptionId: string; db: Database } & Omit<Partial<DbInsertableSubscription>, 'id'>) {
   const [updatedSubscription] = await db
     .update(organizationSubscriptionsTable)
     .set(omitUndefined(subscription))
-    .where(
-      eq(organizationSubscriptionsTable.id, subscriptionId),
-    )
+    .where(eq(organizationSubscriptionsTable.id, subscriptionId))
     .returning();
 
   return { updatedSubscription };
 }
 
 // cspell:ignore upserted Insertable
-async function upsertSubscription({ db, ...subscription }: { db: Database } & DbInsertableSubscription) {
+async function upsertSubscription({
+  db,
+  ...subscription
+}: { db: Database } & DbInsertableSubscription) {
   const [upsertedSubscription] = await db
     .insert(organizationSubscriptionsTable)
     .values(subscription)

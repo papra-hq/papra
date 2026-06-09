@@ -29,7 +29,11 @@ export async function getRateLimit({
 
   if (!entry) {
     const resetAt = now.add(window);
-    await kvStore.set(key, { hitCount: 1, resetAtEpochMs: resetAt.epochMilliseconds }, { expiresAt: resetAt });
+    await kvStore.set(
+      key,
+      { hitCount: 1, resetAtEpochMs: resetAt.epochMilliseconds },
+      { expiresAt: resetAt },
+    );
     return {
       hasExceededLimit: false,
       hitCount: 1,
@@ -51,7 +55,11 @@ export async function getRateLimit({
   // Keep the original reset instant so the window stays fixed instead of sliding forward on each hit.
   const resetAt = Temporal.Instant.fromEpochMilliseconds(entry.resetAtEpochMs);
   const hitCount = entry.hitCount + 1;
-  await kvStore.set(key, { hitCount, resetAtEpochMs: entry.resetAtEpochMs }, { expiresAt: resetAt });
+  await kvStore.set(
+    key,
+    { hitCount, resetAtEpochMs: entry.resetAtEpochMs },
+    { expiresAt: resetAt },
+  );
 
   return {
     hasExceededLimit: false,

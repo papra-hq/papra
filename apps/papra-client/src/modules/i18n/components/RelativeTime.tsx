@@ -4,7 +4,9 @@ import { splitProps } from 'solid-js';
 import { coerceDate } from '@/modules/shared/date/coerce-date';
 import { useI18n } from '../i18n.provider';
 
-export const RelativeTime: Component<{ date: CoercibleDate } & JSX.IntrinsicElements['time']> = (props) => {
+export const RelativeTime: Component<{ date: CoercibleDate } & JSX.IntrinsicElements['time']> = (
+  props,
+) => {
   const [local, rest] = splitProps(props, ['date', 'title', 'dateTime']);
   const { formatRelativeTime, formatDate } = useI18n();
 

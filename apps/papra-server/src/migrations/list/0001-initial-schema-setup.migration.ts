@@ -30,11 +30,21 @@ export const initialSchemaSetupMigration = {
         );
       `),
 
-      db.run(sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_is_deleted_created_at_index" ON "documents" ("organization_id","is_deleted","created_at");`),
-      db.run(sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_is_deleted_index" ON "documents" ("organization_id","is_deleted");`),
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "documents_organization_id_original_sha256_hash_unique" ON "documents" ("organization_id","original_sha256_hash");`),
-      db.run(sql`CREATE INDEX IF NOT EXISTS "documents_original_sha256_hash_index" ON "documents" ("original_sha256_hash");`),
-      db.run(sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_size_index" ON "documents" ("organization_id","original_size");`),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_is_deleted_created_at_index" ON "documents" ("organization_id","is_deleted","created_at");`,
+      ),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_is_deleted_index" ON "documents" ("organization_id","is_deleted");`,
+      ),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "documents_organization_id_original_sha256_hash_unique" ON "documents" ("organization_id","original_sha256_hash");`,
+      ),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "documents_original_sha256_hash_index" ON "documents" ("original_sha256_hash");`,
+      ),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "documents_organization_id_size_index" ON "documents" ("organization_id","original_size");`,
+      ),
       db.run(sql`
         CREATE TABLE IF NOT EXISTS "organization_invitations" (
           "id" text PRIMARY KEY NOT NULL,
@@ -62,7 +72,9 @@ export const initialSchemaSetupMigration = {
   FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade
 );`),
 
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "organization_members_user_organization_unique" ON "organization_members" ("organization_id","user_id");`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "organization_members_user_organization_unique" ON "organization_members" ("organization_id","user_id");`,
+      ),
       db.run(sql`CREATE TABLE IF NOT EXISTS "organizations" (
   "id" text PRIMARY KEY NOT NULL,
   "created_at" integer NOT NULL,
@@ -81,7 +93,9 @@ export const initialSchemaSetupMigration = {
 );`),
 
       db.run(sql`CREATE INDEX IF NOT EXISTS "user_roles_role_index" ON "user_roles" ("role");`),
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "user_roles_user_id_role_unique_index" ON "user_roles" ("user_id","role");`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "user_roles_user_id_role_unique_index" ON "user_roles" ("user_id","role");`,
+      ),
       db.run(sql`CREATE TABLE IF NOT EXISTS "documents_tags" (
   "document_id" text NOT NULL,
   "tag_id" text NOT NULL,
@@ -101,7 +115,9 @@ export const initialSchemaSetupMigration = {
   FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade
 );`),
 
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "tags_organization_id_name_unique" ON "tags" ("organization_id","name");`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "tags_organization_id_name_unique" ON "tags" ("organization_id","name");`,
+      ),
       db.run(sql`
         CREATE TABLE IF NOT EXISTS "users" (
           "id" text PRIMARY KEY NOT NULL,
@@ -148,7 +164,9 @@ export const initialSchemaSetupMigration = {
   FOREIGN KEY ("active_organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE set null
 );`),
 
-      db.run(sql`CREATE INDEX IF NOT EXISTS "auth_sessions_token_index" ON "auth_sessions" ("token");`),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "auth_sessions_token_index" ON "auth_sessions" ("token");`,
+      ),
       db.run(sql`CREATE TABLE IF NOT EXISTS "auth_verifications" (
   "id" text PRIMARY KEY NOT NULL,
   "created_at" integer NOT NULL,
@@ -158,7 +176,9 @@ export const initialSchemaSetupMigration = {
   "expires_at" integer NOT NULL
 );`),
 
-      db.run(sql`CREATE INDEX IF NOT EXISTS "auth_verifications_identifier_index" ON "auth_verifications" ("identifier");`),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "auth_verifications_identifier_index" ON "auth_verifications" ("identifier");`,
+      ),
       db.run(sql`CREATE TABLE IF NOT EXISTS "intake_emails" (
   "id" text PRIMARY KEY NOT NULL,
   "created_at" integer NOT NULL,
@@ -170,7 +190,9 @@ export const initialSchemaSetupMigration = {
   FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade
 );`),
 
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "intake_emails_email_address_unique" ON "intake_emails" ("email_address");`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "intake_emails_email_address_unique" ON "intake_emails" ("email_address");`,
+      ),
       db.run(sql`CREATE TABLE IF NOT EXISTS "organization_subscriptions" (
   "id" text PRIMARY KEY NOT NULL,
   "customer_id" text NOT NULL,

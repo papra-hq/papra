@@ -7,7 +7,11 @@ import { createIntakeEmailsRepository } from '../intake-emails/intake-emails.rep
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
-import { ensureUserIsInOrganization, ensureUserIsOwnerOfOrganization, getOrCreateOrganizationCustomerId } from '../organizations/organizations.usecases';
+import {
+  ensureUserIsInOrganization,
+  ensureUserIsOwnerOfOrganization,
+  getOrCreateOrganizationCustomerId,
+} from '../organizations/organizations.usecases';
 import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from '../plans/plans.constants';
 import { getPriceIdForBillingInterval } from '../plans/plans.models';
 import { createPlansRepository } from '../plans/plans.repository';
@@ -17,7 +21,10 @@ import { createLogger } from '../shared/logger/logger';
 import { pick } from '../shared/objects';
 import { nullifyPositiveInfinity } from '../shared/utils';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
-import { createInvalidWebhookPayloadError, createOrganizationAlreadyHasSubscriptionError } from './subscriptions.errors';
+import {
+  createInvalidWebhookPayloadError,
+  createOrganizationAlreadyHasSubscriptionError,
+} from './subscriptions.errors';
 import { isSignatureHeaderFormatValid } from './subscriptions.models';
 import { createSubscriptionsRepository } from './subscriptions.repository';
 import { handleStripeWebhookEvent } from './subscriptions.usecases';
@@ -32,7 +39,12 @@ export function registerSubscriptionsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationSubscriptionUsageRoute(context);
 }
 
-function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: RouteDefinitionContext) {
+function setupStripeWebhookRoute({
+  app,
+  config,
+  db,
+  subscriptionsServices,
+}: RouteDefinitionContext) {
   app.post('/api/stripe/webhook', async (context) => {
     const signature = getHeader({ context, name: 'stripe-signature' });
 
@@ -65,22 +77,31 @@ function setupStripeWebhookRoute({ app, config, db, subscriptionsServices }: Rou
   });
 }
 
-function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsServices }: RouteDefinitionContext) {
+function setupCreateCheckoutSessionRoute({
+  app,
+  config,
+  db,
+  subscriptionsServices,
+}: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/checkout-session',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
-    validateJsonBody(v.strictObject({
-      planId: v.picklist([PLUS_PLAN_ID, PRO_PLAN_ID]),
-      billingInterval: v.optional(v.picklist(['monthly', 'annual']), 'monthly'),
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        planId: v.picklist([PLUS_PLAN_ID, PRO_PLAN_ID]),
+        billingInterval: v.optional(v.picklist(['monthly', 'annual']), 'monthly'),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const plansRepository = createPlansRepository ({ config });
+      const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
 
       const { planId, billingInterval } = context.req.valid('json');
@@ -92,26 +113,37 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
         organizationsRepository,
       });
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();
       }
 
-      const { organizationPlan: organizationCurrentPlan } = await getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository });
+      const { organizationPlan: organizationCurrentPlan } = await getOrganizationPlan({
+        organizationId,
+        subscriptionsRepository,
+        plansRepository,
+      });
 
       if (organizationCurrentPlan.id !== FREE_PLAN_ID) {
         throw createOrganizationAlreadyHasSubscriptionError();
       }
 
-      const { organizationPlan: organizationPlanToSubscribeTo } = await plansRepository.getOrganizationPlanById({ planId });
+      const { organizationPlan: organizationPlanToSubscribeTo } =
+        await plansRepository.getOrganizationPlanById({ planId });
 
       const { priceId } = getPriceIdForBillingInterval({
         plan: organizationPlanToSubscribeTo,
         billingInterval,
       });
 
-      const { customerId } = await getOrCreateOrganizationCustomerId({ organizationId, subscriptionsServices, organizationsRepository });
+      const { customerId } = await getOrCreateOrganizationCustomerId({
+        organizationId,
+        subscriptionsServices,
+        organizationsRepository,
+      });
 
       // Step 1: Expire any active checkout sessions before creating a new one
       // This allows subscriptions to be canceled (can't cancel while checkout is active)
@@ -119,8 +151,11 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
 
       // Step 2: Cancel any incomplete subscriptions from previous failed attempts
       // This prevents accumulating orphaned incomplete subscriptions
-      const { subscriptions: allSubscriptions } = await subscriptionsRepository.getAllOrganizationSubscriptions({ organizationId });
-      const incompleteSubscriptions = allSubscriptions.filter(sub => sub.status === 'incomplete' || sub.status === 'incomplete_expired');
+      const { subscriptions: allSubscriptions } =
+        await subscriptionsRepository.getAllOrganizationSubscriptions({ organizationId });
+      const incompleteSubscriptions = allSubscriptions.filter(
+        (sub) => sub.status === 'incomplete' || sub.status === 'incomplete_expired',
+      );
 
       // Now that checkout sessions are expired, we can cancel the subscriptions
       await Promise.allSettled(
@@ -128,7 +163,10 @@ function setupCreateCheckoutSessionRoute({ app, config, db, subscriptionsService
           try {
             await subscriptionsServices.cancelSubscription({ subscriptionId: sub.id });
           } catch (error) {
-            logger.warn({ subscriptionId: sub.id, error }, 'Failed to cancel incomplete subscription');
+            logger.warn(
+              { subscriptionId: sub.id, error },
+              'Failed to cancel incomplete subscription',
+            );
           }
         }),
       );
@@ -148,9 +186,11 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
   app.get(
     '/api/organizations/:organizationId/customer-portal',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -163,9 +203,15 @@ function setupGetCustomerPortalRoute({ app, db, subscriptionsServices }: RouteDe
         organizationsRepository,
       });
 
-      const { customerId } = await getOrCreateOrganizationCustomerId({ organizationId, subscriptionsServices, organizationsRepository });
+      const { customerId } = await getOrCreateOrganizationCustomerId({
+        organizationId,
+        subscriptionsServices,
+        organizationsRepository,
+      });
 
-      const { customerPortalUrl } = await subscriptionsServices.getCustomerPortalUrl({ customerId });
+      const { customerPortalUrl } = await subscriptionsServices.getCustomerPortalUrl({
+        customerId,
+      });
 
       return context.json({ customerPortalUrl });
     },
@@ -176,9 +222,11 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
   app.get(
     '/api/organizations/:organizationId/subscription',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -197,7 +245,9 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
         organizationId,
       });
 
-      const { organizationPlan } = await plansRepository.getOrganizationPlanById({ planId: subscription?.planId ?? FREE_PLAN_ID });
+      const { organizationPlan } = await plansRepository.getOrganizationPlanById({
+        planId: subscription?.planId ?? FREE_PLAN_ID,
+      });
 
       return context.json({
         subscription: subscription
@@ -220,9 +270,11 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
   app.get(
     '/api/organizations/:organizationId/usage',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -251,9 +303,13 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
       ]);
 
       const nullifiedLimits = {
-        maxDocumentStorageBytes: nullifyPositiveInfinity(organizationPlan.limits.maxDocumentStorageBytes),
+        maxDocumentStorageBytes: nullifyPositiveInfinity(
+          organizationPlan.limits.maxDocumentStorageBytes,
+        ),
         maxIntakeEmailsCount: nullifyPositiveInfinity(organizationPlan.limits.maxIntakeEmailsCount),
-        maxOrganizationsMembersCount: nullifyPositiveInfinity(organizationPlan.limits.maxOrganizationsMembersCount),
+        maxOrganizationsMembersCount: nullifyPositiveInfinity(
+          organizationPlan.limits.maxOrganizationsMembersCount,
+        ),
         maxFileSize: nullifyPositiveInfinity(organizationPlan.limits.maxFileSize),
       };
 

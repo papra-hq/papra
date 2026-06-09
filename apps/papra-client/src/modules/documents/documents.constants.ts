@@ -13,7 +13,12 @@ export const MAX_CONCURRENT_DOCUMENT_UPLOADS = 3;
 
 export const DEFAULT_DOCUMENT_ICON = 'i-tabler-file';
 
-export const DOCUMENT_SEARCH_SORT_FIELDS = ['createdAt', 'updatedAt', 'name', 'documentDate'] as const;
+export const DOCUMENT_SEARCH_SORT_FIELDS = [
+  'createdAt',
+  'updatedAt',
+  'name',
+  'documentDate',
+] as const;
 export type DocumentSearchSortField = (typeof DOCUMENT_SEARCH_SORT_FIELDS)[number];
 
 export const DOCUMENT_SEARCH_SORT_ORDERS = ['asc', 'desc'] as const;

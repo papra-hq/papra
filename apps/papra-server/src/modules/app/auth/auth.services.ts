@@ -65,25 +65,27 @@ export function getAuth({
         }
       : undefined,
 
-    database: drizzleAdapter(
-      db,
-      {
-        provider: 'sqlite',
-        schema: {
-          user: usersTable,
-          account: accountsTable,
-          session: sessionsTable,
-          verification: verificationsTable,
-          twoFactor: twoFactorTable,
-        },
+    database: drizzleAdapter(db, {
+      provider: 'sqlite',
+      schema: {
+        user: usersTable,
+        account: accountsTable,
+        session: sessionsTable,
+        verification: verificationsTable,
+        twoFactor: twoFactorTable,
       },
-    ),
+    }),
 
     databaseHooks: {
       user: {
         create: {
           before: async ({ email }) => {
-            if (!isEmailDomainAllowed({ email, forbiddenEmailDomains: config.auth.forbiddenEmailDomains })) {
+            if (
+              !isEmailDomainAllowed({
+                email,
+                forbiddenEmailDomains: config.auth.forbiddenEmailDomains,
+              })
+            ) {
               throw createForbiddenEmailDomainError();
             }
           },

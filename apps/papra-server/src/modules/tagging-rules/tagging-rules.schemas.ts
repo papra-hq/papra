@@ -1,7 +1,12 @@
 import * as v from 'valibot';
 import { createRegexSchema } from '../shared/schemas/string.schemas';
 import { tagIdSchema } from '../tags/tags.schemas';
-import { CONDITION_MATCH_MODES, TAGGING_RULE_FIELDS, TAGGING_RULE_ID_REGEX, TAGGING_RULE_OPERATORS } from './tagging-rules.constants';
+import {
+  CONDITION_MATCH_MODES,
+  TAGGING_RULE_FIELDS,
+  TAGGING_RULE_ID_REGEX,
+  TAGGING_RULE_OPERATORS,
+} from './tagging-rules.constants';
 
 export const taggingRuleIdSchema = createRegexSchema(TAGGING_RULE_ID_REGEX);
 

@@ -21,7 +21,8 @@ export function getTranslations({ locale }: { locale: string }): TranslationsDic
     return defaultTranslations;
   }
 
-  const localeTranslations = (translations as Record<string, typeof defaultTranslations>)[locale] ?? {};
+  const localeTranslations =
+    (translations as Record<string, typeof defaultTranslations>)[locale] ?? {};
 
   return {
     ...defaultTranslations,
@@ -34,7 +35,10 @@ const { parse } = createBranchlet();
 export function useI18n({ locale = DEFAULT_LOCALE }: { locale?: string } = {}) {
   return {
     locale,
-    t: <K extends keyof TranslationsDictionary>(key: K, args?: Record<string, string | number>): TranslationsDictionary[K] => {
+    t: <K extends keyof TranslationsDictionary>(
+      key: K,
+      args?: Record<string, string | number>,
+    ): TranslationsDictionary[K] => {
       const translations = getTranslations({ locale });
       const template = translations[key] ?? key;
 
@@ -63,6 +67,12 @@ export function getPathWithoutLocale(url: URL | string) {
   return pathname;
 }
 
-export function buildLocalizedPath({ locale = DEFAULT_LOCALE, path }: { locale?: string; path: string }) {
+export function buildLocalizedPath({
+  locale = DEFAULT_LOCALE,
+  path,
+}: {
+  locale?: string;
+  path: string;
+}) {
   return `/${joinUrlPaths(locale, path)}`;
 }

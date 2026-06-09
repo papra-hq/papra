@@ -8,12 +8,10 @@ import type { AndExpression, Expression, NotExpression, OrExpression } from './p
  * - Redundant expressions are removed (duplicates, empty expressions).
  * - Empty AND/OR expressions are converted to 'empty'.
  */
-export function simplifyExpression({ expression }: { expression: Expression }): { expression: Expression } {
-  if (
-    expression.type === 'empty'
-    || expression.type === 'text'
-    || expression.type === 'filter'
-  ) {
+export function simplifyExpression({ expression }: { expression: Expression }): {
+  expression: Expression;
+} {
+  if (expression.type === 'empty' || expression.type === 'text' || expression.type === 'filter') {
     return { expression };
   }
 
@@ -29,14 +27,22 @@ export function simplifyExpression({ expression }: { expression: Expression }): 
   return { expression };
 }
 
-export function simplifyOperands({ operands }: { operands: Expression[] }): { simplifiedOperands: Expression[] } {
-  const simplifiedOperands = operands.map(expression => simplifyExpression({ expression }).expression);
+export function simplifyOperands({ operands }: { operands: Expression[] }): {
+  simplifiedOperands: Expression[];
+} {
+  const simplifiedOperands = operands.map(
+    (expression) => simplifyExpression({ expression }).expression,
+  );
 
   return { simplifiedOperands };
 }
 
-function simplifyNotExpression({ expression }: { expression: NotExpression }): { expression: Expression } {
-  const { expression: simplifiedOperandExpression } = simplifyExpression({ expression: expression.operand });
+function simplifyNotExpression({ expression }: { expression: NotExpression }): {
+  expression: Expression;
+} {
+  const { expression: simplifiedOperandExpression } = simplifyExpression({
+    expression: expression.operand,
+  });
 
   // NOT(NOT(A)) -> A
   if (simplifiedOperandExpression.type === 'not') {
@@ -51,10 +57,15 @@ function simplifyNotExpression({ expression }: { expression: NotExpression }): {
   return { expression: { type: 'not', operand: simplifiedOperandExpression } };
 }
 
-function simplifyAndOrExpression({ expression }: { expression: AndExpression | OrExpression }): { expression: Expression } {
+function simplifyAndOrExpression({ expression }: { expression: AndExpression | OrExpression }): {
+  expression: Expression;
+} {
   const { simplifiedOperands } = simplifyOperands({ operands: expression.operands });
-  const filteredOperands = simplifiedOperands.filter(op => op.type !== 'empty');
-  const { flattenedOperands } = flattenOperands({ type: expression.type, operands: filteredOperands });
+  const filteredOperands = simplifiedOperands.filter((op) => op.type !== 'empty');
+  const { flattenedOperands } = flattenOperands({
+    type: expression.type,
+    operands: filteredOperands,
+  });
   const { deduplicatedOperands } = deduplicateOperands({ operands: flattenedOperands });
 
   if (deduplicatedOperands.length === 0) {
@@ -74,7 +85,9 @@ function simplifyAndOrExpression({ expression }: { expression: AndExpression | O
   };
 }
 
-function flattenOperands({ type, operands }: { type: 'and' | 'or'; operands: Expression[] }): { flattenedOperands: Expression[] } {
+function flattenOperands({ type, operands }: { type: 'and' | 'or'; operands: Expression[] }): {
+  flattenedOperands: Expression[];
+} {
   const flattenedOperands: Expression[] = [];
 
   for (const operand of operands) {
@@ -90,11 +103,15 @@ function flattenOperands({ type, operands }: { type: 'and' | 'or'; operands: Exp
   return { flattenedOperands };
 }
 
-function deduplicateOperands({ operands }: { operands: Expression[] }): { deduplicatedOperands: Expression[] } {
+function deduplicateOperands({ operands }: { operands: Expression[] }): {
+  deduplicatedOperands: Expression[];
+} {
   const deduplicatedOperands: Expression[] = [];
 
   for (const operand of operands) {
-    const isDuplicate = deduplicatedOperands.some(existing => areExpressionsIdentical(existing, operand));
+    const isDuplicate = deduplicatedOperands.some((existing) =>
+      areExpressionsIdentical(existing, operand),
+    );
     if (!isDuplicate) {
       deduplicatedOperands.push(operand);
     }
@@ -117,9 +134,7 @@ export function areExpressionsIdentical(a: Expression, b: Expression): boolean {
   }
 
   if (a.type === 'filter' && b.type === 'filter') {
-    return a.field === b.field
-      && a.operator === b.operator
-      && a.value === b.value;
+    return a.field === b.field && a.operator === b.operator && a.value === b.value;
   }
 
   if (a.type === 'not' && b.type === 'not') {

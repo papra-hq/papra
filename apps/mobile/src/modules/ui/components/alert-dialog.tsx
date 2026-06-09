@@ -1,13 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type AlertButton = {
@@ -34,21 +27,12 @@ export function AlertDialog({ visible, title, message, buttons, onDismiss }: Ale
   };
 
   return (
-    <Modal
-      transparent
-      visible={visible}
-      animationType="fade"
-      onRequestClose={onDismiss}
-    >
+    <Modal transparent visible={visible} animationType="fade" onRequestClose={onDismiss}>
       <Pressable style={styles.overlay} onPress={onDismiss}>
         <Pressable style={styles.container}>
           <View style={styles.content}>
             <Text style={styles.title}>{title}</Text>
-            {message !== undefined && (
-              <Text style={styles.message}>
-                {message}
-              </Text>
-            )}
+            {message !== undefined && <Text style={styles.message}>{message}</Text>}
 
             <View style={styles.buttonContainer}>
               {buttons.map((button, index) => (

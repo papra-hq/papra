@@ -7,9 +7,7 @@ describe('api-keys usecases', () => {
   describe('createApiKey', () => {
     test('the api key is created with the correct hash', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'user_1', email: 'test@test.com' },
-        ],
+        users: [{ id: 'user_1', email: 'test@test.com' }],
       });
       const apiKeyRepository = createApiKeysRepository({ db });
 
@@ -20,7 +18,9 @@ describe('api-keys usecases', () => {
         organizationIds: [],
         allOrganizations: false,
         apiKeyRepository,
-        generateApiToken: () => ({ token: 'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0' }),
+        generateApiToken: () => ({
+          token: 'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0',
+        }),
       });
 
       expect(apiKey).to.deep.include({
@@ -30,23 +30,32 @@ describe('api-keys usecases', () => {
         userId: 'user_1',
         prefix: 'ppapi_HT2Hj',
       });
-      expect(token).to.eql('ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0');
+      expect(token).to.eql(
+        'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0',
+      );
     });
   });
 
   describe('getApiKey', () => {
     test('an api key can be retrieved by its token', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'user_1', email: 'test@test.com' },
-        ],
+        users: [{ id: 'user_1', email: 'test@test.com' }],
         apiKeys: [
-          { id: 'api_key_1', keyHash: 'ExkPP3tmeg55u7ObhGuMOywnfkbLVGYE2VBxMj8koB4', userId: 'user_1', prefix: 'ppapi_HT2Hj', name: 'test' },
+          {
+            id: 'api_key_1',
+            keyHash: 'ExkPP3tmeg55u7ObhGuMOywnfkbLVGYE2VBxMj8koB4',
+            userId: 'user_1',
+            prefix: 'ppapi_HT2Hj',
+            name: 'test',
+          },
         ],
       });
       const apiKeyRepository = createApiKeysRepository({ db });
 
-      const { apiKey } = await getApiKey({ token: 'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0', apiKeyRepository });
+      const { apiKey } = await getApiKey({
+        token: 'ppapi_HT2Hj5V8A3WHMQtVcMDB9UucqUxPU15o1aI6qOc1Oy5qBvbSEr4jZzsjuFYPqCP0',
+        apiKeyRepository,
+      });
 
       expect(apiKey?.id).to.eql('api_key_1');
     });

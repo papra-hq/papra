@@ -4,7 +4,7 @@ const urlSchema = v.pipe(
   v.string(),
   v.trim(),
   v.url(),
-  v.transform(url => url.replace(/\/api\/?$/, '')),
+  v.transform((url) => url.replace(/\/api\/?$/, '')),
 );
 
 export function validateServerUrl({ url }: { url: string }) {

@@ -15,7 +15,9 @@ describe('path', () => {
     });
 
     test('transform url encoded characters', () => {
-      expect(fileUrlToPath({ fileUrl: 'file:./foo%20bar/test.txt' })).to.equal('./foo bar/test.txt');
+      expect(fileUrlToPath({ fileUrl: 'file:./foo%20bar/test.txt' })).to.equal(
+        './foo bar/test.txt',
+      );
     });
   });
 });

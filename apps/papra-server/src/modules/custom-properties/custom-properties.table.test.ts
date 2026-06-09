@@ -21,12 +21,14 @@ describe('custom properties table', () => {
         type: 'text',
       });
 
-      const [value, error] = await safely(db.insert(customPropertyDefinitionsTable).values({
-        organizationId: 'org_111111111111111111111111',
-        name: 'Definition 1',
-        key: 'other-key',
-        type: 'text',
-      }));
+      const [value, error] = await safely(
+        db.insert(customPropertyDefinitionsTable).values({
+          organizationId: 'org_111111111111111111111111',
+          name: 'Definition 1',
+          key: 'other-key',
+          type: 'text',
+        }),
+      );
 
       expect(value).to.eql(null);
       expect(isUniqueConstraintError({ error })).to.eql(true);
@@ -55,12 +57,14 @@ describe('custom properties table', () => {
         type: 'text',
       });
 
-      const [value, error] = await safely(db.insert(customPropertyDefinitionsTable).values({
-        organizationId: 'org_111111111111111111111111',
-        name: 'Other Name',
-        key: 'definition-1',
-        type: 'text',
-      }));
+      const [value, error] = await safely(
+        db.insert(customPropertyDefinitionsTable).values({
+          organizationId: 'org_111111111111111111111111',
+          name: 'Other Name',
+          key: 'definition-1',
+          type: 'text',
+        }),
+      );
 
       expect(value).to.eql(null);
       expect(isUniqueConstraintError({ error })).to.eql(true);

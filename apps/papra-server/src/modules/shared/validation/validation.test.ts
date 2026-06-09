@@ -30,10 +30,12 @@ describe('validation', () => {
           error: {
             message: 'Invalid request body',
             code: 'server.invalid_request.body',
-            details: [{
-              path: 'name',
-              message: 'Invalid key: Expected "name" but received undefined',
-            }],
+            details: [
+              {
+                path: 'name',
+                message: 'Invalid key: Expected "name" but received undefined',
+              },
+            ],
           },
         });
       });
@@ -47,7 +49,10 @@ describe('validation', () => {
           },
         );
 
-        const response = await app.request('/', { method: 'POST', ...jsonPayload({ name: 'hono' }) });
+        const response = await app.request('/', {
+          method: 'POST',
+          ...jsonPayload({ name: 'hono' }),
+        });
         const responseBody = await response.json();
 
         expect(response.status).toBe(200);
@@ -63,7 +68,10 @@ describe('validation', () => {
           },
         );
 
-        const response = await app.request('/', { method: 'POST', ...jsonPayload({ name: 'hono', foo: 'bar' }) });
+        const response = await app.request('/', {
+          method: 'POST',
+          ...jsonPayload({ name: 'hono', foo: 'bar' }),
+        });
         const responseBody = await response.json();
 
         expect(response.status).toBe(400);
@@ -71,10 +79,12 @@ describe('validation', () => {
           error: {
             message: 'Invalid request body',
             code: 'server.invalid_request.body',
-            details: [{
-              path: 'foo',
-              message: 'Invalid key: Expected never but received "foo"',
-            }],
+            details: [
+              {
+                path: 'foo',
+                message: 'Invalid key: Expected never but received "foo"',
+              },
+            ],
           },
         });
       });
@@ -116,10 +126,12 @@ describe('validation', () => {
           error: {
             message: 'Invalid query parameters',
             code: 'server.invalid_request.query',
-            details: [{
-              path: 'name',
-              message: 'Invalid key: Expected "name" but received undefined',
-            }],
+            details: [
+              {
+                path: 'name',
+                message: 'Invalid key: Expected "name" but received undefined',
+              },
+            ],
           },
         });
       });
@@ -147,7 +159,14 @@ describe('validation', () => {
       test('an invalid params should trigger a 400 error', async () => {
         const app = new Hono().get(
           '/:name',
-          validateParams(v.object({ name: v.pipe(v.string(), v.startsWith('foo-', 'Invalid input: must start with "foo-"')) })),
+          validateParams(
+            v.object({
+              name: v.pipe(
+                v.string(),
+                v.startsWith('foo-', 'Invalid input: must start with "foo-"'),
+              ),
+            }),
+          ),
           (context) => {
             return context.json({ ok: true });
           },
@@ -161,10 +180,12 @@ describe('validation', () => {
           error: {
             message: 'Invalid URL parameters',
             code: 'server.invalid_request.params',
-            details: [{
-              path: 'name',
-              message: 'Invalid input: must start with "foo-"',
-            }],
+            details: [
+              {
+                path: 'name',
+                message: 'Invalid input: must start with "foo-"',
+              },
+            ],
           },
         });
       });

@@ -14,22 +14,47 @@ import { documentsFtsTable } from './database-fts5.tables';
 export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRepository>;
 
 export function createDocumentSearchRepository({ db }: { db: Database }) {
-  return injectArguments({
-    searchOrganizationDocuments,
-    getDocumentIdsMatchingQuery,
-    indexDocuments,
-    updateDocuments,
-    deleteDocuments,
-  }, { db });
+  return injectArguments(
+    {
+      searchOrganizationDocuments,
+      getDocumentIdsMatchingQuery,
+      indexDocuments,
+      updateDocuments,
+      deleteDocuments,
+    },
+    { db },
+  );
 }
 
-async function searchOrganizationDocuments({ organizationId, searchQuery, pageIndex, pageSize, sort = DEFAULT_DOCUMENT_SEARCH_SORT, db, now = new Date() }: { organizationId: string; searchQuery: string; pageIndex: number; pageSize: number; sort?: DocumentSearchSort; db: Database; now?: Date }) {
+async function searchOrganizationDocuments({
+  organizationId,
+  searchQuery,
+  pageIndex,
+  pageSize,
+  sort = DEFAULT_DOCUMENT_SEARCH_SORT,
+  db,
+  now = new Date(),
+}: {
+  organizationId: string;
+  searchQuery: string;
+  pageIndex: number;
+  pageSize: number;
+  sort?: DocumentSearchSort;
+  db: Database;
+  now?: Date;
+}) {
   const customPropertyDefinitions = await db
     .select()
     .from(customPropertyDefinitionsTable)
     .where(eq(customPropertyDefinitionsTable.organizationId, organizationId));
 
-  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now, customPropertyDefinitions });
+  const { searchWhereClause } = makeSearchWhereClause({
+    organizationId,
+    query: searchQuery,
+    db,
+    now,
+    customPropertyDefinitions,
+  });
   const { orderByClauses, sortColumn } = makeSearchOrderByClauses({ sort });
 
   const paginatedIdsSubquery = db
@@ -63,35 +88,57 @@ async function searchOrganizationDocuments({ organizationId, searchQuery, pageIn
   return { documents, documentsCount };
 }
 
-async function getDocumentIdsMatchingQuery({ organizationId, searchQuery, db, now = new Date() }: { organizationId: string; searchQuery: string; db: Database; now?: Date }) {
+async function getDocumentIdsMatchingQuery({
+  organizationId,
+  searchQuery,
+  db,
+  now = new Date(),
+}: {
+  organizationId: string;
+  searchQuery: string;
+  db: Database;
+  now?: Date;
+}) {
   const customPropertyDefinitions = await db
     .select()
     .from(customPropertyDefinitionsTable)
     .where(eq(customPropertyDefinitionsTable.organizationId, organizationId));
 
-  const { searchWhereClause } = makeSearchWhereClause({ organizationId, query: searchQuery, db, now, customPropertyDefinitions });
+  const { searchWhereClause } = makeSearchWhereClause({
+    organizationId,
+    query: searchQuery,
+    db,
+    now,
+    customPropertyDefinitions,
+  });
 
   const rows = await db
     .selectDistinct({ id: documentsTable.id })
     .from(documentsTable)
     .where(searchWhereClause);
 
-  return { documentIds: rows.map(row => row.id) };
+  return { documentIds: rows.map((row) => row.id) };
 }
 
-async function indexDocuments({ documents, db }: { documents: DocumentSearchableData[]; db: Database }) {
+async function indexDocuments({
+  documents,
+  db,
+}: {
+  documents: DocumentSearchableData[];
+  db: Database;
+}) {
   if (documents.length === 0) {
     return;
   }
 
-  await db
-    .insert(documentsFtsTable)
-    .values(documents.map(document => ({
+  await db.insert(documentsFtsTable).values(
+    documents.map((document) => ({
       documentId: document.id,
       organizationId: document.organizationId,
       name: document.name,
       content: document.content,
-    })));
+    })),
+  );
 }
 
 async function updateDocuments({ updates, db }: { updates: DocumentUpdate[]; db: Database }) {
@@ -115,7 +162,7 @@ async function updateDocuments({ updates, db }: { updates: DocumentUpdate[]; db:
         .set(dataToUpdate)
         .where(eq(documentsFtsTable.documentId, documentId));
     })
-    .filter(query => query !== null);
+    .filter((query) => query !== null);
 
   if (!isNonEmptyArray(queries)) {
     return;
@@ -129,7 +176,5 @@ async function deleteDocuments({ documentIds, db }: { documentIds: string[]; db:
     return;
   }
 
-  await db
-    .delete(documentsFtsTable)
-    .where(inArray(documentsFtsTable.documentId, documentIds));
+  await db.delete(documentsFtsTable).where(inArray(documentsFtsTable.documentId, documentIds));
 }

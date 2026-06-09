@@ -11,14 +11,11 @@ export const userRolesTable = sqliteTable(
 
     userId: text('user_id')
       .notNull()
-      .references(
-        () => usersTable.id,
-        { onDelete: 'cascade', onUpdate: 'cascade' },
-      ),
+      .references(() => usersTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
 
     role: text('role').notNull().$type<Role>(),
   },
-  table => [
+  (table) => [
     // To enforce unique roles per user
     unique('user_roles_user_id_role_unique_index').on(table.userId, table.role),
 

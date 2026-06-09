@@ -1,6 +1,9 @@
 import type { Buffer } from 'node:buffer';
 import { describe, expect, test } from 'vitest';
-import { createReadableStream, fileToReadableStream } from '../../../../shared/streams/readable-stream';
+import {
+  createReadableStream,
+  fileToReadableStream,
+} from '../../../../shared/streams/readable-stream';
 import { createFileNotFoundError } from '../../document-storage.errors';
 import { runDriverTestSuites } from '../drivers.test-suite';
 import { inMemoryStorageDriverFactory } from './memory.storage-driver';
@@ -40,7 +43,9 @@ describe('memory storage-driver', () => {
 
       await inMemoryStorageDriver.deleteFile({ storageKey: 'org_1/text-file.txt' });
 
-      await expect(inMemoryStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' })).rejects.toThrow(createFileNotFoundError());
+      await expect(
+        inMemoryStorageDriver.getFileStream({ storageKey: 'org_1/text-file.txt' }),
+      ).rejects.toThrow(createFileNotFoundError());
     });
 
     test('mainly for testing purposes, a _getStorage() method is available to access the internal storage map', async () => {
@@ -59,7 +64,10 @@ describe('memory storage-driver', () => {
       const entries = Array.from(storage.entries());
 
       expect(entries).to.have.length(1);
-      const [key, file] = entries[0] as [string, { content: Buffer; mimeType: string; fileName: string }];
+      const [key, file] = entries[0] as [
+        string,
+        { content: Buffer; mimeType: string; fileName: string },
+      ];
 
       expect(key).to.eql('org_1/text-file.txt');
       expect(file).to.be.a('object');

@@ -11,7 +11,9 @@ const SUPPORTED_DOCUMENT_TYPES = [
 ];
 
 export function useImportFromFiles() {
-  const importFromFiles = async ({ selectableTypes = SUPPORTED_DOCUMENT_TYPES }: { selectableTypes?: string[] } = {}) => {
+  const importFromFiles = async ({
+    selectableTypes = SUPPORTED_DOCUMENT_TYPES,
+  }: { selectableTypes?: string[] } = {}) => {
     const result = await DocumentPicker.getDocumentAsync({
       type: selectableTypes,
       copyToCacheDirectory: true,

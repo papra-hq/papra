@@ -5,10 +5,7 @@ export const dateCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'date',
 
   value: {
-    inputSchema: v.pipe(
-      v.union([v.string(), v.number()]),
-      v.toDate(),
-    ),
+    inputSchema: v.pipe(v.union([v.string(), v.number()]), v.toDate()),
 
     toDb: ({ value }) => ({ dateValue: value }),
 

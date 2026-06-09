@@ -17,11 +17,12 @@ export function DocumentDatePicker(props: { document: Document; organizationId: 
   const { getErrorMessage } = useI18nApiErrors();
 
   const updateDateMutation = useMutation(() => ({
-    mutationFn: (date: Date | null) => updateDocument({
-      documentId: props.document.id,
-      organizationId: props.organizationId,
-      documentDate: date,
-    }),
+    mutationFn: (date: Date | null) =>
+      updateDocument({
+        documentId: props.document.id,
+        organizationId: props.organizationId,
+        documentDate: date,
+      }),
     onSuccess: async () => {
       await invalidateOrganizationDocumentsQuery({ organizationId: props.organizationId });
     },
@@ -53,7 +54,7 @@ export function DocumentDatePicker(props: { document: Document; organizationId: 
           when={props.document.documentDate}
           fallback={<span class="text-muted-foreground">{t('documents.info.no-date')}</span>}
         >
-          {date => formatDate(date(), { dateStyle: 'medium' })}
+          {(date) => formatDate(date(), { dateStyle: 'medium' })}
         </Show>
         <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
       </PopoverTrigger>

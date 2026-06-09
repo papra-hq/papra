@@ -18,11 +18,10 @@ type dialogContentProps<T extends ValidComponent = 'div'> = ParentProps<
   }
 >;
 
-export function DialogContent<T extends ValidComponent = 'div'>(props: PolymorphicProps<T, dialogContentProps<T>>) {
-  const [local, rest] = splitProps(props as dialogContentProps, [
-    'class',
-    'children',
-  ]);
+export function DialogContent<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, dialogContentProps<T>>,
+) {
+  const [local, rest] = splitProps(props as dialogContentProps, ['class', 'children']);
 
   return (
     <DialogPrimitive.Portal>
@@ -41,11 +40,7 @@ export function DialogContent<T extends ValidComponent = 'div'>(props: Polymorph
       >
         {local.children}
         <DialogPrimitive.CloseButton class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-card transition-opacity hover:opacity-100 focus:(outline-none ring-1.5 ring-ring ring-offset-2) disabled:pointer-events-none bg-inherit transition-property-[opacity,box-shadow]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            class="h-4 w-4"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4">
             <path
               fill="none"
               stroke="currentColor"
@@ -66,7 +61,9 @@ type dialogTitleProps<T extends ValidComponent = 'h2'> = DialogTitleProps<T> & {
   class?: string;
 };
 
-export function DialogTitle<T extends ValidComponent = 'h2'>(props: PolymorphicProps<T, dialogTitleProps<T>>) {
+export function DialogTitle<T extends ValidComponent = 'h2'>(
+  props: PolymorphicProps<T, dialogTitleProps<T>>,
+) {
   const [local, rest] = splitProps(props as dialogTitleProps, ['class']);
 
   return (
@@ -77,12 +74,13 @@ export function DialogTitle<T extends ValidComponent = 'h2'>(props: PolymorphicP
   );
 }
 
-type dialogDescriptionProps<T extends ValidComponent = 'p'>
-  = DialogDescriptionProps<T> & {
-    class?: string;
-  };
+type dialogDescriptionProps<T extends ValidComponent = 'p'> = DialogDescriptionProps<T> & {
+  class?: string;
+};
 
-export function DialogDescription<T extends ValidComponent = 'p'>(props: PolymorphicProps<T, dialogDescriptionProps<T>>) {
+export function DialogDescription<T extends ValidComponent = 'p'>(
+  props: PolymorphicProps<T, dialogDescriptionProps<T>>,
+) {
   const [local, rest] = splitProps(props as dialogDescriptionProps, ['class']);
 
   return (
@@ -96,15 +94,7 @@ export function DialogDescription<T extends ValidComponent = 'p'>(props: Polymor
 export function DialogHeader(props: ComponentProps<'div'>) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <div
-      class={cn(
-        'flex flex-col space-y-2',
-        local.class,
-      )}
-      {...rest}
-    />
-  );
+  return <div class={cn('flex flex-col space-y-2', local.class)} {...rest} />;
 }
 
 export function DialogFooter(props: ComponentProps<'div'>) {
@@ -112,10 +102,7 @@ export function DialogFooter(props: ComponentProps<'div'>) {
 
   return (
     <div
-      class={cn(
-        'flex flex-col-reverse sm:(flex-row justify-end space-x-2)',
-        local.class,
-      )}
+      class={cn('flex flex-col-reverse sm:(flex-row justify-end space-x-2)', local.class)}
       {...rest}
     />
   );

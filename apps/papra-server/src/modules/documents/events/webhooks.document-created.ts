@@ -15,13 +15,15 @@ export function registerTriggerWebhooksOnDocumentCreatedHandler({
       await webhookTriggerServices.triggerWebhooks({
         organizationId: document.organizationId,
         event: 'document:created',
-        payloads: [{
-          documentId: document.id,
-          organizationId: document.organizationId,
-          name: document.name,
-          createdAt: document.createdAt,
-          updatedAt: document.updatedAt,
-        }],
+        payloads: [
+          {
+            documentId: document.id,
+            organizationId: document.organizationId,
+            name: document.name,
+            createdAt: document.createdAt,
+            updatedAt: document.updatedAt,
+          },
+        ],
       });
     },
   });

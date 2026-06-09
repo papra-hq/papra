@@ -5,7 +5,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'auth.request-password-reset.title': 'Zresetuj swoje hasło',
   'auth.request-password-reset.description': 'Wprowadź swój adres e-mail, aby zresetować hasło.',
-  'auth.request-password-reset.requested': 'Jeśli istnieje konto powiązane z tym adresem e-mail, otrzymasz wiadomość umożliwiającą zresetowanie hasła.',
+  'auth.request-password-reset.requested':
+    'Jeśli istnieje konto powiązane z tym adresem e-mail, otrzymasz wiadomość umożliwiającą zresetowanie hasła.',
   'auth.request-password-reset.back-to-login': 'Wróć do logowania',
   'auth.request-password-reset.form.email.label': 'E-mail',
   'auth.request-password-reset.form.email.placeholder': 'Przykład: ada@papra.app',
@@ -20,14 +21,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.reset-password.form.new-password.label': 'Nowe hasło',
   'auth.reset-password.form.new-password.placeholder': 'Przykład: **********',
   'auth.reset-password.form.new-password.required': 'Wprowadź nowe hasło',
-  'auth.reset-password.form.new-password.min-length': 'Hasło musi mieć co najmniej {{ minLength }} znaków',
-  'auth.reset-password.form.new-password.max-length': 'Hasło musi mieć mniej niż {{ maxLength }} znaków',
+  'auth.reset-password.form.new-password.min-length':
+    'Hasło musi mieć co najmniej {{ minLength }} znaków',
+  'auth.reset-password.form.new-password.max-length':
+    'Hasło musi mieć mniej niż {{ maxLength }} znaków',
   'auth.reset-password.form.submit': 'Zresetuj hasło',
 
   'auth.email-provider.open': 'Otwórz {{ provider }}',
 
   'auth.login.title': 'Zaloguj się do Papra',
-  'auth.login.description': 'Wprowadź swój adres e-mail lub skorzystaj z logowania federacyjnego, aby uzyskać dostęp do swojego konta Papra.',
+  'auth.login.description':
+    'Wprowadź swój adres e-mail lub skorzystaj z logowania federacyjnego, aby uzyskać dostęp do swojego konta Papra.',
   'auth.login.login-with-provider': 'Zaloguj się za pomocą {{ provider }}',
   'auth.login.no-account': 'Nie masz konta?',
   'auth.login.register': 'Zarejestruj się',
@@ -43,8 +47,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Zaloguj się',
 
   'auth.login.two-factor.title': 'Weryfikacja dwuskładnikowa',
-  'auth.login.two-factor.description.totp': 'Wprowadź 6-cyfrowy kod weryfikacyjny z aplikacji uwierzytelniającej.',
-  'auth.login.two-factor.description.backup-code': 'Wprowadź jeden z kodów zapasowych, aby uzyskać dostęp do konta.',
+  'auth.login.two-factor.description.totp':
+    'Wprowadź 6-cyfrowy kod weryfikacyjny z aplikacji uwierzytelniającej.',
+  'auth.login.two-factor.description.backup-code':
+    'Wprowadź jeden z kodów zapasowych, aby uzyskać dostęp do konta.',
   'auth.login.two-factor.code.label.totp': 'Kod uwierzytelniający',
   'auth.login.two-factor.code.label.backup-code': 'Kod zapasowy',
   'auth.login.two-factor.code.placeholder.backup-code': 'Wprowadź kod zapasowy',
@@ -52,7 +58,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.two-factor.trust-device.label': 'Zaufaj temu urządzeniu przez 30 dni',
   'auth.login.two-factor.back': 'Powrót do logowania',
   'auth.login.two-factor.submit': 'Weryfikuj',
-  'auth.login.two-factor.verification-failed': 'Weryfikacja nie powiodła się. Sprawdź kod i spróbuj ponownie.',
+  'auth.login.two-factor.verification-failed':
+    'Weryfikacja nie powiodła się. Sprawdź kod i spróbuj ponownie.',
   'auth.login.two-factor.use-backup-code': 'Użyj kodu zapasowego',
   'auth.login.two-factor.use-totp': 'Użyj aplikacji uwierzytelniającej',
 
@@ -65,7 +72,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Masz już konto?',
   'auth.register.login': 'Zaloguj się',
   'auth.register.registration-disabled.title': 'Rejestracja jest wyłączona',
-  'auth.register.registration-disabled.description': 'Tworzenie nowych kont na tej instancji Papra jest obecnie wyłączone. Tylko użytkownicy z istniejącymi kontami mogą się zalogować. Jeśli uważasz, że to błąd, skontaktuj się z administratorem tej instancji.',
+  'auth.register.registration-disabled.description':
+    'Tworzenie nowych kont na tej instancji Papra jest obecnie wyłączone. Tylko użytkownicy z istniejącymi kontami mogą się zalogować. Jeśli uważasz, że to błąd, skontaktuj się z administratorem tej instancji.',
   'auth.register.form.email.label': 'E-mail',
   'auth.register.form.email.placeholder': 'Przykład: ada@papra.app',
   'auth.register.form.email.required': 'Wprowadź swój adres e-mail',
@@ -78,25 +86,31 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.name.label': 'Imię i nazwisko',
   'auth.register.form.name.placeholder': 'Przykład: Ada Lovelace',
   'auth.register.form.name.required': 'Wprowadź swoje imię i nazwisko',
-  'auth.register.form.name.max-length': 'Imię i nazwisko musi mieć mniej niż {{ maxLength }} znaków',
+  'auth.register.form.name.max-length':
+    'Imię i nazwisko musi mieć mniej niż {{ maxLength }} znaków',
   'auth.register.form.submit': 'Zarejestruj się',
 
   'auth.email-validation-required.title': 'Zweryfikuj swój adres e-mail',
-  'auth.email-validation-required.description': 'Wiadomość weryfikacyjna została wysłana na Twój adres e-mail. Zweryfikuj swój adres e-mail, klikając link w wiadomości.',
+  'auth.email-validation-required.description':
+    'Wiadomość weryfikacyjna została wysłana na Twój adres e-mail. Zweryfikuj swój adres e-mail, klikając link w wiadomości.',
 
   'auth.email-verification.success.title': 'E-mail zweryfikowany',
-  'auth.email-verification.success.description': 'Twój adres e-mail został pomyślnie zweryfikowany. Możesz teraz zalogować się do swojego konta.',
+  'auth.email-verification.success.description':
+    'Twój adres e-mail został pomyślnie zweryfikowany. Możesz teraz zalogować się do swojego konta.',
   'auth.email-verification.success.login': 'Przejdź do logowania',
   'auth.email-verification.error.title': 'Weryfikacja nie powiodła się',
-  'auth.email-verification.error.description': 'Link weryfikacyjny jest nieprawidłowy lub wygasł. Poproś o nową wiadomość weryfikacyjną, logując się.',
+  'auth.email-verification.error.description':
+    'Link weryfikacyjny jest nieprawidłowy lub wygasł. Poproś o nową wiadomość weryfikacyjną, logując się.',
   'auth.email-verification.error.back': 'Powrót do logowania',
 
-  'auth.legal-links.description': 'Kontynuując, potwierdzasz, że rozumiesz i zgadzasz się na {{ terms }} oraz {{ privacy }}.',
+  'auth.legal-links.description':
+    'Kontynuując, potwierdzasz, że rozumiesz i zgadzasz się na {{ terms }} oraz {{ privacy }}.',
   'auth.legal-links.terms': 'Warunki korzystania z usługi',
   'auth.legal-links.privacy': 'Polityka prywatności',
 
   'auth.no-auth-provider.title': 'Brak dostawcy uwierzytelniania',
-  'auth.no-auth-provider.description': 'Na tej instancji Papra nie ma włączonych dostawców uwierzytelniania. Skontaktuj się z administratorem tej instancji, aby je włączyć.',
+  'auth.no-auth-provider.description':
+    'Na tej instancji Papra nie ma włączonych dostawców uwierzytelniania. Skontaktuj się z administratorem tej instancji, aby je włączyć.',
 
   // User settings
 
@@ -108,14 +122,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.email.label': 'Adres e-mail',
 
   'user.settings.name.title': 'Imię i nazwisko',
-  'user.settings.name.description': 'Twoje imię i nazwisko jest wyświetlane innym członkom organizacji.',
+  'user.settings.name.description':
+    'Twoje imię i nazwisko jest wyświetlane innym członkom organizacji.',
   'user.settings.name.label': 'Imię i nazwisko',
   'user.settings.name.placeholder': 'Przykład: Jan Kowalski',
   'user.settings.name.update': 'Zaktualizuj imię i nazwisko',
   'user.settings.name.updated': 'Twoje imię i nazwisko zostało zaktualizowane',
 
   'user.settings.logout.title': 'Wyloguj się',
-  'user.settings.logout.description': 'Wyloguj się ze swojego konta. Możesz zalogować się ponownie później.',
+  'user.settings.logout.description':
+    'Wyloguj się ze swojego konta. Możesz zalogować się ponownie później.',
   'user.settings.logout.button': 'Wyloguj się',
 
   'user.settings.two-factor.title': 'Uwierzytelnianie dwuskładnikowe',
@@ -136,22 +152,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Skonfiguruj uwierzytelnianie dwuskładnikowe',
   'user.settings.two-factor.setup-dialog.step1.title': 'Krok 1: Zeskanuj kod QR',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Zeskanuj poniższy kod QR lub wprowadź ręcznie klucz konfiguracyjny do aplikacji uwierzytelniającej.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Zeskanuj poniższy kod QR lub wprowadź ręcznie klucz konfiguracyjny do aplikacji uwierzytelniającej.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Skopiuj klucz konfiguracyjny',
   'user.settings.two-factor.setup-dialog.step2.title': 'Krok 2: Zweryfikuj kod',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Wprowadź 6-cyfrowy kod wygenerowany przez aplikację uwierzytelniającą, aby zweryfikować i włączyć uwierzytelnianie dwuskładnikowe.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Wprowadź 6-cyfrowy kod wygenerowany przez aplikację uwierzytelniającą, aby zweryfikować i włączyć uwierzytelnianie dwuskładnikowe.',
   'user.settings.two-factor.setup-dialog.cancel': 'Anuluj',
   'user.settings.two-factor.setup-dialog.verify': 'Weryfikuj i włącz 2FA',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Kody zapasowe',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Zapisz te kody zapasowe w bezpiecznym miejscu. Możesz ich użyć do uzyskania dostępu do konta, jeśli stracisz dostęp do aplikacji uwierzytelniającej.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Zapisz te kody zapasowe w bezpiecznym miejscu. Możesz ich użyć do uzyskania dostępu do konta, jeśli stracisz dostęp do aplikacji uwierzytelniającej.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Skopiuj kody zapasowe',
   'user.settings.two-factor.backup-codes-dialog.download': 'Pobierz kody zapasowe',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Zapisałem moje kody',
 
   'user.settings.two-factor.disable-dialog.title': 'Wyłącz uwierzytelnianie dwuskładnikowe',
-  'user.settings.two-factor.disable-dialog.description': 'Wprowadź hasło, aby wyłączyć 2FA. Spowoduje to zmniejszenie bezpieczeństwa konta.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Wprowadź hasło, aby wyłączyć 2FA. Spowoduje to zmniejszenie bezpieczeństwa konta.',
   'user.settings.two-factor.disable-dialog.password.label': 'Hasło',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Wprowadź hasło',
   'user.settings.two-factor.disable-dialog.password.required': 'Wprowadź hasło',
@@ -159,7 +179,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': 'Wyłącz 2FA',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Wygeneruj ponownie kody zapasowe',
-  'user.settings.two-factor.regenerate-dialog.description': 'Spowoduje to unieważnienie wszystkich istniejących kodów zapasowych i wygenerowanie nowych. Wprowadź hasło, aby kontynuować.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Spowoduje to unieważnienie wszystkich istniejących kodów zapasowych i wygenerowanie nowych. Wprowadź hasło, aby kontynuować.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Hasło',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Wprowadź hasło',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Wprowadź hasło',
@@ -173,33 +194,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Twoje organizacje',
-  'organizations.list.description': 'Organizacje to sposób grupowania dokumentów i zarządzania dostępem do nich. Możesz tworzyć wiele organizacji i zapraszać członków zespołu do współpracy.',
+  'organizations.list.description':
+    'Organizacje to sposób grupowania dokumentów i zarządzania dostępem do nich. Możesz tworzyć wiele organizacji i zapraszać członków zespołu do współpracy.',
   'organizations.list.create-new': 'Utwórz nową organizację',
   'organizations.list.back': 'Powrót do organizacji',
   'organizations.list.deleted.title': 'Usunięte organizacje',
-  'organizations.list.deleted.description': 'Usunięte organizacje są przechowywane przez {{ days }} dni przed trwałym usunięciem. Możesz je przywrócić w tym okresie.',
+  'organizations.list.deleted.description':
+    'Usunięte organizacje są przechowywane przez {{ days }} dni przed trwałym usunięciem. Możesz je przywrócić w tym okresie.',
   'organizations.list.deleted.empty': 'Brak usuniętych organizacji',
-  'organizations.list.deleted.empty-description': 'Kiedy usuniesz organizację, pojawi się tutaj na {{ days }} dni przed trwałym usunięciem.',
+  'organizations.list.deleted.empty-description':
+    'Kiedy usuniesz organizację, pojawi się tutaj na {{ days }} dni przed trwałym usunięciem.',
   'organizations.list.deleted.restore': 'Przywróć',
   'organizations.list.deleted.restore-success': 'Organizacja została pomyślnie przywrócona',
   'organizations.list.deleted.restore-confirm.title': 'Przywróć organizację',
-  'organizations.list.deleted.restore-confirm.message': 'Czy na pewno chcesz przywrócić tę organizację? Zostanie przeniesiona z powrotem do listy aktywnych organizacji.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Czy na pewno chcesz przywrócić tę organizację? Zostanie przeniesiona z powrotem do listy aktywnych organizacji.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Przywróć organizację',
   'organizations.list.deleted.deleted-at': 'Usunięto {{ date }}',
   'organizations.list.deleted.purge-at': 'Zostanie trwale usunięta {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} dzień, {daysUntilPurge} dni }} pozostał{{ daysUntilPurge, =1:o, o}})',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} dzień, {daysUntilPurge} dni }} pozostał{{ daysUntilPurge, =1:o, o}})',
 
   'organizations.details.no-documents.title': 'Brak dokumentów',
-  'organizations.details.no-documents.description': 'W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.',
+  'organizations.details.no-documents.description':
+    'W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.',
   'organizations.details.upload-documents': 'Prześlij dokumenty',
   'organizations.details.documents-count': 'dokumentów w sumie',
   'organizations.details.total-size': 'całkowity rozmiar',
   'organizations.details.latest-documents': 'Najnowsze zaimportowane dokumenty',
 
   'organizations.create.title': 'Utwórz nową organizację',
-  'organizations.create.description': 'Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.',
+  'organizations.create.description':
+    'Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.',
   'organizations.create.back': 'Wstecz',
-  'organizations.create.error.max-count-reached': 'Osiągnąłeś maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.',
+  'organizations.create.error.max-count-reached':
+    'Osiągnąłeś maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.',
   'organizations.create.form.name.label': 'Nazwa organizacji',
   'organizations.create.form.name.placeholder': 'Przykład: Acme Inc.',
   'organizations.create.form.name.required': 'Wprowadź nazwę organizacji',
@@ -207,7 +236,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Organizacja została pomyślnie utworzona',
 
   'organizations.create-first.title': 'Utwórz swoją organizację',
-  'organizations.create-first.description': 'Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.',
+  'organizations.create-first.description':
+    'Twoje dokumenty będą grupowane według organizacji. Możesz tworzyć wiele organizacji, aby oddzielić swoje dokumenty, na przykład dokumenty osobiste i służbowe.',
   'organizations.create-first.default-name': 'Moja organizacja',
   'organizations.create-first.user-name': 'Organizacja użytkownika {{ name }}',
 
@@ -219,18 +249,23 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.name.placeholder': 'Przykład: Acme Inc.',
   'organization.settings.name.updated': 'Nazwa organizacji została zaktualizowana',
   'organization.settings.subscription.title': 'Subskrypcja',
-  'organization.settings.subscription.description': 'Zarządzaj swoim rozliczeniem, fakturami i metodami płatności.',
+  'organization.settings.subscription.description':
+    'Zarządzaj swoim rozliczeniem, fakturami i metodami płatności.',
   'organization.settings.subscription.manage': 'Zarządzaj subskrypcją',
   'organization.settings.subscription.error': 'Nie udało się uzyskać adresu URL portalu klienta',
   'organization.settings.delete.title': 'Usuń organizację',
-  'organization.settings.delete.description': 'Usunięcie tej organizacji spowoduje trwałe usunięcie wszystkich danych z nią związanych.',
+  'organization.settings.delete.description':
+    'Usunięcie tej organizacji spowoduje trwałe usunięcie wszystkich danych z nią związanych.',
   'organization.settings.delete.confirm.title': 'Usuń organizację',
-  'organization.settings.delete.confirm.message': 'Czy na pewno chcesz usunąć tę organizację? Organizacja zostanie oznaczona do usunięcia i trwale usunięta po {{ days}} dniach. W tym okresie możesz ją przywrócić z listy organizacji. Wszystkie dokumenty i dane zostaną trwale usunięte po upływie tego terminu.',
+  'organization.settings.delete.confirm.message':
+    'Czy na pewno chcesz usunąć tę organizację? Organizacja zostanie oznaczona do usunięcia i trwale usunięta po {{ days}} dniach. W tym okresie możesz ją przywrócić z listy organizacji. Wszystkie dokumenty i dane zostaną trwale usunięte po upływie tego terminu.',
   'organization.settings.delete.confirm.confirm-button': 'Usuń organizację',
   'organization.settings.delete.confirm.cancel-button': 'Anuluj',
   'organization.settings.delete.success': 'Organizacja została usunięta',
-  'organization.settings.delete.only-owner': 'Tylko właściciel organizacji może usunąć tę organizację.',
-  'organization.settings.delete.has-active-subscription': 'Nie można usunąć organizacji z aktywną subskrypcją, proszę najpierw anulować subskrypcję powyżej.',
+  'organization.settings.delete.only-owner':
+    'Tylko właściciel organizacji może usunąć tę organizację.',
+  'organization.settings.delete.has-active-subscription':
+    'Nie można usunąć organizacji z aktywną subskrypcją, proszę najpierw anulować subskrypcję powyżej.',
 
   'organization.usage.page.title': 'Użycie',
   'organization.usage.page.description': 'Zobacz aktualne użycie i limity Twojej organizacji.',
@@ -245,14 +280,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Członkowie',
   'organizations.members.description': 'Zarządzaj członkami swojej organizacji',
   'organizations.members.invite-member': 'Zaproś członka',
-  'organizations.members.invite-member-disabled-tooltip': 'Tylko administratorzy lub właściciele mogą zapraszać członków do organizacji',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Tylko administratorzy lub właściciele mogą zapraszać członków do organizacji',
   'organizations.members.remove-from-organization': 'Usuń z organizacji',
   'organizations.members.role': 'Rola',
   'organizations.members.roles.owner': 'Właściciel',
   'organizations.members.roles.admin': 'Administrator',
   'organizations.members.roles.member': 'Członek',
   'organizations.members.delete.confirm.title': 'Usuń członka',
-  'organizations.members.delete.confirm.message': 'Czy na pewno chcesz usunąć tego członka z organizacji?',
+  'organizations.members.delete.confirm.message':
+    'Czy na pewno chcesz usunąć tego członka z organizacji?',
   'organizations.members.delete.confirm.confirm-button': 'Usuń',
   'organizations.members.delete.confirm.cancel-button': 'Anuluj',
   'organizations.members.delete.success': 'Członek został usunięty z organizacji',
@@ -278,7 +315,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.description': 'Zarządzaj zaproszeniami do swojej organizacji',
   'organizations.invitations.list.cta': 'Zaproś członka',
   'organizations.invitations.list.empty.title': 'Brak oczekujących zaproszeń',
-  'organizations.invitations.list.empty.description': 'Nie zostałeś zaproszony do żadnej organizacji.',
+  'organizations.invitations.list.empty.description':
+    'Nie zostałeś zaproszony do żadnej organizacji.',
   'organizations.invitations.status.pending': 'Oczekujące',
   'organizations.invitations.status.accepted': 'Zaakceptowane',
   'organizations.invitations.status.rejected': 'Odrzucone',
@@ -290,7 +328,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.cancel.confirm': 'Anuluj zaproszenie',
   'organizations.invitations.cancel.cancel': 'Anuluj',
   'organizations.invitations.resend.title': 'Wyślij zaproszenie ponownie',
-  'organizations.invitations.resend.description': 'Czy na pewno chcesz wysłać ponownie to zaproszenie? To spowoduje wysłanie nowego e-maila do odbiorcy.',
+  'organizations.invitations.resend.description':
+    'Czy na pewno chcesz wysłać ponownie to zaproszenie? To spowoduje wysłanie nowego e-maila do odbiorcy.',
   'organizations.invitations.resend.confirm': 'Wyślij zaproszenie ponownie',
   'organizations.invitations.resend.cancel': 'Anuluj',
 
@@ -313,7 +352,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Dokumenty',
   'documents.list.no-documents.title': 'Brak dokumentów',
-  'documents.list.no-documents.description': 'W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.',
+  'documents.list.no-documents.description':
+    'W tej organizacji nie ma jeszcze żadnych dokumentów. Zacznij od przesłania kilku dokumentów.',
   'documents.list.no-results': 'Nie znaleziono dokumentów',
   'documents.list.table.headers.file-name': 'Nazwa pliku',
   'documents.list.table.headers.created': 'Utworzono',
@@ -321,13 +361,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Akcje',
   'documents.list.table.headers.tags': 'Tagi',
   'documents.list.search.placeholder': 'Szukaj dokumentów...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:dokument, dokumentów }} pasujących do tego wyszukiwania',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:dokument, dokumentów }} łącznie',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:dokument, dokumentów }} pasujących do tego wyszukiwania',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:dokument, dokumentów }} łącznie',
 
   'documents.tabs.info': 'Informacje',
   'documents.tabs.content': 'Treść',
   'documents.tabs.activity': 'Aktywność',
-  'documents.deleted.message': 'Ten dokument został usunięty i zostanie trwale usunięty za {{ days }} dni.',
+  'documents.deleted.message':
+    'Ten dokument został usunięty i zostanie trwale usunięty za {{ days }} dni.',
   'documents.actions.download.title': 'Pobierz',
   'documents.actions.download.error': 'Nie udało się pobrać dokumentu',
   'documents.actions.restore': 'Przywróć',
@@ -336,8 +379,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Anuluj',
   'documents.actions.save': 'Zapisz',
   'documents.actions.saving': 'Zapisywanie...',
-  'documents.content.alert': 'Zawartość dokumentu jest automatycznie wyodrębniana z dokumentu podczas przesyłania. Jest używana tylko do wyszukiwania i indeksowania.',
-  'documents.content.empty-placeholder': 'Ten dokument nie ma wyodrębnionej zawartości, możesz ją ustawić ręcznie tutaj.',
+  'documents.content.alert':
+    'Zawartość dokumentu jest automatycznie wyodrębniana z dokumentu podczas przesyłania. Jest używana tylko do wyszukiwania i indeksowania.',
+  'documents.content.empty-placeholder':
+    'Ten dokument nie ma wyodrębnionej zawartości, możesz ją ustawić ręcznie tutaj.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Nazwa',
   'documents.info.type': 'Typ',
@@ -359,10 +404,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Dokument',
 
   'custom-properties.list.title': 'Właściwości niestandardowe',
-  'custom-properties.list.description': 'Zdefiniuj niestandardowe pola metadanych dla swoich dokumentów. Właściwości mogą być tekstem, liczbami, datami, wartościami logicznymi lub listami wyboru.',
+  'custom-properties.list.description':
+    'Zdefiniuj niestandardowe pola metadanych dla swoich dokumentów. Właściwości mogą być tekstem, liczbami, datami, wartościami logicznymi lub listami wyboru.',
   'custom-properties.list.create-button': 'Utwórz właściwość',
   'custom-properties.list.empty.title': 'Właściwości niestandardowe',
-  'custom-properties.list.empty.description': 'Właściwości niestandardowe pozwalają dodawać ustrukturyzowane metadane do dokumentów, takie jak daty wygaśnięcia, nazwy firm lub kwoty.',
+  'custom-properties.list.empty.description':
+    'Właściwości niestandardowe pozwalają dodawać ustrukturyzowane metadane do dokumentów, takie jak daty wygaśnięcia, nazwy firm lub kwoty.',
   'custom-properties.list.table.name': 'Nazwa',
   'custom-properties.list.table.type': 'Typ',
   'custom-properties.list.table.description': 'Opis',
@@ -370,7 +417,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Działania',
   'custom-properties.list.table.no-description': 'Brak opisu',
   'custom-properties.list.delete.confirm-title': 'Usuń właściwość niestandardową',
-  'custom-properties.list.delete.confirm-message': 'Czy na pewno chcesz usunąć właściwość niestandardową „{{ name }}”? Tej operacji nie można cofnąć.',
+  'custom-properties.list.delete.confirm-message':
+    'Czy na pewno chcesz usunąć właściwość niestandardową „{{ name }}”? Tej operacji nie można cofnąć.',
   'custom-properties.list.delete.confirm-button': 'Usuń',
   'custom-properties.list.delete.success': 'Właściwość niestandardowa została pomyślnie usunięta',
   'custom-properties.list.delete.error': 'Nie udało się usunąć właściwości niestandardowej',
@@ -394,7 +442,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.description.placeholder': 'Opisz, do czego służy ta właściwość',
   'custom-properties.form.description.max-length': 'Opis może mieć co najwyżej 1000 znaków',
   'custom-properties.form.type.label': 'Typ',
-  'custom-properties.form.type.immutable': 'Typ właściwości nie może zostać zmieniony po jej utworzeniu.',
+  'custom-properties.form.type.immutable':
+    'Typ właściwości nie może zostać zmieniony po jej utworzeniu.',
   'custom-properties.form.options.title': 'Opcje',
   'custom-properties.form.options.description': 'Zdefiniuj dostępne opcje dla tej właściwości.',
   'custom-properties.form.options.name.placeholder': 'Nazwa opcji',
@@ -403,7 +452,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.options.validation.required': 'Dodaj co najmniej jedną opcję',
   'custom-properties.form.options.add': 'Dodaj opcję',
   'custom-properties.form.cancel': 'Anuluj',
-  'custom-properties.form.save-error': 'Wystąpił błąd podczas zapisywania definicji właściwości. Spróbuj ponownie.',
+  'custom-properties.form.save-error':
+    'Wystąpił błąd podczas zapisywania definicji właściwości. Spróbuj ponownie.',
 
   'documents.custom-properties.section-title': 'Właściwości',
   'documents.custom-properties.no-value': 'Nie ustawiono',
@@ -432,20 +482,24 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': 'Usunięte dokumenty',
   'documents.deleted.empty.title': 'Brak usuniętych dokumentów',
-  'documents.deleted.empty.description': 'Nie masz żadnych usuniętych dokumentów. Dokumenty, które są usuwane, zostaną przeniesione do kosza na {{ days }} dni.',
-  'documents.deleted.retention-notice': 'Wszystkie usunięte dokumenty są przechowywane w koszu przez {{ days }} dni. Po upływie tego terminu dokumenty zostaną trwale usunięte, a Ty nie będziesz mógł ich przywrócić.',
+  'documents.deleted.empty.description':
+    'Nie masz żadnych usuniętych dokumentów. Dokumenty, które są usuwane, zostaną przeniesione do kosza na {{ days }} dni.',
+  'documents.deleted.retention-notice':
+    'Wszystkie usunięte dokumenty są przechowywane w koszu przez {{ days }} dni. Po upływie tego terminu dokumenty zostaną trwale usunięte, a Ty nie będziesz mógł ich przywrócić.',
   'documents.deleted.deleted-at': 'Usunięto',
   'documents.deleted.restoring': 'Przywracanie...',
   'documents.deleted.deleting': 'Usuwanie...',
 
   'documents.preview.unknown-file-type': 'Brak podglądu dla tego typu pliku',
-  'documents.preview.binary-file': 'To wydaje się być plikiem binarnym i nie może być wyświetlane jako tekst',
+  'documents.preview.binary-file':
+    'To wydaje się być plikiem binarnym i nie może być wyświetlane jako tekst',
 
   'documents.open-with.label': 'Otwórz za pomocą',
   'documents.open-with.pdf-viewer': 'Przeglądarka PDF',
 
   'documents.pdf-viewer.loading': 'Ładowanie PDF',
-  'documents.pdf-viewer.not-a-pdf': 'Ten dokument nie jest plikiem PDF i nie może zostać otwarty w przeglądarce PDF.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Ten dokument nie jest plikiem PDF i nie może zostać otwarty w przeglądarce PDF.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Ukryj panel boczny',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Pokaż panel boczny',
@@ -508,12 +562,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Usuń wszystkie',
   'trash.delete-all.confirm.title': 'Trwale usunąć wszystkie dokumenty?',
-  'trash.delete-all.confirm.description': 'Czy na pewno chcesz trwale usunąć wszystkie dokumenty z kosza? Ta akcja nie może być cofnięta.',
+  'trash.delete-all.confirm.description':
+    'Czy na pewno chcesz trwale usunąć wszystkie dokumenty z kosza? Ta akcja nie może być cofnięta.',
   'trash.delete-all.confirm.label': 'Usuń',
   'trash.delete-all.confirm.cancel': 'Anuluj',
   'trash.delete.button': 'Usuń',
   'trash.delete.confirm.title': 'Trwale usunąć dokument?',
-  'trash.delete.confirm.description': 'Czy na pewno chcesz trwale usunąć ten dokument z kosza? Ta akcja nie może być cofnięta.',
+  'trash.delete.confirm.description':
+    'Czy na pewno chcesz trwale usunąć ten dokument z kosza? Ta akcja nie może być cofnięta.',
   'trash.delete.confirm.label': 'Usuń',
   'trash.delete.confirm.cancel': 'Anuluj',
   'trash.deleted.success.title': 'Dokument usunięty',
@@ -536,16 +592,19 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Brak tagów',
-  'tags.no-tags.description': 'Ta organizacja nie ma jeszcze tagów. Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.',
+  'tags.no-tags.description':
+    'Ta organizacja nie ma jeszcze tagów. Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.',
   'tags.no-tags.create-tag': 'Utwórz tag',
 
   'tags.title': 'Tagi dokumentów',
-  'tags.description': 'Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.',
+  'tags.description':
+    'Tagi służą do kategoryzowania dokumentów. Możesz dodać tagi do swoich dokumentów, aby ułatwić ich wyszukiwanie i organizację.',
   'tags.create': 'Utwórz tag',
   'tags.update': 'Zaktualizuj tag',
   'tags.delete': 'Usuń tag',
   'tags.delete.confirm.title': 'Usuń tag',
-  'tags.delete.confirm.message': 'Czy na pewno chcesz usunąć ten tag? Usunięcie tagu spowoduje jego usunięcie ze wszystkich dokumentów.',
+  'tags.delete.confirm.message':
+    'Czy na pewno chcesz usunąć ten tag? Usunięcie tagu spowoduje jego usunięcie ze wszystkich dokumentów.',
   'tags.delete.confirm.confirm-button': 'Usuń',
   'tags.delete.confirm.cancel-button': 'Anuluj',
   'tags.delete.success': 'Tag został pomyślnie usunięty',
@@ -584,10 +643,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'zaczyna się od',
   'tagging-rules.operator.ends-with': 'kończy się na',
   'tagging-rules.list.title': 'Reguły tagowania',
-  'tagging-rules.list.description': 'Zarządzaj regułami tagowania w swojej organizacji, aby automatycznie tagować dokumenty na podstawie zdefiniowanych przez siebie warunków.',
-  'tagging-rules.list.demo-warning': 'Uwaga: Ponieważ jest to środowisko demonstracyjne (bez serwera), reguły tagowania nie będą stosowane do nowo dodanych dokumentów.',
+  'tagging-rules.list.description':
+    'Zarządzaj regułami tagowania w swojej organizacji, aby automatycznie tagować dokumenty na podstawie zdefiniowanych przez siebie warunków.',
+  'tagging-rules.list.demo-warning':
+    'Uwaga: Ponieważ jest to środowisko demonstracyjne (bez serwera), reguły tagowania nie będą stosowane do nowo dodanych dokumentów.',
   'tagging-rules.list.no-tagging-rules.title': 'Brak reguł tagowania',
-  'tagging-rules.list.no-tagging-rules.description': 'Utwórz regułę tagowania, aby automatycznie tagować dodane dokumenty na podstawie zdefiniowanych przez siebie warunków.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Utwórz regułę tagowania, aby automatycznie tagować dodane dokumenty na podstawie zdefiniowanych przez siebie warunków.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Utwórz regułę tagowania',
   'tagging-rules.list.card.no-conditions': 'Brak warunków',
   'tagging-rules.list.card.one-condition': '1 warunek',
@@ -603,10 +665,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Proszę wprowadzić nazwę reguły',
   'tagging-rules.form.name.max-length': 'Nazwa musi mieć mniej niż 64 znaki',
   'tagging-rules.form.description.label': 'Opis',
-  'tagging-rules.form.description.placeholder': 'Przykład: Oznacz dokumenty ze słowem \'faktura\' w nazwie',
+  'tagging-rules.form.description.placeholder':
+    "Przykład: Oznacz dokumenty ze słowem 'faktura' w nazwie",
   'tagging-rules.form.description.max-length': 'Opis musi mieć mniej niż 256 znaków',
   'tagging-rules.form.conditions.label': 'Warunki',
-  'tagging-rules.form.conditions.description': 'Zdefiniuj warunki, które muszą być spełnione, aby reguła mogła zostać zastosowana. Brak warunków oznacza, że reguła zostanie zastosowana do wszystkich dokumentów',
+  'tagging-rules.form.conditions.description':
+    'Zdefiniuj warunki, które muszą być spełnione, aby reguła mogła zostać zastosowana. Brak warunków oznacza, że reguła zostanie zastosowana do wszystkich dokumentów',
   'tagging-rules.form.conditions.add-condition': 'Dodaj warunek',
   'tagging-rules.form.conditions.connector.when': 'Kiedy',
   'tagging-rules.form.conditions.connector.and': 'i',
@@ -614,13 +678,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Wszystkie warunki muszą być spełnione',
   'tagging-rules.condition-match-mode.any': 'Dowolny warunek musi być spełniony',
   'tagging-rules.form.conditions.no-conditions.title': 'Brak warunków',
-  'tagging-rules.form.conditions.no-conditions.description': 'Nie dodałeś żadnych warunków do tej reguły. Ta reguła zastosuje swoje tagi do wszystkich dokumentów.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'Nie dodałeś żadnych warunków do tej reguły. Ta reguła zastosuje swoje tagi do wszystkich dokumentów.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Zastosuj regułę bez warunków',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Anuluj',
   'tagging-rules.form.conditions.value.placeholder': 'Przykład: faktura',
   'tagging-rules.form.conditions.value.min-length': 'Proszę wprowadzić wartość dla warunku',
   'tagging-rules.form.tags.label': 'Tagi',
-  'tagging-rules.form.tags.description': 'Wybierz tagi do zastosowania do dodanych dokumentów, które spełniają warunki',
+  'tagging-rules.form.tags.description':
+    'Wybierz tagi do zastosowania do dodanych dokumentów, które spełniają warunki',
   'tagging-rules.form.tags.min-length': 'Co najmniej jeden tag do zastosowania jest wymagany',
   'tagging-rules.form.tags.add-tag': 'Utwórz tag',
   'tagging-rules.update.title': 'Zaktualizuj regułę tagowania',
@@ -629,7 +695,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Anuluj',
   'tagging-rules.apply.button': 'Zastosuj do istniejących dokumentów',
   'tagging-rules.apply.confirm.title': 'Zastosować regułę do istniejących dokumentów?',
-  'tagging-rules.apply.confirm.description': 'Sprawdzi to wszystkie istniejące dokumenty w organizacji i zastosuje tagi tam, gdzie warunki są spełnione. Przetwarzanie odbędzie się w tle.',
+  'tagging-rules.apply.confirm.description':
+    'Sprawdzi to wszystkie istniejące dokumenty w organizacji i zastosuje tagi tam, gdzie warunki są spełnione. Przetwarzanie odbędzie się w tle.',
   'tagging-rules.apply.confirm.button': 'Zastosuj regułę',
   'tagging-rules.apply.success': 'Rozpoczęto stosowanie reguły w tle',
   'tagging-rules.apply.error': 'Nie udało się rozpocząć stosowania reguły',
@@ -638,13 +705,17 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'Adresy przyjęć',
-  'intake-emails.description': 'Adresy przyjęć służą do automatycznego przyjmowania wiadomości e-mail do Papra. Wystarczy przekazać wiadomości e-mail na adres e-mail do przyjmowania, a ich załączniki zostaną dodane do dokumentów Twojej organizacji.',
+  'intake-emails.description':
+    'Adresy przyjęć służą do automatycznego przyjmowania wiadomości e-mail do Papra. Wystarczy przekazać wiadomości e-mail na adres e-mail do przyjmowania, a ich załączniki zostaną dodane do dokumentów Twojej organizacji.',
   'intake-emails.disabled.title': 'Adresy przyjęć są wyłączone',
-  'intake-emails.disabled.description': 'Adresy przyjęć są wyłączone na tej instancji. Skontaktuj się z administratorem, aby je włączyć. Zobacz {{ documentation }} w celu uzyskania dodatkowych informacji.',
+  'intake-emails.disabled.description':
+    'Adresy przyjęć są wyłączone na tej instancji. Skontaktuj się z administratorem, aby je włączyć. Zobacz {{ documentation }} w celu uzyskania dodatkowych informacji.',
   'intake-emails.disabled.documentation': 'dokumentację',
-  'intake-emails.info': 'Tylko włączone adresy przyjęć z dozwolonych źródeł będą przetwarzane. Możesz w dowolnym momencie włączyć lub wyłączyć adres e-mail do przyjęć.',
+  'intake-emails.info':
+    'Tylko włączone adresy przyjęć z dozwolonych źródeł będą przetwarzane. Możesz w dowolnym momencie włączyć lub wyłączyć adres e-mail do przyjęć.',
   'intake-emails.empty.title': 'Brak adresów przyjęć',
-  'intake-emails.empty.description': 'Wygeneruj adres przyjęć, aby łatwo przyjmować załączniki e-mail.',
+  'intake-emails.empty.description':
+    'Wygeneruj adres przyjęć, aby łatwo przyjmować załączniki e-mail.',
   'intake-emails.empty.generate': 'Wygeneruj adres e-mail do przyjęć',
   'intake-emails.count': '{{ count }} adres/ów e-mail do przyjęć dla tej organizacji',
   'intake-emails.new': 'Nowy adres e-mail do przyjęć',
@@ -656,7 +727,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Zarządzaj dozwolonymi źródłami',
   'intake-emails.actions.delete': 'Usuń',
   'intake-emails.delete.confirm.title': 'Usuąć adres e-mail do przyjęć?',
-  'intake-emails.delete.confirm.message': 'Czy na pewno chcesz usunąć ten adres e-mail do przyjęć? Ta akcja jest nieodwracalna.',
+  'intake-emails.delete.confirm.message':
+    'Czy na pewno chcesz usunąć ten adres e-mail do przyjęć? Ta akcja jest nieodwracalna.',
   'intake-emails.delete.confirm.confirm-button': 'Usuń adres przyjęć',
   'intake-emails.delete.confirm.cancel-button': 'Anuluj',
   'intake-emails.delete.success': 'Adres przyjęć usunięty',
@@ -664,11 +736,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'Adres przyjęć włączony',
   'intake-emails.update.success.disabled': 'Adres przyjęć wyłączony',
   'intake-emails.allowed-origins.title': 'Dozwolone źródła',
-  'intake-emails.allowed-origins.description': 'Tylko e-maile wysłane na {{ email }} z tych źródeł będą przetwarzane. Jeśli nie określono źródeł, wszystkie e-maile zostaną odrzucone.',
+  'intake-emails.allowed-origins.description':
+    'Tylko e-maile wysłane na {{ email }} z tych źródeł będą przetwarzane. Jeśli nie określono źródeł, wszystkie e-maile zostaną odrzucone.',
   'intake-emails.allowed-origins.add.label': 'Dodaj dozwolony adres e-mail',
   'intake-emails.allowed-origins.add.placeholder': 'Przykład: ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Dodaj',
-  'intake-emails.allowed-origins.add.error.exists': 'Ten adres e-mail jest już w dozwolonych źródłach dla tego adresu e-mail do przyjęć.',
+  'intake-emails.allowed-origins.add.error.exists':
+    'Ten adres e-mail jest już w dozwolonych źródłach dla tego adresu e-mail do przyjęć.',
 
   // API keys
 
@@ -700,7 +774,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Proszę wybrać co najmniej jedno uprawnienie',
   'api-keys.create.form.submit': 'Utwórz klucz API',
   'api-keys.create.created.title': 'Klucz API utworzony',
-  'api-keys.create.created.description': 'Klucz API został utworzony pomyślnie. Zapisz go w bezpiecznym miejscu, ponieważ nie będzie wyświetlony ponownie.',
+  'api-keys.create.created.description':
+    'Klucz API został utworzony pomyślnie. Zapisz go w bezpiecznym miejscu, ponieważ nie będzie wyświetlony ponownie.',
   'api-keys.list.title': 'Klucze API',
   'api-keys.list.description': 'Zarządzaj swoimi kluczami API tutaj.',
   'api-keys.list.create': 'Utwórz klucz API',
@@ -709,7 +784,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Utworzono',
   'api-keys.delete.success': 'Klucz API został usunięty pomyślnie',
   'api-keys.delete.confirm.title': 'Usuń klucz API',
-  'api-keys.delete.confirm.message': 'Czy na pewno chcesz usunąć ten klucz API? Ta akcja jest nieodwracalna.',
+  'api-keys.delete.confirm.message':
+    'Czy na pewno chcesz usunąć ten klucz API? Ta akcja jest nieodwracalna.',
   'api-keys.delete.confirm.confirm-button': 'Usuń',
   'api-keys.delete.confirm.cancel-button': 'Anuluj',
 
@@ -810,24 +886,35 @@ export const translations: Partial<TranslationsDictionary> = {
 
   // API errors
 
-  'api-errors.api.timeout': 'Żądanie trwało zbyt długo i przekroczyło limit czasu. Spróbuj ponownie.',
+  'api-errors.api.timeout':
+    'Żądanie trwało zbyt długo i przekroczyło limit czasu. Spróbuj ponownie.',
   'api-errors.document.already_exists': 'Dokument już istnieje',
   'api-errors.document.size_too_large': 'Plik jest zbyt duży',
   'api-errors.intake-emails.already_exists': 'Adres e-mail do przyjęć z tym adresem już istnieje.',
-  'api-errors.intake_email.limit_reached': 'Osiągnięto maksymalną liczbę adresów e-mail do przyjęć dla tej organizacji. Aby utworzyć więcej adresów e-mail do przyjęć, zaktualizuj swój plan.',
-  'api-errors.user.max_organization_count_reached': 'Osiągnięto maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.',
+  'api-errors.intake_email.limit_reached':
+    'Osiągnięto maksymalną liczbę adresów e-mail do przyjęć dla tej organizacji. Aby utworzyć więcej adresów e-mail do przyjęć, zaktualizuj swój plan.',
+  'api-errors.user.max_organization_count_reached':
+    'Osiągnięto maksymalną liczbę organizacji, które możesz utworzyć. Jeśli potrzebujesz utworzyć więcej, skontaktuj się z pomocą techniczną.',
   'api-errors.default': 'Wystąpił błąd podczas przetwarzania żądania.',
-  'api-errors.organization.invitation_already_exists': 'Zaproszenie dla tego adresu e-mail już istnieje w tej organizacji.',
+  'api-errors.organization.invitation_already_exists':
+    'Zaproszenie dla tego adresu e-mail już istnieje w tej organizacji.',
   'api-errors.user.already_in_organization': 'Ten użytkownik należy już do tej organizacji.',
-  'api-errors.user.organization_invitation_limit_reached': 'Osiągnięto maksymalną liczbę zaproszeń na dzisiaj. Spróbuj ponownie jutro.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Osiągnięto maksymalną liczbę zaproszeń na dzisiaj. Spróbuj ponownie jutro.',
   'api-errors.demo.not_available': 'Ta funkcja nie jest dostępna w wersji demo',
   'api-errors.tags.already_exists': 'Tag o tej nazwie już istnieje w tej organizacji',
-  'api-errors.tags.organization_limit_reached': 'Osiągnięto maksymalną liczbę tagów dla tej organizacji.',
-  'api-errors.internal.error': 'Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.',
-  'api-errors.auth.invalid_origin': 'Nieprawidłowa lokalizacja aplikacji. Jeśli hostujesz Papra, upewnij się, że zmienna środowiskowa APP_BASE_URL odpowiada bieżącemu adresowi URL. Aby uzyskać więcej informacji, zobacz https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'Osiągnięto maksymalną liczbę członków i oczekujących zaproszeń dla tej organizacji. Zaktualizuj swój plan, aby dodać więcej członków.',
-  'api-errors.organization.has_active_subscription': 'Nie można usunąć organizacji z aktywną subskrypcją. Proszę najpierw anulować subskrypcję za pomocą przycisku Zarządzaj subskrypcją powyżej.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'Podany adres URL jest niedozwolony. Adresy URL webhooków nie mogą wskazywać na prywatne lub zarezerwowane adresy IP.',
+  'api-errors.tags.organization_limit_reached':
+    'Osiągnięto maksymalną liczbę tagów dla tej organizacji.',
+  'api-errors.internal.error':
+    'Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.',
+  'api-errors.auth.invalid_origin':
+    'Nieprawidłowa lokalizacja aplikacji. Jeśli hostujesz Papra, upewnij się, że zmienna środowiskowa APP_BASE_URL odpowiada bieżącemu adresowi URL. Aby uzyskać więcej informacji, zobacz https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'Osiągnięto maksymalną liczbę członków i oczekujących zaproszeń dla tej organizacji. Zaktualizuj swój plan, aby dodać więcej członków.',
+  'api-errors.organization.has_active_subscription':
+    'Nie można usunąć organizacji z aktywną subskrypcją. Proszę najpierw anulować subskrypcję za pomocą przycisku Zarządzaj subskrypcją powyżej.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'Podany adres URL jest niedozwolony. Adresy URL webhooków nie mogą wskazywać na prywatne lub zarezerwowane adresy IP.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Nie znaleziono użytkownika',
   'api-errors.FAILED_TO_CREATE_USER': 'Nie udało się utworzyć użytkownika',
@@ -836,7 +923,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.FAILED_TO_GET_SESSION': 'Nie udało się pobrać sesji',
   'api-errors.INVALID_PASSWORD': 'Nieprawidłowe hasło',
   'api-errors.INVALID_EMAIL': 'Nieprawidłowy email',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Email lub hasło jest nieprawidłowe, lub konto nie istnieje.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'Email lub hasło jest nieprawidłowe, lub konto nie istnieje.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Konto społecznościowe już połączone',
   'api-errors.PROVIDER_NOT_FOUND': 'Nie znaleziono dostawcy',
   'api-errors.INVALID_TOKEN': 'Nieprawidłowy token',
@@ -857,21 +945,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.OTP_NOT_ENABLED': 'Uwierzytelnianie dwuskładnikowe nie jest włączone dla tego konta',
   'api-errors.OTP_HAS_EXPIRED': 'Kod uwierzytelniania dwuskładnikowego wygasł',
   'api-errors.TOTP_NOT_ENABLED': 'TOTP nie jest włączone dla tego konta',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Uwierzytelnianie dwuskładnikowe nie jest włączone dla tego konta',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'Uwierzytelnianie dwuskładnikowe nie jest włączone dla tego konta',
   'api-errors.BACKUP_CODES_NOT_ENABLED': 'Kody zapasowe nie są włączone dla tego konta',
   'api-errors.INVALID_BACKUP_CODE': 'Podany kod zapasowy jest nieprawidłowy lub został już użyty',
   'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Zbyt wiele prób. Poproś o nowy kod.',
-  'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Nieprawidłowy plik cookie uwierzytelniania dwuskładnikowego',
+  'api-errors.INVALID_TWO_FACTOR_COOKIE':
+    'Nieprawidłowy plik cookie uwierzytelniania dwuskładnikowego',
 
   // Not found
 
   'not-found.title': '404 - Nie znaleziono',
-  'not-found.description': 'Przepraszamy, strona, której szukasz wydaje się nie istnieć. Sprawdź URL i spróbuj ponownie.',
+  'not-found.description':
+    'Przepraszamy, strona, której szukasz wydaje się nie istnieć. Sprawdź URL i spróbuj ponownie.',
 
   // Demo
 
-  'demo.popup.description': 'To jest środowisko demonstracyjne, wszystkie dane są zapisywane w lokalnej pamięci przeglądarki.',
-  'demo.popup.discord': 'Dołącz do {{ discordLink }}, aby uzyskać wsparcie, zaproponować funkcje lub po prostu porozmawiać.',
+  'demo.popup.description':
+    'To jest środowisko demonstracyjne, wszystkie dane są zapisywane w lokalnej pamięci przeglądarki.',
+  'demo.popup.discord':
+    'Dołącz do {{ discordLink }}, aby uzyskać wsparcie, zaproponować funkcje lub po prostu porozmawiać.',
   'demo.popup.discord-link-label': 'Serwer Discord',
   'demo.popup.reset': 'Zresetuj dane demonstracyjne',
   'demo.popup.hide': 'Ukryj',
@@ -889,26 +982,32 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Płatność zakończona sukcesem!',
   'subscriptions.checkout-success.description': 'Twoja subskrypcja została pomyślnie aktywowana.',
-  'subscriptions.checkout-success.thank-you': 'Dziękujemy za przejście na Papra Plus. Teraz masz dostęp do wszystkich funkcji premium.',
+  'subscriptions.checkout-success.thank-you':
+    'Dziękujemy za przejście na Papra Plus. Teraz masz dostęp do wszystkich funkcji premium.',
   'subscriptions.checkout-success.go-to-organizations': 'Przejdź do Organizacji',
-  'subscriptions.checkout-success.redirecting': 'Przekierowanie za {{ count }} sekund{{ plural }}...',
+  'subscriptions.checkout-success.redirecting':
+    'Przekierowanie za {{ count }} sekund{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Płatność anulowana',
   'subscriptions.checkout-cancel.description': 'Twoja aktualizacja subskrypcji została anulowana.',
-  'subscriptions.checkout-cancel.no-charges': 'Nie pobrano żadnych opłat z Twojego konta. Możesz spróbować ponownie w dowolnym momencie.',
+  'subscriptions.checkout-cancel.no-charges':
+    'Nie pobrano żadnych opłat z Twojego konta. Możesz spróbować ponownie w dowolnym momencie.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Powrót do Organizacji',
   'subscriptions.checkout-cancel.need-help': 'Potrzebujesz pomocy?',
   'subscriptions.checkout-cancel.contact-support': 'Skontaktuj się z pomocą techniczną',
 
   'subscriptions.upgrade-dialog.title': 'Ulepsz tę organizację',
-  'subscriptions.upgrade-dialog.description': 'Odblokuj zaawansowane funkcje dla swojej organizacji',
+  'subscriptions.upgrade-dialog.description':
+    'Odblokuj zaawansowane funkcje dla swojej organizacji',
   'subscriptions.upgrade-dialog.contact-us': 'Skontaktuj się z nami',
-  'subscriptions.upgrade-dialog.enterprise-plans': 'jeśli potrzebujesz niestandardowych planów biznesowych.',
+  'subscriptions.upgrade-dialog.enterprise-plans':
+    'jeśli potrzebujesz niestandardowych planów biznesowych.',
   'subscriptions.upgrade-dialog.per-month': '/miesiąc',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} rozliczane rocznie',
   'subscriptions.upgrade-dialog.upgrade-now': 'Ulepsz teraz',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Oferta ograniczona czasowo',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Uzyskaj {{ percent }}% zniżki na organizację na wszystkie plany na zawsze jako early adopter! Oferta wygasa za {{ days, >1:{days} dni, =1:1 dzień, mniej niż 1 dzień }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Uzyskaj {{ percent }}% zniżki na organizację na wszystkie plany na zawsze jako early adopter! Oferta wygasa za {{ days, >1:{days} dni, =1:1 dzień, mniej niż 1 dzień }}.',
 
   'subscriptions.plan.free.name': 'Plan darmowy',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1028,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Miesięcznie',
   'subscriptions.billing-interval.annual': 'Rocznie',
 
-  'subscriptions.usage-warning.message': 'Wykorzystano {{ percent }}% miejsca na dokumenty. Rozważ aktualizację planu, aby uzyskać więcej miejsca.',
+  'subscriptions.usage-warning.message':
+    'Wykorzystano {{ percent }}% miejsca na dokumenty. Rozważ aktualizację planu, aby uzyskać więcej miejsca.',
   'subscriptions.usage-warning.upgrade-button': 'Ulepsz plan',
 
   // Admin
@@ -960,7 +1060,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': 'Członkowie',
   'admin.organizations.table.created': 'Utworzono',
   'admin.organizations.table.updated': 'Zaktualizowano',
-  'admin.organizations.pagination.info': 'Wyświetlanie od {{ start }} do {{ end }} z {{ total }} {{ total, =1:organizacji, organizacji }}',
+  'admin.organizations.pagination.info':
+    'Wyświetlanie od {{ start }} do {{ end }} z {{ total }} {{ total, =1:organizacji, organizacji }}',
   'admin.organizations.pagination.page-info': 'Strona {{ current }} z {{ total }}',
 
   'admin.organization-detail.title': 'Szczegóły organizacji',
@@ -1017,7 +1118,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Niezweryfikowany',
   'admin.users.table.orgs': 'Org',
   'admin.users.table.created': 'Utworzono',
-  'admin.users.pagination.info': 'Wyświetlanie od {{ start }} do {{ end }} z {{ total }} {{ total, =1:użytkownika, użytkowników }}',
+  'admin.users.pagination.info':
+    'Wyświetlanie od {{ start }} do {{ end }} z {{ total }} {{ total, =1:użytkownika, użytkowników }}',
   'admin.users.pagination.page-info': 'Strona {{ current }} z {{ total }}',
 
   'admin.user-detail.back': 'Powrót do użytkowników',
@@ -1059,7 +1161,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Wersja',
   'about.git-commit': 'Commit Git',
   'about.commit-date': 'Data Commita',
-  'about.description': 'Papra to otwartoźródłowy system zarządzania dokumentami, który pomaga archiwizować, organizować, tagować i zarządzać dokumentami z łatwością.',
+  'about.description':
+    'Papra to otwartoźródłowy system zarządzania dokumentami, który pomaga archiwizować, organizować, tagować i zarządzać dokumentami z łatwością.',
   'about.links.title': 'Linki',
   'about.links.documentation': 'Dokumentacja',
   'about.links.documentation-description': 'Przewodniki użytkownika i dokumentacja API',

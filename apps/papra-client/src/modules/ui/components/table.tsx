@@ -7,10 +7,7 @@ export function Table(props: ComponentProps<'table'>) {
 
   return (
     <div class="w-full overflow-auto">
-      <table
-        class={cn('w-full caption-bottom text-sm text-nowrap', local.class)}
-        {...rest}
-      />
+      <table class={cn('w-full caption-bottom text-sm text-nowrap', local.class)} {...rest} />
     </div>
   );
 }
@@ -24,19 +21,14 @@ export function TableHeader(props: ComponentProps<'thead'>) {
 export function TableBody(props: ComponentProps<'tbody'>) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <tbody class={cn('[&_tr:last-child]:border-0', local.class)} {...rest} />
-  );
+  return <tbody class={cn('[&_tr:last-child]:border-0', local.class)} {...rest} />;
 }
 
 export function TableFooter(props: ComponentProps<'tfoot'>) {
   const [local, rest] = splitProps(props, ['class']);
 
   return (
-    <tbody
-      class={cn('bg-primary font-medium text-primary-foreground', local.class)}
-      {...rest}
-    />
+    <tbody class={cn('bg-primary font-medium text-primary-foreground', local.class)} {...rest} />
   );
 }
 
@@ -45,10 +37,7 @@ export function TableRow(props: ComponentProps<'tr'>) {
 
   return (
     <tr
-      class={cn(
-        'border-b transition-colors data-[state=selected]:bg-muted/30',
-        local.class,
-      )}
+      class={cn('border-b transition-colors data-[state=selected]:bg-muted/30', local.class)}
       {...rest}
     />
   );
@@ -85,10 +74,5 @@ export function TableCell(props: ComponentProps<'td'>) {
 export function TableCaption(props: ComponentProps<'caption'>) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <caption
-      class={cn('mt-4 text-sm text-muted-foreground', local.class)}
-      {...rest}
-    />
-  );
+  return <caption class={cn('mt-4 text-sm text-muted-foreground', local.class)} {...rest} />;
 }

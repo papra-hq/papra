@@ -10,15 +10,17 @@ import { rollbackLastAppliedMigration, runMigrations } from './migrations.usecas
 describe('migrations registry', () => {
   describe('migrations', () => {
     test('each migration should have a unique name', () => {
-      const migrationNames = migrations.map(m => m.name);
-      const duplicateMigrationNames = migrationNames.filter(name => migrationNames.filter(n => n === name).length > 1);
+      const migrationNames = migrations.map((m) => m.name);
+      const duplicateMigrationNames = migrationNames.filter(
+        (name) => migrationNames.filter((n) => n === name).length > 1,
+      );
 
       expect(duplicateMigrationNames).to.eql([], 'Each migration should have a unique name');
     });
 
     test('each migration should have a non empty name', () => {
-      const migrationNames = migrations.map(m => m.name);
-      const emptyMigrationNames = migrationNames.filter(name => name === '');
+      const migrationNames = migrations.map((m) => m.name);
+      const emptyMigrationNames = migrationNames.filter((name) => name === '');
 
       expect(emptyMigrationNames).to.eql([], 'Each migration should have a non empty name');
     });
@@ -50,7 +52,7 @@ describe('migrations registry', () => {
 
       for (const [index, migrationCombination] of migrationCombinations.entries()) {
         const { db } = setupDatabase({ url: ':memory:' });
-        const previousMigration = migrationCombinations[index - 1] ?? [] as Migration[];
+        const previousMigration = migrationCombinations[index - 1] ?? ([] as Migration[]);
 
         await runMigrations({ db, migrations: previousMigration, logger: createNoopLogger() });
         const previousDbState = await serializeSchema({ db });
@@ -59,7 +61,10 @@ describe('migrations registry', () => {
 
         const currentDbState = await serializeSchema({ db });
 
-        expect(currentDbState).to.eql(previousDbState, `Downgrading from ${migrationCombination.at(-1)?.name ?? 'no migration'} should result in the same state as the previous migration`);
+        expect(currentDbState).to.eql(
+          previousDbState,
+          `Downgrading from ${migrationCombination.at(-1)?.name ?? 'no migration'} should result in the same state as the previous migration`,
+        );
       }
     });
 

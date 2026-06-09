@@ -18,8 +18,5 @@ export function createSearchUserWhereClause({ search }: { search?: string }) {
   const escapedSearch = escapeLikeWildcards(trimmedSearch);
   const likeSearch = `%${escapedSearch}%`;
 
-  return or(
-    like(usersTable.email, likeSearch),
-    like(usersTable.name, likeSearch),
-  );
+  return or(like(usersTable.email, likeSearch), like(usersTable.name, likeSearch));
 }

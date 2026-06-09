@@ -13,7 +13,11 @@ import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { DocumentsPaginatedList } from '../components/documents-list.component';
 import { useRestoreDocument } from '../documents.composables';
-import { deleteAllTrashDocuments, deleteTrashDocument, fetchOrganizationDeletedDocuments } from '../documents.services';
+import {
+  deleteAllTrashDocuments,
+  deleteTrashDocument,
+  fetchOrganizationDeletedDocuments,
+} from '../documents.services';
 
 const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
   const { getIsRestoring, restore } = useRestoreDocument();
@@ -26,28 +30,36 @@ const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
       onClick={() => restore({ document: props.document })}
       isLoading={getIsRestoring()}
     >
-      { getIsRestoring()
-        ? (<>{t('documents.deleted.restoring')}</>)
-        : (
-            <>
-              <div class="i-tabler-refresh size-4 mr-2" />
-              {t('documents.actions.restore')}
-            </>
-          )}
+      {getIsRestoring() ? (
+        <>{t('documents.deleted.restoring')}</>
+      ) : (
+        <>
+          <div class="i-tabler-refresh size-4 mr-2" />
+          {t('documents.actions.restore')}
+        </>
+      )}
     </Button>
   );
 };
 
-const PermanentlyDeleteTrashDocumentButton: Component<{ document: Document; organizationId: string }> = (props) => {
+const PermanentlyDeleteTrashDocumentButton: Component<{
+  document: Document;
+  organizationId: string;
+}> = (props) => {
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
 
   const deleteMutation = useMutation(() => ({
     mutationFn: async () => {
-      await deleteTrashDocument({ documentId: props.document.id, organizationId: props.organizationId });
+      await deleteTrashDocument({
+        documentId: props.document.id,
+        organizationId: props.organizationId,
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'documents', 'deleted'] });
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'documents', 'deleted'],
+      });
 
       createToast({
         message: t('trash.deleted.success.title'),
@@ -57,17 +69,19 @@ const PermanentlyDeleteTrashDocumentButton: Component<{ document: Document; orga
   }));
 
   const handleClick = async () => {
-    if (!await confirm({
-      title: t('trash.delete.confirm.title'),
-      message: t('trash.delete.confirm.description'),
-      confirmButton: {
-        text: t('trash.delete.confirm.label'),
-        variant: 'destructive',
-      },
-      cancelButton: {
-        text: t('trash.delete.confirm.cancel'),
-      },
-    })) {
+    if (
+      !(await confirm({
+        title: t('trash.delete.confirm.title'),
+        message: t('trash.delete.confirm.description'),
+        confirmButton: {
+          text: t('trash.delete.confirm.label'),
+          variant: 'destructive',
+        },
+        cancelButton: {
+          text: t('trash.delete.confirm.cancel'),
+        },
+      }))
+    ) {
       return;
     }
 
@@ -82,14 +96,14 @@ const PermanentlyDeleteTrashDocumentButton: Component<{ document: Document; orga
       isLoading={deleteMutation.isPending}
       class="text-red-500 hover:text-red-600"
     >
-      {deleteMutation.isPending
-        ? (<>{t('documents.deleted.deleting')}</>)
-        : (
-            <>
-              <div class="i-tabler-trash size-4 mr-2" />
-              {t('trash.delete.button')}
-            </>
-          )}
+      {deleteMutation.isPending ? (
+        <>{t('documents.deleted.deleting')}</>
+      ) : (
+        <>
+          <div class="i-tabler-trash size-4 mr-2" />
+          {t('trash.delete.button')}
+        </>
+      )}
     </Button>
   );
 };
@@ -103,22 +117,26 @@ const DeleteAllTrashDocumentsButton: Component<{ organizationId: string }> = (pr
       await deleteAllTrashDocuments({ organizationId: props.organizationId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations', props.organizationId, 'documents', 'deleted'] });
+      queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'documents', 'deleted'],
+      });
     },
   }));
 
   const handleClick = async () => {
-    if (!await confirm({
-      title: t('trash.delete-all.confirm.title'),
-      message: t('trash.delete-all.confirm.description'),
-      confirmButton: {
-        text: t('trash.delete-all.confirm.label'),
-        variant: 'destructive',
-      },
-      cancelButton: {
-        text: t('trash.delete-all.confirm.cancel'),
-      },
-    })) {
+    if (
+      !(await confirm({
+        title: t('trash.delete-all.confirm.title'),
+        message: t('trash.delete-all.confirm.description'),
+        confirmButton: {
+          text: t('trash.delete-all.confirm.label'),
+          variant: 'destructive',
+        },
+        cancelButton: {
+          text: t('trash.delete-all.confirm.cancel'),
+        },
+      }))
+    ) {
       return;
     }
 
@@ -133,14 +151,14 @@ const DeleteAllTrashDocumentsButton: Component<{ organizationId: string }> = (pr
       isLoading={deleteAllMutation.isPending}
       class="text-red-500 hover:text-red-600"
     >
-      {deleteAllMutation.isPending
-        ? (<>{t('documents.deleted.deleting')}</>)
-        : (
-            <>
-              <div class="i-tabler-trash size-4 mr-2" />
-              {t('trash.delete-all.button')}
-            </>
-          )}
+      {deleteAllMutation.isPending ? (
+        <>{t('documents.deleted.deleting')}</>
+      ) : (
+        <>
+          <div class="i-tabler-trash size-4 mr-2" />
+          {t('trash.delete-all.button')}
+        </>
+      )}
     </Button>
   );
 };
@@ -153,10 +171,11 @@ export const DeletedDocumentsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'deleted', getPagination()],
-    queryFn: () => fetchOrganizationDeletedDocuments({
-      organizationId: params.organizationId,
-      ...getPagination(),
-    }),
+    queryFn: () =>
+      fetchOrganizationDeletedDocuments({
+        organizationId: params.organizationId,
+        ...getPagination(),
+      }),
     placeholderData: keepPreviousData,
   }));
 
@@ -167,7 +186,9 @@ export const DeletedDocumentsPage: Component = () => {
       <Alert variant="muted" class="my-4 flex items-center gap-6 xl:gap-4">
         <div class="i-tabler-info-circle size-10 xl:size-8 text-primary flex-shrink-0 hidden sm:block" />
         <AlertDescription>
-          {t('documents.deleted.retention-notice', { days: config.documents.deletedDocumentsRetentionDays })}
+          {t('documents.deleted.retention-notice', {
+            days: config.documents.deletedDocumentsRetentionDays,
+          })}
         </AlertDescription>
       </Alert>
 
@@ -177,7 +198,9 @@ export const DeletedDocumentsPage: Component = () => {
             <div class="i-tabler-trash text-primary size-12" aria-hidden="true" />
             <div class="text-xl font-medium">{t('documents.deleted.empty.title')}</div>
             <div class="text-sm text-muted-foreground">
-              {t('documents.deleted.empty.description', { days: config.documents.deletedDocumentsRetentionDays })}
+              {t('documents.deleted.empty.description', {
+                days: config.documents.deletedDocumentsRetentionDays,
+              })}
             </div>
           </div>
         </Show>
@@ -195,20 +218,25 @@ export const DeletedDocumentsPage: Component = () => {
             extraColumns={[
               {
                 id: 'deletion',
-                cell: data => (
+                cell: (data) => (
                   <div class="text-muted-foreground hidden sm:block">
-                    {t('documents.deleted.deleted-at')}
-                    {' '}
-                    <RelativeTime class="text-foreground font-bold" date={data.row.original.deletedAt!} />
+                    {t('documents.deleted.deleted-at')}{' '}
+                    <RelativeTime
+                      class="text-foreground font-bold"
+                      date={data.row.original.deletedAt!}
+                    />
                   </div>
                 ),
               },
               {
                 id: 'actions',
-                cell: data => (
+                cell: (data) => (
                   <div class="flex items-center justify-end gap-2">
                     <RestoreDocumentButton document={data.row.original} />
-                    <PermanentlyDeleteTrashDocumentButton document={data.row.original} organizationId={params.organizationId} />
+                    <PermanentlyDeleteTrashDocumentButton
+                      document={data.row.original}
+                      organizationId={params.organizationId}
+                    />
                   </div>
                 ),
               },

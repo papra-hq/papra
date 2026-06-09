@@ -8,9 +8,8 @@ export const GET: APIRoute = async ({ site }) => {
   const sections = sidebar.map((section) => {
     return {
       label: section.label,
-      items: section
-        .items
-        .filter(item => item.slug !== undefined || (item.link && !item.link.startsWith('http')))
+      items: section.items
+        .filter((item) => item.slug !== undefined || (item.link && !item.link.startsWith('http')))
         .map((item) => {
           const slug = item.slug ?? item.link?.replace(/^\//, '');
 
@@ -18,7 +17,8 @@ export const GET: APIRoute = async ({ site }) => {
             label: item.label,
             slug,
             url: new URL(slug, site).toString(),
-            description: docs.find(doc => (doc.id === slug || (slug === '' && doc.id === 'index')))?.data.description,
+            description: docs.find((doc) => doc.id === slug || (slug === '' && doc.id === 'index'))
+              ?.data.description,
           };
         }),
     };

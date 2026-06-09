@@ -20,7 +20,10 @@ async function resolvePlainDocumentIdsBatchTargetFilter({
   documentsRepository: DocumentsRepository;
   organizationId: string;
 }): Promise<{ documentIds: string[] }> {
-  const allDocumentsExistInOrganization = await documentsRepository.areAllDocumentsInOrganization({ documentIds, organizationId });
+  const allDocumentsExistInOrganization = await documentsRepository.areAllDocumentsInOrganization({
+    documentIds,
+    organizationId,
+  });
 
   if (!allDocumentsExistInOrganization) {
     throw createDocumentIdsNotFromOrganizationError();
@@ -44,16 +47,27 @@ export async function resolveBatchTargetDocumentIds({
 }): Promise<{ documentIds: string[] }> {
   const startTime = Date.now();
 
-  const { documentIds } = 'documentIds' in filter
-    ? await resolvePlainDocumentIdsBatchTargetFilter({ documentIds: filter.documentIds, documentsRepository, organizationId })
-    : await documentSearchServices.getDocumentIdsMatchingQuery({ organizationId, searchQuery: filter.query });
+  const { documentIds } =
+    'documentIds' in filter
+      ? await resolvePlainDocumentIdsBatchTargetFilter({
+          documentIds: filter.documentIds,
+          documentsRepository,
+          organizationId,
+        })
+      : await documentSearchServices.getDocumentIdsMatchingQuery({
+          organizationId,
+          searchQuery: filter.query,
+        });
 
-  logger.info({
-    organizationId,
-    filterKind: 'documentIds' in filter ? 'documentIds' : 'query',
-    resolvedCount: documentIds.length,
-    durationMs: Date.now() - startTime,
-  }, 'Resolved batch target document ids');
+  logger.info(
+    {
+      organizationId,
+      filterKind: 'documentIds' in filter ? 'documentIds' : 'query',
+      resolvedCount: documentIds.length,
+      durationMs: Date.now() - startTime,
+    },
+    'Resolved batch target document ids',
+  );
 
   return { documentIds };
 }
@@ -77,7 +91,13 @@ export async function trashDocumentsBatch({
 }) {
   const startTime = Date.now();
 
-  const { documentIds } = await resolveBatchTargetDocumentIds({ filter, organizationId, documentSearchServices, documentsRepository, logger });
+  const { documentIds } = await resolveBatchTargetDocumentIds({
+    filter,
+    organizationId,
+    documentSearchServices,
+    documentsRepository,
+    logger,
+  });
 
   const { trashedDocumentIds } = await documentsRepository.softDeleteDocuments({
     documentIds,
@@ -92,14 +112,17 @@ export async function trashDocumentsBatch({
     });
   }
 
-  logger.info({
-    organizationId,
-    userId,
-    resolvedCount: documentIds.length,
-    trashedCount: trashedDocumentIds.length,
-    skippedCount: documentIds.length - trashedDocumentIds.length,
-    durationMs: Date.now() - startTime,
-  }, 'Executed batch document trash');
+  logger.info(
+    {
+      organizationId,
+      userId,
+      resolvedCount: documentIds.length,
+      trashedCount: trashedDocumentIds.length,
+      skippedCount: documentIds.length - trashedDocumentIds.length,
+      durationMs: Date.now() - startTime,
+    },
+    'Executed batch document trash',
+  );
 
   return {
     trashedDocumentIds,
@@ -139,17 +162,26 @@ export async function tagDocumentsBatch({
     throw createTagNotFoundError();
   }
 
-  const tagsById = new Map(tags.map(tag => [tag.id, tag]));
+  const tagsById = new Map(tags.map((tag) => [tag.id, tag]));
 
-  const { documentIds } = await resolveBatchTargetDocumentIds({ filter, organizationId, documentSearchServices, documentsRepository, logger });
+  const { documentIds } = await resolveBatchTargetDocumentIds({
+    filter,
+    organizationId,
+    documentSearchServices,
+    documentsRepository,
+    logger,
+  });
 
   if (documentIds.length === 0) {
-    logger.info({
-      organizationId,
-      userId,
-      addTagCount: addTagIds.length,
-      removeTagCount: removeTagIds.length,
-    }, 'Executed batch document tag (no target documents)');
+    logger.info(
+      {
+        organizationId,
+        userId,
+        addTagCount: addTagIds.length,
+        removeTagCount: removeTagIds.length,
+      },
+      'Executed batch document tag (no target documents)',
+    );
     return { taggedCount: 0, untaggedCount: 0, insertedPairs: [], removedPairs: [] };
   }
 
@@ -186,21 +218,34 @@ export async function tagDocumentsBatch({
 
   await registerDocumentsActivityLog({
     activities: [
-      ...insertedPairs.map(({ documentId, tagId }) => ({ documentId, event: 'tagged' as const, userId, tagId })),
-      ...removedPairs.map(({ documentId, tagId }) => ({ documentId, event: 'untagged' as const, userId, tagId })),
+      ...insertedPairs.map(({ documentId, tagId }) => ({
+        documentId,
+        event: 'tagged' as const,
+        userId,
+        tagId,
+      })),
+      ...removedPairs.map(({ documentId, tagId }) => ({
+        documentId,
+        event: 'untagged' as const,
+        userId,
+        tagId,
+      })),
     ],
     documentActivityRepository,
   });
 
-  logger.info({
-    organizationId,
-    userId,
-    resolvedCount: documentIds.length,
-    addTagCount: addTagIds.length,
-    removeTagCount: removeTagIds.length,
-    taggedCount: insertedPairs.length,
-    untaggedCount: removedPairs.length,
-  }, 'Executed batch document tag');
+  logger.info(
+    {
+      organizationId,
+      userId,
+      resolvedCount: documentIds.length,
+      addTagCount: addTagIds.length,
+      removeTagCount: removeTagIds.length,
+      taggedCount: insertedPairs.length,
+      untaggedCount: removedPairs.length,
+    },
+    'Executed batch document tag',
+  );
 
   return {
     taggedCount: insertedPairs.length,

@@ -4,16 +4,14 @@ import { defineTextExtractor } from '../extractors.models';
 
 export const pptxExtractorDefinition = defineTextExtractor({
   name: 'pptx',
-  mimeTypes: [
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  ],
+  mimeTypes: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
   extract: async ({ arrayBuffer }) => {
     // PPTX files are ZIP archives containing XML files
     const zip = await JSZip.loadAsync(arrayBuffer);
 
     // Find all slide files
     const slideFiles = Object.keys(zip.files)
-      .filter(name => name.match(/^ppt\/slides\/slide\d+\.xml$/))
+      .filter((name) => name.match(/^ppt\/slides\/slide\d+\.xml$/))
       .sort((a, b) => {
         const numA = Number.parseInt(a.match(/slide(\d+)\.xml$/)?.[1] || '0', 10);
         const numB = Number.parseInt(b.match(/slide(\d+)\.xml$/)?.[1] || '0', 10);

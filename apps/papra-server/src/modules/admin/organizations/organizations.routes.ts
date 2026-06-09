@@ -64,15 +64,19 @@ function registerGetOrganizationBasicInfoRoute({ app, db }: RouteDefinitionConte
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const organizationsRepository = createOrganizationsRepository({ db });
 
       const { organizationId } = context.req.valid('param');
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();
@@ -92,15 +96,19 @@ function registerGetOrganizationMembersRoute({ app, db }: RouteDefinitionContext
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const organizationsRepository = createOrganizationsRepository({ db });
 
       const { organizationId } = context.req.valid('param');
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();
@@ -122,22 +130,28 @@ function registerGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionCo
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const organizationsRepository = createOrganizationsRepository({ db });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
 
       const { organizationId } = context.req.valid('param');
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();
       }
 
-      const { intakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({ organizationId });
+      const { intakeEmails } = await intakeEmailsRepository.getOrganizationIntakeEmails({
+        organizationId,
+      });
 
       return context.json({ intakeEmails });
     },
@@ -153,16 +167,20 @@ function registerGetOrganizationWebhooksRoute({ app, db }: RouteDefinitionContex
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const organizationsRepository = createOrganizationsRepository({ db });
       const webhookRepository = createWebhookRepository({ db });
 
       const { organizationId } = context.req.valid('param');
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();
@@ -184,16 +202,20 @@ function registerGetOrganizationStatsRoute({ app, db }: RouteDefinitionContext) 
     requirePermissions({
       requiredPermissions: [PERMISSIONS.VIEW_USERS],
     }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { createDocumentsRepository } = await import('../../documents/documents.repository');
       const organizationsRepository = createOrganizationsRepository({ db });
 
       const { organizationId } = context.req.valid('param');
 
-      const { organization } = await organizationsRepository.getOrganizationById({ organizationId });
+      const { organization } = await organizationsRepository.getOrganizationById({
+        organizationId,
+      });
 
       if (!organization) {
         throw createOrganizationNotFoundError();

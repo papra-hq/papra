@@ -76,13 +76,22 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
     }
 
     // If there's no current org set, or the current org doesn't exist anymore, set to first org
-    if (currentOrganizationId == null || !organizations.some(org => org.id === currentOrganizationId)) {
+    if (
+      currentOrganizationId == null ||
+      !organizations.some((org) => org.id === currentOrganizationId)
+    ) {
       const firstOrg = organizations[0];
       if (firstOrg) {
         void setCurrentOrganizationId(firstOrg.id);
       }
     }
-  }, [isInitialized, organizationsQuery.isLoading, organizationsQuery.data, currentOrganizationId, router]);
+  }, [
+    isInitialized,
+    organizationsQuery.isLoading,
+    organizationsQuery.data,
+    currentOrganizationId,
+    router,
+  ]);
 
   const refetch = async () => {
     await queryClient.invalidateQueries({ queryKey: ['organizations'] });
@@ -96,11 +105,7 @@ export function OrganizationsProvider({ children }: OrganizationsProviderProps) 
     refetch,
   };
 
-  return (
-    <OrganizationsContext.Provider value={value}>
-      {children}
-    </OrganizationsContext.Provider>
-  );
+  return <OrganizationsContext.Provider value={value}>{children}</OrganizationsContext.Provider>;
 }
 
 export function useOrganizations(): OrganizationsContextValue {

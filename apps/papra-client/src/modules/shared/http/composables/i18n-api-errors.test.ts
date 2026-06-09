@@ -12,7 +12,7 @@ function t(key: string) {
   };
 
   return translations[key] ?? '';
-};
+}
 
 describe('useI18nApiErrors', () => {
   describe('getErrorMessage', () => {

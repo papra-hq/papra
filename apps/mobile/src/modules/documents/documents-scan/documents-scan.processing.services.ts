@@ -8,7 +8,15 @@ import { fileToBase64DataUrl } from '@/modules/lib/file/file.services';
 import { getExtension } from '@/modules/lib/path/path.models';
 import { SCANS_DIRECTORY_PATH } from './documents-scan.constants';
 
-export async function processScannedImages({ imageUris, format, baseName }: { imageUris: string[]; format: ScanOutputFormat; baseName: string }): Promise<{ localDocuments: LocalDocument[] }> {
+export async function processScannedImages({
+  imageUris,
+  format,
+  baseName,
+}: {
+  imageUris: string[];
+  format: ScanOutputFormat;
+  baseName: string;
+}): Promise<{ localDocuments: LocalDocument[] }> {
   if (format === 'pdf-merged') {
     const { pdfUri } = await convertImagesToPdf({ imageUris });
     const fileName = `${baseName}.pdf`;
@@ -75,7 +83,13 @@ async function ensureScansDirectory(): Promise<void> {
   }
 }
 
-export async function moveToPermanentScanStorage({ fileUri, fileName }: { fileUri: string; fileName: string }): Promise<{ permanentUri: string }> {
+export async function moveToPermanentScanStorage({
+  fileUri,
+  fileName,
+}: {
+  fileUri: string;
+  fileName: string;
+}): Promise<{ permanentUri: string }> {
   await ensureScansDirectory();
 
   const permanentUri = joinUrlPaths(SCANS_DIRECTORY_PATH, fileName);
@@ -88,8 +102,14 @@ export async function moveToPermanentScanStorage({ fileUri, fileName }: { fileUr
   return { permanentUri };
 }
 
-export async function convertImagesToPdf({ imageUris }: { imageUris: string[] }): Promise<{ pdfUri: string }> {
-  const imagesDataUrls = await Promise.all(imageUris.map(async imageUri => fileToBase64DataUrl({ fileUri: imageUri })));
+export async function convertImagesToPdf({
+  imageUris,
+}: {
+  imageUris: string[];
+}): Promise<{ pdfUri: string }> {
+  const imagesDataUrls = await Promise.all(
+    imageUris.map(async (imageUri) => fileToBase64DataUrl({ fileUri: imageUri })),
+  );
 
   const html = `
     <!DOCTYPE html>
@@ -123,9 +143,7 @@ export async function convertImagesToPdf({ imageUris }: { imageUris: string[] })
         </style>
       </head>
       <body>
-        ${imagesDataUrls
-          .map(imageDataUrl => `<div class="page"><img src="${imageDataUrl}" /></div>`)
-          .join('')}
+        ${imagesDataUrls.map((imageDataUrl) => `<div class="page"><img src="${imageDataUrl}" /></div>`).join('')}
       </body>
     </html>
   `;

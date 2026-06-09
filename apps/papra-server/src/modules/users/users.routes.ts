@@ -14,53 +14,38 @@ export function registerUsersRoutes(context: RouteDefinitionContext) {
 }
 
 function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/users/me',
-    requireAuthentication(),
-    async (context) => {
-      const { userId } = getUser({ context });
+  app.get('/api/users/me', requireAuthentication(), async (context) => {
+    const { userId } = getUser({ context });
 
-      const usersRepository = createUsersRepository({ db });
-      const rolesRepository = createRolesRepository({ db });
+    const usersRepository = createUsersRepository({ db });
+    const rolesRepository = createRolesRepository({ db });
 
-      const [
-        { user },
-        { roles },
-      ] = await Promise.all([
-        usersRepository.getUserByIdOrThrow({ userId }),
-        rolesRepository.getUserRoles({ userId }),
-      ]);
+    const [{ user }, { roles }] = await Promise.all([
+      usersRepository.getUserByIdOrThrow({ userId }),
+      rolesRepository.getUserRoles({ userId }),
+    ]);
 
-      const { permissions } = getPermissionsForRoles({ roles });
+    const { permissions } = getPermissionsForRoles({ roles });
 
-      return context.json({
-        user: {
-          ...pick(
-            user,
-            [
-              'id',
-              'email',
-              'name',
-              'createdAt',
-              'updatedAt',
-              'twoFactorEnabled',
-            ],
-          ),
+    return context.json({
+      user: {
+        ...pick(user, ['id', 'email', 'name', 'createdAt', 'updatedAt', 'twoFactorEnabled']),
 
-          permissions,
-        },
-      });
-    },
-  );
+        permissions,
+      },
+    });
+  });
 }
 
 function setupUpdateUserRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/users/me',
     requireAuthentication(),
-    validateJsonBody(v.strictObject({
-      name: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(50)),
-    })),
+    validateJsonBody(
+      v.strictObject({
+        name: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(50)),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 

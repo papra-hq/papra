@@ -1,40 +1,38 @@
 {
   "name": "@papra/search-parser",
-  "type": "module",
   "version": "0.1.1",
   "description": "A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.",
-  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
-  "license": "MIT",
+  "keywords": [
+    "filter",
+    "operator",
+    "papra",
+    "parser",
+    "query",
+    "search"
+  ],
   "homepage": "https://search-parser.papra.app/",
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
+  "license": "MIT",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
   "repository": {
     "type": "git",
     "url": "https://github.com/papra-hq/papra",
     "directory": "packages/search-parser"
   },
-  "bugs": {
-    "url": "https://github.com/papra-hq/papra/issues"
-  },
-  "keywords": [
-    "papra",
-    "search",
-    "parser",
-    "query",
-    "filter",
-    "operator"
+  "files": [
+    "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
@@ -45,8 +43,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
-    "eslint": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

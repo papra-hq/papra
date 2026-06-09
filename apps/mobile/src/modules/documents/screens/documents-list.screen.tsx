@@ -29,7 +29,9 @@ export function DocumentsListScreen() {
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
-  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<CoerceDates<Document> | undefined>(undefined);
+  const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<
+    CoerceDates<Document> | undefined
+  >(undefined);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const pagination = { pageIndex: 0, pageSize: 20 };
 
@@ -88,94 +90,96 @@ export function DocumentsListScreen() {
         <OrganizationPickerButton onPress={() => setIsDrawerVisible(true)} />
       </View>
 
-      {documentsQuery.isLoading
-        ? (
-            <View style={styles.centerContent}>
-              <ActivityIndicator size="large" color={themeColors.primary} />
-            </View>
-          )
-        : (
-            <FlatList
-              data={documentsQuery.data?.documents ?? []}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push({
-                      pathname: '/(app)/document/view',
-                      params: {
-                        documentId: item.id,
-                        organizationId: item.organizationId,
-                      },
-                    });
+      {documentsQuery.isLoading ? (
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color={themeColors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={documentsQuery.data?.documents ?? []}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: '/(app)/document/view',
+                  params: {
+                    documentId: item.id,
+                    organizationId: item.organizationId,
+                  },
+                });
+              }}
+            >
+              <View style={styles.documentCard}>
+                <View
+                  style={{
+                    backgroundColor: themeColors.muted,
+                    padding: 10,
+                    borderRadius: 6,
+                    marginRight: 12,
                   }}
                 >
-                  <View style={styles.documentCard}>
-                    <View style={{ backgroundColor: themeColors.muted, padding: 10, borderRadius: 6, marginRight: 12 }}>
-                      <Icon name="file-text" size={24} color={themeColors.primary} />
-                    </View>
-                    <View style={styles.documentContent}>
-                      <Text style={styles.documentTitle} numberOfLines={1} ellipsizeMode="tail">
-                        {item.name}
-                      </Text>
-                      <View style={styles.documentMeta}>
-                        <Text style={styles.metaText}>{formatBytes({ bytes: item.originalSize })}</Text>
-                        <Text style={styles.metaSplitter}>-</Text>
-                        <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
-                        {item.localUri !== undefined && (
-                          <View style={[styles.unsyncedBadge, { backgroundColor: `${themeColors.primary}20` }]}>
-                            <Icon name="upload" size={12} color={themeColors.primary} />
-                          </View>
-                        )}
-                        {item.tags.length > 0 && (
-                          <View style={styles.tagsContainer}>
-                            {item.tags.map(tag => (
-                              <View
-                                key={tag.id}
-                                style={[
-                                  styles.tag,
-                                  { backgroundColor: `${tag.color}10` },
-                                ]}
-                              >
-                                <Text style={[styles.tagText, { color: tag.color }]}>
-                                  {tag.name}
-                                </Text>
-                              </View>
-                            ))}
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.moreButton}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        setOnDocumentActionSheet(item);
-                      }}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                      <Icon name="more-vertical" size={20} color={themeColors.mutedForeground} />
-                    </TouchableOpacity>
-                  </View>
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={(
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No documents yet</Text>
-                  <Text style={styles.emptySubtext}>
-                    Upload your first document to get started
-                  </Text>
+                  <Icon name="file-text" size={24} color={themeColors.primary} />
                 </View>
-              )}
-              contentContainerStyle={documentsQuery.data?.documents.length === 0 ? styles.emptyList : undefined}
-              refreshControl={(
-                <RefreshControl
-                  refreshing={documentsQuery.isRefetching}
-                  onRefresh={onRefresh}
-                />
-              )}
-            />
+                <View style={styles.documentContent}>
+                  <Text style={styles.documentTitle} numberOfLines={1} ellipsizeMode="tail">
+                    {item.name}
+                  </Text>
+                  <View style={styles.documentMeta}>
+                    <Text style={styles.metaText}>{formatBytes({ bytes: item.originalSize })}</Text>
+                    <Text style={styles.metaSplitter}>-</Text>
+                    <Text style={styles.metaText}>{formatDate(item.createdAt)}</Text>
+                    {item.localUri !== undefined && (
+                      <View
+                        style={[
+                          styles.unsyncedBadge,
+                          { backgroundColor: `${themeColors.primary}20` },
+                        ]}
+                      >
+                        <Icon name="upload" size={12} color={themeColors.primary} />
+                      </View>
+                    )}
+                    {item.tags.length > 0 && (
+                      <View style={styles.tagsContainer}>
+                        {item.tags.map((tag) => (
+                          <View
+                            key={tag.id}
+                            style={[styles.tag, { backgroundColor: `${tag.color}10` }]}
+                          >
+                            <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={styles.moreButton}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setOnDocumentActionSheet(item);
+                  }}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Icon name="more-vertical" size={20} color={themeColors.mutedForeground} />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           )}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No documents yet</Text>
+              <Text style={styles.emptySubtext}>Upload your first document to get started</Text>
+            </View>
+          }
+          contentContainerStyle={
+            documentsQuery.data?.documents.length === 0 ? styles.emptyList : undefined
+          }
+          refreshControl={
+            <RefreshControl refreshing={documentsQuery.isRefetching} onRefresh={onRefresh} />
+          }
+        />
+      )}
 
       <OrganizationPickerDrawer
         visible={isDrawerVisible}

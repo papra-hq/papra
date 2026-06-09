@@ -18,13 +18,20 @@ export function registerDocumentsBatchRoutes(context: RouteDefinitionContext) {
   setupBatchTagDocumentsRoute(context);
 }
 
-function setupBatchTrashDocumentsRoute({ app, db, eventServices, documentSearchServices }: RouteDefinitionContext) {
+function setupBatchTrashDocumentsRoute({
+  app,
+  db,
+  eventServices,
+  documentSearchServices,
+}: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/batch/trash',
     requireAuthentication({ apiKeyPermissions: ['documents:delete'] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateJsonBody(batchTrashBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
@@ -50,13 +57,22 @@ function setupBatchTrashDocumentsRoute({ app, db, eventServices, documentSearchS
   );
 }
 
-function setupBatchTagDocumentsRoute({ app, db, documentSearchServices, webhookTriggerServices }: RouteDefinitionContext) {
+function setupBatchTagDocumentsRoute({
+  app,
+  db,
+  documentSearchServices,
+  webhookTriggerServices,
+}: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/batch/tags',
-    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ] }),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    requireAuthentication({
+      apiKeyPermissions: [API_KEY_PERMISSIONS.DOCUMENTS.UPDATE, API_KEY_PERMISSIONS.TAGS.READ],
+    }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateJsonBody(batchTagsBodySchema),
     async (context) => {
       const { userId } = getUser({ context });

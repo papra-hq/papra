@@ -1,5 +1,8 @@
 import * as v from 'valibot';
-import { customPropertySelectOptionIdSchema, selectCustomPropertyOptionNameSchema } from '../../options/custom-properties-options.schemas';
+import {
+  customPropertySelectOptionIdSchema,
+  selectCustomPropertyOptionNameSchema,
+} from '../../options/custom-properties-options.schemas';
 import { ensureOptionExists } from '../../options/custom-properties-options.usecases';
 import { defineCustomPropertyType } from '../custom-property-definition.models';
 
@@ -26,13 +29,17 @@ export const selectCustomPropertyDefinition = defineCustomPropertyType({
     },
 
     updateExtraSchema: v.object({
-      options: v.optional(v.pipe(
-        v.array(v.object({
-          id: v.optional(customPropertySelectOptionIdSchema),
-          name: selectCustomPropertyOptionNameSchema,
-        })),
-        v.minLength(1, 'At least one option must be provided'),
-      )),
+      options: v.optional(
+        v.pipe(
+          v.array(
+            v.object({
+              id: v.optional(customPropertySelectOptionIdSchema),
+              name: selectCustomPropertyOptionNameSchema,
+            }),
+          ),
+          v.minLength(1, 'At least one option must be provided'),
+        ),
+      ),
     }),
 
     onUpdate: async ({
@@ -50,7 +57,6 @@ export const selectCustomPropertyDefinition = defineCustomPropertyType({
   },
 
   value: {
-
     inputSchema: customPropertySelectOptionIdSchema,
 
     extendInputValidation: async ({ value, customProperty, customPropertiesOptionsRepository }) => {
@@ -70,10 +76,10 @@ export const selectCustomPropertyDefinition = defineCustomPropertyType({
         return null;
       }
 
-      return ({
+      return {
         optionId: row.option.id,
         name: row.option.name,
-      });
+      };
     },
   },
 });

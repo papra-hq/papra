@@ -10,6 +10,6 @@ export function getPermissionsForRoles({
   permissionsByRole?: Record<Role, Readonly<Permission[]>>;
 }): { permissions: Permission[] } {
   return {
-    permissions: uniq(roles.flatMap(role => permissionsByRole[role] ?? [])),
+    permissions: uniq(roles.flatMap((role) => permissionsByRole[role] ?? [])),
   };
 }

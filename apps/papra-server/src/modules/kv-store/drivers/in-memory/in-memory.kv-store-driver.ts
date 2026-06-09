@@ -13,7 +13,9 @@ type Entry = {
   timer: NodeJS.Timeout | undefined;
 };
 
-export function createInMemoryKvStoreDriver({ clock = systemClock }: { clock?: Clock } = {}): KvStoreDriver {
+export function createInMemoryKvStoreDriver({
+  clock = systemClock,
+}: { clock?: Clock } = {}): KvStoreDriver {
   const store = new Map<string, Entry>();
 
   const clearKey = (key: string) => {
@@ -35,7 +37,10 @@ export function createInMemoryKvStoreDriver({ clock = systemClock }: { clock?: C
 
       // The timer set below is best-effort eager cleanup, but the event loop can be blocked or timers paused, so this
       // read-time comparison against the clock is the authoritative expiry check.
-      if (entry.expiresAtMsEpoch !== undefined && entry.expiresAtMsEpoch <= clock.now().epochMilliseconds) {
+      if (
+        entry.expiresAtMsEpoch !== undefined &&
+        entry.expiresAtMsEpoch <= clock.now().epochMilliseconds
+      ) {
         clearKey(key);
         return undefined;
       }
@@ -53,7 +58,10 @@ export function createInMemoryKvStoreDriver({ clock = systemClock }: { clock?: C
 
       const { expiresAtMsEpoch, timerDurationMs } = resolveExpiration({ expiresAt, clock });
 
-      const timer = timerDurationMs === undefined ? undefined : createUnrefTimeout(() => clearKey(key), timerDurationMs);
+      const timer =
+        timerDurationMs === undefined
+          ? undefined
+          : createUnrefTimeout(() => clearKey(key), timerDurationMs);
 
       store.set(key, { value, expiresAtMsEpoch, timer });
     },
@@ -61,11 +69,16 @@ export function createInMemoryKvStoreDriver({ clock = systemClock }: { clock?: C
     delete: async ({ key }) => {
       clearKey(key);
     },
-
   };
 }
 
-function hasExpirationInThePast({ expiresAt, clock }: { expiresAt?: Temporal.Instant; clock: Clock }) {
+function hasExpirationInThePast({
+  expiresAt,
+  clock,
+}: {
+  expiresAt?: Temporal.Instant;
+  clock: Clock;
+}) {
   if (expiresAt === undefined) {
     return false;
   }
@@ -73,7 +86,10 @@ function hasExpirationInThePast({ expiresAt, clock }: { expiresAt?: Temporal.Ins
   return expiresAt.epochMilliseconds <= clock.now().epochMilliseconds;
 }
 
-function resolveExpiration({ expiresAt, clock }: { expiresAt?: Temporal.Instant; clock: Clock }): { expiresAtMsEpoch?: number; timerDurationMs?: number } {
+function resolveExpiration({ expiresAt, clock }: { expiresAt?: Temporal.Instant; clock: Clock }): {
+  expiresAtMsEpoch?: number;
+  timerDurationMs?: number;
+} {
   if (expiresAt === undefined) {
     return { expiresAtMsEpoch: undefined, timerDurationMs: undefined };
   }

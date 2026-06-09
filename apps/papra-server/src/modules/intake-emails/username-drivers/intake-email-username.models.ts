@@ -5,7 +5,10 @@ import type { UsersRepository } from '../../users/users.repository';
 
 export type IntakeEmailUsernameDriver = {
   name: string;
-  generateIntakeEmailUsername: (args: { userId: string; organizationId: string }) => Promise<{ username: string }>;
+  generateIntakeEmailUsername: (args: {
+    userId: string;
+    organizationId: string;
+  }) => Promise<{ username: string }>;
 };
 
 export type IntakeEmailUsernameDriverFactory = (args: {

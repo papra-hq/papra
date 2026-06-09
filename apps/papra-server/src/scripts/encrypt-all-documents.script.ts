@@ -9,7 +9,9 @@ import { runScriptWithDb } from './commons/run-script';
 await runScriptWithDb(
   { scriptName: 'encrypt-all-documents' },
   async ({ db, config, logger, isDryRun }) => {
-    const documentStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+    const documentStorageService = createDocumentStorageService({
+      documentStorageConfig: config.documentsStorage,
+    });
 
     if (!config.documentsStorage.encryption.isEncryptionEnabled) {
       logger.error('Document encryption is not enabled, skipping');
@@ -34,10 +36,13 @@ await runScriptWithDb(
         .from(documentsTable)
         .where(isNull(documentsTable.fileEncryptionKeyWrapped));
 
-      logger.info({
-        count: documents.length,
-        documents: documents.map(d => ({ id: d.id, name: d.originalName })),
-      }, '[DRY RUN] Documents that would be encrypted');
+      logger.info(
+        {
+          count: documents.length,
+          documents: documents.map((d) => ({ id: d.id, name: d.originalName })),
+        },
+        '[DRY RUN] Documents that would be encrypted',
+      );
 
       return;
     }

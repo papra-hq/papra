@@ -22,8 +22,12 @@ export const documentShareLinksMigration = {
         FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON UPDATE cascade ON DELETE cascade,
         FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null
       )`),
-      db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS "document_share_links_token_unique" ON "document_share_links" ("token")`),
-      db.run(sql`CREATE INDEX IF NOT EXISTS "document_share_links_organization_id_document_id_index" ON "document_share_links" ("organization_id", "document_id")`),
+      db.run(
+        sql`CREATE UNIQUE INDEX IF NOT EXISTS "document_share_links_token_unique" ON "document_share_links" ("token")`,
+      ),
+      db.run(
+        sql`CREATE INDEX IF NOT EXISTS "document_share_links_organization_id_document_id_index" ON "document_share_links" ("organization_id", "document_id")`,
+      ),
     ]);
   },
 

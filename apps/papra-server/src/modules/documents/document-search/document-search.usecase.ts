@@ -31,15 +31,18 @@ export async function searchOrganizationDocuments({
   });
   const durationMs = Date.now() - startTime;
 
-  logger.info({
-    organizationId,
-    pageIndex,
-    pageSize,
-    sortField: sort.field,
-    sortOrder: sort.order,
-    durationMs,
-    pageDocumentCount: documents.length,
-  }, 'Executed document search');
+  logger.info(
+    {
+      organizationId,
+      pageIndex,
+      pageSize,
+      sortField: sort.field,
+      sortOrder: sort.order,
+      durationMs,
+      pageDocumentCount: documents.length,
+    },
+    'Executed document search',
+  );
 
   return {
     documents,

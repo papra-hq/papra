@@ -8,7 +8,10 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { CustomPropertyDefinitionForm } from '../components/custom-property-definition-form.component';
-import { fetchCustomPropertyDefinition, updateCustomPropertyDefinition } from '../custom-properties.services';
+import {
+  fetchCustomPropertyDefinition,
+  updateCustomPropertyDefinition,
+} from '../custom-properties.services';
 
 export const UpdateCustomPropertyPage: Component = () => {
   const params = useParams();
@@ -16,8 +19,17 @@ export const UpdateCustomPropertyPage: Component = () => {
   const { t } = useI18n();
 
   const query = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'custom-properties', params.propertyDefinitionId],
-    queryFn: () => fetchCustomPropertyDefinition({ organizationId: params.organizationId, propertyDefinitionId: params.propertyDefinitionId }),
+    queryKey: [
+      'organizations',
+      params.organizationId,
+      'custom-properties',
+      params.propertyDefinitionId,
+    ],
+    queryFn: () =>
+      fetchCustomPropertyDefinition({
+        organizationId: params.organizationId,
+        propertyDefinitionId: params.propertyDefinitionId,
+      }),
   }));
 
   const updateMutation = useMutation(() => ({
@@ -32,7 +44,9 @@ export const UpdateCustomPropertyPage: Component = () => {
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['organizations', params.organizationId, 'custom-properties'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'custom-properties'],
+      });
 
       createToast({
         message: t('custom-properties.update.success'),
@@ -51,22 +65,22 @@ export const UpdateCustomPropertyPage: Component = () => {
   return (
     <div class="p-6 max-w-screen-md mx-auto mt-4">
       <div class="border-b mb-6 pb-4">
-        <h1 class="text-xl font-bold">
-          {t('custom-properties.update.title')}
-        </h1>
+        <h1 class="text-xl font-bold">{t('custom-properties.update.title')}</h1>
       </div>
 
       <Show when={query.data?.definition}>
-        {getDefinition => (
+        {(getDefinition) => (
           <CustomPropertyDefinitionForm
             organizationId={params.organizationId}
             propertyDefinition={getDefinition()}
-            onSubmit={({ propertyDefinition }) => updateMutation.mutateAsync({ propertyDefinition })}
-            submitButton={(
+            onSubmit={({ propertyDefinition }) =>
+              updateMutation.mutateAsync({ propertyDefinition })
+            }
+            submitButton={
               <Button type="submit" isLoading={updateMutation.isPending}>
                 {t('custom-properties.update.submit')}
               </Button>
-            )}
+            }
           />
         )}
       </Show>

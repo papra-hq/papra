@@ -9,7 +9,19 @@ import { deleteExpiredDocuments } from '../documents.usecases';
 
 const logger = createLogger({ namespace: 'documents:tasks:hardDeleteExpiredDocuments' });
 
-export async function registerHardDeleteExpiredDocumentsTask({ taskServices, db, config, documentsStorageService, eventServices }: { taskServices: TaskServices; db: Database; config: Config; documentsStorageService: DocumentStorageService; eventServices: EventServices }) {
+export async function registerHardDeleteExpiredDocumentsTask({
+  taskServices,
+  db,
+  config,
+  documentsStorageService,
+  eventServices,
+}: {
+  taskServices: TaskServices;
+  db: Database;
+  config: Config;
+  documentsStorageService: DocumentStorageService;
+  eventServices: EventServices;
+}) {
   const taskName = 'hard-delete-expired-documents';
   const { cron, runOnStartup } = config.tasks.hardDeleteExpiredDocuments;
 

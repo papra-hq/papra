@@ -25,13 +25,16 @@ export const DocumentUploadArea: Component = () => {
       return;
     }
 
-    const files = [...event.dataTransfer.files].filter(file => file.type === 'application/pdf');
+    const files = [...event.dataTransfer.files].filter((file) => file.type === 'application/pdf');
     await uploadDocuments({ files });
   };
 
   return (
     <div
-      class={cn('border border-[2px] border-dashed text-muted-foreground rounded-lg p-6 sm:py-16 flex flex-col items-center justify-center text-center', { 'border-primary': isDragging() })}
+      class={cn(
+        'border border-[2px] border-dashed text-muted-foreground rounded-lg p-6 sm:py-16 flex flex-col items-center justify-center text-center',
+        { 'border-primary': isDragging() },
+      )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

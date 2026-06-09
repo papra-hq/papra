@@ -6,16 +6,14 @@ import { APP_SCHEME } from '../app/app.constants';
 
 export type AuthClient = ReturnType<typeof createAuthClient>;
 
-export function createAuthClient({ baseUrl}: { baseUrl: string }) {
+export function createAuthClient({ baseUrl }: { baseUrl: string }) {
   return createBetterAuthClient({
     baseURL: baseUrl,
     plugins: [
       expoClient({
         scheme: APP_SCHEME,
         storagePrefix: APP_SCHEME,
-        storage: Platform.OS === 'web'
-          ? localStorage
-          : SecureStore,
+        storage: Platform.OS === 'web' ? localStorage : SecureStore,
       }),
     ],
   });

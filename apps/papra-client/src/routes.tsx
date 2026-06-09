@@ -73,9 +73,14 @@ export const routes: RouteDefinition[] = [
             <>
               <Suspense>
                 <Show when={query.data?.organizations}>
-                  {getOrgs => (
+                  {(getOrgs) => (
                     <Switch>
-                      <Match when={getLatestOrganizationId() && getOrgs().some(org => org.id === getLatestOrganizationId())}>
+                      <Match
+                        when={
+                          getLatestOrganizationId() &&
+                          getOrgs().some((org) => org.id === getLatestOrganizationId())
+                        }
+                      >
                         <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
                       </Match>
 
@@ -95,7 +100,6 @@ export const routes: RouteDefinition[] = [
                 </Show>
               </Suspense>
             </>
-
           );
         },
       },
@@ -193,7 +197,6 @@ export const routes: RouteDefinition[] = [
                     path: '/invitations',
                     component: InvitationsListPage,
                   },
-
                 ],
               },
               {

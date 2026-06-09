@@ -1,10 +1,18 @@
 import { describe, expect, test } from 'vitest';
-import { buildOriginalDocumentKey, ensureSafeFileName, formatDocumentForApi, isDocumentSizeLimitEnabled, joinStorageKeyParts } from './documents.models';
+import {
+  buildOriginalDocumentKey,
+  ensureSafeFileName,
+  formatDocumentForApi,
+  isDocumentSizeLimitEnabled,
+  joinStorageKeyParts,
+} from './documents.models';
 
 describe('documents models', () => {
   describe('joinStorageKeyParts', () => {
     test('the parts of a storage key are joined with a slash', () => {
-      expect(joinStorageKeyParts('org_1', 'documents', 'file.txt')).to.eql('org_1/documents/file.txt');
+      expect(joinStorageKeyParts('org_1', 'documents', 'file.txt')).to.eql(
+        'org_1/documents/file.txt',
+      );
     });
   });
 
@@ -13,35 +21,43 @@ describe('documents models', () => {
           - the organization id
           - the original documents storage key "originals"
           - the document id withe the same extension as the original file (if any)`, () => {
-      expect(buildOriginalDocumentKey({
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        fileName: 'file.txt',
-      })).to.eql({
+      expect(
+        buildOriginalDocumentKey({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          fileName: 'file.txt',
+        }),
+      ).to.eql({
         originalDocumentStorageKey: 'org_1/originals/doc_1.txt',
       });
 
-      expect(buildOriginalDocumentKey({
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        fileName: 'file',
-      })).to.eql({
+      expect(
+        buildOriginalDocumentKey({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          fileName: 'file',
+        }),
+      ).to.eql({
         originalDocumentStorageKey: 'org_1/originals/doc_1',
       });
 
-      expect(buildOriginalDocumentKey({
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        fileName: 'file.',
-      })).to.eql({
+      expect(
+        buildOriginalDocumentKey({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          fileName: 'file.',
+        }),
+      ).to.eql({
         originalDocumentStorageKey: 'org_1/originals/doc_1',
       });
 
-      expect(buildOriginalDocumentKey({
-        documentId: 'doc_1',
-        organizationId: 'org_1',
-        fileName: '',
-      })).to.eql({
+      expect(
+        buildOriginalDocumentKey({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          fileName: '',
+        }),
+      ).to.eql({
         originalDocumentStorageKey: 'org_1/originals/doc_1',
       });
     });
@@ -59,30 +75,32 @@ describe('documents models', () => {
 
   describe('formatDocumentForApi', () => {
     test('formats a document from the database into a user facing document by omitting the storage key and encryption related fields', () => {
-      expect(formatDocumentForApi({
-        document: {
-          id: 'doc_1',
-          organizationId: 'org_1',
-          createdBy: 'user_1',
-          deletedAt: null,
-          deletedBy: null,
-          name: 'file.txt',
-          mimeType: 'text/plain',
-          originalName: 'file.txt',
-          originalSize: 100,
-          originalStorageKey: 'org_1/originals/doc_1.txt',
-          originalSha256Hash: '1234567890',
-          fileEncryptionAlgorithm: 'aes-256-gcm',
-          fileEncryptionKeyWrapped: '1234567890',
-          fileEncryptionKekVersion: '1.0',
-          content: 'Hello, world!',
-          isDeleted: false,
-          createdAt: new Date('2025-01-01'),
-          updatedAt: new Date('2025-01-01'),
-          documentDate: new Date('2025-12-24'),
-          notes: null,
-        },
-      })).to.eql({
+      expect(
+        formatDocumentForApi({
+          document: {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            createdBy: 'user_1',
+            deletedAt: null,
+            deletedBy: null,
+            name: 'file.txt',
+            mimeType: 'text/plain',
+            originalName: 'file.txt',
+            originalSize: 100,
+            originalStorageKey: 'org_1/originals/doc_1.txt',
+            originalSha256Hash: '1234567890',
+            fileEncryptionAlgorithm: 'aes-256-gcm',
+            fileEncryptionKeyWrapped: '1234567890',
+            fileEncryptionKekVersion: '1.0',
+            content: 'Hello, world!',
+            isDeleted: false,
+            createdAt: new Date('2025-01-01'),
+            updatedAt: new Date('2025-01-01'),
+            documentDate: new Date('2025-12-24'),
+            notes: null,
+          },
+        }),
+      ).to.eql({
         content: 'Hello, world!',
         createdAt: new Date('2025-01-01'),
         createdBy: 'user_1',

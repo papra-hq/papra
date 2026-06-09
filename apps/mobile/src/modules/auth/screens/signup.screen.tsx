@@ -53,12 +53,14 @@ export function SignupScreen() {
 
         await authClient.signUp.email({ name, email, password });
 
-        const isEmailVerificationRequired = serverConfig?.auth?.isEmailVerificationRequired ?? false;
+        const isEmailVerificationRequired =
+          serverConfig?.auth?.isEmailVerificationRequired ?? false;
 
         if (isEmailVerificationRequired) {
           showAlert({
             title: 'Check your email',
-            message: 'We sent you a verification link. Please check your email to verify your account.',
+            message:
+              'We sent you a verification link. Please check your email to verify your account.',
             buttons: [{ text: 'OK', onPress: () => router.replace('/auth/login') }],
           });
         } else {
@@ -92,10 +94,7 @@ export function SignupScreen() {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text style={styles.errorText}>Registration is currently disabled</Text>
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
           <Text style={styles.linkText}>Go back to login</Text>
         </TouchableOpacity>
       </View>
@@ -107,10 +106,7 @@ export function SignupScreen() {
       style={{ ...styles.container, paddingTop: insets.top }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <BackToServerSelectionButton />
 
         <View style={styles.header}>
@@ -120,7 +116,7 @@ export function SignupScreen() {
 
         <View style={styles.formContainer}>
           <form.Field name="name">
-            {field => (
+            {(field) => (
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Name</Text>
                 <TextInput
@@ -138,7 +134,7 @@ export function SignupScreen() {
           </form.Field>
 
           <form.Field name="email">
-            {field => (
+            {(field) => (
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
@@ -158,7 +154,7 @@ export function SignupScreen() {
           </form.Field>
 
           <form.Field name="password">
-            {field => (
+            {(field) => (
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Password</Text>
                 <TextInput
@@ -180,20 +176,15 @@ export function SignupScreen() {
             onPress={async () => form.handleSubmit()}
             disabled={isSubmitting}
           >
-            {isSubmitting
-              ? (
-                  <ActivityIndicator color={themeColors.primaryForeground} />
-                )
-              : (
-                  <Text style={styles.buttonText}>Sign Up</Text>
-                )}
+            {isSubmitting ? (
+              <ActivityIndicator color={themeColors.primaryForeground} />
+            ) : (
+              <Text style={styles.buttonText}>Sign Up</Text>
+            )}
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
           <Text style={styles.linkText}>Already have an account? Sign in</Text>
         </TouchableOpacity>
       </ScrollView>

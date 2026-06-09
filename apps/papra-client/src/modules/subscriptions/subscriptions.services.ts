@@ -2,7 +2,15 @@ import type { PlanLimits } from '../plans/plans.types';
 import type { OrganizationSubscription } from './subscriptions.types';
 import { apiClient } from '../shared/http/api-client';
 
-export async function getCheckoutUrl({ organizationId, planId, billingInterval }: { organizationId: string; planId: string; billingInterval: 'monthly' | 'annual' }) {
+export async function getCheckoutUrl({
+  organizationId,
+  planId,
+  billingInterval,
+}: {
+  organizationId: string;
+  planId: string;
+  billingInterval: 'monthly' | 'annual';
+}) {
   const { checkoutUrl } = await apiClient<{ checkoutUrl: string }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/checkout-session`,
@@ -24,7 +32,11 @@ export async function getCustomerPortalUrl({ organizationId }: { organizationId:
   return { customerPortalUrl };
 }
 
-export async function fetchOrganizationSubscription({ organizationId }: { organizationId: string }) {
+export async function fetchOrganizationSubscription({
+  organizationId,
+}: {
+  organizationId: string;
+}) {
   const { subscription, plan } = await apiClient<{
     subscription: OrganizationSubscription;
     plan: {

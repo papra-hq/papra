@@ -37,11 +37,9 @@ export function ApiProvider({ children }: ApiProviderProps) {
 
   return (
     <>
-      { authClient && apiClient && (
+      {authClient && apiClient && (
         <AuthClientContext.Provider value={authClient}>
-          <ApiClientContext.Provider value={apiClient}>
-            {children}
-          </ApiClientContext.Provider>
+          <ApiClientContext.Provider value={apiClient}>{children}</ApiClientContext.Provider>
         </AuthClientContext.Provider>
       )}
     </>

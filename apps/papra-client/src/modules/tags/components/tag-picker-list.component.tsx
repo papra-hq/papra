@@ -14,21 +14,21 @@ export const TagPickerList: Component<TagPickerListProps> = (props) => {
   return (
     <ul role="listbox" class="py-1">
       <For each={props.listItems}>
-        {baseItem => (
+        {(baseItem) => (
           <Switch>
             <Match when={baseItem.type === 'tag' ? baseItem : null}>
-              {getTagItem => (
+              {(getTagItem) => (
                 <TagPickerItemTag
                   tag={getTagItem().tag}
                   selected={getTagItem().isSelected}
                   highlighted={props.highlighted.tagId === getTagItem().tag.id}
-                  onToggle={selected => props.onToggle(getTagItem().tag.id, selected)}
+                  onToggle={(selected) => props.onToggle(getTagItem().tag.id, selected)}
                 />
               )}
             </Match>
 
             <Match when={baseItem.type === 'create-new-tag-button' ? baseItem : null}>
-              {getCreateTagItem => (
+              {(getCreateTagItem) => (
                 <TagPickerItemCreateNewTag
                   highlighted={props.highlighted.action === 'create-new-tag'}
                   onClick={() => props.onCreateNewTag?.()}
@@ -45,7 +45,6 @@ export const TagPickerList: Component<TagPickerListProps> = (props) => {
           </Switch>
         )}
       </For>
-
     </ul>
   );
 };

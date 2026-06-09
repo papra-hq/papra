@@ -5,7 +5,14 @@ import { createDocumentsRepository } from '../documents/documents.repository';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { CUSTOM_PROPERTY_TYPES } from './custom-properties.constants';
 import { createCustomPropertiesRepository } from './custom-properties.repository';
-import { createPropertyDefinition, deleteDocumentCustomPropertyValue, deletePropertyDefinition, ensurePropertyDefinitionExists, setDocumentCustomPropertyValue, updatePropertyDefinition } from './custom-properties.usecases';
+import {
+  createPropertyDefinition,
+  deleteDocumentCustomPropertyValue,
+  deletePropertyDefinition,
+  ensurePropertyDefinitionExists,
+  setDocumentCustomPropertyValue,
+  updatePropertyDefinition,
+} from './custom-properties.usecases';
 import { createCustomPropertiesOptionsRepository } from './options/custom-properties-options.repository';
 
 describe('custom-properties usecases', () => {
@@ -16,7 +23,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -39,7 +57,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -74,7 +103,9 @@ describe('custom-properties usecases', () => {
           customPropertiesRepository,
           customPropertiesOptionsRepository,
         }),
-      ).rejects.toThrow('The maximum number of custom properties for this organization has been reached.');
+      ).rejects.toThrow(
+        'The maximum number of custom properties for this organization has been reached.',
+      );
     });
   });
 
@@ -85,7 +116,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -116,7 +158,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -141,7 +194,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -178,7 +242,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -205,7 +280,9 @@ describe('custom-properties usecases', () => {
         documentsRepository,
       });
 
-      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({ documentId: docId });
+      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({
+        documentId: docId,
+      });
       expect(values).to.have.length(1);
       expect(values[0]!.value.textValue).to.eql('Hello');
     });
@@ -216,7 +293,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -252,7 +340,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -290,7 +389,18 @@ describe('custom-properties usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: orgId, name: 'Test Org' }],
-        documents: [{ id: docId, organizationId: orgId, name: 'test.pdf', originalName: 'test.pdf', mimeType: 'application/pdf', originalSha256Hash: 'abc', originalSize: 100, originalStorageKey: 'key' }],
+        documents: [
+          {
+            id: docId,
+            organizationId: orgId,
+            name: 'test.pdf',
+            originalName: 'test.pdf',
+            mimeType: 'application/pdf',
+            originalSha256Hash: 'abc',
+            originalSize: 100,
+            originalStorageKey: 'key',
+          },
+        ],
       });
 
       const customPropertiesRepository = createCustomPropertiesRepository({ db });
@@ -324,7 +434,9 @@ describe('custom-properties usecases', () => {
         customPropertiesRepository,
       });
 
-      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({ documentId: docId });
+      const { values } = await customPropertiesRepository.getDocumentCustomPropertyValues({
+        documentId: docId,
+      });
       expect(values).to.have.length(0);
     });
   });

@@ -13,10 +13,7 @@ export function registerErrorMiddleware({ app }: { app: ServerInstance }) {
     context.header('Cache-Control', 'no-store');
 
     if (isCustomError(error) && !error.isInternal) {
-      return context.json(
-        formatPublicErrorPayload(error),
-        error.statusCode,
-      );
+      return context.json(formatPublicErrorPayload(error), error.statusCode);
     }
 
     if (error.message === 'Malformed JSON in request body') {

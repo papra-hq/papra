@@ -1,6 +1,12 @@
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
-export { createError, createErrorFactory, formatPublicErrorPayload, isCustomError, isErrorWithCode };
+export {
+  createError,
+  createErrorFactory,
+  formatPublicErrorPayload,
+  isCustomError,
+  isErrorWithCode,
+};
 
 type ErrorOptions = {
   message: string;

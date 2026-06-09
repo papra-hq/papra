@@ -69,59 +69,54 @@ function setupCreateApiKeyRoute({ app, db }: RouteDefinitionContext) {
 }
 
 function setupGetApiKeysRoute({ app, db }: RouteDefinitionContext) {
-  app.get(
-    '/api/api-keys',
-    requireAuthentication(),
-    async (context) => {
-      const { userId } = getUser({ context });
-      const apiKeyRepository = createApiKeysRepository({ db });
+  app.get('/api/api-keys', requireAuthentication(), async (context) => {
+    const { userId } = getUser({ context });
+    const apiKeyRepository = createApiKeysRepository({ db });
 
-      const { apiKeys } = await apiKeyRepository.getUserApiKeys({ userId });
+    const { apiKeys } = await apiKeyRepository.getUserApiKeys({ userId });
 
-      return context.json({ apiKeys });
-    },
-  );
+    return context.json({ apiKeys });
+  });
 }
 
 // Mainly use for authentication verification in client SDKs
 function setupGetCurrentApiKeyRoute({ app }: RouteDefinitionContext) {
-  app.get(
-    '/api/api-keys/current',
-    async (context) => {
-      const authType = context.get('authType');
-      const apiKey = context.get('apiKey');
+  app.get('/api/api-keys/current', async (context) => {
+    const authType = context.get('authType');
+    const apiKey = context.get('apiKey');
 
-      if (isNil(authType)) {
-        throw createUnauthorizedError();
-      }
+    if (isNil(authType)) {
+      throw createUnauthorizedError();
+    }
 
-      if (authType !== 'api-key') {
-        throw createNotApiKeyAuthError();
-      }
+    if (authType !== 'api-key') {
+      throw createNotApiKeyAuthError();
+    }
 
-      if (isNil(apiKey)) {
-        // Should not happen as authType is 'api-key', but for type safety
-        throw createUnauthorizedError();
-      }
+    if (isNil(apiKey)) {
+      // Should not happen as authType is 'api-key', but for type safety
+      throw createUnauthorizedError();
+    }
 
-      return context.json({
-        apiKey: {
-          id: apiKey.id,
-          name: apiKey.name,
-          permissions: apiKey.permissions,
-        },
-      });
-    },
-  );
+    return context.json({
+      apiKey: {
+        id: apiKey.id,
+        name: apiKey.name,
+        permissions: apiKey.permissions,
+      },
+    });
+  });
 }
 
 function setupDeleteApiKeyRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/api-keys/:apiKeyId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      apiKeyId: apiKeyIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        apiKeyId: apiKeyIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const apiKeyRepository = createApiKeysRepository({ db });

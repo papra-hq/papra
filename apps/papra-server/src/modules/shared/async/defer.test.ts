@@ -22,9 +22,12 @@ describe('defer', () => {
     test('if the function throws an error, the error is logged', async () => {
       const { logger, getLogs } = createTestLogger({ namespace: 'defer' });
 
-      safelyDefer(async () => {
-        throw new Error('test');
-      }, { logger });
+      safelyDefer(
+        async () => {
+          throw new Error('test');
+        },
+        { logger },
+      );
 
       expect(getLogs()).to.deep.equal([]);
 
@@ -34,7 +37,6 @@ describe('defer', () => {
       expect(logs.length).to.equal(1);
 
       expect(logs[0]).to.deep.include({
-
         level: 'error',
         message: 'Error in safelyDefer',
         namespace: 'defer',

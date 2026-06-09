@@ -6,7 +6,10 @@ import type { DbSelectableShareLink } from './document-share-links.types';
 import { getDocumentOrThrow } from '../documents/documents.usecases';
 import { systemClock } from '../shared/clock/clock';
 import { isNil } from '../shared/utils';
-import { isShareLinkAccessTokenValid, issueShareLinkAccessToken } from './document-share-links.access-token';
+import {
+  isShareLinkAccessTokenValid,
+  issueShareLinkAccessToken,
+} from './document-share-links.access-token';
 import {
   createShareLinkGoneError,
   createShareLinkInvalidPasswordError,
@@ -15,10 +18,19 @@ import {
   createShareLinkNotPasswordProtectedError,
   createShareLinkPasswordRequiredError,
 } from './document-share-links.errors';
-import { generateShareToken, shouldTouchShareLinkLastAccessedAt } from './document-share-links.models';
+import {
+  generateShareToken,
+  shouldTouchShareLinkLastAccessedAt,
+} from './document-share-links.models';
 import { hashPassword, verifyPassword } from './document-share-links.password';
 
-function isShareLinkExpired({ shareLink, clock }: { shareLink: DbSelectableShareLink; clock: Clock }) {
+function isShareLinkExpired({
+  shareLink,
+  clock,
+}: {
+  shareLink: DbSelectableShareLink;
+  clock: Clock;
+}) {
   if (isNil(shareLink.expiresAt)) {
     return false;
   }
@@ -26,7 +38,7 @@ function isShareLinkExpired({ shareLink, clock }: { shareLink: DbSelectableShare
   return shareLink.expiresAt.getTime() <= clock.now().epochMilliseconds;
 }
 
-async function resolvePasswordHash({ password}: { password: string | undefined | null }) {
+async function resolvePasswordHash({ password }: { password: string | undefined | null }) {
   if (password === undefined) {
     return { passwordHash: undefined };
   }
@@ -62,7 +74,10 @@ export async function createShareLink({
   // Ensures the document exists in the organization before exposing it through a share link.
   await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
 
-  const { shareLinksCount } = await shareLinksRepository.countDocumentShareLinks({ documentId, organizationId });
+  const { shareLinksCount } = await shareLinksRepository.countDocumentShareLinks({
+    documentId,
+    organizationId,
+  });
 
   if (shareLinksCount >= config.documentShareLinks.maxLinksPerDocument) {
     throw createShareLinkLimitReachedError();
@@ -121,7 +136,11 @@ export async function getShareLinkDocumentOrThrow({
   shareLink: DbSelectableShareLink;
   documentsRepository: DocumentsRepository;
 }) {
-  const { document } = await getDocumentOrThrow({ documentId: shareLink.documentId, organizationId: shareLink.organizationId, documentsRepository });
+  const { document } = await getDocumentOrThrow({
+    documentId: shareLink.documentId,
+    organizationId: shareLink.organizationId,
+    documentsRepository,
+  });
 
   if (document.isDeleted) {
     throw createShareLinkGoneError();
@@ -170,7 +189,13 @@ export async function ensureShareLinkAccessGranted({
     return;
   }
 
-  const { isValid } = await isShareLinkAccessTokenValid({ accessToken, shareLinkId: shareLink.id, passwordHash: shareLink.passwordHash, authSecret: config.auth.secret, clock });
+  const { isValid } = await isShareLinkAccessTokenValid({
+    accessToken,
+    shareLinkId: shareLink.id,
+    passwordHash: shareLink.passwordHash,
+    authSecret: config.auth.secret,
+    clock,
+  });
 
   if (!isValid) {
     throw createShareLinkPasswordRequiredError();
@@ -190,7 +215,11 @@ export async function verifySharePassword({
   config: Config;
   clock?: Clock;
 }) {
-  const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository, clock });
+  const { shareLink } = await resolveUsableShareLinkByToken({
+    shareLinkToken,
+    shareLinksRepository,
+    clock,
+  });
 
   if (shareLink.passwordHash === null) {
     throw createShareLinkNotPasswordProtectedError();
@@ -217,9 +246,21 @@ export async function touchShareLinkLastAccessedAt({
   shareLink,
   shareLinksRepository,
   clock = systemClock,
-}: { shareLink: DbSelectableShareLink; shareLinksRepository: ShareLinksRepository; clock?: Clock }) {
-  if (shouldTouchShareLinkLastAccessedAt({ lastAccessedAt: shareLink.lastAccessedAt?.toTemporalInstant(), clock })) {
-    await shareLinksRepository.touchLastAccessedAt({ shareLinkId: shareLink.id, lastAccessedAt: new Date(clock.now().epochMilliseconds) });
+}: {
+  shareLink: DbSelectableShareLink;
+  shareLinksRepository: ShareLinksRepository;
+  clock?: Clock;
+}) {
+  if (
+    shouldTouchShareLinkLastAccessedAt({
+      lastAccessedAt: shareLink.lastAccessedAt?.toTemporalInstant(),
+      clock,
+    })
+  ) {
+    await shareLinksRepository.touchLastAccessedAt({
+      shareLinkId: shareLink.id,
+      lastAccessedAt: new Date(clock.now().epochMilliseconds),
+    });
   }
 }
 
@@ -239,7 +280,11 @@ export async function getSharedDocument({
   config: Config;
   clock?: Clock;
 }) {
-  const { shareLink } = await resolveUsableShareLinkByToken({ shareLinkToken, shareLinksRepository, clock });
+  const { shareLink } = await resolveUsableShareLinkByToken({
+    shareLinkToken,
+    shareLinksRepository,
+    clock,
+  });
 
   await ensureShareLinkAccessGranted({ shareLink, accessToken, config, clock });
 

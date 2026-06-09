@@ -11,7 +11,10 @@ export function createApiClient({
   baseUrl: string;
   getAuthCookie: () => string;
 }) {
-  return async <T, R extends ResponseType = 'json'>({ path, ...rest}: { path: string } & Omit<HttpClientOptions<R>, 'url'>) => {
+  return async <T, R extends ResponseType = 'json'>({
+    path,
+    ...rest
+  }: { path: string } & Omit<HttpClientOptions<R>, 'url'>) => {
     return httpClient<T, R>({
       baseUrl,
       url: path,

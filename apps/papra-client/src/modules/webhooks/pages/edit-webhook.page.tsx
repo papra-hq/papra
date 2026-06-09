@@ -38,18 +38,22 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
         Object.assign(updateData, { secret });
       }
 
-      const [, error] = await safely(updateWebhook({
-        webhookId: params.webhookId,
-        organizationId: params.organizationId,
-        input: updateData,
-      }));
+      const [, error] = await safely(
+        updateWebhook({
+          webhookId: params.webhookId,
+          organizationId: params.organizationId,
+          input: updateData,
+        }),
+      );
 
       if (error) {
         throw createI18nApiError({ error });
       }
 
       await queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
-      await queryClient.invalidateQueries({ queryKey: ['webhook', params.organizationId, params.webhookId] });
+      await queryClient.invalidateQueries({
+        queryKey: ['webhook', params.organizationId, params.webhookId],
+      });
 
       createToast({
         type: 'success',
@@ -85,7 +89,6 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
   });
 
   return (
-
     <Form>
       <Field name="name">
         {(field, inputProps) => (
@@ -131,14 +134,23 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
                 <TextField
                   type="password"
                   id="secret"
-                  placeholder={rotateSecret() ? t('webhooks.update.form.secret.placeholder') : t('webhooks.update.form.secret.placeholder-redacted')}
+                  placeholder={
+                    rotateSecret()
+                      ? t('webhooks.update.form.secret.placeholder')
+                      : t('webhooks.update.form.secret.placeholder-redacted')
+                  }
                   {...inputProps}
                   value={field.value}
                   aria-invalid={Boolean(field.error)}
                   disabled={!rotateSecret()}
                 />
                 <Show when={!rotateSecret()}>
-                  <Button type="button" variant="secondary" onClick={() => setRotateSecret(true)} class="flex-shrink-0">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setRotateSecret(true)}
+                    class="flex-shrink-0"
+                  >
                     {t('webhooks.update.form.rotate-secret.button')}
                   </Button>
                 </Show>
@@ -150,12 +162,15 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
       </div>
 
       <Field name="events" type="string[]">
-        {field => (
+        {(field) => (
           <div>
             <p class="text-sm font-bold">{t('webhooks.create.form.events.label')}</p>
 
             <div class="p-6 pb-8 border rounded-md mt-2">
-              <WebhookEventsPicker events={field.value ?? []} onChange={events => setValue(form, 'events', events)} />
+              <WebhookEventsPicker
+                events={field.value ?? []}
+                onChange={(events) => setValue(form, 'events', events)}
+              />
             </div>
 
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
@@ -164,7 +179,12 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
       </Field>
 
       <div class="flex justify-end mt-6">
-        <Button type="button" variant="secondary" as={A} href={`/organizations/${params.organizationId}/settings/webhooks`}>
+        <Button
+          type="button"
+          variant="secondary"
+          as={A}
+          href={`/organizations/${params.organizationId}/settings/webhooks`}
+        >
           {t('webhooks.update.cancel')}
         </Button>
         <Button type="submit" class="ml-2" isLoading={form.submitting}>
@@ -173,7 +193,6 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
       </div>
 
       <div class="text-red-500 text-sm mt-2">{form.response.message}</div>
-
     </Form>
   );
 };
@@ -184,10 +203,11 @@ export const EditWebhookPage: Component = () => {
 
   const webhookQuery = useQuery(() => ({
     queryKey: ['webhook', params.organizationId, params.webhookId],
-    queryFn: () => fetchWebhook({
-      organizationId: params.organizationId,
-      webhookId: params.webhookId,
-    }),
+    queryFn: () =>
+      fetchWebhook({
+        organizationId: params.organizationId,
+        webhookId: params.webhookId,
+      }),
   }));
 
   return (
@@ -199,7 +219,7 @@ export const EditWebhookPage: Component = () => {
 
       <Suspense>
         <Show when={webhookQuery.data?.webhook}>
-          {getWebhook => <EditWebhookForm webhook={getWebhook()} />}
+          {(getWebhook) => <EditWebhookForm webhook={getWebhook()} />}
         </Show>
       </Suspense>
     </div>

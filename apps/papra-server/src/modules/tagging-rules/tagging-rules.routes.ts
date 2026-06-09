@@ -25,9 +25,11 @@ function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionConte
   app.get(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -38,7 +40,9 @@ function setupGetOrganizationTaggingRulesRoute({ app, db }: RouteDefinitionConte
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { taggingRules } = await taggingRulesRepository.getOrganizationTaggingRules({ organizationId });
+      const { taggingRules } = await taggingRulesRepository.getOrganizationTaggingRules({
+        organizationId,
+      });
 
       return context.json({
         taggingRules,
@@ -51,22 +55,34 @@ function setupCreateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/tagging-rules',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+      }),
+    ),
     validateJsonBody(taggingRuleBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
 
       const { organizationId } = context.req.valid('param');
-      const { name, description, enabled, conditionMatchMode, conditions, tagIds } = context.req.valid('json');
+      const { name, description, enabled, conditionMatchMode, conditions, tagIds } =
+        context.req.valid('json');
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      await createTaggingRule({ name, description, enabled, conditionMatchMode, conditions, tagIds, organizationId, taggingRulesRepository });
+      await createTaggingRule({
+        name,
+        description,
+        enabled,
+        conditionMatchMode,
+        conditions,
+        tagIds,
+        organizationId,
+        taggingRulesRepository,
+      });
 
       return context.body(null, 204);
     },
@@ -77,10 +93,12 @@ function setupDeleteTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      taggingRuleId: taggingRuleIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        taggingRuleId: taggingRuleIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -102,10 +120,12 @@ function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      taggingRuleId: taggingRuleIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        taggingRuleId: taggingRuleIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -116,7 +136,10 @@ function setupGetTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
-      const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({ organizationId, taggingRuleId });
+      const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({
+        organizationId,
+        taggingRuleId,
+      });
 
       return context.json({
         taggingRule,
@@ -129,16 +152,19 @@ function setupUpdateTaggingRuleRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      taggingRuleId: taggingRuleIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        taggingRuleId: taggingRuleIdSchema,
+      }),
+    ),
     validateJsonBody(taggingRuleBodySchema),
     async (context) => {
       const { userId } = getUser({ context });
 
       const { organizationId, taggingRuleId } = context.req.valid('param');
-      const { name, description, enabled, conditionMatchMode, conditions, tagIds } = context.req.valid('json');
+      const { name, description, enabled, conditionMatchMode, conditions, tagIds } =
+        context.req.valid('json');
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -160,10 +186,12 @@ function setupApplyTaggingRuleRoute({ app, db, taskServices }: RouteDefinitionCo
   app.post(
     '/api/organizations/:organizationId/tagging-rules/:taggingRuleId/apply',
     requireAuthentication(),
-    validateParams(v.strictObject({
-      organizationId: organizationIdSchema,
-      taggingRuleId: taggingRuleIdSchema,
-    })),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        taggingRuleId: taggingRuleIdSchema,
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
 
@@ -175,7 +203,10 @@ function setupApplyTaggingRuleRoute({ app, db, taskServices }: RouteDefinitionCo
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       // Verify the tagging rule exists before enqueuing the task
-      const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({ organizationId, taggingRuleId });
+      const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({
+        organizationId,
+        taggingRuleId,
+      });
 
       if (isNil(taggingRule)) {
         throw createError({

@@ -22,9 +22,21 @@ describe('libsql.kv-store-driver', () => {
         const { clock } = createTestClock();
         const { driver } = await createDriver({ clock });
 
-        await driver.set({ key: 'expired-1', value: 'value', expiresAt: clock.now().add({ milliseconds: 1_000 }) });
-        await driver.set({ key: 'expired-2', value: 'value', expiresAt: clock.now().add({ milliseconds: 1_000 }) });
-        await driver.set({ key: 'still-valid', value: 'value', expiresAt: clock.now().add({ milliseconds: 10_000 }) });
+        await driver.set({
+          key: 'expired-1',
+          value: 'value',
+          expiresAt: clock.now().add({ milliseconds: 1_000 }),
+        });
+        await driver.set({
+          key: 'expired-2',
+          value: 'value',
+          expiresAt: clock.now().add({ milliseconds: 1_000 }),
+        });
+        await driver.set({
+          key: 'still-valid',
+          value: 'value',
+          expiresAt: clock.now().add({ milliseconds: 10_000 }),
+        });
         await driver.set({ key: 'no-expiry', value: 'value' });
 
         clock.advanceBy({ milliseconds: 1_001 });

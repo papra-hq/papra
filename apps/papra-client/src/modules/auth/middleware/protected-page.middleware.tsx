@@ -11,9 +11,7 @@ export const PublicOnlyPage: ParentComponent = (props) => {
       <Match when={!sessionQuery.isLoading && getIsAuthenticated()}>
         <Navigate href="/" />
       </Match>
-      <Match when={!sessionQuery.isLoading && !getIsAuthenticated()}>
-        {props.children}
-      </Match>
+      <Match when={!sessionQuery.isLoading && !getIsAuthenticated()}>{props.children}</Match>
     </Switch>
   );
 };

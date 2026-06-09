@@ -56,12 +56,7 @@ export function RenameDocumentDialog({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleCancel}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleCancel}>
       <TouchableWithoutFeedback onPress={handleCancel}>
         <View style={styles.backdrop}>
           <TouchableWithoutFeedback>

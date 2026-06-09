@@ -13,7 +13,8 @@ export const alertVariants = cva(
     variants: {
       variant: {
         default: 'bg-background text-foreground',
-        destructive: 'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
+        destructive:
+          'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
         primary: 'bg-background text-foreground border-primary',
         muted: 'bg-muted text-muted-foreground border-muted',
       },
@@ -24,8 +25,8 @@ export const alertVariants = cva(
   },
 );
 
-type alertProps<T extends ValidComponent = 'div'> = AlertRootProps<T>
-  & VariantProps<typeof alertVariants> & {
+type alertProps<T extends ValidComponent = 'div'> = AlertRootProps<T> &
+  VariantProps<typeof alertVariants> & {
     class?: string;
   };
 
@@ -48,18 +49,11 @@ export function Alert<T extends ValidComponent = 'div'>(props: PolymorphicProps<
 export function AlertTitle(props: ComponentProps<'div'>) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <div
-      class={cn('font-medium leading-5 tracking-tight', local.class)}
-      {...rest}
-    />
-  );
+  return <div class={cn('font-medium leading-5 tracking-tight', local.class)} {...rest} />;
 }
 
 export function AlertDescription(props: ComponentProps<'div'>) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <div class={cn('text-sm [&_p]:leading-relaxed', local.class)} {...rest} />
-  );
+  return <div class={cn('text-sm [&_p]:leading-relaxed', local.class)} {...rest} />;
 }

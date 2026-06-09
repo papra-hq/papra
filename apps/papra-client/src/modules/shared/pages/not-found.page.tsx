@@ -17,13 +17,10 @@ export const NotFoundPage: Component = () => {
 
   return (
     <div class="h-screen flex flex-col items-center justify-center p-6">
-
       <div class="flex items-center flex-row sm:gap-24">
         <div class="max-w-350px">
           <h1 class="text-xl mr-4 py-2">{t('not-found.title')}</h1>
-          <p class="text-muted-foreground">
-            {t('not-found.description')}
-          </p>
+          <p class="text-muted-foreground">{t('not-found.description')}</p>
           <Button as={A} href={getRedirectionUrl()} class="mt-4" variant="default">
             <div class="i-tabler-arrow-left mr-2" />
             {t('common.back-to-home')}

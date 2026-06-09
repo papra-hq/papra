@@ -65,7 +65,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': '已有账户？',
   'auth.register.login': '登录',
   'auth.register.registration-disabled.title': '注册被禁用',
-  'auth.register.registration-disabled.description': '当前 Papra 实例已禁用新账户的创建。只有已有账户的用户可以登录。如果您认为这是错误，请联系该实例的管理员。',
+  'auth.register.registration-disabled.description':
+    '当前 Papra 实例已禁用新账户的创建。只有已有账户的用户可以登录。如果您认为这是错误，请联系该实例的管理员。',
   'auth.register.form.email.label': '电子邮件',
   'auth.register.form.email.placeholder': '示例: ada@papra.app',
   'auth.register.form.email.required': '请输入您的电子邮件地址',
@@ -82,7 +83,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.submit': '注册',
 
   'auth.email-validation-required.title': '验证您的电子邮件',
-  'auth.email-validation-required.description': '一封验证邮件已发送到您的电子邮件地址。请通过点击邮件中的链接来验证您的电子邮件地址。',
+  'auth.email-validation-required.description':
+    '一封验证邮件已发送到您的电子邮件地址。请通过点击邮件中的链接来验证您的电子邮件地址。',
 
   'auth.email-verification.success.title': '电子邮件已验证',
   'auth.email-verification.success.description': '您的电子邮件已成功验证。您现在可以登录您的账户。',
@@ -96,7 +98,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.legal-links.privacy': '隐私政策',
 
   'auth.no-auth-provider.title': '无身份验证提供者',
-  'auth.no-auth-provider.description': '此 Papra 实例未启用任何身份验证提供者。请联系该实例的管理员以启用它们。',
+  'auth.no-auth-provider.description':
+    '此 Papra 实例未启用任何身份验证提供者。请联系该实例的管理员以启用它们。',
 
   // User settings
 
@@ -136,22 +139,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': '设置双因素认证',
   'user.settings.two-factor.setup-dialog.step1.title': '步骤1：扫描二维码',
-  'user.settings.two-factor.setup-dialog.step1.description': '扫描下方二维码或手动输入设置密钥到您的身份验证应用中。',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    '扫描下方二维码或手动输入设置密钥到您的身份验证应用中。',
   'user.settings.two-factor.setup-dialog.copy-setup-key': '复制设置密钥',
   'user.settings.two-factor.setup-dialog.step2.title': '步骤2：验证码',
-  'user.settings.two-factor.setup-dialog.step2.description': '输入身份验证应用生成的6位验证码以验证并启用双因素认证。',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    '输入身份验证应用生成的6位验证码以验证并启用双因素认证。',
   'user.settings.two-factor.setup-dialog.cancel': '取消',
   'user.settings.two-factor.setup-dialog.verify': '验证并启用双因素认证',
 
   'user.settings.two-factor.backup-codes-dialog.title': '备用码',
-  'user.settings.two-factor.backup-codes-dialog.description': '请将这些备用码保存在安全的地方。如果您无法访问身份验证应用，可以使用它们访问账户。',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    '请将这些备用码保存在安全的地方。如果您无法访问身份验证应用，可以使用它们访问账户。',
   'user.settings.two-factor.backup-codes-dialog.copy': '复制备用码',
   'user.settings.two-factor.backup-codes-dialog.download': '下载备用码',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': '我已保存备用码',
 
   'user.settings.two-factor.disable-dialog.title': '禁用双因素认证',
-  'user.settings.two-factor.disable-dialog.description': '请输入密码以禁用双因素认证。这将降低您账户的安全性。',
+  'user.settings.two-factor.disable-dialog.description':
+    '请输入密码以禁用双因素认证。这将降低您账户的安全性。',
   'user.settings.two-factor.disable-dialog.password.label': '密码',
   'user.settings.two-factor.disable-dialog.password.placeholder': '输入密码',
   'user.settings.two-factor.disable-dialog.password.required': '请输入密码',
@@ -159,7 +166,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': '禁用双因素认证',
 
   'user.settings.two-factor.regenerate-dialog.title': '重新生成备用码',
-  'user.settings.two-factor.regenerate-dialog.description': '这将使所有现有备用码失效并生成新的备用码。请输入密码以继续。',
+  'user.settings.two-factor.regenerate-dialog.description':
+    '这将使所有现有备用码失效并生成新的备用码。请输入密码以继续。',
   'user.settings.two-factor.regenerate-dialog.password.label': '密码',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': '输入密码',
   'user.settings.two-factor.regenerate-dialog.password.required': '请输入密码',
@@ -173,21 +181,26 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': '您的组织',
-  'organizations.list.description': '组织是一种将您的文档分组并管理访问权限的方式。您可以创建多个组织并邀请您的团队成员进行协作。',
+  'organizations.list.description':
+    '组织是一种将您的文档分组并管理访问权限的方式。您可以创建多个组织并邀请您的团队成员进行协作。',
   'organizations.list.create-new': '创建新组织',
   'organizations.list.back': '返回组织列表',
   'organizations.list.deleted.title': '已删除的组织',
-  'organizations.list.deleted.description': '已删除的组织将在 {{ days }} 天内保留，之后将被永久删除。您可以在此期间恢复它们。',
+  'organizations.list.deleted.description':
+    '已删除的组织将在 {{ days }} 天内保留，之后将被永久删除。您可以在此期间恢复它们。',
   'organizations.list.deleted.empty': '没有已删除的组织',
-  'organizations.list.deleted.empty-description': '当您删除一个组织时，它将在此处显示 {{ days }} 天，然后被永久删除。',
+  'organizations.list.deleted.empty-description':
+    '当您删除一个组织时，它将在此处显示 {{ days }} 天，然后被永久删除。',
   'organizations.list.deleted.restore': '恢复',
   'organizations.list.deleted.restore-success': '组织已成功恢复',
   'organizations.list.deleted.restore-confirm.title': '恢复组织',
-  'organizations.list.deleted.restore-confirm.message': '您确定要恢复此组织吗？它将被移回您的活动组织列表。',
+  'organizations.list.deleted.restore-confirm.message':
+    '您确定要恢复此组织吗？它将被移回您的活动组织列表。',
   'organizations.list.deleted.restore-confirm.confirm-button': '恢复组织',
   'organizations.list.deleted.deleted-at': '已删除 {{ date }}',
   'organizations.list.deleted.purge-at': '将于 {{ date }} 被永久删除',
-  'organizations.list.deleted.days-remaining': '（剩余 {{ daysUntilPurge, =1:{daysUntilPurge} 天, {daysUntilPurge} 天 }}）',
+  'organizations.list.deleted.days-remaining':
+    '（剩余 {{ daysUntilPurge, =1:{daysUntilPurge} 天, {daysUntilPurge} 天 }}）',
 
   'organizations.details.no-documents.title': '没有文档',
   'organizations.details.no-documents.description': '该组织中尚无文档。您可以开始上传一些文档。',
@@ -197,9 +210,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.details.latest-documents': '最新导入的文档',
 
   'organizations.create.title': '创建新组织',
-  'organizations.create.description': '您的文档将按组织分组。您可以创建多个组织来分隔您的文档，例如，个人和工作文档。',
+  'organizations.create.description':
+    '您的文档将按组织分组。您可以创建多个组织来分隔您的文档，例如，个人和工作文档。',
   'organizations.create.back': '返回',
-  'organizations.create.error.max-count-reached': '您已达到可创建的组织数量上限，如果需要创建更多组织，请联系支持。',
+  'organizations.create.error.max-count-reached':
+    '您已达到可创建的组织数量上限，如果需要创建更多组织，请联系支持。',
   'organizations.create.form.name.label': '组织名称',
   'organizations.create.form.name.placeholder': '例如: Acme Inc.',
   'organizations.create.form.name.required': '请输入组织名称',
@@ -207,7 +222,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': '组织创建成功',
 
   'organizations.create-first.title': '创建您的组织',
-  'organizations.create-first.description': '您的文档将按组织分组。您可以创建多个组织来分隔您的文档，例如，个人和工作文档。',
+  'organizations.create-first.description':
+    '您的文档将按组织分组。您可以创建多个组织来分隔您的文档，例如，个人和工作文档。',
   'organizations.create-first.default-name': '我的组织',
   'organizations.create-first.user-name': '{{ name }}的组织',
 
@@ -225,12 +241,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.delete.title': '删除组织',
   'organization.settings.delete.description': '删除此组织将永久移除与其相关的所有数据。',
   'organization.settings.delete.confirm.title': '删除组织',
-  'organization.settings.delete.confirm.message': '您确定要删除此组织吗？该组织将被标记为删除，并在 {{ days }} 天后永久移除。在此期间，您可以从您的组织列表中恢复它。所有文档和数据将在此延迟后永久删除。',
+  'organization.settings.delete.confirm.message':
+    '您确定要删除此组织吗？该组织将被标记为删除，并在 {{ days }} 天后永久移除。在此期间，您可以从您的组织列表中恢复它。所有文档和数据将在此延迟后永久删除。',
   'organization.settings.delete.confirm.confirm-button': '删除组织',
   'organization.settings.delete.confirm.cancel-button': '取消',
   'organization.settings.delete.success': '组织已删除',
   'organization.settings.delete.only-owner': '只有组织所有者可以删除此组织。',
-  'organization.settings.delete.has-active-subscription': '无法删除有有效订阅的组织，请先取消您的订阅。',
+  'organization.settings.delete.has-active-subscription':
+    '无法删除有有效订阅的组织，请先取消您的订阅。',
 
   'organization.usage.page.title': '使用情况',
   'organization.usage.page.description': '查看您组织的当前使用情况和限制。',
@@ -290,7 +308,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.cancel.confirm': '取消邀请',
   'organizations.invitations.cancel.cancel': '取消',
   'organizations.invitations.resend.title': '重新发送邀请',
-  'organizations.invitations.resend.description': '您确定要重新发送此邀请吗？这将向收件人发送一封新电子邮件。',
+  'organizations.invitations.resend.description':
+    '您确定要重新发送此邀请吗？这将向收件人发送一封新电子邮件。',
   'organizations.invitations.resend.confirm': '重新发送邀请',
   'organizations.invitations.resend.cancel': '取消',
 
@@ -359,10 +378,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': '文档',
 
   'custom-properties.list.title': '自定义属性',
-  'custom-properties.list.description': '为您的文档定义自定义元数据字段。属性可以是文本、数字、日期、布尔值或选择列表。',
+  'custom-properties.list.description':
+    '为您的文档定义自定义元数据字段。属性可以是文本、数字、日期、布尔值或选择列表。',
   'custom-properties.list.create-button': '创建属性',
   'custom-properties.list.empty.title': '自定义属性',
-  'custom-properties.list.empty.description': '自定义属性让您可以为文档添加结构化元数据，如到期日期、公司名称或金额。',
+  'custom-properties.list.empty.description':
+    '自定义属性让您可以为文档添加结构化元数据，如到期日期、公司名称或金额。',
   'custom-properties.list.table.name': '名称',
   'custom-properties.list.table.type': '类型',
   'custom-properties.list.table.description': '描述',
@@ -370,7 +391,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': '操作',
   'custom-properties.list.table.no-description': '无描述',
   'custom-properties.list.delete.confirm-title': '删除自定义属性',
-  'custom-properties.list.delete.confirm-message': '确定要删除自定义属性"{{ name }}"吗？此操作无法撤销。',
+  'custom-properties.list.delete.confirm-message':
+    '确定要删除自定义属性"{{ name }}"吗？此操作无法撤销。',
   'custom-properties.list.delete.confirm-button': '删除',
   'custom-properties.list.delete.success': '自定义属性已成功删除',
   'custom-properties.list.delete.error': '删除自定义属性失败',
@@ -432,8 +454,10 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': '已删除的文档',
   'documents.deleted.empty.title': '没有已删除的文档',
-  'documents.deleted.empty.description': '您没有已删除的文档。被删除的文档将在 {{ days }} 天内移至回收站。',
-  'documents.deleted.retention-notice': '所有已删除的文档将在回收站中保存 {{ days }} 天。超过此期限，文档将被永久删除，且无法恢复。',
+  'documents.deleted.empty.description':
+    '您没有已删除的文档。被删除的文档将在 {{ days }} 天内移至回收站。',
+  'documents.deleted.retention-notice':
+    '所有已删除的文档将在回收站中保存 {{ days }} 天。超过此期限，文档将被永久删除，且无法恢复。',
   'documents.deleted.deleted-at': '删除时间',
   'documents.deleted.restoring': '恢复中...',
   'documents.deleted.deleting': '删除中...',
@@ -585,9 +609,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.ends-with': '结束于',
   'tagging-rules.list.title': '标签规则',
   'tagging-rules.list.description': '管理组织的标签规则，根据您定义的条件自动为文档打标签。',
-  'tagging-rules.list.demo-warning': '注意：此为演示环境（无服务器），标签规则不会应用于新添加的文档。',
+  'tagging-rules.list.demo-warning':
+    '注意：此为演示环境（无服务器），标签规则不会应用于新添加的文档。',
   'tagging-rules.list.no-tagging-rules.title': '暂无标签规则',
-  'tagging-rules.list.no-tagging-rules.description': '创建标签规则，根据设定条件自动为添加的文档打标签。',
+  'tagging-rules.list.no-tagging-rules.description':
+    '创建标签规则，根据设定条件自动为添加的文档打标签。',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': '创建标签规则',
   'tagging-rules.list.card.no-conditions': '无条件',
   'tagging-rules.list.card.one-condition': '1 条条件',
@@ -603,7 +629,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': '请输入规则名称',
   'tagging-rules.form.name.max-length': '名称必须少于 64 个字符',
   'tagging-rules.form.description.label': '描述',
-  'tagging-rules.form.description.placeholder': '例如：名称中包含 \'invoice\' 的文档将被打标签',
+  'tagging-rules.form.description.placeholder': "例如：名称中包含 'invoice' 的文档将被打标签",
   'tagging-rules.form.description.max-length': '描述必须少于 256 个字符',
   'tagging-rules.form.conditions.label': '条件',
   'tagging-rules.form.conditions.description': '定义规则适用的条件。若无条件，规则将应用于所有文档',
@@ -614,7 +640,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': '所有条件都需匹配',
   'tagging-rules.condition-match-mode.any': '任一条件匹配即可',
   'tagging-rules.form.conditions.no-conditions.title': '无条件',
-  'tagging-rules.form.conditions.no-conditions.description': '您未为该规则添加条件。此规则将对所有文档应用其标签。',
+  'tagging-rules.form.conditions.no-conditions.description':
+    '您未为该规则添加条件。此规则将对所有文档应用其标签。',
   'tagging-rules.form.conditions.no-conditions.confirm': '在无条件下应用规则',
   'tagging-rules.form.conditions.no-conditions.cancel': '取消',
   'tagging-rules.form.conditions.value.placeholder': '例如：invoice',
@@ -629,7 +656,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': '取消',
   'tagging-rules.apply.button': '应用于现有文档',
   'tagging-rules.apply.confirm.title': '将规则应用于现有文档？',
-  'tagging-rules.apply.confirm.description': '这将检查组织内的所有现有文档，并对匹配条件的文档应用标签。处理将在后台进行。',
+  'tagging-rules.apply.confirm.description':
+    '这将检查组织内的所有现有文档，并对匹配条件的文档应用标签。处理将在后台进行。',
   'tagging-rules.apply.confirm.button': '应用规则',
   'tagging-rules.apply.success': '规则应用已在后台启动',
   'tagging-rules.apply.error': '启动规则应用失败',
@@ -638,11 +666,14 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': '接收邮箱',
-  'intake-emails.description': '接收邮箱地址用于将电子邮件自动导入到 Papra。只需将邮件转发至接收地址，其附件将被添加到组织的文档中。',
+  'intake-emails.description':
+    '接收邮箱地址用于将电子邮件自动导入到 Papra。只需将邮件转发至接收地址，其附件将被添加到组织的文档中。',
   'intake-emails.disabled.title': '接收邮箱已禁用',
-  'intake-emails.disabled.description': '此实例已禁用接收邮箱。请联系管理员以启用。更多信息请参阅 {{ documentation }}。',
+  'intake-emails.disabled.description':
+    '此实例已禁用接收邮箱。请联系管理员以启用。更多信息请参阅 {{ documentation }}。',
   'intake-emails.disabled.documentation': '文档',
-  'intake-emails.info': '只有来自允许来源且已启用的接收邮箱的邮件会被处理。您可以随时启用或禁用接收邮箱。',
+  'intake-emails.info':
+    '只有来自允许来源且已启用的接收邮箱的邮件会被处理。您可以随时启用或禁用接收邮箱。',
   'intake-emails.empty.title': '暂无接收邮箱',
   'intake-emails.empty.description': '生成接收地址以便轻松导入邮件附件。',
   'intake-emails.empty.generate': '生成接收邮箱',
@@ -664,7 +695,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': '接收邮箱已启用',
   'intake-emails.update.success.disabled': '接收邮箱已禁用',
   'intake-emails.allowed-origins.title': '允许的来源',
-  'intake-emails.allowed-origins.description': '只有来自这些来源并发送到 {{ email }} 的邮件会被处理。若未指定来源，所有邮件将被丢弃。',
+  'intake-emails.allowed-origins.description':
+    '只有来自这些来源并发送到 {{ email }} 的邮件会被处理。若未指定来源，所有邮件将被丢弃。',
   'intake-emails.allowed-origins.add.label': '添加允许的来源邮箱',
   'intake-emails.allowed-origins.add.placeholder': '例如：ada@papra.app',
   'intake-emails.allowed-origins.add.button': '添加',
@@ -814,8 +846,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.document.already_exists': '文档已存在',
   'api-errors.document.size_too_large': '文件大小过大',
   'api-errors.intake-emails.already_exists': '具有此地址的接收邮箱已存在。',
-  'api-errors.intake_email.limit_reached': '该组织的接收邮箱数量已达到上限。请升级您的方案以创建更多接收邮箱。',
-  'api-errors.user.max_organization_count_reached': '您已达到可创建的组织数量上限，如需创建更多，请联系支持。',
+  'api-errors.intake_email.limit_reached':
+    '该组织的接收邮箱数量已达到上限。请升级您的方案以创建更多接收邮箱。',
+  'api-errors.user.max_organization_count_reached':
+    '您已达到可创建的组织数量上限，如需创建更多，请联系支持。',
   'api-errors.default': '处理请求时发生错误。',
   'api-errors.organization.invitation_already_exists': '此邮箱的邀请在该组织中已存在。',
   'api-errors.user.already_in_organization': '该用户已在此组织中。',
@@ -824,10 +858,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.tags.already_exists': '该组织已存在同名标签',
   'api-errors.tags.organization_limit_reached': '该组织的标签数量已达上限。',
   'api-errors.internal.error': '处理请求时发生错误。请稍后重试。',
-  'api-errors.auth.invalid_origin': '应用来源无效。如果您自托管 Papra，请确保 APP_BASE_URL 环境变量与当前 URL 匹配。详情见 https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': '该组织的成员和待处理邀请数量已达上限。请升级方案以添加更多成员。',
-  'api-errors.organization.has_active_subscription': '无法删除有有效订阅的组织。请先通过上方“管理订阅”取消订阅。',
-  'api-errors.webhooks.ssrf_unsafe_url': '提供的 URL 不被允许。Webhook URL 不能指向私有或保留的 IP 地址。',
+  'api-errors.auth.invalid_origin':
+    '应用来源无效。如果您自托管 Papra，请确保 APP_BASE_URL 环境变量与当前 URL 匹配。详情见 https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    '该组织的成员和待处理邀请数量已达上限。请升级方案以添加更多成员。',
+  'api-errors.organization.has_active_subscription':
+    '无法删除有有效订阅的组织。请先通过上方“管理订阅”取消订阅。',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    '提供的 URL 不被允许。Webhook URL 不能指向私有或保留的 IP 地址。',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': '未找到用户',
   'api-errors.FAILED_TO_CREATE_USER': '创建用户失败',
@@ -908,7 +946,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.billed-annually': '按年计费：${{ price }}',
   'subscriptions.upgrade-dialog.upgrade-now': '立即升级',
   'subscriptions.upgrade-dialog.promo-banner.title': '限时优惠',
-  'subscriptions.upgrade-dialog.promo-banner.description': '作为早期采用者，组织可永久获得所有方案 {{ percent }}% 折扣！优惠于 {{ days, >1:{days} 天, =1:1 天, 少于 1 天 }} 到期。',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    '作为早期采用者，组织可永久获得所有方案 {{ percent }}% 折扣！优惠于 {{ days, >1:{days} 天, =1:1 天, 少于 1 天 }} 到期。',
 
   'subscriptions.plan.free.name': '免费方案',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +968,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': '按月',
   'subscriptions.billing-interval.annual': '按年',
 
-  'subscriptions.usage-warning.message': '您的文档存储已使用 {{ percent }}%，考虑升级方案以获得更多空间。',
+  'subscriptions.usage-warning.message':
+    '您的文档存储已使用 {{ percent }}%，考虑升级方案以获得更多空间。',
   'subscriptions.usage-warning.upgrade-button': '升级方案',
 
   // Admin
@@ -960,7 +1000,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': '成员',
   'admin.organizations.table.created': '创建时间',
   'admin.organizations.table.updated': '更新时间',
-  'admin.organizations.pagination.info': '显示第 {{ start }} 到 {{ end }} 条，共 {{ total }} {{ total, =1:个组织, 个组织 }}',
+  'admin.organizations.pagination.info':
+    '显示第 {{ start }} 到 {{ end }} 条，共 {{ total }} {{ total, =1:个组织, 个组织 }}',
   'admin.organizations.pagination.page-info': '第 {{ current }} 页，共 {{ total }} 页',
 
   'admin.organization-detail.title': '组织详情',
@@ -1017,7 +1058,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': '未验证',
   'admin.users.table.orgs': '组织',
   'admin.users.table.created': '创建时间',
-  'admin.users.pagination.info': '显示第 {{ start }} 到 {{ end }} 条，共 {{ total }} {{ total, =1:个用户, 个用户 }}',
+  'admin.users.pagination.info':
+    '显示第 {{ start }} 到 {{ end }} 条，共 {{ total }} {{ total, =1:个用户, 个用户 }}',
   'admin.users.pagination.page-info': '第 {{ current }} 页，共 {{ total }} 页',
 
   'admin.user-detail.back': '返回用户列表',

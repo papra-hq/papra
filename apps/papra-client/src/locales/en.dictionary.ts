@@ -3,7 +3,8 @@ export const translations = {
 
   'auth.request-password-reset.title': 'Reset your password',
   'auth.request-password-reset.description': 'Enter your email to reset your password.',
-  'auth.request-password-reset.requested': 'If an account exists for this email, we\'ve sent you an email to reset your password.',
+  'auth.request-password-reset.requested':
+    "If an account exists for this email, we've sent you an email to reset your password.",
   'auth.request-password-reset.back-to-login': 'Back to login',
   'auth.request-password-reset.form.email.label': 'Email',
   'auth.request-password-reset.form.email.placeholder': 'Example: ada@papra.app',
@@ -18,8 +19,10 @@ export const translations = {
   'auth.reset-password.form.new-password.label': 'New password',
   'auth.reset-password.form.new-password.placeholder': 'Example: **********',
   'auth.reset-password.form.new-password.required': 'Please enter your new password',
-  'auth.reset-password.form.new-password.min-length': 'Password must be at least {{ minLength }} characters',
-  'auth.reset-password.form.new-password.max-length': 'Password must be less than {{ maxLength }} characters',
+  'auth.reset-password.form.new-password.min-length':
+    'Password must be at least {{ minLength }} characters',
+  'auth.reset-password.form.new-password.max-length':
+    'Password must be less than {{ maxLength }} characters',
   'auth.reset-password.form.submit': 'Reset password',
 
   'auth.email-provider.open': 'Open {{ provider }}',
@@ -27,7 +30,7 @@ export const translations = {
   'auth.login.title': 'Login to Papra',
   'auth.login.description': 'Enter your email or use social login to access your Papra account.',
   'auth.login.login-with-provider': 'Login with {{ provider }}',
-  'auth.login.no-account': 'Don\'t have an account?',
+  'auth.login.no-account': "Don't have an account?",
   'auth.login.register': 'Register',
   'auth.login.form.email.label': 'Email',
   'auth.login.form.email.placeholder': 'Example: ada@papra.app',
@@ -41,8 +44,10 @@ export const translations = {
   'auth.login.form.submit': 'Login',
 
   'auth.login.two-factor.title': 'Two-Factor Verification',
-  'auth.login.two-factor.description.totp': 'Enter the 6-digit verification code from your authenticator app.',
-  'auth.login.two-factor.description.backup-code': 'Enter one of your backup codes to access your account.',
+  'auth.login.two-factor.description.totp':
+    'Enter the 6-digit verification code from your authenticator app.',
+  'auth.login.two-factor.description.backup-code':
+    'Enter one of your backup codes to access your account.',
   'auth.login.two-factor.code.label.totp': 'Authenticator code',
   'auth.login.two-factor.code.label.backup-code': 'Backup code',
   'auth.login.two-factor.code.placeholder.backup-code': 'Enter backup code',
@@ -50,7 +55,8 @@ export const translations = {
   'auth.login.two-factor.trust-device.label': 'Trust this device for 30 days',
   'auth.login.two-factor.back': 'Back to login',
   'auth.login.two-factor.submit': 'Verify',
-  'auth.login.two-factor.verification-failed': 'Verification failed. Please check your code and try again.',
+  'auth.login.two-factor.verification-failed':
+    'Verification failed. Please check your code and try again.',
   'auth.login.two-factor.use-backup-code': 'Use backup code instead',
   'auth.login.two-factor.use-totp': 'Use authenticator app instead',
 
@@ -63,7 +69,8 @@ export const translations = {
   'auth.register.have-account': 'Already have an account?',
   'auth.register.login': 'Login',
   'auth.register.registration-disabled.title': 'Registration is disabled',
-  'auth.register.registration-disabled.description': 'The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.',
+  'auth.register.registration-disabled.description':
+    'The creation of new accounts is currently disabled on this instance of Papra. Only users with existing accounts can log in. If you think this is a mistake, please contact the administrator of this instance.',
   'auth.register.form.email.label': 'Email',
   'auth.register.form.email.placeholder': 'Example: ada@papra.app',
   'auth.register.form.email.required': 'Please enter your email address',
@@ -80,21 +87,26 @@ export const translations = {
   'auth.register.form.submit': 'Register',
 
   'auth.email-validation-required.title': 'Verify your email',
-  'auth.email-validation-required.description': 'A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.',
+  'auth.email-validation-required.description':
+    'A verification email has been sent to your email address. Please verify your email address by clicking the link in the email.',
 
   'auth.email-verification.success.title': 'Email verified',
-  'auth.email-verification.success.description': 'Your email has been successfully verified. You can now log in to your account.',
+  'auth.email-verification.success.description':
+    'Your email has been successfully verified. You can now log in to your account.',
   'auth.email-verification.success.login': 'Go to login',
   'auth.email-verification.error.title': 'Verification failed',
-  'auth.email-verification.error.description': 'The verification link has expired or is invalid. Please request a new verification email by logging in.',
+  'auth.email-verification.error.description':
+    'The verification link has expired or is invalid. Please request a new verification email by logging in.',
   'auth.email-verification.error.back': 'Back to login',
 
-  'auth.legal-links.description': 'By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.',
+  'auth.legal-links.description':
+    'By continuing, you acknowledge that you understand and agree to the {{ terms }} and {{ privacy }}.',
   'auth.legal-links.terms': 'Terms of Service',
   'auth.legal-links.privacy': 'Privacy Policy',
 
   'auth.no-auth-provider.title': 'No authentication provider',
-  'auth.no-auth-provider.description': 'There are no authentication providers enabled on this instance of Papra. Please contact the administrator of this instance to enable them.',
+  'auth.no-auth-provider.description':
+    'There are no authentication providers enabled on this instance of Papra. Please contact the administrator of this instance to enable them.',
 
   // User settings
 
@@ -134,22 +146,26 @@ export const translations = {
 
   'user.settings.two-factor.setup-dialog.title': 'Set Up Two-Factor Authentication',
   'user.settings.two-factor.setup-dialog.step1.title': 'Step 1: Scan the QR code',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Scan the QR code below or manually enter the setup key into your authenticator app.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Scan the QR code below or manually enter the setup key into your authenticator app.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Copy setup key',
   'user.settings.two-factor.setup-dialog.step2.title': 'Step 2: Verify the code',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Enter the 6-digit code generated by your authenticator app to verify and enable two-factor authentication.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Enter the 6-digit code generated by your authenticator app to verify and enable two-factor authentication.',
   'user.settings.two-factor.setup-dialog.cancel': 'Cancel',
   'user.settings.two-factor.setup-dialog.verify': 'Verify and enable 2FA',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Backup Codes',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Save these backup codes in a safe place. You can use them to access your account if you lose access to your authenticator app.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Save these backup codes in a safe place. You can use them to access your account if you lose access to your authenticator app.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Copy backup codes',
   'user.settings.two-factor.backup-codes-dialog.download': 'Download backup codes',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
-  'user.settings.two-factor.backup-codes-dialog.close': 'I\'ve saved my codes',
+  'user.settings.two-factor.backup-codes-dialog.close': "I've saved my codes",
 
   'user.settings.two-factor.disable-dialog.title': 'Disable Two-Factor Authentication',
-  'user.settings.two-factor.disable-dialog.description': 'Enter your password to disable 2FA. This will make your account less secure.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Enter your password to disable 2FA. This will make your account less secure.',
   'user.settings.two-factor.disable-dialog.password.label': 'Password',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Enter your password',
   'user.settings.two-factor.disable-dialog.password.required': 'Please enter your password',
@@ -157,7 +173,8 @@ export const translations = {
   'user.settings.two-factor.disable-dialog.submit': 'Disable 2FA',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Regenerate Backup Codes',
-  'user.settings.two-factor.regenerate-dialog.description': 'This will invalidate all existing backup codes and generate new ones. Enter your password to continue.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'This will invalidate all existing backup codes and generate new ones. Enter your password to continue.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Password',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Enter your password',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Please enter your password',
@@ -171,33 +188,41 @@ export const translations = {
   // Organizations
 
   'organizations.list.title': 'Your organizations',
-  'organizations.list.description': 'Organizations are a way to group your documents and manage access to them. You can create multiple organizations and invite your team members to collaborate.',
+  'organizations.list.description':
+    'Organizations are a way to group your documents and manage access to them. You can create multiple organizations and invite your team members to collaborate.',
   'organizations.list.create-new': 'Create new organization',
   'organizations.list.back': 'Back to organizations',
   'organizations.list.deleted.title': 'Deleted organizations',
-  'organizations.list.deleted.description': 'Deleted organizations are kept for {{ days }} days before being permanently removed. You can restore them during this period.',
+  'organizations.list.deleted.description':
+    'Deleted organizations are kept for {{ days }} days before being permanently removed. You can restore them during this period.',
   'organizations.list.deleted.empty': 'No deleted organizations',
-  'organizations.list.deleted.empty-description': 'When you delete an organization, it will appear here for {{ days }} days before being permanently deleted.',
+  'organizations.list.deleted.empty-description':
+    'When you delete an organization, it will appear here for {{ days }} days before being permanently deleted.',
   'organizations.list.deleted.restore': 'Restore',
   'organizations.list.deleted.restore-success': 'Organization restored successfully',
   'organizations.list.deleted.restore-confirm.title': 'Restore organization',
-  'organizations.list.deleted.restore-confirm.message': 'Are you sure you want to restore this organization? It will be moved back to your active organizations list.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Are you sure you want to restore this organization? It will be moved back to your active organizations list.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Restore organization',
   'organizations.list.deleted.deleted-at': 'Deleted {{ date }}',
   'organizations.list.deleted.purge-at': 'Will be permanently deleted on {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} day, {daysUntilPurge} days }} remaining)',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} day, {daysUntilPurge} days }} remaining)',
 
   'organizations.details.no-documents.title': 'No documents',
-  'organizations.details.no-documents.description': 'There are no documents in this organization yet. Start by uploading some documents.',
+  'organizations.details.no-documents.description':
+    'There are no documents in this organization yet. Start by uploading some documents.',
   'organizations.details.upload-documents': 'Upload documents',
   'organizations.details.documents-count': 'documents in total',
   'organizations.details.total-size': 'total size',
   'organizations.details.latest-documents': 'Latest imported documents',
 
   'organizations.create.title': 'Create a new organization',
-  'organizations.create.description': 'Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.',
+  'organizations.create.description':
+    'Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.',
   'organizations.create.back': 'Back',
-  'organizations.create.error.max-count-reached': 'You have reached the maximum number of organizations you can create, if you need to create more, please contact support.',
+  'organizations.create.error.max-count-reached':
+    'You have reached the maximum number of organizations you can create, if you need to create more, please contact support.',
   'organizations.create.form.name.label': 'Organization name',
   'organizations.create.form.name.placeholder': 'Eg. Acme Inc.',
   'organizations.create.form.name.required': 'Please enter an organization name',
@@ -205,9 +230,10 @@ export const translations = {
   'organizations.create.success': 'Organization created successfully',
 
   'organizations.create-first.title': 'Create your organization',
-  'organizations.create-first.description': 'Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.',
+  'organizations.create-first.description':
+    'Your documents will be grouped by organization. You can create multiple organizations to separate your documents, for example, for personal and work documents.',
   'organizations.create-first.default-name': 'My organization',
-  'organizations.create-first.user-name': '{{ name }}\'s organization',
+  'organizations.create-first.user-name': "{{ name }}'s organization",
 
   'organization.settings.title': 'Organization Settings',
   'organization.settings.page.title': 'Organization settings',
@@ -217,21 +243,26 @@ export const translations = {
   'organization.settings.name.placeholder': 'Eg. Acme Inc.',
   'organization.settings.name.updated': 'Organization name updated',
   'organization.settings.subscription.title': 'Subscription',
-  'organization.settings.subscription.description': 'Manage your billing, invoices and payment methods.',
+  'organization.settings.subscription.description':
+    'Manage your billing, invoices and payment methods.',
   'organization.settings.subscription.manage': 'Manage subscription',
   'organization.settings.subscription.error': 'Failed to get customer portal URL',
   'organization.settings.delete.title': 'Delete organization',
-  'organization.settings.delete.description': 'Deleting this organization will permanently remove all data associated with it.',
+  'organization.settings.delete.description':
+    'Deleting this organization will permanently remove all data associated with it.',
   'organization.settings.delete.confirm.title': 'Delete organization',
-  'organization.settings.delete.confirm.message': 'Are you sure you want to delete this organization? The organization will be marked for deletion and permanently removed after {{ days }} days. During this period, you can restore it from your organizations list. All documents and data will be permanently deleted after this delay.',
+  'organization.settings.delete.confirm.message':
+    'Are you sure you want to delete this organization? The organization will be marked for deletion and permanently removed after {{ days }} days. During this period, you can restore it from your organizations list. All documents and data will be permanently deleted after this delay.',
   'organization.settings.delete.confirm.confirm-button': 'Delete organization',
   'organization.settings.delete.confirm.cancel-button': 'Cancel',
   'organization.settings.delete.success': 'Organization deleted',
-  'organization.settings.delete.only-owner': 'Only the organization owner can delete this organization.',
-  'organization.settings.delete.has-active-subscription': 'Cannot delete organization with an active subscription, please cancel your subscription above first.',
+  'organization.settings.delete.only-owner':
+    'Only the organization owner can delete this organization.',
+  'organization.settings.delete.has-active-subscription':
+    'Cannot delete organization with an active subscription, please cancel your subscription above first.',
 
   'organization.usage.page.title': 'Usage',
-  'organization.usage.page.description': 'View your organization\'s current usage and limits.',
+  'organization.usage.page.description': "View your organization's current usage and limits.",
   'organization.usage.storage.title': 'Document storage',
   'organization.usage.storage.description': 'Total storage used by your documents',
   'organization.usage.intake-emails.title': 'Intake emails',
@@ -243,14 +274,16 @@ export const translations = {
   'organizations.members.title': 'Members',
   'organizations.members.description': 'Manage your organization members',
   'organizations.members.invite-member': 'Invite member',
-  'organizations.members.invite-member-disabled-tooltip': 'Only admins or owners can invite members to the organization',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Only admins or owners can invite members to the organization',
   'organizations.members.remove-from-organization': 'Remove from organization',
   'organizations.members.role': 'Role',
   'organizations.members.roles.owner': 'Owner',
   'organizations.members.roles.admin': 'Admin',
   'organizations.members.roles.member': 'Member',
   'organizations.members.delete.confirm.title': 'Remove member',
-  'organizations.members.delete.confirm.message': 'Are you sure you want to remove this member from the organization?',
+  'organizations.members.delete.confirm.message':
+    'Are you sure you want to remove this member from the organization?',
   'organizations.members.delete.confirm.confirm-button': 'Remove',
   'organizations.members.delete.confirm.cancel-button': 'Cancel',
   'organizations.members.delete.success': 'Member removed from organization',
@@ -269,14 +302,16 @@ export const translations = {
   'organizations.invite-member.form.role.label': 'Role',
   'organizations.invite-member.form.submit': 'Invite to organization',
   'organizations.invite-member.success.message': 'Member invited',
-  'organizations.invite-member.success.description': 'The email has been invited to the organization.',
+  'organizations.invite-member.success.description':
+    'The email has been invited to the organization.',
   'organizations.invite-member.error.message': 'Failed to invite member',
 
   'organizations.invitations.title': 'Invitations',
   'organizations.invitations.description': 'Manage your organization invitations',
   'organizations.invitations.list.cta': 'Invite member',
   'organizations.invitations.list.empty.title': 'No pending invitations',
-  'organizations.invitations.list.empty.description': 'You haven\'t been invited to any organizations yet.',
+  'organizations.invitations.list.empty.description':
+    "You haven't been invited to any organizations yet.",
   'organizations.invitations.status.pending': 'Pending',
   'organizations.invitations.status.accepted': 'Accepted',
   'organizations.invitations.status.rejected': 'Rejected',
@@ -284,18 +319,20 @@ export const translations = {
   'organizations.invitations.status.cancelled': 'Cancelled',
   'organizations.invitations.resend': 'Resend invitation',
   'organizations.invitations.cancel.title': 'Cancel invitation',
-  'organizations.invitations.cancel.description': 'Are you sure you want to cancel this invitation?',
+  'organizations.invitations.cancel.description':
+    'Are you sure you want to cancel this invitation?',
   'organizations.invitations.cancel.confirm': 'Cancel invitation',
   'organizations.invitations.cancel.cancel': 'Cancel',
   'organizations.invitations.resend.title': 'Resend invitation',
-  'organizations.invitations.resend.description': 'Are you sure you want to resend this invitation? This will send a new email to the recipient.',
+  'organizations.invitations.resend.description':
+    'Are you sure you want to resend this invitation? This will send a new email to the recipient.',
   'organizations.invitations.resend.confirm': 'Resend invitation',
   'organizations.invitations.resend.cancel': 'Cancel',
 
   'invitations.list.title': 'Invitations',
   'invitations.list.description': 'Manage your organization invitations',
   'invitations.list.empty.title': 'No pending invitations',
-  'invitations.list.empty.description': 'You haven\'t been invited to any organizations yet.',
+  'invitations.list.empty.description': "You haven't been invited to any organizations yet.",
   'invitations.list.headers.organization': 'Organization',
   'invitations.list.headers.status': 'Status',
   'invitations.list.headers.created': 'Created',
@@ -311,7 +348,8 @@ export const translations = {
 
   'documents.list.title': 'Documents',
   'documents.list.no-documents.title': 'No documents',
-  'documents.list.no-documents.description': 'There are no documents in this organization yet. Start by uploading some documents.',
+  'documents.list.no-documents.description':
+    'There are no documents in this organization yet. Start by uploading some documents.',
   'documents.list.no-results': 'No documents found',
   'documents.list.table.headers.file-name': 'File name',
   'documents.list.table.headers.created': 'Created',
@@ -319,8 +357,10 @@ export const translations = {
   'documents.list.table.headers.actions': 'Actions',
   'documents.list.table.headers.tags': 'Tags',
   'documents.list.search.placeholder': 'Search documents...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:document, documents }} matching this query',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:document, documents }} in total',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:document, documents }} matching this query',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:document, documents }} in total',
 
   'documents.list.batch.selected-count': '{{ count }} {{ count, =1:document, documents }} selected',
   'documents.list.batch.clear': 'Clear selection',
@@ -329,26 +369,34 @@ export const translations = {
   'documents.list.batch.error': 'The batch operation failed. Please try again.',
   'documents.list.batch.select-all-matching': 'Select all {{ count }} matching this search',
   'documents.list.batch.select-all': 'Select all {{ count }} {{ count, =1:document, documents }}',
-  'documents.list.batch.all-matching-selected': 'All {{ count }} {{ count, =1:document, documents }} matching this search selected',
-  'documents.list.batch.all-selected': 'All {{ count }} {{ count, =1:document, documents }} selected',
+  'documents.list.batch.all-matching-selected':
+    'All {{ count }} {{ count, =1:document, documents }} matching this search selected',
+  'documents.list.batch.all-selected':
+    'All {{ count }} {{ count, =1:document, documents }} selected',
   'documents.list.batch.trash.confirm.title': 'Move to trash',
-  'documents.list.batch.trash.confirm.description': 'Move {{ count }} {{ count, =1:document, documents }} to trash? You can restore them later from the trash.',
+  'documents.list.batch.trash.confirm.description':
+    'Move {{ count }} {{ count, =1:document, documents }} to trash? You can restore them later from the trash.',
   'documents.list.batch.trash.confirm.label': 'Move to trash',
   'documents.list.batch.trash.confirm.cancel': 'Cancel',
-  'documents.list.batch.trash.success': '{{ count }} {{ count, =1:document, documents }} moved to trash',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:document, documents }} moved to trash',
   'documents.list.batch.tags.dialog.title': 'Update tags',
-  'documents.list.batch.tags.dialog.description': 'Add or remove tags on {{ count }} selected {{ count, =1:document, documents }}.',
+  'documents.list.batch.tags.dialog.description':
+    'Add or remove tags on {{ count }} selected {{ count, =1:document, documents }}.',
   'documents.list.batch.tags.dialog.add-label': 'Tags to add',
   'documents.list.batch.tags.dialog.remove-label': 'Tags to remove',
-  'documents.list.batch.tags.dialog.overlap-error': 'A tag cannot be both added and removed in the same operation.',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'A tag cannot be both added and removed in the same operation.',
   'documents.list.batch.tags.dialog.submit': 'Apply',
   'documents.list.batch.tags.dialog.cancel': 'Cancel',
-  'documents.list.batch.tags.success': 'Tags updated on {{ count }} {{ count, =1:document, documents }}',
+  'documents.list.batch.tags.success':
+    'Tags updated on {{ count }} {{ count, =1:document, documents }}',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Content',
   'documents.tabs.activity': 'Activity',
-  'documents.deleted.message': 'This document has been deleted and will be permanently removed in {{ days }} days.',
+  'documents.deleted.message':
+    'This document has been deleted and will be permanently removed in {{ days }} days.',
   'documents.actions.download.title': 'Download',
   'documents.actions.download.error': 'Failed to download document',
   'documents.actions.restore': 'Restore',
@@ -357,8 +405,10 @@ export const translations = {
   'documents.actions.cancel': 'Cancel',
   'documents.actions.save': 'Save',
   'documents.actions.saving': 'Saving...',
-  'documents.content.alert': 'The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.',
-  'documents.content.empty-placeholder': 'This document has no extracted content, you can set it manually here.',
+  'documents.content.alert':
+    'The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.',
+  'documents.content.empty-placeholder':
+    'This document has no extracted content, you can set it manually here.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Name',
   'documents.info.type': 'Type',
@@ -385,10 +435,12 @@ export const translations = {
   'custom-properties.types.document_relation': 'Document',
 
   'custom-properties.list.title': 'Custom Properties',
-  'custom-properties.list.description': 'Define custom metadata fields for your documents. Properties can be text, numbers, dates, booleans, or selection lists.',
+  'custom-properties.list.description':
+    'Define custom metadata fields for your documents. Properties can be text, numbers, dates, booleans, or selection lists.',
   'custom-properties.list.create-button': 'Create property',
   'custom-properties.list.empty.title': 'Custom Properties',
-  'custom-properties.list.empty.description': 'Custom properties let you add structured metadata to your documents, such as expiration dates, company names, or amounts.',
+  'custom-properties.list.empty.description':
+    'Custom properties let you add structured metadata to your documents, such as expiration dates, company names, or amounts.',
   'custom-properties.list.table.name': 'Name',
   'custom-properties.list.table.type': 'Type',
   'custom-properties.list.table.description': 'Description',
@@ -396,7 +448,8 @@ export const translations = {
   'custom-properties.list.table.actions': 'Actions',
   'custom-properties.list.table.no-description': 'No description',
   'custom-properties.list.delete.confirm-title': 'Delete custom property',
-  'custom-properties.list.delete.confirm-message': 'Are you sure you want to delete the custom property "{{ name }}"? This action cannot be undone.',
+  'custom-properties.list.delete.confirm-message':
+    'Are you sure you want to delete the custom property "{{ name }}"? This action cannot be undone.',
   'custom-properties.list.delete.confirm-button': 'Delete',
   'custom-properties.list.delete.success': 'Custom property deleted successfully',
   'custom-properties.list.delete.error': 'Failed to delete custom property',
@@ -429,7 +482,8 @@ export const translations = {
   'custom-properties.form.options.validation.required': 'Please add at least one option',
   'custom-properties.form.options.add': 'Add option',
   'custom-properties.form.cancel': 'Cancel',
-  'custom-properties.form.save-error': 'An error occurred while saving the property definition. Please try again.',
+  'custom-properties.form.save-error':
+    'An error occurred while saving the property definition. Please try again.',
 
   'documents.custom-properties.section-title': 'Properties',
   'documents.custom-properties.no-value': 'Not set',
@@ -458,20 +512,24 @@ export const translations = {
 
   'documents.deleted.title': 'Deleted documents',
   'documents.deleted.empty.title': 'No deleted documents',
-  'documents.deleted.empty.description': 'You have no deleted documents. Documents that are deleted will be moved to the trash bin for {{ days }} days.',
-  'documents.deleted.retention-notice': 'All deleted documents are stored in the trash bin for {{ days }} days. Passing this delay, the documents will be permanently deleted, and you will not be able to restore them.',
+  'documents.deleted.empty.description':
+    'You have no deleted documents. Documents that are deleted will be moved to the trash bin for {{ days }} days.',
+  'documents.deleted.retention-notice':
+    'All deleted documents are stored in the trash bin for {{ days }} days. Passing this delay, the documents will be permanently deleted, and you will not be able to restore them.',
   'documents.deleted.deleted-at': 'Deleted',
   'documents.deleted.restoring': 'Restoring...',
   'documents.deleted.deleting': 'Deleting...',
 
   'documents.preview.unknown-file-type': 'No preview available for this file type',
-  'documents.preview.binary-file': 'This appears to be a binary file and cannot be displayed as text',
+  'documents.preview.binary-file':
+    'This appears to be a binary file and cannot be displayed as text',
 
   'documents.open-with.label': 'Open with',
   'documents.open-with.pdf-viewer': 'PDF viewer',
 
   'documents.pdf-viewer.loading': 'Loading PDF',
-  'documents.pdf-viewer.not-a-pdf': 'This document is not a PDF and cannot be opened in the PDF viewer.',
+  'documents.pdf-viewer.not-a-pdf':
+    'This document is not a PDF and cannot be opened in the PDF viewer.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Hide sidebar',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Show sidebar',
@@ -550,11 +608,13 @@ export const translations = {
   'document-share-links.create.title': 'Create a share link',
   'document-share-links.create.description': 'Create a new share link for this document.',
   'document-share-links.create.password.toggle': 'Require a password',
-  'document-share-links.create.password.hint': 'Optional, recipients will have to enter it before accessing.',
+  'document-share-links.create.password.hint':
+    'Optional, recipients will have to enter it before accessing.',
   'document-share-links.create.password.placeholder': 'Enter or generate a password',
   'document-share-links.create.password.generate': 'Generate',
   'document-share-links.create.expiration.toggle': 'Set an expiration date',
-  'document-share-links.create.expiration.hint': 'Optional, the link will auto-expire after this date.',
+  'document-share-links.create.expiration.hint':
+    'Optional, the link will auto-expire after this date.',
   'document-share-links.create.expiration.24h': '24 hours',
   'document-share-links.create.expiration.7d': '7 days',
   'document-share-links.create.expiration.30d': '30 days',
@@ -572,13 +632,16 @@ export const translations = {
   'document-share-links.actions.disable': 'Disable link',
   'document-share-links.actions.stop-sharing': 'Stop sharing',
   'document-share-links.delete.confirm.title': 'Delete share link',
-  'document-share-links.delete.confirm.message': 'Anyone with this link will immediately lose access. This cannot be undone.',
+  'document-share-links.delete.confirm.message':
+    'Anyone with this link will immediately lose access. This cannot be undone.',
   'document-share-links.delete.confirm.confirm-button': 'Delete link',
   'document-share-links.delete.confirm.cancel-button': 'Cancel',
   'document-share-links.management.title': 'Share links',
-  'document-share-links.management.description': 'Manage every share link created in this organization.',
+  'document-share-links.management.description':
+    'Manage every share link created in this organization.',
   'document-share-links.management.empty.title': 'No share links',
-  'document-share-links.management.empty.description': 'Share links created for documents in this organization will appear here.',
+  'document-share-links.management.empty.description':
+    'Share links created for documents in this organization will appear here.',
   'document-share-links.management.table.document': 'Document',
   'document-share-links.management.table.link': 'Link',
   'document-share-links.management.table.status': 'Status',
@@ -590,32 +653,38 @@ export const translations = {
   'document-share-links.management.status.enabled': 'Enabled',
   'document-share-links.management.status.disabled': 'Disabled',
   'document-share-links.management.status.trashed': 'Document in trash',
-  'document-share-links.management.status.trashed-hint': 'The shared document is in the trash, so this link is inactive until the document is restored.',
+  'document-share-links.management.status.trashed-hint':
+    'The shared document is in the trash, so this link is inactive until the document is restored.',
   'document-share-links.management.security.password': 'Password',
   'document-share-links.management.security.public': 'Public',
   'document-share-links.management.never': 'Never',
   'document-share-links.public.download': 'Download',
   'document-share-links.public.download-error': 'Failed to download the file',
   'document-share-links.public.password.title': 'Password required',
-  'document-share-links.public.password.description': 'This document is protected. Enter the password to access it.',
+  'document-share-links.public.password.description':
+    'This document is protected. Enter the password to access it.',
   'document-share-links.public.password.label': 'Password',
   'document-share-links.public.password.placeholder': 'Enter the password',
   'document-share-links.public.password.submit': 'Unlock',
   'document-share-links.public.password.invalid': 'Incorrect password',
-  'document-share-links.public.password.too-many-attempts': 'Too many attempts. Please try again later.',
+  'document-share-links.public.password.too-many-attempts':
+    'Too many attempts. Please try again later.',
   'document-share-links.public.gone.title': 'Link unavailable',
-  'document-share-links.public.gone.description': 'This share link has expired or has been disabled.',
+  'document-share-links.public.gone.description':
+    'This share link has expired or has been disabled.',
   'document-share-links.public.not-found.title': 'Link not found',
   'document-share-links.public.not-found.description': 'This share link does not exist.',
 
   'trash.delete-all.button': 'Delete all',
   'trash.delete-all.confirm.title': 'Permanently delete all documents?',
-  'trash.delete-all.confirm.description': 'Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.',
+  'trash.delete-all.confirm.description':
+    'Are you sure you want to permanently delete all documents from the trash? This action cannot be undone.',
   'trash.delete-all.confirm.label': 'Delete',
   'trash.delete-all.confirm.cancel': 'Cancel',
   'trash.delete.button': 'Delete',
   'trash.delete.confirm.title': 'Permanently delete document?',
-  'trash.delete.confirm.description': 'Are you sure you want to permanently delete this document from the trash? This action cannot be undone.',
+  'trash.delete.confirm.description':
+    'Are you sure you want to permanently delete this document from the trash? This action cannot be undone.',
   'trash.delete.confirm.label': 'Delete',
   'trash.delete.confirm.cancel': 'Cancel',
   'trash.deleted.success.title': 'Document deleted',
@@ -638,16 +707,19 @@ export const translations = {
   // Tags
 
   'tags.no-tags.title': 'No tags yet',
-  'tags.no-tags.description': 'This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.',
+  'tags.no-tags.description':
+    'This organization has no tags yet. Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.',
   'tags.no-tags.create-tag': 'Create tag',
 
   'tags.title': 'Documents Tags',
-  'tags.description': 'Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.',
+  'tags.description':
+    'Tags are used to categorize documents. You can add tags to your documents to make them easier to find and organize.',
   'tags.create': 'Create tag',
   'tags.update': 'Update tag',
   'tags.delete': 'Delete tag',
   'tags.delete.confirm.title': 'Delete tag',
-  'tags.delete.confirm.message': 'Are you sure you want to delete this tag? Deleting a tag will remove it from all documents.',
+  'tags.delete.confirm.message':
+    'Are you sure you want to delete this tag? Deleting a tag will remove it from all documents.',
   'tags.delete.confirm.confirm-button': 'Delete',
   'tags.delete.confirm.cancel-button': 'Cancel',
   'tags.delete.success': 'Tag deleted successfully',
@@ -696,15 +768,17 @@ export const translations = {
   'document-views.form.query.placeholder': 'Eg. tag:inbox AND -tag:archived',
   'document-views.form.query.required': 'Please enter a query',
   'document-views.form.query.max-length': 'Query must be less than 500 characters',
-  'document-views.form.query.hint': 'Use the same syntax as the document search bar. Eg. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.query.hint':
+    'Use the same syntax as the document search bar. Eg. tag:inbox, has:tags, before:2024-01-01',
   'document-views.form.description.label': 'Description',
   'document-views.form.description.optional': '(optional)',
   'document-views.form.description.placeholder': 'Eg. Documents waiting to be processed',
   'document-views.form.description.max-length': 'Description must be less than 256 characters',
   'document-views.actions.menu': 'View actions',
-  'document-views.view.no-documents': 'No documents match this view\'s query.',
+  'document-views.view.no-documents': "No documents match this view's query.",
   'document-views.view.not-found': 'View not found.',
-  'api-errors.document_views.already_exists': 'A view with this name already exists for this organization',
+  'api-errors.document_views.already_exists':
+    'A view with this name already exists for this organization',
   'api-errors.document_views.not_found': 'View not found',
 
   // Tagging rules
@@ -718,10 +792,13 @@ export const translations = {
   'tagging-rules.operator.starts-with': 'starts with',
   'tagging-rules.operator.ends-with': 'ends with',
   'tagging-rules.list.title': 'Tagging rules',
-  'tagging-rules.list.description': 'Manage your organization\'s tagging rules, to automatically tag documents based on conditions you define.',
-  'tagging-rules.list.demo-warning': 'Note: As this is a demo environment (with no server), tagging rules will not be applied to newly added documents.',
+  'tagging-rules.list.description':
+    "Manage your organization's tagging rules, to automatically tag documents based on conditions you define.",
+  'tagging-rules.list.demo-warning':
+    'Note: As this is a demo environment (with no server), tagging rules will not be applied to newly added documents.',
   'tagging-rules.list.no-tagging-rules.title': 'No tagging rules',
-  'tagging-rules.list.no-tagging-rules.description': 'Create a tagging rule to automatically tag your added documents based on conditions you define.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Create a tagging rule to automatically tag your added documents based on conditions you define.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Create tagging rule',
   'tagging-rules.list.card.no-conditions': 'No conditions',
   'tagging-rules.list.card.one-condition': '1 condition',
@@ -737,10 +814,11 @@ export const translations = {
   'tagging-rules.form.name.min-length': 'Please enter a name for the rule',
   'tagging-rules.form.name.max-length': 'The name must be less than 64 characters',
   'tagging-rules.form.description.label': 'Description',
-  'tagging-rules.form.description.placeholder': 'Example: Tag documents with \'invoice\' in the name',
+  'tagging-rules.form.description.placeholder': "Example: Tag documents with 'invoice' in the name",
   'tagging-rules.form.description.max-length': 'The description must be less than 256 characters',
   'tagging-rules.form.conditions.label': 'Conditions',
-  'tagging-rules.form.conditions.description': 'Define the conditions that must be met for the rule to apply. No conditions means the rule will apply to all documents',
+  'tagging-rules.form.conditions.description':
+    'Define the conditions that must be met for the rule to apply. No conditions means the rule will apply to all documents',
   'tagging-rules.form.conditions.add-condition': 'Add condition',
   'tagging-rules.form.conditions.connector.when': 'When',
   'tagging-rules.form.conditions.connector.and': 'and',
@@ -748,13 +826,15 @@ export const translations = {
   'tagging-rules.condition-match-mode.all': 'All conditions must match',
   'tagging-rules.condition-match-mode.any': 'Any condition must match',
   'tagging-rules.form.conditions.no-conditions.title': 'No conditions',
-  'tagging-rules.form.conditions.no-conditions.description': 'You didn\'t add any conditions to this rule. This rule will apply its tags to all documents.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    "You didn't add any conditions to this rule. This rule will apply its tags to all documents.",
   'tagging-rules.form.conditions.no-conditions.confirm': 'Apply rule without conditions',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Cancel',
   'tagging-rules.form.conditions.value.placeholder': 'Example: invoice',
   'tagging-rules.form.conditions.value.min-length': 'Please enter a value for the condition',
   'tagging-rules.form.tags.label': 'Tags',
-  'tagging-rules.form.tags.description': 'Select the tags to apply to the added documents that match the conditions',
+  'tagging-rules.form.tags.description':
+    'Select the tags to apply to the added documents that match the conditions',
   'tagging-rules.form.tags.min-length': 'At least one tag to apply is required',
   'tagging-rules.form.tags.add-tag': 'Create tag',
   'tagging-rules.update.title': 'Update tagging rule',
@@ -763,7 +843,8 @@ export const translations = {
   'tagging-rules.update.cancel': 'Cancel',
   'tagging-rules.apply.button': 'Apply to existing documents',
   'tagging-rules.apply.confirm.title': 'Apply rule to existing documents?',
-  'tagging-rules.apply.confirm.description': 'This will check all existing documents in your organization and apply tags where conditions match. The processing will happen in the background.',
+  'tagging-rules.apply.confirm.description':
+    'This will check all existing documents in your organization and apply tags where conditions match. The processing will happen in the background.',
   'tagging-rules.apply.confirm.button': 'Apply rule',
   'tagging-rules.apply.success': 'Rule application started in the background',
   'tagging-rules.apply.error': 'Failed to start rule application',
@@ -772,13 +853,17 @@ export const translations = {
   // Intake emails
 
   'intake-emails.title': 'Intake Emails',
-  'intake-emails.description': 'Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization\'s documents.',
+  'intake-emails.description':
+    "Intake emails address are used to automatically ingest emails into Papra. Just forward emails to the intake email address and their attachments will be added to your organization's documents.",
   'intake-emails.disabled.title': 'Intake Emails are disabled',
-  'intake-emails.disabled.description': 'Intake emails are disabled on this instance. Please contact your administrator to enable them. See the {{ documentation }} for more information.',
+  'intake-emails.disabled.description':
+    'Intake emails are disabled on this instance. Please contact your administrator to enable them. See the {{ documentation }} for more information.',
   'intake-emails.disabled.documentation': 'documentation',
-  'intake-emails.info': 'Only enabled intake emails from allowed origins will be processed. You can enable or disable an intake email at any time.',
+  'intake-emails.info':
+    'Only enabled intake emails from allowed origins will be processed. You can enable or disable an intake email at any time.',
   'intake-emails.empty.title': 'No intake emails',
-  'intake-emails.empty.description': 'Generate an intake address to easily ingest emails attachments.',
+  'intake-emails.empty.description':
+    'Generate an intake address to easily ingest emails attachments.',
   'intake-emails.empty.generate': 'Generate intake email',
   'intake-emails.count': '{{ count }} intake email{{ plural }} for this organization',
   'intake-emails.new': 'New intake email',
@@ -790,7 +875,8 @@ export const translations = {
   'intake-emails.actions.manage-origins': 'Manage origins addresses',
   'intake-emails.actions.delete': 'Delete',
   'intake-emails.delete.confirm.title': 'Delete intake email?',
-  'intake-emails.delete.confirm.message': 'Are you sure you want to delete this intake email? This action cannot be undone.',
+  'intake-emails.delete.confirm.message':
+    'Are you sure you want to delete this intake email? This action cannot be undone.',
   'intake-emails.delete.confirm.confirm-button': 'Delete intake email',
   'intake-emails.delete.confirm.cancel-button': 'Cancel',
   'intake-emails.delete.success': 'Intake email deleted',
@@ -798,11 +884,13 @@ export const translations = {
   'intake-emails.update.success.enabled': 'Intake email enabled',
   'intake-emails.update.success.disabled': 'Intake email disabled',
   'intake-emails.allowed-origins.title': 'Allowed origins',
-  'intake-emails.allowed-origins.description': 'Only emails sent to {{ email }} from these origins will be processed. If no origins are specified, all emails will be discarded.',
+  'intake-emails.allowed-origins.description':
+    'Only emails sent to {{ email }} from these origins will be processed. If no origins are specified, all emails will be discarded.',
   'intake-emails.allowed-origins.add.label': 'Add allowed origin email',
   'intake-emails.allowed-origins.add.placeholder': 'Eg. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Add',
-  'intake-emails.allowed-origins.add.error.exists': 'This email is already in the allowed origins for this intake email',
+  'intake-emails.allowed-origins.add.error.exists':
+    'This email is already in the allowed origins for this intake email',
 
   // API keys
 
@@ -839,7 +927,8 @@ export const translations = {
   'api-keys.create.form.permissions.required': 'Please select at least one permission',
   'api-keys.create.form.submit': 'Create API key',
   'api-keys.create.created.title': 'API key created',
-  'api-keys.create.created.description': 'The API key has been created successfully. Save it in a secure location as it will not be displayed again.',
+  'api-keys.create.created.description':
+    'The API key has been created successfully. Save it in a secure location as it will not be displayed again.',
   'api-keys.list.title': 'API keys',
   'api-keys.list.description': 'Manage your API keys here.',
   'api-keys.list.create': 'Create API key',
@@ -848,7 +937,8 @@ export const translations = {
   'api-keys.list.card.created': 'Created',
   'api-keys.delete.success': 'The API key has been deleted successfully',
   'api-keys.delete.confirm.title': 'Delete API key',
-  'api-keys.delete.confirm.message': 'Are you sure you want to delete this API key? This action cannot be undone.',
+  'api-keys.delete.confirm.message':
+    'Are you sure you want to delete this API key? This action cannot be undone.',
   'api-keys.delete.confirm.confirm-button': 'Delete',
   'api-keys.delete.confirm.cancel-button': 'Cancel',
 
@@ -955,21 +1045,32 @@ export const translations = {
   'api-errors.document.already_exists': 'The document already exists',
   'api-errors.document.size_too_large': 'The file size is too large',
   'api-errors.intake-emails.already_exists': 'An intake email with this address already exists.',
-  'api-errors.intake_email.limit_reached': 'The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.',
-  'api-errors.user.max_organization_count_reached': 'You have reached the maximum number of organizations you can create, if you need to create more, please contact support.',
+  'api-errors.intake_email.limit_reached':
+    'The maximum number of intake emails for this organization has been reached. Please upgrade your plan to create more intake emails.',
+  'api-errors.user.max_organization_count_reached':
+    'You have reached the maximum number of organizations you can create, if you need to create more, please contact support.',
   'api-errors.default': 'An error occurred while processing your request.',
-  'api-errors.organization.invitation_already_exists': 'An invitation for this email already exists in this organization.',
+  'api-errors.organization.invitation_already_exists':
+    'An invitation for this email already exists in this organization.',
   'api-errors.user.already_in_organization': 'This user is already in this organization.',
-  'api-errors.user.organization_invitation_limit_reached': 'The maximum number of invitations has been reached for today. Please try again tomorrow.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'The maximum number of invitations has been reached for today. Please try again tomorrow.',
   'api-errors.demo.not_available': 'This feature is not available in demo',
   'api-errors.tags.already_exists': 'A tag with this name already exists for this organization',
-  'api-errors.tags.organization_limit_reached': 'The maximum number of tags for this organization has been reached.',
-  'api-errors.internal.error': 'An error occurred while processing your request. Please try again later.',
-  'api-errors.auth.invalid_origin': 'Invalid application origin. If you are self-hosting Papra, ensure your APP_BASE_URL environment variable matches your current url. For more details see https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
-  'api-errors.organization.has_active_subscription': 'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
-  'api-errors.users.still_owns_organizations': 'This user still owns one or more organizations. Delete those organizations before deleting the user.',
+  'api-errors.tags.organization_limit_reached':
+    'The maximum number of tags for this organization has been reached.',
+  'api-errors.internal.error':
+    'An error occurred while processing your request. Please try again later.',
+  'api-errors.auth.invalid_origin':
+    'Invalid application origin. If you are self-hosting Papra, ensure your APP_BASE_URL environment variable matches your current url. For more details see https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'The maximum number of members and pending invitations for this organization has been reached. Please upgrade your plan to add more members.',
+  'api-errors.organization.has_active_subscription':
+    'Cannot delete organization with an active subscription. Please cancel your subscription first using the Manage Subscription button above.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
+  'api-errors.users.still_owns_organizations':
+    'This user still owns one or more organizations. Delete those organizations before deleting the user.',
   'api-errors.users.cannot_delete_self': 'You cannot delete your own account from the admin panel.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'User not found',
@@ -979,7 +1080,8 @@ export const translations = {
   'api-errors.FAILED_TO_GET_SESSION': 'Failed to get session',
   'api-errors.INVALID_PASSWORD': 'Invalid password',
   'api-errors.INVALID_EMAIL': 'Invalid email',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'The email or password is incorrect, or the account does not exist.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'The email or password is incorrect, or the account does not exist.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Social account already linked',
   'api-errors.PROVIDER_NOT_FOUND': 'Provider not found',
   'api-errors.INVALID_TOKEN': 'Invalid token',
@@ -1009,11 +1111,13 @@ export const translations = {
   // Not found
 
   'not-found.title': '404 - Not Found',
-  'not-found.description': 'Sorry, the page you are looking for does not seem to exist. Please check the URL and try again.',
+  'not-found.description':
+    'Sorry, the page you are looking for does not seem to exist. Please check the URL and try again.',
 
   // Demo
 
-  'demo.popup.description': 'This is a demo environment, all data is saved to your browser local storage.',
+  'demo.popup.description':
+    'This is a demo environment, all data is saved to your browser local storage.',
   'demo.popup.discord': 'Join the {{ discordLink }} to get support, propose features or just chat.',
   'demo.popup.discord-link-label': 'Discord server',
   'demo.popup.reset': 'Reset demo data',
@@ -1031,14 +1135,17 @@ export const translations = {
   // Subscriptions
 
   'subscriptions.checkout-success.title': 'Payment Successful!',
-  'subscriptions.checkout-success.description': 'Your subscription has been activated successfully.',
-  'subscriptions.checkout-success.thank-you': 'Thank you for upgrading to Papra Plus. You now have access to all premium features.',
+  'subscriptions.checkout-success.description':
+    'Your subscription has been activated successfully.',
+  'subscriptions.checkout-success.thank-you':
+    'Thank you for upgrading to Papra Plus. You now have access to all premium features.',
   'subscriptions.checkout-success.go-to-organizations': 'Go to Organizations',
   'subscriptions.checkout-success.redirecting': 'Redirecting in {{ count }} second{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Payment Canceled',
   'subscriptions.checkout-cancel.description': 'Your subscription upgrade was canceled.',
-  'subscriptions.checkout-cancel.no-charges': 'No charges have been made to your account. You can try again anytime you\'re ready.',
+  'subscriptions.checkout-cancel.no-charges':
+    "No charges have been made to your account. You can try again anytime you're ready.",
   'subscriptions.checkout-cancel.back-to-organizations': 'Back to Organizations',
   'subscriptions.checkout-cancel.need-help': 'Need help?',
   'subscriptions.checkout-cancel.contact-support': 'Contact support',
@@ -1051,7 +1158,8 @@ export const translations = {
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} billed annually',
   'subscriptions.upgrade-dialog.upgrade-now': 'Upgrade now',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Limited Time Offer',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Get {{ percent }}% off all plans forever per organization as an early adopter! Offer expires in {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Get {{ percent }}% off all plans forever per organization as an early adopter! Offer expires in {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
 
   'subscriptions.plan.free.name': 'Free plan',
   'subscriptions.plan.plus.name': 'Plus',
@@ -1072,7 +1180,8 @@ export const translations = {
   'subscriptions.billing-interval.monthly': 'Monthly',
   'subscriptions.billing-interval.annual': 'Annual',
 
-  'subscriptions.usage-warning.message': 'You have used {{ percent }}% of your document storage. Consider upgrading your plan to get more space.',
+  'subscriptions.usage-warning.message':
+    'You have used {{ percent }}% of your document storage. Consider upgrading your plan to get more space.',
   'subscriptions.usage-warning.upgrade-button': 'Upgrade Plan',
 
   // Admin
@@ -1103,7 +1212,8 @@ export const translations = {
   'admin.organizations.table.members': 'Members',
   'admin.organizations.table.created': 'Created',
   'admin.organizations.table.updated': 'Updated',
-  'admin.organizations.pagination.info': 'Showing {{ start }} to {{ end }} of {{ total }} {{ total, =1:organization, organizations }}',
+  'admin.organizations.pagination.info':
+    'Showing {{ start }} to {{ end }} of {{ total }} {{ total, =1:organization, organizations }}',
   'admin.organizations.pagination.page-info': 'Page {{ current }} of {{ total }}',
 
   'admin.organization-detail.title': 'Organization Details',
@@ -1160,7 +1270,8 @@ export const translations = {
   'admin.users.table.status.unverified': 'Unverified',
   'admin.users.table.orgs': 'Orgs',
   'admin.users.table.created': 'Created',
-  'admin.users.pagination.info': 'Showing {{ start }} to {{ end }} of {{ total }} {{ total, =1:user, users }}',
+  'admin.users.pagination.info':
+    'Showing {{ start }} to {{ end }} of {{ total }} {{ total, =1:user, users }}',
   'admin.users.pagination.page-info': 'Page {{ current }} of {{ total }}',
 
   'admin.user-detail.back': 'Back to Users',
@@ -1189,11 +1300,14 @@ export const translations = {
   'admin.user-detail.organizations.table.name': 'Name',
   'admin.user-detail.organizations.table.created': 'Created',
   'admin.user-detail.delete.title': 'Delete user',
-  'admin.user-detail.delete.description': 'Permanently delete this user account. This will cascade to their organization memberships, sessions, two-factor settings and other authentication data. Organizations they still own must be deleted or transferred first.',
+  'admin.user-detail.delete.description':
+    'Permanently delete this user account. This will cascade to their organization memberships, sessions, two-factor settings and other authentication data. Organizations they still own must be deleted or transferred first.',
   'admin.user-detail.delete.button': 'Delete user',
-  'admin.user-detail.delete.self-warning': 'You cannot delete your own account from the admin panel.',
+  'admin.user-detail.delete.self-warning':
+    'You cannot delete your own account from the admin panel.',
   'admin.user-detail.delete.confirm.title': 'Delete user?',
-  'admin.user-detail.delete.confirm.message': 'This action cannot be undone. Type the user\'s email below to confirm.',
+  'admin.user-detail.delete.confirm.message':
+    "This action cannot be undone. Type the user's email below to confirm.",
   'admin.user-detail.delete.confirm.confirm-button': 'Delete user',
   'admin.user-detail.delete.confirm.cancel-button': 'Cancel',
   'admin.user-detail.delete.success': 'User deleted successfully.',
@@ -1211,7 +1325,8 @@ export const translations = {
   'about.version': 'Version',
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Commit Date',
-  'about.description': 'Papra is an open-source document management system that helps you archive, organize, tag, and manage your documents with ease.',
+  'about.description':
+    'Papra is an open-source document management system that helps you archive, organize, tag, and manage your documents with ease.',
   'about.links.title': 'Links',
   'about.links.documentation': 'Documentation',
   'about.links.documentation-description': 'User guides and API reference',

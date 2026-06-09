@@ -31,14 +31,16 @@ export const CreateFirstOrganizationPage: Component = () => {
     queryFn: fetchOrganizations,
   }));
 
-  createEffect(on(
-    () => query.data?.organizations,
-    (orgs) => {
-      if (orgs && orgs.length > 0) {
-        navigate('/organizations/create');
-      }
-    },
-  ));
+  createEffect(
+    on(
+      () => query.data?.organizations,
+      (orgs) => {
+        if (orgs && orgs.length > 0) {
+          navigate('/organizations/create');
+        }
+      },
+    ),
+  );
 
   return (
     <div>
@@ -49,15 +51,14 @@ export const CreateFirstOrganizationPage: Component = () => {
       </div>
 
       <div class="max-w-md mx-auto pt-12 sm:pt-24 px-6">
-        <h1 class="text-xl font-bold">
-          {t('organizations.create-first.title')}
-        </h1>
+        <h1 class="text-xl font-bold">{t('organizations.create-first.title')}</h1>
 
-        <p class="text-muted-foreground mb-6">
-          {t('organizations.create-first.description')}
-        </p>
+        <p class="text-muted-foreground mb-6">{t('organizations.create-first.description')}</p>
 
-        <CreateOrganizationForm onSubmit={createOrganization} initialOrganizationName={getOrganizationName()} />
+        <CreateOrganizationForm
+          onSubmit={createOrganization}
+          initialOrganizationName={getOrganizationName()}
+        />
       </div>
     </div>
   );

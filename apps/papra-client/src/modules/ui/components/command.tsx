@@ -31,12 +31,7 @@ export function Command(props: CommandRootProps) {
 export function CommandLoading(props: CommandLoadingProps) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <CommandPrimitive.Loading
-      class={cn('py-6 text-center text-sm', local.class)}
-      {...rest}
-    />
-  );
+  return <CommandPrimitive.Loading class={cn('py-6 text-center text-sm', local.class)} {...rest} />;
 }
 
 export function CommandList(props: CommandListProps) {
@@ -44,10 +39,7 @@ export function CommandList(props: CommandListProps) {
 
   return (
     <CommandPrimitive.List
-      class={cn(
-        'max-h-[300px] overflow-y-auto overflow-x-hidden p-1',
-        local.class,
-      )}
+      class={cn('max-h-[300px] overflow-y-auto overflow-x-hidden p-1', local.class)}
       {...rest}
     />
   );
@@ -103,10 +95,7 @@ export function CommandShortcut(props: ComponentProps<'span'>) {
 
   return (
     <span
-      class={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground',
-        local.class,
-      )}
+      class={cn('ml-auto text-xs tracking-widest text-muted-foreground', local.class)}
       {...rest}
     />
   );
@@ -129,12 +118,7 @@ export function CommandDialog(props: CommandDialogProps) {
 export function CommandEmpty(props: CommandEmptyProps) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <CommandPrimitive.Empty
-      class={cn('py-6 text-center text-sm', local.class)}
-      {...rest}
-    />
-  );
+  return <CommandPrimitive.Empty class={cn('py-6 text-center text-sm', local.class)} {...rest} />;
 }
 
 export function CommandGroup(props: CommandGroupProps) {
@@ -154,10 +138,5 @@ export function CommandGroup(props: CommandGroupProps) {
 export function CommandSeparator(props: CommandEmptyProps) {
   const [local, rest] = splitProps(props, ['class']);
 
-  return (
-    <CommandPrimitive.Separator
-      class={cn('-mx-1 h-px bg-border', local.class)}
-      {...rest}
-    />
-  );
+  return <CommandPrimitive.Separator class={cn('-mx-1 h-px bg-border', local.class)} {...rest} />;
 }

@@ -38,8 +38,16 @@ import { createTagsRepository } from '../tags/tags.repository';
 import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { createDocumentAlreadyExistsError, createDocumentNotDeletedError, createDocumentNotFoundError, createDocumentSizeTooLargeError } from './documents.errors';
-import { formatDocumentForApi, generateDocumentId as generateDocumentIdImpl } from './documents.models';
+import {
+  createDocumentAlreadyExistsError,
+  createDocumentNotDeletedError,
+  createDocumentNotFoundError,
+  createDocumentSizeTooLargeError,
+} from './documents.errors';
+import {
+  formatDocumentForApi,
+  generateDocumentId as generateDocumentIdImpl,
+} from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
 import { createStorageKey } from './storage/document-storage.usecases';
@@ -91,7 +99,12 @@ export async function createDocument({
   taskServices: TaskServices;
   logger?: Logger;
 }) {
-  const { availableDocumentStorageBytes, maxFileSize } = await getOrganizationStorageLimits({ organizationId, plansRepository, subscriptionsRepository, documentsRepository });
+  const { availableDocumentStorageBytes, maxFileSize } = await getOrganizationStorageLimits({
+    organizationId,
+    plansRepository,
+    subscriptionsRepository,
+    documentsRepository,
+  });
 
   const documentId = generateDocumentId();
   const { storageKey } = await createStorageKey({
@@ -121,12 +134,7 @@ export async function createDocument({
   // This allows us to use pipeline for better error handling
   const outputStream = new PassThrough();
 
-  const streamProcessingPromise = pipeline(
-    fileStream,
-    hashStream,
-    byteCountStream,
-    outputStream,
-  );
+  const streamProcessingPromise = pipeline(fileStream, hashStream, byteCountStream, outputStream);
 
   // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
   const [encryptionMetadata] = await Promise.all([
@@ -143,7 +151,11 @@ export async function createDocument({
   const size = getByteCount();
 
   // Early check to avoid saving the file and then realizing it already exists with the db constraint
-  const { document: existingDocument } = await documentsRepository.getOrganizationDocumentBySha256Hash({ sha256Hash: hash, organizationId });
+  const { document: existingDocument } =
+    await documentsRepository.getOrganizationDocumentBySha256Hash({
+      sha256Hash: hash,
+      organizationId,
+    });
 
   const { document } = existingDocument
     ? await handleExistingDocument({
@@ -187,7 +199,10 @@ export async function createDocument({
 }
 
 export type CreateDocumentUsecase = Awaited<ReturnType<typeof createDocumentCreationUsecase>>;
-export type DocumentUsecaseDependencies = Omit<Parameters<typeof createDocument>[0], 'fileStream' | 'fileName' | 'mimeType' | 'userId' | 'organizationId'>;
+export type DocumentUsecaseDependencies = Omit<
+  Parameters<typeof createDocument>[0],
+  'fileStream' | 'fileName' | 'mimeType' | 'userId' | 'organizationId'
+>;
 
 export function createDocumentCreationUsecase({
   db,
@@ -206,15 +221,24 @@ export function createDocumentCreationUsecase({
   const deps = {
     documentsRepository: initialDeps.documentsRepository ?? createDocumentsRepository({ db }),
     plansRepository: initialDeps.plansRepository ?? createPlansRepository({ config }),
-    subscriptionsRepository: initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
-    taggingRulesRepository: initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
+    subscriptionsRepository:
+      initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
+    taggingRulesRepository:
+      initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
-    webhookTriggerServices: initialDeps.webhookTriggerServices ?? createWebhookTriggerServices({ webhooksConfig: config.webhooks, webhookRepository: createWebhookRepository({ db }) }),
-    documentActivityRepository: initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
+    webhookTriggerServices:
+      initialDeps.webhookTriggerServices ??
+      createWebhookTriggerServices({
+        webhooksConfig: config.webhooks,
+        webhookRepository: createWebhookRepository({ db }),
+      }),
+    documentActivityRepository:
+      initialDeps.documentActivityRepository ?? createDocumentActivityRepository({ db }),
 
     storagePatternConfig: initialDeps.storagePatternConfig ?? config.documentsStorage.pattern,
     ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
-    isContentExtractionEnabled: initialDeps.isContentExtractionEnabled ?? config.documents.isContentExtractionEnabled,
+    isContentExtractionEnabled:
+      initialDeps.isContentExtractionEnabled ?? config.documents.isContentExtractionEnabled,
     generateDocumentId: initialDeps.generateDocumentId,
     logger: initialDeps.logger,
   };
@@ -262,14 +286,28 @@ async function handleExistingDocument({
     throw createDocumentAlreadyExistsError();
   }
 
-  logger.info({ documentId: existingDocument.id }, 'Document already exists, restoring for deduplication');
+  logger.info(
+    { documentId: existingDocument.id },
+    'Document already exists, restoring for deduplication',
+  );
 
   const [, { document: restoredDocument }] = await Promise.all([
     tagsRepository.removeAllTagsFromDocument({ documentId: existingDocument.id }),
-    documentsRepository.restoreDocument({ documentId: existingDocument.id, organizationId, name: fileName, userId }),
+    documentsRepository.restoreDocument({
+      documentId: existingDocument.id,
+      organizationId,
+      name: fileName,
+      userId,
+    }),
   ]);
 
-  await applyTaggingRules({ document: restoredDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+  await applyTaggingRules({
+    document: restoredDocument,
+    taggingRulesRepository,
+    tagsRepository,
+    webhookTriggerServices,
+    documentActivityRepository,
+  });
 
   return { document: restoredDocument };
 }
@@ -312,29 +350,39 @@ async function createNewDocument({
   // TODO: wrap in a transaction
 
   // Recheck for quota after saving the file to the storage
-  const { availableDocumentStorageBytes } = await getOrganizationStorageLimits({ organizationId, plansRepository, subscriptionsRepository, documentsRepository });
+  const { availableDocumentStorageBytes } = await getOrganizationStorageLimits({
+    organizationId,
+    plansRepository,
+    subscriptionsRepository,
+    documentsRepository,
+  });
 
   if (size > availableDocumentStorageBytes) {
-    logger.error({ size, availableDocumentStorageBytes }, 'Document size exceeds organization storage limit after being saved');
+    logger.error(
+      { size, availableDocumentStorageBytes },
+      'Document size exceeds organization storage limit after being saved',
+    );
     await documentsStorageService.deleteFile({ storageKey: newFileStorageContext.storageKey });
 
     throw createOrganizationDocumentStorageLimitReachedError();
   }
 
-  const [result, error] = await safely(documentsRepository.saveOrganizationDocument({
-    id: documentId,
-    name: fileName,
-    organizationId,
-    originalName: fileName,
-    createdBy: userId,
-    originalSize: size,
-    originalStorageKey: newFileStorageContext.storageKey,
-    fileEncryptionAlgorithm: newFileStorageContext.fileEncryptionAlgorithm,
-    fileEncryptionKekVersion: newFileStorageContext.fileEncryptionKekVersion,
-    fileEncryptionKeyWrapped: newFileStorageContext.fileEncryptionKeyWrapped,
-    mimeType,
-    originalSha256Hash: hash,
-  }));
+  const [result, error] = await safely(
+    documentsRepository.saveOrganizationDocument({
+      id: documentId,
+      name: fileName,
+      organizationId,
+      originalName: fileName,
+      createdBy: userId,
+      originalSize: size,
+      originalStorageKey: newFileStorageContext.storageKey,
+      fileEncryptionAlgorithm: newFileStorageContext.fileEncryptionAlgorithm,
+      fileEncryptionKekVersion: newFileStorageContext.fileEncryptionKekVersion,
+      fileEncryptionKeyWrapped: newFileStorageContext.fileEncryptionKeyWrapped,
+      mimeType,
+      originalSha256Hash: hash,
+    }),
+  );
 
   if (error) {
     logger.error({ error }, 'Error while creating document');
@@ -436,13 +484,22 @@ export async function deleteExpiredDocuments({
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(async document => limit(async () => {
-      const [, error] = await safely(hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices }));
+    documents.map(async (document) =>
+      limit(async () => {
+        const [, error] = await safely(
+          hardDeleteDocument({
+            document,
+            documentsRepository,
+            documentsStorageService,
+            eventServices,
+          }),
+        );
 
-      if (error) {
-        logger.error({ document, error }, 'Error while deleting expired document');
-      }
-    })),
+        if (error) {
+          logger.error({ document, error }, 'Error while deleting expired document');
+        }
+      }),
+    ),
   );
 
   return {
@@ -473,7 +530,12 @@ export async function deleteTrashDocument({
     throw createDocumentNotDeletedError();
   }
 
-  await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
+  await hardDeleteDocument({
+    document,
+    documentsRepository,
+    documentsStorageService,
+    eventServices,
+  });
 }
 
 export async function deleteAllTrashDocuments({
@@ -487,16 +549,25 @@ export async function deleteAllTrashDocuments({
   documentsStorageService: DocumentStorageService;
   eventServices: EventServices;
 }) {
-  const { documents } = await documentsRepository.getAllOrganizationTrashDocuments({ organizationId });
+  const { documents } = await documentsRepository.getAllOrganizationTrashDocuments({
+    organizationId,
+  });
 
   // TODO: refactor to use batching and transaction
 
   const limit = pLimit(10);
 
   await Promise.all(
-    documents.map(async document => limit(async () => {
-      await hardDeleteDocument({ document, documentsRepository, documentsStorageService, eventServices });
-    })),
+    documents.map(async (document) =>
+      limit(async () => {
+        await hardDeleteDocument({
+          document,
+          documentsRepository,
+          documentsStorageService,
+          eventServices,
+        });
+      }),
+    ),
   );
 }
 
@@ -536,18 +607,34 @@ export async function extractAndSaveDocumentFileContent({
     fileEncryptionKeyWrapped: document.fileEncryptionKeyWrapped,
   });
 
-  const { file } = await collectStreamToFile({ fileStream, fileName: document.name, mimeType: document.mimeType });
+  const { file } = await collectStreamToFile({
+    fileStream,
+    fileName: document.name,
+    mimeType: document.mimeType,
+  });
 
   const { text } = await extractDocumentText({ file, ocrLanguages });
 
-  const { document: updatedDocument } = await updateDocument({ documentId, organizationId, changes: { content: text }, documentsRepository, eventServices });
+  const { document: updatedDocument } = await updateDocument({
+    documentId,
+    organizationId,
+    changes: { content: text },
+    documentsRepository,
+    eventServices,
+  });
 
   if (isNil(updatedDocument)) {
     // This should never happen, but for type safety
     throw createDocumentNotFoundError();
   }
 
-  await applyTaggingRules({ document: updatedDocument, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+  await applyTaggingRules({
+    document: updatedDocument,
+    taggingRulesRepository,
+    tagsRepository,
+    webhookTriggerServices,
+    documentActivityRepository,
+  });
 
   return { document: updatedDocument };
 }
@@ -617,7 +704,7 @@ export async function enrichAndFormatDocumentsForApi({
     });
   }
 
-  const uniqueOrganizationIds = new Set(documents.map(d => d.organizationId));
+  const uniqueOrganizationIds = new Set(documents.map((d) => d.organizationId));
 
   if (uniqueOrganizationIds.size > 1) {
     throw createError({
@@ -627,16 +714,18 @@ export async function enrichAndFormatDocumentsForApi({
     });
   }
 
-  const documentIds = documents.map(d => d.id);
+  const documentIds = documents.map((d) => d.id);
 
-  const [{ tagsByDocumentId }, { valuesByDocumentId }, { propertyDefinitions }] = await Promise.all([
-    tagsRepository.getTagsByDocumentIds({ documentIds }),
-    customPropertiesRepository.getCustomPropertyValuesByDocumentIds({ documentIds }),
-    customPropertiesRepository.getOrganizationPropertyDefinitions({ organizationId }),
-  ]);
+  const [{ tagsByDocumentId }, { valuesByDocumentId }, { propertyDefinitions }] = await Promise.all(
+    [
+      tagsRepository.getTagsByDocumentIds({ documentIds }),
+      customPropertiesRepository.getCustomPropertyValuesByDocumentIds({ documentIds }),
+      customPropertiesRepository.getOrganizationPropertyDefinitions({ organizationId }),
+    ],
+  );
 
   return {
-    enrichedDocuments: documents.map(document => ({
+    enrichedDocuments: documents.map((document) => ({
       ...formatDocumentForApi({ document }),
       tags: tagsByDocumentId[document.id] ?? [],
       customProperties: buildCustomPropertiesArray({
@@ -656,7 +745,11 @@ export async function enrichAndFormatDocumentForApi({
   tagsRepository: TagsRepository;
   customPropertiesRepository: CustomPropertiesRepository;
 }) {
-  const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({ documents: [document], tagsRepository, customPropertiesRepository });
+  const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
+    documents: [document],
+    tagsRepository,
+    customPropertiesRepository,
+  });
 
   const [enrichedDocument] = enrichedDocuments;
 
@@ -693,7 +786,11 @@ export async function updateDocument({
   };
 }) {
   // It throws if the document does not exist
-  const { document } = await documentsRepository.updateDocument({ documentId, organizationId, ...changes });
+  const { document } = await documentsRepository.updateDocument({
+    documentId,
+    organizationId,
+    ...changes,
+  });
 
   eventServices.emitEvent({
     eventName: 'document.updated',

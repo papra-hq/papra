@@ -5,8 +5,10 @@ export const textCustomPropertyDefinition = defineCustomPropertyType({
   typeName: 'text',
 
   value: {
-
-    inputSchema: v.pipe(v.string(), v.maxLength(10_000, 'Text custom property value must be at most 10,000 characters long')),
+    inputSchema: v.pipe(
+      v.string(),
+      v.maxLength(10_000, 'Text custom property value must be at most 10,000 characters long'),
+    ),
 
     toDb: ({ value }) => ({ textValue: value }),
 

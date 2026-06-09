@@ -8,7 +8,10 @@ import { createCustomPropertiesRepository } from '../custom-properties/custom-pr
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { createDeterministicIdGenerator } from '../shared/random/ids';
-import { collectReadableStreamToString, createReadableStream } from '../shared/streams/readable-stream';
+import {
+  collectReadableStreamToString,
+  createReadableStream,
+} from '../shared/streams/readable-stream';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
@@ -16,7 +19,10 @@ import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
 import { createWebhookRepository } from '../webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
-import { createDocumentAlreadyExistsError, createDocumentSizeTooLargeError } from './documents.errors';
+import {
+  createDocumentAlreadyExistsError,
+  createDocumentSizeTooLargeError,
+} from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 import {
@@ -37,14 +43,18 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
         organizationPlans: { isFreePlanUnlimited: true },
         documentsStorage: { driver: 'in-memory' },
       });
-      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const documentsStorageService = createDocumentStorageService({
+        documentStorageConfig: config.documentsStorage,
+      });
 
       const createDocument = createDocumentCreationUsecase({
         db,
@@ -81,7 +91,9 @@ describe('documents usecases', () => {
       });
 
       // Ensure the file content is saved in the storage
-      const { fileStream } = await documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' });
+      const { fileStream } = await documentsStorageService.getFileStream({
+        storageKey: 'organization-1/originals/doc_1.txt',
+      });
       const content = await collectReadableStreamToString({ stream: fileStream });
 
       expect(content).to.eql('Hello, world!');
@@ -97,7 +109,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -105,7 +119,9 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
 
-      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const documentsStorageService = createDocumentStorageService({
+        documentStorageConfig: config.documentsStorage,
+      });
 
       let documentIdIndex = 1;
       const createDocument = createDocumentCreationUsecase({
@@ -137,7 +153,9 @@ describe('documents usecases', () => {
         originalSha256Hash: '315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3',
       });
 
-      const { fileStream: fileStream1 } = await documentsStorageService.getFileStream({ storageKey: 'organization-1/originals/doc_1.txt' });
+      const { fileStream: fileStream1 } = await documentsStorageService.getFileStream({
+        storageKey: 'organization-1/originals/doc_1.txt',
+      });
       const content1 = await collectReadableStreamToString({ stream: fileStream1 });
 
       expect(content1).to.eql('Hello, world!');
@@ -150,9 +168,7 @@ describe('documents usecases', () => {
           userId,
           organizationId,
         }),
-      ).rejects.toThrow(
-        createDocumentAlreadyExistsError(),
-      );
+      ).rejects.toThrow(createDocumentAlreadyExistsError());
 
       const documentRecords = await db.select().from(documentsTable);
 
@@ -177,31 +193,60 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        tags: [
-          { id: 'tag-1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'organization-1' },
-          { id: 'tag-2', name: 'Tag 2', normalizedName: 'tag 2', color: '#000000', organizationId: 'organization-1' },
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
         ],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          originalSha256Hash: hash,
-          isDeleted: true,
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          content: 'Hello, world!',
-        }],
-        documentsTags: [{
-          documentId: 'document-1',
-          tagId: 'tag-1',
-        }],
+        tags: [
+          {
+            id: 'tag-1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'organization-1',
+          },
+          {
+            id: 'tag-2',
+            name: 'Tag 2',
+            normalizedName: 'tag 2',
+            color: '#000000',
+            organizationId: 'organization-1',
+          },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            originalSha256Hash: hash,
+            isDeleted: true,
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            content: 'Hello, world!',
+          },
+        ],
+        documentsTags: [
+          {
+            documentId: 'document-1',
+            tagId: 'tag-1',
+          },
+        ],
         taggingRules: [
-          { id: 'tagging-rule-1', organizationId: 'organization-1', name: 'Tagging Rule 1', enabled: true },
+          {
+            id: 'tagging-rule-1',
+            organizationId: 'organization-1',
+            name: 'Tagging Rule 1',
+            enabled: true,
+          },
         ],
         taggingRuleConditions: [
-          { id: 'tagging-rule-condition-1', taggingRuleId: 'tagging-rule-1', field: 'content', operator: 'contains', value: 'hello' },
+          {
+            id: 'tagging-rule-condition-1',
+            taggingRuleId: 'tagging-rule-1',
+            field: 'content',
+            operator: 'contains',
+            value: 'hello',
+          },
         ],
         taggingRuleActions: [
           { id: 'tagging-rule-action-1', taggingRuleId: 'tagging-rule-1', tagId: 'tag-2' },
@@ -248,10 +293,12 @@ describe('documents usecases', () => {
 
       const documentsTagsRecordsAfterRestoration = await db.select().from(documentsTagsTable);
 
-      expect(documentsTagsRecordsAfterRestoration).to.eql([{
-        documentId: 'document-1',
-        tagId: 'tag-2',
-      }]);
+      expect(documentsTagsRecordsAfterRestoration).to.eql([
+        {
+          documentId: 'document-1',
+          tagId: 'tag-2',
+        },
+      ]);
     });
 
     test('when restoring a deleted document via duplicate upload, the optimistically saved new file should be cleaned up to prevent orphan files', async () => {
@@ -259,7 +306,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -291,9 +340,7 @@ describe('documents usecases', () => {
       });
 
       expect(document1.id).to.eql('doc_000000000000000000000001');
-      expect(
-        Array.from(inMemoryDocumentsStorageService._getStorage().keys()),
-      ).to.eql([
+      expect(Array.from(inMemoryDocumentsStorageService._getStorage().keys())).to.eql([
         'organization-1/originals/doc_000000000000000000000001.pdf',
       ]);
 
@@ -306,7 +353,10 @@ describe('documents usecases', () => {
         eventServices: createTestEventServices(),
       });
 
-      const { document: trashedDoc } = await documentsRepository.getDocumentById({ documentId: document1.id, organizationId });
+      const { document: trashedDoc } = await documentsRepository.getDocumentById({
+        documentId: document1.id,
+        organizationId,
+      });
       expect(trashedDoc?.isDeleted).to.eql(true);
 
       // Step 3: Upload the same file again - this should restore the original document
@@ -324,9 +374,7 @@ describe('documents usecases', () => {
 
       // Step 5: Verify no orphan files remain in storage
       // The optimistically saved file (doc_2.pdf) should have been cleaned up during restoration
-      expect(
-        Array.from(inMemoryDocumentsStorageService._getStorage().keys()),
-      ).to.eql([
+      expect(Array.from(inMemoryDocumentsStorageService._getStorage().keys())).to.eql([
         'organization-1/originals/doc_000000000000000000000001.pdf',
       ]);
     });
@@ -336,7 +384,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -345,7 +395,9 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const documentsStorageService = createDocumentStorageService({
+        documentStorageConfig: config.documentsStorage,
+      });
 
       const createDocument = createDocumentCreationUsecase({
         documentsStorageService,
@@ -389,13 +441,15 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
 
       const plansRepository = {
-        getOrganizationPlanById: async _args => ({
+        getOrganizationPlanById: async (_args) => ({
           organizationPlan: {
             limits: {
               maxDocumentStorageBytes: 100, // 100 bytes
@@ -436,7 +490,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       // Quota is 100 bytes
@@ -461,7 +517,7 @@ describe('documents usecases', () => {
       } as DocumentStorageService;
 
       const plansRepository = {
-        getOrganizationPlanById: async _args => ({
+        getOrganizationPlanById: async (_args) => ({
           organizationPlan: {
             limits: {
               maxDocumentStorageBytes: 100, // 100 bytes
@@ -504,7 +560,10 @@ describe('documents usecases', () => {
         name: 'file-2.txt',
       });
 
-      expect(result1).to.deep.include({ status: 'rejected', reason: createOrganizationDocumentStorageLimitReachedError() });
+      expect(result1).to.deep.include({
+        status: 'rejected',
+        reason: createOrganizationDocumentStorageLimitReachedError(),
+      });
       expect(result2).to.deep.include({ status: 'fulfilled' });
     });
 
@@ -513,13 +572,15 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
 
       const plansRepository = {
-        getOrganizationPlanById: async _args => ({
+        getOrganizationPlanById: async (_args) => ({
           organizationPlan: {
             limits: {
               maxDocumentStorageBytes: 1_000, // 1kiB
@@ -561,7 +622,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -610,7 +673,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -619,7 +684,9 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const documentsStorageService = createDocumentStorageService({
+        documentStorageConfig: config.documentsStorage,
+      });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 
@@ -640,7 +707,10 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await extractAndSaveDocumentFileContent({
@@ -669,7 +739,9 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
       });
 
       const config = overrideConfig({
@@ -678,7 +750,9 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+      const documentsStorageService = createDocumentStorageService({
+        documentStorageConfig: config.documentsStorage,
+      });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
 
@@ -699,7 +773,10 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
       const eventServices = createTestEventServices();
 
@@ -715,9 +792,7 @@ describe('documents usecases', () => {
         eventServices,
       });
 
-      expect(
-        eventServices.getEmittedEvents().map(({ eventName }) => (eventName)),
-      ).to.eql([
+      expect(eventServices.getEmittedEvents().map(({ eventName }) => eventName)).to.eql([
         'document.updated',
       ]);
     });
@@ -728,16 +803,20 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          originalSha256Hash: 'hash',
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+          },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -765,16 +844,20 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          originalSha256Hash: 'hash',
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+          },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -807,18 +890,22 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          originalSha256Hash: 'hash',
-          isDeleted: true,
-          deletedBy: 'user-1',
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+            isDeleted: true,
+            deletedBy: 'user-1',
+          },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -847,18 +934,22 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          originalSha256Hash: 'hash',
-          isDeleted: true,
-          deletedBy: 'user-1',
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+            isDeleted: true,
+            deletedBy: 'user-1',
+          },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -872,16 +963,16 @@ describe('documents usecases', () => {
         eventServices,
       });
 
-      expect(
-        eventServices.getEmittedEvents(),
-      ).to.eql([{
-        eventName: 'document.restored',
-        payload: {
-          documentId: 'document-1',
-          organizationId: 'organization-1',
-          restoredBy: 'user-1',
+      expect(eventServices.getEmittedEvents()).to.eql([
+        {
+          eventName: 'document.restored',
+          payload: {
+            documentId: 'document-1',
+            organizationId: 'organization-1',
+            restoredBy: 'user-1',
+          },
         },
-      }]);
+      ]);
     });
   });
 
@@ -912,12 +1003,25 @@ describe('documents usecases', () => {
     test('strips sensitive storage and encryption fields', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org-1', name: 'Organization 1' }],
-        documents: [{ id: 'doc-1', ...baseDocument, fileEncryptionAlgorithm: 'aes-256-gcm', fileEncryptionKeyWrapped: 'wrapped-key', fileEncryptionKekVersion: 'v1' }],
+        documents: [
+          {
+            id: 'doc-1',
+            ...baseDocument,
+            fileEncryptionAlgorithm: 'aes-256-gcm',
+            fileEncryptionKeyWrapped: 'wrapped-key',
+            fileEncryptionKekVersion: 'v1',
+          },
+        ],
       });
 
-      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+      });
 
-      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+      const {
+        enrichedDocuments: [enrichedDocument],
+      } = await enrichAndFormatDocumentsForApi({
         documents: [document!],
         tagsRepository: createTagsRepository({ db }),
         customPropertiesRepository: createCustomPropertiesRepository({ db }),
@@ -935,8 +1039,13 @@ describe('documents usecases', () => {
         documents: [{ id: 'doc-1', ...baseDocument }],
       });
 
-      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
-      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+      });
+      const {
+        enrichedDocuments: [enrichedDocument],
+      } = await enrichAndFormatDocumentsForApi({
         documents: [document!],
         tagsRepository: createTagsRepository({ db }),
         customPropertiesRepository: createCustomPropertiesRepository({ db }),
@@ -953,8 +1062,20 @@ describe('documents usecases', () => {
           { id: 'doc-2', ...baseDocument, originalSha256Hash: 'hash2' },
         ],
         tags: [
-          { id: 'tag-1', organizationId: 'org-1', name: 'Urgent', normalizedName: 'urgent', color: '#ff0000' },
-          { id: 'tag-2', organizationId: 'org-1', name: 'Finance', normalizedName: 'finance', color: '#00ff00' },
+          {
+            id: 'tag-1',
+            organizationId: 'org-1',
+            name: 'Urgent',
+            normalizedName: 'urgent',
+            color: '#ff0000',
+          },
+          {
+            id: 'tag-2',
+            organizationId: 'org-1',
+            name: 'Finance',
+            normalizedName: 'finance',
+            color: '#00ff00',
+          },
         ],
         documentsTags: [
           { documentId: 'doc-1', tagId: 'tag-1' },
@@ -964,8 +1085,14 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const { document: doc1 } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
-      const { document: doc2 } = await documentsRepository.getDocumentById({ documentId: 'doc-2', organizationId: 'org-1' });
+      const { document: doc1 } = await documentsRepository.getDocumentById({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+      });
+      const { document: doc2 } = await documentsRepository.getDocumentById({
+        documentId: 'doc-2',
+        organizationId: 'org-1',
+      });
 
       const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
         documents: [doc1!, doc2!],
@@ -973,7 +1100,7 @@ describe('documents usecases', () => {
         customPropertiesRepository: createCustomPropertiesRepository({ db }),
       });
 
-      expect(enrichedDocuments[0]!.tags.map(t => t.id).toSorted()).to.eql(['tag-1', 'tag-2']);
+      expect(enrichedDocuments[0]!.tags.map((t) => t.id).toSorted()).to.eql(['tag-1', 'tag-2']);
       expect(enrichedDocuments[1]!.tags).to.eql([]);
     });
 
@@ -986,8 +1113,13 @@ describe('documents usecases', () => {
         ],
       });
 
-      const { document } = await createDocumentsRepository({ db }).getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
-      const { enrichedDocuments: [enrichedDocument] } = await enrichAndFormatDocumentsForApi({
+      const { document } = await createDocumentsRepository({ db }).getDocumentById({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+      });
+      const {
+        enrichedDocuments: [enrichedDocument],
+      } = await enrichAndFormatDocumentsForApi({
         documents: [document!],
         tagsRepository: createTagsRepository({ db }),
         customPropertiesRepository: createCustomPropertiesRepository({ db }),
@@ -1009,14 +1141,25 @@ describe('documents usecases', () => {
           { id: 'cpd-1', organizationId: 'org-1', name: 'Note', key: 'note', type: 'text' },
         ],
         documentCustomPropertyValues: [
-          { id: 'dcpv-1', documentId: 'doc-1', propertyDefinitionId: 'cpd-1', textValue: 'important' },
+          {
+            id: 'dcpv-1',
+            documentId: 'doc-1',
+            propertyDefinitionId: 'cpd-1',
+            textValue: 'important',
+          },
           // doc-2 has no value for this property
         ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const { document: doc1 } = await documentsRepository.getDocumentById({ documentId: 'doc-1', organizationId: 'org-1' });
-      const { document: doc2 } = await documentsRepository.getDocumentById({ documentId: 'doc-2', organizationId: 'org-1' });
+      const { document: doc1 } = await documentsRepository.getDocumentById({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+      });
+      const { document: doc2 } = await documentsRepository.getDocumentById({
+        documentId: 'doc-2',
+        organizationId: 'org-1',
+      });
 
       const { enrichedDocuments } = await enrichAndFormatDocumentsForApi({
         documents: [doc1!, doc2!],
@@ -1038,19 +1181,23 @@ describe('documents usecases', () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
-        organizationMembers: [{ organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER }],
-        documents: [{
-          id: 'document-1',
-          organizationId: 'organization-1',
-          mimeType: 'text/plain',
-          originalStorageKey: 'organization-1/originals/document-1.txt',
-          name: 'file-1.txt',
-          originalName: 'file-1.txt',
-          originalSha256Hash: 'hash',
-          content: 'Original content',
-          createdAt: new Date('2025-12-10'),
-          updatedAt: new Date('2025-12-11'),
-        }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        documents: [
+          {
+            id: 'document-1',
+            organizationId: 'organization-1',
+            mimeType: 'text/plain',
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+            name: 'file-1.txt',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+            content: 'Original content',
+            createdAt: new Date('2025-12-10'),
+            updatedAt: new Date('2025-12-11'),
+          },
+        ],
       });
 
       const documentsRepository = createDocumentsRepository({ db });
@@ -1065,44 +1212,40 @@ describe('documents usecases', () => {
         changes: { name: 'new-name.txt', content: 'Updated content' },
       });
 
-      expect(
-        eventServices.getEmittedEvents(),
-      ).to.eql(
-        [
-          {
-            eventName: 'document.updated',
-            payload: {
-              changes: {
-                content: 'Updated content',
-                name: 'new-name.txt',
-              },
-              document: {
-                content: 'Updated content',
-                createdAt: new Date('2025-12-10'),
-                createdBy: null,
-                deletedAt: null,
-                deletedBy: null,
-                fileEncryptionAlgorithm: null,
-                fileEncryptionKekVersion: null,
-                fileEncryptionKeyWrapped: null,
-                id: 'document-1',
-                isDeleted: false,
-                mimeType: 'text/plain',
-                notes: null,
-                name: 'new-name.txt',
-                documentDate: null,
-                organizationId: 'organization-1',
-                originalName: 'file-1.txt',
-                originalSha256Hash: 'hash',
-                originalSize: 0,
-                originalStorageKey: 'organization-1/originals/document-1.txt',
-                updatedAt: new Date('2025-12-11'),
-              },
-              userId: 'user-1',
+      expect(eventServices.getEmittedEvents()).to.eql([
+        {
+          eventName: 'document.updated',
+          payload: {
+            changes: {
+              content: 'Updated content',
+              name: 'new-name.txt',
             },
+            document: {
+              content: 'Updated content',
+              createdAt: new Date('2025-12-10'),
+              createdBy: null,
+              deletedAt: null,
+              deletedBy: null,
+              fileEncryptionAlgorithm: null,
+              fileEncryptionKekVersion: null,
+              fileEncryptionKeyWrapped: null,
+              id: 'document-1',
+              isDeleted: false,
+              mimeType: 'text/plain',
+              notes: null,
+              name: 'new-name.txt',
+              documentDate: null,
+              organizationId: 'organization-1',
+              originalName: 'file-1.txt',
+              originalSha256Hash: 'hash',
+              originalSize: 0,
+              originalStorageKey: 'organization-1/originals/document-1.txt',
+              updatedAt: new Date('2025-12-11'),
+            },
+            userId: 'user-1',
           },
-        ],
-      );
+        },
+      ]);
     });
   });
 });

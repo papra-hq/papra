@@ -1,5 +1,8 @@
 import type { Logger } from '@crowlog/logger';
-import type { DocumentActivityInput, DocumentActivityRepository } from './document-activity.repository';
+import type {
+  DocumentActivityInput,
+  DocumentActivityRepository,
+} from './document-activity.repository';
 import type { DocumentActivityEvent } from './document-activity.types';
 import { createDeferable } from '../../shared/async/defer';
 import { createLogger } from '../../shared/logger/logger';
@@ -29,13 +32,16 @@ export async function registerDocumentActivityLog({
     tagId,
   });
 
-  logger.info({
-    documentId,
-    event,
-    eventData,
-    userId,
-    tagId,
-  }, 'Document activity log registered');
+  logger.info(
+    {
+      documentId,
+      event,
+      eventData,
+      userId,
+      tagId,
+    },
+    'Document activity log registered',
+  );
 }
 
 export async function registerDocumentsActivityLog({

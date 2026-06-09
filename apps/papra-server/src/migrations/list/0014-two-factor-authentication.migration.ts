@@ -7,7 +7,7 @@ export const twoFactorAuthenticationMigration = {
 
   up: async ({ db }) => {
     const tableInfo = await db.run(sql`PRAGMA table_info(users)`);
-    const existingColumns = tableInfo.rows.map(row => row.name);
+    const existingColumns = tableInfo.rows.map((row) => row.name);
     const hasColumn = (columnName: string) => existingColumns.includes(columnName);
 
     const statements = [
@@ -23,10 +23,17 @@ export const twoFactorAuthenticationMigration = {
         );
       `,
 
-      ...(!hasColumn('two_factor_enabled') ? [sql`ALTER TABLE "users" ADD "two_factor_enabled" integer DEFAULT false NOT NULL;`] : []),
+      ...(!hasColumn('two_factor_enabled')
+        ? [sql`ALTER TABLE "users" ADD "two_factor_enabled" integer DEFAULT false NOT NULL;`]
+        : []),
     ];
 
-    await db.batch(statements.map(statement => db.run(statement) as BatchItem<'sqlite'>) as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]]);
+    await db.batch(
+      statements.map((statement) => db.run(statement) as BatchItem<'sqlite'>) as [
+        BatchItem<'sqlite'>,
+        ...BatchItem<'sqlite'>[],
+      ],
+    );
   },
 
   down: async ({ db }) => {

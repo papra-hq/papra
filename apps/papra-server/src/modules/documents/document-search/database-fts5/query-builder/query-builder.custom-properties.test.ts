@@ -2,13 +2,18 @@ import type { CustomPropertyDefinition } from './query-builder.custom-properties
 import { describe, expect, test } from 'vitest';
 import { stringifySqlQuery } from '../../../../app/database/database.models';
 import { createInMemoryDatabase } from '../../../../app/database/database.test-utils';
-import { handleCustomPropertyFilter, handleHasCustomPropertyFilter } from './query-builder.custom-properties';
+import {
+  handleCustomPropertyFilter,
+  handleHasCustomPropertyFilter,
+} from './query-builder.custom-properties';
 
 describe('query-builder - custom properties', async () => {
   const { db } = await createInMemoryDatabase();
   const now = new Date('2025-06-15');
 
-  function makeDefinition(overrides: Partial<CustomPropertyDefinition> = {}): CustomPropertyDefinition {
+  function makeDefinition(
+    overrides: Partial<CustomPropertyDefinition> = {},
+  ): CustomPropertyDefinition {
     return {
       id: 'cpd_1',
       organizationId: 'org_1',
@@ -90,10 +95,13 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Invalid boolean value "maybe" for warranty filter. Expected one of: true, yes, y, 1, on, enabled, false, no, n, 0, off, disabled',
-        code: 'INVALID_BOOLEAN_VALUE',
-      }]);
+      expect(issues).to.eql([
+        {
+          message:
+            'Invalid boolean value "maybe" for warranty filter. Expected one of: true, yes, y, 1, on, enabled, false, no, n, 0, off, disabled',
+          code: 'INVALID_BOOLEAN_VALUE',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
 
@@ -105,10 +113,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Unsupported operator ">" for warranty filter',
-        code: 'UNSUPPORTED_FILTER_OPERATOR',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Unsupported operator ">" for warranty filter',
+          code: 'UNSUPPORTED_FILTER_OPERATOR',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -137,10 +147,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Unsupported operator ">" for category filter',
-        code: 'UNSUPPORTED_FILTER_OPERATOR',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Unsupported operator ">" for category filter',
+          code: 'UNSUPPORTED_FILTER_OPERATOR',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -229,10 +241,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Invalid number value "notanumber" for amount filter. Expected a numeric value.',
-        code: 'INVALID_NUMBER_VALUE',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Invalid number value "notanumber" for amount filter. Expected a numeric value.',
+          code: 'INVALID_NUMBER_VALUE',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -291,10 +305,13 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Invalid date format for expiry filter: "not-a-date". Expected a valid date string.',
-        code: 'INVALID_DATE_FORMAT',
-      }]);
+      expect(issues).to.eql([
+        {
+          message:
+            'Invalid date format for expiry filter: "not-a-date". Expected a valid date string.',
+          code: 'INVALID_DATE_FORMAT',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -323,10 +340,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Unsupported operator ">" for status filter',
-        code: 'UNSUPPORTED_FILTER_OPERATOR',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Unsupported operator ">" for status filter',
+          code: 'UNSUPPORTED_FILTER_OPERATOR',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -387,10 +406,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Unsupported operator ">" for assignee filter',
-        code: 'UNSUPPORTED_FILTER_OPERATOR',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Unsupported operator ">" for assignee filter',
+          code: 'UNSUPPORTED_FILTER_OPERATOR',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });
@@ -419,10 +440,12 @@ describe('query-builder - custom properties', async () => {
         now,
       });
 
-      expect(issues).to.eql([{
-        message: 'Unsupported operator ">" for related filter',
-        code: 'UNSUPPORTED_FILTER_OPERATOR',
-      }]);
+      expect(issues).to.eql([
+        {
+          message: 'Unsupported operator ">" for related filter',
+          code: 'UNSUPPORTED_FILTER_OPERATOR',
+        },
+      ]);
       expect(stringifySqlQuery(sqlQuery)).to.eql({ query: '0', params: [] });
     });
   });

@@ -2,7 +2,7 @@ import type { ApiClient } from '../api/api.client';
 import type { ServerConfig } from './config.types';
 import { httpClient } from '../api/http.client';
 
-export async function fetchServerConfig({ apiClient}: { apiClient: ApiClient }) {
+export async function fetchServerConfig({ apiClient }: { apiClient: ApiClient }) {
   return apiClient<{
     config: ServerConfig;
   }>({
@@ -10,7 +10,7 @@ export async function fetchServerConfig({ apiClient}: { apiClient: ApiClient }) 
   });
 }
 
-export async function pingServer({ url}: { url: string }): Promise<true | never> {
+export async function pingServer({ url }: { url: string }): Promise<true | never> {
   const response = await httpClient<{ status: 'ok' | 'error' }>({ url: `/api/ping`, baseUrl: url })
     .then(() => true)
     .catch(() => false);

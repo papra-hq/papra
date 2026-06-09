@@ -28,7 +28,13 @@ export async function fetchWebhooks({ organizationId }: { organizationId: string
   };
 }
 
-export async function fetchWebhook({ webhookId, organizationId }: { webhookId: string; organizationId: string }) {
+export async function fetchWebhook({
+  webhookId,
+  organizationId,
+}: {
+  webhookId: string;
+  organizationId: string;
+}) {
   const { webhook } = await apiClient<{
     webhook: Webhook;
   }>({
@@ -40,7 +46,15 @@ export async function fetchWebhook({ webhookId, organizationId }: { webhookId: s
   };
 }
 
-export async function updateWebhook({ webhookId, organizationId, input }: { webhookId: string; organizationId: string; input: UpdateWebhookInput }) {
+export async function updateWebhook({
+  webhookId,
+  organizationId,
+  input,
+}: {
+  webhookId: string;
+  organizationId: string;
+  input: UpdateWebhookInput;
+}) {
   const { webhook } = await apiClient<{
     webhook: Webhook;
   }>({
@@ -54,7 +68,13 @@ export async function updateWebhook({ webhookId, organizationId, input }: { webh
   };
 }
 
-export async function deleteWebhook({ webhookId, organizationId }: { webhookId: string; organizationId: string }) {
+export async function deleteWebhook({
+  webhookId,
+  organizationId,
+}: {
+  webhookId: string;
+  organizationId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/webhooks/${webhookId}`,
     method: 'DELETE',

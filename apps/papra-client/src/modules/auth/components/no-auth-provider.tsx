@@ -8,9 +8,7 @@ export const NoAuthProviderWarning: Component = () => {
     <div class="flex items-center justify-center h-full p-6 sm:pb-32">
       <div class="max-w-sm w-full">
         <h1 class="text-lg font-bold">{t('auth.no-auth-provider.title')}</h1>
-        <p class="text-muted-foreground mt-1 mb-4">
-          {t('auth.no-auth-provider.description')}
-        </p>
+        <p class="text-muted-foreground mt-1 mb-4">{t('auth.no-auth-provider.description')}</p>
       </div>
     </div>
   );

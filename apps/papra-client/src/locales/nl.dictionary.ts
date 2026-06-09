@@ -4,8 +4,10 @@ export const translations: Partial<TranslationsDictionary> = {
   // Authentication
 
   'auth.request-password-reset.title': 'Wachtwoord opnieuw instellen',
-  'auth.request-password-reset.description': 'Voer uw e-mailadres in om uw wachtwoord opnieuw in te stellen.',
-  'auth.request-password-reset.requested': 'Als er een account bestaat voor dit e-mailadres, hebben we u een e-mail gestuurd om uw wachtwoord opnieuw in te stellen.',
+  'auth.request-password-reset.description':
+    'Voer uw e-mailadres in om uw wachtwoord opnieuw in te stellen.',
+  'auth.request-password-reset.requested':
+    'Als er een account bestaat voor dit e-mailadres, hebben we u een e-mail gestuurd om uw wachtwoord opnieuw in te stellen.',
   'auth.request-password-reset.back-to-login': 'Terug naar inloggen',
   'auth.request-password-reset.form.email.label': 'E-mail',
   'auth.request-password-reset.form.email.placeholder': 'Voorbeeld: ada@papra.app',
@@ -14,20 +16,24 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.request-password-reset.form.submit': 'Wachtwoord opnieuw instellen',
 
   'auth.reset-password.title': 'Wachtwoord opnieuw instellen',
-  'auth.reset-password.description': 'Voer uw nieuwe wachtwoord in om uw wachtwoord opnieuw in te stellen.',
+  'auth.reset-password.description':
+    'Voer uw nieuwe wachtwoord in om uw wachtwoord opnieuw in te stellen.',
   'auth.reset-password.reset': 'Uw wachtwoord is opnieuw ingesteld.',
   'auth.reset-password.back-to-login': 'Terug naar inloggen',
   'auth.reset-password.form.new-password.label': 'Nieuw wachtwoord',
   'auth.reset-password.form.new-password.placeholder': 'Voorbeeld: **********',
   'auth.reset-password.form.new-password.required': 'Voer uw nieuwe wachtwoord in',
-  'auth.reset-password.form.new-password.min-length': 'Wachtwoord moet minimaal {{ minLength }} tekens bevatten',
-  'auth.reset-password.form.new-password.max-length': 'Wachtwoord mag maximaal {{ maxLength }} tekens bevatten',
+  'auth.reset-password.form.new-password.min-length':
+    'Wachtwoord moet minimaal {{ minLength }} tekens bevatten',
+  'auth.reset-password.form.new-password.max-length':
+    'Wachtwoord mag maximaal {{ maxLength }} tekens bevatten',
   'auth.reset-password.form.submit': 'Wachtwoord opnieuw instellen',
 
   'auth.email-provider.open': 'Open {{ provider }}',
 
   'auth.login.title': 'Inloggen bij Papra',
-  'auth.login.description': 'Voer uw e-mailadres in of gebruik sociale media om toegang te krijgen tot uw Papra-account.',
+  'auth.login.description':
+    'Voer uw e-mailadres in of gebruik sociale media om toegang te krijgen tot uw Papra-account.',
   'auth.login.login-with-provider': 'Inloggen met {{ provider }}',
   'auth.login.no-account': 'Nog geen account?',
   'auth.login.register': 'Registreren',
@@ -43,8 +49,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Inloggen',
 
   'auth.login.two-factor.title': 'Twee-staps-verificatie',
-  'auth.login.two-factor.description.totp': 'Voer de 6-cijferige verificatiecode van je authenticatie-app in.',
-  'auth.login.two-factor.description.backup-code': 'Voer een van je back-upcodes in om toegang te krijgen tot je account.',
+  'auth.login.two-factor.description.totp':
+    'Voer de 6-cijferige verificatiecode van je authenticatie-app in.',
+  'auth.login.two-factor.description.backup-code':
+    'Voer een van je back-upcodes in om toegang te krijgen tot je account.',
   'auth.login.two-factor.code.label.totp': 'Authenticatiecode',
   'auth.login.two-factor.code.label.backup-code': 'Back-upcode',
   'auth.login.two-factor.code.placeholder.backup-code': 'Voer back-upcode in',
@@ -52,7 +60,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.two-factor.trust-device.label': 'Dit apparaat 30 dagen vertrouwen',
   'auth.login.two-factor.back': 'Terug naar inloggen',
   'auth.login.two-factor.submit': 'Verifiëren',
-  'auth.login.two-factor.verification-failed': 'Verificatie mislukt. Controleer je code en probeer het opnieuw.',
+  'auth.login.two-factor.verification-failed':
+    'Verificatie mislukt. Controleer je code en probeer het opnieuw.',
   'auth.login.two-factor.use-backup-code': 'Gebruik in plaats daarvan een back-upcode',
   'auth.login.two-factor.use-totp': 'Gebruik in plaats daarvan de authenticatie-app',
 
@@ -65,7 +74,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Heeft u al een account?',
   'auth.register.login': 'Inloggen',
   'auth.register.registration-disabled.title': 'Registratie is uitgeschakeld',
-  'auth.register.registration-disabled.description': 'Het aanmaken van nieuwe accounts is momenteel uitgeschakeld op deze Papra-instantie. Alleen gebruikers met bestaande accounts kunnen inloggen. Als u denkt dat dit een vergissing is, neem dan contact op met de beheerder van deze instantie.',
+  'auth.register.registration-disabled.description':
+    'Het aanmaken van nieuwe accounts is momenteel uitgeschakeld op deze Papra-instantie. Alleen gebruikers met bestaande accounts kunnen inloggen. Als u denkt dat dit een vergissing is, neem dan contact op met de beheerder van deze instantie.',
   'auth.register.form.email.label': 'E-mail',
   'auth.register.form.email.placeholder': 'Voorbeeld: ada@papra.app',
   'auth.register.form.email.required': 'Voer uw e-mailadres in',
@@ -73,8 +83,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.password.label': 'Wachtwoord',
   'auth.register.form.password.placeholder': 'Kies een wachtwoord',
   'auth.register.form.password.required': 'Voer uw wachtwoord in',
-  'auth.register.form.password.min-length': 'Wachtwoord moet minimaal {{ minLength }} tekens bevatten',
-  'auth.register.form.password.max-length': 'Wachtwoord mag maximaal {{ maxLength }} tekens bevatten',
+  'auth.register.form.password.min-length':
+    'Wachtwoord moet minimaal {{ minLength }} tekens bevatten',
+  'auth.register.form.password.max-length':
+    'Wachtwoord mag maximaal {{ maxLength }} tekens bevatten',
   'auth.register.form.name.label': 'Naam',
   'auth.register.form.name.placeholder': 'Voorbeeld: Ada Lovelace',
   'auth.register.form.name.required': 'Voer uw naam in',
@@ -82,21 +94,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.submit': 'Registreren',
 
   'auth.email-validation-required.title': 'Bevestig uw e-mail',
-  'auth.email-validation-required.description': 'We hebben een e-mail naar u gestuurd. Bevestig uw e-mailadres door op de link in de e-mail te klikken.',
+  'auth.email-validation-required.description':
+    'We hebben een e-mail naar u gestuurd. Bevestig uw e-mailadres door op de link in de e-mail te klikken.',
 
   'auth.email-verification.success.title': 'E-mail bevestigd',
-  'auth.email-verification.success.description': 'Uw e-mail is succesvol bevestigd. U kunt nu inloggen op uw account.',
+  'auth.email-verification.success.description':
+    'Uw e-mail is succesvol bevestigd. U kunt nu inloggen op uw account.',
   'auth.email-verification.success.login': 'Ga naar inloggen',
   'auth.email-verification.error.title': 'Bevestiging mislukt',
-  'auth.email-verification.error.description': 'De bevestigingslink is verlopen of ongeldig. Vraag een nieuwe e-mail aan door in te loggen.',
+  'auth.email-verification.error.description':
+    'De bevestigingslink is verlopen of ongeldig. Vraag een nieuwe e-mail aan door in te loggen.',
   'auth.email-verification.error.back': 'Terug naar inloggen',
 
-  'auth.legal-links.description': 'Door door te gaan erkent u dat u de {{ terms }} en {{ privacy }} begrijpt en ermee instemt.',
+  'auth.legal-links.description':
+    'Door door te gaan erkent u dat u de {{ terms }} en {{ privacy }} begrijpt en ermee instemt.',
   'auth.legal-links.terms': 'Servicevoorwaarden',
   'auth.legal-links.privacy': 'Privacybeleid',
 
   'auth.no-auth-provider.title': 'Geen authenticatieprovider',
-  'auth.no-auth-provider.description': 'Er zijn geen authenticatieproviders ingeschakeld op deze Papra-instantie. Neem contact op met de beheerder om deze in te schakelen.',
+  'auth.no-auth-provider.description':
+    'Er zijn geen authenticatieproviders ingeschakeld op deze Papra-instantie. Neem contact op met de beheerder om deze in te schakelen.',
 
   // User settings
 
@@ -108,7 +125,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.email.label': 'E-mailadres',
 
   'user.settings.name.title': 'Volledige naam',
-  'user.settings.name.description': 'Uw volledige naam wordt weergegeven aan andere organisatiedeelnemers.',
+  'user.settings.name.description':
+    'Uw volledige naam wordt weergegeven aan andere organisatiedeelnemers.',
   'user.settings.name.label': 'Volledige naam',
   'user.settings.name.placeholder': 'Bijv. John Doe',
   'user.settings.name.update': 'Naam bijwerken',
@@ -127,7 +145,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.regenerate-codes-button': 'Back-upcodes opnieuw genereren',
 
   'user.settings.two-factor.enable-dialog.title': 'Twee-factor-authenticatie inschakelen',
-  'user.settings.two-factor.enable-dialog.description': 'Voer je wachtwoord in om 2FA in te schakelen.',
+  'user.settings.two-factor.enable-dialog.description':
+    'Voer je wachtwoord in om 2FA in te schakelen.',
   'user.settings.two-factor.enable-dialog.password.label': 'Wachtwoord',
   'user.settings.two-factor.enable-dialog.password.placeholder': 'Voer je wachtwoord in',
   'user.settings.two-factor.enable-dialog.password.required': 'Voer je wachtwoord in',
@@ -136,22 +155,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Twee-factor-authenticatie instellen',
   'user.settings.two-factor.setup-dialog.step1.title': 'Stap 1: Scan de QR-code',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Scan de onderstaande QR-code of voer de instellingssleutel handmatig in je authenticatie-app in.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Scan de onderstaande QR-code of voer de instellingssleutel handmatig in je authenticatie-app in.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Instellingssleutel kopiëren',
   'user.settings.two-factor.setup-dialog.step2.title': 'Stap 2: Verifieer de code',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Voer de 6-cijferige code in die door je authenticatie-app is gegenereerd om twee-factor-authenticatie te verifiëren en in te schakelen.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Voer de 6-cijferige code in die door je authenticatie-app is gegenereerd om twee-factor-authenticatie te verifiëren en in te schakelen.',
   'user.settings.two-factor.setup-dialog.cancel': 'Annuleren',
   'user.settings.two-factor.setup-dialog.verify': 'Verifiëren en 2FA inschakelen',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Back-upcodes',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Bewaar deze back-upcodes op een veilige plaats. Je kunt ze gebruiken om toegang te krijgen tot je account als je de toegang tot je authenticatie-app verliest.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Bewaar deze back-upcodes op een veilige plaats. Je kunt ze gebruiken om toegang te krijgen tot je account als je de toegang tot je authenticatie-app verliest.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Back-upcodes kopiëren',
   'user.settings.two-factor.backup-codes-dialog.download': 'Back-upcodes downloaden',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Ik heb mijn codes opgeslagen',
 
   'user.settings.two-factor.disable-dialog.title': 'Twee-factor-authenticatie uitschakelen',
-  'user.settings.two-factor.disable-dialog.description': 'Voer je wachtwoord in om 2FA uit te schakelen. Dit maakt je account minder veilig.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Voer je wachtwoord in om 2FA uit te schakelen. Dit maakt je account minder veilig.',
   'user.settings.two-factor.disable-dialog.password.label': 'Wachtwoord',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Voer je wachtwoord in',
   'user.settings.two-factor.disable-dialog.password.required': 'Voer je wachtwoord in',
@@ -159,7 +182,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': '2FA uitschakelen',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Back-upcodes opnieuw genereren',
-  'user.settings.two-factor.regenerate-dialog.description': 'Dit zal alle bestaande back-upcodes ongeldig maken en nieuwe genereren. Voer je wachtwoord in om door te gaan.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Dit zal alle bestaande back-upcodes ongeldig maken en nieuwe genereren. Voer je wachtwoord in om door te gaan.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Wachtwoord',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Voer je wachtwoord in',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Voer je wachtwoord in',
@@ -173,33 +197,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Uw organisaties',
-  'organizations.list.description': 'Organisaties zijn een manier om uw documenten te groeperen en toegang te beheren. U kunt meerdere organisaties aanmaken en uw teamleden uitnodigen om samen te werken.',
+  'organizations.list.description':
+    'Organisaties zijn een manier om uw documenten te groeperen en toegang te beheren. U kunt meerdere organisaties aanmaken en uw teamleden uitnodigen om samen te werken.',
   'organizations.list.create-new': 'Nieuwe organisatie aanmaken',
   'organizations.list.back': 'Terug naar organisaties',
   'organizations.list.deleted.title': 'Verwijderde organisaties',
-  'organizations.list.deleted.description': 'Verwijderde organisaties worden nog {{ days }} dagen bewaard voordat ze permanent worden verwijderd. U kunt ze in deze periode herstellen.',
+  'organizations.list.deleted.description':
+    'Verwijderde organisaties worden nog {{ days }} dagen bewaard voordat ze permanent worden verwijderd. U kunt ze in deze periode herstellen.',
   'organizations.list.deleted.empty': 'Geen verwijderde organisaties',
-  'organizations.list.deleted.empty-description': 'Wanneer u een organisatie verwijdert, verschijnt deze hier gedurende {{ days }} dagen voordat deze permanent wordt verwijderd.',
+  'organizations.list.deleted.empty-description':
+    'Wanneer u een organisatie verwijdert, verschijnt deze hier gedurende {{ days }} dagen voordat deze permanent wordt verwijderd.',
   'organizations.list.deleted.restore': 'Herstellen',
   'organizations.list.deleted.restore-success': 'Organisatie succesvol hersteld',
   'organizations.list.deleted.restore-confirm.title': 'Organisatie herstellen',
-  'organizations.list.deleted.restore-confirm.message': 'Weet u zeker dat u deze organisatie wilt herstellen? Deze wordt teruggezet naar uw lijst met actieve organisaties.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Weet u zeker dat u deze organisatie wilt herstellen? Deze wordt teruggezet naar uw lijst met actieve organisaties.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Organisatie herstellen',
   'organizations.list.deleted.deleted-at': 'Verwijderd {{ date }}',
   'organizations.list.deleted.purge-at': 'Wordt permanent verwijderd op {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:{daysUntilPurge} dag, {daysUntilPurge} dagen }} resterend)',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:{daysUntilPurge} dag, {daysUntilPurge} dagen }} resterend)',
 
   'organizations.details.no-documents.title': 'Geen documenten',
-  'organizations.details.no-documents.description': 'Er staan nog geen documenten in deze organisatie. Begin met het uploaden van documenten.',
+  'organizations.details.no-documents.description':
+    'Er staan nog geen documenten in deze organisatie. Begin met het uploaden van documenten.',
   'organizations.details.upload-documents': 'Documenten uploaden',
   'organizations.details.documents-count': 'documenten in totaal',
   'organizations.details.total-size': 'totale grootte',
   'organizations.details.latest-documents': 'Laatst geïmporteerde documenten',
 
   'organizations.create.title': 'Maak een nieuwe organisatie',
-  'organizations.create.description': 'Uw documenten worden per organisatie gegroepeerd. U kunt meerdere organisaties aanmaken om uw documenten te scheiden, bijvoorbeeld privé en werk.',
+  'organizations.create.description':
+    'Uw documenten worden per organisatie gegroepeerd. U kunt meerdere organisaties aanmaken om uw documenten te scheiden, bijvoorbeeld privé en werk.',
   'organizations.create.back': 'Terug',
-  'organizations.create.error.max-count-reached': 'U heeft het maximale aantal organisaties bereikt dat u kunt aanmaken. Neem contact op met support als u meer nodig heeft.',
+  'organizations.create.error.max-count-reached':
+    'U heeft het maximale aantal organisaties bereikt dat u kunt aanmaken. Neem contact op met support als u meer nodig heeft.',
   'organizations.create.form.name.label': 'Organisatienaam',
   'organizations.create.form.name.placeholder': 'Bijv. Acme Inc.',
   'organizations.create.form.name.required': 'Voer een organisatienaam in',
@@ -207,9 +239,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Organisatie succesvol aangemaakt',
 
   'organizations.create-first.title': 'Maak uw organisatie',
-  'organizations.create-first.description': 'Uw documenten worden per organisatie gegroepeerd. U kunt meerdere organisaties aanmaken om uw documenten te scheiden, bijvoorbeeld privé en werk.',
+  'organizations.create-first.description':
+    'Uw documenten worden per organisatie gegroepeerd. U kunt meerdere organisaties aanmaken om uw documenten te scheiden, bijvoorbeeld privé en werk.',
   'organizations.create-first.default-name': 'Mijn organisatie',
-  'organizations.create-first.user-name': '{{ name }}\'s organisatie',
+  'organizations.create-first.user-name': "{{ name }}'s organisatie",
 
   'organization.settings.title': 'Organisatie-instellingen',
   'organization.settings.page.title': 'Organisatie-instellingen',
@@ -219,21 +252,27 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.name.placeholder': 'Bijv. Acme Inc.',
   'organization.settings.name.updated': 'Organisatienaam bijgewerkt',
   'organization.settings.subscription.title': 'Abonnement',
-  'organization.settings.subscription.description': 'Beheer uw facturering, facturen en betaalmethoden.',
+  'organization.settings.subscription.description':
+    'Beheer uw facturering, facturen en betaalmethoden.',
   'organization.settings.subscription.manage': 'Abonnement beheren',
   'organization.settings.subscription.error': 'Kan customer portal-URL niet ophalen',
   'organization.settings.delete.title': 'Organisatie verwijderen',
-  'organization.settings.delete.description': 'Het verwijderen van deze organisatie zal alle bijbehorende gegevens permanent verwijderen.',
+  'organization.settings.delete.description':
+    'Het verwijderen van deze organisatie zal alle bijbehorende gegevens permanent verwijderen.',
   'organization.settings.delete.confirm.title': 'Organisatie verwijderen',
-  'organization.settings.delete.confirm.message': 'Weet u zeker dat u deze organisatie wilt verwijderen? De organisatie wordt gemarkeerd voor verwijdering en na {{ days }} dagen permanent verwijderd. Tijdens deze periode kunt u deze herstellen vanuit uw organisatieslijst. Alle documenten en gegevens worden na deze termijn permanent verwijderd.',
+  'organization.settings.delete.confirm.message':
+    'Weet u zeker dat u deze organisatie wilt verwijderen? De organisatie wordt gemarkeerd voor verwijdering en na {{ days }} dagen permanent verwijderd. Tijdens deze periode kunt u deze herstellen vanuit uw organisatieslijst. Alle documenten en gegevens worden na deze termijn permanent verwijderd.',
   'organization.settings.delete.confirm.confirm-button': 'Organisatie verwijderen',
   'organization.settings.delete.confirm.cancel-button': 'Annuleren',
   'organization.settings.delete.success': 'Organisatie verwijderd',
-  'organization.settings.delete.only-owner': 'Alleen de eigenaar van de organisatie kan deze verwijderen.',
-  'organization.settings.delete.has-active-subscription': 'Kan organisatie met een actief abonnement niet verwijderen. Annuleer eerst uw abonnement hierboven.',
+  'organization.settings.delete.only-owner':
+    'Alleen de eigenaar van de organisatie kan deze verwijderen.',
+  'organization.settings.delete.has-active-subscription':
+    'Kan organisatie met een actief abonnement niet verwijderen. Annuleer eerst uw abonnement hierboven.',
 
   'organization.usage.page.title': 'Gebruik',
-  'organization.usage.page.description': 'Bekijk het huidige gebruik en de limieten van uw organisatie.',
+  'organization.usage.page.description':
+    'Bekijk het huidige gebruik en de limieten van uw organisatie.',
   'organization.usage.storage.title': 'Documentopslag',
   'organization.usage.storage.description': 'Totale opslag die door uw documenten wordt gebruikt',
   'organization.usage.intake-emails.title': 'Intake-e-mails',
@@ -245,14 +284,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Leden',
   'organizations.members.description': 'Beheer de leden van uw organisatie',
   'organizations.members.invite-member': 'Lid uitnodigen',
-  'organizations.members.invite-member-disabled-tooltip': 'Alleen beheerders of eigenaren kunnen leden uitnodigen voor de organisatie',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Alleen beheerders of eigenaren kunnen leden uitnodigen voor de organisatie',
   'organizations.members.remove-from-organization': 'Verwijderen uit organisatie',
   'organizations.members.role': 'Rol',
   'organizations.members.roles.owner': 'Eigenaar',
   'organizations.members.roles.admin': 'Beheerder',
   'organizations.members.roles.member': 'Lid',
   'organizations.members.delete.confirm.title': 'Lid verwijderen',
-  'organizations.members.delete.confirm.message': 'Weet u zeker dat u dit lid uit de organisatie wilt verwijderen?',
+  'organizations.members.delete.confirm.message':
+    'Weet u zeker dat u dit lid uit de organisatie wilt verwijderen?',
   'organizations.members.delete.confirm.confirm-button': 'Verwijderen',
   'organizations.members.delete.confirm.cancel-button': 'Annuleren',
   'organizations.members.delete.success': 'Lid verwijderd uit organisatie',
@@ -271,14 +312,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invite-member.form.role.label': 'Rol',
   'organizations.invite-member.form.submit': 'Uitnodigen voor organisatie',
   'organizations.invite-member.success.message': 'Lid uitgenodigd',
-  'organizations.invite-member.success.description': 'Het e-mailadres is uitgenodigd voor de organisatie.',
+  'organizations.invite-member.success.description':
+    'Het e-mailadres is uitgenodigd voor de organisatie.',
   'organizations.invite-member.error.message': 'Uitnodiging mislukt',
 
   'organizations.invitations.title': 'Uitnodigingen',
   'organizations.invitations.description': 'Beheer uitnodigingen voor uw organisatie',
   'organizations.invitations.list.cta': 'Lid uitnodigen',
   'organizations.invitations.list.empty.title': 'Geen openstaande uitnodigingen',
-  'organizations.invitations.list.empty.description': 'U bent nog voor geen organisaties uitgenodigd.',
+  'organizations.invitations.list.empty.description':
+    'U bent nog voor geen organisaties uitgenodigd.',
   'organizations.invitations.status.pending': 'In afwachting',
   'organizations.invitations.status.accepted': 'Geaccepteerd',
   'organizations.invitations.status.rejected': 'Geweigerd',
@@ -286,11 +329,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.status.cancelled': 'Geannuleerd',
   'organizations.invitations.resend': 'Uitnodiging opnieuw verzenden',
   'organizations.invitations.cancel.title': 'Uitnodiging annuleren',
-  'organizations.invitations.cancel.description': 'Weet u zeker dat u deze uitnodiging wilt annuleren?',
+  'organizations.invitations.cancel.description':
+    'Weet u zeker dat u deze uitnodiging wilt annuleren?',
   'organizations.invitations.cancel.confirm': 'Uitnodiging annuleren',
   'organizations.invitations.cancel.cancel': 'Annuleren',
   'organizations.invitations.resend.title': 'Uitnodiging opnieuw verzenden',
-  'organizations.invitations.resend.description': 'Weet u zeker dat u deze uitnodiging opnieuw wilt verzenden? Er wordt dan een nieuwe e-mail naar de ontvanger gestuurd.',
+  'organizations.invitations.resend.description':
+    'Weet u zeker dat u deze uitnodiging opnieuw wilt verzenden? Er wordt dan een nieuwe e-mail naar de ontvanger gestuurd.',
   'organizations.invitations.resend.confirm': 'Opnieuw verzenden',
   'organizations.invitations.resend.cancel': 'Annuleren',
 
@@ -313,7 +358,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Documenten',
   'documents.list.no-documents.title': 'Geen documenten',
-  'documents.list.no-documents.description': 'Er staan nog geen documenten in deze organisatie. Begin met het uploaden van documenten.',
+  'documents.list.no-documents.description':
+    'Er staan nog geen documenten in deze organisatie. Begin met het uploaden van documenten.',
   'documents.list.no-results': 'Geen documenten gevonden',
   'documents.list.table.headers.file-name': 'Bestandsnaam',
   'documents.list.table.headers.created': 'Aangemaakt op',
@@ -321,13 +367,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Acties',
   'documents.list.table.headers.tags': 'Tags',
   'documents.list.search.placeholder': 'Zoek documenten...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:document, documenten }} komen overeen met deze zoekopdracht',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:document, documenten }} in totaal',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:document, documenten }} komen overeen met deze zoekopdracht',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:document, documenten }} in totaal',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Inhoud',
   'documents.tabs.activity': 'Activiteit',
-  'documents.deleted.message': 'Dit document is verwijderd en wordt permanent verwijderd over {{ days }} dagen.',
+  'documents.deleted.message':
+    'Dit document is verwijderd en wordt permanent verwijderd over {{ days }} dagen.',
   'documents.actions.download.title': 'Downloaden',
   'documents.actions.download.error': 'Document kon niet worden gedownload',
   'documents.actions.restore': 'Herstellen',
@@ -336,8 +385,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Annuleren',
   'documents.actions.save': 'Opslaan',
   'documents.actions.saving': 'Bezig met opslaan...',
-  'documents.content.alert': 'De inhoud van het document wordt automatisch geëxtraheerd bij het uploaden. Deze wordt alleen gebruikt voor zoeken en indexering.',
-  'documents.content.empty-placeholder': 'Dit document heeft geen geëxtraheerde inhoud; u kunt deze hier handmatig instellen.',
+  'documents.content.alert':
+    'De inhoud van het document wordt automatisch geëxtraheerd bij het uploaden. Deze wordt alleen gebruikt voor zoeken en indexering.',
+  'documents.content.empty-placeholder':
+    'Dit document heeft geen geëxtraheerde inhoud; u kunt deze hier handmatig instellen.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Naam',
   'documents.info.type': 'Type',
@@ -359,10 +410,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Document',
 
   'custom-properties.list.title': 'Aangepaste eigenschappen',
-  'custom-properties.list.description': 'Definieer aangepaste metadatavelden voor uw documenten. Eigenschappen kunnen tekst, getallen, datums, booleaanse waarden of selectielijsten zijn.',
+  'custom-properties.list.description':
+    'Definieer aangepaste metadatavelden voor uw documenten. Eigenschappen kunnen tekst, getallen, datums, booleaanse waarden of selectielijsten zijn.',
   'custom-properties.list.create-button': 'Eigenschap aanmaken',
   'custom-properties.list.empty.title': 'Aangepaste eigenschappen',
-  'custom-properties.list.empty.description': 'Met aangepaste eigenschappen kunt u gestructureerde metadata aan uw documenten toevoegen, zoals vervaldatums, bedrijfsnamen of bedragen.',
+  'custom-properties.list.empty.description':
+    'Met aangepaste eigenschappen kunt u gestructureerde metadata aan uw documenten toevoegen, zoals vervaldatums, bedrijfsnamen of bedragen.',
   'custom-properties.list.table.name': 'Naam',
   'custom-properties.list.table.type': 'Type',
   'custom-properties.list.table.description': 'Beschrijving',
@@ -370,7 +423,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Acties',
   'custom-properties.list.table.no-description': 'Geen beschrijving',
   'custom-properties.list.delete.confirm-title': 'Aangepaste eigenschap verwijderen',
-  'custom-properties.list.delete.confirm-message': 'Weet u zeker dat u de aangepaste eigenschap "{{ name }}" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+  'custom-properties.list.delete.confirm-message':
+    'Weet u zeker dat u de aangepaste eigenschap "{{ name }}" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
   'custom-properties.list.delete.confirm-button': 'Verwijderen',
   'custom-properties.list.delete.success': 'Aangepaste eigenschap succesvol verwijderd',
   'custom-properties.list.delete.error': 'Verwijderen van aangepaste eigenschap mislukt',
@@ -391,19 +445,24 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.name.max-length': 'De naam mag maximaal 255 tekens bevatten',
   'custom-properties.form.description.label': 'Beschrijving',
   'custom-properties.form.description.optional': '(optioneel)',
-  'custom-properties.form.description.placeholder': 'Beschrijf waarvoor deze eigenschap wordt gebruikt',
-  'custom-properties.form.description.max-length': 'De beschrijving mag maximaal 1000 tekens bevatten',
+  'custom-properties.form.description.placeholder':
+    'Beschrijf waarvoor deze eigenschap wordt gebruikt',
+  'custom-properties.form.description.max-length':
+    'De beschrijving mag maximaal 1000 tekens bevatten',
   'custom-properties.form.type.label': 'Type',
-  'custom-properties.form.type.immutable': 'Het type eigenschap kan na aanmaken niet worden gewijzigd.',
+  'custom-properties.form.type.immutable':
+    'Het type eigenschap kan na aanmaken niet worden gewijzigd.',
   'custom-properties.form.options.title': 'Opties',
-  'custom-properties.form.options.description': 'Definieer de beschikbare keuzes voor deze eigenschap.',
+  'custom-properties.form.options.description':
+    'Definieer de beschikbare keuzes voor deze eigenschap.',
   'custom-properties.form.options.name.placeholder': 'Optienaam',
   'custom-properties.form.options.name.required': 'Optienaam is verplicht',
   'custom-properties.form.options.name.max-length': 'De optienaam mag maximaal 255 tekens bevatten',
   'custom-properties.form.options.validation.required': 'Voeg ten minste één optie toe',
   'custom-properties.form.options.add': 'Optie toevoegen',
   'custom-properties.form.cancel': 'Annuleren',
-  'custom-properties.form.save-error': 'Er is een fout opgetreden bij het opslaan van de eigenschapsdefinitie. Probeer het opnieuw.',
+  'custom-properties.form.save-error':
+    'Er is een fout opgetreden bij het opslaan van de eigenschapsdefinitie. Probeer het opnieuw.',
 
   'documents.custom-properties.section-title': 'Eigenschappen',
   'documents.custom-properties.no-value': 'Niet ingesteld',
@@ -432,20 +491,24 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.deleted.title': 'Verwijderde documenten',
   'documents.deleted.empty.title': 'Geen verwijderde documenten',
-  'documents.deleted.empty.description': 'U heeft geen verwijderde documenten. Verwijderde documenten worden gedurende {{ days }} dagen naar de prullenbak verplaatst.',
-  'documents.deleted.retention-notice': 'Alle verwijderde documenten worden gedurende {{ days }} dagen in de prullenbak bewaard. Na deze periode worden ze permanent verwijderd en kunt u ze niet meer herstellen.',
+  'documents.deleted.empty.description':
+    'U heeft geen verwijderde documenten. Verwijderde documenten worden gedurende {{ days }} dagen naar de prullenbak verplaatst.',
+  'documents.deleted.retention-notice':
+    'Alle verwijderde documenten worden gedurende {{ days }} dagen in de prullenbak bewaard. Na deze periode worden ze permanent verwijderd en kunt u ze niet meer herstellen.',
   'documents.deleted.deleted-at': 'Verwijderd',
   'documents.deleted.restoring': 'Bezig met herstellen...',
   'documents.deleted.deleting': 'Bezig met verwijderen...',
 
   'documents.preview.unknown-file-type': 'Geen voorbeeld beschikbaar voor dit bestandstype',
-  'documents.preview.binary-file': 'Dit lijkt een binaire bestandsinhoud te zijn en kan niet als tekst worden weergegeven',
+  'documents.preview.binary-file':
+    'Dit lijkt een binaire bestandsinhoud te zijn en kan niet als tekst worden weergegeven',
 
   'documents.open-with.label': 'Openen met',
   'documents.open-with.pdf-viewer': 'PDF-viewer',
 
   'documents.pdf-viewer.loading': 'PDF laden',
-  'documents.pdf-viewer.not-a-pdf': 'Dit document is geen PDF en kan niet worden geopend in de PDF-viewer.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Dit document is geen PDF en kan niet worden geopend in de PDF-viewer.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Zijbalk verbergen',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Zijbalk tonen',
@@ -476,9 +539,9 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.more-actions.vertical-scrolling': 'Verticaal scrollen',
   'documents.pdf-viewer.more-actions.horizontal-scrolling': 'Horizontaal scrollen',
   'documents.pdf-viewer.more-actions.wrapped-scrolling': 'Doorlopend scrollen',
-  'documents.pdf-viewer.more-actions.no-spreads': 'Geen dubbele pagina\'s',
-  'documents.pdf-viewer.more-actions.odd-spreads': 'Oneven dubbele pagina\'s',
-  'documents.pdf-viewer.more-actions.even-spreads': 'Even dubbele pagina\'s',
+  'documents.pdf-viewer.more-actions.no-spreads': "Geen dubbele pagina's",
+  'documents.pdf-viewer.more-actions.odd-spreads': "Oneven dubbele pagina's",
+  'documents.pdf-viewer.more-actions.even-spreads': "Even dubbele pagina's",
   'documents.pdf-viewer.more-actions.document-properties': 'Documenteigenschappen',
 
   'documents.pdf-viewer.properties.title': 'Documenteigenschappen',
@@ -494,7 +557,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.properties.creator': 'Gemaakt met',
   'documents.pdf-viewer.properties.pdf-producer': 'PDF-producent',
   'documents.pdf-viewer.properties.pdf-version': 'PDF-versie',
-  'documents.pdf-viewer.properties.page-count': 'Aantal pagina\'s',
+  'documents.pdf-viewer.properties.page-count': "Aantal pagina's",
   'documents.pdf-viewer.properties.page-size': 'Paginagrootte',
   'documents.pdf-viewer.properties.fast-web-view': 'Snelle webweergave',
   'documents.pdf-viewer.properties.yes': 'Ja',
@@ -508,12 +571,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Alles verwijderen',
   'trash.delete-all.confirm.title': 'Alle documenten permanent verwijderen?',
-  'trash.delete-all.confirm.description': 'Weet u zeker dat u alle documenten uit de prullenbak permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+  'trash.delete-all.confirm.description':
+    'Weet u zeker dat u alle documenten uit de prullenbak permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
   'trash.delete-all.confirm.label': 'Verwijderen',
   'trash.delete-all.confirm.cancel': 'Annuleren',
   'trash.delete.button': 'Verwijderen',
   'trash.delete.confirm.title': 'Document permanent verwijderen?',
-  'trash.delete.confirm.description': 'Weet u zeker dat u dit document permanent uit de prullenbak wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+  'trash.delete.confirm.description':
+    'Weet u zeker dat u dit document permanent uit de prullenbak wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
   'trash.delete.confirm.label': 'Verwijderen',
   'trash.delete.confirm.cancel': 'Annuleren',
   'trash.deleted.success.title': 'Document verwijderd',
@@ -536,16 +601,19 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Nog geen labels',
-  'tags.no-tags.description': 'Deze organisatie heeft nog geen labels. Labels worden gebruikt om documenten te categoriseren. U kunt labels toevoegen aan uw documenten om ze eenvoudiger te vinden en te organiseren.',
+  'tags.no-tags.description':
+    'Deze organisatie heeft nog geen labels. Labels worden gebruikt om documenten te categoriseren. U kunt labels toevoegen aan uw documenten om ze eenvoudiger te vinden en te organiseren.',
   'tags.no-tags.create-tag': 'Label aanmaken',
 
   'tags.title': 'Documentlabels',
-  'tags.description': 'Labels worden gebruikt om documenten te categoriseren. U kunt labels toevoegen aan uw documenten om ze eenvoudiger te vinden en te organiseren.',
+  'tags.description':
+    'Labels worden gebruikt om documenten te categoriseren. U kunt labels toevoegen aan uw documenten om ze eenvoudiger te vinden en te organiseren.',
   'tags.create': 'Label aanmaken',
   'tags.update': 'Label bijwerken',
   'tags.delete': 'Label verwijderen',
   'tags.delete.confirm.title': 'Label verwijderen',
-  'tags.delete.confirm.message': 'Weet u zeker dat u dit label wilt verwijderen? Het verwijderen van een label verwijdert het van alle documenten.',
+  'tags.delete.confirm.message':
+    'Weet u zeker dat u dit label wilt verwijderen? Het verwijderen van een label verwijdert het van alle documenten.',
   'tags.delete.confirm.confirm-button': 'Verwijderen',
   'tags.delete.confirm.cancel-button': 'Annuleren',
   'tags.delete.success': 'Label succesvol verwijderd',
@@ -584,10 +652,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'begint met',
   'tagging-rules.operator.ends-with': 'eindigt met',
   'tagging-rules.list.title': 'Labelregels',
-  'tagging-rules.list.description': 'Beheer de labelregels van uw organisatie om documenten automatisch te labelen op basis van door u gedefinieerde voorwaarden.',
-  'tagging-rules.list.demo-warning': 'Opmerking: Dit is een demoomgeving (zonder server); labelregels worden niet toegepast op nieuw toegevoegde documenten.',
+  'tagging-rules.list.description':
+    'Beheer de labelregels van uw organisatie om documenten automatisch te labelen op basis van door u gedefinieerde voorwaarden.',
+  'tagging-rules.list.demo-warning':
+    'Opmerking: Dit is een demoomgeving (zonder server); labelregels worden niet toegepast op nieuw toegevoegde documenten.',
   'tagging-rules.list.no-tagging-rules.title': 'Geen labelregels',
-  'tagging-rules.list.no-tagging-rules.description': 'Maak een labelregel om automatisch labels toe te passen op documenten die voldoen aan uw voorwaarden.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Maak een labelregel om automatisch labels toe te passen op documenten die voldoen aan uw voorwaarden.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Labelregel aanmaken',
   'tagging-rules.list.card.no-conditions': 'Geen voorwaarden',
   'tagging-rules.list.card.one-condition': '1 voorwaarde',
@@ -603,10 +674,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Voer een naam voor de regel in',
   'tagging-rules.form.name.max-length': 'De naam mag minder dan 64 tekens bevatten',
   'tagging-rules.form.description.label': 'Beschrijving',
-  'tagging-rules.form.description.placeholder': 'Bijv. Label documenten met \'factuur\' in de naam',
+  'tagging-rules.form.description.placeholder': "Bijv. Label documenten met 'factuur' in de naam",
   'tagging-rules.form.description.max-length': 'De beschrijving mag minder dan 256 tekens bevatten',
   'tagging-rules.form.conditions.label': 'Voorwaarden',
-  'tagging-rules.form.conditions.description': 'Definieer de voorwaarden waaraan moet worden voldaan zodat de regel wordt toegepast. Geen voorwaarden betekent dat de regel op alle documenten wordt toegepast',
+  'tagging-rules.form.conditions.description':
+    'Definieer de voorwaarden waaraan moet worden voldaan zodat de regel wordt toegepast. Geen voorwaarden betekent dat de regel op alle documenten wordt toegepast',
   'tagging-rules.form.conditions.add-condition': 'Voorwaarde toevoegen',
   'tagging-rules.form.conditions.connector.when': 'Wanneer',
   'tagging-rules.form.conditions.connector.and': 'en',
@@ -614,13 +686,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Alle voorwaarden moeten overeenkomen',
   'tagging-rules.condition-match-mode.any': 'Een van de voorwaarden moet overeenkomen',
   'tagging-rules.form.conditions.no-conditions.title': 'Geen voorwaarden',
-  'tagging-rules.form.conditions.no-conditions.description': 'U heeft geen voorwaarden toegevoegd aan deze regel. Deze regel zal zijn labels op alle documenten toepassen.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'U heeft geen voorwaarden toegevoegd aan deze regel. Deze regel zal zijn labels op alle documenten toepassen.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Regel toepassen zonder voorwaarden',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Annuleren',
   'tagging-rules.form.conditions.value.placeholder': 'Voorbeeld: factuur',
   'tagging-rules.form.conditions.value.min-length': 'Voer een waarde in voor de voorwaarde',
   'tagging-rules.form.tags.label': 'Labels',
-  'tagging-rules.form.tags.description': 'Selecteer de labels die moeten worden toegepast op documenten die aan de voorwaarden voldoen',
+  'tagging-rules.form.tags.description':
+    'Selecteer de labels die moeten worden toegepast op documenten die aan de voorwaarden voldoen',
   'tagging-rules.form.tags.min-length': 'Minstens één label is vereist om toe te passen',
   'tagging-rules.form.tags.add-tag': 'Label aanmaken',
   'tagging-rules.update.title': 'Labelregel bijwerken',
@@ -629,7 +703,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Annuleren',
   'tagging-rules.apply.button': 'Toepassen op bestaande documenten',
   'tagging-rules.apply.confirm.title': 'Regel toepassen op bestaande documenten?',
-  'tagging-rules.apply.confirm.description': 'Dit controleert alle bestaande documenten in uw organisatie en past labels toe waar voorwaarden overeenkomen. De verwerking gebeurt op de achtergrond.',
+  'tagging-rules.apply.confirm.description':
+    'Dit controleert alle bestaande documenten in uw organisatie en past labels toe waar voorwaarden overeenkomen. De verwerking gebeurt op de achtergrond.',
   'tagging-rules.apply.confirm.button': 'Regel toepassen',
   'tagging-rules.apply.success': 'Het toepassen van de regel is op de achtergrond gestart',
   'tagging-rules.apply.error': 'Kan het toepassen van de regel niet starten',
@@ -638,13 +713,17 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'Intake-e-mails',
-  'intake-emails.description': 'Intake-e-mailadressen worden gebruikt om e-mails automatisch in Papra te importeren. Stuur e-mails door naar het intake-adres en de bijlagen worden toegevoegd aan de documenten van uw organisatie.',
+  'intake-emails.description':
+    'Intake-e-mailadressen worden gebruikt om e-mails automatisch in Papra te importeren. Stuur e-mails door naar het intake-adres en de bijlagen worden toegevoegd aan de documenten van uw organisatie.',
   'intake-emails.disabled.title': 'Intake-e-mails zijn uitgeschakeld',
-  'intake-emails.disabled.description': 'Intake-e-mails zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder om ze in te schakelen. Zie de {{ documentation }} voor meer informatie.',
+  'intake-emails.disabled.description':
+    'Intake-e-mails zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder om ze in te schakelen. Zie de {{ documentation }} voor meer informatie.',
   'intake-emails.disabled.documentation': 'documentatie',
-  'intake-emails.info': 'Alleen ingeschakelde intake-e-mails van toegestane bronnen worden verwerkt. U kunt een intake-e-mail op elk moment in- of uitschakelen.',
+  'intake-emails.info':
+    'Alleen ingeschakelde intake-e-mails van toegestane bronnen worden verwerkt. U kunt een intake-e-mail op elk moment in- of uitschakelen.',
   'intake-emails.empty.title': 'Geen intake-e-mails',
-  'intake-emails.empty.description': 'Genereer een intake-adres om eenvoudig e-mailbijlagen te importeren.',
+  'intake-emails.empty.description':
+    'Genereer een intake-adres om eenvoudig e-mailbijlagen te importeren.',
   'intake-emails.empty.generate': 'Intake-e-mail genereren',
   'intake-emails.count': '{{ count }} intake-e-mail{{ plural }} voor deze organisatie',
   'intake-emails.new': 'Nieuwe intake-e-mail',
@@ -656,7 +735,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Bronadressen beheren',
   'intake-emails.actions.delete': 'Verwijderen',
   'intake-emails.delete.confirm.title': 'Intake-e-mail verwijderen?',
-  'intake-emails.delete.confirm.message': 'Weet u zeker dat u deze intake-e-mail wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+  'intake-emails.delete.confirm.message':
+    'Weet u zeker dat u deze intake-e-mail wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
   'intake-emails.delete.confirm.confirm-button': 'Intake-e-mail verwijderen',
   'intake-emails.delete.confirm.cancel-button': 'Annuleren',
   'intake-emails.delete.success': 'Intake-e-mail verwijderd',
@@ -664,11 +744,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'Intake-e-mail ingeschakeld',
   'intake-emails.update.success.disabled': 'Intake-e-mail uitgeschakeld',
   'intake-emails.allowed-origins.title': 'Toegestane bronnen',
-  'intake-emails.allowed-origins.description': 'Alleen e-mails verzonden naar {{ email }} vanaf deze bronnen worden verwerkt. Als er geen bronnen zijn opgegeven, worden alle e-mails genegeerd.',
+  'intake-emails.allowed-origins.description':
+    'Alleen e-mails verzonden naar {{ email }} vanaf deze bronnen worden verwerkt. Als er geen bronnen zijn opgegeven, worden alle e-mails genegeerd.',
   'intake-emails.allowed-origins.add.label': 'Toegestaan origineel e-mailadres toevoegen',
   'intake-emails.allowed-origins.add.placeholder': 'Bijv. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Toevoegen',
-  'intake-emails.allowed-origins.add.error.exists': 'Dit e-mailadres staat al in de toegestane bronnen voor deze intake-e-mail',
+  'intake-emails.allowed-origins.add.error.exists':
+    'Dit e-mailadres staat al in de toegestane bronnen voor deze intake-e-mail',
 
   // API keys
 
@@ -700,7 +782,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Selecteer minimaal één machtiging',
   'api-keys.create.form.submit': 'API-sleutel aanmaken',
   'api-keys.create.created.title': 'API-sleutel aangemaakt',
-  'api-keys.create.created.description': 'De API-sleutel is succesvol aangemaakt. Sla deze op een veilige plek op, want deze wordt niet opnieuw weergegeven.',
+  'api-keys.create.created.description':
+    'De API-sleutel is succesvol aangemaakt. Sla deze op een veilige plek op, want deze wordt niet opnieuw weergegeven.',
   'api-keys.list.title': 'API-sleutels',
   'api-keys.list.description': 'Beheer hier uw API-sleutels.',
   'api-keys.list.create': 'API-sleutel aanmaken',
@@ -709,7 +792,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Aangemaakt',
   'api-keys.delete.success': 'De API-sleutel is succesvol verwijderd',
   'api-keys.delete.confirm.title': 'API-sleutel verwijderen',
-  'api-keys.delete.confirm.message': 'Weet u zeker dat u deze API-sleutel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+  'api-keys.delete.confirm.message':
+    'Weet u zeker dat u deze API-sleutel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
   'api-keys.delete.confirm.confirm-button': 'Verwijderen',
   'api-keys.delete.confirm.cancel-button': 'Annuleren',
 
@@ -758,8 +842,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'webhooks.events.documents.document:created.description': 'Document aangemaakt',
   'webhooks.events.documents.document:deleted.description': 'Document verwijderd',
   'webhooks.events.documents.document:updated.description': 'Document bijgewerkt',
-  'webhooks.events.documents.document:tag:added.description': 'Er is een label toegevoegd aan een document',
-  'webhooks.events.documents.document:tag:removed.description': 'Er is een label verwijderd van een document',
+  'webhooks.events.documents.document:tag:added.description':
+    'Er is een label toegevoegd aan een document',
+  'webhooks.events.documents.document:tag:removed.description':
+    'Er is een label verwijderd van een document',
 
   // Navigation
 
@@ -814,20 +900,30 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.document.already_exists': 'Het document bestaat al',
   'api-errors.document.size_too_large': 'Het bestand is te groot',
   'api-errors.intake-emails.already_exists': 'Er bestaat al een intake-e-mail met dit adres.',
-  'api-errors.intake_email.limit_reached': 'Het maximum aantal intake-e-mails voor deze organisatie is bereikt. Upgrade uw plan om meer intake-e-mails aan te maken.',
-  'api-errors.user.max_organization_count_reached': 'U heeft het maximale aantal organisaties bereikt dat u kunt aanmaken. Neem contact op met support als u meer nodig heeft.',
+  'api-errors.intake_email.limit_reached':
+    'Het maximum aantal intake-e-mails voor deze organisatie is bereikt. Upgrade uw plan om meer intake-e-mails aan te maken.',
+  'api-errors.user.max_organization_count_reached':
+    'U heeft het maximale aantal organisaties bereikt dat u kunt aanmaken. Neem contact op met support als u meer nodig heeft.',
   'api-errors.default': 'Er is een fout opgetreden bij het verwerken van uw verzoek.',
-  'api-errors.organization.invitation_already_exists': 'Er bestaat al een uitnodiging voor dit e-mailadres in deze organisatie.',
+  'api-errors.organization.invitation_already_exists':
+    'Er bestaat al een uitnodiging voor dit e-mailadres in deze organisatie.',
   'api-errors.user.already_in_organization': 'Deze gebruiker zit al in deze organisatie.',
-  'api-errors.user.organization_invitation_limit_reached': 'Het maximale aantal uitnodigingen voor vandaag is bereikt. Probeer het morgen opnieuw.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Het maximale aantal uitnodigingen voor vandaag is bereikt. Probeer het morgen opnieuw.',
   'api-errors.demo.not_available': 'Deze functie is niet beschikbaar in de demo',
   'api-errors.tags.already_exists': 'Er bestaat al een label met deze naam voor deze organisatie',
-  'api-errors.tags.organization_limit_reached': 'Het maximale aantal labels voor deze organisatie is bereikt.',
-  'api-errors.internal.error': 'Er is een fout opgetreden bij het verwerken van uw verzoek. Probeer het later opnieuw.',
-  'api-errors.auth.invalid_origin': 'Ongeldige applicatiebron. Als u Papra zelf host, zorg ervoor dat uw APP_BASE_URL-omgeving variabele overeenkomt met uw huidige URL. Zie https://docs.papra.app/resources/troubleshooting/#invalid-application-origin voor meer informatie.',
-  'api-errors.organization.max_members_count_reached': 'Het maximale aantal leden en openstaande uitnodigingen voor deze organisatie is bereikt. Upgrade uw plan om meer leden toe te voegen.',
-  'api-errors.organization.has_active_subscription': 'Kan de organisatie niet verwijderen vanwege een actief abonnement. Annuleer eerst uw abonnement via de knop Abonnement beheren.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'De opgegeven URL is niet toegestaan. Webhook-URL\'s mogen niet verwijzen naar privé- of gereserveerde IP-adressen.',
+  'api-errors.tags.organization_limit_reached':
+    'Het maximale aantal labels voor deze organisatie is bereikt.',
+  'api-errors.internal.error':
+    'Er is een fout opgetreden bij het verwerken van uw verzoek. Probeer het later opnieuw.',
+  'api-errors.auth.invalid_origin':
+    'Ongeldige applicatiebron. Als u Papra zelf host, zorg ervoor dat uw APP_BASE_URL-omgeving variabele overeenkomt met uw huidige URL. Zie https://docs.papra.app/resources/troubleshooting/#invalid-application-origin voor meer informatie.',
+  'api-errors.organization.max_members_count_reached':
+    'Het maximale aantal leden en openstaande uitnodigingen voor deze organisatie is bereikt. Upgrade uw plan om meer leden toe te voegen.',
+  'api-errors.organization.has_active_subscription':
+    'Kan de organisatie niet verwijderen vanwege een actief abonnement. Annuleer eerst uw abonnement via de knop Abonnement beheren.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    "De opgegeven URL is niet toegestaan. Webhook-URL's mogen niet verwijzen naar privé- of gereserveerde IP-adressen.",
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Gebruiker niet gevonden',
   'api-errors.FAILED_TO_CREATE_USER': 'Kan gebruiker niet aanmaken',
@@ -836,7 +932,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.FAILED_TO_GET_SESSION': 'Kan sessie niet ophalen',
   'api-errors.INVALID_PASSWORD': 'Ongeldig wachtwoord',
   'api-errors.INVALID_EMAIL': 'Ongeldig e-mailadres',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'Het e-mailadres of wachtwoord is onjuist, of het account bestaat niet.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD':
+    'Het e-mailadres of wachtwoord is onjuist, of het account bestaat niet.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Social account is al gekoppeld',
   'api-errors.PROVIDER_NOT_FOUND': 'Provider niet gevonden',
   'api-errors.INVALID_TOKEN': 'Ongeldige token',
@@ -857,7 +954,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.OTP_NOT_ENABLED': 'Twee-factor-authenticatie is niet ingeschakeld voor dit account',
   'api-errors.OTP_HAS_EXPIRED': 'De twee-factor-authenticatiecode is verlopen',
   'api-errors.TOTP_NOT_ENABLED': 'TOTP is niet ingeschakeld voor dit account',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Twee-factor-authenticatie is niet ingeschakeld voor dit account',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'Twee-factor-authenticatie is niet ingeschakeld voor dit account',
   'api-errors.BACKUP_CODES_NOT_ENABLED': 'Back-upcodes zijn niet ingeschakeld voor dit account',
   'api-errors.INVALID_BACKUP_CODE': 'De opgegeven back-upcode is ongeldig of is al gebruikt',
   'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Te veel pogingen. Vraag een nieuwe code aan.',
@@ -866,12 +964,15 @@ export const translations: Partial<TranslationsDictionary> = {
   // Not found
 
   'not-found.title': '404 - Niet gevonden',
-  'not-found.description': 'Sorry, de door u gezochte pagina lijkt niet te bestaan. Controleer de URL en probeer het opnieuw.',
+  'not-found.description':
+    'Sorry, de door u gezochte pagina lijkt niet te bestaan. Controleer de URL en probeer het opnieuw.',
 
   // Demo
 
-  'demo.popup.description': 'Dit is een demoomgeving; alle gegevens worden opgeslagen in uw browserlokale opslag.',
-  'demo.popup.discord': 'Sluit u aan bij de {{ discordLink }} voor ondersteuning, het voorstellen van functies of gewoon om te chatten.',
+  'demo.popup.description':
+    'Dit is een demoomgeving; alle gegevens worden opgeslagen in uw browserlokale opslag.',
+  'demo.popup.discord':
+    'Sluit u aan bij de {{ discordLink }} voor ondersteuning, het voorstellen van functies of gewoon om te chatten.',
   'demo.popup.discord-link-label': 'Discord-server',
   'demo.popup.reset': 'Demo-gegevens opnieuw instellen',
   'demo.popup.hide': 'Verbergen',
@@ -889,13 +990,15 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Betaling geslaagd!',
   'subscriptions.checkout-success.description': 'Uw abonnement is succesvol geactiveerd.',
-  'subscriptions.checkout-success.thank-you': 'Dank u voor het upgraden naar Papra Plus. U heeft nu toegang tot alle premiumfuncties.',
+  'subscriptions.checkout-success.thank-you':
+    'Dank u voor het upgraden naar Papra Plus. U heeft nu toegang tot alle premiumfuncties.',
   'subscriptions.checkout-success.go-to-organizations': 'Ga naar organisaties',
   'subscriptions.checkout-success.redirecting': 'Omleiden over {{ count }} seconde{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Betaling geannuleerd',
   'subscriptions.checkout-cancel.description': 'Uw abonnementsupgrade is geannuleerd.',
-  'subscriptions.checkout-cancel.no-charges': 'Er zijn geen kosten in rekening gebracht. Probeer het opnieuw wanneer u er klaar voor bent.',
+  'subscriptions.checkout-cancel.no-charges':
+    'Er zijn geen kosten in rekening gebracht. Probeer het opnieuw wanneer u er klaar voor bent.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Terug naar organisaties',
   'subscriptions.checkout-cancel.need-help': 'Heeft u hulp nodig?',
   'subscriptions.checkout-cancel.contact-support': 'Contact opnemen met support',
@@ -903,12 +1006,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.title': 'Deze organisatie upgraden',
   'subscriptions.upgrade-dialog.description': 'Ontgrendel krachtige functies voor uw organisatie',
   'subscriptions.upgrade-dialog.contact-us': 'Neem contact op',
-  'subscriptions.upgrade-dialog.enterprise-plans': 'als u aangepaste enterprise-plannen nodig heeft.',
+  'subscriptions.upgrade-dialog.enterprise-plans':
+    'als u aangepaste enterprise-plannen nodig heeft.',
   'subscriptions.upgrade-dialog.per-month': '/maand',
   'subscriptions.upgrade-dialog.billed-annually': '€{{ price }} jaarlijks in rekening gebracht',
   'subscriptions.upgrade-dialog.upgrade-now': 'Nu upgraden',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Tijdelijk aanbod',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Krijg {{ percent }}% korting op alle plannen voor altijd per organisatie als vroege gebruiker! Aanbod verloopt over {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Krijg {{ percent }}% korting op alle plannen voor altijd per organisatie als vroege gebruiker! Aanbod verloopt over {{ days, >1:{days} days, =1:1 day, less than 1 day }}.',
 
   'subscriptions.plan.free.name': 'Gratis plan',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1034,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Maandelijks',
   'subscriptions.billing-interval.annual': 'Jaarlijks',
 
-  'subscriptions.usage-warning.message': 'U heeft {{ percent }}% van uw documentopslag gebruikt. Overweeg uw plan te upgraden voor meer ruimte.',
+  'subscriptions.usage-warning.message':
+    'U heeft {{ percent }}% van uw documentopslag gebruikt. Overweeg uw plan te upgraden voor meer ruimte.',
   'subscriptions.usage-warning.upgrade-button': 'Plan upgraden',
 
   // Admin
@@ -953,14 +1059,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.description': 'Alle organisaties in het systeem beheren en bekijken',
   'admin.organizations.search-placeholder': 'Zoeken op naam of ID...',
   'admin.organizations.loading': 'Organisaties laden...',
-  'admin.organizations.no-results': 'Geen organisaties gevonden die overeenkomen met uw zoekopdracht.',
+  'admin.organizations.no-results':
+    'Geen organisaties gevonden die overeenkomen met uw zoekopdracht.',
   'admin.organizations.empty': 'Geen organisaties gevonden.',
   'admin.organizations.table.id': 'ID',
   'admin.organizations.table.name': 'Naam',
   'admin.organizations.table.members': 'Leden',
   'admin.organizations.table.created': 'Aangemaakt',
   'admin.organizations.table.updated': 'Bijgewerkt',
-  'admin.organizations.pagination.info': 'Weergave {{ start }} tot {{ end }} van {{ total }} {{ total, =1:organisatie, organisaties }}',
+  'admin.organizations.pagination.info':
+    'Weergave {{ start }} tot {{ end }} van {{ total }} {{ total, =1:organisatie, organisaties }}',
   'admin.organizations.pagination.page-info': 'Pagina {{ current }} van {{ total }}',
 
   'admin.organization-detail.title': 'Organisatiedetails',
@@ -1017,7 +1125,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Niet geverifieerd',
   'admin.users.table.orgs': 'Orgs',
   'admin.users.table.created': 'Aangemaakt',
-  'admin.users.pagination.info': 'Weergave {{ start }} tot {{ end }} van {{ total }} {{ total, =1:gebruiker, gebruikers }}',
+  'admin.users.pagination.info':
+    'Weergave {{ start }} tot {{ end }} van {{ total }} {{ total, =1:gebruiker, gebruikers }}',
   'admin.users.pagination.page-info': 'Pagina {{ current }} van {{ total }}',
 
   'admin.user-detail.back': 'Terug naar gebruikers',
@@ -1059,7 +1168,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Versie',
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Commitdatum',
-  'about.description': 'Papra is een open-source documentbeheersysteem dat u helpt uw documenten gemakkelijk te archiveren, organiseren, taggen en beheren.',
+  'about.description':
+    'Papra is een open-source documentbeheersysteem dat u helpt uw documenten gemakkelijk te archiveren, organiseren, taggen en beheren.',
   'about.links.title': 'Links',
   'about.links.documentation': 'Documentatie',
   'about.links.documentation-description': 'Gebruikershandleidingen en API-referentie',

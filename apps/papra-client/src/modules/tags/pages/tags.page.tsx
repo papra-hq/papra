@@ -5,7 +5,12 @@ import { safely } from '@corentinth/chisels';
 import { getValues, setValue } from '@modular-forms/solid';
 import { A, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createSolidTable, flexRender, getCoreRowModel, getSortedRowModel } from '@tanstack/solid-table';
+import {
+  createSolidTable,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+} from '@tanstack/solid-table';
 import { createSignal, For, Show, Suspense } from 'solid-js';
 import * as v from 'valibot';
 import { makeDocumentSearchPermalink } from '@/modules/documents/document.models';
@@ -18,10 +23,23 @@ import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-err
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { ColorSwatchPicker } from '@/modules/ui/components/color-swatch-picker';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/modules/ui/components/dialog';
 import { EmptyState } from '@/modules/ui/components/empty';
 import { createToast } from '@/modules/ui/components/sonner';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/ui/components/table';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { Tag as TagComponent, TagLink } from '../components/tag.component';
@@ -38,7 +56,18 @@ import { createTag, deleteTag, fetchTags, updateTag } from '../tags.services';
 //   return colors;
 // }
 
-const defaultColors = ['#D8FF75', '#7FFF7A', '#7AFFCE', '#7AD7FF', '#7A7FFF', '#CE7AFF', '#FF7AD7', '#FF7A7F', '#FFCE7A', '#FFFFFF'];
+const defaultColors = [
+  '#D8FF75',
+  '#7FFF7A',
+  '#7AFFCE',
+  '#7AD7FF',
+  '#7A7FFF',
+  '#CE7AFF',
+  '#FF7AD7',
+  '#FF7A7F',
+  '#FFCE7A',
+  '#FFFFFF',
+];
 
 const TagColorPicker: Component<{
   color: string;
@@ -48,7 +77,11 @@ const TagColorPicker: Component<{
 };
 
 const TagForm: Component<{
-  onSubmit: (values: { name: string; color: string; description: string }) => Promise<unknown> | unknown;
+  onSubmit: (values: {
+    name: string;
+    color: string;
+    description: string;
+  }) => Promise<unknown> | unknown;
   initialValues?: { name?: string; color?: string; description?: string | null };
   submitButton: JSX.Element;
 }> = (props) => {
@@ -88,17 +121,28 @@ const TagForm: Component<{
         {(field, inputProps) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="name">{t('tags.form.name.label')}</TextFieldLabel>
-            <TextField type="text" id="name" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.name.placeholder')} />
+            <TextField
+              type="text"
+              id="name"
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+              placeholder={t('tags.form.name.placeholder')}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
       </Field>
 
       <Field name="color">
-        {field => (
+        {(field) => (
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="color">{t('tags.form.color.label')}</TextFieldLabel>
-            <TagColorPicker color={field.value ?? ''} onChange={color => setValue(form, 'color', color)} />
+            <TagColorPicker
+              color={field.value ?? ''}
+              onChange={(color) => setValue(form, 'color', color)}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -109,9 +153,18 @@ const TagForm: Component<{
           <TextFieldRoot class="flex flex-col gap-1 mb-4">
             <TextFieldLabel for="description">
               {t('tags.form.description.label')}
-              <span class="font-normal ml-1 text-muted-foreground">{t('tags.form.description.optional')}</span>
+              <span class="font-normal ml-1 text-muted-foreground">
+                {t('tags.form.description.optional')}
+              </span>
             </TextFieldLabel>
-            <TextArea id="description" {...inputProps} autoFocus value={field.value} aria-invalid={Boolean(field.error)} placeholder={t('tags.form.description.placeholder')} />
+            <TextArea
+              id="description"
+              {...inputProps}
+              autoFocus
+              value={field.value}
+              aria-invalid={Boolean(field.error)}
+              placeholder={t('tags.form.description.placeholder')}
+            />
             {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
           </TextFieldRoot>
         )}
@@ -120,9 +173,7 @@ const TagForm: Component<{
       <div class="flex flex-row-reverse justify-between items-center mt-6">
         {props.submitButton}
 
-        {getFormValues().name && (
-          <TagComponent {...getFormValues()} />
-        )}
+        {getFormValues().name && <TagComponent {...getFormValues()} />}
       </div>
     </Form>
   );
@@ -150,12 +201,13 @@ export const CreateTagModal: Component<{
   };
 
   const createTagMutation = useMutation(() => ({
-    mutationFn: (data: { name: string; color: string; description: string }) => createTag({
-      name: data.name,
-      color: data.color.toLowerCase(),
-      description: data.description,
-      organizationId: props.organizationId,
-    }),
+    mutationFn: (data: { name: string; color: string; description: string }) =>
+      createTag({
+        name: data.name,
+        color: data.color.toLowerCase(),
+        description: data.description,
+        organizationId: props.organizationId,
+      }),
     onSuccess: async ({ tag }, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'tags'],
@@ -180,7 +232,7 @@ export const CreateTagModal: Component<{
 
   return (
     <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
-      {props.children && <DialogTrigger as={props.children} /> }
+      {props.children && <DialogTrigger as={props.children} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('tags.create')}</DialogTitle>
@@ -189,15 +241,15 @@ export const CreateTagModal: Component<{
         <TagForm
           onSubmit={createTagMutation.mutateAsync}
           initialValues={{ color: '#D8FF75', name: props.initialName }}
-          submitButton={(
+          submitButton={
             <Button
               type="submit"
               isLoading={createTagMutation.isPending}
               disabled={!getIsModalOpen()} // As the dialog closing animation may still be running
             >
-              { t('tags.create') }
+              {t('tags.create')}
             </Button>
-          )}
+          }
         />
       </DialogContent>
     </Dialog>
@@ -214,13 +266,14 @@ const UpdateTagModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const updateTagMutation = useMutation(() => ({
-    mutationFn: (data: { name: string; color: string; description: string }) => updateTag({
-      name: data.name,
-      color: data.color.toLowerCase(),
-      description: data.description,
-      organizationId: props.organizationId,
-      tagId: props.tag.id,
-    }),
+    mutationFn: (data: { name: string; color: string; description: string }) =>
+      updateTag({
+        name: data.name,
+        color: data.color.toLowerCase(),
+        description: data.description,
+        organizationId: props.organizationId,
+        tagId: props.tag.id,
+      }),
     onSuccess: async (data, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId],
@@ -253,15 +306,15 @@ const UpdateTagModal: Component<{
         <TagForm
           onSubmit={updateTagMutation.mutate}
           initialValues={props.tag}
-          submitButton={(
+          submitButton={
             <Button
               type="submit"
               isLoading={updateTagMutation.isPending}
               disabled={!getIsModalOpen()} // As the dialog closing animation may still be running
             >
-              { t('tags.update') }
+              {t('tags.update')}
             </Button>
-          )}
+          }
         />
       </DialogContent>
     </Dialog>
@@ -297,10 +350,12 @@ export const TagsPage: Component = () => {
       return;
     }
 
-    const [, error] = await safely(deleteTag({
-      organizationId: params.organizationId,
-      tagId: tag.id,
-    }));
+    const [, error] = await safely(
+      deleteTag({
+        organizationId: params.organizationId,
+        tagId: tag.id,
+      }),
+    );
 
     if (error) {
       createToast({
@@ -331,15 +386,17 @@ export const TagsPage: Component = () => {
         header: () => t('tags.table.headers.tag'),
         accessorKey: 'name',
         sortingFn: 'alphanumeric',
-        cell: data => <TagLink {...data.row.original} />,
+        cell: (data) => <TagLink {...data.row.original} />,
       },
       {
         header: () => t('tags.table.headers.description'),
         accessorKey: 'description',
         sortingFn: 'alphanumeric',
-        cell: data => (
+        cell: (data) => (
           <span class="text-wrap">
-            {data.getValue<string | null>() || <span class="text-muted-foreground">{t('tags.form.no-description')}</span>}
+            {data.getValue<string | null>() || (
+              <span class="text-muted-foreground">{t('tags.form.no-description')}</span>
+            )}
           </span>
         ),
       },
@@ -347,8 +404,14 @@ export const TagsPage: Component = () => {
         header: () => t('tags.table.headers.documents'),
         accessorKey: 'documentsCount',
         sortingFn: 'basic',
-        cell: data => (
-          <A href={makeDocumentSearchPermalink({ organizationId: params.organizationId, search: { tags: [data.row.original] } })} class="inline-flex items-center gap-1 hover:underline">
+        cell: (data) => (
+          <A
+            href={makeDocumentSearchPermalink({
+              organizationId: params.organizationId,
+              search: { tags: [data.row.original] },
+            })}
+            class="inline-flex items-center gap-1 hover:underline"
+          >
             <div class="i-tabler-file-text size-5 text-muted-foreground" />
             {data.getValue<number>()}
           </A>
@@ -358,24 +421,28 @@ export const TagsPage: Component = () => {
         header: () => t('tags.table.headers.created'),
         accessorKey: 'createdAt',
         sortingFn: 'datetime',
-        cell: data => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
-
+        cell: (data) => <RelativeTime date={data.getValue<Date>()} class="text-muted-foreground" />,
       },
       {
         id: 'actions',
         header: () => <div class="text-right">{t('tags.table.headers.actions')}</div>,
         enableSorting: false,
-        cell: data => (
+        cell: (data) => (
           <div class="flex gap-2 justify-end">
             <UpdateTagModal organizationId={params.organizationId} tag={data.row.original}>
-              {props => (
+              {(props) => (
                 <Button size="icon" variant="outline" class="size-7" {...props}>
                   <div class="i-tabler-edit size-4" />
                 </Button>
               )}
             </UpdateTagModal>
 
-            <Button size="icon" variant="outline" class="size-7 text-red" onClick={() => del({ tag: data.row.original })}>
+            <Button
+              size="icon"
+              variant="outline"
+              class="size-7 text-red"
+              onClick={() => del({ tag: data.row.original })}
+            >
               <div class="i-tabler-trash size-4" />
             </Button>
           </div>
@@ -393,41 +460,37 @@ export const TagsPage: Component = () => {
     <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
       <Suspense>
         <Show when={query.data?.tags}>
-          {getTags => (
+          {(getTags) => (
             <Show
               when={getTags().length > 0}
-              fallback={(
+              fallback={
                 <EmptyState
                   title={t('tags.no-tags.title')}
                   icon="i-tabler-tag"
                   description={t('tags.no-tags.description')}
-                  cta={(
+                  cta={
                     <CreateTagModal organizationId={params.organizationId}>
-                      {props => (
+                      {(props) => (
                         <Button {...props}>
                           <div class="i-tabler-plus size-4 mr-2" />
                           {t('tags.no-tags.create-tag')}
                         </Button>
                       )}
                     </CreateTagModal>
-                  )}
+                  }
                 />
-              )}
+              }
             >
               <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
                 <div>
-                  <h2 class="text-xl font-bold ">
-                    {t('tags.title')}
-                  </h2>
+                  <h2 class="text-xl font-bold ">{t('tags.title')}</h2>
 
-                  <p class="text-muted-foreground mt-1">
-                    {t('tags.description')}
-                  </p>
+                  <p class="text-muted-foreground mt-1">{t('tags.description')}</p>
                 </div>
 
                 <div class="flex-shrink-0">
                   <CreateTagModal organizationId={params.organizationId}>
-                    {props => (
+                    {(props) => (
                       <Button class="w-full" {...props}>
                         <div class="i-tabler-plus size-4 mr-2" />
                         {t('tags.create')}
@@ -440,14 +503,17 @@ export const TagsPage: Component = () => {
               <Table>
                 <TableHeader>
                   <For each={table.getHeaderGroups()}>
-                    {headerGroup => (
+                    {(headerGroup) => (
                       <TableRow>
                         <For each={headerGroup.headers}>
-                          {header => (
+                          {(header) => (
                             <TableHead>
                               <Show
                                 when={header.column.getCanSort()}
-                                fallback={flexRender(header.column.columnDef.header, header.getContext())}
+                                fallback={flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                               >
                                 <button
                                   class="flex items-center gap-1 cursor-pointer select-none"
@@ -474,10 +540,10 @@ export const TagsPage: Component = () => {
                 </TableHeader>
                 <TableBody>
                   <For each={table.getRowModel().rows}>
-                    {row => (
+                    {(row) => (
                       <TableRow>
                         <For each={row.getVisibleCells()}>
-                          {cell => (
+                          {(cell) => (
                             <TableCell>
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
@@ -488,12 +554,9 @@ export const TagsPage: Component = () => {
                   </For>
                 </TableBody>
               </Table>
-
             </Show>
-
           )}
         </Show>
-
       </Suspense>
     </div>
   );

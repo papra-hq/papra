@@ -11,10 +11,7 @@ import { createDemoAuthClient } from './auth.demo.services';
 export function createAuthClient() {
   const client = createBetterAuthClient({
     baseURL: buildTimeConfig.baseApiUrl,
-    plugins: [
-      genericOAuthClient(),
-      twoFactorClient(),
-    ],
+    plugins: [genericOAuthClient(), twoFactorClient()],
   });
 
   return {
@@ -47,12 +44,18 @@ export const {
   resetPassword,
   sendVerificationEmail,
   twoFactor,
-} = isDemoMode
-  ? createDemoAuthClient()
-  : createAuthClient();
+} = isDemoMode ? createDemoAuthClient() : createAuthClient();
 
-export async function authWithProvider({ provider, config }: { provider: SsoProviderConfig; config: Config }) {
-  const isCustomProvider = config.auth.providers.customs.some(({ providerId }) => providerId === provider.key);
+export async function authWithProvider({
+  provider,
+  config,
+}: {
+  provider: SsoProviderConfig;
+  config: Config;
+}) {
+  const isCustomProvider = config.auth.providers.customs.some(
+    ({ providerId }) => providerId === provider.key,
+  );
 
   if (isCustomProvider) {
     const { error } = await signIn.oauth2({
@@ -67,7 +70,10 @@ export async function authWithProvider({ provider, config }: { provider: SsoProv
     return;
   }
 
-  const { error } = await signIn.social({ provider: provider.key as 'github' | 'google', callbackURL: config.baseUrl });
+  const { error } = await signIn.social({
+    provider: provider.key as 'github' | 'google',
+    callbackURL: config.baseUrl,
+  });
 
   if (error) {
     throw error;

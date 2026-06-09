@@ -7,10 +7,10 @@ export type UseTagPickerOptions = {
   getSelectedTagIds: () => string[];
 };
 
-export type HighlightedItem
-  = | { tagId: string; action?: never }
-    | { tagId?: never; action: 'create-new-tag' }
-    | { tagId?: never; action?: never }; // represents no highlight
+export type HighlightedItem =
+  | { tagId: string; action?: never }
+  | { tagId?: never; action: 'create-new-tag' }
+  | { tagId?: never; action?: never }; // represents no highlight
 
 export type TagPickerListItemTag = {
   type: 'tag';
@@ -18,12 +18,15 @@ export type TagPickerListItemTag = {
   isSelected: boolean;
 };
 
-export type TagPickerListItem = TagPickerListItemTag | {
-  type: 'create-new-tag-button';
-  name?: string;
-} | {
-  type: 'initially-selected-separator';
-};
+export type TagPickerListItem =
+  | TagPickerListItemTag
+  | {
+      type: 'create-new-tag-button';
+      name?: string;
+    }
+  | {
+      type: 'initially-selected-separator';
+    };
 
 export function useTagPicker(options: UseTagPickerOptions) {
   const [filterQuery, setFilterQuery] = createSignal('');
@@ -34,9 +37,10 @@ export function useTagPicker(options: UseTagPickerOptions) {
   const getNormalizedFilterQuery = createMemo(() => filterQuery().trim().toLowerCase());
 
   const getTagsListItems = createMemo<TagPickerListItemTag[]>(() =>
-    options.getAvailableTags()
+    options
+      .getAvailableTags()
       .toSorted((a, b) => a.name.localeCompare(b.name))
-      .map(tag => ({
+      .map((tag) => ({
         type: 'tag' as const,
         tag,
         isSelected: options.getSelectedTagIds().includes(tag.id),
@@ -44,9 +48,17 @@ export function useTagPicker(options: UseTagPickerOptions) {
       })),
   );
 
-  const getFilteredTagListItems = createMemo(() => getTagsListItems().filter(({ tag }) => tag.name.toLowerCase().includes(getNormalizedFilterQuery())));
+  const getFilteredTagListItems = createMemo(() =>
+    getTagsListItems().filter(({ tag }) =>
+      tag.name.toLowerCase().includes(getNormalizedFilterQuery()),
+    ),
+  );
 
-  const isExactMatch = createMemo(() => getFilteredTagListItems().some(({ tag }) => tag.name.toLowerCase() === getNormalizedFilterQuery()));
+  const isExactMatch = createMemo(() =>
+    getFilteredTagListItems().some(
+      ({ tag }) => tag.name.toLowerCase() === getNormalizedFilterQuery(),
+    ),
+  );
 
   const shouldShowCreateOption = createMemo(() => {
     if (options.getAvailableTags().length === 0) {
@@ -57,20 +69,30 @@ export function useTagPicker(options: UseTagPickerOptions) {
 
   const getListItems = createMemo<TagPickerListItem[]>(() => {
     const tagListItems = getFilteredTagListItems();
-    const initiallySelectedTagsItems = tagListItems.filter(item => initiallySelectedTagIds.includes(item.tag.id));
-    const nonInitiallySelectedTagsItems = tagListItems.filter(item => !initiallySelectedTagIds.includes(item.tag.id));
+    const initiallySelectedTagsItems = tagListItems.filter((item) =>
+      initiallySelectedTagIds.includes(item.tag.id),
+    );
+    const nonInitiallySelectedTagsItems = tagListItems.filter(
+      (item) => !initiallySelectedTagIds.includes(item.tag.id),
+    );
 
-    const showSeparator = initiallySelectedTagsItems.length > 0 && nonInitiallySelectedTagsItems.length > 0;
+    const showSeparator =
+      initiallySelectedTagsItems.length > 0 && nonInitiallySelectedTagsItems.length > 0;
 
     return [
       ...initiallySelectedTagsItems,
-      ...(toArrayIf(showSeparator, { type: 'initially-selected-separator' as const })),
+      ...toArrayIf(showSeparator, { type: 'initially-selected-separator' as const }),
       ...nonInitiallySelectedTagsItems,
-      ...(toArrayIf(shouldShowCreateOption(), { type: 'create-new-tag-button', name: getNormalizedFilterQuery() } as const)),
+      ...toArrayIf(shouldShowCreateOption(), {
+        type: 'create-new-tag-button',
+        name: getNormalizedFilterQuery(),
+      } as const),
     ];
   });
 
-  const getHighlightableItems = createMemo(() => getListItems().filter(item => item.type === 'tag' || item.type === 'create-new-tag-button'));
+  const getHighlightableItems = createMemo(() =>
+    getListItems().filter((item) => item.type === 'tag' || item.type === 'create-new-tag-button'),
+  );
 
   const highlightItem = (item: TagPickerListItem) => {
     if (item.type === 'tag') {

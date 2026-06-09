@@ -12,7 +12,13 @@ export async function fetchTaggingRules({ organizationId }: { organizationId: st
   return { taggingRules: taggingRules.map(coerceDates) };
 }
 
-export async function createTaggingRule({ taggingRule, organizationId }: { taggingRule: TaggingRuleForCreation; organizationId: string }) {
+export async function createTaggingRule({
+  taggingRule,
+  organizationId,
+}: {
+  taggingRule: TaggingRuleForCreation;
+  organizationId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/tagging-rules`,
     method: 'POST',
@@ -20,14 +26,26 @@ export async function createTaggingRule({ taggingRule, organizationId }: { taggi
   });
 }
 
-export async function deleteTaggingRule({ organizationId, taggingRuleId }: { organizationId: string; taggingRuleId: string }) {
+export async function deleteTaggingRule({
+  organizationId,
+  taggingRuleId,
+}: {
+  organizationId: string;
+  taggingRuleId: string;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/tagging-rules/${taggingRuleId}`,
     method: 'DELETE',
   });
 }
 
-export async function getTaggingRule({ organizationId, taggingRuleId }: { organizationId: string; taggingRuleId: string }) {
+export async function getTaggingRule({
+  organizationId,
+  taggingRuleId,
+}: {
+  organizationId: string;
+  taggingRuleId: string;
+}) {
   const { taggingRule } = await apiClient<{ taggingRule: AsDto<TaggingRule> }>({
     path: `/api/organizations/${organizationId}/tagging-rules/${taggingRuleId}`,
     method: 'GET',
@@ -36,7 +54,15 @@ export async function getTaggingRule({ organizationId, taggingRuleId }: { organi
   return { taggingRule: coerceDates(taggingRule) };
 }
 
-export async function updateTaggingRule({ organizationId, taggingRuleId, taggingRule }: { organizationId: string; taggingRuleId: string; taggingRule: TaggingRuleForCreation }) {
+export async function updateTaggingRule({
+  organizationId,
+  taggingRuleId,
+  taggingRule,
+}: {
+  organizationId: string;
+  taggingRuleId: string;
+  taggingRule: TaggingRuleForCreation;
+}) {
   await apiClient({
     path: `/api/organizations/${organizationId}/tagging-rules/${taggingRuleId}`,
     method: 'PUT',

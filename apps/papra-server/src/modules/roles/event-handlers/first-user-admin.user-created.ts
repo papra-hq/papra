@@ -36,7 +36,10 @@ export function registerFirstUserAdminEventHandler({
       const { userCount } = await usersRepository.getUserCount();
 
       if (userCount !== 1) {
-        logger.debug({ userId, userCount }, 'User is not the first user, skipping admin assignment');
+        logger.debug(
+          { userId, userCount },
+          'User is not the first user, skipping admin assignment',
+        );
         return;
       }
 

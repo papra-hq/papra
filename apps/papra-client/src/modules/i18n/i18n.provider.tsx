@@ -1,12 +1,25 @@
 import type { Accessor, ParentComponent, Setter } from 'solid-js';
 import type { TranslationsDictionary } from './locales.types';
 import { makePersisted } from '@solid-primitives/storage';
-import { createContext, createEffect, createResource, createSignal, Show, useContext } from 'solid-js';
+import {
+  createContext,
+  createEffect,
+  createResource,
+  createSignal,
+  Show,
+  useContext,
+} from 'solid-js';
 import { translations as defaultTranslations } from '../../locales/en.dictionary';
 import { locales } from './i18n.constants';
-import { createDateFormatter, createFragmentTranslator, createRelativeTimeFormatter, createTranslator, findMatchingLocale } from './i18n.models';
+import {
+  createDateFormatter,
+  createFragmentTranslator,
+  createRelativeTimeFormatter,
+  createTranslator,
+  findMatchingLocale,
+} from './i18n.models';
 
-export type Locale = typeof locales[number]['key'];
+export type Locale = (typeof locales)[number]['key'];
 
 const I18nContext = createContext<{
   t: ReturnType<typeof createTranslator<TranslationsDictionary>>;
@@ -39,10 +52,13 @@ async function fetchDictionary(locale: Locale): Promise<TranslationsDictionary> 
 
 export const I18nProvider: ParentComponent = (props) => {
   const browserLocale = findMatchingLocale({
-    preferredLocales: navigator.languages.map(x => new Intl.Locale(x)),
-    supportedLocales: locales.map(x => new Intl.Locale(x.key)),
+    preferredLocales: navigator.languages.map((x) => new Intl.Locale(x)),
+    supportedLocales: locales.map((x) => new Intl.Locale(x.key)),
   });
-  const [getLocale, setLocale] = makePersisted(createSignal<Locale>(browserLocale), { name: 'papra_locale', storage: localStorage });
+  const [getLocale, setLocale] = makePersisted(createSignal<Locale>(browserLocale), {
+    name: 'papra_locale',
+    storage: localStorage,
+  });
 
   const [dict] = createResource(getLocale, fetchDictionary);
 
@@ -52,7 +68,7 @@ export const I18nProvider: ParentComponent = (props) => {
 
   return (
     <Show when={dict.latest}>
-      {getDictionary => (
+      {(getDictionary) => (
         <I18nContext.Provider
           value={{
             t: createTranslator({ getDictionary }),

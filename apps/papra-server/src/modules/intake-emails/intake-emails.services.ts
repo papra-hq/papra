@@ -6,7 +6,8 @@ import { isNil } from '../shared/utils';
 import { intakeEmailDrivers } from './drivers/intake-emails.drivers';
 
 export function createIntakeEmailsServices({ config }: { config: Config }) {
-  const intakeEmailDriver: IntakeEmailDriverFactory | undefined = intakeEmailDrivers[config.intakeEmails.driver as IntakeEmailDriverName];
+  const intakeEmailDriver: IntakeEmailDriverFactory | undefined =
+    intakeEmailDrivers[config.intakeEmails.driver as IntakeEmailDriverName];
 
   if (isNil(intakeEmailDriver)) {
     throw createError({

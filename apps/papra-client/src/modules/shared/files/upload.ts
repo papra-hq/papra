@@ -13,7 +13,7 @@ export function promptUploadFiles({
     }
 
     input.onchange = () => {
-      resolve({ files: [...input.files ?? []] });
+      resolve({ files: [...(input.files ?? [])] });
     };
 
     input.click();

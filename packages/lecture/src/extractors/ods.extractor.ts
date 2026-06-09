@@ -54,9 +54,7 @@ function extractText(node: unknown): string {
 
 export const odsExtractorDefinition = defineTextExtractor({
   name: 'ods',
-  mimeTypes: [
-    'application/vnd.oasis.opendocument.spreadsheet',
-  ],
+  mimeTypes: ['application/vnd.oasis.opendocument.spreadsheet'],
   extract: async ({ arrayBuffer }) => {
     const contentXml = await getFileContentFromArchive({ arrayBuffer, filePath: 'content.xml' });
 
@@ -64,7 +62,12 @@ export const odsExtractorDefinition = defineTextExtractor({
       return { content: '' };
     }
 
-    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', textNodeName: '#text', isArray: () => false });
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      textNodeName: '#text',
+      isArray: () => false,
+    });
     const parsed = asNode(parser.parse(contentXml));
 
     // Navigate to office:spreadsheet

@@ -4,9 +4,7 @@ import { getFileContentFromArchive } from '../utils/archive';
 
 export const odtExtractorDefinition = defineTextExtractor({
   name: 'odt',
-  mimeTypes: [
-    'application/vnd.oasis.opendocument.text',
-  ],
+  mimeTypes: ['application/vnd.oasis.opendocument.text'],
   extract: async ({ arrayBuffer }) => {
     const contentXml = await getFileContentFromArchive({ arrayBuffer, filePath: 'content.xml' });
 

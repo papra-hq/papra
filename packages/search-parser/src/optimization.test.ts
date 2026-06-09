@@ -268,11 +268,7 @@ describe('simplifyExpression', () => {
     test('removes empty from AND operands', () => {
       const expression: Expression = {
         type: 'and',
-        operands: [
-          { type: 'text', value: 'a' },
-          { type: 'empty' },
-          { type: 'text', value: 'b' },
-        ],
+        operands: [{ type: 'text', value: 'a' }, { type: 'empty' }, { type: 'text', value: 'b' }],
       };
       expect(simplifyExpression({ expression })).toEqual({
         expression: {
@@ -288,11 +284,7 @@ describe('simplifyExpression', () => {
     test('removes empty from OR operands', () => {
       const expression: Expression = {
         type: 'or',
-        operands: [
-          { type: 'empty' },
-          { type: 'text', value: 'a' },
-          { type: 'empty' },
-        ],
+        operands: [{ type: 'empty' }, { type: 'text', value: 'a' }, { type: 'empty' }],
       };
       expect(simplifyExpression({ expression })).toEqual({
         expression: { type: 'text', value: 'a' },
@@ -394,11 +386,7 @@ describe('simplifyExpression', () => {
 
       const expression: Expression = {
         type: 'or',
-        operands: [
-          duplicateExpr,
-          { type: 'text', value: 'c' },
-          duplicateExpr,
-        ],
+        operands: [duplicateExpr, { type: 'text', value: 'c' }, duplicateExpr],
       };
 
       expect(simplifyExpression({ expression })).toEqual({
@@ -528,10 +516,7 @@ describe('simplifyExpression', () => {
               { type: 'text', value: 'x' },
               {
                 type: 'and',
-                operands: [
-                  { type: 'text', value: 'x' },
-                  { type: 'empty' },
-                ],
+                operands: [{ type: 'text', value: 'x' }, { type: 'empty' }],
               },
             ],
           },
@@ -663,21 +648,13 @@ describe('simplifyExpression', () => {
   describe('expressionsEqual', () => {
     describe('permit to check equality between expressions', () => {
       test('empty expressions are equal', () => {
-        expect(
-          areExpressionsIdentical(
-            { type: 'empty' },
-            { type: 'empty' },
-          ),
-        ).to.eql(true);
+        expect(areExpressionsIdentical({ type: 'empty' }, { type: 'empty' })).to.eql(true);
       });
 
       test('different expression types are never equal', () => {
-        expect(
-          areExpressionsIdentical(
-            { type: 'empty' },
-            { type: 'text', value: 'hello' },
-          ),
-        ).to.eql(false);
+        expect(areExpressionsIdentical({ type: 'empty' }, { type: 'text', value: 'hello' })).to.eql(
+          false,
+        );
 
         expect(
           areExpressionsIdentical(
@@ -837,9 +814,7 @@ describe('simplifyExpression', () => {
             },
             {
               type: 'or',
-              operands: [
-                { type: 'text', value: 'a' },
-              ],
+              operands: [{ type: 'text', value: 'a' }],
             },
           ),
         ).to.eql(false);

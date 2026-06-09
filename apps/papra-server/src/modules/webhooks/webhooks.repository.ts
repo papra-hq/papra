@@ -25,7 +25,18 @@ export function createWebhookRepository({ db }: { db: Database }) {
   );
 }
 
-async function createOrganizationWebhook({ db, ...webhook }: { db: Database } & { name: string; url: string; secret?: string; enabled?: boolean; events?: EventName[]; organizationId: string; createdBy: string }) {
+async function createOrganizationWebhook({
+  db,
+  ...webhook
+}: { db: Database } & {
+  name: string;
+  url: string;
+  secret?: string;
+  enabled?: boolean;
+  events?: EventName[];
+  organizationId: string;
+  createdBy: string;
+}) {
   const [createdWebhook] = await db.insert(webhooksTable).values(webhook).returning();
 
   if (!createdWebhook) {
@@ -35,29 +46,33 @@ async function createOrganizationWebhook({ db, ...webhook }: { db: Database } & 
   }
 
   if (webhook.events && webhook.events.length > 0) {
-    await db
-      .insert(webhookEventsTable)
-      .values(
-        webhook.events.map(eventName => ({
-          webhookId: createdWebhook.id,
-          eventName,
-        })),
-      );
+    await db.insert(webhookEventsTable).values(
+      webhook.events.map((eventName) => ({
+        webhookId: createdWebhook.id,
+        eventName,
+      })),
+    );
   }
 
   return { webhook: createdWebhook };
 }
 
-async function updateOrganizationWebhook({ db, webhookId, events, organizationId, ...webhook }: { db: Database; webhookId: string; events?: EventName[]; organizationId: string } & { name?: string; url?: string; secret?: string; enabled?: boolean }) {
+async function updateOrganizationWebhook({
+  db,
+  webhookId,
+  events,
+  organizationId,
+  ...webhook
+}: { db: Database; webhookId: string; events?: EventName[]; organizationId: string } & {
+  name?: string;
+  url?: string;
+  secret?: string;
+  enabled?: boolean;
+}) {
   const [updatedWebhook] = await db
     .update(webhooksTable)
     .set(omitUndefined(webhook))
-    .where(
-      and(
-        eq(webhooksTable.id, webhookId),
-        eq(webhooksTable.organizationId, organizationId),
-      ),
-    )
+    .where(and(eq(webhooksTable.id, webhookId), eq(webhooksTable.organizationId, organizationId)))
     .returning();
 
   if (isNil(updatedWebhook)) {
@@ -67,14 +82,12 @@ async function updateOrganizationWebhook({ db, webhookId, events, organizationId
 
   if (events) {
     // Delete existing events
-    await db
-      .delete(webhookEventsTable)
-      .where(eq(webhookEventsTable.webhookId, webhookId));
+    await db.delete(webhookEventsTable).where(eq(webhookEventsTable.webhookId, webhookId));
 
     // Insert new events
     if (events.length) {
       await db.insert(webhookEventsTable).values(
-        events.map(eventName => ({
+        events.map((eventName) => ({
           webhookId,
           eventName,
         })),
@@ -85,7 +98,15 @@ async function updateOrganizationWebhook({ db, webhookId, events, organizationId
   return { webhook: updatedWebhook };
 }
 
-async function getOrganizationWebhookById({ db, webhookId, organizationId }: { db: Database; webhookId: string; organizationId: string }) {
+async function getOrganizationWebhookById({
+  db,
+  webhookId,
+  organizationId,
+}: {
+  db: Database;
+  webhookId: string;
+  organizationId: string;
+}) {
   const records = await db
     .select({
       webhook: getTableColumns(webhooksTable),
@@ -93,12 +114,7 @@ async function getOrganizationWebhookById({ db, webhookId, organizationId }: { d
     })
     .from(webhooksTable)
     .leftJoin(webhookEventsTable, eq(webhooksTable.id, webhookEventsTable.webhookId))
-    .where(
-      and(
-        eq(webhooksTable.id, webhookId),
-        eq(webhooksTable.organizationId, organizationId),
-      ),
-    );
+    .where(and(eq(webhooksTable.id, webhookId), eq(webhooksTable.organizationId, organizationId)));
 
   if (!records.length) {
     return { webhook: undefined };
@@ -111,21 +127,32 @@ async function getOrganizationWebhookById({ db, webhookId, organizationId }: { d
     return { webhook: undefined };
   }
 
-  const events = records.map(record => record.webhookEvents?.eventName).filter(Boolean);
+  const events = records.map((record) => record.webhookEvents?.eventName).filter(Boolean);
 
   return { webhook: { ...webhook, events } };
 }
 
-async function deleteOrganizationWebhook({ db, webhookId, organizationId }: { db: Database; webhookId: string; organizationId: string }) {
-  await db.delete(webhooksTable).where(
-    and(
-      eq(webhooksTable.id, webhookId),
-      eq(webhooksTable.organizationId, organizationId),
-    ),
-  );
+async function deleteOrganizationWebhook({
+  db,
+  webhookId,
+  organizationId,
+}: {
+  db: Database;
+  webhookId: string;
+  organizationId: string;
+}) {
+  await db
+    .delete(webhooksTable)
+    .where(and(eq(webhooksTable.id, webhookId), eq(webhooksTable.organizationId, organizationId)));
 }
 
-async function getOrganizationWebhooks({ db, organizationId }: { db: Database; organizationId: string }) {
+async function getOrganizationWebhooks({
+  db,
+  organizationId,
+}: {
+  db: Database;
+  organizationId: string;
+}) {
   // Create a subquery for the latest delivery date per webhook
   const latestDeliverySubquery = db
     .select({
@@ -143,8 +170,8 @@ async function getOrganizationWebhooks({ db, organizationId }: { db: Database; o
     .leftJoin(latestDeliverySubquery, eq(webhooksTable.id, latestDeliverySubquery.webhookId))
     .where(eq(webhooksTable.organizationId, organizationId));
 
-  const webhooksRecord = rawWebhooks
-    .reduce((acc, { webhooks, webhook_events, latest_delivery }) => {
+  const webhooksRecord = rawWebhooks.reduce(
+    (acc, { webhooks, webhook_events, latest_delivery }) => {
       const webhookId = webhooks.id;
       const webhookEvents = webhook_events;
 
@@ -161,12 +188,22 @@ async function getOrganizationWebhooks({ db, organizationId }: { db: Database; o
       }
 
       return acc;
-    }, {} as Record<string, Webhook & { events: WebhookEvent[]; lastTriggeredAt: Date | null }>);
+    },
+    {} as Record<string, Webhook & { events: WebhookEvent[]; lastTriggeredAt: Date | null }>,
+  );
 
   return { webhooks: Object.values(webhooksRecord) };
 }
 
-async function getOrganizationEnabledWebhooksForEvent({ db, organizationId, event }: { db: Database; organizationId: string; event: EventName }) {
+async function getOrganizationEnabledWebhooksForEvent({
+  db,
+  organizationId,
+  event,
+}: {
+  db: Database;
+  organizationId: string;
+  event: EventName;
+}) {
   const webhooks = await db
     .select({
       ...getTableColumns(webhooksTable),
@@ -184,6 +221,9 @@ async function getOrganizationEnabledWebhooksForEvent({ db, organizationId, even
   return { webhooks };
 }
 
-async function saveWebhookDelivery({ db, ...webhookDelivery }: { db: Database } & WebhookDeliveryInsert) {
+async function saveWebhookDelivery({
+  db,
+  ...webhookDelivery
+}: { db: Database } & WebhookDeliveryInsert) {
   await db.insert(webhookDeliveriesTable).values(webhookDelivery);
 }

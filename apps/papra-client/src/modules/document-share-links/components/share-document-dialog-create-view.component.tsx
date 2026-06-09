@@ -7,10 +7,21 @@ import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-err
 import { Button } from '@/modules/ui/components/button';
 import { CalendarGrid } from '@/modules/ui/components/calendar';
 import { CalendarMonthYearHeader } from '@/modules/ui/components/calendar-month-year-header';
-import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/modules/ui/components/dialog';
+import {
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/modules/ui/components/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/ui/components/popover';
 import { createToast } from '@/modules/ui/components/sonner';
-import { Switch, SwitchControl, SwitchDescription, SwitchLabel, SwitchThumb } from '@/modules/ui/components/switch';
+import {
+  Switch,
+  SwitchControl,
+  SwitchDescription,
+  SwitchLabel,
+  SwitchThumb,
+} from '@/modules/ui/components/switch';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { invalidateShareLinksQueries, useCopyShareLink } from '../document-share-links.composables';
 import { generateShareLinkPassword } from '../document-share-links.models';
@@ -71,19 +82,23 @@ export const ShareDocumentDialogCreateView: Component<{
   };
 
   const createMutation = useMutation(() => ({
-    mutationFn: () => createShareLink({
-      organizationId: props.document.organizationId,
-      documentId: props.document.id,
-      expiresAt: computeExpiresAt(),
-      password: getIsPasswordEnabled() && getPassword() !== '' ? getPassword() : undefined,
-    }),
+    mutationFn: () =>
+      createShareLink({
+        organizationId: props.document.organizationId,
+        documentId: props.document.id,
+        expiresAt: computeExpiresAt(),
+        password: getIsPasswordEnabled() && getPassword() !== '' ? getPassword() : undefined,
+      }),
     onSuccess: async ({ shareLink }) => {
       await invalidateShareLinksQueries({ organizationId: props.document.organizationId });
       await copyShareLink({ url: shareLink.url });
       props.onCreated({ url: shareLink.url });
     },
     onError: (error) => {
-      createToast({ type: 'error', message: getErrorMessage({ error, defaultMessage: t('document-share-links.create.error') }) });
+      createToast({
+        type: 'error',
+        message: getErrorMessage({ error, defaultMessage: t('document-share-links.create.error') }),
+      });
     },
   }));
 
@@ -96,10 +111,18 @@ export const ShareDocumentDialogCreateView: Component<{
 
       <div class="flex flex-col">
         <div class="flex flex-col gap-3 py-4 border-t">
-          <Switch class="flex items-center justify-between gap-4" checked={getIsPasswordEnabled()} onChange={setIsPasswordEnabled}>
+          <Switch
+            class="flex items-center justify-between gap-4"
+            checked={getIsPasswordEnabled()}
+            onChange={setIsPasswordEnabled}
+          >
             <div class="flex flex-col gap-0.5">
-              <SwitchLabel class="text-sm font-medium">{t('document-share-links.create.password.toggle')}</SwitchLabel>
-              <SwitchDescription class="text-xs text-muted-foreground">{t('document-share-links.create.password.hint')}</SwitchDescription>
+              <SwitchLabel class="text-sm font-medium">
+                {t('document-share-links.create.password.toggle')}
+              </SwitchLabel>
+              <SwitchDescription class="text-xs text-muted-foreground">
+                {t('document-share-links.create.password.hint')}
+              </SwitchDescription>
             </div>
             <SwitchControl>
               <SwitchThumb />
@@ -109,9 +132,19 @@ export const ShareDocumentDialogCreateView: Component<{
           <Show when={getIsPasswordEnabled()}>
             <div class="flex items-center gap-2">
               <TextFieldRoot class="flex-1">
-                <TextField type="text" autocomplete="off" placeholder={t('document-share-links.create.password.placeholder')} value={getPassword()} onInput={e => setPassword(e.currentTarget.value)} />
+                <TextField
+                  type="text"
+                  autocomplete="off"
+                  placeholder={t('document-share-links.create.password.placeholder')}
+                  value={getPassword()}
+                  onInput={(e) => setPassword(e.currentTarget.value)}
+                />
               </TextFieldRoot>
-              <Button type="button" variant="outline" onClick={() => setPassword(generateShareLinkPassword())}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPassword(generateShareLinkPassword())}
+              >
                 <div class="i-tabler-refresh size-4 mr-2" />
                 {t('document-share-links.create.password.generate')}
               </Button>
@@ -120,10 +153,18 @@ export const ShareDocumentDialogCreateView: Component<{
         </div>
 
         <div class="flex flex-col gap-3 py-4 border-t">
-          <Switch class="flex items-center justify-between gap-4" checked={getIsExpirationEnabled()} onChange={setIsExpirationEnabled}>
+          <Switch
+            class="flex items-center justify-between gap-4"
+            checked={getIsExpirationEnabled()}
+            onChange={setIsExpirationEnabled}
+          >
             <div class="flex flex-col gap-0.5">
-              <SwitchLabel class="text-sm font-medium">{t('document-share-links.create.expiration.toggle')}</SwitchLabel>
-              <SwitchDescription class="text-xs text-muted-foreground">{t('document-share-links.create.expiration.hint')}</SwitchDescription>
+              <SwitchLabel class="text-sm font-medium">
+                {t('document-share-links.create.expiration.toggle')}
+              </SwitchLabel>
+              <SwitchDescription class="text-xs text-muted-foreground">
+                {t('document-share-links.create.expiration.hint')}
+              </SwitchDescription>
             </div>
             <SwitchControl>
               <SwitchThumb />
@@ -133,7 +174,7 @@ export const ShareDocumentDialogCreateView: Component<{
           <Show when={getIsExpirationEnabled()}>
             <div class="flex flex-wrap items-center gap-2">
               <For each={['24h', '7d', '30d', 'custom'] as const}>
-                {preset => (
+                {(preset) => (
                   <Button
                     type="button"
                     size="sm"
@@ -150,12 +191,20 @@ export const ShareDocumentDialogCreateView: Component<{
               <Popover>
                 <PopoverTrigger as={Button} variant="outline" class="self-start">
                   <div class="i-tabler-calendar size-4 mr-2" />
-                  <Show when={getCustomDate()} fallback={t('document-share-links.create.expiration.pick-date')}>
-                    {getDate => formatDate(getDate(), { dateStyle: 'medium' })}
+                  <Show
+                    when={getCustomDate()}
+                    fallback={t('document-share-links.create.expiration.pick-date')}
+                  >
+                    {(getDate) => formatDate(getDate(), { dateStyle: 'medium' })}
                   </Show>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-3">
-                  <Calendar mode="single" value={getCustomDate()} onValueChange={setCustomDate} fixedWeeks>
+                  <Calendar
+                    mode="single"
+                    value={getCustomDate()}
+                    onValueChange={setCustomDate}
+                    fixedWeeks
+                  >
                     {() => (
                       <div class="flex flex-col gap-2">
                         <CalendarMonthYearHeader />
@@ -175,7 +224,11 @@ export const ShareDocumentDialogCreateView: Component<{
           <Button variant="secondary" onClick={props.onCancel} disabled={createMutation.isPending}>
             {t('document-share-links.create.cancel')}
           </Button>
-          <Button onClick={() => createMutation.mutate()} disabled={!canSubmit() || createMutation.isPending} isLoading={createMutation.isPending}>
+          <Button
+            onClick={() => createMutation.mutate()}
+            disabled={!canSubmit() || createMutation.isPending}
+            isLoading={createMutation.isPending}
+          >
             {t('document-share-links.create.submit')}
           </Button>
         </div>

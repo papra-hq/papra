@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
-const getDocsSections = (): Promise<{ label: string; items: { label: string; url: string; description: string }[] }[]> => fetch('https://docs.papra.app/docs-navigation.json').then(res => res.json());
+function getDocsSections(): Promise<
+  { label: string; items: { label: string; url: string; description: string }[] }[]
+> {
+  return fetch('https://docs.papra.app/docs-navigation.json').then((res) => res.json());
+}
 
 export const GET: APIRoute = async ({ site }) => {
   const posts = await getCollection('blog');
@@ -16,7 +20,7 @@ export const GET: APIRoute = async ({ site }) => {
 
 ## Blog Posts
 
-${posts.map(post => `- [${post.data.title}](${getBlogPostUrl(post.slug)}): ${post.data.description}`).join('\n')}
+${posts.map((post) => `- [${post.data.title}](${getBlogPostUrl(post.slug)}): ${post.data.description}`).join('\n')}
 
 ## Assets
 
@@ -36,7 +40,7 @@ ${posts.map(post => `- [${post.data.title}](${getBlogPostUrl(post.slug)}): ${pos
 
 ## Docs
 
-${docsSections.map(section => `### ${section.label}\n\n${section.items.map(item => `- [${item.label}](${item.url}): ${item.description ?? item.label}`).join('\n')}`).join('\n\n')} 
+${docsSections.map((section) => `### ${section.label}\n\n${section.items.map((item) => `- [${item.label}](${item.url}): ${item.description ?? item.label}`).join('\n')}`).join('\n\n')} 
 `.trim();
 
   return new Response(llmTxt);

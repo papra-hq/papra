@@ -10,7 +10,12 @@ import { createLogger, wrapWithLoggerContext } from '../../modules/shared/logger
 export async function runScriptWithDb(
   { scriptName, silent = false }: { scriptName: string; silent?: boolean },
 
-  fn: (args: { isDryRun: boolean; logger: Logger; db: Database; config: Config }) => Promise<void> | void,
+  fn: (args: {
+    isDryRun: boolean;
+    logger: Logger;
+    db: Database;
+    config: Config;
+  }) => Promise<void> | void,
 ) {
   const isDryRun = process.argv.includes('--dry-run');
 
@@ -44,7 +49,15 @@ export async function runScript(
   });
 }
 
-async function executeScript({ logger, fn, silent = false }: { logger: Logger; fn: () => Promise<unknown>; silent?: boolean }) {
+async function executeScript({
+  logger,
+  fn,
+  silent = false,
+}: {
+  logger: Logger;
+  fn: () => Promise<unknown>;
+  silent?: boolean;
+}) {
   try {
     await fn();
     if (!silent) {

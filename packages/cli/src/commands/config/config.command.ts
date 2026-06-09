@@ -38,7 +38,7 @@ function defineConfigSetter({
       const valueFromArgs = args[name];
 
       if (valueFromArgs) {
-        await updateConfig(config => ({ ...config, [configKey]: ensureString(valueFromArgs) }));
+        await updateConfig((config) => ({ ...config, [configKey]: ensureString(valueFromArgs) }));
 
         prompts.log.info(`${name} set to ${valueFromArgs}`);
 
@@ -53,7 +53,7 @@ function defineConfigSetter({
         return;
       }
 
-      await updateConfig(config => ({ ...config, [configKey]: valueFromPrompt }));
+      await updateConfig((config) => ({ ...config, [configKey]: valueFromPrompt }));
 
       prompts.log.info(`${name} set to ${valueFromPrompt}`);
     },
@@ -74,30 +74,32 @@ export const configCommand = defineCommand({
       run: async () => {
         const group = await prompts.group(
           {
-            apiUrl: () => prompts.text({
-              message: 'Enter your instance URL (e.g. https://api.papra.app)',
-              validate: (value) => {
-                const result = v.safeParser(apiUrlSchema)(value);
+            apiUrl: () =>
+              prompts.text({
+                message: 'Enter your instance URL (e.g. https://api.papra.app)',
+                validate: (value) => {
+                  const result = v.safeParser(apiUrlSchema)(value);
 
-                if (result.success) {
-                  return undefined;
-                }
+                  if (result.success) {
+                    return undefined;
+                  }
 
-                return result.issues.map(({ message }) => message).join('\n');
-              },
-            }),
-            apiKey: () => prompts.text({
-              message: `Enter your API key (can be be found in your User Settings)`,
-              validate: (value) => {
-                const result = v.safeParser(apiKeySchema)(value);
+                  return result.issues.map(({ message }) => message).join('\n');
+                },
+              }),
+            apiKey: () =>
+              prompts.text({
+                message: `Enter your API key (can be be found in your User Settings)`,
+                validate: (value) => {
+                  const result = v.safeParser(apiKeySchema)(value);
 
-                if (result.success) {
-                  return undefined;
-                }
+                  if (result.success) {
+                    return undefined;
+                  }
 
-                return result.issues.map(({ message }) => message).join('\n');
-              },
-            }),
+                  return result.issues.map(({ message }) => message).join('\n');
+                },
+              }),
           },
           {
             onCancel: () => {
@@ -108,7 +110,7 @@ export const configCommand = defineCommand({
           },
         );
 
-        await updateConfig(config => ({
+        await updateConfig((config) => ({
           ...config,
           ...group,
         }));

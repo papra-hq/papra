@@ -17,16 +17,40 @@ export function createWebhooksHandler({
   onError = handleError,
 }: {
   secret: string;
-  onError?: (args: { body: string; signature: string; webhookId: string; timestamp: string; error: unknown }) => void | Promise<void>;
+  onError?: (args: {
+    body: string;
+    signature: string;
+    webhookId: string;
+    timestamp: string;
+    error: unknown;
+  }) => void | Promise<void>;
 }) {
-  const eventEmitter = new EventEmitter<WebhookEvents & { '*': (payload: StandardWebhookEventPayload) => void }>();
+  const eventEmitter = new EventEmitter<
+    WebhookEvents & { '*': (payload: StandardWebhookEventPayload) => void }
+  >();
 
   return {
     on: eventEmitter.on,
     ee: eventEmitter,
-    handle: async ({ body, signature, webhookId, timestamp }: { body: string; signature: string; webhookId: string; timestamp: string }) => {
+    handle: async ({
+      body,
+      signature,
+      webhookId,
+      timestamp,
+    }: {
+      body: string;
+      signature: string;
+      webhookId: string;
+      timestamp: string;
+    }) => {
       try {
-        const isValid = await verifySignature({ serializedPayload: body, signature, secret, webhookId, timestamp });
+        const isValid = await verifySignature({
+          serializedPayload: body,
+          signature,
+          secret,
+          webhookId,
+          timestamp,
+        });
 
         if (!isValid) {
           throw createInvalidSignatureError();

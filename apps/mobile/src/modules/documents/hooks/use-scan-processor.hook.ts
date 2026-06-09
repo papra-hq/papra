@@ -42,7 +42,9 @@ export function useScanProcessor() {
         });
       }
 
-      await queryClient.invalidateQueries({ queryKey: ['organizations', organizationId, 'documents'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', organizationId, 'documents'],
+      });
 
       return {
         success: true,

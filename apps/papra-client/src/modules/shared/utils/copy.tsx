@@ -15,16 +15,20 @@ export function useCopy() {
   return { copy, getIsJustCopied };
 }
 
-export const CopyButton: ParentComponent<{ text: string; label?: string; copiedLabel?: string } & ComponentProps<typeof Button>> = (props) => {
+export const CopyButton: ParentComponent<
+  { text: string; label?: string; copiedLabel?: string } & ComponentProps<typeof Button>
+> = (props) => {
   const { copy, getIsJustCopied } = useCopy();
 
   return (
-    <Button
-      onClick={() => copy({ text: props.text })}
-      {...props}
-    >
-      <div classList={{ 'i-tabler-copy': !getIsJustCopied(), 'i-tabler-check': getIsJustCopied() }} class="mr-2 text-lg" />
-      {(getIsJustCopied() ? props.copiedLabel ?? 'Copied!' : props.children ?? props.label ?? 'Copy')}
+    <Button onClick={() => copy({ text: props.text })} {...props}>
+      <div
+        classList={{ 'i-tabler-copy': !getIsJustCopied(), 'i-tabler-check': getIsJustCopied() }}
+        class="mr-2 text-lg"
+      />
+      {getIsJustCopied()
+        ? (props.copiedLabel ?? 'Copied!')
+        : (props.children ?? props.label ?? 'Copy')}
     </Button>
   );
 };

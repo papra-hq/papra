@@ -1,7 +1,10 @@
 import { Buffer } from 'node:buffer';
 import { Webhook } from 'standardwebhooks';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { createInvalidSignatureFormatError, createUnsupportedSignatureVersionError } from './handler/handler.errors';
+import {
+  createInvalidSignatureFormatError,
+  createUnsupportedSignatureVersionError,
+} from './handler/handler.errors';
 import { arrayBufferToBase64, base64ToArrayBuffer, signBody, verifySignature } from './signature';
 
 const arrayBuffer = (str: string) => new TextEncoder().encode(str).buffer as ArrayBuffer;
@@ -30,7 +33,13 @@ describe('signature', () => {
       const secret = 'secret-key';
       const signature = 'v1,POSJo83MmyWmTh3NJOtEpBZSn+CmdpjHSS05p3wYAVE=';
 
-      const result = await verifySignature({ serializedPayload, webhookId, timestamp, signature, secret });
+      const result = await verifySignature({
+        serializedPayload,
+        webhookId,
+        timestamp,
+        signature,
+        secret,
+      });
 
       expect(result).to.equal(true);
     });
@@ -43,7 +52,9 @@ describe('signature', () => {
       const secret = 'secret-key';
       const signature = 'v2,POSJo83MmyWmTh3NJOtEpBZSn+CmdpjHSS05p3wYAVE=';
 
-      expect(verifySignature({ serializedPayload, webhookId, timestamp, signature, secret })).rejects.toThrow(createUnsupportedSignatureVersionError());
+      expect(
+        verifySignature({ serializedPayload, webhookId, timestamp, signature, secret }),
+      ).rejects.toThrow(createUnsupportedSignatureVersionError());
     });
 
     test('an error is thrown when the signature is not valid', async () => {
@@ -54,7 +65,9 @@ describe('signature', () => {
       const secret = 'secret-key';
       const signature = '';
 
-      expect(verifySignature({ serializedPayload, webhookId, timestamp, signature, secret })).rejects.toThrow(createInvalidSignatureFormatError());
+      expect(
+        verifySignature({ serializedPayload, webhookId, timestamp, signature, secret }),
+      ).rejects.toThrow(createInvalidSignatureFormatError());
     });
   });
 
@@ -102,7 +115,11 @@ describe('signature', () => {
 
       const { signature } = await signBody({ serializedPayload, webhookId, timestamp, secret });
 
-      const standardWebhookSignature = new Webhook(Buffer.from(secret).toString('base64')).sign(webhookId, new Date(Number(timestamp) * 1000), serializedPayload);
+      const standardWebhookSignature = new Webhook(Buffer.from(secret).toString('base64')).sign(
+        webhookId,
+        new Date(Number(timestamp) * 1000),
+        serializedPayload,
+      );
 
       expect(standardWebhookSignature).to.equal(signature);
     });
@@ -126,13 +143,9 @@ describe('signature', () => {
     });
 
     test('a buffer can be converted to a base64 encoded string and back to a buffer', () => {
-      expect(
-        base64ToArrayBuffer(
-          arrayBufferToBase64(
-            arrayBuffer('test'),
-          ),
-        ),
-      ).to.deep.equal(arrayBuffer('test'));
+      expect(base64ToArrayBuffer(arrayBufferToBase64(arrayBuffer('test')))).to.deep.equal(
+        arrayBuffer('test'),
+      );
     });
   });
 });

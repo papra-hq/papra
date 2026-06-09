@@ -7,7 +7,13 @@ export const PAPRA_API_URL = 'https://api.papra.app';
 
 export type Client = ReturnType<typeof createClient>;
 
-export function createClient({ apiKey, apiBaseUrl = PAPRA_API_URL }: { apiKey: string; apiBaseUrl?: string }) {
+export function createClient({
+  apiKey,
+  apiBaseUrl = PAPRA_API_URL,
+}: {
+  apiKey: string;
+  apiBaseUrl?: string;
+}) {
   const { apiClient } = createApiClient({ apiKey, apiBaseUrl });
 
   const methods = injectArguments(
@@ -33,14 +39,21 @@ async function uploadDocument({
   file,
   organizationId,
   apiClient,
-}: { file: File; organizationId: string; apiClient: ApiClient }) {
+}: {
+  file: File;
+  organizationId: string;
+  apiClient: ApiClient;
+}) {
   const formData = new FormData();
   formData.append('file', file);
 
-  return await apiClient<{ document: PapraDocument }>(`/api/organizations/${organizationId}/documents`, {
-    method: 'POST',
-    body: formData,
-  });
+  return await apiClient<{ document: PapraDocument }>(
+    `/api/organizations/${organizationId}/documents`,
+    {
+      method: 'POST',
+      body: formData,
+    },
+  );
 }
 
 async function trashDocumentsBatch({
@@ -70,7 +83,10 @@ async function listOrganizations({ apiClient }: { apiClient: ApiClient }) {
 async function listTags({
   organizationId,
   apiClient,
-}: { organizationId: string; apiClient: ApiClient }) {
+}: {
+  organizationId: string;
+  apiClient: ApiClient;
+}) {
   return await apiClient<{ tags: PapraTag[] }>(`/api/organizations/${organizationId}/tags`, {
     method: 'GET',
   });
@@ -106,10 +122,13 @@ async function addTagToDocument({
   tagId: string;
   apiClient: ApiClient;
 }) {
-  return await apiClient<void>(`/api/organizations/${organizationId}/documents/${documentId}/tags`, {
-    method: 'POST',
-    body: { tagId },
-  });
+  return await apiClient<void>(
+    `/api/organizations/${organizationId}/documents/${documentId}/tags`,
+    {
+      method: 'POST',
+      body: { tagId },
+    },
+  );
 }
 
 async function getCurrentApiKey({ apiClient }: { apiClient: ApiClient }) {

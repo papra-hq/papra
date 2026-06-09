@@ -24,7 +24,8 @@ describe('document-storage usecases', () => {
           maxIncrementalSuffixAttempts: 3,
           enableRandomSuffixFallback: false,
           documentsStorageService: {
-            fileExists: async ({ storageKey }) => ['path/to/file.txt', 'path/to/file_1.txt'].includes(storageKey),
+            fileExists: async ({ storageKey }) =>
+              ['path/to/file.txt', 'path/to/file_1.txt'].includes(storageKey),
           },
         }),
       ).to.eql({ storageKey: 'path/to/file_2.txt' });
@@ -66,7 +67,9 @@ describe('document-storage usecases', () => {
       expect(await ensureStorageKeyIsAvailable(args)).to.eql({ storageKey: 'path/to/file_1.txt' });
       expect(await ensureStorageKeyIsAvailable(args)).to.eql({ storageKey: 'path/to/file_2.txt' });
       expect(await ensureStorageKeyIsAvailable(args)).to.eql({ storageKey: 'path/to/file_3.txt' });
-      await expect(ensureStorageKeyIsAvailable(args)).rejects.toThrow(createUnableToFindAvailableStorageKeyError());
+      await expect(ensureStorageKeyIsAvailable(args)).rejects.toThrow(
+        createUnableToFindAvailableStorageKeyError(),
+      );
     });
 
     test('if even the random suffix fallback is taken, throw an error', async () => {

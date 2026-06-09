@@ -6,7 +6,15 @@ import { useQuery } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Pdf from 'react-native-pdf';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
@@ -35,7 +43,12 @@ function isTextBasedFile(mimeType: string): boolean {
   return mimeType.startsWith('text/') || textMimeTypes.has(mimeType);
 }
 
-function DocumentViewer({ file, styles, themeColors, onError }: {
+function DocumentViewer({
+  file,
+  styles,
+  themeColors,
+  onError,
+}: {
   file: DocumentFile;
   styles: ReturnType<typeof createStyles>;
   themeColors: ThemeColors;
@@ -52,8 +65,7 @@ function DocumentViewer({ file, styles, themeColors, onError }: {
       <Pdf
         source={{ uri: file.uri, cache: true }}
         style={styles.documentViewer}
-        onError={(error) => {
-          console.error('PDF error:', error);
+        onError={() => {
           onError('Failed to load PDF');
         }}
         enablePaging
@@ -77,14 +89,24 @@ function DocumentViewer({ file, styles, themeColors, onError }: {
 
   return (
     <View style={styles.centeredContainer}>
-      <MaterialCommunityIcons name="file-question-outline" size={64} color={themeColors.mutedForeground} />
+      <MaterialCommunityIcons
+        name="file-question-outline"
+        size={64}
+        color={themeColors.mutedForeground}
+      />
       <Text style={styles.centeredTitle}>Preview not available</Text>
       <Text style={styles.centeredText}>This file type cannot be previewed in the app</Text>
     </View>
   );
 }
 
-function LoadingState({ styles, themeColors }: { styles: ReturnType<typeof createStyles>; themeColors: ThemeColors }) {
+function LoadingState({
+  styles,
+  themeColors,
+}: {
+  styles: ReturnType<typeof createStyles>;
+  themeColors: ThemeColors;
+}) {
   return (
     <View style={styles.centeredContainer}>
       <ActivityIndicator size="large" color={themeColors.primary} />
@@ -93,7 +115,12 @@ function LoadingState({ styles, themeColors }: { styles: ReturnType<typeof creat
   );
 }
 
-function ErrorState({ styles, themeColors, onRetry, onGoBack }: {
+function ErrorState({
+  styles,
+  themeColors,
+  onRetry,
+  onGoBack,
+}: {
   styles: ReturnType<typeof createStyles>;
   themeColors: ThemeColors;
   onRetry: () => void;
@@ -101,7 +128,11 @@ function ErrorState({ styles, themeColors, onRetry, onGoBack }: {
 }) {
   return (
     <View style={styles.centeredContainer}>
-      <MaterialCommunityIcons name="file-alert-outline" size={64} color={themeColors.mutedForeground} />
+      <MaterialCommunityIcons
+        name="file-alert-outline"
+        size={64}
+        color={themeColors.mutedForeground}
+      />
       <Text style={styles.centeredTitle}>Failed to load document</Text>
       <TouchableOpacity style={styles.actionButton} onPress={onRetry}>
         <Text style={styles.actionButtonText}>Retry</Text>

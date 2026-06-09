@@ -17,12 +17,22 @@ export const AuthLegalLinks: Component = () => {
     <p class="text-muted-foreground mt-2">
       {te('auth.legal-links.description', {
         terms: (
-          <Button variant="link" as={A} class="inline px-0" href={createVitrineUrl({ path: 'terms-of-service' })}>
+          <Button
+            variant="link"
+            as={A}
+            class="inline px-0"
+            href={createVitrineUrl({ path: 'terms-of-service' })}
+          >
             {t('auth.legal-links.terms')}
           </Button>
         ),
         privacy: (
-          <Button variant="link" as={A} class="inline px-0" href={createVitrineUrl({ path: 'privacy' })}>
+          <Button
+            variant="link"
+            as={A}
+            class="inline px-0"
+            href={createVitrineUrl({ path: 'privacy' })}
+          >
             {t('auth.legal-links.privacy')}
           </Button>
         ),

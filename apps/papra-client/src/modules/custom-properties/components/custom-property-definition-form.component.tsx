@@ -8,16 +8,36 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createForm } from '@/modules/shared/form/form';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { Button } from '@/modules/ui/components/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/modules/ui/components/select';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { PROPERTY_TYPE_LABEL_I18N_KEYS } from '../custom-properties.constants';
 
-const PROPERTY_TYPES: CustomPropertyType[] = ['text', 'number', 'date', 'boolean', 'select', 'multi_select', 'user_relation', 'document_relation'];
+const PROPERTY_TYPES: CustomPropertyType[] = [
+  'text',
+  'number',
+  'date',
+  'boolean',
+  'select',
+  'multi_select',
+  'user_relation',
+  'document_relation',
+];
 const SELECT_LIKE_TYPES: CustomPropertyType[] = ['select', 'multi_select'];
 
 type OptionDraft = { id?: string; name: string };
-export type PropertyDefinitionDraft = { name: string; description?: string; type: CustomPropertyType; options?: OptionDraft[] };
+export type PropertyDefinitionDraft = {
+  name: string;
+  description?: string;
+  type: CustomPropertyType;
+  options?: OptionDraft[];
+};
 
 export const CustomPropertyDefinitionForm: Component<{
   onSubmit: (args: { propertyDefinition: PropertyDefinitionDraft }) => Promise<void> | void;
@@ -46,7 +66,10 @@ export const CustomPropertyDefinitionForm: Component<{
           },
         });
       } catch (error) {
-        const message = getErrorMessage({ error, defaultMessage: t('custom-properties.form.save-error') });
+        const message = getErrorMessage({
+          error,
+          defaultMessage: t('custom-properties.form.save-error'),
+        });
         throw createFormError({ message });
       }
     },
@@ -64,15 +87,17 @@ export const CustomPropertyDefinitionForm: Component<{
       ),
       type: v.picklist(PROPERTY_TYPES),
       options: v.optional(
-        v.array(v.object({
-          id: v.optional(v.string()),
-          name: v.pipe(
-            v.string(),
-            v.trim(),
-            v.minLength(1, t('custom-properties.form.options.name.required')),
-            v.maxLength(255, t('custom-properties.form.options.name.max-length')),
-          ),
-        })),
+        v.array(
+          v.object({
+            id: v.optional(v.string()),
+            name: v.pipe(
+              v.string(),
+              v.trim(),
+              v.minLength(1, t('custom-properties.form.options.name.required')),
+              v.maxLength(255, t('custom-properties.form.options.name.max-length')),
+            ),
+          }),
+        ),
         [],
       ),
     }),
@@ -80,7 +105,9 @@ export const CustomPropertyDefinitionForm: Component<{
       name: props.propertyDefinition?.name ?? '',
       description: props.propertyDefinition?.description ?? '',
       type: props.propertyDefinition?.type ?? 'text',
-      options: props.propertyDefinition?.options?.map(o => ({ id: o.id, name: o.name })) ?? [{ name: '' }],
+      options: props.propertyDefinition?.options?.map((o) => ({ id: o.id, name: o.name })) ?? [
+        { name: '' },
+      ],
     },
   });
 
@@ -111,7 +138,9 @@ export const CustomPropertyDefinitionForm: Component<{
           <TextFieldRoot class="flex flex-col gap-1 mt-6">
             <TextFieldLabel for="description">
               {t('custom-properties.form.description.label')}
-              <span class="text-muted-foreground font-normal ml-1">{t('custom-properties.form.description.optional')}</span>
+              <span class="text-muted-foreground font-normal ml-1">
+                {t('custom-properties.form.description.optional')}
+              </span>
             </TextFieldLabel>
             <TextArea
               id="description"
@@ -125,21 +154,27 @@ export const CustomPropertyDefinitionForm: Component<{
       </Field>
 
       <Field name="type">
-        {field => (
+        {(field) => (
           <div class="flex flex-col gap-1 mt-6">
-            <label class="text-sm font-medium" for="type">{t('custom-properties.form.type.label')}</label>
+            <label class="text-sm font-medium" for="type">
+              {t('custom-properties.form.type.label')}
+            </label>
             <Select
               id="type"
               defaultValue={field.value ?? 'text'}
-              onChange={value => value && setValue(form, 'type', value as CustomPropertyType)}
+              onChange={(value) => value && setValue(form, 'type', value as CustomPropertyType)}
               options={PROPERTY_TYPES}
-              itemComponent={itemProps => (
-                <SelectItem item={itemProps.item}>{t(PROPERTY_TYPE_LABEL_I18N_KEYS[itemProps.item.rawValue as CustomPropertyType])}</SelectItem>
+              itemComponent={(itemProps) => (
+                <SelectItem item={itemProps.item}>
+                  {t(PROPERTY_TYPE_LABEL_I18N_KEYS[itemProps.item.rawValue as CustomPropertyType])}
+                </SelectItem>
               )}
               disabled={hasExistingType()}
             >
               <SelectTrigger class="w-full">
-                <SelectValue<CustomPropertyType>>{state => t(PROPERTY_TYPE_LABEL_I18N_KEYS[state.selectedOption()])}</SelectValue>
+                <SelectValue<CustomPropertyType>>
+                  {(state) => t(PROPERTY_TYPE_LABEL_I18N_KEYS[state.selectedOption()])}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent />
             </Select>
@@ -154,10 +189,12 @@ export const CustomPropertyDefinitionForm: Component<{
 
       <Show when={isSelectLike()}>
         <p class="mb-1 font-medium mt-6">{t('custom-properties.form.options.title')}</p>
-        <p class="mb-3 text-sm text-muted-foreground">{t('custom-properties.form.options.description')}</p>
+        <p class="mb-3 text-sm text-muted-foreground">
+          {t('custom-properties.form.options.description')}
+        </p>
 
         <FieldArray name="options">
-          {fieldArray => (
+          {(fieldArray) => (
             <div class="flex flex-col gap-3">
               <For each={fieldArray.items}>
                 {(_, index) => (
@@ -174,7 +211,9 @@ export const CustomPropertyDefinitionForm: Component<{
                                   value={field.value}
                                   aria-invalid={Boolean(field.error)}
                                 />
-                                {field.error && <div class="text-red-500 text-xs mt-1">{field.error}</div>}
+                                {field.error && (
+                                  <div class="text-red-500 text-xs mt-1">{field.error}</div>
+                                )}
                               </TextFieldRoot>
                             )}
                           </Field>
@@ -209,14 +248,17 @@ export const CustomPropertyDefinitionForm: Component<{
       </Show>
 
       <div class="flex justify-end mt-8 gap-2">
-        <Button variant="outline" as={A} href={`/organizations/${props.organizationId}/custom-properties`}>
+        <Button
+          variant="outline"
+          as={A}
+          href={`/organizations/${props.organizationId}/custom-properties`}
+        >
           {t('custom-properties.form.cancel')}
         </Button>
         {props.submitButton}
       </div>
 
       <div class="text-red-500 text-sm mt-4">{form.response.message}</div>
-
     </Form>
   );
 };

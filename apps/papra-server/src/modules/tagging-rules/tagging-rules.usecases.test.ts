@@ -20,15 +20,38 @@ describe('tagging-rules usecases', () => {
 
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Doc 1',
+            originalName: 'Doc 1',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
 
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1' }],
-        taggingRuleConditions: [{ id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'equal', value: 'Doc 1' }],
+        taggingRuleConditions: [
+          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'equal', value: 'Doc 1' },
+        ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         // type safety
@@ -37,10 +60,20 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository, logger });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+        logger,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -73,13 +106,34 @@ describe('tagging-rules usecases', () => {
     test('a rule without conditions will apply its tags to all imported documents', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Doc 1',
+            originalName: 'Doc 1',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1' }],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         // type safety
@@ -88,10 +142,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -101,13 +164,41 @@ describe('tagging-rules usecases', () => {
     test('a rule without conditions and conditionMatchMode "any" applies tags to all documents', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Doc 1',
+            originalName: 'Doc 1',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        taggingRules: [
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Tagging Rule 1',
+            conditionMatchMode: 'any',
+          },
+        ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -115,10 +206,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -129,10 +229,23 @@ describe('tagging-rules usecases', () => {
     test('an organization with no tagging rules will not apply any tag to a document', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Doc 1',
+            originalName: 'Doc 1',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         // type safety
@@ -141,10 +254,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -154,18 +276,58 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "any", tags are applied when at least one condition matches', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Invoice 2024',
+            originalName: 'Invoice 2024',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
 
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        taggingRules: [
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Tagging Rule 1',
+            conditionMatchMode: 'any',
+          },
+        ],
         taggingRuleConditions: [
-          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
-          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Receipt',
+          },
         ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -173,10 +335,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -187,18 +358,58 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "any", tags are not applied when no conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Contract 2024', originalName: 'Contract 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Contract 2024',
+            originalName: 'Contract 2024',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
 
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'any' }],
+        taggingRules: [
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Tagging Rule 1',
+            conditionMatchMode: 'any',
+          },
+        ],
         taggingRuleConditions: [
-          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
-          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Receipt',
+          },
         ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -206,10 +417,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -220,18 +440,58 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "all" (default), tags are applied only when all conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Invoice 2024',
+            originalName: 'Invoice 2024',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
 
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
+        taggingRules: [
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Tagging Rule 1',
+            conditionMatchMode: 'all',
+          },
+        ],
         taggingRuleConditions: [
-          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
-          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: '2024' },
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: '2024',
+          },
         ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -239,10 +499,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -253,18 +522,58 @@ describe('tagging-rules usecases', () => {
     test('when conditionMatchMode is "all" (default), tags are not applied when only some conditions match', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Tag 1', normalizedName: 'tag 1', color: '#000000', organizationId: 'org_1' }],
-        documents: [{ id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'doc_1', mimeType: 'text/plain' }],
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Tag 1',
+            normalizedName: 'tag 1',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
+        ],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Invoice 2024',
+            originalName: 'Invoice 2024',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'doc_1',
+            mimeType: 'text/plain',
+          },
+        ],
 
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tagging Rule 1', conditionMatchMode: 'all' }],
+        taggingRules: [
+          {
+            id: 'tr_1',
+            organizationId: 'org_1',
+            name: 'Tagging Rule 1',
+            conditionMatchMode: 'all',
+          },
+        ],
         taggingRuleConditions: [
-          { id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' },
-          { id: 'trc_2', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Receipt' },
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
+          {
+            id: 'trc_2',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Receipt',
+          },
         ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
-      const [document] = await db.select().from(documentsTable).where(eq(documentsTable.id, 'doc_1'));
+      const [document] = await db
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, 'doc_1'));
 
       if (isNil(document)) {
         throw new Error('Document not found');
@@ -272,10 +581,19 @@ describe('tagging-rules usecases', () => {
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
-      await applyTaggingRules({ document, taggingRulesRepository, tagsRepository, webhookTriggerServices, documentActivityRepository });
+      await applyTaggingRules({
+        document,
+        taggingRulesRepository,
+        tagsRepository,
+        webhookTriggerServices,
+        documentActivityRepository,
+      });
 
       const documentTags = await db.select().from(documentsTagsTable);
 
@@ -288,21 +606,66 @@ describe('tagging-rules usecases', () => {
     test('applying rule to existing documents tags only matching ones', async () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
-        tags: [{ id: 'tag_1', name: 'Invoice', normalizedName: 'invoice', color: '#000000', organizationId: 'org_1' }],
-        documents: [
-          { id: 'doc_1', organizationId: 'org_1', name: 'Invoice 2024', originalName: 'Invoice 2024', originalStorageKey: 'doc_1', originalSha256Hash: 'hash_1', mimeType: 'text/plain' },
-          { id: 'doc_2', organizationId: 'org_1', name: 'Invoice Q1', originalName: 'Invoice Q1', originalStorageKey: 'doc_2', originalSha256Hash: 'hash_2', mimeType: 'text/plain' },
-          { id: 'doc_3', organizationId: 'org_1', name: 'Contract', originalName: 'Contract', originalStorageKey: 'doc_3', originalSha256Hash: 'hash_3', mimeType: 'text/plain' },
+        tags: [
+          {
+            id: 'tag_1',
+            name: 'Invoice',
+            normalizedName: 'invoice',
+            color: '#000000',
+            organizationId: 'org_1',
+          },
         ],
-        taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Tag Invoices', enabled: true }],
-        taggingRuleConditions: [{ id: 'trc_1', taggingRuleId: 'tr_1', field: 'name', operator: 'contains', value: 'Invoice' }],
+        documents: [
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Invoice 2024',
+            originalName: 'Invoice 2024',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'hash_1',
+            mimeType: 'text/plain',
+          },
+          {
+            id: 'doc_2',
+            organizationId: 'org_1',
+            name: 'Invoice Q1',
+            originalName: 'Invoice Q1',
+            originalStorageKey: 'doc_2',
+            originalSha256Hash: 'hash_2',
+            mimeType: 'text/plain',
+          },
+          {
+            id: 'doc_3',
+            organizationId: 'org_1',
+            name: 'Contract',
+            originalName: 'Contract',
+            originalStorageKey: 'doc_3',
+            originalSha256Hash: 'hash_3',
+            mimeType: 'text/plain',
+          },
+        ],
+        taggingRules: [
+          { id: 'tr_1', organizationId: 'org_1', name: 'Tag Invoices', enabled: true },
+        ],
+        taggingRuleConditions: [
+          {
+            id: 'trc_1',
+            taggingRuleId: 'tr_1',
+            field: 'name',
+            operator: 'contains',
+            value: 'Invoice',
+          },
+        ],
         taggingRuleActions: [{ id: 'tra_1', taggingRuleId: 'tr_1', tagId: 'tag_1' }],
       });
 
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       const result = await applyTaggingRuleToExistingDocuments({
@@ -322,8 +685,8 @@ describe('tagging-rules usecases', () => {
 
       // Only doc_1 and doc_2 should be tagged (they contain "Invoice")
       expect(documentTags).toHaveLength(2);
-      expect(documentTags.map(dt => dt.documentId).sort()).toEqual(['doc_1', 'doc_2']);
-      expect(documentTags.every(dt => dt.tagId === 'tag_1')).toBe(true);
+      expect(documentTags.map((dt) => dt.documentId).sort()).toEqual(['doc_1', 'doc_2']);
+      expect(documentTags.every((dt) => dt.tagId === 'tag_1')).toBe(true);
     });
 
     test('returns error when tagging rule does not exist', async () => {
@@ -334,7 +697,10 @@ describe('tagging-rules usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await expect(
@@ -354,7 +720,15 @@ describe('tagging-rules usecases', () => {
       const { db } = await createInMemoryDatabase({
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [
-          { id: 'doc_1', organizationId: 'org_1', name: 'Doc 1', originalName: 'Doc 1', originalStorageKey: 'doc_1', originalSha256Hash: 'hash_1', mimeType: 'text/plain' },
+          {
+            id: 'doc_1',
+            organizationId: 'org_1',
+            name: 'Doc 1',
+            originalName: 'Doc 1',
+            originalStorageKey: 'doc_1',
+            originalSha256Hash: 'hash_1',
+            mimeType: 'text/plain',
+          },
         ],
         taggingRules: [{ id: 'tr_1', organizationId: 'org_1', name: 'Rule 1', enabled: false }],
       });
@@ -362,7 +736,10 @@ describe('tagging-rules usecases', () => {
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const webhookTriggerServices = createWebhookTriggerServices({ webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() }, webhookRepository: createWebhookRepository({ db }) });
+      const webhookTriggerServices = createWebhookTriggerServices({
+        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
+        webhookRepository: createWebhookRepository({ db }),
+      });
       const documentActivityRepository = createDocumentActivityRepository({ db });
 
       const result = await applyTaggingRuleToExistingDocuments({

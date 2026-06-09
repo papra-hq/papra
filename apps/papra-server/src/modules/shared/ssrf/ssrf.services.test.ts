@@ -46,14 +46,24 @@ describe('ssrf services', () => {
         expect(
           await isUrlSsrfSafe({
             url: 'http://example.com/foo/bar',
-            dnsLookup: async () => ({ addresses: [{ address: '127.0.0.1', family: 4 }, { address: '1.1.1.1', family: 4 }] }),
+            dnsLookup: async () => ({
+              addresses: [
+                { address: '127.0.0.1', family: 4 },
+                { address: '1.1.1.1', family: 4 },
+              ],
+            }),
           }),
         ).toBe(false);
 
         expect(
           await isUrlSsrfSafe({
             url: 'http://example.com/foo/bar',
-            dnsLookup: async () => ({ addresses: [{ address: '8.8.8.8', family: 4 }, { address: '1.1.1.1', family: 4 }] }),
+            dnsLookup: async () => ({
+              addresses: [
+                { address: '8.8.8.8', family: 4 },
+                { address: '1.1.1.1', family: 4 },
+              ],
+            }),
           }),
         ).toBe(true);
       });
@@ -91,7 +101,11 @@ describe('ssrf services', () => {
           return { addresses: [] };
         };
 
-        await isUrlSsrfSafe({ url: 'http://example.com/foo/bar', allowedHostnames: new Set(['example.com']), dnsLookup });
+        await isUrlSsrfSafe({
+          url: 'http://example.com/foo/bar',
+          allowedHostnames: new Set(['example.com']),
+          dnsLookup,
+        });
 
         expect(dnsLookupCalled).toBe(false);
       });
@@ -103,7 +117,10 @@ describe('ssrf services', () => {
 
         const logs = getLogs({ excludeTimestampMs: true });
         expect(logs.length).toBe(1);
-        expect(logs[0]).to.contain({ level: 'error', message: 'Invalid URL provided, cannot extract hostname' });
+        expect(logs[0]).to.contain({
+          level: 'error',
+          message: 'Invalid URL provided, cannot extract hostname',
+        });
       });
 
       test('given an url with an hostname, if the DNS lookup throws an error, the function should return false and not throw', async () => {
@@ -113,11 +130,16 @@ describe('ssrf services', () => {
 
         const { logger, getLogs } = createTestLogger();
 
-        expect(await isUrlSsrfSafe({ url: 'http://example.com/foo/bar', dnsLookup, logger })).toBe(false);
+        expect(await isUrlSsrfSafe({ url: 'http://example.com/foo/bar', dnsLookup, logger })).toBe(
+          false,
+        );
 
         const logs = getLogs({ excludeTimestampMs: true });
         expect(logs.length).toBe(1);
-        expect(logs[0]).to.contain({ level: 'error', message: 'Error while checking if hostname is SSRF safe' });
+        expect(logs[0]).to.contain({
+          level: 'error',
+          message: 'Error while checking if hostname is SSRF safe',
+        });
         expect(logs[0]?.data.error).to.contain({ message: 'DNS lookup failed', name: 'Error' });
       });
     });

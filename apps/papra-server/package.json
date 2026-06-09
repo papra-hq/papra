@@ -1,12 +1,12 @@
 {
   "name": "@papra/app-server",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "description": "Papra app server",
-  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
-  "license": "AGPL-3.0-or-later",
   "keywords": [],
+  "license": "AGPL-3.0-or-later",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "type": "module",
   "exports": {
     "./organizations/constants": "./src/modules/organizations/organizations.constants.ts",
     "./customProperties/constants": "./src/modules/custom-properties/custom-properties.constants.ts",
@@ -17,8 +17,6 @@
     "build": "pnpm esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=dist/index.js --minify",
     "start": "node dist/index.js",
     "start:with-migrations": "pnpm migrate:up:prod && pnpm start",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:unit": "vitest run --exclude '**/*.int.test.ts'",
@@ -90,7 +88,6 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
     "@crowlog/pretty": "^2.0.1",
     "@testcontainers/azurite": "^11.5.1",
     "@testcontainers/localstack": "^11.5.1",
@@ -104,7 +101,6 @@
     "@types/picomatch": "^4.0.0",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "^0.24.2",
-    "eslint": "catalog:",
     "magicast": "^0.3.5",
     "memfs": "^4.17.2",
     "testcontainers": "^11.5.1",

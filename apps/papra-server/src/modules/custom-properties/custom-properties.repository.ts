@@ -11,7 +11,10 @@ import { isDefined, isNil } from '../shared/utils';
 import { usersTable } from '../users/users.table';
 import { createCustomPropertyDefinitionAlreadyExistsError } from './custom-properties.errors';
 import { generatePropertyKey } from './custom-properties.repository.models';
-import { customPropertyDefinitionsTable, documentCustomPropertyValuesTable } from './custom-properties.table';
+import {
+  customPropertyDefinitionsTable,
+  documentCustomPropertyValuesTable,
+} from './custom-properties.table';
 import { customPropertySelectOptionsTable } from './options/custom-properties-options.table';
 
 export type CustomPropertiesRepository = ReturnType<typeof createCustomPropertiesRepository>;
@@ -35,22 +38,32 @@ export function createCustomPropertiesRepository({ db }: { db: Database }) {
   );
 }
 
-async function getOrganizationPropertyDefinitions({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationPropertyDefinitions({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const definitions = await db
     .select()
     .from(customPropertyDefinitionsTable)
     .where(eq(customPropertyDefinitionsTable.organizationId, organizationId))
-    .orderBy(asc(customPropertyDefinitionsTable.displayOrder), asc(customPropertyDefinitionsTable.createdAt));
+    .orderBy(
+      asc(customPropertyDefinitionsTable.displayOrder),
+      asc(customPropertyDefinitionsTable.createdAt),
+    );
 
-  const definitionIds = definitions.map(d => d.id);
+  const definitionIds = definitions.map((d) => d.id);
 
-  const options = definitionIds.length > 0
-    ? await db
-        .select()
-        .from(customPropertySelectOptionsTable)
-        .where(inArray(customPropertySelectOptionsTable.propertyDefinitionId, definitionIds))
-        .orderBy(asc(customPropertySelectOptionsTable.displayOrder))
-    : [];
+  const options =
+    definitionIds.length > 0
+      ? await db
+          .select()
+          .from(customPropertySelectOptionsTable)
+          .where(inArray(customPropertySelectOptionsTable.propertyDefinitionId, definitionIds))
+          .orderBy(asc(customPropertySelectOptionsTable.displayOrder))
+      : [];
 
   const optionsByDefinition = new Map<string, typeof options>();
 
@@ -61,14 +74,20 @@ async function getOrganizationPropertyDefinitions({ organizationId, db }: { orga
   }
 
   return {
-    propertyDefinitions: definitions.map(definition => ({
+    propertyDefinitions: definitions.map((definition) => ({
       ...definition,
       options: optionsByDefinition.get(definition.id) ?? [],
     })),
   };
 }
 
-async function getOrganizationPropertyDefinitionsCount({ organizationId, db }: { organizationId: string; db: Database }) {
+async function getOrganizationPropertyDefinitionsCount({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
   const [result] = await db
     .select({ count: count() })
     .from(customPropertyDefinitionsTable)
@@ -77,7 +96,15 @@ async function getOrganizationPropertyDefinitionsCount({ organizationId, db }: {
   return { count: result?.count ?? 0 };
 }
 
-async function getPropertyDefinitionById({ propertyDefinitionId, organizationId, db }: { propertyDefinitionId: string; organizationId: string; db: Database }) {
+async function getPropertyDefinitionById({
+  propertyDefinitionId,
+  organizationId,
+  db,
+}: {
+  propertyDefinitionId: string;
+  organizationId: string;
+  db: Database;
+}) {
   const [definition] = await db
     .select()
     .from(customPropertyDefinitionsTable)
@@ -106,7 +133,10 @@ async function getPropertyDefinitionById({ propertyDefinitionId, organizationId,
   };
 }
 
-async function createPropertyDefinition({ definition, db }: {
+async function createPropertyDefinition({
+  definition,
+  db,
+}: {
   definition: {
     organizationId: string;
     name: string;
@@ -170,12 +200,14 @@ async function updatePropertyDefinition({
   const [result, error] = await safely(
     db
       .update(customPropertyDefinitionsTable)
-      .set(omitUndefined({
-        name,
-        key: isDefined(name) ? generatePropertyKey({ name }) : undefined,
-        description,
-        displayOrder,
-      }))
+      .set(
+        omitUndefined({
+          name,
+          key: isDefined(name) ? generatePropertyKey({ name }) : undefined,
+          description,
+          displayOrder,
+        }),
+      )
       .where(
         and(
           eq(customPropertyDefinitionsTable.id, propertyDefinitionId),
@@ -207,7 +239,15 @@ async function updatePropertyDefinition({
   return { propertyDefinition };
 }
 
-async function deletePropertyDefinition({ propertyDefinitionId, organizationId, db }: { propertyDefinitionId: string; organizationId: string; db: Database }) {
+async function deletePropertyDefinition({
+  propertyDefinitionId,
+  organizationId,
+  db,
+}: {
+  propertyDefinitionId: string;
+  organizationId: string;
+  db: Database;
+}) {
   await db
     .delete(customPropertyDefinitionsTable)
     .where(
@@ -218,7 +258,13 @@ async function deletePropertyDefinition({ propertyDefinitionId, organizationId, 
     );
 }
 
-async function getDocumentCustomPropertyValues({ documentId, db }: { documentId: string; db: Database }) {
+async function getDocumentCustomPropertyValues({
+  documentId,
+  db,
+}: {
+  documentId: string;
+  db: Database;
+}) {
   const relatedDocAlias = alias(documentsTable, 'related_doc');
 
   const values = await db
@@ -255,18 +301,54 @@ async function getDocumentCustomPropertyValues({ documentId, db }: { documentId:
       },
     })
     .from(documentCustomPropertyValuesTable)
-    .innerJoin(customPropertyDefinitionsTable, eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id))
-    .leftJoin(customPropertySelectOptionsTable, eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id))
+    .innerJoin(
+      customPropertyDefinitionsTable,
+      eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id),
+    )
+    .leftJoin(
+      customPropertySelectOptionsTable,
+      eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id),
+    )
     .leftJoin(usersTable, eq(documentCustomPropertyValuesTable.userId, usersTable.id))
-    .leftJoin(relatedDocAlias, eq(documentCustomPropertyValuesTable.relatedDocumentId, relatedDocAlias.id))
+    .leftJoin(
+      relatedDocAlias,
+      eq(documentCustomPropertyValuesTable.relatedDocumentId, relatedDocAlias.id),
+    )
     .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
 
   return { values };
 }
 
-async function getCustomPropertyValuesByDocumentIds({ documentIds, db }: { documentIds: string[]; db: Database }) {
+async function getCustomPropertyValuesByDocumentIds({
+  documentIds,
+  db,
+}: {
+  documentIds: string[];
+  db: Database;
+}) {
   if (documentIds.length === 0) {
-    return { valuesByDocumentId: {} as Record<string, { value: { id: string; propertyDefinitionId: string; textValue: string | null; numberValue: number | null; dateValue: Date | null; booleanValue: boolean | null; selectOptionId: string | null; userId: string | null; relatedDocumentId: string | null }; definition: { id: string; name: string; key: string; type: string }; option: { id: string; name: string } | null; relatedUser: { id: string; name: string | null; email: string } | null; relatedDocument: { id: string; name: string } | null }[]> };
+    return {
+      valuesByDocumentId: {} as Record<
+        string,
+        {
+          value: {
+            id: string;
+            propertyDefinitionId: string;
+            textValue: string | null;
+            numberValue: number | null;
+            dateValue: Date | null;
+            booleanValue: boolean | null;
+            selectOptionId: string | null;
+            userId: string | null;
+            relatedDocumentId: string | null;
+          };
+          definition: { id: string; name: string; key: string; type: string };
+          option: { id: string; name: string } | null;
+          relatedUser: { id: string; name: string | null; email: string } | null;
+          relatedDocument: { id: string; name: string } | null;
+        }[]
+      >,
+    };
   }
 
   const relatedDocAlias = alias(documentsTable, 'related_doc');
@@ -306,13 +388,31 @@ async function getCustomPropertyValuesByDocumentIds({ documentIds, db }: { docum
       },
     })
     .from(documentCustomPropertyValuesTable)
-    .innerJoin(customPropertyDefinitionsTable, eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id))
-    .leftJoin(customPropertySelectOptionsTable, eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id))
+    .innerJoin(
+      customPropertyDefinitionsTable,
+      eq(documentCustomPropertyValuesTable.propertyDefinitionId, customPropertyDefinitionsTable.id),
+    )
+    .leftJoin(
+      customPropertySelectOptionsTable,
+      eq(documentCustomPropertyValuesTable.selectOptionId, customPropertySelectOptionsTable.id),
+    )
     .leftJoin(usersTable, eq(documentCustomPropertyValuesTable.userId, usersTable.id))
-    .leftJoin(relatedDocAlias, eq(documentCustomPropertyValuesTable.relatedDocumentId, relatedDocAlias.id))
+    .leftJoin(
+      relatedDocAlias,
+      eq(documentCustomPropertyValuesTable.relatedDocumentId, relatedDocAlias.id),
+    )
     .where(inArray(documentCustomPropertyValuesTable.documentId, documentIds));
 
-  const valuesByDocumentId: Record<string, { value: typeof rows[0]['value']; definition: typeof rows[0]['definition']; option: typeof rows[0]['option']; relatedUser: typeof rows[0]['relatedUser']; relatedDocument: typeof rows[0]['relatedDocument'] }[]> = {};
+  const valuesByDocumentId: Record<
+    string,
+    {
+      value: (typeof rows)[0]['value'];
+      definition: (typeof rows)[0]['definition'];
+      option: (typeof rows)[0]['option'];
+      relatedUser: (typeof rows)[0]['relatedUser'];
+      relatedDocument: (typeof rows)[0]['relatedDocument'];
+    }[]
+  > = {};
 
   for (const { documentId, ...rest } of rows) {
     (valuesByDocumentId[documentId] ??= []).push(rest);
@@ -321,7 +421,12 @@ async function getCustomPropertyValuesByDocumentIds({ documentIds, db }: { docum
   return { valuesByDocumentId };
 }
 
-async function setDocumentCustomPropertyValue({ documentId, propertyDefinitionId, values, db }: {
+async function setDocumentCustomPropertyValue({
+  documentId,
+  propertyDefinitionId,
+  values,
+  db,
+}: {
   documentId: string;
   propertyDefinitionId: string;
   values: {
@@ -345,17 +450,25 @@ async function setDocumentCustomPropertyValue({ documentId, propertyDefinitionId
     );
 
   if (values.length > 0) {
-    await db
-      .insert(documentCustomPropertyValuesTable)
-      .values(values.map(v => ({
+    await db.insert(documentCustomPropertyValuesTable).values(
+      values.map((v) => ({
         documentId,
         propertyDefinitionId,
         ...v,
-      })));
+      })),
+    );
   }
 }
 
-async function deleteDocumentCustomPropertyValue({ documentId, propertyDefinitionId, db }: { documentId: string; propertyDefinitionId: string; db: Database }) {
+async function deleteDocumentCustomPropertyValue({
+  documentId,
+  propertyDefinitionId,
+  db,
+}: {
+  documentId: string;
+  propertyDefinitionId: string;
+  db: Database;
+}) {
   await db
     .delete(documentCustomPropertyValuesTable)
     .where(

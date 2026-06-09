@@ -7,30 +7,31 @@ import { Button } from '../components/button';
 export const SettingsLayout: ParentComponent = (props) => {
   const { t } = useI18n();
 
-  const getMainMenuItems = () => [{
-    items: [
-      {
-        label: t('layout.menu.account'),
-        icon: 'i-tabler-user',
-        href: '/settings',
-      },
-      {
-        label: t('layout.menu.api-keys'),
-        icon: 'i-tabler-key',
-        href: '/api-keys',
-      },
-      {
-        label: t('layout.menu.invitations'),
-        icon: 'i-tabler-mail',
-        href: '/invitations',
-      },
-    ],
-  }];
+  const getMainMenuItems = () => [
+    {
+      items: [
+        {
+          label: t('layout.menu.account'),
+          icon: 'i-tabler-user',
+          href: '/settings',
+        },
+        {
+          label: t('layout.menu.api-keys'),
+          icon: 'i-tabler-key',
+          href: '/api-keys',
+        },
+        {
+          label: t('layout.menu.invitations'),
+          icon: 'i-tabler-mail',
+          href: '/invitations',
+        },
+      ],
+    },
+  ];
 
   return (
     <div class="flex flex-row h-screen min-h-0">
       <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
-
         <SideNav
           mainMenu={getMainMenuItems()}
           header={() => (
@@ -38,17 +39,12 @@ export const SettingsLayout: ParentComponent = (props) => {
               <Button variant="ghost" size="icon" class="text-muted-foreground" as={A} href="/">
                 <div class="i-tabler-arrow-left size-5" />
               </Button>
-              <h1 class="text-lg font-bold">
-                {t('layout.menu.settings')}
-              </h1>
+              <h1 class="text-lg font-bold">{t('layout.menu.settings')}</h1>
             </div>
           )}
         />
-
       </div>
-      <div class="flex-1 min-h-0 flex flex-col">
-        {props.children}
-      </div>
+      <div class="flex-1 min-h-0 flex flex-col">{props.children}</div>
     </div>
   );
 };

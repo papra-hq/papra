@@ -3,16 +3,19 @@ import type { ConfigDefinition, ConfigDefinitionElement } from 'figue';
 import { configDefinition } from '../../papra-server/src/modules/config/config';
 import { renderMarkdown } from './markdown';
 
-function walk(configDefinition: ConfigDefinition, path: string[] = []): (ConfigDefinitionElement & { path: string[] })[] {
-  return Object
-    .entries(configDefinition)
-    .flatMap(([key, value]) => {
-      if ('schema' in value) {
-        return [{ ...value, path: [...path, key] }] as (ConfigDefinitionElement & { path: string[] })[];
-      }
+function walk(
+  configDefinition: ConfigDefinition,
+  path: string[] = [],
+): (ConfigDefinitionElement & { path: string[] })[] {
+  return Object.entries(configDefinition).flatMap(([key, value]) => {
+    if ('schema' in value) {
+      return [{ ...value, path: [...path, key] }] as (ConfigDefinitionElement & {
+        path: string[];
+      })[];
+    }
 
-      return walk(value, [...path, key]);
-    });
+    return walk(value, [...path, key]);
+  });
 }
 
 const configDetails = walk(configDefinition);
@@ -28,7 +31,12 @@ function formatDoc(doc: string | undefined): string {
 }
 
 function getIsEmptyDefaultValue(defaultValue: unknown): boolean {
-  return defaultValue === undefined || defaultValue === null || defaultValue === '' || (Array.isArray(defaultValue) && defaultValue.length === 0);
+  return (
+    defaultValue === undefined ||
+    defaultValue === null ||
+    defaultValue === '' ||
+    (Array.isArray(defaultValue) && defaultValue.length === 0)
+  );
 }
 
 const rows = configDetails
@@ -39,7 +47,8 @@ const rows = configDetails
     const rawDocumentation = formatDoc(doc);
 
     // The client baseUrl default value is overridden in the Dockerfiles
-    const defaultOverride = path.join('.') === 'client.baseUrl' ? 'http://localhost:1221' : undefined;
+    const defaultOverride =
+      path.join('.') === 'client.baseUrl' ? 'http://localhost:1221' : undefined;
 
     return {
       path,
@@ -49,21 +58,23 @@ const rows = configDetails
     };
   });
 
-const mdSections = rows.map(({ documentation, env, path, defaultValue }) => {
-  const envs = Array.isArray(env) ? env : [env];
-  const [firstEnv, ...restEnvs] = envs;
+const mdSections = rows
+  .map(({ documentation, env, path, defaultValue }) => {
+    const envs = Array.isArray(env) ? env : [env];
+    const [firstEnv, ...restEnvs] = envs;
 
-  return `
+    return `
 ### ${firstEnv}
 ${documentation}
 
 - Path: \`${path.join('.')}\`
-- Environment variable: \`${firstEnv}\` ${restEnvs.length ? `, with fallback to: ${restEnvs.map(e => `\`${e}\``).join(', ')}` : ''}
+- Environment variable: \`${firstEnv}\` ${restEnvs.length ? `, with fallback to: ${restEnvs.map((e) => `\`${e}\``).join(', ')}` : ''}
 - Default value: \`${defaultValue}\`
 
 
 `.trim();
-}).join('\n\n---\n\n');
+  })
+  .join('\n\n---\n\n');
 
 function wrapText(text: string, maxLength = 75) {
   const words = text.split(' ');
@@ -83,19 +94,21 @@ function wrapText(text: string, maxLength = 75) {
     lines.push(currentLine);
   }
 
-  return lines.map(line => `# ${line}`);
+  return lines.map((line) => `# ${line}`);
 }
 
-const fullDotEnv = rows.map(({ env, defaultValue, documentation }) => {
-  const isEmptyDefaultValue = getIsEmptyDefaultValue(defaultValue);
-  const envs = Array.isArray(env) ? env : [env];
-  const [firstEnv] = envs;
+const fullDotEnv = rows
+  .map(({ env, defaultValue, documentation }) => {
+    const isEmptyDefaultValue = getIsEmptyDefaultValue(defaultValue);
+    const envs = Array.isArray(env) ? env : [env];
+    const [firstEnv] = envs;
 
-  return [
-    ...wrapText(documentation),
-    `# ${firstEnv}=${isEmptyDefaultValue ? '' : defaultValue}`,
-  ].join('\n');
-}).join('\n\n');
+    return [
+      ...wrapText(documentation),
+      `# ${firstEnv}=${isEmptyDefaultValue ? '' : defaultValue}`,
+    ].join('\n');
+  })
+  .join('\n\n');
 
 const sectionsHtml = renderMarkdown(mdSections);
 

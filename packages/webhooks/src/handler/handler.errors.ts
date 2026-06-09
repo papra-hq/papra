@@ -1,10 +1,7 @@
 export function createInvalidSignatureError() {
-  return Object.assign(
-    new Error('[Papra Webhooks] Invalid signature'),
-    {
-      code: 'webhook.invalid_signature',
-    },
-  );
+  return Object.assign(new Error('[Papra Webhooks] Invalid signature'), {
+    code: 'webhook.invalid_signature',
+  });
 }
 
 export function createUnsupportedSignatureVersionError() {

@@ -24,17 +24,13 @@ export const LanguageSwitcher: Component = () => {
   return (
     <DropdownMenuRadioGroup value={getLocale()} onChange={setLocale}>
       <For each={locales}>
-        {locale => (
+        {(locale) => (
           <DropdownMenuRadioItem value={locale.key} disabled={getLocale() === locale.key}>
             <span translate="no" lang={getLocale() === locale.key ? undefined : locale.key}>
               {locale.name}
             </span>
             <Show when={getLocale() !== locale.key}>
-              <span class="text-muted-foreground pl-1">
-                (
-                {languageName.of(locale.key)}
-                )
-              </span>
+              <span class="text-muted-foreground pl-1">({languageName.of(locale.key)})</span>
             </Show>
           </DropdownMenuRadioItem>
         )}
@@ -58,14 +54,12 @@ export const SidenavLayout: ParentComponent<{
     <div class="flex flex-row h-screen min-h-0">
       <div class="w-280px border-r border-r-border  flex-shrink-0 hidden lg:block bg-card">
         <props.sideNav />
-
       </div>
 
       <div class="flex-1 min-h-0 flex flex-col">
         <UsageWarningCard organizationId={params.organizationId} />
 
         <div class="flex justify-between px-6 pt-4">
-
           <div class="flex items-center">
             <Sheet>
               <SheetTrigger>
@@ -79,7 +73,11 @@ export const SidenavLayout: ParentComponent<{
             </Sheet>
 
             {(props.showSearch ?? true) && (
-              <Button variant="outline" class="lg:min-w-64  justify-start" onClick={openCommandPalette}>
+              <Button
+                variant="outline"
+                class="lg:min-w-64  justify-start"
+                onClick={openCommandPalette}
+              >
                 <div class="i-tabler-search size-4 mr-2" />
                 {t('layout.search.placeholder')}
               </Button>
@@ -87,13 +85,10 @@ export const SidenavLayout: ParentComponent<{
           </div>
 
           <div class="flex items-center gap-2">
-
             <GlobalDropArea onFilesDrop={uploadDocuments} />
             <Button onClick={promptImport}>
               <div class="i-tabler-upload size-4" />
-              <span class="hidden sm:inline ml-2">
-                {t('layout.menu.import-document')}
-              </span>
+              <span class="hidden sm:inline ml-2">{t('layout.menu.import-document')}</span>
             </Button>
 
             <Show when={hasPermission('bo:access')}>
@@ -104,17 +99,12 @@ export const SidenavLayout: ParentComponent<{
             </Show>
 
             <UserSettingsDropdown class="hidden sm:flex" />
-
           </div>
         </div>
         <div class="flex-1 overflow-auto max-w-screen">
-          <Suspense>
-            {props.children}
-
-          </Suspense>
+          <Suspense>{props.children}</Suspense>
         </div>
       </div>
-
     </div>
   );
 };

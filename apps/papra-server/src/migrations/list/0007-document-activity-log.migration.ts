@@ -24,8 +24,6 @@ export const documentActivityLogMigration = {
   },
 
   down: async ({ db }) => {
-    await db.batch([
-      db.run(sql`DROP TABLE IF EXISTS "document_activity_log"`),
-    ]);
+    await db.batch([db.run(sql`DROP TABLE IF EXISTS "document_activity_log"`)]);
   },
 } satisfies Migration;

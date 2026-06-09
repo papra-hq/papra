@@ -15,7 +15,9 @@ describe('api-keys.schemas', () => {
     });
 
     test('accepts all known permissions', () => {
-      expect(v.parse(apiKeyPermissionsSchema, API_KEY_PERMISSIONS_VALUES)).toEqual(API_KEY_PERMISSIONS_VALUES);
+      expect(v.parse(apiKeyPermissionsSchema, API_KEY_PERMISSIONS_VALUES)).toEqual(
+        API_KEY_PERMISSIONS_VALUES,
+      );
     });
 
     test('rejects an empty array', () => {

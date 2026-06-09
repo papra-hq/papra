@@ -35,7 +35,7 @@ const UsageCardLine: Component<{
         <div class="font-medium leading-none">{props.title}</div>
         <div class="text-sm text-muted-foreground">{props.description}</div>
       </div>
-      <div class="text-muted-foreground leading-none">{ `${formatValue(props.used)} / ${props.limit === null ? t('organization.usage.unlimited') : formatValue(props.limit)}${props.limit ? ` - ${percentage().toFixed(2)}%` : ''}`}</div>
+      <div class="text-muted-foreground leading-none">{`${formatValue(props.used)} / ${props.limit === null ? t('organization.usage.unlimited') : formatValue(props.limit)}${props.limit ? ` - ${percentage().toFixed(2)}%` : ''}`}</div>
     </div>
   );
 };
@@ -53,15 +53,11 @@ export const OrganizationUsagePage: Component = () => {
     <div class="p-6 mt-10 pb-32 mx-auto max-w-screen-md w-full">
       <Suspense>
         <Show when={query.data}>
-          {getData => (
+          {(getData) => (
             <>
-              <h1 class="text-xl font-semibold mb-2">
-                {t('organization.usage.page.title')}
-              </h1>
+              <h1 class="text-xl font-semibold mb-2">{t('organization.usage.page.title')}</h1>
 
-              <p class="text-muted-foreground mb-6">
-                {t('organization.usage.page.description')}
-              </p>
+              <p class="text-muted-foreground mb-6">{t('organization.usage.page.description')}</p>
 
               <Card>
                 <CardContent class="pt-6 flex flex-col gap-4">
@@ -70,7 +66,7 @@ export const OrganizationUsagePage: Component = () => {
                     description={t('organization.usage.storage.description')}
                     used={getData().usage.documentsStorage.used}
                     limit={getData().usage.documentsStorage.limit}
-                    formatValue={bytes => formatBytes({ bytes, base: 1000 })}
+                    formatValue={(bytes) => formatBytes({ bytes, base: 1000 })}
                   />
 
                   <Separator />
@@ -90,7 +86,6 @@ export const OrganizationUsagePage: Component = () => {
                     used={getData().usage.membersCount.used}
                     limit={getData().usage.membersCount.limit}
                   />
-
                 </CardContent>
               </Card>
             </>

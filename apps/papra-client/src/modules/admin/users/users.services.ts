@@ -4,7 +4,15 @@ import { apiClient } from '@/modules/shared/http/api-client';
 
 export type UserWithOrganizationCount = User & { organizationCount: number };
 
-export async function listUsers({ search, pageIndex = 0, pageSize = 25 }: { search?: string; pageIndex?: number; pageSize?: number }) {
+export async function listUsers({
+  search,
+  pageIndex = 0,
+  pageSize = 25,
+}: {
+  search?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}) {
   const { totalCount, users } = await apiClient<{
     users: UserWithOrganizationCount[];
     totalCount: number;

@@ -44,13 +44,7 @@ export function ImagePreviewCarousel({ imageUris }: ImagePreviewCarouselProps) {
       {imageUris.length > 1 && (
         <View style={styles.dotsContainer}>
           {imageUris.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                index === activeIndex && styles.dotActive,
-              ]}
-            />
+            <View key={index} style={[styles.dot, index === activeIndex && styles.dotActive]} />
           ))}
         </View>
       )}

@@ -6,7 +6,14 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { PLUS_PLAN_ID, PRO_PLAN_ID } from '@/modules/plans/plans.constants';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/modules/ui/components/dialog';
 import { getCheckoutUrl } from '../subscriptions.services';
 
 // Hardcoded global reduction configuration, will be replaced by a dynamic configuration later
@@ -52,9 +59,14 @@ const PlanCard: Component<PlanCardProps> = (props) => {
     {
       icon: 'i-tabler-mail',
       title: t('subscriptions.features.email-intakes'),
-      value: props.features.emailIntakes === 1
-        ? t('subscriptions.features.email-intakes-count-singular', { count: props.features.emailIntakes })
-        : t('subscriptions.features.email-intakes-count-plural', { count: props.features.emailIntakes }),
+      value:
+        props.features.emailIntakes === 1
+          ? t('subscriptions.features.email-intakes-count-singular', {
+              count: props.features.emailIntakes,
+            })
+          : t('subscriptions.features.email-intakes-count-plural', {
+              count: props.features.emailIntakes,
+            }),
     },
     {
       icon: 'i-tabler-file-upload',
@@ -77,12 +89,15 @@ const PlanCard: Component<PlanCardProps> = (props) => {
     setIsUpgradeLoading(false);
   };
 
-  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) => globalReduction.enabled && now < globalReduction.untilDate;
-  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) => getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
+  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) =>
+    globalReduction.enabled && now < globalReduction.untilDate;
+  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) =>
+    getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
 
   const getMonthlyPrice = ({ now = new Date() }: { now?: Date } = {}) => {
     const multiplier = getReductionMultiplier({ now });
-    const basePrice = props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice;
+    const basePrice =
+      props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice;
 
     return Math.round(100 * basePrice * multiplier) / 100;
   };
@@ -94,37 +109,48 @@ const PlanCard: Component<PlanCardProps> = (props) => {
 
   return (
     <div class="border rounded-xl">
-
       <div class="p-6">
         <div class="text-sm font-medium text-muted-foreground flex items-center gap-2 justify-between mb-1">
           <span class="min-h-24px">{props.name}</span>
-          {getIsReductionActive() && props.annualPrice > 0 && <div class="text-xs font-medium text-primary bg-primary/10 rounded-md px-2 py-1">{`-${100 * (1 - getReductionMultiplier())}%`}</div>}
+          {getIsReductionActive() && props.annualPrice > 0 && (
+            <div class="text-xs font-medium text-primary bg-primary/10 rounded-md px-2 py-1">{`-${100 * (1 - getReductionMultiplier())}%`}</div>
+          )}
         </div>
 
         {getIsReductionActive() && props.annualPrice > 0 && (
-          <span class="text-lg text-muted-foreground relative after:(content-[''] absolute left--5px right--5px top-1/2 h-2px bg-muted-foreground/40 rounded-full -rotate-12 origin-center)">{`$${(props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice)}`}</span>
+          <span class="text-lg text-muted-foreground relative after:(content-[''] absolute left--5px right--5px top-1/2 h-2px bg-muted-foreground/40 rounded-full -rotate-12 origin-center)">{`$${props.billingInterval === 'annual' ? props.annualPrice / 12 : props.monthlyPrice}`}</span>
         )}
         <div class="flex items-baseline gap-1">
           <span class="text-4xl font-semibold">{`$${getMonthlyPrice()}`}</span>
-          <span class="text-sm text-muted-foreground">{t('subscriptions.upgrade-dialog.per-month')}</span>
+          <span class="text-sm text-muted-foreground">
+            {t('subscriptions.upgrade-dialog.per-month')}
+          </span>
         </div>
 
-        {
-          props.annualPrice > 0 && (
-            <div class="overflow-hidden transition-all duration-300" style={{ 'max-height': props.billingInterval === 'annual' ? '24px' : '0px', 'opacity': props.billingInterval === 'annual' ? '1' : '0' }}>
-              <span class="text-xs text-muted-foreground">{t('subscriptions.upgrade-dialog.billed-annually', { price: getAnnualPrice() })}</span>
-            </div>
-          )
-        }
+        {props.annualPrice > 0 && (
+          <div
+            class="overflow-hidden transition-all duration-300"
+            style={{
+              'max-height': props.billingInterval === 'annual' ? '24px' : '0px',
+              'opacity': props.billingInterval === 'annual' ? '1' : '0',
+            }}
+          >
+            <span class="text-xs text-muted-foreground">
+              {t('subscriptions.upgrade-dialog.billed-annually', { price: getAnnualPrice() })}
+            </span>
+          </div>
+        )}
 
         <hr class="my-6" />
 
         <div class="flex flex-col gap-3 ">
           <For each={featureItems}>
-            {feature => (
+            {(feature) => (
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                  <div class={`p-1.5 rounded-lg ${props.isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                  <div
+                    class={`p-1.5 rounded-lg ${props.isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}
+                  >
                     <div class={`size-5 ${feature.icon}`} />
                   </div>
                   <div>
@@ -137,7 +163,7 @@ const PlanCard: Component<PlanCardProps> = (props) => {
           </For>
         </div>
 
-        { props.onUpgrade && (
+        {props.onUpgrade && (
           <>
             <hr class="my-6" />
 
@@ -161,10 +187,13 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   const { t } = useI18n();
   const [getIsOpen, setIsOpen] = createSignal(false);
   const defaultBillingInterval: BillingInterval = 'annual';
-  const [getBillingInterval, setBillingInterval] = createSignal<BillingInterval>(defaultBillingInterval);
+  const [getBillingInterval, setBillingInterval] =
+    createSignal<BillingInterval>(defaultBillingInterval);
 
-  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) => globalReduction.enabled && now < globalReduction.untilDate;
-  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) => getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
+  const getIsReductionActive = ({ now = new Date() }: { now?: Date } = {}) =>
+    globalReduction.enabled && now < globalReduction.untilDate;
+  const getReductionMultiplier = ({ now = new Date() }: { now?: Date } = {}) =>
+    getIsReductionActive({ now }) ? globalReduction.multiplier : 1;
   const getReductionPercent = () => 100 * (1 - getReductionMultiplier());
   const getDaysUntilReductionExpiry = ({ now = new Date() }: { now?: Date } = {}) => {
     if (!getIsReductionActive({ now })) {
@@ -175,7 +204,11 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
   };
 
   const onUpgrade = async (planId: string) => {
-    const { checkoutUrl } = await getCheckoutUrl({ organizationId: props.organizationId, planId, billingInterval: getBillingInterval() });
+    const { checkoutUrl } = await getCheckoutUrl({
+      organizationId: props.organizationId,
+      planId,
+      billingInterval: getBillingInterval(),
+    });
     window.location.href = checkoutUrl;
   };
 
@@ -232,7 +265,9 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
                 <div class="i-tabler-sparkles size-7 text-primary" />
               </div>
               <div>
-                <DialogTitle class="text-xl mb-0">{t('subscriptions.upgrade-dialog.title')}</DialogTitle>
+                <DialogTitle class="text-xl mb-0">
+                  {t('subscriptions.upgrade-dialog.title')}
+                </DialogTitle>
                 <DialogDescription class="text-sm text-muted-foreground">
                   {t('subscriptions.upgrade-dialog.description')}
                 </DialogDescription>
@@ -244,7 +279,10 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'monthly' })}
+                  class={cn('text-sm', {
+                    'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)':
+                      getBillingInterval() === 'monthly',
+                  })}
                   onClick={() => setBillingInterval('monthly')}
                 >
                   {t('subscriptions.billing-interval.monthly')}
@@ -252,7 +290,10 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
                 <Button
                   size="sm"
                   variant="ghost"
-                  class={cn('text-sm', { 'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)': getBillingInterval() === 'annual' })}
+                  class={cn('text-sm', {
+                    'bg-primary/10 text-primary hover:(bg-primary/10 text-primary)':
+                      getBillingInterval() === 'annual',
+                  })}
                   onClick={() => setBillingInterval('annual')}
                 >
                   {t('subscriptions.billing-interval.annual')}
@@ -270,13 +311,16 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
               </div>
               <div class="flex-1">
                 <div class="flex items-center gap-2">
-                  <h4 class="text-base font-semibold text-foreground">{t('subscriptions.upgrade-dialog.promo-banner.title')}</h4>
-                  <div class="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-md">
-                    {`-${getReductionPercent()}%`}
-                  </div>
+                  <h4 class="text-base font-semibold text-foreground">
+                    {t('subscriptions.upgrade-dialog.promo-banner.title')}
+                  </h4>
+                  <div class="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-md">{`-${getReductionPercent()}%`}</div>
                 </div>
                 <p class="text-sm text-muted-foreground mb-1">
-                  {t('subscriptions.upgrade-dialog.promo-banner.description', { percent: getReductionPercent(), days: getDaysUntilReductionExpiry() })}
+                  {t('subscriptions.upgrade-dialog.promo-banner.description', {
+                    percent: getReductionPercent(),
+                    days: getDaysUntilReductionExpiry(),
+                  })}
                 </p>
               </div>
             </div>
@@ -285,13 +329,22 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
 
         <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
           <PlanCard {...currentPlan} billingInterval={getBillingInterval()} />
-          <PlanCard {...plusPlan} onUpgrade={() => onUpgrade(PLUS_PLAN_ID)} billingInterval={getBillingInterval()} />
-          <PlanCard {...proPlan} onUpgrade={() => onUpgrade(PRO_PLAN_ID)} billingInterval={getBillingInterval()} />
+          <PlanCard
+            {...plusPlan}
+            onUpgrade={() => onUpgrade(PLUS_PLAN_ID)}
+            billingInterval={getBillingInterval()}
+          />
+          <PlanCard
+            {...proPlan}
+            onUpgrade={() => onUpgrade(PRO_PLAN_ID)}
+            billingInterval={getBillingInterval()}
+          />
         </div>
 
         <p class="text-muted-foreground text-xs text-center mt-2">
-          <a href="https://papra.app/contact" class="underline" target="_blank" rel="noreferrer">{t('subscriptions.upgrade-dialog.contact-us')}</a>
-          {' '}
+          <a href="https://papra.app/contact" class="underline" target="_blank" rel="noreferrer">
+            {t('subscriptions.upgrade-dialog.contact-us')}
+          </a>{' '}
           {t('subscriptions.upgrade-dialog.enterprise-plans')}
         </p>
       </DialogContent>

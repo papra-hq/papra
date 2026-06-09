@@ -6,7 +6,15 @@ import { isNil } from '../../shared/utils';
 
 const logger = createLogger({ namespace: 'kv-store:tasks:purgeExpiredEntries' });
 
-export async function registerPurgeExpiredKvEntriesTask({ taskServices, kvStore, config }: { taskServices: TaskServices; kvStore: KvStore; config: Config }) {
+export async function registerPurgeExpiredKvEntriesTask({
+  taskServices,
+  kvStore,
+  config,
+}: {
+  taskServices: TaskServices;
+  kvStore: KvStore;
+  config: Config;
+}) {
   const taskName = 'purge-expired-kv-entries';
   const { cron, runOnStartup } = config.tasks.purgeExpiredKvEntries;
 
@@ -14,7 +22,9 @@ export async function registerPurgeExpiredKvEntriesTask({ taskServices, kvStore,
 
   // Drivers that evict eagerly (e.g. in-memory) don't accumulate expired entries, so there's nothing to purge.
   if (isNil(purgeExpired)) {
-    logger.debug('Kv-store driver does not require expired entry purging, skipping task registration');
+    logger.debug(
+      'Kv-store driver does not require expired entry purging, skipping task registration',
+    );
     return;
   }
 

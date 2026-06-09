@@ -13,8 +13,16 @@ function codeToKey(code: string): TranslationKeys {
   return `api-errors.${code}` as TranslationKeys;
 }
 
-export function useI18nApiErrors({ t = useI18n().t }: { t?: ReturnType<typeof useI18n>['t'] } = {}) {
-  const getErrorMessage = ({ error, defaultMessage = t('api-errors.default') }: { error: unknown; defaultMessage?: string }) => {
+export function useI18nApiErrors({
+  t = useI18n().t,
+}: { t?: ReturnType<typeof useI18n>['t'] } = {}) {
+  const getErrorMessage = ({
+    error,
+    defaultMessage = t('api-errors.default'),
+  }: {
+    error: unknown;
+    defaultMessage?: string;
+  }) => {
     const code = get(
       error,
       ['data', 'error', 'code'], // From fetch errors

@@ -3,13 +3,15 @@ import { apiClient } from '../shared/http/api-client';
 import { coerceDates } from '../shared/http/http-client.models';
 
 export async function fetchInvitations() {
-  const { invitations } = await apiClient<{ invitations: { id: string; organization: Organization }[] }>({
+  const { invitations } = await apiClient<{
+    invitations: { id: string; organization: Organization }[];
+  }>({
     path: '/api/invitations',
     method: 'GET',
   });
 
   return {
-    invitations: invitations.map(i => ({
+    invitations: invitations.map((i) => ({
       ...coerceDates(i),
       organization: coerceDates(i.organization),
     })),

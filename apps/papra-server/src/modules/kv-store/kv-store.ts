@@ -35,7 +35,10 @@ export function createKvStore({
 
           if (!parsed.success) {
             // Drop entries that no longer match the schema (e.g. shape changed between deploys) so they don't poison every future read.
-            logger.warn({ prefix, key, issues: parsed.issues }, 'Dropping kv entry that fails schema validation');
+            logger.warn(
+              { prefix, key, issues: parsed.issues },
+              'Dropping kv entry that fails schema validation',
+            );
             await driver.delete({ key: fullKey });
             return undefined;
           }
@@ -47,7 +50,10 @@ export function createKvStore({
           const parsed = v.safeParse(schema, value);
 
           if (!parsed.success) {
-            logger.error({ prefix, key, issues: parsed.issues }, 'Failed to set kv entry because value fails schema validation');
+            logger.error(
+              { prefix, key, issues: parsed.issues },
+              'Failed to set kv entry because value fails schema validation',
+            );
             throw createInvalidKvStoreValueError();
           }
 
@@ -57,7 +63,6 @@ export function createKvStore({
         delete: async (key) => {
           await driver.delete({ key: buildKey(key) });
         },
-
       };
     },
   };

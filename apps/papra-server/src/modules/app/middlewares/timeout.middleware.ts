@@ -41,13 +41,17 @@ export function createTimeoutMiddleware({ config }: { config: Config }) {
     let timerId: NodeJS.Timeout | undefined;
 
     const timeoutPromise = new Promise((_, reject) => {
-      timerId = setTimeout(() => reject(
-        createError({
-          code: 'api.timeout',
-          message: 'The request timed out',
-          statusCode: 504,
-        }),
-      ), timeoutMs);
+      timerId = setTimeout(
+        () =>
+          reject(
+            createError({
+              code: 'api.timeout',
+              message: 'The request timed out',
+              statusCode: 504,
+            }),
+          ),
+        timeoutMs,
+      );
     });
 
     try {

@@ -67,7 +67,8 @@ export const createOnlyPreviousOwnerCanRestoreError = createErrorFactory({
 });
 
 export const createOrganizationHasActiveSubscriptionError = createErrorFactory({
-  message: 'Cannot delete organization with an active subscription. Please cancel your subscription first.',
+  message:
+    'Cannot delete organization with an active subscription. Please cancel your subscription first.',
   code: 'organization.has_active_subscription',
   statusCode: 403,
 });

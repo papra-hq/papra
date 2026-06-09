@@ -6,7 +6,9 @@ describe('errors', () => {
     test('type guards to check if an error is a custom error', () => {
       expect(isCustomError(new Error('foo'))).to.eql(false);
       expect(isCustomError({ isCustomError: true })).to.eql(false);
-      expect(isCustomError(createError({ message: 'foo', code: 'bar', statusCode: 500 }))).to.eql(true);
+      expect(isCustomError(createError({ message: 'foo', code: 'bar', statusCode: 500 }))).to.eql(
+        true,
+      );
 
       expect(isCustomError('foo')).to.eql(false);
       expect(isCustomError(null)).to.eql(false);
@@ -39,41 +41,31 @@ describe('errors', () => {
     test('creates a factory function to create custom errors with an extendable base configuration', () => {
       const createFooError = createErrorFactory({ message: 'foo', code: 'bar', statusCode: 500 });
 
-      expect(
-        createFooError(),
-      ).to.includes({
+      expect(createFooError()).to.includes({
         message: 'foo',
         code: 'bar',
         statusCode: 500,
       });
 
-      expect(
-        createFooError({ message: 'baz' }),
-      ).to.includes({
+      expect(createFooError({ message: 'baz' })).to.includes({
         message: 'baz',
         code: 'bar',
         statusCode: 500,
       });
 
-      expect(
-        createFooError({ code: 'qux' }),
-      ).to.includes({
+      expect(createFooError({ code: 'qux' })).to.includes({
         message: 'foo',
         code: 'qux',
         statusCode: 500,
       });
 
-      expect(
-        createFooError({ statusCode: 400 }),
-      ).to.includes({
+      expect(createFooError({ statusCode: 400 })).to.includes({
         message: 'foo',
         code: 'bar',
         statusCode: 400,
       });
 
-      expect(
-        createFooError({ message: 'baz', code: 'qux', statusCode: 400 }),
-      ).to.includes({
+      expect(createFooError({ message: 'baz', code: 'qux', statusCode: 400 })).to.includes({
         message: 'baz',
         code: 'qux',
         statusCode: 400,
@@ -83,9 +75,7 @@ describe('errors', () => {
 
   describe('formatPublicError', () => {
     test('simple type safe helper to format an normalize an error for public consumption', () => {
-      expect(
-        formatPublicErrorPayload({ message: 'foo', code: 'bar' }),
-      ).to.eql({
+      expect(formatPublicErrorPayload({ message: 'foo', code: 'bar' })).to.eql({
         error: {
           message: 'foo',
           code: 'bar',

@@ -5,7 +5,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'auth.request-password-reset.title': 'Сброс пароля',
   'auth.request-password-reset.description': 'Введите адрес электронной почты для сброса пароля.',
-  'auth.request-password-reset.requested': 'Если такой адрес электронной почты существует, то мы отправим на него письмо для сброса пароля.',
+  'auth.request-password-reset.requested':
+    'Если такой адрес электронной почты существует, то мы отправим на него письмо для сброса пароля.',
   'auth.request-password-reset.back-to-login': 'Назад к авторизации',
   'auth.request-password-reset.form.email.label': 'Email',
   'auth.request-password-reset.form.email.placeholder': 'Пример: ada@papra.app',
@@ -20,14 +21,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.reset-password.form.new-password.label': 'Новый пароль',
   'auth.reset-password.form.new-password.placeholder': 'Пример: **********',
   'auth.reset-password.form.new-password.required': 'Введите новый пароль',
-  'auth.reset-password.form.new-password.min-length': 'Пароль должен быть не короче {{ minLength }} символов',
-  'auth.reset-password.form.new-password.max-length': 'Пароль должен быть короче {{ maxLength }} символов',
+  'auth.reset-password.form.new-password.min-length':
+    'Пароль должен быть не короче {{ minLength }} символов',
+  'auth.reset-password.form.new-password.max-length':
+    'Пароль должен быть короче {{ maxLength }} символов',
   'auth.reset-password.form.submit': 'Сбросить пароль',
 
   'auth.email-provider.open': 'Открыть {{ provider }}',
 
   'auth.login.title': 'Войти в Papra',
-  'auth.login.description': 'Введите email или войдите через соцсети, чтобы получить доступ к аккаунту Papra.',
+  'auth.login.description':
+    'Введите email или войдите через соцсети, чтобы получить доступ к аккаунту Papra.',
   'auth.login.login-with-provider': 'Войти с помощью {{ provider }}',
   'auth.login.no-account': 'Нет учётной записи?',
   'auth.login.register': 'Зарегистрируйтесь',
@@ -43,8 +47,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.form.submit': 'Войти',
 
   'auth.login.two-factor.title': 'Проверка второго фактора',
-  'auth.login.two-factor.description.totp': 'Введите 6-значный код из вашего приложения-аутентификатора.',
-  'auth.login.two-factor.description.backup-code': 'Введите один из резервных кодов для доступа к учётной записи.',
+  'auth.login.two-factor.description.totp':
+    'Введите 6-значный код из вашего приложения-аутентификатора.',
+  'auth.login.two-factor.description.backup-code':
+    'Введите один из резервных кодов для доступа к учётной записи.',
   'auth.login.two-factor.code.label.totp': 'Код из приложения',
   'auth.login.two-factor.code.label.backup-code': 'Резервный код',
   'auth.login.two-factor.code.placeholder.backup-code': 'Введите резервный код',
@@ -52,7 +58,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.login.two-factor.trust-device.label': 'Доверять этому устройству 30 дней',
   'auth.login.two-factor.back': 'Назад к авторизации',
   'auth.login.two-factor.submit': 'Подтвердить',
-  'auth.login.two-factor.verification-failed': 'Неверный код. Пожалуйста, проверьте его и повторите попытку.',
+  'auth.login.two-factor.verification-failed':
+    'Неверный код. Пожалуйста, проверьте его и повторите попытку.',
   'auth.login.two-factor.use-backup-code': 'Использовать резервный код',
   'auth.login.two-factor.use-totp': 'Использовать приложение-аутентификатор',
 
@@ -65,7 +72,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.have-account': 'Уже есть аккаунт?',
   'auth.register.login': 'Войти',
   'auth.register.registration-disabled.title': 'Регистрация отключена',
-  'auth.register.registration-disabled.description': 'Регистрация новых аккаунтов на этом сервере Papra временно закрыта. Войти могут только зарегистрированные пользователи. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с администратором.',
+  'auth.register.registration-disabled.description':
+    'Регистрация новых аккаунтов на этом сервере Papra временно закрыта. Войти могут только зарегистрированные пользователи. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с администратором.',
   'auth.register.form.email.label': 'Электронная почта',
   'auth.register.form.email.placeholder': 'Пример: ada@papra.app',
   'auth.register.form.email.required': 'Введите адрес электронной почты',
@@ -82,21 +90,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'auth.register.form.submit': 'Зарегистрироваться',
 
   'auth.email-validation-required.title': 'Подтвердите почту',
-  'auth.email-validation-required.description': 'На ваш адрес отправлено письмо с подтверждением. Пожалуйста, перейдите по ссылке в письме, чтобы подтвердить почту.',
+  'auth.email-validation-required.description':
+    'На ваш адрес отправлено письмо с подтверждением. Пожалуйста, перейдите по ссылке в письме, чтобы подтвердить почту.',
 
   'auth.email-verification.success.title': 'Электронная почта подтверждена',
-  'auth.email-verification.success.description': 'Адрес электронной почты был успешно подтверждён. Теперь вы можете войти в свой аккаунт.',
+  'auth.email-verification.success.description':
+    'Адрес электронной почты был успешно подтверждён. Теперь вы можете войти в свой аккаунт.',
   'auth.email-verification.success.login': 'Перейти к авторизации',
   'auth.email-verification.error.title': 'Не удалось подтвердить',
-  'auth.email-verification.error.description': 'Ссылка для подтверждения недействительна или срок её действия истёк. Пожалуйста, войдите в систему, чтобы отправить письмо повторно.',
+  'auth.email-verification.error.description':
+    'Ссылка для подтверждения недействительна или срок её действия истёк. Пожалуйста, войдите в систему, чтобы отправить письмо повторно.',
   'auth.email-verification.error.back': 'Назад к авторизации',
 
-  'auth.legal-links.description': 'Продолжая, вы подтверждаете, что принимаете {{ terms }} и соглашаетесь с {{ privacy }}.',
+  'auth.legal-links.description':
+    'Продолжая, вы подтверждаете, что принимаете {{ terms }} и соглашаетесь с {{ privacy }}.',
   'auth.legal-links.terms': 'Условия использования',
   'auth.legal-links.privacy': 'Политику конфиденциальности',
 
   'auth.no-auth-provider.title': 'Нет провайдера аутентификации',
-  'auth.no-auth-provider.description': 'На этом сервере Papra не включён ни один провайдер аутентификации. Обратитесь к администратору, чтобы включить их.',
+  'auth.no-auth-provider.description':
+    'На этом сервере Papra не включён ни один провайдер аутентификации. Обратитесь к администратору, чтобы включить их.',
 
   // User settings
 
@@ -119,7 +132,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.logout.button': 'Выйти',
 
   'user.settings.two-factor.title': 'Двухфакторная аутентификация',
-  'user.settings.two-factor.description': 'Добавьте дополнительный уровень безопасности для вашего аккаунта.',
+  'user.settings.two-factor.description':
+    'Добавьте дополнительный уровень безопасности для вашего аккаунта.',
   'user.settings.two-factor.status.enabled': 'Включено',
   'user.settings.two-factor.status.disabled': 'Отключено',
   'user.settings.two-factor.enable-button': 'Включить 2FA',
@@ -136,22 +150,26 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'user.settings.two-factor.setup-dialog.title': 'Настройка двухфакторной аутентификации',
   'user.settings.two-factor.setup-dialog.step1.title': 'Шаг 1: Отсканируйте QR-код',
-  'user.settings.two-factor.setup-dialog.step1.description': 'Отсканируйте QR-код ниже или вручную введите ключ настройки в приложение-аутентификатор.',
+  'user.settings.two-factor.setup-dialog.step1.description':
+    'Отсканируйте QR-код ниже или вручную введите ключ настройки в приложение-аутентификатор.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Скопировать ключ настройки',
   'user.settings.two-factor.setup-dialog.step2.title': 'Шаг 2: Проверьте код',
-  'user.settings.two-factor.setup-dialog.step2.description': 'Введите 6-значный код, сгенерированный приложением-аутентификатором, чтобы подтвердить и включить двухфакторную аутентификацию.',
+  'user.settings.two-factor.setup-dialog.step2.description':
+    'Введите 6-значный код, сгенерированный приложением-аутентификатором, чтобы подтвердить и включить двухфакторную аутентификацию.',
   'user.settings.two-factor.setup-dialog.cancel': 'Отмена',
   'user.settings.two-factor.setup-dialog.verify': 'Проверить и включить 2FA',
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Резервные коды',
-  'user.settings.two-factor.backup-codes-dialog.description': 'Сохраните эти резервные коды в безопасном месте. Вы можете использовать их для доступа к аккаунту, если потеряете доступ к приложению-аутентификатору.',
+  'user.settings.two-factor.backup-codes-dialog.description':
+    'Сохраните эти резервные коды в безопасном месте. Вы можете использовать их для доступа к аккаунту, если потеряете доступ к приложению-аутентификатору.',
   'user.settings.two-factor.backup-codes-dialog.copy': 'Скопировать резервные коды',
   'user.settings.two-factor.backup-codes-dialog.download': 'Скачать резервные коды',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'Я сохранил коды',
 
   'user.settings.two-factor.disable-dialog.title': 'Отключить двухфакторную аутентификацию',
-  'user.settings.two-factor.disable-dialog.description': 'Введите пароль, чтобы отключить 2FA. Ваш аккаунт будет менее защищённым.',
+  'user.settings.two-factor.disable-dialog.description':
+    'Введите пароль, чтобы отключить 2FA. Ваш аккаунт будет менее защищённым.',
   'user.settings.two-factor.disable-dialog.password.label': 'Пароль',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Введите пароль',
   'user.settings.two-factor.disable-dialog.password.required': 'Введите пароль',
@@ -159,7 +177,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'user.settings.two-factor.disable-dialog.submit': 'Отключить 2FA',
 
   'user.settings.two-factor.regenerate-dialog.title': 'Перегенерировать резервные коды',
-  'user.settings.two-factor.regenerate-dialog.description': 'Это сделает недействительными все существующие резервные коды и сгенерирует новые. Введите пароль, чтобы продолжить.',
+  'user.settings.two-factor.regenerate-dialog.description':
+    'Это сделает недействительными все существующие резервные коды и сгенерирует новые. Введите пароль, чтобы продолжить.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Пароль',
   'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Введите пароль',
   'user.settings.two-factor.regenerate-dialog.password.required': 'Введите пароль',
@@ -173,33 +192,41 @@ export const translations: Partial<TranslationsDictionary> = {
   // Organizations
 
   'organizations.list.title': 'Ваши организации',
-  'organizations.list.description': 'Организации — это способ группировки ваших документов и управления доступом к ним. Вы можете создать несколько организаций и пригласить членов команды для совместной работы.',
+  'organizations.list.description':
+    'Организации — это способ группировки ваших документов и управления доступом к ним. Вы можете создать несколько организаций и пригласить членов команды для совместной работы.',
   'organizations.list.create-new': 'Создать новую организацию',
   'organizations.list.back': 'Назад к организациям',
   'organizations.list.deleted.title': 'Удалённые организации',
-  'organizations.list.deleted.description': 'Удалённые организации хранятся {{ days }} дней перед окончательным удалением. Вы можете восстановить их в течение этого периода.',
+  'organizations.list.deleted.description':
+    'Удалённые организации хранятся {{ days }} дней перед окончательным удалением. Вы можете восстановить их в течение этого периода.',
   'organizations.list.deleted.empty': 'Нет удалённых организаций',
-  'organizations.list.deleted.empty-description': 'Когда вы удалите организацию, она появится здесь на {{ days }} дней перед окончательным удалением.',
+  'organizations.list.deleted.empty-description':
+    'Когда вы удалите организацию, она появится здесь на {{ days }} дней перед окончательным удалением.',
   'organizations.list.deleted.restore': 'Восстановить',
   'organizations.list.deleted.restore-success': 'Организация успешно восстановлена',
   'organizations.list.deleted.restore-confirm.title': 'Восстановить организацию',
-  'organizations.list.deleted.restore-confirm.message': 'Вы уверены, что хотите восстановить эту организацию? Она будет перемещена обратно в список ваших активных организаций.',
+  'organizations.list.deleted.restore-confirm.message':
+    'Вы уверены, что хотите восстановить эту организацию? Она будет перемещена обратно в список ваших активных организаций.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Восстановить организацию',
   'organizations.list.deleted.deleted-at': 'Удалено {{ date }}',
   'organizations.list.deleted.purge-at': 'Будет окончательно удалено {{ date }}',
-  'organizations.list.deleted.days-remaining': '({{ daysUntilPurge, =1:остался {daysUntilPurge} день, =2:осталось {daysUntilPurge} дня, осталось {daysUntilPurge} дней }})',
+  'organizations.list.deleted.days-remaining':
+    '({{ daysUntilPurge, =1:остался {daysUntilPurge} день, =2:осталось {daysUntilPurge} дня, осталось {daysUntilPurge} дней }})',
 
   'organizations.details.no-documents.title': 'Нет документов',
-  'organizations.details.no-documents.description': 'В этой организации пока нет документов. Загрузите первый документ.',
+  'organizations.details.no-documents.description':
+    'В этой организации пока нет документов. Загрузите первый документ.',
   'organizations.details.upload-documents': 'Загрузить документы',
   'organizations.details.documents-count': 'документов',
   'organizations.details.total-size': 'общий размер',
   'organizations.details.latest-documents': 'Последние импортированные документы',
 
   'organizations.create.title': 'Создать новую организацию',
-  'organizations.create.description': 'Ваши документы будут группироваться по организациям. Вы можете создать несколько организаций для разделения документов, например, для личных и рабочих документов.',
+  'organizations.create.description':
+    'Ваши документы будут группироваться по организациям. Вы можете создать несколько организаций для разделения документов, например, для личных и рабочих документов.',
   'organizations.create.back': 'Назад',
-  'organizations.create.error.max-count-reached': 'Вы достигли максимального количества организаций, которые можете создать. Если вам нужно создать больше, пожалуйста, свяжитесь со службой поддержки.',
+  'organizations.create.error.max-count-reached':
+    'Вы достигли максимального количества организаций, которые можете создать. Если вам нужно создать больше, пожалуйста, свяжитесь со службой поддержки.',
   'organizations.create.form.name.label': 'Название организации',
   'organizations.create.form.name.placeholder': 'Например: ООО «Рога и Копыта»',
   'organizations.create.form.name.required': 'Введите название организации',
@@ -207,7 +234,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.success': 'Организация успешно создана',
 
   'organizations.create-first.title': 'Создать организацию',
-  'organizations.create-first.description': 'Ваши документы будут группироваться по организациям. Вы можете создать несколько организаций для разделения документов, например, для личных и рабочих документов.',
+  'organizations.create-first.description':
+    'Ваши документы будут группироваться по организациям. Вы можете создать несколько организаций для разделения документов, например, для личных и рабочих документов.',
   'organizations.create-first.default-name': 'Моя организация',
   'organizations.create-first.user-name': 'Организация {{ name }}',
 
@@ -219,21 +247,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'organization.settings.name.placeholder': 'Например: ООО «Рога и Копыта»',
   'organization.settings.name.updated': 'Название организации обновлено',
   'organization.settings.subscription.title': 'Подписка',
-  'organization.settings.subscription.description': 'Управляйте счетами, платежами и способами оплаты.',
+  'organization.settings.subscription.description':
+    'Управляйте счетами, платежами и способами оплаты.',
   'organization.settings.subscription.manage': 'Управление подпиской',
   'organization.settings.subscription.error': 'Не удалось получить URL портала клиента',
   'organization.settings.delete.title': 'Удаление организации',
-  'organization.settings.delete.description': 'Удаление этой организации навсегда удалит все связанные с ней данные.',
+  'organization.settings.delete.description':
+    'Удаление этой организации навсегда удалит все связанные с ней данные.',
   'organization.settings.delete.confirm.title': 'Удаление организации',
-  'organization.settings.delete.confirm.message': 'Вы уверены, что хотите удалить эту организацию? Организация будет помечена для удаления и окончательно удалена через {{ days }} дней. В течение этого периода вы можете восстановить её из списка организаций. Все документы и данные будут окончательно удалены по истечении этого срока.',
+  'organization.settings.delete.confirm.message':
+    'Вы уверены, что хотите удалить эту организацию? Организация будет помечена для удаления и окончательно удалена через {{ days }} дней. В течение этого периода вы можете восстановить её из списка организаций. Все документы и данные будут окончательно удалены по истечении этого срока.',
   'organization.settings.delete.confirm.confirm-button': 'Удалить организацию',
   'organization.settings.delete.confirm.cancel-button': 'Отмена',
   'organization.settings.delete.success': 'Организация удалена',
   'organization.settings.delete.only-owner': 'Только владелец может удалить организацию.',
-  'organization.settings.delete.has-active-subscription': 'Невозможно удалить организацию с активной подпиской, пожалуйста, сначала отмените подписку выше.',
+  'organization.settings.delete.has-active-subscription':
+    'Невозможно удалить организацию с активной подпиской, пожалуйста, сначала отмените подписку выше.',
 
   'organization.usage.page.title': 'Статистика использования',
-  'organization.usage.page.description': 'Просмотр текущей статистики использования и лимитов вашей организации.',
+  'organization.usage.page.description':
+    'Просмотр текущей статистики использования и лимитов вашей организации.',
   'organization.usage.storage.title': 'Размер документов',
   'organization.usage.storage.description': 'Объём памяти, который занимают ваши документы',
   'organization.usage.intake-emails.title': 'Email для импорта',
@@ -245,14 +278,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.members.title': 'Участники',
   'organizations.members.description': 'Управление участниками вашей организации',
   'organizations.members.invite-member': 'Пригласить участника',
-  'organizations.members.invite-member-disabled-tooltip': 'Только администраторы или владельцы могут приглашать участников в организацию',
+  'organizations.members.invite-member-disabled-tooltip':
+    'Только администраторы или владельцы могут приглашать участников в организацию',
   'organizations.members.remove-from-organization': 'Удалить из организации',
   'organizations.members.role': 'Роль',
   'organizations.members.roles.owner': 'Владелец',
   'organizations.members.roles.admin': 'Администратор',
   'organizations.members.roles.member': 'Участник',
   'organizations.members.delete.confirm.title': 'Удалить участника',
-  'organizations.members.delete.confirm.message': 'Вы уверены, что хотите удалить этого участника из организации?',
+  'organizations.members.delete.confirm.message':
+    'Вы уверены, что хотите удалить этого участника из организации?',
   'organizations.members.delete.confirm.confirm-button': 'Удалить',
   'organizations.members.delete.confirm.cancel-button': 'Отмена',
   'organizations.members.delete.success': 'Участник удалён из организации',
@@ -267,7 +302,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invite-member.description': 'Пригласить участника в вашу организацию',
   'organizations.invite-member.form.email.label': 'Email',
   'organizations.invite-member.form.email.placeholder': 'Пример: ada@papra.app',
-  'organizations.invite-member.form.email.required': 'Введите действительный адрес электронной почты',
+  'organizations.invite-member.form.email.required':
+    'Введите действительный адрес электронной почты',
   'organizations.invite-member.form.role.label': 'Роль',
   'organizations.invite-member.form.submit': 'Пригласить в организацию',
   'organizations.invite-member.success.message': 'Участник приглашён',
@@ -278,7 +314,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.description': 'Управление приглашениями организации',
   'organizations.invitations.list.cta': 'Пригласить участника',
   'organizations.invitations.list.empty.title': 'Нет ожидающих приглашений',
-  'organizations.invitations.list.empty.description': 'Вас пока ещё не пригласили ни в одну организацию.',
+  'organizations.invitations.list.empty.description':
+    'Вас пока ещё не пригласили ни в одну организацию.',
   'organizations.invitations.status.pending': 'Ожидает',
   'organizations.invitations.status.accepted': 'Принято',
   'organizations.invitations.status.rejected': 'Отклонено',
@@ -290,7 +327,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.invitations.cancel.confirm': 'Отменить приглашение',
   'organizations.invitations.cancel.cancel': 'Отмена',
   'organizations.invitations.resend.title': 'Отправить приглашение повторно',
-  'organizations.invitations.resend.description': 'Вы уверены, что хотите повторно отправить приглашение? Получателю будет отправлено новое письмо.',
+  'organizations.invitations.resend.description':
+    'Вы уверены, что хотите повторно отправить приглашение? Получателю будет отправлено новое письмо.',
   'organizations.invitations.resend.confirm': 'Отправить повторно',
   'organizations.invitations.resend.cancel': 'Отмена',
 
@@ -313,7 +351,8 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'documents.list.title': 'Документы',
   'documents.list.no-documents.title': 'Нет документов',
-  'documents.list.no-documents.description': 'В этой организации пока нет документов. Загрузите первый документ.',
+  'documents.list.no-documents.description':
+    'В этой организации пока нет документов. Загрузите первый документ.',
   'documents.list.no-results': 'Документы не найдены',
   'documents.list.table.headers.file-name': 'Имя файла',
   'documents.list.table.headers.created': 'Создан',
@@ -321,13 +360,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.actions': 'Действия',
   'documents.list.table.headers.tags': 'Теги',
   'documents.list.search.placeholder': 'Поиск документов...',
-  'documents.list.search.total-count-with-query': '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} соответствует этому запросу',
-  'documents.list.search.total-count-no-query': '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} всего',
+  'documents.list.search.total-count-with-query':
+    '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} соответствует этому запросу',
+  'documents.list.search.total-count-no-query':
+    '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} всего',
 
   'documents.tabs.info': 'Информация',
   'documents.tabs.content': 'Содержимое',
   'documents.tabs.activity': 'Активность',
-  'documents.deleted.message': 'Этот документ был удален и будет окончательно удален через {{ days }} {{ count, =1:дней, [2-4]:дня, дней }}.',
+  'documents.deleted.message':
+    'Этот документ был удален и будет окончательно удален через {{ days }} {{ count, =1:дней, [2-4]:дня, дней }}.',
   'documents.actions.download.title': 'Скачать',
   'documents.actions.download.error': 'Не удалось загрузить документ',
   'documents.actions.restore': 'Восстановить',
@@ -336,8 +378,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Отмена',
   'documents.actions.save': 'Сохранить',
   'documents.actions.saving': 'Сохранение...',
-  'documents.content.alert': 'Содержимое документа автоматически извлекается из документа при загрузке. Оно используется только для поиска и индексации.',
-  'documents.content.empty-placeholder': 'У этого документа нет извлечённого содержимого, вы можете установить его вручную.',
+  'documents.content.alert':
+    'Содержимое документа автоматически извлекается из документа при загрузке. Оно используется только для поиска и индексации.',
+  'documents.content.empty-placeholder':
+    'У этого документа нет извлечённого содержимого, вы можете установить его вручную.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Имя',
   'documents.info.type': 'Тип',
@@ -359,10 +403,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.types.document_relation': 'Документ',
 
   'custom-properties.list.title': 'Пользовательские свойства',
-  'custom-properties.list.description': 'Задайте пользовательские поля метаданных для ваших документов. Свойства могут быть текстом, числами, датами, логическими значениями или списками выбора.',
+  'custom-properties.list.description':
+    'Задайте пользовательские поля метаданных для ваших документов. Свойства могут быть текстом, числами, датами, логическими значениями или списками выбора.',
   'custom-properties.list.create-button': 'Создать свойство',
   'custom-properties.list.empty.title': 'Пользовательские свойства',
-  'custom-properties.list.empty.description': 'Пользовательские свойства позволяют добавлять структурированные метаданные к документам, например даты истечения срока, названия компаний или суммы.',
+  'custom-properties.list.empty.description':
+    'Пользовательские свойства позволяют добавлять структурированные метаданные к документам, например даты истечения срока, названия компаний или суммы.',
   'custom-properties.list.table.name': 'Название',
   'custom-properties.list.table.type': 'Тип',
   'custom-properties.list.table.description': 'Описание',
@@ -370,7 +416,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.list.table.actions': 'Действия',
   'custom-properties.list.table.no-description': 'Нет описания',
   'custom-properties.list.delete.confirm-title': 'Удалить пользовательское свойство',
-  'custom-properties.list.delete.confirm-message': 'Вы уверены, что хотите удалить пользовательское свойство «{{ name }}»? Это действие нельзя отменить.',
+  'custom-properties.list.delete.confirm-message':
+    'Вы уверены, что хотите удалить пользовательское свойство «{{ name }}»? Это действие нельзя отменить.',
   'custom-properties.list.delete.confirm-button': 'Удалить',
   'custom-properties.list.delete.success': 'Пользовательское свойство успешно удалено',
   'custom-properties.list.delete.error': 'Не удалось удалить пользовательское свойство',
@@ -392,18 +439,21 @@ export const translations: Partial<TranslationsDictionary> = {
   'custom-properties.form.description.label': 'Описание',
   'custom-properties.form.description.optional': '(необязательно)',
   'custom-properties.form.description.placeholder': 'Опишите, для чего используется это свойство',
-  'custom-properties.form.description.max-length': 'Описание должно содержать не более 1000 символов',
+  'custom-properties.form.description.max-length':
+    'Описание должно содержать не более 1000 символов',
   'custom-properties.form.type.label': 'Тип',
   'custom-properties.form.type.immutable': 'Тип свойства нельзя изменить после создания.',
   'custom-properties.form.options.title': 'Варианты',
   'custom-properties.form.options.description': 'Задайте доступные варианты для этого свойства.',
   'custom-properties.form.options.name.placeholder': 'Название варианта',
   'custom-properties.form.options.name.required': 'Название варианта обязательно',
-  'custom-properties.form.options.name.max-length': 'Название варианта должно содержать не более 255 символов',
+  'custom-properties.form.options.name.max-length':
+    'Название варианта должно содержать не более 255 символов',
   'custom-properties.form.options.validation.required': 'Добавьте хотя бы один вариант',
   'custom-properties.form.options.add': 'Добавить вариант',
   'custom-properties.form.cancel': 'Отмена',
-  'custom-properties.form.save-error': 'Произошла ошибка при сохранении определения свойства. Пожалуйста, попробуйте ещё раз.',
+  'custom-properties.form.save-error':
+    'Произошла ошибка при сохранении определения свойства. Пожалуйста, попробуйте ещё раз.',
 
   'documents.custom-properties.section-title': 'Свойства',
   'documents.custom-properties.no-value': 'Не задано',
@@ -424,16 +474,20 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.rename.success': 'Документ успешно переименован',
   'documents.rename.cancel': 'Отмена',
 
-  'import-documents.title.error': '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} не удалось импортировать',
-  'import-documents.title.success': '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} импортировано',
+  'import-documents.title.error':
+    '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} не удалось импортировать',
+  'import-documents.title.success':
+    '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} импортировано',
   'import-documents.title.pending': '{{ count }} / {{ total }} документов импортировано',
   'import-documents.title.none': 'Импортировать документы',
   'import-documents.no-import-in-progress': 'В данный момент нет импорта документов',
 
   'documents.deleted.title': 'Удалённые документы',
   'documents.deleted.empty.title': 'Нет удалённых документов',
-  'documents.deleted.empty.description': 'У вас нет удалённых документов. При удалении документы будут перемещены в корзину на {{ days }} дней.',
-  'documents.deleted.retention-notice': 'Все удалённые документы хранятся в корзине {{ days }} дней. По истечении этого срока документы будут удалены без возможности восстановления.',
+  'documents.deleted.empty.description':
+    'У вас нет удалённых документов. При удалении документы будут перемещены в корзину на {{ days }} дней.',
+  'documents.deleted.retention-notice':
+    'Все удалённые документы хранятся в корзине {{ days }} дней. По истечении этого срока документы будут удалены без возможности восстановления.',
   'documents.deleted.deleted-at': 'Удалено',
   'documents.deleted.restoring': 'Восстановление...',
   'documents.deleted.deleting': 'Удаление...',
@@ -445,7 +499,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.open-with.pdf-viewer': 'Просмотр PDF',
 
   'documents.pdf-viewer.loading': 'Загрузка PDF',
-  'documents.pdf-viewer.not-a-pdf': 'Этот документ не является PDF и не может быть открыт в просмотрщике PDF.',
+  'documents.pdf-viewer.not-a-pdf':
+    'Этот документ не является PDF и не может быть открыт в просмотрщике PDF.',
 
   'documents.pdf-viewer.toolbar.hide-sidebar': 'Скрыть боковую панель',
   'documents.pdf-viewer.toolbar.show-sidebar': 'Показать боковую панель',
@@ -508,12 +563,14 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'trash.delete-all.button': 'Удалить всё',
   'trash.delete-all.confirm.title': 'Окончательно удалить все документы?',
-  'trash.delete-all.confirm.description': 'Вы уверены, что хотите окончательно удалить все документы из корзины? Это действие нельзя отменить.',
+  'trash.delete-all.confirm.description':
+    'Вы уверены, что хотите окончательно удалить все документы из корзины? Это действие нельзя отменить.',
   'trash.delete-all.confirm.label': 'Удалить',
   'trash.delete-all.confirm.cancel': 'Отмена',
   'trash.delete.button': 'Удалить',
   'trash.delete.confirm.title': 'Окончательно удалить документ?',
-  'trash.delete.confirm.description': 'Вы уверены, что хотите окончательно удалить этот документ из корзины? Это действие нельзя отменить.',
+  'trash.delete.confirm.description':
+    'Вы уверены, что хотите окончательно удалить этот документ из корзины? Это действие нельзя отменить.',
   'trash.delete.confirm.label': 'Удалить',
   'trash.delete.confirm.cancel': 'Отмена',
   'trash.deleted.success.title': 'Документ удалён',
@@ -536,16 +593,19 @@ export const translations: Partial<TranslationsDictionary> = {
   // Tags
 
   'tags.no-tags.title': 'Пока нет тегов',
-  'tags.no-tags.description': 'В этой организации пока нет тегов. Теги используются для категоризации документов. Вы можете добавлять теги к документам, чтобы их было легче находить и организовывать.',
+  'tags.no-tags.description':
+    'В этой организации пока нет тегов. Теги используются для категоризации документов. Вы можете добавлять теги к документам, чтобы их было легче находить и организовывать.',
   'tags.no-tags.create-tag': 'Создать тег',
 
   'tags.title': 'Теги документов',
-  'tags.description': 'Теги используются для категоризации документов. Вы можете добавлять теги к документам, чтобы их было легче находить и организовывать.',
+  'tags.description':
+    'Теги используются для категоризации документов. Вы можете добавлять теги к документам, чтобы их было легче находить и организовывать.',
   'tags.create': 'Создать тег',
   'tags.update': 'Обновить тег',
   'tags.delete': 'Удалить тег',
   'tags.delete.confirm.title': 'Удалить тег',
-  'tags.delete.confirm.message': 'Вы уверены, что хотите удалить этот тег? Удаление тега уберёт его из всех документов.',
+  'tags.delete.confirm.message':
+    'Вы уверены, что хотите удалить этот тег? Удаление тега уберёт его из всех документов.',
   'tags.delete.confirm.confirm-button': 'Удалить',
   'tags.delete.confirm.cancel-button': 'Отмена',
   'tags.delete.success': 'Тег успешно удалён',
@@ -584,10 +644,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.operator.starts-with': 'начинается с',
   'tagging-rules.operator.ends-with': 'заканчивается на',
   'tagging-rules.list.title': 'Правила тегирования',
-  'tagging-rules.list.description': 'Управляйте правилами тегирования вашей организации для автоматической установки тегов документам на основе заданных вами условий.',
-  'tagging-rules.list.demo-warning': 'Примечание: Так как это демо-окружение (без сервера), правила тегирования не будут применяться к новым документам.',
+  'tagging-rules.list.description':
+    'Управляйте правилами тегирования вашей организации для автоматической установки тегов документам на основе заданных вами условий.',
+  'tagging-rules.list.demo-warning':
+    'Примечание: Так как это демо-окружение (без сервера), правила тегирования не будут применяться к новым документам.',
   'tagging-rules.list.no-tagging-rules.title': 'Нет правил тегирования',
-  'tagging-rules.list.no-tagging-rules.description': 'Создайте правило тегирования для автоматической установки тегов добавляемым документам на основе заданных вами условий.',
+  'tagging-rules.list.no-tagging-rules.description':
+    'Создайте правило тегирования для автоматической установки тегов добавляемым документам на основе заданных вами условий.',
   'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Создать правило тегирования',
   'tagging-rules.list.card.no-conditions': 'Нет условий',
   'tagging-rules.list.card.one-condition': '1 условие',
@@ -603,10 +666,12 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.form.name.min-length': 'Введите название для правила',
   'tagging-rules.form.name.max-length': 'Название должно быть короче 64 символов',
   'tagging-rules.form.description.label': 'Описание',
-  'tagging-rules.form.description.placeholder': 'Например: Добавляет тег к документам со словом "счёт" в названии',
+  'tagging-rules.form.description.placeholder':
+    'Например: Добавляет тег к документам со словом "счёт" в названии',
   'tagging-rules.form.description.max-length': 'Описание должно быть короче 256 символов',
   'tagging-rules.form.conditions.label': 'Условия',
-  'tagging-rules.form.conditions.description': 'Определите условия, которые должны быть выполнены для применения правила. Отсутствие условий означает, что правило будет применяться ко всем документам',
+  'tagging-rules.form.conditions.description':
+    'Определите условия, которые должны быть выполнены для применения правила. Отсутствие условий означает, что правило будет применяться ко всем документам',
   'tagging-rules.form.conditions.add-condition': 'Добавить условие',
   'tagging-rules.form.conditions.connector.when': 'Когда',
   'tagging-rules.form.conditions.connector.and': 'и',
@@ -614,13 +679,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.condition-match-mode.all': 'Все условия должны совпадать',
   'tagging-rules.condition-match-mode.any': 'Любое условие должно совпадать',
   'tagging-rules.form.conditions.no-conditions.title': 'Нет условий',
-  'tagging-rules.form.conditions.no-conditions.description': 'Вы не добавили ни одного условия. Это правило будет добавлять теги ко всем документам.',
+  'tagging-rules.form.conditions.no-conditions.description':
+    'Вы не добавили ни одного условия. Это правило будет добавлять теги ко всем документам.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Применить правило без условий',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Отмена',
   'tagging-rules.form.conditions.value.placeholder': 'Например: счёт',
   'tagging-rules.form.conditions.value.min-length': 'Введите значение для условия',
   'tagging-rules.form.tags.label': 'Теги',
-  'tagging-rules.form.tags.description': 'Выберите теги, которые будут добавлены к подходящим документам.',
+  'tagging-rules.form.tags.description':
+    'Выберите теги, которые будут добавлены к подходящим документам.',
   'tagging-rules.form.tags.min-length': 'Требуется хотя бы один тег',
   'tagging-rules.form.tags.add-tag': 'Создать тег',
   'tagging-rules.update.title': 'Обновить правило тегирования',
@@ -629,7 +696,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'tagging-rules.update.cancel': 'Отмена',
   'tagging-rules.apply.button': 'Применить к существующим документам',
   'tagging-rules.apply.confirm.title': 'Применить правило к существующим документам?',
-  'tagging-rules.apply.confirm.description': 'Это проверит все существующие документы в вашей организации и добавит теги, где условия совпадают. Обработка будет происходить в фоновом режиме.',
+  'tagging-rules.apply.confirm.description':
+    'Это проверит все существующие документы в вашей организации и добавит теги, где условия совпадают. Обработка будет происходить в фоновом режиме.',
   'tagging-rules.apply.confirm.button': 'Применить правило',
   'tagging-rules.apply.success': 'Применение правила запущено в фоновом режиме',
   'tagging-rules.apply.error': 'Не удалось запустить применение правила',
@@ -638,15 +706,20 @@ export const translations: Partial<TranslationsDictionary> = {
   // Intake emails
 
   'intake-emails.title': 'Email для импорта',
-  'intake-emails.description': 'Email-адреса для сохранения документов в Papra. Просто перешлите письма на почтовый адрес для импорта, и их вложения будут добавлены в документы вашей организации.',
+  'intake-emails.description':
+    'Email-адреса для сохранения документов в Papra. Просто перешлите письма на почтовый адрес для импорта, и их вложения будут добавлены в документы вашей организации.',
   'intake-emails.disabled.title': 'Адреса для импорта отключены',
-  'intake-emails.disabled.description': 'Почтовые адреса для импорта отключены на этом сервере. Пожалуйста, свяжитесь с администратором, чтобы включить их. Подробнее в {{ documentation }}.',
+  'intake-emails.disabled.description':
+    'Почтовые адреса для импорта отключены на этом сервере. Пожалуйста, свяжитесь с администратором, чтобы включить их. Подробнее в {{ documentation }}.',
   'intake-emails.disabled.documentation': 'документации',
-  'intake-emails.info': 'Будут обрабатываться только включённые адреса для импорта от разрешённых отправителей. Вы можете включить или отключить адреса для импорта в любое время.',
+  'intake-emails.info':
+    'Будут обрабатываться только включённые адреса для импорта от разрешённых отправителей. Вы можете включить или отключить адреса для импорта в любое время.',
   'intake-emails.empty.title': 'Нет адресов для импорта',
-  'intake-emails.empty.description': 'Создайте адрес для импорта, чтобы получать вложения из писем.',
+  'intake-emails.empty.description':
+    'Создайте адрес для импорта, чтобы получать вложения из писем.',
   'intake-emails.empty.generate': 'Создать email для импорта',
-  'intake-emails.count': '{{ count }} {{ count, =1:адрес, [2-4]:адреса, адресов }} в этой организации',
+  'intake-emails.count':
+    '{{ count }} {{ count, =1:адрес, [2-4]:адреса, адресов }} в этой организации',
   'intake-emails.new': 'Новый адрес для импорта',
   'intake-emails.disabled-label': '(Отключён)',
   'intake-emails.no-origins': 'Нет разрешённых адресов отправителей',
@@ -656,7 +729,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.actions.manage-origins': 'Управление адресами отправителей',
   'intake-emails.actions.delete': 'Удалить',
   'intake-emails.delete.confirm.title': 'Удалить адрес для импорта?',
-  'intake-emails.delete.confirm.message': 'Вы уверены, что хотите удалить этот адрес для импорта? Это действие нельзя отменить.',
+  'intake-emails.delete.confirm.message':
+    'Вы уверены, что хотите удалить этот адрес для импорта? Это действие нельзя отменить.',
   'intake-emails.delete.confirm.confirm-button': 'Удалить адрес для импорта',
   'intake-emails.delete.confirm.cancel-button': 'Отмена',
   'intake-emails.delete.success': 'Адрес для импорта удалён',
@@ -664,11 +738,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.update.success.enabled': 'Адрес для импорта включён',
   'intake-emails.update.success.disabled': 'Адрес для импорта отключён',
   'intake-emails.allowed-origins.title': 'Разрешённые отправители',
-  'intake-emails.allowed-origins.description': 'Будут обрабатываться только письма, отправленные на {{ email }} от этих отправителей. Если отправители не указаны, все письма будут отклонены.',
+  'intake-emails.allowed-origins.description':
+    'Будут обрабатываться только письма, отправленные на {{ email }} от этих отправителей. Если отправители не указаны, все письма будут отклонены.',
   'intake-emails.allowed-origins.add.label': 'Добавить разрешенный email отправителя',
   'intake-emails.allowed-origins.add.placeholder': 'Например: ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Добавить',
-  'intake-emails.allowed-origins.add.error.exists': 'Этот email уже есть в разрешённых отправителях для этого email для импорта',
+  'intake-emails.allowed-origins.add.error.exists':
+    'Этот email уже есть в разрешённых отправителях для этого email для импорта',
 
   // API keys
 
@@ -700,7 +776,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.create.form.permissions.required': 'Выберите хотя бы одно разрешение',
   'api-keys.create.form.submit': 'Создать API ключ',
   'api-keys.create.created.title': 'API ключ создан',
-  'api-keys.create.created.description': 'API ключ успешно создан. Сохраните его в безопасном месте, так как он больше не будет отображаться.',
+  'api-keys.create.created.description':
+    'API ключ успешно создан. Сохраните его в безопасном месте, так как он больше не будет отображаться.',
   'api-keys.list.title': 'API ключи',
   'api-keys.list.description': 'Управляйте своими API ключами здесь.',
   'api-keys.list.create': 'Создать API ключ',
@@ -709,7 +786,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.list.card.created': 'Создан',
   'api-keys.delete.success': 'API ключ успешно удалён',
   'api-keys.delete.confirm.title': 'Удалить API ключ',
-  'api-keys.delete.confirm.message': 'Вы уверены, что хотите удалить этот API ключ? Это действие нельзя отменить.',
+  'api-keys.delete.confirm.message':
+    'Вы уверены, что хотите удалить этот API ключ? Это действие нельзя отменить.',
   'api-keys.delete.confirm.confirm-button': 'Удалить',
   'api-keys.delete.confirm.cancel-button': 'Отмена',
 
@@ -782,7 +860,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.admin': 'Админка',
 
   'layout.upgrade-cta.title': 'Нужно больше места?',
-  'layout.upgrade-cta.description': 'Получите в 10 раз больше хранилища + возможности командной работы',
+  'layout.upgrade-cta.description':
+    'Получите в 10 раз больше хранилища + возможности командной работы',
   'layout.upgrade-cta.button': 'Обновить сейчас',
 
   'layout.theme.light': 'Светлая',
@@ -806,28 +885,41 @@ export const translations: Partial<TranslationsDictionary> = {
   'command-palette.no-results': 'Ничего не найдено',
   'command-palette.sections.documents': 'Документы',
   'command-palette.sections.theme': 'Тема',
-  'command-palette.show-more-results': 'Показать ещё {{ count }} {{ count, =1:результат, [2-4]:результата, результатов }} для "{{ query }}"',
+  'command-palette.show-more-results':
+    'Показать ещё {{ count }} {{ count, =1:результат, [2-4]:результата, результатов }} для "{{ query }}"',
 
   // API errors
 
-  'api-errors.api.timeout': 'Запрос занял слишком много времени и завершился таймаутом. Пожалуйста, попробуйте снова.',
+  'api-errors.api.timeout':
+    'Запрос занял слишком много времени и завершился таймаутом. Пожалуйста, попробуйте снова.',
   'api-errors.document.already_exists': 'Документ уже существует',
   'api-errors.document.size_too_large': 'Размер файла слишком большой',
   'api-errors.intake-emails.already_exists': 'Адрес для импорта с этим адресом уже существует.',
-  'api-errors.intake_email.limit_reached': 'Достигнуто максимальное количество адресов для импорта в этой организации. Пожалуйста, обновите ваш план, чтобы создать больше адресов для импорта.',
-  'api-errors.user.max_organization_count_reached': 'Вы достигли максимального количества организаций, которые можете создать. Если вам нужно создать больше, пожалуйста, свяжитесь со службой поддержки.',
+  'api-errors.intake_email.limit_reached':
+    'Достигнуто максимальное количество адресов для импорта в этой организации. Пожалуйста, обновите ваш план, чтобы создать больше адресов для импорта.',
+  'api-errors.user.max_organization_count_reached':
+    'Вы достигли максимального количества организаций, которые можете создать. Если вам нужно создать больше, пожалуйста, свяжитесь со службой поддержки.',
   'api-errors.default': 'Произошла ошибка при обработке вашего запроса.',
-  'api-errors.organization.invitation_already_exists': 'Приглашение для этого email уже существует в этой организации.',
-  'api-errors.user.already_in_organization': 'Этот пользователь уже является участником этой организации.',
-  'api-errors.user.organization_invitation_limit_reached': 'Достигнуто максимальное количество приглашений на сегодня. Пожалуйста, попробуйте снова завтра.',
+  'api-errors.organization.invitation_already_exists':
+    'Приглашение для этого email уже существует в этой организации.',
+  'api-errors.user.already_in_organization':
+    'Этот пользователь уже является участником этой организации.',
+  'api-errors.user.organization_invitation_limit_reached':
+    'Достигнуто максимальное количество приглашений на сегодня. Пожалуйста, попробуйте снова завтра.',
   'api-errors.demo.not_available': 'Эта функция недоступна в демо',
   'api-errors.tags.already_exists': 'Тег с таким именем уже существует в этой организации',
-  'api-errors.tags.organization_limit_reached': 'Достигнуто максимальное количество тегов для этой организации.',
-  'api-errors.internal.error': 'Произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.',
-  'api-errors.auth.invalid_origin': 'Неверный origin приложения. Если вы используете Papra на собственном хостинге, убедитесь, что переменная окружения APP_BASE_URL соответствует вашему текущему URL. Для получения дополнительной информации см. https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
-  'api-errors.organization.max_members_count_reached': 'Достигнуто максимальное количество участников и ожидающих приглашений для этой организации. Пожалуйста, обновите ваш план, чтобы добавить больше участников.',
-  'api-errors.organization.has_active_subscription': 'Невозможно удалить организацию с активной подпиской. Пожалуйста, сначала отмените подписку, используя кнопку "Управление подпиской" выше.',
-  'api-errors.webhooks.ssrf_unsafe_url': 'Указанный URL не разрешён. URL-адреса вебхуков не должны указывать на частные или зарезервированные IP-адреса.',
+  'api-errors.tags.organization_limit_reached':
+    'Достигнуто максимальное количество тегов для этой организации.',
+  'api-errors.internal.error':
+    'Произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.',
+  'api-errors.auth.invalid_origin':
+    'Неверный origin приложения. Если вы используете Papra на собственном хостинге, убедитесь, что переменная окружения APP_BASE_URL соответствует вашему текущему URL. Для получения дополнительной информации см. https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+  'api-errors.organization.max_members_count_reached':
+    'Достигнуто максимальное количество участников и ожидающих приглашений для этой организации. Пожалуйста, обновите ваш план, чтобы добавить больше участников.',
+  'api-errors.organization.has_active_subscription':
+    'Невозможно удалить организацию с активной подпиской. Пожалуйста, сначала отмените подписку, используя кнопку "Управление подпиской" выше.',
+  'api-errors.webhooks.ssrf_unsafe_url':
+    'Указанный URL не разрешён. URL-адреса вебхуков не должны указывать на частные или зарезервированные IP-адреса.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Пользователь не найден',
   'api-errors.FAILED_TO_CREATE_USER': 'Не удалось создать пользователя',
@@ -857,21 +949,27 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-errors.OTP_NOT_ENABLED': 'Двухфакторная аутентификация не включена для этого аккаунта',
   'api-errors.OTP_HAS_EXPIRED': 'Код двухфакторной аутентификации истёк',
   'api-errors.TOTP_NOT_ENABLED': 'TOTP не включен для этого аккаунта',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Двухфакторная аутентификация не включена для этого аккаунта',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'Двухфакторная аутентификация не включена для этого аккаунта',
   'api-errors.BACKUP_CODES_NOT_ENABLED': 'Резервные коды не включены для этого аккаунта',
-  'api-errors.INVALID_BACKUP_CODE': 'Предоставленный резервный код недействителен или уже использован',
-  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Слишком много попыток. Пожалуйста, запросите новый код.',
+  'api-errors.INVALID_BACKUP_CODE':
+    'Предоставленный резервный код недействителен или уже использован',
+  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE':
+    'Слишком много попыток. Пожалуйста, запросите новый код.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Неверный cookie двухфакторной аутентификации',
 
   // Not found
 
   'not-found.title': '404 - Не найдено',
-  'not-found.description': 'Извините, страница, которую вы ищете, похоже, не существует. Пожалуйста, проверьте URL и попробуйте снова.',
+  'not-found.description':
+    'Извините, страница, которую вы ищете, похоже, не существует. Пожалуйста, проверьте URL и попробуйте снова.',
 
   // Demo
 
-  'demo.popup.description': 'Это демо-окружение, все данные сохраняются в локальное хранилище вашего браузера.',
-  'demo.popup.discord': 'Присоединяйтесь к {{ discordLink }}, чтобы получить поддержку, предложить функции или просто пообщаться.',
+  'demo.popup.description':
+    'Это демо-окружение, все данные сохраняются в локальное хранилище вашего браузера.',
+  'demo.popup.discord':
+    'Присоединяйтесь к {{ discordLink }}, чтобы получить поддержку, предложить функции или просто пообщаться.',
   'demo.popup.discord-link-label': 'серверу Discord',
   'demo.popup.reset': 'Сбросить демо-данные',
   'demo.popup.hide': 'Скрыть',
@@ -889,13 +987,15 @@ export const translations: Partial<TranslationsDictionary> = {
 
   'subscriptions.checkout-success.title': 'Платёж успешен!',
   'subscriptions.checkout-success.description': 'Ваша подписка успешно активирована.',
-  'subscriptions.checkout-success.thank-you': 'Спасибо за обновление до Papra Plus. Теперь у вас есть доступ ко всем премиум-функциям.',
+  'subscriptions.checkout-success.thank-you':
+    'Спасибо за обновление до Papra Plus. Теперь у вас есть доступ ко всем премиум-функциям.',
   'subscriptions.checkout-success.go-to-organizations': 'Перейти к организациям',
   'subscriptions.checkout-success.redirecting': 'Перенаправление через {{ count }} секунд...',
 
   'subscriptions.checkout-cancel.title': 'Платёж отменен',
   'subscriptions.checkout-cancel.description': 'Обновление подписки было отменено.',
-  'subscriptions.checkout-cancel.no-charges': 'С вашего аккаунта не было списано средств. Вы можете попробовать снова в любое время.',
+  'subscriptions.checkout-cancel.no-charges':
+    'С вашего аккаунта не было списано средств. Вы можете попробовать снова в любое время.',
   'subscriptions.checkout-cancel.back-to-organizations': 'Назад к организациям',
   'subscriptions.checkout-cancel.need-help': 'Нужна помощь?',
   'subscriptions.checkout-cancel.contact-support': 'Связаться с поддержкой',
@@ -903,12 +1003,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.upgrade-dialog.title': 'Обновить эту организацию',
   'subscriptions.upgrade-dialog.description': 'Разблокируйте мощные функции для вашей организации',
   'subscriptions.upgrade-dialog.contact-us': 'Свяжитесь с нами',
-  'subscriptions.upgrade-dialog.enterprise-plans': 'если вам нужны индивидуальные корпоративные планы.',
+  'subscriptions.upgrade-dialog.enterprise-plans':
+    'если вам нужны индивидуальные корпоративные планы.',
   'subscriptions.upgrade-dialog.per-month': '/месяц',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} оплачивается ежегодно',
   'subscriptions.upgrade-dialog.upgrade-now': 'Обновить сейчас',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Ограниченное предложение',
-  'subscriptions.upgrade-dialog.promo-banner.description': 'Получите {{ percent }}% скидки на все планы навсегда для каждой организации как одному из первых пользователей! Предложение истекает через {{ days, >1:{days} дней, =1:1 день, менее 1 дня }}.',
+  'subscriptions.upgrade-dialog.promo-banner.description':
+    'Получите {{ percent }}% скидки на все планы навсегда для каждой организации как одному из первых пользователей! Предложение истекает через {{ days, >1:{days} дней, =1:1 день, менее 1 дня }}.',
 
   'subscriptions.plan.free.name': 'Бесплатный план',
   'subscriptions.plan.plus.name': 'Plus',
@@ -929,7 +1031,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'subscriptions.billing-interval.monthly': 'Ежемесячно',
   'subscriptions.billing-interval.annual': 'Ежегодно',
 
-  'subscriptions.usage-warning.message': 'Вы использовали {{ percent }}% вашего хранилища документов. Рассмотрите возможность обновления плана для получения большего пространства.',
+  'subscriptions.usage-warning.message':
+    'Вы использовали {{ percent }}% вашего хранилища документов. Рассмотрите возможность обновления плана для получения большего пространства.',
   'subscriptions.usage-warning.upgrade-button': 'Обновить план',
 
   // Admin
@@ -960,7 +1063,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organizations.table.members': 'Участники',
   'admin.organizations.table.created': 'Создана',
   'admin.organizations.table.updated': 'Обновлена',
-  'admin.organizations.pagination.info': 'Показано с {{ start }} по {{ end }} из {{ total }} {{ total, =1:организации, организаций }}',
+  'admin.organizations.pagination.info':
+    'Показано с {{ start }} по {{ end }} из {{ total }} {{ total, =1:организации, организаций }}',
   'admin.organizations.pagination.page-info': 'Страница {{ current }} из {{ total }}',
 
   'admin.organization-detail.title': 'Детали организации',
@@ -984,7 +1088,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.organization-detail.members.table.role': 'Роль',
   'admin.organization-detail.members.table.joined': 'Присоединился',
   'admin.organization-detail.intake-emails.title': 'Email для импорта ({{ count }})',
-  'admin.organization-detail.intake-emails.description': 'Адреса электронной почты для приема документов',
+  'admin.organization-detail.intake-emails.description':
+    'Адреса электронной почты для приема документов',
   'admin.organization-detail.intake-emails.empty': 'Адреса для импорта не настроены',
   'admin.organization-detail.intake-emails.status.enabled': 'Включено',
   'admin.organization-detail.intake-emails.status.disabled': 'Отключено',
@@ -1017,14 +1122,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.users.table.status.unverified': 'Не подтверждён',
   'admin.users.table.orgs': 'Организаций',
   'admin.users.table.created': 'Создан',
-  'admin.users.pagination.info': 'Показано с {{ start }} по {{ end }} из {{ total }} {{ total, =1:пользователя, пользователей }}',
+  'admin.users.pagination.info':
+    'Показано с {{ start }} по {{ end }} из {{ total }} {{ total, =1:пользователя, пользователей }}',
   'admin.users.pagination.page-info': 'Страница {{ current }} из {{ total }}',
 
   'admin.user-detail.back': 'Назад к пользователям',
   'admin.user-detail.loading': 'Загрузка пользователя...',
   'admin.user-detail.unnamed': 'Пользователь без имени',
   'admin.user-detail.basic-info.title': 'Информация о пользователе',
-  'admin.user-detail.basic-info.description': 'Основные сведения о пользователе и информация об аккаунте',
+  'admin.user-detail.basic-info.description':
+    'Основные сведения о пользователе и информация об аккаунте',
   'admin.user-detail.basic-info.user-id': 'ID пользователя',
   'admin.user-detail.basic-info.email': 'Email',
   'admin.user-detail.basic-info.name': 'Имя',
@@ -1040,7 +1147,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.roles.description': 'Роли пользователя и уровни доступа',
   'admin.user-detail.roles.empty': 'Роли не назначены',
   'admin.user-detail.organizations.title': 'Организации ({{ count }})',
-  'admin.user-detail.organizations.description': 'Организации, к которым принадлежит этот пользователь',
+  'admin.user-detail.organizations.description':
+    'Организации, к которым принадлежит этот пользователь',
   'admin.user-detail.organizations.empty': 'Не является участником какой-либо организации',
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Название',
@@ -1059,7 +1167,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.version': 'Версия',
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Дата коммита',
-  'about.description': 'Papra — это система управления документами с открытым исходным кодом, которая помогает вам архивировать, организовывать, тегировать и управлять вашими документами.',
+  'about.description':
+    'Papra — это система управления документами с открытым исходным кодом, которая помогает вам архивировать, организовывать, тегировать и управлять вашими документами.',
   'about.links.title': 'Ссылки',
   'about.links.documentation': 'Документация',
   'about.links.documentation-description': 'Руководства пользователя и справочник API',

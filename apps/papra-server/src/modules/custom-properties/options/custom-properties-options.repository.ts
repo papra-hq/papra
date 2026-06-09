@@ -6,7 +6,9 @@ import { generatePropertyKey } from '../custom-properties.repository.models';
 import { createCustomPropertySelectOptionUnknownIdError } from './custom-properties-options.errors';
 import { customPropertySelectOptionsTable } from './custom-properties-options.table';
 
-export type CustomPropertiesOptionsRepository = ReturnType<typeof createCustomPropertiesOptionsRepository>;
+export type CustomPropertiesOptionsRepository = ReturnType<
+  typeof createCustomPropertiesOptionsRepository
+>;
 
 export function createCustomPropertiesOptionsRepository({ db }: { db: Database }) {
   return injectArguments(
@@ -19,7 +21,15 @@ export function createCustomPropertiesOptionsRepository({ db }: { db: Database }
   );
 }
 
-async function getSelectOption({ optionId, propertyDefinitionId, db}: { optionId: string; propertyDefinitionId: string; db: Database }) {
+async function getSelectOption({
+  optionId,
+  propertyDefinitionId,
+  db,
+}: {
+  optionId: string;
+  propertyDefinitionId: string;
+  db: Database;
+}) {
   const [option] = await db
     .select()
     .from(customPropertySelectOptionsTable)
@@ -35,7 +45,15 @@ async function getSelectOption({ optionId, propertyDefinitionId, db}: { optionId
   };
 }
 
-async function getSelectOptions({ optionsIds, propertyDefinitionId, db}: { optionsIds: string[]; propertyDefinitionId: string; db: Database }) {
+async function getSelectOptions({
+  optionsIds,
+  propertyDefinitionId,
+  db,
+}: {
+  optionsIds: string[];
+  propertyDefinitionId: string;
+  db: Database;
+}) {
   const options = await db
     .select()
     .from(customPropertySelectOptionsTable)
@@ -51,7 +69,11 @@ async function getSelectOptions({ optionsIds, propertyDefinitionId, db}: { optio
   };
 }
 
-async function syncSelectOptions({ propertyDefinitionId, options, db }: {
+async function syncSelectOptions({
+  propertyDefinitionId,
+  options,
+  db,
+}: {
   propertyDefinitionId: string;
   options: { id?: string; name: string }[];
   db: Database;
@@ -61,21 +83,26 @@ async function syncSelectOptions({ propertyDefinitionId, options, db }: {
     .from(customPropertySelectOptionsTable)
     .where(eq(customPropertySelectOptionsTable.propertyDefinitionId, propertyDefinitionId));
 
-  const existingOptionIds = new Set(existingOptions.map(o => o.id));
+  const existingOptionIds = new Set(existingOptions.map((o) => o.id));
 
   const optionsWithPositions = options.map((option, index) => ({ ...option, displayOrder: index }));
 
-  const optionsToUpdate = optionsWithPositions.filter((option): option is { id: string; name: string; displayOrder: number } => option.id !== undefined);
-  const optionsToCreate = optionsWithPositions.filter(option => option.id === undefined);
+  const optionsToUpdate = optionsWithPositions.filter(
+    (option): option is { id: string; name: string; displayOrder: number } =>
+      option.id !== undefined,
+  );
+  const optionsToCreate = optionsWithPositions.filter((option) => option.id === undefined);
 
-  const hasUnknownIds = optionsToUpdate.some(option => !existingOptionIds.has(option.id));
+  const hasUnknownIds = optionsToUpdate.some((option) => !existingOptionIds.has(option.id));
 
   if (hasUnknownIds) {
     throw createCustomPropertySelectOptionUnknownIdError();
   }
 
-  const providedIds = new Set(optionsToUpdate.map(option => option.id));
-  const optionsIdsToDelete = existingOptions.filter(existing => !providedIds.has(existing.id)).map(o => o.id);
+  const providedIds = new Set(optionsToUpdate.map((option) => option.id));
+  const optionsIdsToDelete = existingOptions
+    .filter((existing) => !providedIds.has(existing.id))
+    .map((o) => o.id);
 
   const hasUpdates = optionsToUpdate.length > 0;
   const hasCreates = optionsToCreate.length > 0;
@@ -86,31 +113,32 @@ async function syncSelectOptions({ propertyDefinitionId, options, db }: {
   }
 
   await db.batch([
-    ...optionsToUpdate.map(option =>
-      db
-        .update(customPropertySelectOptionsTable)
-        .set({
-          name: option.name,
-          key: generatePropertyKey({ name: option.name }),
-          displayOrder: option.displayOrder,
-        })
-        .where(
-          and(
-            eq(customPropertySelectOptionsTable.id, option.id),
-            eq(customPropertySelectOptionsTable.propertyDefinitionId, propertyDefinitionId),
-          ),
-        ) as BatchItem<'sqlite'>,
+    ...optionsToUpdate.map(
+      (option) =>
+        db
+          .update(customPropertySelectOptionsTable)
+          .set({
+            name: option.name,
+            key: generatePropertyKey({ name: option.name }),
+            displayOrder: option.displayOrder,
+          })
+          .where(
+            and(
+              eq(customPropertySelectOptionsTable.id, option.id),
+              eq(customPropertySelectOptionsTable.propertyDefinitionId, propertyDefinitionId),
+            ),
+          ) as BatchItem<'sqlite'>,
     ),
     ...(hasCreates
       ? [
-          db
-            .insert(customPropertySelectOptionsTable)
-            .values(optionsToCreate.map(option => ({
+          db.insert(customPropertySelectOptionsTable).values(
+            optionsToCreate.map((option) => ({
               propertyDefinitionId,
               name: option.name,
               key: generatePropertyKey({ name: option.name }),
               displayOrder: option.displayOrder,
-            }))),
+            })),
+          ),
         ]
       : []),
     ...(hasDeletes

@@ -12,7 +12,9 @@ type DocumentPropertiesDialogProps = {
   onClose: () => void;
 };
 
-const PropertyRow: Component<{ label: string; value?: string | number | null; naText: string }> = (props) => {
+const PropertyRow: Component<{ label: string; value?: string | number | null; naText: string }> = (
+  props,
+) => {
   return (
     <div class="grid grid-cols-3 gap-4 px-4 mx--4 py-1.5 rounded-sm hover:bg-muted/50">
       <dt class="text-sm font-medium text-muted-foreground">{props.label}</dt>
@@ -48,7 +50,9 @@ export const DocumentPropertiesDialog: Component<DocumentPropertiesDialogProps> 
     },
     {
       label: 'documents.pdf-viewer.properties.file-size',
-      value: props.store.filesize ? formatBytes({ bytes: props.store.filesize, base: 1024 }) : undefined,
+      value: props.store.filesize
+        ? formatBytes({ bytes: props.store.filesize, base: 1024 })
+        : undefined,
     },
     {
       label: 'documents.pdf-viewer.properties.doc-title',
@@ -96,7 +100,9 @@ export const DocumentPropertiesDialog: Component<DocumentPropertiesDialogProps> 
     },
     {
       label: 'documents.pdf-viewer.properties.fast-web-view',
-      value: props.store.isLinearized ? t('documents.pdf-viewer.properties.yes') : t('documents.pdf-viewer.properties.no'),
+      value: props.store.isLinearized
+        ? t('documents.pdf-viewer.properties.yes')
+        : t('documents.pdf-viewer.properties.no'),
     },
   ];
 
@@ -117,7 +123,11 @@ export const DocumentPropertiesDialog: Component<DocumentPropertiesDialogProps> 
         <dl>
           <For each={getProperties()}>
             {({ label, value }) => (
-              <PropertyRow label={t(label)} value={value} naText={t('documents.pdf-viewer.properties.na')} />
+              <PropertyRow
+                label={t(label)}
+                value={value}
+                naText={t('documents.pdf-viewer.properties.na')}
+              />
             )}
           </For>
         </dl>

@@ -15,12 +15,12 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: 'usr_regular', email: 'user@example.com', name: 'Regular User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users',
@@ -40,12 +40,12 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: 'usr_regular', email: 'user@example.com', name: 'Regular User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users?search=admin',
@@ -54,7 +54,7 @@ describe('admin users routes - permission protection', () => {
       );
 
       expect(response.status).to.eql(200);
-      const body = await response.json() as { users: { email: string }[]; totalCount: number };
+      const body = (await response.json()) as { users: { email: string }[]; totalCount: number };
       expect(body.users).to.have.length(1);
       expect(body.users[0]?.email).to.eql('admin@example.com');
     });
@@ -65,12 +65,12 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: 'usr_abcdefghijklmnopqrstuvwx', email: 'user@example.com', name: 'Regular User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users?search=usr_abcdefghijklmnopqrstuvwx',
@@ -79,7 +79,7 @@ describe('admin users routes - permission protection', () => {
       );
 
       expect(response.status).to.eql(200);
-      const body = await response.json() as { users: { id: string }[]; totalCount: number };
+      const body = (await response.json()) as { users: { id: string }[]; totalCount: number };
       expect(body.users).to.have.length(1);
       expect(body.users[0]?.id).to.eql('usr_abcdefghijklmnopqrstuvwx');
     });
@@ -89,7 +89,9 @@ describe('admin users routes - permission protection', () => {
         users: [{ id: 'usr_regular', email: 'user@example.com' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users',
@@ -109,12 +111,11 @@ describe('admin users routes - permission protection', () => {
     test('when the user is not authenticated, a 401 error is returned', async () => {
       const { db } = await createInMemoryDatabase();
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
-
-      const response = await app.request(
-        '/api/admin/users',
-        { method: 'GET' },
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
       );
+
+      const response = await app.request('/api/admin/users', { method: 'GET' });
 
       expect(response.status).to.eql(401);
       expect(await response.json()).to.eql({
@@ -134,18 +135,14 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: targetUserId, email: 'target@example.com', name: 'Target User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
-        organizations: [
-          { id: 'org_1', name: 'Organization 1' },
-        ],
-        organizationMembers: [
-          { userId: targetUserId, organizationId: 'org_1', role: 'owner' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        organizationMembers: [{ userId: targetUserId, organizationId: 'org_1', role: 'owner' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${targetUserId}`,
@@ -154,7 +151,7 @@ describe('admin users routes - permission protection', () => {
       );
 
       expect(response.status).to.eql(200);
-      const body = await response.json() as {
+      const body = (await response.json()) as {
         user: { id: string; email: string };
         organizations: { id: string; name: string }[];
         roles: string[];
@@ -168,15 +165,13 @@ describe('admin users routes - permission protection', () => {
 
     test('when the user does not exist, a 404 error is returned', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
-        ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        users: [{ id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' }],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users/usr_999999999999999999999999',
@@ -196,7 +191,9 @@ describe('admin users routes - permission protection', () => {
         ],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${targetUserId}`,
@@ -215,17 +212,14 @@ describe('admin users routes - permission protection', () => {
 
     test('when the user is not authenticated, a 401 error is returned', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'usr_target', email: 'target@example.com' },
-        ],
+        users: [{ id: 'usr_target', email: 'target@example.com' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
-
-      const response = await app.request(
-        '/api/admin/users/usr_target',
-        { method: 'GET' },
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
       );
+
+      const response = await app.request('/api/admin/users/usr_target', { method: 'GET' });
 
       expect(response.status).to.eql(401);
       expect(await response.json()).to.eql({
@@ -245,12 +239,12 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: targetUserId, email: 'target@example.com', name: 'Target User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${targetUserId}`,
@@ -271,18 +265,16 @@ describe('admin users routes - permission protection', () => {
           { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
           { id: targetUserId, email: 'target@example.com', name: 'Target User' },
         ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
-        organizations: [
-          { id: 'org_1', name: 'Organization 1' },
-        ],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
         organizationMembers: [
           { organizationId: 'org_1', userId: targetUserId, role: ORGANIZATION_ROLES.OWNER },
         ],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${targetUserId}`,
@@ -305,15 +297,13 @@ describe('admin users routes - permission protection', () => {
     test('when the admin tries to delete their own account, a 400 error is returned', async () => {
       const adminUserId = 'usr_aaaaaaaaaaaaaaaaaaaaaaaa';
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: adminUserId, email: 'admin@example.com', name: 'Admin User' },
-        ],
-        userRoles: [
-          { userId: adminUserId, role: 'admin' },
-        ],
+        users: [{ id: adminUserId, email: 'admin@example.com', name: 'Admin User' }],
+        userRoles: [{ userId: adminUserId, role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${adminUserId}`,
@@ -335,15 +325,13 @@ describe('admin users routes - permission protection', () => {
 
     test('when the target user does not exist, a 404 error is returned', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' },
-        ],
-        userRoles: [
-          { userId: 'usr_admin', role: 'admin' },
-        ],
+        users: [{ id: 'usr_admin', email: 'admin@example.com', name: 'Admin User' }],
+        userRoles: [{ userId: 'usr_admin', role: 'admin' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         '/api/admin/users/usr_999999999999999999999999',
@@ -363,7 +351,9 @@ describe('admin users routes - permission protection', () => {
         ],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
+      );
 
       const response = await app.request(
         `/api/admin/users/${targetUserId}`,
@@ -385,17 +375,14 @@ describe('admin users routes - permission protection', () => {
 
     test('when the user is not authenticated, a 401 error is returned', async () => {
       const { db } = await createInMemoryDatabase({
-        users: [
-          { id: 'usr_target', email: 'target@example.com' },
-        ],
+        users: [{ id: 'usr_target', email: 'target@example.com' }],
       });
 
-      const { app } = createServer(createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }));
-
-      const response = await app.request(
-        '/api/admin/users/usr_target',
-        { method: 'DELETE' },
+      const { app } = createServer(
+        createTestServerDependencies({ db, config: overrideConfig({ env: 'test' }) }),
       );
+
+      const response = await app.request('/api/admin/users/usr_target', { method: 'DELETE' });
 
       expect(response.status).to.eql(401);
       expect(await response.json()).to.eql({

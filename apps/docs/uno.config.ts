@@ -16,8 +16,8 @@ export default defineConfig({
       },
       prefix: '',
     }),
-    presetAnimations(),
     presetTypography(),
+    presetAnimations(),
   ],
   transformers: [transformerVariantGroup(), transformerDirectives()],
   theme: {
@@ -65,8 +65,7 @@ export default defineConfig({
       keyframes: {
         'accordion-down':
           '{ from { height: 0 } to { height: var(--kb-accordion-content-height) } }',
-        'accordion-up':
-          '{ from { height: var(--kb-accordion-content-height) } to { height: 0 } }',
+        'accordion-up': '{ from { height: var(--kb-accordion-content-height) } to { height: 0 } }',
         'collapsible-down':
           '{ from { height: 0 } to { height: var(--kb-collapsible-content-height) } }',
         'collapsible-up':
@@ -91,9 +90,11 @@ export default defineConfig({
         'caret-blink': 'infinite',
       },
     },
-  },
+  } as any,
   shortcuts: {
-    'input-field': 'flex h-9 w-full bg-none outline-none rounded-lg border border-border border-solid bg-inherit px-3 py-1 text-sm shadow-none placeholder:text-muted-foreground focus-visible:(outline-none ring-1.5 ring-ring) disabled:(cursor-not-allowed opacity-50) transition-shadow',
-    'btn': 'text-sm font-medium hover:opacity-80 rounded-lg transition-all px-4 py-2 bg-none outline-none border-none cursor-pointer',
+    'input-field':
+      'flex h-9 w-full bg-none outline-none rounded-lg border border-border border-solid bg-inherit px-3 py-1 text-sm shadow-none placeholder:text-muted-foreground focus-visible:(outline-none ring-1.5 ring-ring) disabled:(cursor-not-allowed opacity-50) transition-shadow',
+    'btn':
+      'text-sm font-medium hover:opacity-80 rounded-lg transition-all px-4 py-2 bg-none outline-none border-none cursor-pointer',
   },
 });
