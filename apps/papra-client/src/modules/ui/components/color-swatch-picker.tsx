@@ -58,7 +58,7 @@ const ColorPicker: Component<{
     try {
       const parsedColor = parseColor(color);
       onUpdateColor(parsedColor);
-    } catch (_error) {}
+    } catch {}
   };
 
   return (
