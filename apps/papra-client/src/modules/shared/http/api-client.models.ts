@@ -1,7 +1,6 @@
-import type { FetchError } from 'ofetch';
 import { getErrorStatus } from '../utils/errors';
 
-export function shouldRefreshAuthTokens({ error }: { error: FetchError | unknown | undefined }) {
+export function shouldRefreshAuthTokens({ error }: { error: unknown }) {
   if (!error) {
     return false;
   }

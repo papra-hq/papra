@@ -17,7 +17,7 @@ export function reportClientError(error: Error) {
   p.log.error(`${error.message}`);
 }
 
-function getCauseCode(error: Error & { code?: unknown }): unknown | null {
+function getCauseCode(error: Error & { code?: unknown }): unknown {
   if (error.code) {
     return error.code;
   }
