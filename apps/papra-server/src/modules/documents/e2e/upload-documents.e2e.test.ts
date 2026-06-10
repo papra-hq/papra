@@ -319,15 +319,14 @@ describe('documents e2e', () => {
             env: 'test',
             documentsStorage: {
               driver: 'in-memory',
-              // Global config set to 10 MiB (simulating free tier limit)
-              maxUploadSize: 1024 * 1024 * 10, // 10 MiB
+              maxUploadSize: 1024 * 10, // 10 kiB
             },
           }),
         }),
       );
 
-      // File size: 50 MiB - exceeds global config (10 MiB) but within Plus plan limit (100 MiB)
-      const fileSizeBytes = 1024 * 1024 * 50; // 50 MiB
+      // File size: 11 kiB - exceeds global config (10 kiB) but within Plus plan limit (100 MiB)
+      const fileSizeBytes = 1024 * 11; // 11 kiB
       const formData = new FormData();
       formData.append(
         'file',
@@ -345,7 +344,6 @@ describe('documents e2e', () => {
         { loggedInUserId: 'usr_111111111111111111111111' },
       );
 
-      // Should succeed because Plus plan allows 100 MiB
       expect(createDocumentResponse.status).to.eql(200);
       const { document } = (await createDocumentResponse.json()) as { document: Document };
 
@@ -391,15 +389,14 @@ describe('documents e2e', () => {
             env: 'test',
             documentsStorage: {
               driver: 'in-memory',
-              // Global config set to 10 MiB (simulating free tier limit)
-              maxUploadSize: 1024 * 1024 * 10, // 10 MiB
+              maxUploadSize: 1024 * 10, // 10 kiB
             },
           }),
         }),
       );
 
-      // File size: 200 MiB - exceeds global config (10 MiB) but within Pro plan limit (500 MiB)
-      const fileSizeBytes = 1024 * 1024 * 200; // 200 MiB
+      // File size: 11 kiB - exceeds global config (10 kiB) but within Pro plan limit (500 MiB)
+      const fileSizeBytes = 1024 * 11; // 11 kiB
       const formData = new FormData();
       formData.append(
         'file',
@@ -417,7 +414,6 @@ describe('documents e2e', () => {
         { loggedInUserId: 'usr_111111111111111111111111' },
       );
 
-      // Should succeed because Pro plan allows 500 MiB
       expect(createDocumentResponse.status).to.eql(200);
       const { document } = (await createDocumentResponse.json()) as { document: Document };
 
