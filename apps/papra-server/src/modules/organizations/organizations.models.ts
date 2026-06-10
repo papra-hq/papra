@@ -1,3 +1,4 @@
+import type { Config } from '../config/config.types';
 import type { OrganizationRole } from './organizations.types';
 import { generateId } from '../shared/random/ids';
 import { ORGANIZATION_ID_PREFIX, ORGANIZATION_ROLES } from './organizations.constants';
@@ -22,4 +23,14 @@ export function canUserRemoveMemberFromOrganization({
 
 export function generateOrganizationId() {
   return generateId({ prefix: ORGANIZATION_ID_PREFIX });
+}
+
+export function getUserMaxOrganizationCount({
+  user,
+  config,
+}: {
+  user: { maxOrganizationCount?: number | null };
+  config: Config;
+}) {
+  return user.maxOrganizationCount ?? config.organizations.maxOrganizationCount;
 }

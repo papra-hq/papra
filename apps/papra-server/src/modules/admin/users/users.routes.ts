@@ -2,6 +2,7 @@ import type { RouteDefinitionContext } from '../../app/server.types';
 import * as v from 'valibot';
 import { createRoleMiddleware, requireAuthentication } from '../../app/auth/auth.middleware';
 import { getUser } from '../../app/auth/auth.models';
+import { getUserMaxOrganizationCount } from '../../organizations/organizations.models';
 import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { PERMISSIONS } from '../../roles/roles.constants';
 import { createRolesRepository } from '../../roles/roles.repository';
@@ -54,7 +55,7 @@ function registerListUsersRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function registerGetUserDetailRoute({ app, db }: RouteDefinitionContext) {
+function registerGetUserDetailRoute({ app, db, config }: RouteDefinitionContext) {
   const { requirePermissions } = createRoleMiddleware({ db });
 
   app.get(
@@ -80,7 +81,10 @@ function registerGetUserDetailRoute({ app, db }: RouteDefinitionContext) {
       const { roles } = await rolesRepository.getUserRoles({ userId });
 
       return context.json({
-        user,
+        user: {
+          ...user,
+          maxOrganizationCount: getUserMaxOrganizationCount({ user, config }),
+        },
         organizations,
         roles,
       });

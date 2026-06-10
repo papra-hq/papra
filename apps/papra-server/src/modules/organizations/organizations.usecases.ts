@@ -32,7 +32,10 @@ import {
   createUserNotOrganizationOwnerError,
   createUserOrganizationInvitationLimitReachedError,
 } from './organizations.errors';
-import { canUserRemoveMemberFromOrganization } from './organizations.models';
+import {
+  canUserRemoveMemberFromOrganization,
+  getUserMaxOrganizationCount,
+} from './organizations.models';
 
 export async function createOrganization({
   name,
@@ -91,8 +94,7 @@ export async function checkIfUserCanCreateNewOrganization({
   });
   const { user } = await usersRepository.getUserByIdOrThrow({ userId });
 
-  const maxOrganizationCount =
-    user.maxOrganizationCount ?? config.organizations.maxOrganizationCount;
+  const maxOrganizationCount = getUserMaxOrganizationCount({ user, config });
 
   if (organizationCount >= maxOrganizationCount) {
     throw createUserMaxOrganizationCountReachedError();

@@ -1,6 +1,10 @@
+import type { Config } from '../config/config.types';
 import { describe, expect, test } from 'vitest';
 import { ORGANIZATION_ROLES } from './organizations.constants';
-import { canUserRemoveMemberFromOrganization } from './organizations.models';
+import {
+  canUserRemoveMemberFromOrganization,
+  getUserMaxOrganizationCount,
+} from './organizations.models';
 
 describe('organizations models', () => {
   describe('canUserRemoveMemberFromOrganization', () => {
@@ -55,6 +59,24 @@ describe('organizations models', () => {
           memberRole: ORGANIZATION_ROLES.OWNER,
         }),
       ).to.equal(false);
+    });
+  });
+
+  describe('getUserMaxOrganizationCount', () => {
+    const config = { organizations: { maxOrganizationCount: 10 } } as Config;
+
+    test('a user with a custom max organization count uses that value', () => {
+      expect(getUserMaxOrganizationCount({ user: { maxOrganizationCount: 3 }, config })).to.equal(
+        3,
+      );
+    });
+
+    test('a user without a custom max organization count falls back to the global config value', () => {
+      expect(
+        getUserMaxOrganizationCount({ user: { maxOrganizationCount: null }, config }),
+      ).to.equal(10);
+
+      expect(getUserMaxOrganizationCount({ user: {}, config })).to.equal(10);
     });
   });
 });
