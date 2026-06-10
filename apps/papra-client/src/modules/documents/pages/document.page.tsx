@@ -159,7 +159,7 @@ const KeyValues: Component<{ data?: KeyValueItem[] }> = (props) => {
             {item.icon && <div class={item.icon} />}
             {item.label}
           </div>
-          <div class="py-1 pl-2 text-sm">{item.value}</div>
+          <div class="py-1 pl-2 text-sm min-w-0">{item.value}</div>
         </>
       )}
     </For>
@@ -361,14 +361,14 @@ export const DocumentPage: Component = () => {
   return (
     <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
-        <div class="md:flex-1 md:border-r">
+        <div class="md:flex-1 md:min-w-0 md:border-r">
           <Show when={documentQuery.data?.document}>
             {(getDocument) => (
               <div class="flex gap-4 md:pr-6">
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                   <Button
                     variant="ghost"
-                    class="flex items-center gap-2 group bg-transparent! px-0 text-left h-auto"
+                    class="flex items-center gap-2 group bg-transparent! px-0 text-left h-auto max-w-full"
                     onClick={() =>
                       openRenameDialog({
                         documentId: getDocument().id,
@@ -377,7 +377,10 @@ export const DocumentPage: Component = () => {
                       })
                     }
                   >
-                    <h1 class="text-xl font-semibold lh-tight" title={getDocument().name}>
+                    <h1
+                      class="text-xl font-semibold lh-tight min-w-0 break-all"
+                      title={getDocument().name}
+                    >
                       {getDocument().name}
                     </h1>
 
@@ -483,7 +486,7 @@ export const DocumentPage: Component = () => {
                               value: (
                                 <Button
                                   variant="ghost"
-                                  class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left"
+                                  class="flex items-center gap-2 group bg-transparent! p-0 h-auto text-left max-w-full"
                                   onClick={() =>
                                     openRenameDialog({
                                       documentId: getDocument().id,
@@ -492,7 +495,9 @@ export const DocumentPage: Component = () => {
                                     })
                                   }
                                 >
-                                  {getDocument().name}
+                                  <span class="truncate" title={getDocument().name}>
+                                    {getDocument().name}
+                                  </span>
 
                                   <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                                 </Button>
