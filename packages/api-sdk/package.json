@@ -2,6 +2,7 @@
   "name": "@papra/api-sdk",
   "version": "1.3.0",
   "description": "Api SDK for Papra, the document archiving platform.",
+  "homepage": "https://github.com/papra-hq/papra/tree/main/packages/api-sdk#readme",
   "keywords": [
     "api",
     "archiving",
