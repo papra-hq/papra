@@ -40,7 +40,7 @@ export const DocumentPropertiesDialog: Component<DocumentPropertiesDialogProps> 
       return undefined;
     }
 
-    return `${ps.width} x ${ps.height}`;
+    return `${String(ps.width)} x ${String(ps.height)}`;
   };
 
   const getProperties = (): { label: TranslationKeys; value?: string | number | null }[] => [

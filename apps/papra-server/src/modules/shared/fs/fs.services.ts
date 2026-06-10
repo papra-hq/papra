@@ -142,7 +142,7 @@ export async function areFilesContentIdentical({
     const content2 = await readFile({ filePath: file2, fs });
 
     return Buffer.compare(content1, content2) === 0;
-  } catch (_) {
+  } catch {
     return false;
   }
 }
