@@ -1071,6 +1071,10 @@ export const translations = {
     'The provided URL is not allowed. Webhook URLs must not point to private or reserved IP addresses.',
   'api-errors.users.still_owns_organizations':
     'This user still owns one or more organizations. Delete those organizations before deleting the user.',
+  'api-errors.plan_entitlements.already_exists':
+    'This user already has an entitlement of this type.',
+  'api-errors.plan_entitlements.not_found': 'Plan entitlement not found.',
+  'api-errors.plan_entitlements.not_eligible': 'This user is not eligible for this entitlement.',
   'api-errors.users.cannot_delete_self': 'You cannot delete your own account from the admin panel.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'User not found',
@@ -1299,6 +1303,33 @@ export const translations = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Name',
   'admin.user-detail.organizations.table.created': 'Created',
+  'admin.user-detail.plan-entitlements.title': 'Plan entitlements',
+  'admin.user-detail.plan-entitlements.description':
+    'Entitlements that boost the plan of the organizations this user owns',
+  'admin.user-detail.plan-entitlements.empty': 'No plan entitlements',
+  'admin.user-detail.plan-entitlements.table.type': 'Type',
+  'admin.user-detail.plan-entitlements.table.source': 'Source',
+  'admin.user-detail.plan-entitlements.table.granted': 'Granted',
+  'admin.user-detail.plan-entitlements.table.expires': 'Expires',
+  'admin.user-detail.plan-entitlements.never-expires': 'Never',
+  'admin.user-detail.plan-entitlements.expired': 'Expired',
+  'admin.user-detail.plan-entitlements.grant.button': 'Grant entitlement',
+  'admin.user-detail.plan-entitlements.grant.title': 'Grant plan entitlement',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Grant a plan entitlement to this user, optionally with an expiration date.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Entitlement type',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Set an expiration date',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Pick a date',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Grant entitlement',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Cancel',
+  'admin.user-detail.plan-entitlements.grant.success': 'Entitlement granted successfully.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Revoke',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Revoke entitlement?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'The user will lose the plan benefits granted by this entitlement.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Revoke entitlement',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Cancel',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Entitlement revoked successfully.',
   'admin.user-detail.delete.title': 'Delete user',
   'admin.user-detail.delete.description':
     'Permanently delete this user account. This will cascade to their organization memberships, sessions, two-factor settings and other authentication data. Organizations they still own must be deleted or transferred first.',
