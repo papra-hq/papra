@@ -1,3 +1,4 @@
+import type { ApiClient } from '@/modules/api/api.client';
 import type { CoerceDates } from '@/modules/api/api.models';
 import type { Document } from '@/modules/documents/documents.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
@@ -148,6 +149,40 @@ function ErrorState({
   );
 }
 
+const documentNavigationPageSize = 100;
+
+async function fetchAllNavigationDocuments({
+  organizationId,
+  apiClient,
+}: {
+  organizationId: string;
+  apiClient: ApiClient;
+}) {
+  const documentsById = new Map<string, CoerceDates<Document>>();
+  let pageIndex = 0;
+  let documentsCount = 0;
+
+  do {
+    const page = await fetchOrganizationDocuments({
+      organizationId,
+      pageIndex,
+      pageSize: documentNavigationPageSize,
+      apiClient,
+    });
+    const previousDocumentsCount = documentsById.size;
+
+    page.documents.forEach((document) => documentsById.set(document.id, document));
+    documentsCount = page.documentsCount;
+    pageIndex += 1;
+
+    if (documentsById.size === previousDocumentsCount) {
+      break;
+    }
+  } while (documentsById.size < documentsCount);
+
+  return { documents: Array.from(documentsById.values()), documentsCount };
+}
+
 function DocumentNavigationBar({
   canGoPrevious,
   canGoNext,
@@ -269,15 +304,9 @@ export default function DocumentViewScreen() {
     enabled: documentQuery.isSuccess && documentQuery.data != null,
   });
 
-  const navigationDocumentsQuery = useQuery({
+const navigationDocumentsQuery = useQuery({
     queryKey: ['organizations', organizationId, 'documents', 'viewer-navigation'],
-    queryFn: async () =>
-      fetchOrganizationDocuments({
-        organizationId,
-        pageIndex: 0,
-        pageSize: 100,
-        apiClient,
-      }),
+    queryFn: async () => fetchAllNavigationDocuments({ organizationId, apiClient }),
   });
 
   const navigationDocuments: CoerceDates<Document>[] =

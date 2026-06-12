@@ -69,6 +69,33 @@ type KeyValueItem = {
   icon?: string;
 };
 
+const documentNavigationPageSize = 100;
+
+async function fetchAllNavigationDocuments({ organizationId }: { organizationId: string }) {
+  const documentsById = new Map<string, Document>();
+  let pageIndex = 0;
+  let documentsCount = 0;
+
+  do {
+    const page = await fetchOrganizationDocuments({
+      organizationId,
+      pageIndex,
+      pageSize: documentNavigationPageSize,
+    });
+    const previousDocumentsCount = documentsById.size;
+
+    page.documents.forEach((document) => documentsById.set(document.id, document));
+    documentsCount = page.documentsCount;
+    pageIndex += 1;
+
+    if (documentsById.size === previousDocumentsCount) {
+      break;
+    }
+  } while (documentsById.size < documentsCount);
+
+  return { documents: Array.from(documentsById.values()), documentsCount };
+}
+
 const DocumentNotes: Component<{ documentId: string; organizationId: string; notes?: string }> = (
   props,
 ) => {
@@ -347,12 +374,7 @@ export const DocumentPage: Component = () => {
 
   const documentNavigationQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
-    queryFn: () =>
-      fetchOrganizationDocuments({
-        organizationId: params.organizationId,
-        pageIndex: 0,
-        pageSize: 100,
-      }),
+    queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
   }));
 
   const getNavigationDocuments = () => documentNavigationQuery.data?.documents ?? [];
@@ -405,7 +427,7 @@ export const DocumentPage: Component = () => {
   };
 
   return (
-    <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
+    <div class="p-6 pb-28 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
         <div class="md:flex-1 md:min-w-0 md:border-r">
           <Show when={documentQuery.data?.document}>
@@ -689,11 +711,49 @@ export const DocumentPage: Component = () => {
         </div>
 
         <div class="flex-1 min-h-50vh">
-          <Show when={documentQuery.data?.document}>
-            {(getDocument) => <DocumentPreview document={getDocument()} />}
+          <Show keyed when={documentQuery.data?.document}>
+            {(document) => <DocumentPreview document={document} />}
           </Show>
         </div>
       </Suspense>
+
+      <div class="fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-background/95 p-2 shadow-lg backdrop-blur">
+        <Button
+          onClick={() => {
+            const previousDocument = getPreviousDocument();
+            if (previousDocument) {
+              navigateToDocument(previousDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getPreviousDocument()}
+          class="rounded-full"
+        >
+          <div class="i-tabler-chevron-left size-4 mr-2" />
+          Previous
+        </Button>
+
+        <span class="min-w-24 text-center text-sm text-muted-foreground">
+          {getDocumentPositionLabel()}
+        </span>
+
+        <Button
+          onClick={() => {
+            const nextDocument = getNextDocument();
+            if (nextDocument) {
+              navigateToDocument(nextDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getNextDocument()}
+          class="rounded-full"
+        >
+          Next
+          <div class="i-tabler-chevron-right size-4 ml-2" />
+        </Button>
+      </div>
     </div>
   );
 };
