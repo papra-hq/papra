@@ -8,6 +8,8 @@ import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import { PLAN_IDS } from '../plans/plans.constants';
 import { pick } from '../shared/objects';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -322,12 +324,18 @@ describe('intake-emails usecases', () => {
       } as unknown as PlansRepository;
 
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const planEntitlementDefinitionRegistry = createPlanEntitlementDefinitionRegistry({
+        config: overrideConfig(),
+      });
 
       // no throw as the intake email count is less than the allowed limit
       await checkIfOrganizationCanCreateNewIntakeEmail({
         organizationId: 'org-1',
         plansRepository,
         subscriptionsRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
         intakeEmailsRepository,
       });
 
@@ -341,6 +349,8 @@ describe('intake-emails usecases', () => {
           organizationId: 'org-1',
           plansRepository,
           subscriptionsRepository,
+          planEntitlementsRepository,
+          planEntitlementDefinitionRegistry,
           intakeEmailsRepository,
         }),
       ).rejects.toThrow(createIntakeEmailLimitReachedError());

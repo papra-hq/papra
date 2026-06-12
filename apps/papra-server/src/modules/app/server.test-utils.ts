@@ -17,6 +17,7 @@ import { setupDatabase } from './database/database';
 import { registerEventHandlers } from './events/events.handlers';
 import { createEventServices } from './events/events.services';
 import { createGracefulShutdownService } from './graceful-shutdown/graceful-shutdown.services';
+import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 
 export function createTestServerDependencies(
   overrides: Partial<GlobalDependencies> = {},
@@ -45,6 +46,7 @@ export function createTestServerDependencies(
       webhookRepository: createWebhookRepository({ db }),
     });
   const kvStore = overrides.kvStore ?? createKvStore({ driver: createInMemoryKvStoreDriver() });
+  const planEntitlementDefinitionRegistry = createPlanEntitlementDefinitionRegistry({ config });
 
   registerEventHandlers({
     eventServices,
@@ -69,5 +71,6 @@ export function createTestServerDependencies(
     documentSearchServices,
     webhookTriggerServices,
     kvStore,
+    planEntitlementDefinitionRegistry,
   };
 }

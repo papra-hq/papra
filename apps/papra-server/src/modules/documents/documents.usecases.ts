@@ -4,6 +4,8 @@ import type { Database } from '../app/database/database.types';
 import type { EventServices } from '../app/events/events.services';
 import type { Config } from '../config/config.types';
 import type { CustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
+import type { PlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -24,6 +26,8 @@ import pLimit from 'p-limit';
 import { buildCustomPropertiesArray } from '../custom-properties/custom-properties.models';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
 import { getOrganizationStorageLimits } from '../organizations/organizations.usecases';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
@@ -70,6 +74,8 @@ export async function createDocument({
   generateDocumentId = generateDocumentIdImpl,
   plansRepository,
   subscriptionsRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   taggingRulesRepository,
   tagsRepository,
   webhookTriggerServices,
@@ -91,6 +97,8 @@ export async function createDocument({
   generateDocumentId?: () => string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
   webhookTriggerServices: WebhookTriggerServices;
@@ -103,6 +111,8 @@ export async function createDocument({
     organizationId,
     plansRepository,
     subscriptionsRepository,
+    planEntitlementsRepository,
+    planEntitlementDefinitionRegistry,
     documentsRepository,
   });
 
@@ -183,6 +193,8 @@ export async function createDocument({
         documentsStorageService,
         plansRepository,
         subscriptionsRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
         documentId,
         taskServices,
         ocrLanguages,
@@ -223,6 +235,11 @@ export function createDocumentCreationUsecase({
     plansRepository: initialDeps.plansRepository ?? createPlansRepository({ config }),
     subscriptionsRepository:
       initialDeps.subscriptionsRepository ?? createSubscriptionsRepository({ db }),
+    planEntitlementsRepository:
+      initialDeps.planEntitlementsRepository ?? createPlanEntitlementsRepository({ db }),
+    planEntitlementDefinitionRegistry:
+      initialDeps.planEntitlementDefinitionRegistry ??
+      createPlanEntitlementDefinitionRegistry({ config }),
     taggingRulesRepository:
       initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
@@ -321,6 +338,8 @@ async function createNewDocument({
   organizationId,
   plansRepository,
   subscriptionsRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   documentsRepository,
   documentsStorageService,
   newFileStorageContext,
@@ -341,6 +360,8 @@ async function createNewDocument({
   documentsStorageService: DocumentStorageService;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   newFileStorageContext: DocumentStorageContext;
   taskServices: TaskServices;
   ocrLanguages?: string[];
@@ -354,6 +375,8 @@ async function createNewDocument({
     organizationId,
     plansRepository,
     subscriptionsRepository,
+    planEntitlementsRepository,
+    planEntitlementDefinitionRegistry,
     documentsRepository,
   });
 

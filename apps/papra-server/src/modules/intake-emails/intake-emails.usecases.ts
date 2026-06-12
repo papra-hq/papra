@@ -1,4 +1,6 @@
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
+import type { PlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -23,6 +25,8 @@ export async function createIntakeEmail({
   intakeEmailsServices,
   plansRepository,
   subscriptionsRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   intakeEmailUsernameServices,
 }: {
   userId: string;
@@ -31,12 +35,16 @@ export async function createIntakeEmail({
   intakeEmailsServices: IntakeEmailsServices;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   intakeEmailUsernameServices: IntakeEmailUsernameServices;
 }) {
   await checkIfOrganizationCanCreateNewIntakeEmail({
     organizationId,
     plansRepository,
     subscriptionsRepository,
+    planEntitlementsRepository,
+    planEntitlementDefinitionRegistry,
     intakeEmailsRepository,
   });
 
@@ -156,11 +164,15 @@ export async function checkIfOrganizationCanCreateNewIntakeEmail({
   organizationId,
   plansRepository,
   subscriptionsRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   intakeEmailsRepository,
 }: {
   organizationId: string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   intakeEmailsRepository: IntakeEmailsRepository;
 }) {
   const { intakeEmailCount } = await intakeEmailsRepository.getOrganizationIntakeEmailsCount({
@@ -170,6 +182,8 @@ export async function checkIfOrganizationCanCreateNewIntakeEmail({
     organizationId,
     plansRepository,
     subscriptionsRepository,
+    planEntitlementsRepository,
+    planEntitlementDefinitionRegistry,
   });
 
   if (intakeEmailCount >= organizationPlan.limits.maxIntakeEmailsCount) {

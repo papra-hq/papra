@@ -1,4 +1,5 @@
 import { isNil } from '../shared/utils';
+import { PLAN_PRIORITY, type PlanId } from './plans.constants';
 import { createOrganizationPlanPriceIdNotSetError } from './plans.errors';
 
 export function getPriceIdForBillingInterval({
@@ -17,4 +18,25 @@ export function getPriceIdForBillingInterval({
   }
 
   return { priceId };
+}
+
+export function getApplyablePlanId({
+  basePlanId,
+  entitlementPlanId,
+}: {
+  basePlanId: PlanId;
+  entitlementPlanId?: PlanId;
+}) {
+  if (isNil(entitlementPlanId)) {
+    return { applyablePlanId: basePlanId };
+  }
+
+  const basePlanPriority = PLAN_PRIORITY[basePlanId];
+  const entitlementPlanPriority = PLAN_PRIORITY[entitlementPlanId];
+
+  if (entitlementPlanPriority > basePlanPriority) {
+    return { applyablePlanId: entitlementPlanId };
+  }
+
+  return { applyablePlanId: basePlanId };
 }

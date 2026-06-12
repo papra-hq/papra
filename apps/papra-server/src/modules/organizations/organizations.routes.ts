@@ -3,6 +3,7 @@ import * as v from 'valibot';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -329,6 +330,7 @@ function setupInviteOrganizationMemberRoute({
   db,
   config,
   emailsServices,
+  planEntitlementDefinitionRegistry,
 }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/members/invitations',
@@ -352,6 +354,7 @@ function setupInviteOrganizationMemberRoute({
       const organizationsRepository = createOrganizationsRepository({ db });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
       const plansRepository = createPlansRepository({ config });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -362,6 +365,8 @@ function setupInviteOrganizationMemberRoute({
         organizationsRepository,
         subscriptionsRepository,
         plansRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
         inviterId: userId,
         expirationDelayDays: config.organizations.invitationExpirationDelayDays,
         maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,

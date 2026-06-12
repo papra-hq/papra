@@ -2,6 +2,8 @@ import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
 import type { EmailsServices } from '../emails/emails.services';
+import type { PlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { Logger } from '../shared/logger/logger';
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
@@ -233,6 +235,8 @@ export async function inviteMemberToOrganization({
   organizationsRepository,
   subscriptionsRepository,
   plansRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   inviterId,
   expirationDelayDays,
   maxInvitationsPerDay,
@@ -247,6 +251,8 @@ export async function inviteMemberToOrganization({
   organizationsRepository: OrganizationsRepository;
   subscriptionsRepository: SubscriptionsRepository;
   plansRepository: PlansRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   inviterId: string;
   expirationDelayDays: number;
   maxInvitationsPerDay: number;
@@ -313,6 +319,8 @@ export async function inviteMemberToOrganization({
     organizationId,
     subscriptionsRepository,
     plansRepository,
+    planEntitlementsRepository,
+    planEntitlementDefinitionRegistry,
   });
 
   if (
@@ -526,15 +534,25 @@ export async function getOrganizationStorageLimits({
   organizationId,
   plansRepository,
   subscriptionsRepository,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
   documentsRepository,
 }: {
   organizationId: string;
   plansRepository: PlansRepository;
   subscriptionsRepository: SubscriptionsRepository;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   documentsRepository: DocumentsRepository;
 }) {
   const [{ organizationPlan }, { totalDocumentsSize }] = await Promise.all([
-    getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
+    getOrganizationPlan({
+      organizationId,
+      subscriptionsRepository,
+      plansRepository,
+      planEntitlementsRepository,
+      planEntitlementDefinitionRegistry,
+    }),
     documentsRepository.getOrganizationStats({ organizationId }),
   ]);
 

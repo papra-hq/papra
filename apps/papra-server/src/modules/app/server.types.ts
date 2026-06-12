@@ -14,6 +14,7 @@ import type { Session } from './auth/auth.types';
 import type { Database } from './database/database.types';
 import type { EventServices } from './events/events.services';
 import type { ShutdownServices } from './graceful-shutdown/graceful-shutdown.services';
+import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 
 export type ServerInstanceGenerics = {
   Variables: {
@@ -41,6 +42,7 @@ export type GlobalDependencies = {
   eventServices: EventServices;
   shutdownServices: ShutdownServices;
   webhookTriggerServices: WebhookTriggerServices;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   kvStore: KvStore;
 };
 

@@ -12,8 +12,9 @@ import {
   ensureUserIsOwnerOfOrganization,
   getOrCreateOrganizationCustomerId,
 } from '../organizations/organizations.usecases';
-import { PLAN_IDS } from '../plans/plans.constants';
+import { FREE_PLANS_IDS, PLAN_IDS } from '../plans/plans.constants';
 import { getPriceIdForBillingInterval } from '../plans/plans.models';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getHeader } from '../shared/headers/headers.models';
@@ -82,6 +83,7 @@ function setupCreateCheckoutSessionRoute({
   config,
   db,
   subscriptionsServices,
+  planEntitlementDefinitionRegistry,
 }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/checkout-session',
@@ -103,6 +105,7 @@ function setupCreateCheckoutSessionRoute({
       const organizationsRepository = createOrganizationsRepository({ db });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
 
       const { planId, billingInterval } = context.req.valid('json');
       const { organizationId } = context.req.valid('param');
@@ -125,9 +128,11 @@ function setupCreateCheckoutSessionRoute({
         organizationId,
         subscriptionsRepository,
         plansRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
       });
 
-      if (organizationCurrentPlan.id !== PLAN_IDS.FREE) {
+      if (!FREE_PLANS_IDS.includes(organizationCurrentPlan.id)) {
         throw createOrganizationAlreadyHasSubscriptionError();
       }
 
@@ -266,7 +271,12 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
   );
 }
 
-function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDefinitionContext) {
+function setupGetOrganizationSubscriptionUsageRoute({
+  app,
+  db,
+  config,
+  planEntitlementDefinitionRegistry,
+}: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/usage',
     requireAuthentication(),
@@ -283,6 +293,7 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
       const documentsRepository = createDocumentsRepository({ db });
       const plansRepository = createPlansRepository({ config });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
 
       await ensureUserIsInOrganization({
         userId,
@@ -296,7 +307,13 @@ function setupGetOrganizationSubscriptionUsageRoute({ app, db, config }: RouteDe
         { intakeEmailCount },
         { membersCount },
       ] = await Promise.all([
-        getOrganizationPlan({ organizationId, subscriptionsRepository, plansRepository }),
+        getOrganizationPlan({
+          organizationId,
+          subscriptionsRepository,
+          plansRepository,
+          planEntitlementsRepository,
+          planEntitlementDefinitionRegistry,
+        }),
         documentsRepository.getOrganizationStats({ organizationId }),
         intakeEmailsRepository.getOrganizationIntakeEmailsCount({ organizationId }),
         organizationsRepository.getOrganizationMembersCount({ organizationId }),
