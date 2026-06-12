@@ -3,7 +3,7 @@ import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
-import { FREE_PLAN_ID, PLUS_PLAN_ID } from './plans.constants';
+import { PLAN_IDS } from './plans.constants';
 import { createPlansRepository } from './plans.repository';
 import { getOrganizationPlan } from './plans.usecases';
 
@@ -20,7 +20,7 @@ describe('plans usecases', () => {
           {
             id: 'org_sub_1',
             organizationId: 'organization-1',
-            planId: PLUS_PLAN_ID,
+            planId: PLAN_IDS.PLUS,
             customerId: 'cus_123',
             seatsCount: 10,
             status: 'active',
@@ -47,7 +47,7 @@ describe('plans usecases', () => {
         plansRepository,
       });
 
-      expect(organizationPlan.id).to.equal(PLUS_PLAN_ID);
+      expect(organizationPlan.id).to.equal(PLAN_IDS.PLUS);
     });
 
     test('an organization may not have any subscription, in this case the organization is considered to be on the free plan', async () => {
@@ -75,7 +75,7 @@ describe('plans usecases', () => {
         plansRepository,
       });
 
-      expect(organizationPlan.id).to.equal(FREE_PLAN_ID);
+      expect(organizationPlan.id).to.equal(PLAN_IDS.FREE);
     });
   });
 });

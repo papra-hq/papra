@@ -1,6 +1,6 @@
 import type { SubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import type { PlansRepository } from './plans.repository';
-import { FREE_PLAN_ID } from './plans.constants';
+import { PLAN_IDS } from './plans.constants';
 
 export async function getOrganizationPlan({
   organizationId,
@@ -15,7 +15,7 @@ export async function getOrganizationPlan({
     organizationId,
   });
 
-  const planId = subscription?.planId ?? FREE_PLAN_ID;
+  const planId = subscription?.planId ?? PLAN_IDS.FREE;
 
   const { organizationPlan } = await plansRepository.getOrganizationPlanById({ planId });
 

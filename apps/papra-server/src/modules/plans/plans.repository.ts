@@ -3,7 +3,7 @@ import type { OrganizationPlanRecord } from './plans.types';
 import { injectArguments } from '@corentinth/chisels';
 import { isDocumentSizeLimitEnabled } from '../documents/documents.models';
 import { IN_BYTES } from '../shared/units';
-import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from './plans.constants';
+import { PLAN_IDS } from './plans.constants';
 import { createPlanNotFoundError } from './plans.errors';
 
 export type PlansRepository = ReturnType<typeof createPlansRepository>;
@@ -27,8 +27,8 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
   const { maxUploadSize } = config.documentsStorage;
 
   const organizationPlans: Record<string, OrganizationPlanRecord> = {
-    [FREE_PLAN_ID]: {
-      id: FREE_PLAN_ID,
+    [PLAN_IDS.FREE]: {
+      id: PLAN_IDS.FREE,
       name: 'Free',
       limits: {
         maxDocumentStorageBytes: isFreePlanUnlimited
@@ -41,8 +41,8 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
           : Number.POSITIVE_INFINITY,
       },
     },
-    [PLUS_PLAN_ID]: {
-      id: PLUS_PLAN_ID,
+    [PLAN_IDS.PLUS]: {
+      id: PLAN_IDS.PLUS,
       name: 'Plus',
       monthlyPriceId: config.organizationPlans.plusPlanMonthlyPriceId,
       annualPriceId: config.organizationPlans.plusPlanAnnualPriceId,
@@ -53,8 +53,8 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
         maxFileSize: 100 * IN_BYTES.MEGABYTE, // 100 MiB
       },
     },
-    [PRO_PLAN_ID]: {
-      id: PRO_PLAN_ID,
+    [PLAN_IDS.PRO]: {
+      id: PLAN_IDS.PRO,
       name: 'Pro',
       monthlyPriceId: config.organizationPlans.proPlanMonthlyPriceId,
       annualPriceId: config.organizationPlans.proPlanAnnualPriceId,
