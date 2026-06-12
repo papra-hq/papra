@@ -20,7 +20,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
-import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import {
+  fetchDocument,
+  fetchDocumentFile,
+  fetchOrganizationDocuments,
+} from '@/modules/documents/documents.services';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
@@ -144,6 +148,67 @@ function ErrorState({
   );
 }
 
+function DocumentNavigationBar({
+  canGoPrevious,
+  canGoNext,
+  positionLabel,
+  styles,
+  themeColors,
+  onPrevious,
+  onNext,
+}: {
+  canGoPrevious: boolean;
+  canGoNext: boolean;
+  positionLabel: string;
+  styles: ReturnType<typeof createStyles>;
+  themeColors: ThemeColors;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <View style={styles.navigationBar}>
+      <TouchableOpacity
+        style={[styles.navigationButton, !canGoPrevious && styles.navigationButtonDisabled]}
+        onPress={onPrevious}
+        disabled={!canGoPrevious}
+      >
+        <MaterialCommunityIcons
+          name="chevron-left"
+          size={24}
+          color={canGoPrevious ? themeColors.foreground : themeColors.mutedForeground}
+        />
+        <Text
+          style={[
+            styles.navigationButtonText,
+            !canGoPrevious && styles.navigationButtonTextDisabled,
+          ]}
+        >
+          Previous
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.navigationPosition}>{positionLabel}</Text>
+
+      <TouchableOpacity
+        style={[styles.navigationButton, !canGoNext && styles.navigationButtonDisabled]}
+        onPress={onNext}
+        disabled={!canGoNext}
+      >
+        <Text
+          style={[styles.navigationButtonText, !canGoNext && styles.navigationButtonTextDisabled]}
+        >
+          Next
+        </Text>
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={24}
+          color={canGoNext ? themeColors.foreground : themeColors.mutedForeground}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 export default function DocumentViewScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ documentId: string; organizationId: string }>();
@@ -204,10 +269,56 @@ export default function DocumentViewScreen() {
     enabled: documentQuery.isSuccess && documentQuery.data != null,
   });
 
+  const navigationDocumentsQuery = useQuery({
+    queryKey: ['organizations', organizationId, 'documents', 'viewer-navigation'],
+    queryFn: async () =>
+      fetchOrganizationDocuments({
+        organizationId,
+        pageIndex: 0,
+        pageSize: 100,
+        apiClient,
+      }),
+  });
+
+  const navigationDocuments: CoerceDates<Document>[] =
+    navigationDocumentsQuery.data?.documents ?? [];
+  const currentDocumentIndex = navigationDocuments.findIndex(
+    (document) => document.id === documentId,
+  );
+  const previousDocument =
+    currentDocumentIndex > 0 ? navigationDocuments[currentDocumentIndex - 1] : undefined;
+  const nextDocument =
+    currentDocumentIndex >= 0 ? navigationDocuments[currentDocumentIndex + 1] : undefined;
+  const positionLabel =
+    navigationDocuments.length === 0 || currentDocumentIndex < 0
+      ? 'Document'
+      : `${currentDocumentIndex + 1} of ${navigationDocuments.length}`;
+
+  const navigateToDocument = (targetDocumentId: string) => {
+    router.replace({
+      pathname: '/(app)/document/view',
+      params: {
+        documentId: targetDocumentId,
+        organizationId,
+      },
+    });
+  };
+
+  const handleDeletedDocument = () => {
+    const fallbackDocument = nextDocument ?? previousDocument;
+
+    if (fallbackDocument == null) {
+      router.back();
+      return;
+    }
+
+    navigateToDocument(fallbackDocument.id);
+  };
+
   const isLoading = documentQuery.isLoading || documentFileQuery.isLoading;
   const error = documentQuery.error ?? documentFileQuery.error;
   const documentFile = documentFileQuery.data;
-  const documentName = documentFile?.doc.name ?? 'Document';
+  const documentName = documentFile?.doc.name ?? documentQuery.data?.document.name ?? 'Document';
 
   const handleShowError = (message: string) => {
     showAlert({ title: 'Error', message });
@@ -261,12 +372,31 @@ export default function DocumentViewScreen() {
 
       <DocumentActionSheet
         visible={isActionSheetVisible}
-        document={documentFile?.doc}
+        document={documentFile?.doc ?? documentQuery.data?.document}
         onClose={() => setIsActionSheetVisible(false)}
         excludedActions={['view']}
+        onDeleted={handleDeletedDocument}
       />
 
       {renderContent()}
+
+      <DocumentNavigationBar
+        canGoPrevious={previousDocument != null}
+        canGoNext={nextDocument != null}
+        positionLabel={positionLabel}
+        styles={styles}
+        themeColors={themeColors}
+        onPrevious={() => {
+          if (previousDocument != null) {
+            navigateToDocument(previousDocument.id);
+          }
+        }}
+        onNext={() => {
+          if (nextDocument != null) {
+            navigateToDocument(nextDocument.id);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -337,6 +467,45 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       fontSize: 14,
       color: themeColors.mutedForeground,
       marginTop: 8,
+      textAlign: 'center',
+    },
+    navigationBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderTopWidth: 1,
+      borderTopColor: themeColors.border,
+      backgroundColor: themeColors.background,
+      gap: 12,
+    },
+    navigationButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 104,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderRadius: 20,
+      backgroundColor: themeColors.secondaryBackground,
+    },
+    navigationButtonDisabled: {
+      opacity: 0.45,
+    },
+    navigationButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: themeColors.foreground,
+    },
+    navigationButtonTextDisabled: {
+      color: themeColors.mutedForeground,
+    },
+    navigationPosition: {
+      flex: 1,
+      fontSize: 13,
+      fontWeight: '600',
+      color: themeColors.mutedForeground,
       textAlign: 'center',
     },
     actionButton: {

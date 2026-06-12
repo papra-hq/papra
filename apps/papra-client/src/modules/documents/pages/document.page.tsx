@@ -56,7 +56,12 @@ import {
   useDownloadDocument,
   useRestoreDocument,
 } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities, updateDocument } from '../documents.services';
+import {
+  fetchDocument,
+  fetchDocumentActivities,
+  fetchOrganizationDocuments,
+  updateDocument,
+} from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
@@ -340,10 +345,46 @@ export const DocumentPage: Component = () => {
     initialPageParam: 0,
   }));
 
+  const documentNavigationQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
+    queryFn: () =>
+      fetchOrganizationDocuments({
+        organizationId: params.organizationId,
+        pageIndex: 0,
+        pageSize: 100,
+      }),
+  }));
+
+  const getNavigationDocuments = () => documentNavigationQuery.data?.documents ?? [];
+  const getCurrentDocumentIndex = () =>
+    getNavigationDocuments().findIndex((document) => document.id === params.documentId);
+  const getPreviousDocument = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex > 0 ? getNavigationDocuments()[currentIndex - 1] : undefined;
+  };
+  const getNextDocument = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex >= 0 ? getNavigationDocuments()[currentIndex + 1] : undefined;
+  };
+  const getDocumentPositionLabel = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    const documentsCount = getNavigationDocuments().length;
+
+    if (documentsCount === 0 || currentIndex < 0) {
+      return 'Document';
+    }
+
+    return `${currentIndex + 1} of ${documentsCount}`;
+  };
+  const navigateToDocument = (documentId: string) =>
+    navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
+
   const deleteDoc = async () => {
     if (!documentQuery.data) {
       return;
     }
+
+    const fallbackDocument = getNextDocument() ?? getPreviousDocument();
 
     const { hasDeleted } = await deleteDocument({
       documentId: params.documentId,
@@ -352,6 +393,11 @@ export const DocumentPage: Component = () => {
     });
 
     if (!hasDeleted) {
+      return;
+    }
+
+    if (fallbackDocument) {
+      navigateToDocument(fallbackDocument.id);
       return;
     }
 
@@ -387,6 +433,42 @@ export const DocumentPage: Component = () => {
                     <div class="i-tabler-pencil size-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
+
+                  <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <Button
+                      onClick={() => {
+                        const previousDocument = getPreviousDocument();
+                        if (previousDocument) {
+                          navigateToDocument(previousDocument.id);
+                        }
+                      }}
+                      variant="outline"
+                      size="sm"
+                      disabled={!getPreviousDocument()}
+                    >
+                      <div class="i-tabler-chevron-left size-4 mr-2" />
+                      Previous
+                    </Button>
+
+                    <span class="text-sm text-muted-foreground px-2">
+                      {getDocumentPositionLabel()}
+                    </span>
+
+                    <Button
+                      onClick={() => {
+                        const nextDocument = getNextDocument();
+                        if (nextDocument) {
+                          navigateToDocument(nextDocument.id);
+                        }
+                      }}
+                      variant="outline"
+                      size="sm"
+                      disabled={!getNextDocument()}
+                    >
+                      Next
+                      <div class="i-tabler-chevron-right size-4 ml-2" />
+                    </Button>
+                  </div>
 
                   <div class="flex gap-2 mb-2">
                     <Button

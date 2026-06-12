@@ -3,6 +3,7 @@ import type { Document } from '@/modules/documents/documents.types';
 import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
+import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
@@ -13,9 +14,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { useAuthClient } from '@/modules/api/providers/api.provider';
+import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
-import { fetchDocumentFile } from '@/modules/documents/documents.services';
+import { deleteDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -25,20 +26,24 @@ type DocumentActionSheetProps = {
   document: CoerceDates<Document> | undefined;
   onClose: () => void;
   excludedActions?: ActionsKey[];
+  onDeleted?: (document: CoerceDates<Document>) => void;
 };
 
-export type ActionsKey = 'view' | 'share';
+export type ActionsKey = 'view' | 'share' | 'delete';
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
   excludedActions = [],
+  onDeleted,
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
   const authClient = useAuthClient();
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
 
   if (document === undefined) {
     return null;
@@ -103,6 +108,44 @@ export function DocumentActionSheet({
     }
   };
 
+  const handleDelete = () => {
+    onClose();
+
+    showAlert({
+      title: 'Move document to trash?',
+      message: `The document "${document.name}" will be moved to trash.`,
+      buttons: [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Move to trash',
+          style: 'destructive',
+          onPress: () => {
+            void (async () => {
+              try {
+                await deleteDocument({
+                  documentId: document.id,
+                  organizationId: document.organizationId,
+                  apiClient,
+                });
+
+                onDeleted?.(document);
+
+                await queryClient.invalidateQueries({
+                  queryKey: ['organizations', document.organizationId, 'documents'],
+                });
+              } catch {
+                showAlert({
+                  title: 'Error',
+                  message: 'Failed to move document to trash',
+                });
+              }
+            })();
+          },
+        },
+      ],
+    });
+  };
+
   // Extract MIME type subtype, fallback to full MIME type if subtype is missing
   const mimeParts = document.mimeType.split('/');
   const mimeSubtype = mimeParts[1];
@@ -121,6 +164,12 @@ export function DocumentActionSheet({
       label: 'Share',
       icon: 'share',
       onPress: handleDownloadAndShare,
+    },
+    {
+      key: 'delete',
+      label: 'Move to trash',
+      icon: 'trash-2',
+      onPress: handleDelete,
     },
   ];
   const filteredActions = actions.filter((action) => !excludedActions.includes(action.key));
