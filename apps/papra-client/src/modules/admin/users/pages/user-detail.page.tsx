@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 import { safely } from '@corentinth/chisels';
 import { A, useNavigate, useParams } from '@solidjs/router';
 import { useQuery, useQueryClient } from '@tanstack/solid-query';
-import { For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
@@ -27,7 +27,9 @@ import {
   TableRow,
 } from '@/modules/ui/components/table';
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
-import { deleteUser, getUserDetail } from '../users.services';
+import { GrantPlanEntitlementDialog } from '../components/grant-plan-entitlement-dialog.component';
+import { deleteUser, getUserDetail, revokePlanEntitlement } from '../users.services';
+import { useConfig } from '@/modules/config/config.provider';
 
 export const AdminUserDetailPage: Component = () => {
   const { t } = useI18n();
@@ -37,11 +39,47 @@ export const AdminUserDetailPage: Component = () => {
   const { confirm } = useConfirmModal();
   const { getErrorMessage } = useI18nApiErrors({ t });
   const { user: currentUser } = useCurrentUser();
+  const { config } = useConfig();
+
+  const [getIsGrantDialogOpen, setIsGrantDialogOpen] = createSignal(false);
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'users', params.userId],
     queryFn: () => getUserDetail({ userId: params.userId }),
   }));
+
+  const handleRevokeEntitlement = async (planEntitlement: { id: string; type: string }) => {
+    const confirmed = await confirm({
+      title: t('admin.user-detail.plan-entitlements.revoke.confirm.title'),
+      message: t('admin.user-detail.plan-entitlements.revoke.confirm.message'),
+      confirmButton: {
+        text: t('admin.user-detail.plan-entitlements.revoke.confirm.confirm-button'),
+        variant: 'destructive',
+      },
+      cancelButton: {
+        text: t('admin.user-detail.plan-entitlements.revoke.confirm.cancel-button'),
+      },
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    const [, error] = await safely(
+      revokePlanEntitlement({ userId: params.userId, planEntitlementId: planEntitlement.id }),
+    );
+
+    if (error) {
+      createToast({ type: 'error', message: getErrorMessage({ error }) });
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ['admin', 'users', params.userId] });
+    createToast({
+      type: 'success',
+      message: t('admin.user-detail.plan-entitlements.revoke.success'),
+    });
+  };
 
   const handleDelete = async (targetUser: { id: string; email: string }) => {
     const confirmed = await confirm({
@@ -258,6 +296,131 @@ export const AdminUserDetailPage: Component = () => {
                   </Show>
                 </CardContent>
               </Card>
+
+              {config.isSubscriptionsEnabled && (
+                <Card>
+                  <CardHeader class="flex-row items-start justify-between space-y-0 gap-4">
+                    <div class="space-y-1.5">
+                      <CardTitle>{t('admin.user-detail.plan-entitlements.title')}</CardTitle>
+                      <CardDescription>
+                        {t('admin.user-detail.plan-entitlements.description')}
+                      </CardDescription>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      class="flex-shrink-0"
+                      disabled={data().availablePlanEntitlementTypes.every((type) =>
+                        data().planEntitlements.some((entitlement) => entitlement.type === type),
+                      )}
+                      onClick={() => setIsGrantDialogOpen(true)}
+                    >
+                      <div class="i-tabler-plus size-4 mr-2" />
+                      {t('admin.user-detail.plan-entitlements.grant.button')}
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <Show
+                      when={data().planEntitlements.length > 0}
+                      fallback={
+                        <p class="text-sm text-muted-foreground">
+                          {t('admin.user-detail.plan-entitlements.empty')}
+                        </p>
+                      }
+                    >
+                      <div class="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>
+                                {t('admin.user-detail.plan-entitlements.table.type')}
+                              </TableHead>
+                              <TableHead>
+                                {t('admin.user-detail.plan-entitlements.table.source')}
+                              </TableHead>
+                              <TableHead>
+                                {t('admin.user-detail.plan-entitlements.table.granted')}
+                              </TableHead>
+                              <TableHead>
+                                {t('admin.user-detail.plan-entitlements.table.expires')}
+                              </TableHead>
+                              <TableHead />
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <For each={data().planEntitlements}>
+                              {(entitlement) => (
+                                <TableRow>
+                                  <TableCell>
+                                    <Badge variant="secondary" class="font-mono">
+                                      {entitlement.type}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge variant="outline" class="font-mono">
+                                      {entitlement.source}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <RelativeTime
+                                      class="text-sm"
+                                      date={new Date(entitlement.grantedAt)}
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    <Show
+                                      when={entitlement.expiresAt}
+                                      fallback={
+                                        <span class="text-sm text-muted-foreground">
+                                          {t('admin.user-detail.plan-entitlements.never-expires')}
+                                        </span>
+                                      }
+                                    >
+                                      {(getExpiresAt) => (
+                                        <span class="flex items-center gap-2">
+                                          <RelativeTime
+                                            class="text-sm"
+                                            date={new Date(getExpiresAt())}
+                                          />
+                                          <Show when={new Date(getExpiresAt()) < new Date()}>
+                                            <Badge variant="destructive" class="text-xs">
+                                              {t('admin.user-detail.plan-entitlements.expired')}
+                                            </Badge>
+                                          </Show>
+                                        </span>
+                                      )}
+                                    </Show>
+                                  </TableCell>
+                                  <TableCell class="text-right">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      class="text-destructive"
+                                      onClick={() => handleRevokeEntitlement(entitlement)}
+                                    >
+                                      {t('admin.user-detail.plan-entitlements.revoke.button')}
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </For>
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </Show>
+                  </CardContent>
+                </Card>
+              )}
+
+              <GrantPlanEntitlementDialog
+                userId={params.userId}
+                availableTypes={data().availablePlanEntitlementTypes.filter(
+                  (type) =>
+                    !data().planEntitlements.some((entitlement) => entitlement.type === type),
+                )}
+                open={getIsGrantDialogOpen()}
+                onOpenChange={setIsGrantDialogOpen}
+              />
 
               <Card class="border-destructive">
                 <CardHeader>

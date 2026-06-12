@@ -8,6 +8,13 @@ import { organizationMembersTable } from '../organizations/organizations.table';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import type { Logger } from '@crowlog/logger';
 import { createLogger } from '../shared/logger/logger';
+import { isUniqueConstraintError } from '../shared/db/constraints.models';
+import type { PlanEntitlementSource } from './plan-entitlements.constants';
+import type { PlanEntitlementType } from './plan-entitlements.registry';
+import {
+  createPlanEntitlementAlreadyExistsError,
+  createPlanEntitlementNotFoundError,
+} from './plan-entitlements.errors';
 
 export type PlanEntitlementsRepository = ReturnType<typeof createPlanEntitlementsRepository>;
 
@@ -20,7 +27,88 @@ export function createPlanEntitlementsRepository({
   clock?: Clock;
   logger?: Logger;
 }) {
-  return injectArguments({ getActiveEntitlementForOrganization }, { db, clock, logger });
+  return injectArguments(
+    {
+      getActiveEntitlementForOrganization,
+      getUserPlanEntitlements,
+      createPlanEntitlement,
+      deleteUserPlanEntitlement,
+    },
+    { db, clock, logger },
+  );
+}
+
+async function getUserPlanEntitlements({ db, userId }: { db: Database; userId: string }) {
+  const planEntitlements = await db
+    .select()
+    .from(planEntitlementsTable)
+    .where(eq(planEntitlementsTable.userId, userId));
+
+  return { planEntitlements };
+}
+
+async function createPlanEntitlement({
+  db,
+  userId,
+  type,
+  source,
+  expiresAt,
+  lastVerifiedAt,
+  clock = systemClock,
+}: {
+  db: Database;
+  userId: string;
+  type: PlanEntitlementType;
+  source: PlanEntitlementSource;
+  expiresAt?: Date | null;
+  lastVerifiedAt?: Date | null;
+  clock?: Clock;
+}) {
+  try {
+    const [planEntitlement] = await db
+      .insert(planEntitlementsTable)
+      .values({
+        userId,
+        type,
+        source,
+        expiresAt: expiresAt ?? null,
+        lastVerifiedAt: lastVerifiedAt ?? null,
+        grantedAt: new Date(clock.now().epochMilliseconds),
+      })
+      .returning();
+
+    return { planEntitlement };
+  } catch (error) {
+    if (isUniqueConstraintError({ error })) {
+      throw createPlanEntitlementAlreadyExistsError();
+    }
+
+    throw error;
+  }
+}
+
+async function deleteUserPlanEntitlement({
+  db,
+  planEntitlementId,
+  userId,
+}: {
+  db: Database;
+  planEntitlementId: string;
+  userId: string;
+}) {
+  const deleted = await db
+    .delete(planEntitlementsTable)
+    .where(
+      and(
+        eq(planEntitlementsTable.id, planEntitlementId),
+        eq(planEntitlementsTable.userId, userId),
+      ),
+    )
+    .returning({ id: planEntitlementsTable.id });
+
+  if (deleted.length === 0) {
+    throw createPlanEntitlementNotFoundError();
+  }
 }
 
 async function getActiveEntitlementForOrganization({

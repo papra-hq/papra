@@ -46,7 +46,9 @@ export function createTestServerDependencies(
       webhookRepository: createWebhookRepository({ db }),
     });
   const kvStore = overrides.kvStore ?? createKvStore({ driver: createInMemoryKvStoreDriver() });
-  const planEntitlementDefinitionRegistry = createPlanEntitlementDefinitionRegistry({ config });
+  const planEntitlementDefinitionRegistry =
+    overrides.planEntitlementDefinitionRegistry ??
+    createPlanEntitlementDefinitionRegistry({ config });
 
   registerEventHandlers({
     eventServices,
