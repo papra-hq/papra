@@ -7,6 +7,8 @@ import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
@@ -496,6 +498,8 @@ describe('organizations usecases', () => {
         organizationsRepository,
         subscriptionsRepository,
         plansRepository,
+        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
         expirationDelayDays: 7,
         maxInvitationsPerDay: 10,
@@ -513,6 +517,8 @@ describe('organizations usecases', () => {
         organizationsRepository,
         subscriptionsRepository,
         plansRepository,
+        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-2',
         expirationDelayDays: 7,
         maxInvitationsPerDay: 10,
@@ -531,6 +537,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-3',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,
@@ -590,6 +598,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,
@@ -658,6 +668,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,
@@ -731,6 +743,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,
@@ -802,6 +816,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,
@@ -882,6 +898,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 2,
@@ -930,6 +948,8 @@ describe('organizations usecases', () => {
         organizationsRepository,
         subscriptionsRepository,
         plansRepository,
+        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
         expirationDelayDays: 7,
         maxInvitationsPerDay: 10,
@@ -1006,6 +1026,8 @@ describe('organizations usecases', () => {
           organizationsRepository,
           subscriptionsRepository,
           plansRepository,
+          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-2',
           expirationDelayDays: 7,
           maxInvitationsPerDay: 10,

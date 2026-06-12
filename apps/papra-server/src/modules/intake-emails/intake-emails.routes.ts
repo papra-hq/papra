@@ -8,6 +8,7 @@ import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { createError } from '../shared/errors/errors';
 import { getHeader } from '../shared/headers/headers.models';
@@ -73,7 +74,12 @@ function setupGetOrganizationIntakeEmailsRoute({ app, db }: RouteDefinitionConte
   );
 }
 
-function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext) {
+function setupCreateIntakeEmailRoute({
+  app,
+  db,
+  config,
+  planEntitlementDefinitionRegistry,
+}: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/intake-emails',
     requireAuthentication(),
@@ -92,6 +98,7 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
       const intakeEmailsServices = createIntakeEmailsServices({ config });
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
       const intakeEmailUsernameServices = createIntakeEmailUsernameServices({
         config,
         usersRepository,
@@ -107,6 +114,8 @@ function setupCreateIntakeEmailRoute({ app, db, config }: RouteDefinitionContext
         intakeEmailsServices,
         plansRepository,
         subscriptionsRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
         intakeEmailUsernameServices,
       });
 

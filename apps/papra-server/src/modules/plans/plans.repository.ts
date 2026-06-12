@@ -26,19 +26,31 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
   const { isFreePlanUnlimited } = config.organizationPlans;
   const { maxUploadSize } = config.documentsStorage;
 
+  const freePlanLimits = {
+    maxDocumentStorageBytes: isFreePlanUnlimited
+      ? Number.POSITIVE_INFINITY
+      : 500 * IN_BYTES.MEGABYTE,
+    maxIntakeEmailsCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1,
+    maxOrganizationsMembersCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 3,
+    maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize })
+      ? maxUploadSize
+      : Number.POSITIVE_INFINITY,
+  };
+
   const organizationPlans: Record<string, OrganizationPlanRecord> = {
     [PLAN_IDS.FREE]: {
       id: PLAN_IDS.FREE,
       name: 'Free',
+      limits: freePlanLimits,
+    },
+    [PLAN_IDS.FREE_EXTENDED]: {
+      id: PLAN_IDS.FREE_EXTENDED,
+      name: 'Free Extended',
       limits: {
-        maxDocumentStorageBytes: isFreePlanUnlimited
-          ? Number.POSITIVE_INFINITY
-          : 500 * IN_BYTES.MEGABYTE,
-        maxIntakeEmailsCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1,
-        maxOrganizationsMembersCount: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 3,
-        maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize })
-          ? maxUploadSize
-          : Number.POSITIVE_INFINITY,
+        maxDocumentStorageBytes: freePlanLimits.maxDocumentStorageBytes * 2,
+        maxIntakeEmailsCount: freePlanLimits.maxIntakeEmailsCount * 2,
+        maxOrganizationsMembersCount: freePlanLimits.maxOrganizationsMembersCount * 2,
+        maxFileSize: freePlanLimits.maxFileSize, // Same file size limit as Free plan
       },
     },
     [PLAN_IDS.PLUS]: {

@@ -32,6 +32,7 @@ import {
 } from '../../webhooks/webhooks.tables';
 import { accountsTable, sessionsTable, twoFactorTable } from '../auth/auth.tables';
 import { setupDatabase } from './database';
+import { planEntitlementsTable } from '../../plan-entitlements/plan-entitlements.tables';
 
 export { createInMemoryDatabase, seedDatabase };
 
@@ -68,6 +69,7 @@ const seedTables = {
   organizationMembers: organizationMembersTable,
   organizations: organizationsTable,
   organizationSubscriptions: organizationSubscriptionsTable,
+  planEntitlements: planEntitlementsTable,
   sessions: sessionsTable,
   taggingRuleActions: taggingRuleActionsTable,
   taggingRuleConditions: taggingRuleConditionsTable,

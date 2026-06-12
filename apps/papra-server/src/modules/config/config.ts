@@ -37,6 +37,7 @@ import {
   urlSchema,
 } from './config.schemas';
 import { getCommitInfo } from './config.usecases';
+import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 
 export const configDefinition = {
   env: {
@@ -171,6 +172,7 @@ export const configDefinition = {
   tracking: trackingConfig,
   webhooks: webhookConfig,
   kvStore: kvStoreConfig,
+  planEntitlements: planEntitlementsConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

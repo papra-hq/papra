@@ -7,6 +7,7 @@ import { createCustomPropertiesRepository } from '../custom-properties/custom-pr
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { createQueryPaginationSchemaKeys } from '../shared/schemas/pagination.schemas';
@@ -58,7 +59,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
 }
 
 function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
-  const { config, db } = deps;
+  const { config, db, planEntitlementDefinitionRegistry } = deps;
 
   app.post(
     '/api/organizations/:organizationId/documents',
@@ -78,11 +79,14 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
       // Get organization's plan-specific upload limit
       const plansRepository = createPlansRepository({ config });
       const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
 
       const { organizationPlan } = await getOrganizationPlan({
         organizationId,
         plansRepository,
         subscriptionsRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
       });
       const { maxFileSize } = organizationPlan.limits;
 

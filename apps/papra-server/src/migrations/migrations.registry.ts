@@ -23,6 +23,7 @@ import { kvStoreMigration } from './list/0020-kv-store.migration';
 import { documentShareLinksMigration } from './list/0021-document-share-links.migration';
 import { documentsNotesMigration } from './list/0022-documents-notes.migration';
 import { documentViewsMigration } from './list/0023-document-views.migration';
+import { userPlanEntitlementsMigration } from './list/0024-user-plan-entitlements.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -48,4 +49,5 @@ export const migrations: Migration[] = [
   documentShareLinksMigration,
   documentsNotesMigration,
   documentViewsMigration,
+  userPlanEntitlementsMigration,
 ];
