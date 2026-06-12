@@ -5,7 +5,7 @@ import { createServer } from '../../app/server';
 import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
-import { PLUS_PLAN_ID, PRO_PLAN_ID } from '../../plans/plans.constants';
+import { PLAN_IDS } from '../../plans/plans.constants';
 import { documentsTable } from '../documents.table';
 import { createInMemoryDocumentStorageServices } from '../storage/documents.storage.services.test-utils';
 
@@ -302,7 +302,7 @@ describe('documents e2e', () => {
             id: 'sub_plus123',
             customerId: 'cus_plus123',
             organizationId: 'org_222222222222222222222222',
-            planId: PLUS_PLAN_ID,
+            planId: PLAN_IDS.PLUS,
             status: 'active',
             seatsCount: 5,
             currentPeriodStart: new Date('2024-01-01'),
@@ -372,7 +372,7 @@ describe('documents e2e', () => {
             id: 'sub_pro123',
             customerId: 'cus_pro123',
             organizationId: 'org_333333333333333333333333',
-            planId: PRO_PLAN_ID,
+            planId: PLAN_IDS.PRO,
             status: 'active',
             seatsCount: 20,
             currentPeriodStart: new Date('2024-01-01'),

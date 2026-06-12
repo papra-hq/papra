@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '../components/select';
 import { SidenavLayout } from './sidenav.layout';
+import { PLAN_IDS } from '@papra/app-server/plans/constants';
 
 const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { t } = useI18n();
@@ -42,7 +43,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
       return false;
     }
 
-    return query.data && query.data.plan.id === 'free';
+    return query.data && query.data.plan.id === PLAN_IDS.FREE;
   };
 
   return (

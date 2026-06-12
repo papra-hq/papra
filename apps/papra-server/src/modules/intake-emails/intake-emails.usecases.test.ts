@@ -8,7 +8,7 @@ import { overrideConfig } from '../config/config.test-utils';
 import { documentsTable } from '../documents/documents.table';
 import { createDocumentCreationUsecase } from '../documents/documents.usecases';
 import { createInMemoryDocumentStorageServices } from '../documents/storage/documents.storage.services.test-utils';
-import { PLUS_PLAN_ID } from '../plans/plans.constants';
+import { PLAN_IDS } from '../plans/plans.constants';
 import { pick } from '../shared/objects';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
@@ -301,7 +301,7 @@ describe('intake-emails usecases', () => {
             currentPeriodStart: new Date('2025-03-18T00:00:00.000Z'),
             currentPeriodEnd: new Date('2025-04-18T00:00:00.000Z'),
             customerId: 'sc_123',
-            planId: PLUS_PLAN_ID,
+            planId: PLAN_IDS.PLUS,
           },
         ],
       });
@@ -310,7 +310,7 @@ describe('intake-emails usecases', () => {
       const plansRepository = {
         getOrganizationPlanById: async () => ({
           organizationPlan: {
-            id: PLUS_PLAN_ID,
+            id: PLAN_IDS.PLUS,
             name: 'Plus',
             limits: {
               maxIntakeEmailsCount: 2,

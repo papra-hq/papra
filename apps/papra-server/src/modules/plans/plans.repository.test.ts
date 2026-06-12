@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { overrideConfig } from '../config/config.test-utils';
-import { FREE_PLAN_ID } from './plans.constants';
+import { PLAN_IDS } from './plans.constants';
 import { getOrganizationPlansRecords } from './plans.repository';
 
 describe('plans repository', () => {
@@ -32,7 +32,7 @@ describe('plans repository', () => {
 
       const { organizationPlans } = getOrganizationPlansRecords({ config });
 
-      expect(organizationPlans[FREE_PLAN_ID]!.limits).to.deep.equal({
+      expect(organizationPlans[PLAN_IDS.FREE]!.limits).to.deep.equal({
         maxDocumentStorageBytes: Number.POSITIVE_INFINITY,
         maxIntakeEmailsCount: Number.POSITIVE_INFINITY,
         maxOrganizationsMembersCount: Number.POSITIVE_INFINITY,

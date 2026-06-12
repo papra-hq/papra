@@ -3,7 +3,6 @@ import type { Component, JSX } from 'solid-js';
 import { safely } from '@corentinth/chisels';
 import { createSignal, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { PLUS_PLAN_ID, PRO_PLAN_ID } from '@/modules/plans/plans.constants';
 import { cn } from '@/modules/shared/style/cn';
 import { Button } from '@/modules/ui/components/button';
 import {
@@ -15,6 +14,7 @@ import {
   DialogTrigger,
 } from '@/modules/ui/components/dialog';
 import { getCheckoutUrl } from '../subscriptions.services';
+import { PLAN_IDS } from '@papra/app-server/plans/constants';
 
 // Hardcoded global reduction configuration, will be replaced by a dynamic configuration later
 const globalReduction = {
@@ -331,12 +331,12 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
           <PlanCard {...currentPlan} billingInterval={getBillingInterval()} />
           <PlanCard
             {...plusPlan}
-            onUpgrade={() => onUpgrade(PLUS_PLAN_ID)}
+            onUpgrade={() => onUpgrade(PLAN_IDS.PLUS)}
             billingInterval={getBillingInterval()}
           />
           <PlanCard
             {...proPlan}
-            onUpgrade={() => onUpgrade(PRO_PLAN_ID)}
+            onUpgrade={() => onUpgrade(PLAN_IDS.PRO)}
             billingInterval={getBillingInterval()}
           />
         </div>

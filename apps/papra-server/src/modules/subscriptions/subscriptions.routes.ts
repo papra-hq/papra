@@ -12,7 +12,7 @@ import {
   ensureUserIsOwnerOfOrganization,
   getOrCreateOrganizationCustomerId,
 } from '../organizations/organizations.usecases';
-import { FREE_PLAN_ID, PLUS_PLAN_ID, PRO_PLAN_ID } from '../plans/plans.constants';
+import { PLAN_IDS } from '../plans/plans.constants';
 import { getPriceIdForBillingInterval } from '../plans/plans.models';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
@@ -93,7 +93,7 @@ function setupCreateCheckoutSessionRoute({
     ),
     validateJsonBody(
       v.strictObject({
-        planId: v.picklist([PLUS_PLAN_ID, PRO_PLAN_ID]),
+        planId: v.picklist([PLAN_IDS.PLUS, PLAN_IDS.PRO]),
         billingInterval: v.optional(v.picklist(['monthly', 'annual']), 'monthly'),
       }),
     ),
@@ -127,7 +127,7 @@ function setupCreateCheckoutSessionRoute({
         plansRepository,
       });
 
-      if (organizationCurrentPlan.id !== FREE_PLAN_ID) {
+      if (organizationCurrentPlan.id !== PLAN_IDS.FREE) {
         throw createOrganizationAlreadyHasSubscriptionError();
       }
 
@@ -246,7 +246,7 @@ function setupGetOrganizationSubscriptionRoute({ app, db, config }: RouteDefinit
       });
 
       const { organizationPlan } = await plansRepository.getOrganizationPlanById({
-        planId: subscription?.planId ?? FREE_PLAN_ID,
+        planId: subscription?.planId ?? PLAN_IDS.FREE,
       });
 
       return context.json({
