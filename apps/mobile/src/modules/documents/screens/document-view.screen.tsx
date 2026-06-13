@@ -344,46 +344,6 @@ export default function DocumentViewScreen() {
     navigateToDocument(fallbackDocument.id);
   };
 
-const navigationDocumentsQuery = useQuery({
-    queryKey: ['organizations', organizationId, 'documents', 'viewer-navigation'],
-    queryFn: async () => fetchAllNavigationDocuments({ organizationId, apiClient }),
-  });
-
-  const navigationDocuments: CoerceDates<Document>[] =
-    navigationDocumentsQuery.data?.documents ?? [];
-  const currentDocumentIndex = navigationDocuments.findIndex(
-    (document) => document.id === documentId,
-  );
-  const previousDocument =
-    currentDocumentIndex > 0 ? navigationDocuments[currentDocumentIndex - 1] : undefined;
-  const nextDocument =
-    currentDocumentIndex >= 0 ? navigationDocuments[currentDocumentIndex + 1] : undefined;
-  const positionLabel =
-    navigationDocuments.length === 0 || currentDocumentIndex < 0
-      ? 'Document'
-      : `${currentDocumentIndex + 1} of ${navigationDocuments.length}`;
-
-  const navigateToDocument = (targetDocumentId: string) => {
-    router.replace({
-      pathname: '/(app)/document/view',
-      params: {
-        documentId: targetDocumentId,
-        organizationId,
-      },
-    });
-  };
-
-  const handleDeletedDocument = () => {
-    const fallbackDocument = nextDocument ?? previousDocument;
-
-    if (fallbackDocument == null) {
-      router.back();
-      return;
-    }
-
-    navigateToDocument(fallbackDocument.id);
-  };
-
   const isLoading = documentQuery.isLoading || documentFileQuery.isLoading;
   const error = documentQuery.error ?? documentFileQuery.error;
   const documentFile = documentFileQuery.data;
