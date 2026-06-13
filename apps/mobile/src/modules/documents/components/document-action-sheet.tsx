@@ -190,7 +190,7 @@ export function DocumentActionSheet({
                   <Text style={styles.documentName} numberOfLines={2}>
                     {document.name}
                   </Text>
-                  <Text style={styles.documentMeta}>
+                  <Text style={styles.documentMeta} numberOfLines={1}>
                     {displayMimeType}
                     {' · '}
                     {formatBytes({ bytes: document.originalSize })}
@@ -231,6 +231,8 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       justifyContent: 'flex-end',
     },
     sheet: {
+      width: '100%',
+      maxWidth: '100%',
       backgroundColor: themeColors.secondaryBackground,
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
@@ -264,14 +266,17 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
     headerContent: {
       flex: 1,
+      minWidth: 0,
     },
     documentName: {
+      flexShrink: 1,
       fontSize: 16,
       fontWeight: '600',
       color: themeColors.foreground,
       marginBottom: 4,
     },
     documentMeta: {
+      flexShrink: 1,
       fontSize: 13,
       color: themeColors.mutedForeground,
     },
@@ -280,6 +285,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       paddingBottom: 8,
     },
     actionRow: {
+      maxWidth: '100%',
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: 8,
@@ -293,6 +299,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
     actionText: {
       flex: 1,
+      flexShrink: 1,
       fontSize: 16,
       color: themeColors.foreground,
     },

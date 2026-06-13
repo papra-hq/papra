@@ -304,6 +304,46 @@ export default function DocumentViewScreen() {
     enabled: documentQuery.isSuccess && documentQuery.data != null,
   });
 
+  const navigationDocumentsQuery = useQuery({
+    queryKey: ['organizations', organizationId, 'documents', 'viewer-navigation'],
+    queryFn: async () => fetchAllNavigationDocuments({ organizationId, apiClient }),
+  });
+
+  const navigationDocuments: CoerceDates<Document>[] =
+    navigationDocumentsQuery.data?.documents ?? [];
+  const currentDocumentIndex = navigationDocuments.findIndex(
+    (document) => document.id === documentId,
+  );
+  const previousDocument =
+    currentDocumentIndex > 0 ? navigationDocuments[currentDocumentIndex - 1] : undefined;
+  const nextDocument =
+    currentDocumentIndex >= 0 ? navigationDocuments[currentDocumentIndex + 1] : undefined;
+  const positionLabel =
+    navigationDocuments.length === 0 || currentDocumentIndex < 0
+      ? 'Document'
+      : `${currentDocumentIndex + 1} of ${navigationDocuments.length}`;
+
+  const navigateToDocument = (targetDocumentId: string) => {
+    router.replace({
+      pathname: '/(app)/document/view',
+      params: {
+        documentId: targetDocumentId,
+        organizationId,
+      },
+    });
+  };
+
+  const handleDeletedDocument = () => {
+    const fallbackDocument = nextDocument ?? previousDocument;
+
+    if (fallbackDocument == null) {
+      router.back();
+      return;
+    }
+
+    navigateToDocument(fallbackDocument.id);
+  };
+
 const navigationDocumentsQuery = useQuery({
     queryKey: ['organizations', organizationId, 'documents', 'viewer-navigation'],
     queryFn: async () => fetchAllNavigationDocuments({ organizationId, apiClient }),
@@ -499,13 +539,16 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       textAlign: 'center',
     },
     navigationBar: {
+      alignSelf: 'center',
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderTopWidth: 1,
-      borderTopColor: themeColors.border,
+      justifyContent: 'center',
+      marginHorizontal: 16,
+      marginVertical: 12,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: themeColors.border,
+      borderRadius: 28,
       backgroundColor: themeColors.background,
       gap: 12,
     },

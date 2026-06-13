@@ -372,6 +372,124 @@ export const DocumentPage: Component = () => {
     initialPageParam: 0,
   }));
 
+  @@ -34,58 +34,90 @@ import { Separator } from '@/modules/ui/components/separator';
+import { createToast } from '@/modules/ui/components/sonner';
+import {
+  Tabs,
+  TabsContent,
+  TabsIndicator,
+  TabsList,
+  TabsTrigger,
+} from '@/modules/ui/components/tabs';
+import { TextArea } from '@/modules/ui/components/textarea';
+import { TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { DocumentContentEditionPanel } from '../components/document-content-edition-panel.component';
+import { DocumentDatePicker } from '../components/document-date-picker.component';
+import { DocumentPreview } from '../components/document-preview.component';
+import { DocumentOpenWithDropdownItems } from '../components/open-with.component';
+import { useRenameDocumentDialog } from '../components/rename-document-button.component';
+import {
+  getDaysBeforePermanentDeletion,
+  getDocumentActivityIcon,
+  getDocumentOpenWithApps,
+} from '../document.models';
+import {
+  useDeleteDocument,
+  useDownloadDocument,
+  useRestoreDocument,
+} from '../documents.composables';
+import { fetchDocument, fetchDocumentActivities, updateDocument } from '../documents.services';
+import {
+  fetchDocument,
+  fetchDocumentActivities,
+  fetchOrganizationDocuments,
+  updateDocument,
+} from '../documents.services';
+
+type KeyValueItem = {
+  label: string | JSX.Element;
+  value: string | JSX.Element;
+  icon?: string;
+};
+
+const documentNavigationPageSize = 100;
+
+async function fetchAllNavigationDocuments({ organizationId }: { organizationId: string }) {
+  const documentsById = new Map<string, Document>();
+  let pageIndex = 0;
+  let documentsCount = 0;
+
+  do {
+    const page = await fetchOrganizationDocuments({
+      organizationId,
+      pageIndex,
+      pageSize: documentNavigationPageSize,
+    });
+    const previousDocumentsCount = documentsById.size;
+
+    page.documents.forEach((document) => documentsById.set(document.id, document));
+    documentsCount = page.documentsCount;
+    pageIndex += 1;
+
+    if (documentsById.size === previousDocumentsCount) {
+      break;
+    }
+  } while (documentsById.size < documentsCount);
+
+  return { documents: Array.from(documentsById.values()), documentsCount };
+}
+
+const DocumentNotes: Component<{ documentId: string; organizationId: string; notes?: string }> = (
+  props,
+) => {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const [notes, setNotes] = createSignal(props.notes ?? '');
+  const [getStatus, setStatus] = createSignal<'idle' | 'pending' | 'saved'>('idle');
+  const [getIsSavedVisible, setIsSavedVisible] = createSignal(false);
+
+  let fadeTimeout: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(fadeTimeout));
+
+  const updateNotesMutation = useMutation(() => ({
+    mutationFn: ({ notes }: { notes: string }) =>
+      updateDocument({
+        documentId: props.documentId,
+        organizationId: props.organizationId,
+        notes,
+      }),
+    onSuccess: () => {
+      setStatus('saved');
+      setIsSavedVisible(true);
+
+      clearTimeout(fadeTimeout);
+      fadeTimeout = setTimeout(() => setIsSavedVisible(false), 2000);
+@@ -318,145 +350,183 @@ export const DocumentPage: Component = () => {
+
+  const activityPageSize = 20;
+  const activityQuery = useInfiniteQuery(() => ({
+    enabled: getTab() === 'activity',
+    queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'activity'],
+    queryFn: async ({ pageParam }) => {
+      const { activities } = await fetchDocumentActivities({
+        documentId: params.documentId,
+        organizationId: params.organizationId,
+        pageIndex: pageParam,
+        pageSize: activityPageSize,
+      });
+
+      return activities;
+    },
+    getNextPageParam: (lastPage, _pages, lastPageParam) => {
+      if (lastPage.length < activityPageSize) {
+        return undefined;
+      }
+
+      return lastPageParam + 1;
+    },
+    initialPageParam: 0,
+  }));
+
   const documentNavigationQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
     queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
@@ -456,43 +574,7 @@ export const DocumentPage: Component = () => {
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
-                  <div class="flex flex-wrap items-center gap-2 mb-4">
-                    <Button
-                      onClick={() => {
-                        const previousDocument = getPreviousDocument();
-                        if (previousDocument) {
-                          navigateToDocument(previousDocument.id);
-                        }
-                      }}
-                      variant="outline"
-                      size="sm"
-                      disabled={!getPreviousDocument()}
-                    >
-                      <div class="i-tabler-chevron-left size-4 mr-2" />
-                      Previous
-                    </Button>
-
-                    <span class="text-sm text-muted-foreground px-2">
-                      {getDocumentPositionLabel()}
-                    </span>
-
-                    <Button
-                      onClick={() => {
-                        const nextDocument = getNextDocument();
-                        if (nextDocument) {
-                          navigateToDocument(nextDocument.id);
-                        }
-                      }}
-                      variant="outline"
-                      size="sm"
-                      disabled={!getNextDocument()}
-                    >
-                      Next
-                      <div class="i-tabler-chevron-right size-4 ml-2" />
-                    </Button>
-                  </div>
-
-                  <div class="flex gap-2 mb-2">
+                  <div class="flex flex-wrap gap-2 mb-2 max-w-full">
                     <Button
                       onClick={() =>
                         downloadDocument({
@@ -513,6 +595,7 @@ export const DocumentPage: Component = () => {
                     />
 
                     <Button
+                      class="min-w-0"
                       onClick={() =>
                         openShareDialog({
                           documentId: getDocument().id,
@@ -529,6 +612,7 @@ export const DocumentPage: Component = () => {
 
                     {getDocument().isDeleted ? (
                       <Button
+                        class="min-w-0"
                         variant="destructive"
                         size="sm"
                         onClick={() => restore({ document: getDocument() })}
@@ -538,7 +622,7 @@ export const DocumentPage: Component = () => {
                         {t('documents.actions.restore')}
                       </Button>
                     ) : (
-                      <Button variant="destructive" size="sm" onClick={deleteDoc}>
+                      <Button class="min-w-0" variant="destructive" size="sm" onClick={deleteDoc}>
                         <div class="i-tabler-trash size-4 mr-2" />
                         {t('documents.actions.delete')}
                       </Button>
@@ -717,7 +801,7 @@ export const DocumentPage: Component = () => {
         </div>
       </Suspense>
 
-      <div class="fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-background/95 p-2 shadow-lg backdrop-blur">
+      <div class="fixed bottom-6 left-1/2 z-20 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 rounded-full border bg-background/95 p-2 shadow-lg backdrop-blur sm:gap-2">
         <Button
           onClick={() => {
             const previousDocument = getPreviousDocument();
@@ -728,13 +812,13 @@ export const DocumentPage: Component = () => {
           variant="outline"
           size="sm"
           disabled={!getPreviousDocument()}
-          class="rounded-full"
+          class="rounded-full px-2 sm:px-3"
         >
           <div class="i-tabler-chevron-left size-4 mr-2" />
           Previous
         </Button>
 
-        <span class="min-w-24 text-center text-sm text-muted-foreground">
+        <span class="min-w-16 shrink-0 text-center text-xs text-muted-foreground sm:min-w-24 sm:text-sm">
           {getDocumentPositionLabel()}
         </span>
 
@@ -748,7 +832,7 @@ export const DocumentPage: Component = () => {
           variant="outline"
           size="sm"
           disabled={!getNextDocument()}
-          class="rounded-full"
+          class="rounded-full px-2 sm:px-3"
         >
           Next
           <div class="i-tabler-chevron-right size-4 ml-2" />

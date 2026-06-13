@@ -100,10 +100,14 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
   return (
     <ConfirmModalContext.Provider value={{ confirm }}>
       <Dialog open={getIsOpen()} onOpenChange={onOpenChange}>
-        <DialogContent class="sm:max-w-[425px]">
+        <DialogContent class="max-w-[calc(100vw-2rem)] overflow-x-hidden sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{getConfig()?.title ?? 'Confirm ?'}</DialogTitle>
-            {getConfig()?.message && <DialogDescription>{getConfig()?.message}</DialogDescription>}
+            {getConfig()?.message && (
+              <DialogDescription class="min-w-0 break-words">
+                {getConfig()?.message}
+              </DialogDescription>
+            )}
           </DialogHeader>
 
           <Show when={getConfig()?.shouldType}>
@@ -123,7 +127,7 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
           </Show>
 
           <DialogFooter>
-            <div class="flex gap-2 justify-end flex-col-reverse sm:flex-row">
+            <div class="flex min-w-0 max-w-full gap-2 justify-end flex-col-reverse sm:flex-row sm:flex-wrap">
               <Button
                 onClick={() => handleConfirm({ isConfirmed: false })}
                 variant={getConfig()?.cancelButton?.variant ?? 'secondary'}
