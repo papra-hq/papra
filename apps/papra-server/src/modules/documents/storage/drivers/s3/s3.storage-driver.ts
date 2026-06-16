@@ -38,6 +38,8 @@ export const s3StorageDriverFactory = defineStorageDriver(({ documentStorageConf
       secretAccessKey,
     },
     forcePathStyle,
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   });
 
   const fileExists = async ({ storageKey }: { storageKey: string }) => {
