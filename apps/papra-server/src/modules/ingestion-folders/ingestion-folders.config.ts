@@ -31,6 +31,20 @@ export const ingestionFolderConfig = {
       default: 2 * IN_MS.SECOND,
       env: 'INGESTION_FOLDER_WATCHER_POLLING_INTERVAL_MS',
     },
+    awaitWriteFinish: {
+      stabilityThreshold: {
+        doc: 'The amount of time in milliseconds for a file size to remain constant before being consumed. This helps to avoid processing files that are still being written to (e.g., scanners, cameras, network shares, etc.).',
+        schema: coercedStrictlyPositiveIntegerSchema,
+        default: 2 * IN_MS.SECOND,
+        env: 'INGESTION_FOLDER_WATCHER_FILE_STABILITY_THRESHOLD_MS',
+      },
+      pollInterval: {
+        doc: 'The interval in milliseconds at which the file size is polled while waiting for write to finish.',
+        schema: coercedStrictlyPositiveIntegerSchema,
+        default: 100,
+        env: 'INGESTION_FOLDER_WATCHER_FILE_STABILITY_POLL_INTERVAL_MS',
+      },
+    },
   },
   processingConcurrency: {
     doc: 'The number of files that can be processed concurrently by the server. Increasing this can improve processing speed, but it will also increase CPU and memory usage.',
