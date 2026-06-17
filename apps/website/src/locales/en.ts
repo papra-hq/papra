@@ -114,11 +114,13 @@ export const translations = {
   'footer.link.contact': 'Contact',
 
   // Home Page - Hero Section
-  'home.hero.title': 'Your Solution to Document Chaos',
+  'home.hero.title': 'Turn your paper chaos into a calm, searchable archive',
   'home.hero.subtitle':
     'Papra is an open-source document management platform designed to help you organize, secure, and archive your files effortlessly.',
+  'home.hero.chip.open-source': 'Open source',
+  'home.hero.chip.self-hostable': 'Self-hostable',
   'home.hero.live-demo': 'Live Demo',
-  'home.hero.get-started': 'Get started',
+  'home.hero.get-started': 'Start archiving - Free',
 
   // Home Page - Open Source Section
   'home.open-source.title':

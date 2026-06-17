@@ -118,6 +118,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'home.hero.title': "La plateforme open-source d'archivage et de gestion de documents",
   'home.hero.subtitle':
     'Papra est une plateforme open-source pour organiser, sécuriser et archiver tous vos fichiers, sans effort.',
+  'home.hero.chip.open-source': 'Open source',
+  'home.hero.chip.self-hostable': 'Auto-hébergeable',
   'home.hero.live-demo': 'Essayer la démo',
   'home.hero.get-started': 'Commencer',
 
