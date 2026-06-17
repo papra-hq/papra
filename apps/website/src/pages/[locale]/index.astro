@@ -5,6 +5,7 @@ import FaqAccordion from '../../components/FaqAccordion.astro';
 import FeaturesBento from '../../components/FeaturesBento.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
+import OpenSource from '../../components/OpenSource.astro';
 import ValuesSection from '../../components/ValuesSection.astro';
 import { useI18n } from '../../i18n/i18n';
 import { LOCALES } from '../../i18n/i18n.constants';
@@ -23,32 +24,14 @@ const { t } = useI18n({ locale: Astro.currentLocale });
   description={t('site.description')}
 >
   <Header />
+
   <Hero />
-
-
 
   <FeaturesBento />
 
   <ValuesSection />
 
-  <div class="bg-card py-64 border-t flex items-center justify-center gap-8 sm:gap-12 flex-col sm:flex-row relative overflow-hidden">
-    <div class="max-w-600px px-6 text-center sm:text-left">
-      <h2 class="text-2xl sm:text-4xl font-bold max-w-650px mx-auto" set:html={t('home.open-source.title')} />
-
-      <p class="text-muted-foreground mx-auto mt-4 text-lg" set:html={t('home.open-source.description')} />
-    </div>
-
-    <div class="flex items-center justify-center gap-2 mt-8">
-      <a
-        href="https://github.com/papra-hq/papra"
-        class="border text-sm font-bold rounded py-2 px-4 rounded-xl hover:border-primary hover:text-primary transition flex items-center gap-2 flex-shrink-0"
-        target="_blank"
-      >
-        {t('home.open-source.see-on-github')} <div class="i-tabler-arrow-right size-5" aria-hidden="true"></div>
-      </a>
-    </div>
-  </div>
-
+  <OpenSource />
 
   <FaqAccordion
     title={t('home.faq.title')}
@@ -59,4 +42,5 @@ const { t } = useI18n({ locale: Astro.currentLocale });
   <Cta />
 
   <Footer />
+
 </Layout>
