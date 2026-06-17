@@ -38,42 +38,128 @@ type Props = {
 const { class: className } = Astro.props;
 ---
 
-<nav
-  class={`z-100 border-0 border-b md:max-w-4xl pl-4 pr-3 py-4 mx-auto flex items-center justify-between md:(py-2 border-1px rounded-full mt-4) fixed top-0 left-0 right-0 bg-background bg-op-40 backdrop-blur-sm shadow-lg ${className}`}
+<header
+  class={cn('z-100 fixed top-0 left-0 right-0 border-b bg-background/80 backdrop-blur-sm', className)}
 >
-  <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-lg font-bold flex items-center group">
-    <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
-    <span class="ml-2">Papra</span>
-  </a>
+  <nav class="max-w-1200px mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <a href={buildLocalizedPath({ locale: Astro.currentLocale, path: '/' })} class="text-lg font-bold flex items-center group">
+        <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
+        <span class="ml-2">Papra</span>
+      </a>
 
-  <div class="items-center gap-6 hidden md:flex">
-    {
-      navigation.map(nav => (
-        <a href={nav.url} class="text-sm font-bold hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
-          {nav.name}
-        </a>
-      ))
-    }
-  </div>
+      <div class="items-center gap-6 hidden md:flex">
+        {
+          navigation.map(nav => (
+            <a href={nav.url} class="text-sm font-semibold hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
+              {nav.name}
+            </a>
+          ))
+        }
+      </div>
+    </div>
 
-  <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-4">
+      <div class="items-center gap-3 hidden md:flex">
+        {
+          socials.map(social => (
+            <a href={social.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition" aria-label={social.name}>
+              <div class={cn('size-5', social.icon)} />
+            </a>
+          ))
+        }
+      </div>
+
+      <a
+        class="hidden md:flex gap-1.5 items-center bg-primary font-bold rounded py-1 px-3 rounded-xl text-primary-foreground text-sm transition hover:bg-primary/80"
+        href={config.getStartedLink}
+        target="_blank"
+        rel="noopener"
+      >
+        {t('nav.sign-in')}
+        <div class="i-tabler-arrow-right size-4"></div>
+      </a>
+
+      <button
+        type="button"
+        id="mobile-menu-toggle"
+        class="md:hidden flex items-center justify-center size-9 -mr-2 rounded-lg hover:bg-muted transition"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <div class="i-tabler-menu-2 size-6" data-menu-icon-open aria-hidden="true"></div>
+        <div class="i-tabler-x size-6 hidden" data-menu-icon-close aria-hidden="true"></div>
+      </button>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    class="md:hidden hidden border-t bg-background/95 backdrop-blur-sm"
+  >
+    <nav class="max-w-5xl mx-auto px-6 py-4 flex flex-col gap-1" aria-label="Mobile">
       {
-        socials.map(social => (
-          <a href={social.url} target="_blank" rel="noopener noreferrer" class=" hover:text-primary transition" aria-label={social.name}>
-            <div class={cn('size-5', social.icon)} />
+        navigation.map(nav => (
+          <a href={nav.url} class="text-base font-semibold py-2 hover:text-primary transition" {...(nav.url.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}>
+            {nav.name}
           </a>
         ))
       }
-    </div>
 
-    <a
-      class="flex gap-1.5 items-center bg-primary font-bold rounded py-1 px-3 rounded-xl text-primary-foreground text-sm transition hover:bg-primary/80"
-      href={config.getStartedLink}
-      target="_blank"
-    >
-      {t('nav.sign-in')}
-      <div class="i-tabler-arrow-right size-4"></div>
-    </a>
+      <a
+        class="flex gap-1.5 items-center justify-center bg-primary font-bold rounded-xl py-2 px-3 mt-3 text-primary-foreground text-sm transition hover:bg-primary/80"
+        href={config.getStartedLink}
+        target="_blank"
+        rel="noopener"
+      >
+        {t('nav.sign-in')}
+        <div class="i-tabler-arrow-right size-4"></div>
+      </a>
+
+      <div class="flex items-center gap-4 mt-4 pt-4 border-t">
+        {
+          socials.map(social => (
+            <a href={social.url} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition" aria-label={social.name}>
+              <div class={cn('size-5', social.icon)} />
+            </a>
+          ))
+        }
+      </div>
+    </nav>
   </div>
-</nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = toggle?.querySelector('[data-menu-icon-open]');
+  const iconClose = toggle?.querySelector('[data-menu-icon-close]');
+
+  function setMenuOpen(isOpen: boolean) {
+    if (!menu || !toggle) {
+      return;
+    }
+
+    menu.classList.toggle('hidden', !isOpen);
+    iconOpen?.classList.toggle('hidden', isOpen);
+    iconClose?.classList.toggle('hidden', !isOpen);
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  toggle?.addEventListener('click', () => {
+    setMenuOpen(menu?.classList.contains('hidden') ?? false);
+  });
+
+  // Close the menu when a link is clicked or the viewport grows to desktop.
+  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenuOpen(false)));
+  window.matchMedia('(min-width: 768px)').addEventListener('change', event => event.matches && setMenuOpen(false));
+
+  // Close on Escape and return focus to the toggle for keyboard users.
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu && !menu.classList.contains('hidden')) {
+      setMenuOpen(false);
+      toggle?.focus();
+    }
+  });
+</script>
