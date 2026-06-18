@@ -11,6 +11,7 @@ const secretAccessKey = process.env.TEST_R2_SECRET_ACCESS_KEY;
 describe('s3 storage-driver', () => {
   describe.skipIf(!endpoint)('r2 bucket', () => {
     runDriverTestSuites({
+      timeout: 40_000,
       createDriver: async () => {
         const driver = s3StorageDriverFactory({
           documentStorageConfig: {
