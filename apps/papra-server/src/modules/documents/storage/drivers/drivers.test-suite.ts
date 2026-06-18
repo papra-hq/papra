@@ -1,8 +1,9 @@
 import type { StorageDriver, StorageServices } from './drivers.models';
 import { Buffer } from 'node:buffer';
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { describe, expect, test } from 'vitest';
 import {
+  collectReadableStreamToBuffer,
   collectReadableStreamToString,
   createReadableStream,
 } from '../../../shared/streams/readable-stream';
@@ -11,6 +12,8 @@ import {
   createFileNotFoundError,
 } from '../document-storage.errors';
 import { wrapWithEncryptionLayer } from '../encryption/document-encryption.services';
+import { IN_BYTES } from '../../../shared/units';
+import { MULTIPART_MIN_PART_SIZE_IN_BYTES } from './s3/s3.storage-driver';
 
 export function runDriverTestSuites({
   createDriver: createDriverBase,
@@ -133,6 +136,41 @@ export function runDriverTestSuites({
           await expect(storageServices.deleteFile({ storageKey })).rejects.toThrow(
             createFileNotFoundError(),
           );
+        },
+      );
+
+      test(
+        'the driver should support uploading and retrieving large files',
+        { timeout, retry },
+        async () => {
+          await using resource = await createStorageService();
+
+          const { storageServices } = resource;
+
+          const storageKey = `files/${randomUUID()}.bin`;
+          // Larger than the s3 driver's 8MB single-PUT threshold, so the upload goes through the
+          // multipart path. Random bytes so a corrupted or mis-ordered part would fail the comparison.
+          const documentSizeInBytes = 9 * IN_BYTES.MEGABYTE;
+          expect.assert(documentSizeInBytes > MULTIPART_MIN_PART_SIZE_IN_BYTES);
+          const content = randomBytes(documentSizeInBytes);
+
+          const storageContext = await storageServices.saveFile({
+            fileName: 'large.bin',
+            mimeType: 'application/octet-stream',
+            storageKey,
+            fileStream: createReadableStream({ content }),
+          });
+
+          const { fileStream } = await storageServices.getFileStream({
+            ...storageContext,
+            storageKey,
+          });
+          const retrieved = await collectReadableStreamToBuffer({ stream: fileStream });
+
+          expect(retrieved.length).to.eql(content.length);
+          expect(retrieved.equals(content)).to.eql(true);
+
+          await storageServices.deleteFile({ storageKey });
         },
       );
     });
