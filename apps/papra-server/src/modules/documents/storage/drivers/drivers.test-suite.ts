@@ -1,5 +1,6 @@
 import type { StorageDriver, StorageServices } from './drivers.models';
 import { Buffer } from 'node:buffer';
+import { randomUUID } from 'node:crypto';
 import { describe, expect, test } from 'vitest';
 import {
   collectReadableStreamToString,
@@ -76,32 +77,36 @@ export function runDriverTestSuites({
 
           const { storageServices } = resource;
 
+          // Use a unique key per run so suites that share a real backend (e.g. a live R2/B2 bucket)
+          // don't collide. With isolated localstack containers this just adds harmless entropy.
+          const storageKey = `files/${randomUUID()}.txt`;
+
           // Save the file
           const storageContext = await storageServices.saveFile({
             fileName: 'test.txt',
             mimeType: 'text/plain',
-            storageKey: 'files/test.txt',
+            storageKey,
             fileStream: createReadableStream({ content: 'Hello, world!' }),
           });
 
           // Retrieve the file
           const { fileStream } = await storageServices.getFileStream({
             ...storageContext,
-            storageKey: 'files/test.txt',
+            storageKey,
           });
           expect(await collectReadableStreamToString({ stream: fileStream })).to.eql(
             'Hello, world!',
           );
 
           // Check that the file exists
-          expect(await storageServices.fileExists({ storageKey: 'files/test.txt' })).to.eql(true);
+          expect(await storageServices.fileExists({ storageKey })).to.eql(true);
 
           // Try to save another file with the same storage key and expect an error
           await expect(
             storageServices.saveFile({
               fileName: 'test.txt',
               mimeType: 'text/plain',
-              storageKey: 'files/test.txt',
+              storageKey,
               fileStream: createReadableStream({ content: 'Lorem ipsum' }),
             }),
           ).rejects.toThrow(createFileAlreadyExistsInStorageError());
@@ -109,25 +114,25 @@ export function runDriverTestSuites({
           // Ensure that the original file is still intact after the failed attempt to overwrite it
           const { fileStream: fileStreamAfterError } = await storageServices.getFileStream({
             ...storageContext,
-            storageKey: 'files/test.txt',
+            storageKey,
           });
           expect(await collectReadableStreamToString({ stream: fileStreamAfterError })).to.eql(
             'Hello, world!',
           );
 
           // Delete the file
-          await storageServices.deleteFile({ storageKey: 'files/test.txt' });
-          await expect(
-            storageServices.getFileStream({ storageKey: 'files/test.txt' }),
-          ).rejects.toThrow(createFileNotFoundError());
+          await storageServices.deleteFile({ storageKey });
+          await expect(storageServices.getFileStream({ storageKey })).rejects.toThrow(
+            createFileNotFoundError(),
+          );
 
           // Check that the file no longer exists
-          expect(await storageServices.fileExists({ storageKey: 'files/test.txt' })).to.eql(false);
+          expect(await storageServices.fileExists({ storageKey })).to.eql(false);
 
           // Try to delete the file again
-          await expect(
-            storageServices.deleteFile({ storageKey: 'files/test.txt' }),
-          ).rejects.toThrow(createFileNotFoundError());
+          await expect(storageServices.deleteFile({ storageKey })).rejects.toThrow(
+            createFileNotFoundError(),
+          );
         },
       );
     });
