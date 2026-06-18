@@ -25,6 +25,7 @@ logs
 .env
 .env.*
 !.env.example
+!.env.*.example
 
 .wrangler
 coverage
