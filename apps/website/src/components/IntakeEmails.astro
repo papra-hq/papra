@@ -1,0 +1,80 @@
+---
+import { useI18n } from '../i18n/i18n';
+
+const { t } = useI18n({ locale: Astro.currentLocale });
+---
+
+<div class="max-w-1200px mx-auto px-6 py-48">
+  <div class="text-center text-sm font-semibold text-muted-foreground uppercase mb-2 tracking-widest">
+    {t('home.intake-emails.eyebrow')}
+  </div>
+  <h2 class="text-center text-3xl font-bold mb-4">{t('home.intake-emails.title')}</h2>
+  <p class="text-center text-base text-muted-foreground max-w-600px mx-auto">{t('home.intake-emails.subtitle')}</p>
+
+  <div class="relative">
+    <div class="absolute z-1 h-full w-3px top-0 left-30px bg-border md:hidden" />
+    <div class="absolute z-1 h-3px w-full top-35px left-0 bg-border hidden md:block" />
+
+    <div class="mt-12 grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3 z-10 relative">
+
+      <div class="bg-card border rounded-2xl p-6">
+        <span class="font-mono text-primary">01</span>
+        <h3 class="text-lg font-semibold my-2">{t('home.intake-emails.step-1.title')}</h3>
+        <p class="text-sm text-muted-foreground">{t('home.intake-emails.step-1.description')}</p>
+
+        <div class="bg-muted/20 border rounded-lg mt-4 px-3 py-2 text-sm font-mono text-muted-foreground flex items-center justify-between">
+          <span>my-address@papra.email</span>
+          <div class="i-tabler-copy size-4" title={t('home.intake-emails.copy')} />
+        </div>
+      </div>
+
+      <div class="bg-card border rounded-2xl p-6">
+        <span class="font-mono text-primary">02</span>
+        <h3 class="text-lg font-semibold my-2">{t('home.intake-emails.step-2.title')}</h3>
+        <p class="text-sm text-muted-foreground">{t('home.intake-emails.step-2.description')}</p>
+
+        <div class="bg-muted/20 border rounded-lg mt-4 p-3 text-sm">
+          <div class="flex items-center gap-2 text-xs text-muted-foreground">
+            <div class="i-tabler-mail size-4" />
+            <span class="font-mono">To: my-address@papra.email</span>
+          </div>
+
+          <div class="flex items-center gap-2 mt-3">
+            <div class="flex items-center gap-1.5 border rounded px-2 py-1 text-xs text-muted-foreground">
+              <div class="i-tabler-file-text size-3.5 text-primary" />
+              invoice.pdf
+            </div>
+            <div class="flex items-center gap-1.5 border rounded px-2 py-1 text-xs text-muted-foreground">
+              <div class="i-tabler-file-text size-3.5 text-primary" />
+              contract.pdf
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-card border rounded-2xl p-6">
+        <span class="font-mono text-primary">03</span>
+        <h3 class="text-lg font-semibold my-2">{t('home.intake-emails.step-3.title')}</h3>
+        <p class="text-sm text-muted-foreground">{t('home.intake-emails.step-3.description')}</p>
+
+        <div class="bg-muted/20 border rounded-lg mt-4 p-3 text-sm">
+          <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <div class="flex items-center gap-2">
+              <div class="i-tabler-file-text size-4 text-primary" />
+              invoice.pdf
+            </div>
+            <div class="i-tabler-check size-4 text-primary" />
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-muted-foreground mt-2">
+            <div class="flex items-center gap-2">
+              <div class="i-tabler-file-text size-4 text-primary" />
+              contract.pdf
+            </div>
+            <div class="i-tabler-check size-4 text-primary" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
