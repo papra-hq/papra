@@ -11,6 +11,7 @@ import { useI18n } from '../../i18n/i18n';
 import { LOCALES } from '../../i18n/i18n.constants';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
+import IntakeEmails from '../../components/IntakeEmails.astro';
 
 
 export async function getStaticPaths() {
@@ -28,6 +29,8 @@ const { t } = useI18n({ locale: Astro.currentLocale });
   <Hero />
 
   <FeaturesBento />
+
+  <IntakeEmails />
 
   <ValuesSection />
 

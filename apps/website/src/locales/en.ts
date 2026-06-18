@@ -122,6 +122,22 @@ export const translations = {
   'home.hero.live-demo': 'Live Demo',
   'home.hero.get-started': 'Start archiving - Free',
 
+  // Home Page - Intake Emails Section
+  'home.intake-emails.eyebrow': 'Intake emails',
+  'home.intake-emails.title': 'Forward it. Forget it.',
+  'home.intake-emails.subtitle':
+    'Get dedicated email addresses, send or forward an email and the attachments are automatically imported.',
+  'home.intake-emails.copy': 'Copy to clipboard',
+  'home.intake-emails.step-1.title': 'Get your address',
+  'home.intake-emails.step-1.description':
+    'Each organization can have one or more dedicated email addresses.',
+  'home.intake-emails.step-2.title': 'Send or forward',
+  'home.intake-emails.step-2.description':
+    'Email your documents directly, or forward them straight from your inbox.',
+  'home.intake-emails.step-3.title': 'Imported automatically',
+  'home.intake-emails.step-3.description':
+    'Attachments are extracted and added to your organization, ready to use.',
+
   // Home Page - Open Source Section
   'home.open-source.title':
     'Papra is <span class="bg-primary text-primary-foreground px-3 py-1 rounded-md inline-block leading-tight">open-source</span>',
