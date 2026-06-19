@@ -1,6 +1,7 @@
 import { defineConfig } from 'oxlint';
 
 export default defineConfig({
+  plugins: ['typescript', 'import'],
   options: {
     typeAware: true,
     typeCheck: true,
@@ -10,6 +11,7 @@ export default defineConfig({
     'no-console': 'error',
     'no-unused-vars': 'error',
     'typescript/no-redundant-type-constituents': 'error',
+    'import/no-duplicates': 'error',
   },
   ignorePatterns: [
     '.output/**',
