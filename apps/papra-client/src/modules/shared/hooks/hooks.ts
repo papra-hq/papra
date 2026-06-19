@@ -1,10 +1,11 @@
 export { createHook, createWaitForHook };
 
 function createHook<T = any>() {
-  let callbacks: ((args: T) => void)[] = [];
+  let callbacks: ((args: T) => void | Promise<void>)[] = [];
 
   return {
     on: (callback: (args: T) => void | Promise<void>) => callbacks.push(callback),
+    // oxlint-disable-next-line typescript/await-thenable
     trigger: (args: T) => Promise.all(callbacks.map((callback) => callback(args))),
     removeHandler: (callback: (args: T) => void) => {
       callbacks = callbacks.filter((cb) => cb !== callback);
