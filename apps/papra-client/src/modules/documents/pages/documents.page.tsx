@@ -439,7 +439,12 @@ export const DocumentsPage: Component = () => {
               setRowSelection={setRowSelection}
               getSorting={getSorting}
               setSorting={setSorting}
-              extraColumns={[tagsColumn, documentDateColumn, createdAtColumn, standardActionsColumn]}
+              extraColumns={[
+                tagsColumn,
+                documentDateColumn,
+                createdAtColumn,
+                standardActionsColumn,
+              ]}
             />
 
             <DocumentsBatchTagDialog

@@ -171,7 +171,12 @@ export const DocumentViewPage: Component = () => {
                     documentsCount={getData().documentsCount}
                     getPagination={getPagination}
                     setPagination={setPagination}
-                    extraColumns={[tagsColumn, documentDateColumn, createdAtColumn, standardActionsColumn]}
+                    extraColumns={[
+                      tagsColumn,
+                      documentDateColumn,
+                      createdAtColumn,
+                      standardActionsColumn,
+                    ]}
                   />
                 )}
               </Show>

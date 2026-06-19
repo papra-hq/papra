@@ -108,7 +108,12 @@ export const OrganizationPage: Component = () => {
               documentsCount={documentsQuery.data?.documentsCount ?? 0}
               getPagination={getPagination}
               setPagination={setPagination}
-              extraColumns={[tagsColumn, documentDateColumn, createdAtColumn, standardActionsColumn]}
+              extraColumns={[
+                tagsColumn,
+                documentDateColumn,
+                createdAtColumn,
+                standardActionsColumn,
+              ]}
             />
           </>
         )}
