@@ -31,7 +31,7 @@ export const DocumentContentEditionPanel: Component<{
     onSuccess: () => {
       createToast({ type: 'success', message: 'Document content updated' });
       setIsEditing(false);
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
       });
     },

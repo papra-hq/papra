@@ -58,7 +58,7 @@ export const TaggingRuleForm: Component<{
         }
       }
 
-      props.onSubmit({
+      void props.onSubmit({
         taggingRule: { name, conditions, tagIds, description, conditionMatchMode },
       });
     },

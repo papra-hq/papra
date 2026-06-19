@@ -168,7 +168,7 @@ export const DocumentsPage: Component = () => {
   }
 
   function invalidateDocuments() {
-    queryClient.invalidateQueries({
+    void queryClient.invalidateQueries({
       queryKey: ['organizations', params.organizationId, 'documents'],
     });
   }
