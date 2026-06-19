@@ -364,6 +364,38 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} соответствует этому запросу',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} всего',
+  'documents.list.batch.selected-count':
+    'Выбрано {{ count }} {{ count, =1:документ, [2-4]:документа, документов }}',
+  'documents.list.batch.clear': 'Очистить выбор',
+  'documents.list.batch.tag-action': 'Метки',
+  'documents.list.batch.trash-action': 'В корзину',
+  'documents.list.batch.error': 'Не удалось выполнить массовую операцию. Попробуйте снова.',
+  'documents.list.batch.select-all-matching':
+    'Выбрать все {{ count }}, соответствующие этому запросу',
+  'documents.list.batch.select-all':
+    'Выбрать все {{ count }} {{ count, =1:документ, [2-4]:документа, документов }}',
+  'documents.list.batch.all-matching-selected':
+    'Выбраны все {{ count }} {{ count, =1:документ, [2-4]:документа, документов }}, соответствующие этому запросу',
+  'documents.list.batch.all-selected':
+    'Выбраны все {{ count }} {{ count, =1:документ, [2-4]:документа, документов }}',
+  'documents.list.batch.trash.confirm.title': 'Переместить в корзину',
+  'documents.list.batch.trash.confirm.description':
+    'Переместить {{ count }} {{ count, =1:документ, [2-4]:документа, документов }} в корзину? Позже их можно восстановить из корзины.',
+  'documents.list.batch.trash.confirm.label': 'Переместить в корзину',
+  'documents.list.batch.trash.confirm.cancel': 'Отмена',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} перемещено в корзину',
+  'documents.list.batch.tags.dialog.title': 'Обновить метки',
+  'documents.list.batch.tags.dialog.description':
+    'Добавьте или удалите метки у {{ count }} {{ count, =1:выбранного документа, [2-4]:выбранных документов, выбранных документов }}.',
+  'documents.list.batch.tags.dialog.add-label': 'Метки для добавления',
+  'documents.list.batch.tags.dialog.remove-label': 'Метки для удаления',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'Метку нельзя одновременно добавить и удалить в одной операции.',
+  'documents.list.batch.tags.dialog.submit': 'Применить',
+  'documents.list.batch.tags.dialog.cancel': 'Отмена',
+  'documents.list.batch.tags.success':
+    'Метки обновлены у {{ count }} {{ count, =1:документа, [2-4]:документов, документов }}',
 
   'documents.tabs.info': 'Информация',
   'documents.tabs.content': 'Содержимое',
@@ -393,6 +425,11 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.list.table.headers.document-date': 'Дата',
   'documents.info.no-date': 'Нет даты',
   'documents.info.today': 'Сегодня',
+  'documents.notes.label': 'Заметки',
+  'documents.notes.placeholder': 'Добавьте заметки об этом документе',
+  'documents.notes.saving': 'Сохранение',
+  'documents.notes.saved': 'Сохранено',
+  'documents.notes.save-error': 'Не удалось сохранить заметки',
 
   'custom-properties.types.text': 'Текст',
   'custom-properties.types.number': 'Число',
@@ -561,6 +598,92 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Вложения',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Страница {{ page }}',
+  'document-share-links.share-action': 'Поделиться',
+  'document-share-links.copy': 'Копировать ссылку',
+  'document-share-links.copied': 'Ссылка скопирована в буфер обмена',
+  'document-share-links.copy-error': 'Не удалось скопировать ссылку',
+  'document-share-links.enabled': 'Ссылка для общего доступа включена',
+  'document-share-links.disabled': 'Ссылка для общего доступа отключена',
+  'document-share-links.deleted': 'Ссылка для общего доступа удалена',
+  'document-share-links.password-protected': 'Защищено паролем',
+  'document-share-links.no-password': 'Без пароля',
+  'document-share-links.never-expires': 'Никогда не истекает',
+  'document-share-links.expires-on': 'Истекает {{ date }}',
+  'document-share-links.list.title': 'Ссылки для общего доступа',
+  'document-share-links.list.description': 'Управляйте ссылками для общего доступа к «{{ name }}».',
+  'document-share-links.list.create-new': 'Создать новую ссылку',
+  'document-share-links.create.title': 'Создать ссылку для общего доступа',
+  'document-share-links.create.description':
+    'Создайте новую ссылку для общего доступа к этому документу.',
+  'document-share-links.create.password.toggle': 'Требовать пароль',
+  'document-share-links.create.password.hint':
+    'Необязательно, получателям нужно будет ввести его перед доступом.',
+  'document-share-links.create.password.placeholder': 'Введите или сгенерируйте пароль',
+  'document-share-links.create.password.generate': 'Сгенерировать',
+  'document-share-links.create.expiration.toggle': 'Установить срок действия',
+  'document-share-links.create.expiration.hint':
+    'Необязательно, ссылка автоматически перестанет действовать после этой даты.',
+  'document-share-links.create.expiration.24h': '24 часа',
+  'document-share-links.create.expiration.7d': '7 дней',
+  'document-share-links.create.expiration.30d': '30 дней',
+  'document-share-links.create.expiration.custom': 'Произвольно',
+  'document-share-links.create.expiration.pick-date': 'Выберите дату',
+  'document-share-links.create.cancel': 'Отмена',
+  'document-share-links.create.submit': 'Создать ссылку',
+  'document-share-links.create.error': 'Не удалось создать ссылку для общего доступа',
+  'document-share-links.created.title': 'Ссылка для общего доступа создана',
+  'document-share-links.created.description':
+    'Ваша ссылка для общего доступа готова — скопируйте и поделитесь ею.',
+  'document-share-links.created.done': 'Готово',
+  'document-share-links.actions.menu': 'Действия',
+  'document-share-links.actions.open-document': 'Открыть документ',
+  'document-share-links.actions.enable': 'Включить ссылку',
+  'document-share-links.actions.disable': 'Отключить ссылку',
+  'document-share-links.actions.stop-sharing': 'Прекратить общий доступ',
+  'document-share-links.delete.confirm.title': 'Удалить ссылку для общего доступа',
+  'document-share-links.delete.confirm.message':
+    'Любой, у кого есть эта ссылка, немедленно потеряет доступ. Это действие нельзя отменить.',
+  'document-share-links.delete.confirm.confirm-button': 'Удалить ссылку',
+  'document-share-links.delete.confirm.cancel-button': 'Отмена',
+  'document-share-links.management.title': 'Ссылки для общего доступа',
+  'document-share-links.management.description':
+    'Управляйте всеми ссылками для общего доступа, созданными в этой организации.',
+  'document-share-links.management.empty.title': 'Нет ссылок для общего доступа',
+  'document-share-links.management.empty.description':
+    'Здесь будут отображаться ссылки для общего доступа, созданные для документов этой организации.',
+  'document-share-links.management.table.document': 'Документ',
+  'document-share-links.management.table.link': 'Ссылка',
+  'document-share-links.management.table.status': 'Статус',
+  'document-share-links.management.table.security': 'Безопасность',
+  'document-share-links.management.table.expiry': 'Срок действия',
+  'document-share-links.management.table.last-accessed': 'Последний доступ',
+  'document-share-links.management.table.actions': 'Действия',
+  'document-share-links.management.status.expired': 'Истёк',
+  'document-share-links.management.status.enabled': 'Включено',
+  'document-share-links.management.status.disabled': 'Отключено',
+  'document-share-links.management.status.trashed': 'Документ в корзине',
+  'document-share-links.management.status.trashed-hint':
+    'Общий документ находится в корзине, поэтому ссылка неактивна до восстановления документа.',
+  'document-share-links.management.security.password': 'Пароль',
+  'document-share-links.management.security.public': 'Публичный',
+  'document-share-links.management.never': 'Никогда',
+  'document-share-links.public.download': 'Скачать',
+  'document-share-links.public.download-error': 'Не удалось скачать файл',
+  'document-share-links.public.password.title': 'Требуется пароль',
+  'document-share-links.public.password.description':
+    'Этот документ защищён. Введите пароль для доступа к нему.',
+  'document-share-links.public.password.label': 'Пароль',
+  'document-share-links.public.password.placeholder': 'Введите пароль',
+  'document-share-links.public.password.submit': 'Разблокировать',
+  'document-share-links.public.password.invalid': 'Неверный пароль',
+  'document-share-links.public.password.too-many-attempts':
+    'Слишком много попыток. Повторите попытку позже.',
+  'document-share-links.public.gone.title': 'Ссылка недоступна',
+  'document-share-links.public.gone.description':
+    'Эта ссылка для общего доступа истекла или была отключена.',
+  'document-share-links.public.not-found.title': 'Ссылка не найдена',
+  'document-share-links.public.not-found.description':
+    'Эта ссылка для общего доступа не существует.',
 
   'trash.delete-all.button': 'Удалить всё',
   'trash.delete-all.confirm.title': 'Окончательно удалить все документы?',
@@ -633,6 +756,39 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Фильтровать теги...',
   'tags.picker.create-new-with-name': 'Создать новый тег "{{ name }}"',
   'tags.picker.create-new': 'Создать новый тег',
+  'document-views.create': 'Создать представление',
+  'document-views.save-as-view': 'Сохранить запрос как представление',
+  'document-views.update': 'Обновить представление',
+  'document-views.delete': 'Удалить представление',
+  'document-views.delete.confirm.title': 'Удалить представление',
+  'document-views.delete.confirm.message': 'Вы уверены, что хотите удалить это представление?',
+  'document-views.delete.confirm.confirm-button': 'Удалить',
+  'document-views.delete.confirm.cancel-button': 'Отмена',
+  'document-views.delete.success': 'Представление успешно удалено',
+  'document-views.create.success': 'Представление «{{ name }}» успешно создано.',
+  'document-views.update.success': 'Представление «{{ name }}» успешно обновлено.',
+  'document-views.form.name.label': 'Название',
+  'document-views.form.name.placeholder': 'Напр. Входящие',
+  'document-views.form.name.required': 'Введите название представления',
+  'document-views.form.name.max-length':
+    'Название представления должно содержать менее 100 символов',
+  'document-views.form.query.label': 'Запрос',
+  'document-views.form.query.placeholder': 'Напр. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Введите запрос',
+  'document-views.form.query.max-length': 'Запрос должен содержать менее 500 символов',
+  'document-views.form.query.hint':
+    'Используйте тот же синтаксис, что и в строке поиска документов. Напр. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Описание',
+  'document-views.form.description.optional': '(необязательно)',
+  'document-views.form.description.placeholder': 'Напр. Документы, ожидающие обработки',
+  'document-views.form.description.max-length': 'Описание должно содержать менее 256 символов',
+  'document-views.actions.menu': 'Действия представления',
+  'document-views.view.no-documents':
+    'Ни один документ не соответствует запросу этого представления.',
+  'document-views.view.not-found': 'Представление не найдено.',
+  'api-errors.document_views.already_exists':
+    'Представление с таким именем уже существует в этой организации',
+  'api-errors.document_views.not_found': 'Представление не найдено',
 
   // Tagging rules
 
@@ -766,6 +922,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Чтение тегов',
   'api-keys.permissions.tags.tags:update': 'Изменение тегов',
   'api-keys.permissions.tags.tags:delete': 'Удаление тегов',
+  'api-keys.permissions.custom-properties.title': 'Пользовательские свойства',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Создавать пользовательские свойства',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Читать пользовательские свойства',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Обновлять пользовательские свойства',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Удалять пользовательские свойства',
   'api-keys.create.title': 'Создание API ключа',
   'api-keys.create.description': 'Создайте новый API ключ для доступа к API Papra.',
   'api-keys.create.success': 'API ключ успешно создан.',
@@ -847,6 +1012,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Теги',
   'layout.menu.custom-properties': 'Пользовательские свойства',
   'layout.menu.tagging-rules': 'Правила тегирования',
+  'layout.menu.share-links': 'Ссылки для общего доступа',
   'layout.menu.deleted-documents': 'Удалённые документы',
   'layout.menu.organization-settings': 'Настройки',
   'layout.menu.api-keys': 'API ключи',
@@ -857,6 +1023,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'Email для импорта',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Участники',
+  'layout.menu.document-views': 'Представления',
   'layout.menu.invitations': 'Приглашения',
   'layout.menu.admin': 'Админка',
 
@@ -921,6 +1088,15 @@ export const translations: Partial<TranslationsDictionary> = {
     'Невозможно удалить организацию с активной подпиской. Пожалуйста, сначала отмените подписку, используя кнопку "Управление подпиской" выше.',
   'api-errors.webhooks.ssrf_unsafe_url':
     'Указанный URL не разрешён. URL-адреса вебхуков не должны указывать на частные или зарезервированные IP-адреса.',
+  'api-errors.users.still_owns_organizations':
+    'Этот пользователь по-прежнему владеет одной или несколькими организациями. Удалите эти организации перед удалением пользователя.',
+  'api-errors.plan_entitlements.already_exists':
+    'У этого пользователя уже есть привилегия этого типа.',
+  'api-errors.plan_entitlements.not_found': 'Привилегия плана не найдена.',
+  'api-errors.plan_entitlements.not_eligible':
+    'Этот пользователь не имеет права на эту привилегию.',
+  'api-errors.users.cannot_delete_self':
+    'Вы не можете удалить собственную учётную запись из панели администратора.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Пользователь не найден',
   'api-errors.FAILED_TO_CREATE_USER': 'Не удалось создать пользователя',
@@ -1154,6 +1330,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Название',
   'admin.user-detail.organizations.table.created': 'Создана',
+  'admin.user-detail.plan-entitlements.title': 'Привилегии плана',
+  'admin.user-detail.plan-entitlements.description':
+    'Привилегии, повышающие план организаций, которыми владеет этот пользователь',
+  'admin.user-detail.plan-entitlements.empty': 'Нет привилегий плана',
+  'admin.user-detail.plan-entitlements.table.type': 'Тип',
+  'admin.user-detail.plan-entitlements.table.source': 'Источник',
+  'admin.user-detail.plan-entitlements.table.granted': 'Предоставлено',
+  'admin.user-detail.plan-entitlements.table.expires': 'Истекает',
+  'admin.user-detail.plan-entitlements.never-expires': 'Никогда',
+  'admin.user-detail.plan-entitlements.expired': 'Истёк',
+  'admin.user-detail.plan-entitlements.grant.button': 'Предоставить привилегию',
+  'admin.user-detail.plan-entitlements.grant.title': 'Предоставить привилегию плана',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Предоставьте этому пользователю привилегию плана, при необходимости с датой истечения.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Тип привилегии',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Установить срок действия',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Выберите дату',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Предоставить привилегию',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Отмена',
+  'admin.user-detail.plan-entitlements.grant.success': 'Привилегия успешно предоставлена.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Отозвать',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Отозвать привилегию?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'Пользователь потеряет преимущества плана, предоставленные этой привилегией.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Отозвать привилегию',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Отмена',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Привилегия успешно отозвана.',
+  'admin.user-detail.delete.title': 'Удалить пользователя',
+  'admin.user-detail.delete.description':
+    'Безвозвратно удаляет эту учётную запись пользователя. Это затронет его членство в организациях, сеансы, настройки двухфакторной аутентификации и другие данные аутентификации. Организации, которыми он по-прежнему владеет, необходимо сначала удалить или передать.',
+  'admin.user-detail.delete.button': 'Удалить пользователя',
+  'admin.user-detail.delete.self-warning':
+    'Вы не можете удалить собственную учётную запись из панели администратора.',
+  'admin.user-detail.delete.confirm.title': 'Удалить пользователя?',
+  'admin.user-detail.delete.confirm.message':
+    'Это действие нельзя отменить. Введите адрес электронной почты пользователя ниже для подтверждения.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Удалить пользователя',
+  'admin.user-detail.delete.confirm.cancel-button': 'Отмена',
+  'admin.user-detail.delete.success': 'Пользователь успешно удалён.',
 
   // Common / Shared
 
