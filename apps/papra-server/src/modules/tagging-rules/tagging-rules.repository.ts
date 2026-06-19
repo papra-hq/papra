@@ -87,6 +87,7 @@ async function getOrganizationTaggingRule({
     )
     .leftJoin(tagsTable, eq(taggingRuleActionsTable.tagId, tagsTable.id));
 
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const { taggingRules = [] } = aggregateTaggingRules({ rawTaggingRules });
   const [taggingRule] = taggingRules;
 

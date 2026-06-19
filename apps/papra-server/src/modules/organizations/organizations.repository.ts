@@ -782,6 +782,7 @@ async function getExpiredSoftDeletedOrganizations({
 }
 
 async function getOrganizationCount({ db }: { db: Database }) {
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const [{ organizationCount = 0 } = {}] = await db
     .select({ organizationCount: count() })
     .from(organizationsTable)
@@ -828,6 +829,7 @@ async function listOrganizations({
     pageSize,
   });
 
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const [{ totalCount = 0 } = {}] = await db
     .select({ totalCount: count() })
     .from(organizationsTable)

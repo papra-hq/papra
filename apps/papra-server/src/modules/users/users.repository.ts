@@ -96,6 +96,7 @@ async function deleteUser({ userId, db }: { userId: string; db: Database }) {
 }
 
 export async function getUserCount({ db }: { db: Database }) {
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const [{ userCount = 0 } = {}] = await db.select({ userCount: count() }).from(usersTable);
 
   return {
@@ -133,6 +134,7 @@ async function listUsers({
     pageSize,
   });
 
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const [{ totalCount = 0 } = {}] = await db
     .select({ totalCount: count() })
     .from(usersTable)
