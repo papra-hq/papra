@@ -387,7 +387,7 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:документ, [2-4]:документа, документов }} перемещено в корзину',
   'documents.list.batch.tags.dialog.title': 'Обновить метки',
   'documents.list.batch.tags.dialog.description':
-    'Добавьте или удалите метки у {{ count }} выбранных {{ count, =1:документа, [2-4]:документов, документов }}.',
+    'Добавьте или удалите метки у {{ count }} {{ count, =1:выбранного документа, [2-4]:выбранных документов, выбранных документов }}.',
   'documents.list.batch.tags.dialog.add-label': 'Метки для добавления',
   'documents.list.batch.tags.dialog.remove-label': 'Метки для удаления',
   'documents.list.batch.tags.dialog.overlap-error':

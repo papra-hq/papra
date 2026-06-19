@@ -915,10 +915,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:delete': 'Radera taggar',
   'api-keys.permissions.custom-properties.title': 'Anpassade egenskaper',
   'api-keys.permissions.custom-properties.custom-properties:create': 'Skapa anpassade egenskaper',
-  'api-keys.permissions.custom-properties.custom-properties:read': 'Läsa anpassade egenskaper',
+  'api-keys.permissions.custom-properties.custom-properties:read': 'Läs anpassade egenskaper',
   'api-keys.permissions.custom-properties.custom-properties:update':
     'Uppdatera anpassade egenskaper',
-  'api-keys.permissions.custom-properties.custom-properties:delete': 'Ta bort anpassade egenskaper',
+  'api-keys.permissions.custom-properties.custom-properties:delete': 'Radera anpassade egenskaper',
   'api-keys.create.title': 'Skapa API-nyckel',
   'api-keys.create.description': 'Skapa en ny API-nyckel för att komma åt Papras API',
   'api-keys.create.success': 'API-nyckeln har skapats',
