@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { coerceDate } from './api.models';
-import { headersInitToObject } from './api.models';
+import { coerceDate, headersInitToObject } from './api.models';
 
 describe('api models', () => {
   describe('coerceDate', () => {
