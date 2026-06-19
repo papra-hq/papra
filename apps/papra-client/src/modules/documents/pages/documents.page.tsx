@@ -21,6 +21,7 @@ import { DocumentUploadArea } from '../components/document-upload-area.component
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import {
   createdAtColumn,
+  documentDateColumn,
   DocumentsPaginatedList,
   standardActionsColumn,
   tagsColumn,
@@ -438,7 +439,7 @@ export const DocumentsPage: Component = () => {
               setRowSelection={setRowSelection}
               getSorting={getSorting}
               setSorting={setSorting}
-              extraColumns={[tagsColumn, createdAtColumn, standardActionsColumn]}
+              extraColumns={[tagsColumn, documentDateColumn, createdAtColumn, standardActionsColumn]}
             />
 
             <DocumentsBatchTagDialog

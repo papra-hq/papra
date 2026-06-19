@@ -24,5 +24,5 @@ export type DocumentSearchSortField = (typeof DOCUMENT_SEARCH_SORT_FIELDS)[numbe
 export const DOCUMENT_SEARCH_SORT_ORDERS = ['asc', 'desc'] as const;
 export type DocumentSearchSortOrder = (typeof DOCUMENT_SEARCH_SORT_ORDERS)[number];
 
-export const DEFAULT_DOCUMENT_SEARCH_SORT_FIELD: DocumentSearchSortField = 'createdAt';
+export const DEFAULT_DOCUMENT_SEARCH_SORT_FIELD: DocumentSearchSortField = 'documentDate';
 export const DEFAULT_DOCUMENT_SEARCH_SORT_ORDER: DocumentSearchSortOrder = 'desc';
