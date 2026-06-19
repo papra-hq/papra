@@ -60,3 +60,25 @@ export type LocalDocument = {
   name: string;
   type: string | undefined;
 };
+
+export function headersInitToObject(
+  headers: HeadersInit | undefined | null,
+): Record<string, string> {
+  if (!headers) {
+    return {};
+  }
+
+  if (Array.isArray(headers)) {
+    return Object.fromEntries(headers);
+  }
+
+  if (headers instanceof Headers) {
+    const obj: Record<string, string> = {};
+    headers.forEach((value, key) => {
+      obj[key] = value;
+    });
+    return obj;
+  }
+
+  return headers;
+}

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { coerceDate } from './api.models';
+import { headersInitToObject } from './api.models';
 
 describe('api models', () => {
   describe('coerceDate', () => {
@@ -26,6 +27,48 @@ describe('api models', () => {
       expect(() => coerceDate(true)).toThrow(
         'Invalid date: expected Date, string, or number, but received value "true" of type "boolean"',
       );
+    });
+  });
+
+  describe('headersInitToObject', () => {
+    test('headers can be a tuple array', () => {
+      expect(
+        headersInitToObject([
+          ['Content-Type', 'application/json'],
+          ['Authorization', 'Bearer token'],
+        ]),
+      ).to.eql({
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer token',
+      });
+    });
+
+    test('headers can be a Headers instance, case-insensitive', () => {
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', 'Bearer token');
+
+      expect(headersInitToObject(headers)).to.eql({
+        'content-type': 'application/json',
+        'authorization': 'Bearer token',
+      });
+    });
+
+    test('headers can be a plain object', () => {
+      expect(
+        headersInitToObject({
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer token',
+        }),
+      ).to.eql({
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer token',
+      });
+    });
+
+    test('headers can be undefined or null', () => {
+      expect(headersInitToObject(undefined)).to.eql({});
+      expect(headersInitToObject(null)).to.eql({});
     });
   });
 });
