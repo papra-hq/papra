@@ -6,7 +6,7 @@ packages:
 catalog:
   '@better-auth/expo': 1.6.11
   '@corentinth/chisels': 2.1.0
-  '@types/node': ^25.0.0
+  '@types/node': ^26.0.0
   '@vitest/coverage-v8': ^4.0.3
   better-auth: 1.6.11
   p-limit: ^7.3.0
