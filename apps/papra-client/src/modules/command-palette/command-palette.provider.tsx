@@ -72,6 +72,7 @@ export const CommandPaletteProvider: ParentComponent = (props) => {
     document.removeEventListener('keydown', handleKeyDown);
   });
 
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via Solid ref binding in JSX
   let inputRef: HTMLInputElement | undefined;
 
   createEffect(

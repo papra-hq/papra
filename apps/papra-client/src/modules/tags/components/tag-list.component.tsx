@@ -22,6 +22,7 @@ export const TagPickerFilter: Component<{
   isOpen?: boolean;
 }> = (props) => {
   const { t } = useI18n();
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via Solid ref binding in JSX
   let ref: HTMLInputElement | undefined;
 
   createEffect(() => {
@@ -182,6 +183,7 @@ export const TagList: Component<{
   organizationId: string;
 }> = (props) => {
   const TagItem = (props.asLink ?? true) ? TagLink : TagComponent;
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via Solid ref binding in JSX
   let containerRef: HTMLDivElement | undefined;
   const [isOpen, setIsOpen] = createSignal(false);
 

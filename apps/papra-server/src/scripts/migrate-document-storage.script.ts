@@ -55,6 +55,7 @@ export async function migrateDocumentStorage({
     error: unknown;
   }[] = [];
 
+  // oxlint-disable-next-line typescript/no-useless-default-assignment -- defensive fallback for empty result set
   const [{ count: documentCount = 0 } = {}] = await db
     .select({ count: count() })
     .from(documentsTable);
