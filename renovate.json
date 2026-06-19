@@ -1,23 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    "group:monorepos",
-    "group:recommended"
-  ],
-  "timezone": "Europe/Paris",
-  "packageRules": [
-    {
-      "description": "oxlint / oxfmt tooling",
-      "groupName": "oxc tooling",
-      "matchPackageNames": ["oxlint", "oxfmt", "oxlint-tsgolint"]
-    },
-    {
-      "description": "Vitest",
-      "groupName": "vitest",
-      "matchPackageNames": ["vitest", "/^@vitest//"]
-    }
-  ]
+  "extends": ["config:base"],
+  "timezone": "Europe/Paris"
 }
