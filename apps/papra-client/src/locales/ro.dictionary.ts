@@ -395,6 +395,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Actualizat la',
   'documents.info.never': 'Niciodată',
   'documents.info.document-date': 'Data',
+  'documents.list.table.headers.document-date': 'Data',
   'documents.info.no-date': 'Fără dată',
   'documents.info.today': 'Astăzi',
 

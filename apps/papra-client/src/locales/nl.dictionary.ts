@@ -397,6 +397,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Bijgewerkt op',
   'documents.info.never': 'Nooit',
   'documents.info.document-date': 'Datum',
+  'documents.list.table.headers.document-date': 'Datum',
   'documents.info.no-date': 'Geen datum',
   'documents.info.today': 'Vandaag',
 
