@@ -1,4 +1,4 @@
-import type { BinaryLike, BinaryToTextEncoding } from 'node:crypto';
+import type { BinaryToTextEncoding } from 'node:crypto';
 import crypto from 'node:crypto';
 import { Transform } from 'node:stream';
 import { isNil } from '../utils';
@@ -28,7 +28,7 @@ export function createSha256HashTransformer({
   let hash: string | undefined;
 
   const tap = new Transform({
-    transform(chunk: BinaryLike, _, callback) {
+    transform(chunk: string | NodeJS.ArrayBufferView, _, callback) {
       hasher.update(chunk);
       callback(null, chunk);
     },

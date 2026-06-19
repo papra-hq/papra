@@ -9,7 +9,13 @@ const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 const TAG_LENGTH = 16;
 
-export function encrypt({ key, value }: { key: BinaryLike; value: BinaryLike }) {
+export function encrypt({
+  key,
+  value,
+}: {
+  key: BinaryLike;
+  value: string | NodeJS.ArrayBufferView;
+}) {
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv(ALGORITHM, key, iv);
   const encrypted = cipher.update(value);
