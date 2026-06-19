@@ -14,7 +14,7 @@ export function useCopyShareLink() {
   const { t } = useI18n();
 
   return {
-    async copyShareLink({ url }: { url: string }) {
+    copyShareLink: async ({ url }: { url: string }) => {
       try {
         await navigator.clipboard.writeText(url);
         createToast({ type: 'success', message: t('document-share-links.copied') });
@@ -29,7 +29,7 @@ export function useToggleShareLink() {
   const { t } = useI18n();
 
   return {
-    async toggleShareLink({
+    toggleShareLink: async ({
       organizationId,
       shareLinkId,
       isEnabled,
@@ -37,7 +37,7 @@ export function useToggleShareLink() {
       organizationId: string;
       shareLinkId: string;
       isEnabled: boolean;
-    }) {
+    }) => {
       await updateShareLink({ organizationId, shareLinkId, isEnabled });
       await invalidateShareLinksQueries({ organizationId });
       createToast({
@@ -53,13 +53,13 @@ export function useDeleteShareLink() {
   const { t } = useI18n();
 
   return {
-    async deleteShareLink({
+    deleteShareLink: async ({
       organizationId,
       shareLinkId,
     }: {
       organizationId: string;
       shareLinkId: string;
-    }): Promise<{ hasDeleted: boolean }> {
+    }): Promise<{ hasDeleted: boolean }> => {
       const isConfirmed = await confirm({
         title: t('document-share-links.delete.confirm.title'),
         message: t('document-share-links.delete.confirm.message'),
