@@ -34,13 +34,13 @@ export function useDownloadDocument() {
   const { t } = useI18n();
 
   return {
-    async downloadDocument({
+    downloadDocument: async ({
       organizationId,
       documentId,
     }: {
       organizationId: string;
       documentId: string;
-    }) {
+    }) => {
       try {
         const [document, documentFile] = await Promise.all([
           queryClient.fetchQuery({
@@ -69,7 +69,7 @@ export function useDeleteDocument() {
   const { confirm } = useConfirmModal();
 
   return {
-    async deleteDocument({
+    deleteDocument: async ({
       documentId,
       organizationId,
       documentName,
@@ -77,7 +77,7 @@ export function useDeleteDocument() {
       documentId: string;
       organizationId: string;
       documentName: string;
-    }): Promise<{ hasDeleted: boolean }> {
+    }): Promise<{ hasDeleted: boolean }> => {
       const isConfirmed = await confirm({
         title: 'Delete document',
         message: getConfirmMessage(documentName),
@@ -112,7 +112,7 @@ export function useRestoreDocument() {
 
   return {
     getIsRestoring,
-    async restore({ document }: { document: Document }) {
+    restore: async ({ document }: { document: Document }) => {
       setIsRestoring(true);
 
       await restoreDocument({
