@@ -398,6 +398,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Actualizado el',
   'documents.info.never': 'Nunca',
   'documents.info.document-date': 'Fecha',
+  'documents.list.table.headers.document-date': 'Fecha',
   'documents.info.no-date': 'Sin fecha',
   'documents.info.today': 'Hoy',
 

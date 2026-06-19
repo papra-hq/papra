@@ -352,6 +352,7 @@ export const translations = {
     'There are no documents in this organization yet. Start by uploading some documents.',
   'documents.list.no-results': 'No documents found',
   'documents.list.table.headers.file-name': 'File name',
+  'documents.list.table.headers.document-date': 'Date',
   'documents.list.table.headers.created': 'Created',
   'documents.list.table.headers.deleted': 'Deleted',
   'documents.list.table.headers.actions': 'Actions',

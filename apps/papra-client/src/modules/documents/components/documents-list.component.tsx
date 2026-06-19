@@ -67,6 +67,29 @@ const selectionColumn: ColumnDef<Document> = {
   enableHiding: false,
 };
 
+export const documentDateColumn: ColumnDef<Document> = {
+  header: () => {
+    const { t } = useI18n();
+    return <span class="hidden sm:block">{t('documents.list.table.headers.document-date')}</span>;
+  },
+  accessorKey: 'documentDate',
+  enableSorting: true,
+  cell: (data) => {
+    const { t } = useI18n();
+    const value = data.getValue<Date | null | undefined>();
+    return (
+      <span class="text-muted-foreground hidden sm:block">
+        <Show
+          when={value}
+          fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
+        >
+          {(date) => <RelativeTime date={date()} />}
+        </Show>
+      </span>
+    );
+  },
+};
+
 export const createdAtColumn: ColumnDef<Document> = {
   header: () => {
     const { t } = useI18n();

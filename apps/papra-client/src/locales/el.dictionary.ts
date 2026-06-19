@@ -393,6 +393,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Ημερομηνία ενημέρωσης',
   'documents.info.never': 'Ποτέ',
   'documents.info.document-date': 'Ημερομηνία',
+  'documents.list.table.headers.document-date': 'Ημερομηνία',
   'documents.info.no-date': 'Χωρίς ημερομηνία',
   'documents.info.today': 'Σήμερα',
 
