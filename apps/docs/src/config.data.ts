@@ -69,7 +69,7 @@ ${documentation}
 
 - Path: \`${path.join('.')}\`
 - Environment variable: \`${firstEnv}\` ${restEnvs.length ? `, with fallback to: ${restEnvs.map((e) => `\`${e}\``).join(', ')}` : ''}
-- Default value: \`${defaultValue}\`
+- Default value: \`${String(defaultValue)}\`
 
 
 `.trim();
@@ -105,7 +105,7 @@ const fullDotEnv = rows
 
     return [
       ...wrapText(documentation),
-      `# ${firstEnv}=${isEmptyDefaultValue ? '' : defaultValue}`,
+      `# ${firstEnv}=${isEmptyDefaultValue ? '' : String(defaultValue)}`,
     ].join('\n');
   })
   .join('\n\n');
