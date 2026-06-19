@@ -75,10 +75,14 @@ export const documentDateColumn: ColumnDef<Document> = {
   accessorKey: 'documentDate',
   enableSorting: true,
   cell: (data) => {
+    const { t } = useI18n();
     const value = data.getValue<Date | null | undefined>();
     return (
       <span class="text-muted-foreground hidden sm:block">
-        <Show when={value} fallback="—">
+        <Show
+          when={value}
+          fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
+        >
           {(date) => <RelativeTime date={date()} />}
         </Show>
       </span>
