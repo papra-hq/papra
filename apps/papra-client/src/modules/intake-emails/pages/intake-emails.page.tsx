@@ -101,7 +101,7 @@ const AllowedOriginsDialog: Component<{
       open={props.open}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
-          invalidateQuery();
+          void invalidateQuery();
         }
         props.onOpenChange?.(isOpen);
       }}
@@ -402,7 +402,7 @@ export const IntakeEmailsPage: Component = () => {
                             <DropdownMenuItem
                               onClick={() => {
                                 setOpenDropdownId(null);
-                                updateEmail({
+                                void updateEmail({
                                   intakeEmailId: intakeEmail.id,
                                   isEnabled: !intakeEmail.isEnabled,
                                 });
@@ -422,7 +422,7 @@ export const IntakeEmailsPage: Component = () => {
                             <DropdownMenuItem
                               onClick={() => {
                                 setOpenDropdownId(null);
-                                deleteEmail({ intakeEmailId: intakeEmail.id });
+                                void deleteEmail({ intakeEmailId: intakeEmail.id });
                               }}
                               class="text-red"
                             >

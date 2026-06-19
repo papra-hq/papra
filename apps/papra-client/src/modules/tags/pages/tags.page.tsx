@@ -216,7 +216,7 @@ export const CreateTagModal: Component<{
       });
 
       setIsModalOpen(false);
-      props.onTagCreated?.({ tag });
+      void props.onTagCreated?.({ tag });
     },
     onError: (error) => {
       createToast({

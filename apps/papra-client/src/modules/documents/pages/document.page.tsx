@@ -90,7 +90,7 @@ const DocumentNotes: Component<{ documentId: string; organizationId: string; not
       clearTimeout(fadeTimeout);
       fadeTimeout = setTimeout(() => setIsSavedVisible(false), 2000);
 
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
         exact: true, // To avoid refetching the document file content
       });

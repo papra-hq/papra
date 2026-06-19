@@ -6,7 +6,7 @@ export function useCopy() {
   const [getIsJustCopied, setIsJustCopied] = createSignal(false);
 
   const copy = ({ text }: { text: string }) => {
-    navigator.clipboard.writeText(text).then(() => {
+    void navigator.clipboard.writeText(text).then(() => {
       setIsJustCopied(true);
       setTimeout(() => setIsJustCopied(false), 2000);
     });

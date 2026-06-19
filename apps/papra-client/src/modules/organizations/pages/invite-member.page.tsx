@@ -47,7 +47,7 @@ export const InviteMemberPage: Component = () => {
         role,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', params.organizationId, 'invitations'],
       });
       createToast({

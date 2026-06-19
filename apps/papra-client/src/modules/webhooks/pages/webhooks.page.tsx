@@ -19,7 +19,7 @@ export const WebhookCard: Component<{ webhook: Webhook }> = (props) => {
   const deleteWebhookMutation = useMutation(() => ({
     mutationFn: deleteWebhook,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
+      void queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
       createToast({
         message: t('webhooks.delete.success'),
       });
