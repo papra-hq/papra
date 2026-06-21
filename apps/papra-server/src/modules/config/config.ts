@@ -38,6 +38,7 @@ import {
 } from './config.schemas';
 import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
+import { aiConfig } from '../ai/ai.config';
 
 export const configDefinition = {
   env: {
@@ -173,6 +174,7 @@ export const configDefinition = {
   webhooks: webhookConfig,
   kvStore: kvStoreConfig,
   planEntitlements: planEntitlementsConfig,
+  ai: aiConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });
