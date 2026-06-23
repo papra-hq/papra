@@ -8,7 +8,6 @@ import { createOrganizationsRepository } from '../../organizations/organizations
 import { ensureUserIsInOrganization } from '../../organizations/organizations.usecases';
 import { validateJsonBody, validateParams } from '../../shared/validation/validation';
 import { createTagsRepository } from '../../tags/tags.repository';
-import { createDocumentActivityRepository } from '../document-activity/document-activity.repository';
 import { createDocumentsRepository } from '../documents.repository';
 import { batchTagsBodySchema, batchTrashBodySchema } from './documents-batch.schemas';
 import { tagDocumentsBatch, trashDocumentsBatch } from './documents-batch.usecases';
@@ -61,7 +60,7 @@ function setupBatchTagDocumentsRoute({
   app,
   db,
   documentSearchServices,
-  webhookTriggerServices,
+  eventServices,
 }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/batch/tags',
@@ -82,7 +81,6 @@ function setupBatchTagDocumentsRoute({
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
@@ -95,8 +93,7 @@ function setupBatchTagDocumentsRoute({
         documentsRepository,
         tagsRepository,
         documentSearchServices,
-        webhookTriggerServices,
-        documentActivityRepository,
+        eventServices,
       });
 
       return context.body(null, 204);

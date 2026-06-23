@@ -7,10 +7,12 @@ import type { EventServices } from './events.services';
 import { registerSyncDocumentSearchEventHandlers } from '../../documents/document-search/events/sync-document-search.handlers';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from '../../documents/events/activity-log.document-created';
 import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../documents/events/activity-log.document-restored';
+import { registerInsertActivityLogOnDocumentTagsChangedHandler } from '../../documents/events/activity-log.document-tags-changed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
 import { registerInsertActivityLogOnDocumentsTrashedHandler } from '../../documents/events/activity-log.documents-trashed';
 import { registerTrackDocumentCreatedHandler } from '../../documents/events/tracking.document-created';
 import { registerTriggerWebhooksOnDocumentCreatedHandler } from '../../documents/events/webhooks.document-created';
+import { registerTriggerWebhooksOnDocumentTagsChangedHandler } from '../../documents/events/webhooks.document-tags-changed';
 import { registerTriggerWebhooksOnDocumentUpdatedHandler } from '../../documents/events/webhooks.document-updated';
 import { registerTriggerWebhooksOnDocumentsTrashedHandler } from '../../documents/events/webhooks.documents-trashed';
 import { registerFirstUserAdminEventHandler } from '../../roles/event-handlers/first-user-admin.user-created';
@@ -34,5 +36,7 @@ export function registerEventHandlers(deps: {
   registerInsertActivityLogOnDocumentRestoredHandler(deps);
   registerTriggerWebhooksOnDocumentUpdatedHandler(deps);
   registerInsertActivityLogOnDocumentUpdatedHandler(deps);
+  registerTriggerWebhooksOnDocumentTagsChangedHandler(deps);
+  registerInsertActivityLogOnDocumentTagsChangedHandler(deps);
   registerSyncDocumentSearchEventHandlers(deps);
 }
