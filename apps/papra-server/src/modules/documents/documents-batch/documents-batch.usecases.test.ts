@@ -1,5 +1,3 @@
-import type { WebhookPayloads } from '@papra/webhooks';
-import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
 import type { DocumentSearchServices } from '../document-search/document-search.types';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../../app/database/database.test-utils';
@@ -8,8 +6,6 @@ import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants'
 import { pick } from '../../shared/objects';
 import { createTagsRepository } from '../../tags/tags.repository';
 import { documentsTagsTable } from '../../tags/tags.table';
-import { createDocumentActivityRepository } from '../document-activity/document-activity.repository';
-import { documentActivityLogTable } from '../document-activity/document-activity.table';
 import { createDatabaseFts5DocumentSearchServices } from '../document-search/database-fts5/database-fts5.document-search-provider';
 import { createDocumentsRepository } from '../documents.repository';
 import { documentsTable } from '../documents.table';
@@ -34,21 +30,6 @@ function createStubSearchServices({ documentIds = [] }: { documentIds?: string[]
     updateDocuments: async () => {},
     deleteDocuments: async () => {},
   };
-
-  return { services, calls };
-}
-
-function createStubWebhookTriggerServices() {
-  const calls: Parameters<WebhookTriggerServices['deferTriggerWebhooks']>[0][] = [];
-
-  const services = {
-    triggerWebhooks: (async () => {}) as WebhookTriggerServices['triggerWebhooks'],
-    deferTriggerWebhooks: ((
-      args: Parameters<WebhookTriggerServices['deferTriggerWebhooks']>[0],
-    ) => {
-      calls.push(args);
-    }) as WebhookTriggerServices['deferTriggerWebhooks'],
-  } as WebhookTriggerServices;
 
   return { services, calls };
 }
@@ -503,7 +484,7 @@ describe('documents-batch usecases', () => {
       });
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount, untaggedCount } = await tagDocumentsBatch({
         filter: { documentIds: ['doc-1', 'doc-2'] },
@@ -514,8 +495,7 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(2);
@@ -551,7 +531,7 @@ describe('documents-batch usecases', () => {
       });
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       await expect(
         tagDocumentsBatch({
@@ -563,8 +543,7 @@ describe('documents-batch usecases', () => {
           documentsRepository: createDocumentsRepository({ db }),
           tagsRepository: createTagsRepository({ db }),
           documentSearchServices: searchServices,
-          webhookTriggerServices: webhookServices,
-          documentActivityRepository: createDocumentActivityRepository({ db }),
+          eventServices,
         }),
       ).rejects.toThrow(createDocumentIdsNotFromOrganizationError());
 
@@ -585,7 +564,7 @@ describe('documents-batch usecases', () => {
       await db.insert(documentsTagsTable).values([{ documentId: 'doc-1', tagId: 'tag-1' }]);
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices, calls: webhookCalls } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount } = await tagDocumentsBatch({
         filter: { documentIds: ['doc-1', 'doc-2'] },
@@ -596,8 +575,7 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(1);
@@ -606,9 +584,11 @@ describe('documents-batch usecases', () => {
         'doc-1:tag-1',
         'doc-2:tag-1',
       ]);
-      expect(webhookCalls.find((c) => c.event === 'document:tag:added')?.payloads).to.have.length(
-        1,
-      );
+
+      // Only the newly-added pair is reported in the emitted event (idempotent skip of the existing one).
+      const [event] = eventServices.getEmittedEvents();
+      expect(event?.eventName).to.eql('document.tags.changed');
+      expect(event?.payload.addedPairs).to.have.length(1);
     });
 
     test('removes only existing tag pairs', async () => {
@@ -627,7 +607,7 @@ describe('documents-batch usecases', () => {
       ]);
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount, untaggedCount } = await tagDocumentsBatch({
         filter: { documentIds: ['doc-1', 'doc-2'] },
@@ -638,8 +618,7 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(0);
@@ -662,7 +641,7 @@ describe('documents-batch usecases', () => {
       await db.insert(documentsTagsTable).values([{ documentId: 'doc-1', tagId: 'tag-1' }]);
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount, untaggedCount } = await tagDocumentsBatch({
         filter: { documentIds: ['doc-1', 'doc-2'] },
@@ -673,8 +652,7 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(2);
@@ -708,7 +686,7 @@ describe('documents-batch usecases', () => {
       });
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       await expect(
         tagDocumentsBatch({
@@ -720,8 +698,7 @@ describe('documents-batch usecases', () => {
           documentsRepository: createDocumentsRepository({ db }),
           tagsRepository: createTagsRepository({ db }),
           documentSearchServices: searchServices,
-          webhookTriggerServices: webhookServices,
-          documentActivityRepository: createDocumentActivityRepository({ db }),
+          eventServices,
         }),
       ).rejects.toThrow();
 
@@ -740,7 +717,7 @@ describe('documents-batch usecases', () => {
       const { services: searchServices, calls: searchCalls } = createStubSearchServices({
         documentIds: ['doc-1'],
       });
-      const { services: webhookServices } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount } = await tagDocumentsBatch({
         filter: { query: 'tag:invoice' },
@@ -751,8 +728,7 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(1);
@@ -761,7 +737,7 @@ describe('documents-batch usecases', () => {
       ]);
     });
 
-    test('emits batched webhook trigger calls and writes activity logs in one bulk insert', async () => {
+    test('emits a single document.tags.changed event carrying the actually-changed pairs', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -774,7 +750,7 @@ describe('documents-batch usecases', () => {
       await db.insert(documentsTagsTable).values([{ documentId: 'doc-1', tagId: 'tag-2' }]);
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices, calls: webhookCalls } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       await tagDocumentsBatch({
         filter: { documentIds: ['doc-1', 'doc-2'] },
@@ -785,41 +761,31 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
-      const addedPayloads = webhookCalls.find((c) => c.event === 'document:tag:added')?.payloads as
-        | Extract<WebhookPayloads, { event: 'document:tag:added' }>['payload'][]
-        | undefined;
-      const removedPayloads = webhookCalls.find((c) => c.event === 'document:tag:removed')
-        ?.payloads as
-        | Extract<WebhookPayloads, { event: 'document:tag:removed' }>['payload'][]
-        | undefined;
+      const events = eventServices.getEmittedEvents();
+      expect(events).to.have.length(1);
 
-      expect(addedPayloads).to.have.length(2);
-      expect(
-        addedPayloads?.every(
-          (p) =>
-            p.tagId === 'tag-1' && p.tagName === 'Tag One' && p.organizationId === 'organization-1',
-        ),
-      ).to.eql(true);
+      const { eventName, payload } = events[0]!;
+      expect(eventName).to.eql('document.tags.changed');
+      expect(payload.organizationId).to.eql('organization-1');
+      expect(payload.userId).to.eql('user-1');
 
-      expect(removedPayloads).to.eql([
-        {
-          documentId: 'doc-1',
-          organizationId: 'organization-1',
-          tagId: 'tag-2',
-          tagName: 'Tag Two',
-        },
+      const addedPairs = payload.addedPairs as {
+        documentId: string;
+        tagId: string;
+        tagName: string;
+      }[];
+      expect(addedPairs).to.have.length(2);
+      expect(addedPairs.every((p) => p.tagId === 'tag-1' && p.tagName === 'Tag One')).to.eql(true);
+
+      expect(payload.removedPairs).to.eql([
+        { documentId: 'doc-1', tagId: 'tag-2', tagName: 'Tag Two' },
       ]);
-
-      const activityRows = await db.select().from(documentActivityLogTable);
-      const events = activityRows.map((r) => `${r.documentId}:${r.event}:${r.tagId}`).toSorted();
-      expect(events).to.eql(['doc-1:tagged:tag-1', 'doc-1:untagged:tag-2', 'doc-2:tagged:tag-1']);
     });
 
-    test('does not emit webhooks or write activity logs when nothing changes', async () => {
+    test('does not emit any event when nothing changes', async () => {
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'user-1@example.com' }],
         organizations: [{ id: 'organization-1', name: 'Organization 1' }],
@@ -829,7 +795,7 @@ describe('documents-batch usecases', () => {
       await db.insert(documentsTagsTable).values([{ documentId: 'doc-1', tagId: 'tag-1' }]);
 
       const { services: searchServices } = createStubSearchServices();
-      const { services: webhookServices, calls: webhookCalls } = createStubWebhookTriggerServices();
+      const eventServices = createTestEventServices();
 
       const { taggedCount, untaggedCount } = await tagDocumentsBatch({
         filter: { documentIds: ['doc-1'] },
@@ -840,15 +806,12 @@ describe('documents-batch usecases', () => {
         documentsRepository: createDocumentsRepository({ db }),
         tagsRepository: createTagsRepository({ db }),
         documentSearchServices: searchServices,
-        webhookTriggerServices: webhookServices,
-        documentActivityRepository: createDocumentActivityRepository({ db }),
+        eventServices,
       });
 
       expect(taggedCount).to.eql(0);
       expect(untaggedCount).to.eql(0);
-      expect(webhookCalls).to.eql([]);
-      const activityRows = await db.select().from(documentActivityLogTable);
-      expect(activityRows).to.eql([]);
+      expect(eventServices.getEmittedEvents()).to.eql([]);
     });
   });
 });

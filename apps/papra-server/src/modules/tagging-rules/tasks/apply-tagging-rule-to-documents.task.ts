@@ -1,7 +1,6 @@
 import type { Database } from '../../app/database/database.types';
+import type { EventServices } from '../../app/events/events.services';
 import type { TaskServices } from '../../tasks/tasks.services';
-import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
-import { createDocumentActivityRepository } from '../../documents/document-activity/document-activity.repository';
 import { createDocumentsRepository } from '../../documents/documents.repository';
 import { createLogger } from '../../shared/logger/logger';
 import { createTagsRepository } from '../../tags/tags.repository';
@@ -13,11 +12,11 @@ const logger = createLogger({ namespace: 'tasks:apply-tagging-rule' });
 export async function registerApplyTaggingRuleToDocumentsTask({
   taskServices,
   db,
-  webhookTriggerServices,
+  eventServices,
 }: {
   taskServices: TaskServices;
   db: Database;
-  webhookTriggerServices: WebhookTriggerServices;
+  eventServices: EventServices;
 }) {
   const taskName = 'apply-tagging-rule-to-documents';
 
@@ -27,7 +26,6 @@ export async function registerApplyTaggingRuleToDocumentsTask({
       const documentsRepository = createDocumentsRepository({ db });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
 
       // TODO: remove type cast once taskServices has proper typing
       const { organizationId, taggingRuleId } = data as {
@@ -46,8 +44,7 @@ export async function registerApplyTaggingRuleToDocumentsTask({
         taggingRulesRepository,
         documentsRepository,
         tagsRepository,
-        webhookTriggerServices,
-        documentActivityRepository,
+        eventServices,
         logger,
       });
 
