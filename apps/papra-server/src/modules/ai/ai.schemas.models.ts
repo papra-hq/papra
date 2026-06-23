@@ -12,3 +12,11 @@ export function parseModelId(modelId: string) {
 
   return { adapterId, modelName };
 }
+
+export function parseOptionalModelId(modelId: string | undefined | null) {
+  if (isNilOrEmptyString(modelId)) {
+    return undefined;
+  }
+
+  return parseModelId(modelId);
+}

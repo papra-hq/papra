@@ -2,6 +2,7 @@ import { aiModelIdSchema, aiModelsAdapterConfigSchema } from './ai.schemas';
 import { booleanishSchema } from '../config/config.schemas';
 import * as v from 'valibot';
 import type { AppConfigDefinition } from '../config/config.types';
+import { AI_DEFAULT_MODEL_ENV_KEY } from './ai.constants';
 
 export const aiConfig = {
   aiIsEnabled: {
@@ -21,7 +22,7 @@ export const aiConfig = {
   defaultModel: {
     doc: 'Default AI model to use when no specific model is specified, the format is <adapterId>:<modelName>, e.g. "ollama:llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
     schema: v.optional(aiModelIdSchema),
-    env: 'AI_DEFAULT_MODEL',
+    env: AI_DEFAULT_MODEL_ENV_KEY,
     default: undefined,
     showInDocumentation: false,
   },

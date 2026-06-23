@@ -18,6 +18,7 @@ import { registerEventHandlers } from './events/events.handlers';
 import { createEventServices } from './events/events.services';
 import { createGracefulShutdownService } from './graceful-shutdown/graceful-shutdown.services';
 import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
+import { createAiServices } from '../ai/ai.services';
 
 export function createTestServerDependencies(
   overrides: Partial<GlobalDependencies> = {},
@@ -49,6 +50,7 @@ export function createTestServerDependencies(
   const planEntitlementDefinitionRegistry =
     overrides.planEntitlementDefinitionRegistry ??
     createPlanEntitlementDefinitionRegistry({ config });
+  const aiServices = overrides.aiServices ?? createAiServices({ config });
 
   registerEventHandlers({
     eventServices,
@@ -74,5 +76,6 @@ export function createTestServerDependencies(
     webhookTriggerServices,
     kvStore,
     planEntitlementDefinitionRegistry,
+    aiServices,
   };
 }

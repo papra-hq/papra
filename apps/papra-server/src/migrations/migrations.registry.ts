@@ -24,6 +24,7 @@ import { documentShareLinksMigration } from './list/0021-document-share-links.mi
 import { documentsNotesMigration } from './list/0022-documents-notes.migration';
 import { documentViewsMigration } from './list/0023-document-views.migration';
 import { userPlanEntitlementsMigration } from './list/0024-user-plan-entitlements.migration';
+import { addOrganizationSettingsTableMigration } from './list/0025-add-organization-settings-table.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -50,4 +51,5 @@ export const migrations: Migration[] = [
   documentsNotesMigration,
   documentViewsMigration,
   userPlanEntitlementsMigration,
+  addOrganizationSettingsTableMigration,
 ];
