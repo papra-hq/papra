@@ -58,7 +58,7 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "19.1.17",
+    "@types/react": "19.2.17",
     "eas-cli": "16.27.0",
     "reactotron-react-native": "5.1.18",
     "typescript": "catalog:",
