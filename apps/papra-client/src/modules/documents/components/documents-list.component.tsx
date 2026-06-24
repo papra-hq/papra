@@ -42,27 +42,35 @@ import { DocumentManagementDropdown } from './document-management-dropdown.compo
 
 const selectionColumn: ColumnDef<Document> = {
   id: 'select',
-  header: (props) => (
-    <Checkbox
-      checked={props.table.getIsAllPageRowsSelected()}
-      indeterminate={
-        props.table.getIsSomePageRowsSelected() && !props.table.getIsAllPageRowsSelected()
-      }
-      onChange={(value) => props.table.toggleAllPageRowsSelected(value)}
-      aria-label="Select all rows on this page"
-    >
-      <CheckboxControl />
-    </Checkbox>
-  ),
-  cell: (props) => (
-    <Checkbox
-      checked={props.row.getIsSelected()}
-      onChange={(value) => props.row.toggleSelected(value)}
-      aria-label="Select row"
-    >
-      <CheckboxControl />
-    </Checkbox>
-  ),
+  header: (props) => {
+    const { t } = useI18n();
+
+    return (
+      <Checkbox
+        checked={props.table.getIsAllPageRowsSelected()}
+        indeterminate={
+          props.table.getIsSomePageRowsSelected() && !props.table.getIsAllPageRowsSelected()
+        }
+        onChange={(value) => props.table.toggleAllPageRowsSelected(value)}
+        aria-label={t('documents.list.select.all')}
+      >
+        <CheckboxControl />
+      </Checkbox>
+    );
+  },
+  cell: (props) => {
+    const { t } = useI18n();
+
+    return (
+      <Checkbox
+        checked={props.row.getIsSelected()}
+        onChange={(value) => props.row.toggleSelected(value)}
+        aria-label={t('documents.list.select.row')}
+      >
+        <CheckboxControl />
+      </Checkbox>
+    );
+  },
   enableSorting: false,
   enableHiding: false,
 };
@@ -326,7 +334,7 @@ export const DocumentsPaginatedList: Component<{
               </div>
               <div class="flex items-center space-x-2">
                 <Button
-                  aria-label="Go to first page"
+                  aria-label={t('common.tables.first-page')}
                   variant="outline"
                   class="flex size-8 p-0"
                   onClick={() => table.setPageIndex(0)}
@@ -335,7 +343,7 @@ export const DocumentsPaginatedList: Component<{
                   <div class="size-4 i-tabler-chevrons-left" />
                 </Button>
                 <Button
-                  aria-label="Go to previous page"
+                  aria-label={t('common.tables.previous-page')}
                   variant="outline"
                   size="icon"
                   class="size-8"
@@ -345,7 +353,7 @@ export const DocumentsPaginatedList: Component<{
                   <div class="size-4 i-tabler-chevron-left" />
                 </Button>
                 <Button
-                  aria-label="Go to next page"
+                  aria-label={t('common.tables.next-page')}
                   variant="outline"
                   size="icon"
                   class="size-8"
@@ -355,7 +363,7 @@ export const DocumentsPaginatedList: Component<{
                   <div class="size-4 i-tabler-chevron-right" />
                 </Button>
                 <Button
-                  aria-label="Go to last page"
+                  aria-label={t('common.tables.last-page')}
                   variant="outline"
                   size="icon"
                   class="flex size-8"

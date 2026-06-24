@@ -228,6 +228,7 @@ export const translations = {
   'organizations.create.form.name.required': 'Please enter an organization name',
   'organizations.create.form.submit': 'Create organization',
   'organizations.create.success': 'Organization created successfully',
+  'organizations.switcher.create': 'Create new organization',
 
   'organizations.create-first.title': 'Create your organization',
   'organizations.create-first.description':
@@ -440,6 +441,16 @@ export const translations = {
   'documents.notes.saving': 'Saving',
   'documents.notes.saved': 'Saved',
   'documents.notes.save-error': 'Failed to save notes',
+
+  'documents.management.details': 'Document details',
+  'documents.management.rename': 'Rename document',
+  'documents.management.delete': 'Delete document',
+
+  'documents.import.drop-area.title': 'Drop files here',
+  'documents.import.drop-area.description': 'Drag and drop files here to import them',
+
+  'documents.list.select.all': 'Select all rows on this page',
+  'documents.list.select.row': 'Select row',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Number',
@@ -905,6 +916,8 @@ export const translations = {
   'intake-emails.allowed-origins.add.label': 'Add allowed origin email',
   'intake-emails.allowed-origins.add.placeholder': 'Eg. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Add',
+  'intake-emails.allowed-origins.delete.label': 'Delete allowed origin',
+  'intake-emails.actions.more': 'More actions',
   'intake-emails.allowed-origins.add.error.exists':
     'This email is already in the allowed origins for this intake email',
 
@@ -1037,9 +1050,13 @@ export const translations = {
   'layout.theme.dark': 'Dark mode',
   'layout.theme.system': 'System mode',
 
+  'layout.theme-switcher.label': 'Theme switcher',
+  'layout.language-switcher.label': 'Language switcher',
+
   'layout.search.placeholder': 'Quick search',
   'layout.menu.import-document': 'Import a document',
 
+  'user-menu.trigger.label': 'User menu',
   'user-menu.account-settings': 'Account settings',
   'user-menu.api-keys': 'API keys',
   'user-menu.invitations': 'Invitations',
@@ -1365,6 +1382,10 @@ export const translations = {
   'common.confirm-modal.type-to-confirm': 'Type "{{ text }}" to confirm',
   'common.tables.rows-per-page': 'Rows per page',
   'common.tables.pagination-info': 'Page {{ currentPage }} of {{ totalPages }}',
+  'common.tables.first-page': 'Go to first page',
+  'common.tables.previous-page': 'Go to previous page',
+  'common.tables.next-page': 'Go to next page',
+  'common.tables.last-page': 'Go to last page',
   'common.back-to-home': 'Back to home',
 
   // About page
@@ -1384,6 +1405,17 @@ export const translations = {
   'about.links.discord-description': 'Join our community',
   'about.links.sponsor': 'Sponsor',
   'about.links.sponsor-description': 'Support Papra development',
+
+  'config.server-unreachable.title': 'Server unreachable',
+  'config.server-unreachable.description':
+    'The server seems to be unreachable, if you are self-hosting, make sure the server is running and properly configured. You may want to check the console for more information.',
+  'config.server-unreachable.retry': 'Retry',
+  'config.server-unreachable.retry-error.title': 'Server still unreachable',
+  'config.server-unreachable.retry-error.description':
+    'The server remains unreachable, try again later.',
+
+  'coming-soon.title': 'Coming Soon',
+  'coming-soon.description': 'This feature is coming soon, please check back later.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

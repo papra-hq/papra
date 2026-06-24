@@ -1,5 +1,6 @@
 import type { ParentComponent } from 'solid-js';
 import { A } from '@solidjs/router';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 import { ThemeSwitcher } from '@/modules/theme/theme-switcher.component';
 import { useTheme } from '@/modules/theme/theme.provider';
@@ -13,6 +14,7 @@ import { LanguageSwitcher } from './sidenav.layout';
 
 export const AuthLayout: ParentComponent = (props) => {
   const { getTheme } = useTheme();
+  const { t } = useI18n();
 
   return (
     <div class="h-screen w-full flex flex-col">
@@ -27,7 +29,11 @@ export const AuthLayout: ParentComponent = (props) => {
 
         <div class="flex gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger as={Button} variant="outline" aria-label="Theme switcher">
+            <DropdownMenuTrigger
+              as={Button}
+              variant="outline"
+              aria-label={t('layout.theme-switcher.label')}
+            >
               <div
                 class={cn('size-4.5', {
                   'i-tabler-moon': getTheme() === 'dark',
@@ -42,7 +48,11 @@ export const AuthLayout: ParentComponent = (props) => {
           </DropdownMenu>
 
           <DropdownMenu>
-            <DropdownMenuTrigger as={Button} variant="outline" aria-label="Language switcher">
+            <DropdownMenuTrigger
+              as={Button}
+              variant="outline"
+              aria-label={t('layout.language-switcher.label')}
+            >
               <div class="i-tabler-language size-5" />
               <div class="ml-2 i-tabler-chevron-down text-muted-foreground text-sm" />
             </DropdownMenuTrigger>
