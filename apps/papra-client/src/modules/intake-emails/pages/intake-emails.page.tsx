@@ -185,7 +185,7 @@ export const IntakeEmailsPage: Component = () => {
 
   if (!config.intakeEmails.isEnabled) {
     return (
-      <div class="p-6 max-w-screen-md mx-auto mt-10">
+      <div class="p-6 max-w-screen-md mx-auto">
         <h1 class="text-xl font-semibold">{t('intake-emails.title')}</h1>
 
         <p class="text-muted-foreground mt-1">{t('intake-emails.description')}</p>

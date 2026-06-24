@@ -211,7 +211,7 @@ export const EditWebhookPage: Component = () => {
   }));
 
   return (
-    <div class="p-6 mt-12 pb-32 mx-auto max-w-xl w-full">
+    <div class="p-6 pb-32 mx-auto max-w-xl w-full">
       <div class="border-b pb-4 mb-6">
         <h1 class="text-2xl font-bold">{t('webhooks.update.title')}</h1>
         <p class="text-sm text-muted-foreground">{t('webhooks.update.description')}</p>

@@ -3,6 +3,8 @@ import { A, useParams } from '@solidjs/router';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { SideNav } from '@/modules/ui/components/sidenav';
 import { Button } from '../components/button';
+import { SidenavLayout } from './sidenav.layout';
+import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
 
 export const OrganizationSettingsLayout: ParentComponent = (props) => {
   const params = useParams();
@@ -41,8 +43,8 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
   ];
 
   return (
-    <div class="flex flex-row h-screen min-h-0">
-      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
+    <SidenavLayout
+      sideNav={() => (
         <SideNav
           mainMenu={getNavigationItems()}
           header={() => (
@@ -60,8 +62,13 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
             </div>
           )}
         />
-      </div>
-      <div class="flex-1 min-h-0 flex flex-col">{props.children}</div>
-    </div>
+      )}
+      children={props.children}
+      header={() => (
+        <div class="flex items-center justify-end w-full flex-1">
+          <UserSettingsDropdown />
+        </div>
+      )}
+    />
   );
 };
