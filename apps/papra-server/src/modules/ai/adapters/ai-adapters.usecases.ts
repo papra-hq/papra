@@ -1,16 +1,15 @@
 import type { ModelConfig } from '../ai.type';
 import { modelAdapterFactories } from './ai-adapters.registry';
-import type { ModelAdapterNames } from './ai-adapters.registry';
 import type { AiModelAdapterListConfig } from './ai-adapters.schemas';
 
 export function resolveModelAdapter({
-  modelConfig,
+  model,
   adaptersConfig,
 }: {
-  modelConfig: ModelConfig;
+  model: ModelConfig;
   adaptersConfig: AiModelAdapterListConfig;
 }) {
-  const { modelName, adapterId } = modelConfig;
+  const { modelName, adapterId } = model;
 
   const adapterConfig = adaptersConfig.find((adapter) => adapter.id === adapterId);
 
@@ -18,7 +17,7 @@ export function resolveModelAdapter({
     throw new Error(`Adapter config not found for adapterId: ${adapterId}`);
   }
 
-  const factory = modelAdapterFactories[adapterId as ModelAdapterNames];
+  const factory = modelAdapterFactories[adapterConfig.adapter];
 
   if (!factory) {
     throw new Error(`Adapter factory not found for adapterId: ${adapterId}`);

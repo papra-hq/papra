@@ -25,6 +25,7 @@ import { createTrackingServices } from './modules/tracking/tracking.services';
 import { createWebhookRepository } from './modules/webhooks/webhooks.repository';
 import { createWebhookTriggerServices } from './modules/webhooks/webhooks.trigger.services';
 import { createPlanEntitlementDefinitionRegistry } from './modules/plan-entitlements/plan-entitlements.registry';
+import { createAiServices } from './modules/ai/ai.services';
 
 async function startWebMode({ logger, ...dependencies }: { logger: Logger } & GlobalDependencies) {
   const server = createServer(dependencies);
@@ -73,6 +74,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   });
   const kvStore = buildKvStore({ config, db });
   const planEntitlementDefinitionRegistry = createPlanEntitlementDefinitionRegistry({ config });
+  const aiServices = createAiServices({ config });
 
   // --- Services initialization
   await taskServices.initialize();
@@ -100,6 +102,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
     webhookTriggerServices,
     kvStore,
     planEntitlementDefinitionRegistry,
+    aiServices,
   };
 }
 

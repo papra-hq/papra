@@ -6,17 +6,20 @@ import { createTaggingRulesRepository } from '../../tagging-rules/tagging-rules.
 import { createTagsRepository } from '../../tags/tags.repository';
 import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
+import type { Config } from '../../config/config.types';
 
 export async function registerExtractDocumentFileContentTask({
   taskServices,
   db,
   documentsStorageService,
   eventServices,
+  config,
 }: {
   taskServices: TaskServices;
   db: Database;
   documentsStorageService: DocumentStorageService;
   eventServices: EventServices;
+  config: Config;
 }) {
   const taskName = 'extract-document-file-content';
 
@@ -43,6 +46,15 @@ export async function registerExtractDocumentFileContentTask({
         taggingRulesRepository,
         tagsRepository,
         eventServices,
+      });
+
+      if (!config.ai.aiIsEnabled) {
+        return;
+      }
+
+      await taskServices.scheduleJob({
+        taskName: 'auto-tag-document',
+        data: { documentId, organizationId },
       });
     },
   });

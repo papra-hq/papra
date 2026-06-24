@@ -15,6 +15,7 @@ import type { Database } from './database/database.types';
 import type { EventServices } from './events/events.services';
 import type { ShutdownServices } from './graceful-shutdown/graceful-shutdown.services';
 import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
+import type { AiServices } from '../ai/ai.services';
 
 export type ServerInstanceGenerics = {
   Variables: {
@@ -44,6 +45,7 @@ export type GlobalDependencies = {
   webhookTriggerServices: WebhookTriggerServices;
   planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   kvStore: KvStore;
+  aiServices: AiServices;
 };
 
 export type RouteDefinitionContext = { app: ServerInstance } & GlobalDependencies;

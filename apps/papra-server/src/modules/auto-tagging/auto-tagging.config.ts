@@ -1,0 +1,22 @@
+import * as v from 'valibot';
+import type { AppConfigDefinition } from '../config/config.types';
+import { AI_DEFAULT_MODEL_ENV_KEY } from '../ai/ai.constants';
+import { aiModelIdSchema } from '../ai/ai.schemas';
+import { strictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
+
+export const autoTaggingConfig = {
+  model: {
+    doc: 'Default AI model to use when no specific model is specified, the format is <adapterId>:<modelName>, e.g. "ollama:llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
+    schema: v.optional(aiModelIdSchema),
+    env: ['AUTO_TAGGING_MODEL', AI_DEFAULT_MODEL_ENV_KEY],
+    default: undefined,
+    showInDocumentation: false,
+  },
+  defaultMaxTags: {
+    doc: 'The default maximum number of tags that can be assigned by AI auto-tagging. This can be overridden per organization in the organization settings.',
+    schema: strictlyPositiveIntegerSchema,
+    env: 'AUTO_TAGGING_DEFAULT_MAX_TAGS',
+    default: 5,
+    showInDocumentation: false,
+  },
+} as const satisfies AppConfigDefinition;
