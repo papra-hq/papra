@@ -2,12 +2,15 @@ import type { Component, ParentComponent } from 'solid-js';
 
 import type { Organization } from '@/modules/organizations/organizations.types';
 
-import { useNavigate, useParams } from '@solidjs/router';
+import { A, useNavigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { createEffect, on, Show } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { fetchDocumentViews } from '@/modules/document-views/document-views.services';
-import { DocumentUploadProvider } from '@/modules/documents/components/document-import-status.component';
+import {
+  DocumentUploadProvider,
+  useDocumentUpload,
+} from '@/modules/documents/components/document-import-status.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import {
   fetchOrganization,
@@ -28,6 +31,11 @@ import {
 } from '../components/select';
 import { SidenavLayout } from './sidenav.layout';
 import { FREE_PLANS_IDS } from '@papra/app-server/plans/constants';
+import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
+import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
+import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
+import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
+import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
 
 const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { t } = useI18n();
@@ -261,6 +269,9 @@ const OrganizationLayoutSideNav: Component = () => {
 export const OrganizationLayout: ParentComponent = (props) => {
   const params = useParams();
   const navigate = useNavigate();
+  const { openCommandPalette } = useCommandPalette();
+  const { t } = useI18n();
+  const { hasPermission } = useCurrentUser();
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
@@ -285,7 +296,53 @@ export const OrganizationLayout: ParentComponent = (props) => {
 
   return (
     <DocumentUploadProvider organizationId={params.organizationId}>
-      <SidenavLayout children={props.children} sideNav={OrganizationLayoutSideNav} />
+      <SidenavLayout
+        children={props.children}
+        sideNav={OrganizationLayoutSideNav}
+        topSection={() => <UsageWarningCard organizationId={params.organizationId} />}
+        header={() => (
+          <div class="flex justify-between w-full">
+            <div class="flex items-center">
+              <Button
+                variant="outline"
+                class="lg:min-w-64 justify-start gap-2 px-2.5 sm:px-4"
+                onClick={openCommandPalette}
+              >
+                <div class="i-tabler-search size-4" />
+                <span class="hidden sm:inline">{t('layout.search.placeholder')}</span>
+              </Button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <OrganizationLayoutImportButton />
+
+              <Show when={hasPermission('bo:access')}>
+                <Button as={A} href="/admin" variant="outline" class="px-2.5 sm:px-4 gap-2">
+                  <div class="i-tabler-settings size-4" />
+                  <span class="hidden sm:inline">{t('layout.menu.admin')}</span>
+                </Button>
+              </Show>
+
+              <UserSettingsDropdown />
+            </div>
+          </div>
+        )}
+      />
     </DocumentUploadProvider>
+  );
+};
+
+const OrganizationLayoutImportButton: Component = () => {
+  const { uploadDocuments, promptImport } = useDocumentUpload();
+  const { t } = useI18n();
+
+  return (
+    <>
+      <GlobalDropArea onFilesDrop={uploadDocuments} />
+      <Button onClick={promptImport} class="px-2.5 sm:px-4">
+        <div class="i-tabler-upload size-4" />
+        <span class="hidden sm:inline ml-2">{t('layout.menu.import-document')}</span>
+      </Button>
+    </>
   );
 };
