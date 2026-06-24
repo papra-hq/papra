@@ -189,7 +189,12 @@ export const SharedDocumentPage: Component = () => {
 
           <div class="flex gap-2">
             <DropdownMenu>
-              <DropdownMenuTrigger as={Button} variant="outline" aria-label="User menu" size="icon">
+              <DropdownMenuTrigger
+                as={Button}
+                variant="outline"
+                aria-label={t('user-menu.trigger.label')}
+                size="icon"
+              >
                 <div class="i-tabler-dots size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent class="min-w-48">
