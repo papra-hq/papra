@@ -1,10 +1,9 @@
-import type { DocumentActivityRepository } from '../documents/document-activity/document-activity.repository';
+import type { EventServices } from '../app/events/events.services';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import type { Document } from '../documents/documents.types';
 import type { Logger } from '../shared/logger/logger';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { Tag } from '../tags/tags.types';
-import type { WebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
 import type { TaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import type { TaggingRulesRepository } from './tagging-rules.repository';
 import type {
@@ -16,7 +15,7 @@ import { safely, safelySync } from '@corentinth/chisels';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { isNil, uniq } from '../shared/utils';
-import { addTagToDocument } from '../tags/tags.usecases';
+import { applyTagsToDocuments } from '../tags/tags.usecases';
 import { createTaggingRuleOperatorValidatorRegistry } from './conditions/tagging-rule-conditions.registry';
 import { CONDITION_MATCH_MODES } from './tagging-rules.constants';
 import { getDocumentFieldValue } from './tagging-rules.models';
@@ -74,8 +73,7 @@ export async function applyTaggingRule({
   document,
   taggingRule,
   tagsRepository,
-  webhookTriggerServices,
-  documentActivityRepository,
+  eventServices,
   taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
   logger = createLogger({ namespace: 'tagging-rules' }),
 }: {
@@ -94,8 +92,7 @@ export async function applyTaggingRule({
     }>;
   };
   tagsRepository: TagsRepository;
-  webhookTriggerServices: WebhookTriggerServices;
-  documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   logger?: Logger;
 }): Promise<{ appliedTagIds: string[] }> {
@@ -145,45 +142,42 @@ export async function applyTaggingRule({
   }
 
   // Get tags to apply from the rule's actions
-  const tagsToApply: Tag[] = taggingRule.actions
-    .map((action) => action.tag)
-    .filter((tag): tag is Tag => !isNil(tag));
+  const tagIdsToApply = uniq(
+    taggingRule.actions
+      .map((action) => action.tag)
+      .filter((tag): tag is Tag => !isNil(tag))
+      .map((tag) => tag.id),
+  );
 
-  // Apply each tag to the document
-  const appliedTagIdsResults = await Promise.all(
-    tagsToApply.map(async (tag) => {
-      const [, error] = await safely(async () =>
-        addTagToDocument({
-          tagId: tag.id,
-          documentId: document.id,
-          organizationId: document.organizationId,
-          tag,
-          tagsRepository,
-          webhookTriggerServices,
-          documentActivityRepository,
-        }),
-      );
-
-      if (error) {
-        logger.error(
-          { error, tagId: tag.id, documentId: document.id },
-          'Failed to add tag to document',
-        );
-        return undefined;
-      }
-
-      return tag.id;
+  // Apply all of the rule's tags in a single idempotent operation. Failures are swallowed so a
+  // single faulty rule never breaks the document flow that triggered it.
+  const [result, error] = await safely(async () =>
+    applyTagsToDocuments({
+      documentIds: [document.id],
+      addTagIds: tagIdsToApply,
+      organizationId: document.organizationId,
+      tagsRepository,
+      eventServices,
+      logger,
     }),
   );
 
-  const appliedTagIds = appliedTagIdsResults.filter((id): id is string => id !== undefined);
+  if (error) {
+    logger.error(
+      { error, taggingRuleId: taggingRule.id, documentId: document.id },
+      'Failed to apply tagging rule to document',
+    );
+    return { appliedTagIds: [] };
+  }
+
+  const appliedTagIds = uniq(result.insertedPairs.map(({ tagId }) => tagId));
 
   logger.info(
     {
       taggingRuleId: taggingRule.id,
       appliedTagIds,
-      expectedTagCount: tagsToApply.length,
-      hasAllTagBeenApplied: appliedTagIds.length === tagsToApply.length,
+      expectedTagCount: tagIdsToApply.length,
+      hasAllTagBeenApplied: appliedTagIds.length === tagIdsToApply.length,
     },
     'Tagging rule applied to document',
   );
@@ -200,8 +194,7 @@ export async function applyTaggingRules({
 
   taggingRulesRepository,
   tagsRepository,
-  webhookTriggerServices,
-  documentActivityRepository,
+  eventServices,
   taggingRuleOperatorValidatorRegistry = createTaggingRuleOperatorValidatorRegistry(),
   logger = createLogger({ namespace: 'tagging-rules' }),
 }: {
@@ -210,8 +203,7 @@ export async function applyTaggingRules({
   taggingRulesRepository: TaggingRulesRepository;
   taggingRuleOperatorValidatorRegistry?: TaggingRuleOperatorValidatorRegistry;
   tagsRepository: TagsRepository;
-  webhookTriggerServices: WebhookTriggerServices;
-  documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   logger?: Logger;
 }) {
   const { taggingRules } = await taggingRulesRepository.getOrganizationEnabledTaggingRules({
@@ -225,8 +217,7 @@ export async function applyTaggingRules({
         document,
         taggingRule,
         tagsRepository,
-        webhookTriggerServices,
-        documentActivityRepository,
+        eventServices,
         taggingRuleOperatorValidatorRegistry,
         logger,
       });
@@ -256,8 +247,7 @@ async function processDocumentWithTaggingRule({
   document,
   taggingRule,
   tagsRepository,
-  webhookTriggerServices,
-  documentActivityRepository,
+  eventServices,
   logger,
 }: {
   document: Document;
@@ -274,8 +264,7 @@ async function processDocumentWithTaggingRule({
     }>;
   };
   tagsRepository: TagsRepository;
-  webhookTriggerServices: WebhookTriggerServices;
-  documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   logger: Logger;
 }) {
   const [result, error] = await safely(async () => {
@@ -283,8 +272,7 @@ async function processDocumentWithTaggingRule({
       document,
       taggingRule,
       tagsRepository,
-      webhookTriggerServices,
-      documentActivityRepository,
+      eventServices,
       logger,
     });
   });
@@ -303,8 +291,7 @@ export async function applyTaggingRuleToExistingDocuments({
   taggingRulesRepository,
   documentsRepository,
   tagsRepository,
-  webhookTriggerServices,
-  documentActivityRepository,
+  eventServices,
   logger = createLogger({ namespace: 'tagging-rules' }),
 }: {
   taggingRuleId: string;
@@ -312,8 +299,7 @@ export async function applyTaggingRuleToExistingDocuments({
   taggingRulesRepository: TaggingRulesRepository;
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
-  webhookTriggerServices: WebhookTriggerServices;
-  documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   logger?: Logger;
 }) {
   const { taggingRule } = await taggingRulesRepository.getOrganizationTaggingRule({
@@ -350,8 +336,7 @@ export async function applyTaggingRuleToExistingDocuments({
       document,
       taggingRule,
       tagsRepository,
-      webhookTriggerServices,
-      documentActivityRepository,
+      eventServices,
       logger,
     });
 

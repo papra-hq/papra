@@ -118,8 +118,26 @@ export const translations: Partial<TranslationsDictionary> = {
   'home.hero.title': "La plateforme open-source d'archivage et de gestion de documents",
   'home.hero.subtitle':
     'Papra est une plateforme open-source pour organiser, sécuriser et archiver tous vos fichiers, sans effort.',
+  'home.hero.chip.open-source': 'Open source',
+  'home.hero.chip.self-hostable': 'Auto-hébergeable',
   'home.hero.live-demo': 'Essayer la démo',
   'home.hero.get-started': 'Commencer',
+
+  // Home Page - Intake Emails Section
+  'home.intake-emails.eyebrow': 'Import par email',
+  'home.intake-emails.title': 'Transférez. Oubliez.',
+  'home.intake-emails.subtitle':
+    'Obtenez des adresses email dédiées, envoyez ou transférez un email et les pièces jointes sont importées automatiquement.',
+  'home.intake-emails.copy': 'Copier dans le presse-papiers',
+  'home.intake-emails.step-1.title': 'Obtenez votre adresse',
+  'home.intake-emails.step-1.description':
+    'Chaque organisation peut avoir une ou plusieurs adresses email dédiées.',
+  'home.intake-emails.step-2.title': 'Envoyez ou transférez',
+  'home.intake-emails.step-2.description':
+    'Envoyez vos documents directement, ou transférez-les depuis votre boîte mail.',
+  'home.intake-emails.step-3.title': 'Importés automatiquement',
+  'home.intake-emails.step-3.description':
+    "Les pièces jointes sont extraites et ajoutées à votre organisation, prêtes à l'emploi.",
 
   // Home Page - Open Source Section
   'home.open-source.title':

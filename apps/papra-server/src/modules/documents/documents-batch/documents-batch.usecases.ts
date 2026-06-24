@@ -1,14 +1,11 @@
 import type { EventServices } from '../../app/events/events.services';
 import type { Logger } from '../../shared/logger/logger';
 import type { TagsRepository } from '../../tags/tags.repository';
-import type { WebhookTriggerServices } from '../../webhooks/webhooks.trigger.services';
-import type { DocumentActivityRepository } from '../document-activity/document-activity.repository';
 import type { DocumentSearchServices } from '../document-search/document-search.types';
 import type { DocumentsRepository } from '../documents.repository';
 import type { BatchTargetFilter } from './documents-batch.schemas';
+import { applyTagsToDocuments } from '../../tags/tags.usecases';
 import { createLogger } from '../../shared/logger/logger';
-import { createTagNotFoundError } from '../../tags/tags.errors';
-import { registerDocumentsActivityLog } from '../document-activity/document-activity.usecases';
 import { createDocumentIdsNotFromOrganizationError } from './documents-batch.errors';
 
 async function resolvePlainDocumentIdsBatchTargetFilter({
@@ -139,8 +136,7 @@ export async function tagDocumentsBatch({
   documentsRepository,
   tagsRepository,
   documentSearchServices,
-  webhookTriggerServices,
-  documentActivityRepository,
+  eventServices,
   logger = createLogger({ namespace: 'documents-batch.usecases' }),
 }: {
   filter: BatchTargetFilter;
@@ -151,19 +147,9 @@ export async function tagDocumentsBatch({
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   documentSearchServices: DocumentSearchServices;
-  webhookTriggerServices: WebhookTriggerServices;
-  documentActivityRepository: DocumentActivityRepository;
+  eventServices: EventServices;
   logger?: Logger;
 }) {
-  const requestedTagIds = [...new Set([...addTagIds, ...removeTagIds])];
-  const { tags } = await tagsRepository.getTagsByIds({ tagIds: requestedTagIds, organizationId });
-
-  if (tags.length !== requestedTagIds.length) {
-    throw createTagNotFoundError();
-  }
-
-  const tagsById = new Map(tags.map((tag) => [tag.id, tag]));
-
   const { documentIds } = await resolveBatchTargetDocumentIds({
     filter,
     organizationId,
@@ -185,53 +171,15 @@ export async function tagDocumentsBatch({
     return { taggedCount: 0, untaggedCount: 0, insertedPairs: [], removedPairs: [] };
   }
 
-  const [{ insertedPairs }, { removedPairs }] = await Promise.all([
-    tagsRepository.addTagsToDocumentsBatch({ documentIds, tagIds: addTagIds }),
-    tagsRepository.removeTagsFromDocumentsBatch({ documentIds, tagIds: removeTagIds }),
-  ]);
-
-  if (insertedPairs.length > 0) {
-    webhookTriggerServices.deferTriggerWebhooks({
-      organizationId,
-      event: 'document:tag:added',
-      payloads: insertedPairs.map(({ documentId, tagId }) => ({
-        documentId,
-        organizationId,
-        tagId,
-        tagName: tagsById.get(tagId)?.name ?? '',
-      })),
-    });
-  }
-
-  if (removedPairs.length > 0) {
-    webhookTriggerServices.deferTriggerWebhooks({
-      organizationId,
-      event: 'document:tag:removed',
-      payloads: removedPairs.map(({ documentId, tagId }) => ({
-        documentId,
-        organizationId,
-        tagId,
-        tagName: tagsById.get(tagId)?.name ?? '',
-      })),
-    });
-  }
-
-  await registerDocumentsActivityLog({
-    activities: [
-      ...insertedPairs.map(({ documentId, tagId }) => ({
-        documentId,
-        event: 'tagged' as const,
-        userId,
-        tagId,
-      })),
-      ...removedPairs.map(({ documentId, tagId }) => ({
-        documentId,
-        event: 'untagged' as const,
-        userId,
-        tagId,
-      })),
-    ],
-    documentActivityRepository,
+  const { insertedPairs, removedPairs } = await applyTagsToDocuments({
+    documentIds,
+    addTagIds,
+    removeTagIds,
+    organizationId,
+    userId,
+    tagsRepository,
+    eventServices,
+    logger,
   });
 
   logger.info(

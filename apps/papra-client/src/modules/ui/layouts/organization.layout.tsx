@@ -275,7 +275,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
           const status = getErrorStatus(error);
 
           if (status && [401, 403].includes(status)) {
-            queryClient.invalidateQueries({ queryKey: ['organizations'] });
+            void queryClient.invalidateQueries({ queryKey: ['organizations'] });
             navigate('/');
           }
         }

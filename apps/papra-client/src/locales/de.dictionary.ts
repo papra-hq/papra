@@ -377,6 +377,39 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:Dokument, Dokumente }} entsprechen dieser Suche',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:Dokument, Dokumente }} insgesamt',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:Dokument, Dokumente }} ausgewählt',
+  'documents.list.batch.clear': 'Auswahl aufheben',
+  'documents.list.batch.tag-action': 'Markieren',
+  'documents.list.batch.trash-action': 'Papierkorb',
+  'documents.list.batch.error':
+    'Der Stapelvorgang ist fehlgeschlagen. Bitte versuchen Sie es erneut.',
+  'documents.list.batch.select-all-matching':
+    'Alle {{ count }} auswählen, die zu dieser Suche passen',
+  'documents.list.batch.select-all':
+    'Alle {{ count }} {{ count, =1:Dokument, Dokumente }} auswählen',
+  'documents.list.batch.all-matching-selected':
+    'Alle {{ count }} {{ count, =1:Dokument, Dokumente }}, die zu dieser Suche passen, sind ausgewählt',
+  'documents.list.batch.all-selected':
+    'Alle {{ count }} {{ count, =1:Dokument, Dokumente }} sind ausgewählt',
+  'documents.list.batch.trash.confirm.title': 'In den Papierkorb verschieben',
+  'documents.list.batch.trash.confirm.description':
+    '{{ count }} {{ count, =1:Dokument, Dokumente }} in den Papierkorb verschieben? Sie können sie später aus dem Papierkorb wiederherstellen.',
+  'documents.list.batch.trash.confirm.label': 'In den Papierkorb verschieben',
+  'documents.list.batch.trash.confirm.cancel': 'Abbrechen',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:Dokument, Dokumente }} in den Papierkorb verschoben',
+  'documents.list.batch.tags.dialog.title': 'Tags aktualisieren',
+  'documents.list.batch.tags.dialog.description':
+    'Tags zu {{ count }} ausgewählten {{ count, =1:Dokument, Dokumenten }} hinzufügen oder entfernen.',
+  'documents.list.batch.tags.dialog.add-label': 'Hinzuzufügende Tags',
+  'documents.list.batch.tags.dialog.remove-label': 'Zu entfernende Tags',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'Ein Tag kann nicht im selben Vorgang hinzugefügt und entfernt werden.',
+  'documents.list.batch.tags.dialog.submit': 'Anwenden',
+  'documents.list.batch.tags.dialog.cancel': 'Abbrechen',
+  'documents.list.batch.tags.success':
+    'Tags für {{ count }} {{ count, =1:Dokument, Dokumente }} aktualisiert',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Inhalt',
@@ -403,8 +436,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Aktualisiert am',
   'documents.info.never': 'Nie',
   'documents.info.document-date': 'Datum',
+  'documents.list.table.headers.document-date': 'Datum',
   'documents.info.no-date': 'Kein Datum',
   'documents.info.today': 'Heute',
+  'documents.notes.label': 'Notizen',
+  'documents.notes.placeholder': 'Fügen Sie Notizen zu diesem Dokument hinzu',
+  'documents.notes.saving': 'Wird gespeichert',
+  'documents.notes.saved': 'Gespeichert',
+  'documents.notes.save-error': 'Notizen konnten nicht gespeichert werden',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Zahl',
@@ -578,6 +617,91 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Anhänge',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Seite {{ page }}',
+  'document-share-links.share-action': 'Teilen',
+  'document-share-links.copy': 'Link kopieren',
+  'document-share-links.copied': 'Link in die Zwischenablage kopiert',
+  'document-share-links.copy-error': 'Link konnte nicht kopiert werden',
+  'document-share-links.enabled': 'Freigabelink aktiviert',
+  'document-share-links.disabled': 'Freigabelink deaktiviert',
+  'document-share-links.deleted': 'Freigabelink gelöscht',
+  'document-share-links.password-protected': 'Passwortgeschützt',
+  'document-share-links.no-password': 'Kein Passwort',
+  'document-share-links.never-expires': 'Läuft nie ab',
+  'document-share-links.expires-on': 'Läuft am {{ date }} ab',
+  'document-share-links.list.title': 'Freigabelinks',
+  'document-share-links.list.description': 'Verwalten Sie die Freigabelinks für „{{ name }}”.',
+  'document-share-links.list.create-new': 'Neuen Link erstellen',
+  'document-share-links.create.title': 'Freigabelink erstellen',
+  'document-share-links.create.description':
+    'Erstellen Sie einen neuen Freigabelink für dieses Dokument.',
+  'document-share-links.create.password.toggle': 'Passwort erforderlich',
+  'document-share-links.create.password.hint':
+    'Optional, Empfänger müssen es vor dem Zugriff eingeben.',
+  'document-share-links.create.password.placeholder': 'Passwort eingeben oder generieren',
+  'document-share-links.create.password.generate': 'Generieren',
+  'document-share-links.create.expiration.toggle': 'Ablaufdatum festlegen',
+  'document-share-links.create.expiration.hint':
+    'Optional, der Link läuft nach diesem Datum automatisch ab.',
+  'document-share-links.create.expiration.24h': '24 Stunden',
+  'document-share-links.create.expiration.7d': '7 Tage',
+  'document-share-links.create.expiration.30d': '30 Tage',
+  'document-share-links.create.expiration.custom': 'Benutzerdefiniert',
+  'document-share-links.create.expiration.pick-date': 'Datum auswählen',
+  'document-share-links.create.cancel': 'Abbrechen',
+  'document-share-links.create.submit': 'Link erstellen',
+  'document-share-links.create.error': 'Freigabelink konnte nicht erstellt werden',
+  'document-share-links.created.title': 'Freigabelink erstellt',
+  'document-share-links.created.description':
+    'Ihr Freigabelink ist bereit – kopieren Sie ihn und teilen Sie ihn.',
+  'document-share-links.created.done': 'Fertig',
+  'document-share-links.actions.menu': 'Aktionen',
+  'document-share-links.actions.open-document': 'Dokument öffnen',
+  'document-share-links.actions.enable': 'Link aktivieren',
+  'document-share-links.actions.disable': 'Link deaktivieren',
+  'document-share-links.actions.stop-sharing': 'Freigabe beenden',
+  'document-share-links.delete.confirm.title': 'Freigabelink löschen',
+  'document-share-links.delete.confirm.message':
+    'Jeder mit diesem Link verliert sofort den Zugriff. Dies kann nicht rückgängig gemacht werden.',
+  'document-share-links.delete.confirm.confirm-button': 'Link löschen',
+  'document-share-links.delete.confirm.cancel-button': 'Abbrechen',
+  'document-share-links.management.title': 'Freigabelinks',
+  'document-share-links.management.description':
+    'Verwalten Sie alle in dieser Organisation erstellten Freigabelinks.',
+  'document-share-links.management.empty.title': 'Keine Freigabelinks',
+  'document-share-links.management.empty.description':
+    'Für Dokumente dieser Organisation erstellte Freigabelinks werden hier angezeigt.',
+  'document-share-links.management.table.document': 'Dokument',
+  'document-share-links.management.table.link': 'Link',
+  'document-share-links.management.table.status': 'Status',
+  'document-share-links.management.table.security': 'Sicherheit',
+  'document-share-links.management.table.expiry': 'Ablauf',
+  'document-share-links.management.table.last-accessed': 'Letzter Zugriff',
+  'document-share-links.management.table.actions': 'Aktionen',
+  'document-share-links.management.status.expired': 'Abgelaufen',
+  'document-share-links.management.status.enabled': 'Aktiviert',
+  'document-share-links.management.status.disabled': 'Deaktiviert',
+  'document-share-links.management.status.trashed': 'Dokument im Papierkorb',
+  'document-share-links.management.status.trashed-hint':
+    'Das geteilte Dokument befindet sich im Papierkorb, daher ist dieser Link inaktiv, bis das Dokument wiederhergestellt wird.',
+  'document-share-links.management.security.password': 'Passwort',
+  'document-share-links.management.security.public': 'Öffentlich',
+  'document-share-links.management.never': 'Nie',
+  'document-share-links.public.download': 'Herunterladen',
+  'document-share-links.public.download-error': 'Datei konnte nicht heruntergeladen werden',
+  'document-share-links.public.password.title': 'Passwort erforderlich',
+  'document-share-links.public.password.description':
+    'Dieses Dokument ist geschützt. Geben Sie das Passwort ein, um darauf zuzugreifen.',
+  'document-share-links.public.password.label': 'Passwort',
+  'document-share-links.public.password.placeholder': 'Passwort eingeben',
+  'document-share-links.public.password.submit': 'Entsperren',
+  'document-share-links.public.password.invalid': 'Falsches Passwort',
+  'document-share-links.public.password.too-many-attempts':
+    'Zu viele Versuche. Bitte versuchen Sie es später erneut.',
+  'document-share-links.public.gone.title': 'Link nicht verfügbar',
+  'document-share-links.public.gone.description':
+    'Dieser Freigabelink ist abgelaufen oder wurde deaktiviert.',
+  'document-share-links.public.not-found.title': 'Link nicht gefunden',
+  'document-share-links.public.not-found.description': 'Dieser Freigabelink existiert nicht.',
 
   'trash.delete-all.button': 'Alles löschen',
   'trash.delete-all.confirm.title': 'Alle Dokumente dauerhaft löschen?',
@@ -650,6 +774,38 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Tags filtern...',
   'tags.picker.create-new-with-name': 'Neuen Tag "{{ name }}" erstellen',
   'tags.picker.create-new': 'Neuen Tag erstellen',
+  'document-views.create': 'Ansicht erstellen',
+  'document-views.save-as-view': 'Abfrage als Ansicht speichern',
+  'document-views.update': 'Ansicht aktualisieren',
+  'document-views.delete': 'Ansicht löschen',
+  'document-views.delete.confirm.title': 'Ansicht löschen',
+  'document-views.delete.confirm.message': 'Möchten Sie diese Ansicht wirklich löschen?',
+  'document-views.delete.confirm.confirm-button': 'Löschen',
+  'document-views.delete.confirm.cancel-button': 'Abbrechen',
+  'document-views.delete.success': 'Ansicht erfolgreich gelöscht',
+  'document-views.create.success': 'Ansicht „{{ name }}” erfolgreich erstellt.',
+  'document-views.update.success': 'Ansicht „{{ name }}” erfolgreich aktualisiert.',
+  'document-views.form.name.label': 'Name',
+  'document-views.form.name.placeholder': 'Z. B. Posteingang',
+  'document-views.form.name.required': 'Bitte geben Sie einen Ansichtsnamen ein',
+  'document-views.form.name.max-length': 'Der Ansichtsname muss weniger als 100 Zeichen lang sein',
+  'document-views.form.query.label': 'Abfrage',
+  'document-views.form.query.placeholder': 'Z. B. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Bitte geben Sie eine Abfrage ein',
+  'document-views.form.query.max-length': 'Die Abfrage muss weniger als 500 Zeichen lang sein',
+  'document-views.form.query.hint':
+    'Verwenden Sie dieselbe Syntax wie die Dokumentsuchleiste. Z. B. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Beschreibung',
+  'document-views.form.description.optional': '(optional)',
+  'document-views.form.description.placeholder': 'Z. B. Dokumente, die auf Verarbeitung warten',
+  'document-views.form.description.max-length':
+    'Die Beschreibung muss weniger als 256 Zeichen lang sein',
+  'document-views.actions.menu': 'Ansichtsaktionen',
+  'document-views.view.no-documents': 'Kein Dokument entspricht der Abfrage dieser Ansicht.',
+  'document-views.view.not-found': 'Ansicht nicht gefunden.',
+  'api-errors.document_views.already_exists':
+    'Für diese Organisation existiert bereits eine Ansicht mit diesem Namen',
+  'api-errors.document_views.not_found': 'Ansicht nicht gefunden',
 
   // Tagging rules
 
@@ -784,6 +940,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Tags lesen',
   'api-keys.permissions.tags.tags:update': 'Tags aktualisieren',
   'api-keys.permissions.tags.tags:delete': 'Tags löschen',
+  'api-keys.permissions.custom-properties.title': 'Benutzerdefinierte Eigenschaften',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Benutzerdefinierte Eigenschaften erstellen',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Benutzerdefinierte Eigenschaften lesen',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Benutzerdefinierte Eigenschaften aktualisieren',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Benutzerdefinierte Eigenschaften löschen',
   'api-keys.create.title': 'API-Schlüssel erstellen',
   'api-keys.create.description':
     'Erstellen Sie einen neuen API-Schlüssel, um auf die Papra API zuzugreifen.',
@@ -870,6 +1035,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Tags',
   'layout.menu.custom-properties': 'Benutzerdefinierte Eigenschaften',
   'layout.menu.tagging-rules': 'Tagging-Regeln',
+  'layout.menu.share-links': 'Freigabelinks',
   'layout.menu.deleted-documents': 'Gelöschte Dokumente',
   'layout.menu.organization-settings': 'Einstellungen',
   'layout.menu.api-keys': 'API-Schlüssel',
@@ -880,6 +1046,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'E-Mail-Eingang',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Mitglieder',
+  'layout.menu.document-views': 'Ansichten',
   'layout.menu.invitations': 'Einladungen',
   'layout.menu.admin': 'Verwaltung',
 
@@ -943,6 +1110,15 @@ export const translations: Partial<TranslationsDictionary> = {
     'Organisation mit aktivem Abonnement kann nicht gelöscht werden. Bitte kündigen Sie zuerst Ihr Abonnement über die Schaltfläche Abonnement verwalten oben.',
   'api-errors.webhooks.ssrf_unsafe_url':
     'Die angegebene URL ist nicht erlaubt. Webhook-URLs dürfen nicht auf private oder reservierte IP-Adressen verweisen.',
+  'api-errors.users.still_owns_organizations':
+    'Dieser Benutzer besitzt noch eine oder mehrere Organisationen. Löschen Sie diese Organisationen, bevor Sie den Benutzer löschen.',
+  'api-errors.plan_entitlements.already_exists':
+    'Dieser Benutzer hat bereits eine Berechtigung dieses Typs.',
+  'api-errors.plan_entitlements.not_found': 'Plan-Berechtigung nicht gefunden.',
+  'api-errors.plan_entitlements.not_eligible':
+    'Dieser Benutzer ist für diese Berechtigung nicht berechtigt.',
+  'api-errors.users.cannot_delete_self':
+    'Sie können Ihr eigenes Konto nicht über das Admin-Panel löschen.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Benutzer nicht gefunden',
   'api-errors.FAILED_TO_CREATE_USER': 'Fehler beim Erstellen des Benutzers',
@@ -1177,6 +1353,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Name',
   'admin.user-detail.organizations.table.created': 'Erstellt',
+  'admin.user-detail.plan-entitlements.title': 'Plan-Berechtigungen',
+  'admin.user-detail.plan-entitlements.description':
+    'Berechtigungen, die den Plan der Organisationen dieses Benutzers verbessern',
+  'admin.user-detail.plan-entitlements.empty': 'Keine Plan-Berechtigungen',
+  'admin.user-detail.plan-entitlements.table.type': 'Typ',
+  'admin.user-detail.plan-entitlements.table.source': 'Quelle',
+  'admin.user-detail.plan-entitlements.table.granted': 'Gewährt',
+  'admin.user-detail.plan-entitlements.table.expires': 'Läuft ab',
+  'admin.user-detail.plan-entitlements.never-expires': 'Nie',
+  'admin.user-detail.plan-entitlements.expired': 'Abgelaufen',
+  'admin.user-detail.plan-entitlements.grant.button': 'Berechtigung gewähren',
+  'admin.user-detail.plan-entitlements.grant.title': 'Plan-Berechtigung gewähren',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Gewähren Sie diesem Benutzer eine Plan-Berechtigung, optional mit einem Ablaufdatum.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Berechtigungstyp',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Ablaufdatum festlegen',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Datum auswählen',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Berechtigung gewähren',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Abbrechen',
+  'admin.user-detail.plan-entitlements.grant.success': 'Berechtigung erfolgreich gewährt.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Widerrufen',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Berechtigung widerrufen?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'Der Benutzer verliert die durch diese Berechtigung gewährten Planvorteile.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Berechtigung widerrufen',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Abbrechen',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Berechtigung erfolgreich widerrufen.',
+  'admin.user-detail.delete.title': 'Benutzer löschen',
+  'admin.user-detail.delete.description':
+    'Löscht dieses Benutzerkonto dauerhaft. Dies wirkt sich auf seine Organisationsmitgliedschaften, Sitzungen, Zwei-Faktor-Einstellungen und andere Authentifizierungsdaten aus. Organisationen, die er noch besitzt, müssen zuerst gelöscht oder übertragen werden.',
+  'admin.user-detail.delete.button': 'Benutzer löschen',
+  'admin.user-detail.delete.self-warning':
+    'Sie können Ihr eigenes Konto nicht über das Admin-Panel löschen.',
+  'admin.user-detail.delete.confirm.title': 'Benutzer löschen?',
+  'admin.user-detail.delete.confirm.message':
+    'Diese Aktion kann nicht rückgängig gemacht werden. Geben Sie zur Bestätigung unten die E-Mail-Adresse des Benutzers ein.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Benutzer löschen',
+  'admin.user-detail.delete.confirm.cancel-button': 'Abbrechen',
+  'admin.user-detail.delete.success': 'Benutzer erfolgreich gelöscht.',
 
   // Common / Shared
 

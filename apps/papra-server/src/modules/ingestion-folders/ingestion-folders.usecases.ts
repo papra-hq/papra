@@ -49,7 +49,11 @@ export function createIngestionFolderWatcher({
 }) {
   const {
     folderRootPath,
-    watcher: { usePolling, pollingInterval },
+    watcher: {
+      usePolling,
+      pollingInterval,
+      awaitWriteFinish: { stabilityThreshold, pollInterval },
+    },
     processingConcurrency,
   } = config.ingestionFolder;
 
@@ -77,7 +81,10 @@ export function createIngestionFolderWatcher({
         .watch(folderRootPath, {
           persistent: true,
           followSymlinks: true,
-          awaitWriteFinish: true,
+          awaitWriteFinish: {
+            stabilityThreshold,
+            pollInterval,
+          },
           atomic: true,
           cwd,
           usePolling,
@@ -114,6 +121,8 @@ export function createIngestionFolderWatcher({
           folderRootPath,
           usePolling,
           pollingInterval,
+          stabilityThreshold,
+          pollInterval,
           processingConcurrency,
         },
         'Ingestion folder watcher started',

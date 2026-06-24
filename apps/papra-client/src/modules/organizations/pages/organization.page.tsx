@@ -7,6 +7,7 @@ import { useDocumentUpload } from '@/modules/documents/components/document-impor
 import { DocumentUploadArea } from '@/modules/documents/components/document-upload-area.component';
 import {
   createdAtColumn,
+  documentDateColumn,
   DocumentsPaginatedList,
   standardActionsColumn,
   tagsColumn,
@@ -107,7 +108,12 @@ export const OrganizationPage: Component = () => {
               documentsCount={documentsQuery.data?.documentsCount ?? 0}
               getPagination={getPagination}
               setPagination={setPagination}
-              extraColumns={[tagsColumn, createdAtColumn, standardActionsColumn]}
+              extraColumns={[
+                tagsColumn,
+                documentDateColumn,
+                createdAtColumn,
+                standardActionsColumn,
+              ]}
             />
           </>
         )}

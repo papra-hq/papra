@@ -1,0 +1,58 @@
+---
+import { config } from '../app.config';
+import { useI18n } from '../i18n/i18n';
+import { LOCALES } from '../i18n/i18n.constants';
+import { Image } from 'astro:assets';
+import HeroScreenshot from '../assets/papra-screenshot.png';
+import { GITHUB_REPO_URL } from '../socials';
+
+export async function getStaticPaths() {
+    return LOCALES.map(locale => ({ params: { locale } }));
+}
+const { t } = useI18n({ locale: Astro.currentLocale });
+
+const pils = [
+  {
+    label: t('home.hero.chip.open-source'),
+    href: GITHUB_REPO_URL,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  },
+  {
+    label: t('home.hero.chip.self-hostable'),
+    href: 'https://docs.papra.app/self-hosting/using-docker/',
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  },
+];
+---
+
+<div class="relative overflow-hidden bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:48px_48px] border-b">
+  <div class="z-9 bg-gradient-to-b from-background to-transparent w-full h-full absolute top-0 left-0"></div>
+  <div class="z-10 bg-primary w-80% max-w-1000px h-100px sm:h-200px md:h-400px rounded-xl blur-64 op-20 absolute bottom--100px left-50% -translate-x-50%"></div>
+
+
+  <div class="max-w-1000px mx-auto pt-20 px-6 mt-24 z-50 relative">
+    <div class="flex items-center gap-2 mb-6">
+      {
+      pils.map((pil) => (
+        <a class="text-xs font-regular bg-muted/80 text-muted-foreground rounded py-1 px-2.5 rounded-lg border border-muted-foreground/20 hover:(bg-primary/10 border-primary/20 text-primary) transition" href={pil.href} target={pil.target} rel={pil.rel}>{pil.label}</a>
+      ))
+      }
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-semibold mb-4 text-pretty max-w-800px">{t('home.hero.title')}</h1>
+    <p class="text-lg text-muted-foreground max-w-500px">{t('home.hero.subtitle')}</p>
+
+    <div class="flex items-center gap-2 mt-8 mb-32">
+      <a href="https://demo.papra.app" class="border text-sm font-bold rounded py-2 px-4 rounded-xl hover:border-primary hover:text-primary transition" target="_blank" rel="noopener">{t('home.hero.live-demo')}</a>
+
+      <a href={config.getStartedLink} class="text-sm flex items-center gap-1.5 bg-primary hover:bg-primary/80 font-bold rounded py-2 px-4 rounded-xl text-primary-foreground transition">
+        {t('home.hero.get-started')}
+        <div class="i-tabler-arrow-right size-5"></div>
+      </a>
+    </div>
+
+    <Image src={HeroScreenshot} alt="Papra Screenshot" class="hidden sm:block w-full relative z-50 rounded-xl border border-3px border-primary mb--100px md:mb--200px" loading="eager" />
+  </div>
+</div>

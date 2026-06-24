@@ -44,8 +44,8 @@
     "expo-system-ui": "~6.0.8",
     "expo-web-browser": "~15.0.9",
     "ofetch": "catalog:",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-native": "0.81.5",
     "react-native-document-scanner-plugin": "^2.0.2",
     "react-native-gesture-handler": "~2.28.0",
@@ -58,9 +58,9 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "~19.1.0",
-    "eas-cli": "^16.27.0",
-    "reactotron-react-native": "^5.1.18",
+    "@types/react": "19.1.17",
+    "eas-cli": "16.27.0",
+    "reactotron-react-native": "5.1.18",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

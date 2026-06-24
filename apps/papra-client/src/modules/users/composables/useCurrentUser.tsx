@@ -32,7 +32,7 @@ export const CurrentUserProvider: ParentComponent = (props) => {
         value={{
           user: query.data!.user,
           refreshCurrentUser: async () => {
-            query.refetch();
+            await query.refetch();
           },
 
           hasPermission: (permission: string) =>

@@ -1,4 +1,4 @@
-import type { ExecException, ExecOptions } from 'node:child_process';
+import type { ExecOptions } from 'node:child_process';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -20,11 +20,22 @@ export async function executeCommandSafely(command: string, options?: ExecOption
   try {
     return await executeCommand(command, options);
   } catch (error) {
-    const execError = error as ExecException;
+    if (
+      error instanceof Error &&
+      'stdout' in error &&
+      'stderr' in error &&
+      typeof error.stdout === 'string' &&
+      typeof error.stderr === 'string'
+    ) {
+      return {
+        stdout: error.stdout.trim(),
+        stderr: error.stderr.trim(),
+      };
+    }
 
     return {
-      stdout: execError.stdout?.trim() ?? '',
-      stderr: execError.stderr?.trim() ?? '',
+      stdout: '',
+      stderr: '',
     };
   }
 }

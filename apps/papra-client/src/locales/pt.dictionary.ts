@@ -376,6 +376,38 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:documento, documentos }} correspondente a esta pesquisa',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:documento, documentos }} no total',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:documento, documentos }} {{ count, =1:selecionado, selecionados }}',
+  'documents.list.batch.clear': 'Limpar seleção',
+  'documents.list.batch.tag-action': 'Etiquetar',
+  'documents.list.batch.trash-action': 'Lixo',
+  'documents.list.batch.error': 'A operação em lote falhou. Tente novamente.',
+  'documents.list.batch.select-all-matching':
+    'Selecionar todos os {{ count }} que correspondem a esta pesquisa',
+  'documents.list.batch.select-all':
+    'Selecionar os {{ count }} {{ count, =1:documento, documentos }}',
+  'documents.list.batch.all-matching-selected':
+    'Todos os {{ count }} {{ count, =1:documento, documentos }} que correspondem a esta pesquisa foram selecionados',
+  'documents.list.batch.all-selected':
+    'Todos os {{ count }} {{ count, =1:documento, documentos }} foram selecionados',
+  'documents.list.batch.trash.confirm.title': 'Mover para o lixo',
+  'documents.list.batch.trash.confirm.description':
+    'Mover {{ count }} {{ count, =1:documento, documentos }} para o lixo? Poderá restaurá-los mais tarde a partir do lixo.',
+  'documents.list.batch.trash.confirm.label': 'Mover para o lixo',
+  'documents.list.batch.trash.confirm.cancel': 'Cancelar',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:documento, documentos }} {{ count, =1:movido, movidos }} para o lixo',
+  'documents.list.batch.tags.dialog.title': 'Atualizar etiquetas',
+  'documents.list.batch.tags.dialog.description':
+    'Adicione ou remova etiquetas em {{ count }} {{ count, =1:documento, documentos }} {{ count, =1:selecionado, selecionados }}.',
+  'documents.list.batch.tags.dialog.add-label': 'Etiquetas a adicionar',
+  'documents.list.batch.tags.dialog.remove-label': 'Etiquetas a remover',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'Uma etiqueta não pode ser adicionada e removida na mesma operação.',
+  'documents.list.batch.tags.dialog.submit': 'Aplicar',
+  'documents.list.batch.tags.dialog.cancel': 'Cancelar',
+  'documents.list.batch.tags.success':
+    'Etiquetas atualizadas em {{ count }} {{ count, =1:documento, documentos }}',
 
   'documents.tabs.info': 'Informação',
   'documents.tabs.content': 'Conteúdo',
@@ -402,8 +434,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Atualizado em',
   'documents.info.never': 'Nunca',
   'documents.info.document-date': 'Data',
+  'documents.list.table.headers.document-date': 'Data',
   'documents.info.no-date': 'Sem data',
   'documents.info.today': 'Hoje',
+  'documents.notes.label': 'Notas',
+  'documents.notes.placeholder': 'Adicione notas sobre este documento',
+  'documents.notes.saving': 'A guardar',
+  'documents.notes.saved': 'Guardado',
+  'documents.notes.save-error': 'Falha ao guardar as notas',
 
   'custom-properties.types.text': 'Texto',
   'custom-properties.types.number': 'Número',
@@ -573,6 +611,92 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Anexos',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Página {{ page }}',
+  'document-share-links.share-action': 'Partilhar',
+  'document-share-links.copy': 'Copiar ligação',
+  'document-share-links.copied': 'Ligação copiada para a área de transferência',
+  'document-share-links.copy-error': 'Falha ao copiar a ligação',
+  'document-share-links.enabled': 'Ligação de partilha ativada',
+  'document-share-links.disabled': 'Ligação de partilha desativada',
+  'document-share-links.deleted': 'Ligação de partilha eliminada',
+  'document-share-links.password-protected': 'Protegido por palavra-passe',
+  'document-share-links.no-password': 'Sem palavra-passe',
+  'document-share-links.never-expires': 'Nunca expira',
+  'document-share-links.expires-on': 'Expira em {{ date }}',
+  'document-share-links.list.title': 'Ligações de partilha',
+  'document-share-links.list.description':
+    'Faça a gestão das ligações de partilha de "{{ name }}".',
+  'document-share-links.list.create-new': 'Criar nova ligação',
+  'document-share-links.create.title': 'Criar uma ligação de partilha',
+  'document-share-links.create.description':
+    'Crie uma nova ligação de partilha para este documento.',
+  'document-share-links.create.password.toggle': 'Exigir uma palavra-passe',
+  'document-share-links.create.password.hint':
+    'Opcional, os destinatários terão de a introduzir antes de aceder.',
+  'document-share-links.create.password.placeholder': 'Introduza ou gere uma palavra-passe',
+  'document-share-links.create.password.generate': 'Gerar',
+  'document-share-links.create.expiration.toggle': 'Definir uma data de expiração',
+  'document-share-links.create.expiration.hint':
+    'Opcional, a ligação expirará automaticamente após esta data.',
+  'document-share-links.create.expiration.24h': '24 horas',
+  'document-share-links.create.expiration.7d': '7 dias',
+  'document-share-links.create.expiration.30d': '30 dias',
+  'document-share-links.create.expiration.custom': 'Personalizado',
+  'document-share-links.create.expiration.pick-date': 'Escolha uma data',
+  'document-share-links.create.cancel': 'Cancelar',
+  'document-share-links.create.submit': 'Criar ligação',
+  'document-share-links.create.error': 'Falha ao criar a ligação de partilha',
+  'document-share-links.created.title': 'Ligação de partilha criada',
+  'document-share-links.created.description':
+    'A sua ligação de partilha está pronta — copie-a e partilhe-a.',
+  'document-share-links.created.done': 'Concluído',
+  'document-share-links.actions.menu': 'Ações',
+  'document-share-links.actions.open-document': 'Abrir documento',
+  'document-share-links.actions.enable': 'Ativar ligação',
+  'document-share-links.actions.disable': 'Desativar ligação',
+  'document-share-links.actions.stop-sharing': 'Parar de partilhar',
+  'document-share-links.delete.confirm.title': 'Eliminar ligação de partilha',
+  'document-share-links.delete.confirm.message':
+    'Qualquer pessoa com esta ligação perderá o acesso de imediato. Isto não pode ser anulado.',
+  'document-share-links.delete.confirm.confirm-button': 'Eliminar ligação',
+  'document-share-links.delete.confirm.cancel-button': 'Cancelar',
+  'document-share-links.management.title': 'Ligações de partilha',
+  'document-share-links.management.description':
+    'Faça a gestão de todas as ligações de partilha criadas nesta organização.',
+  'document-share-links.management.empty.title': 'Sem ligações de partilha',
+  'document-share-links.management.empty.description':
+    'As ligações de partilha criadas para documentos desta organização aparecerão aqui.',
+  'document-share-links.management.table.document': 'Documento',
+  'document-share-links.management.table.link': 'Ligação',
+  'document-share-links.management.table.status': 'Estado',
+  'document-share-links.management.table.security': 'Segurança',
+  'document-share-links.management.table.expiry': 'Expiração',
+  'document-share-links.management.table.last-accessed': 'Último acesso',
+  'document-share-links.management.table.actions': 'Ações',
+  'document-share-links.management.status.expired': 'Expirado',
+  'document-share-links.management.status.enabled': 'Ativado',
+  'document-share-links.management.status.disabled': 'Desativado',
+  'document-share-links.management.status.trashed': 'Documento no lixo',
+  'document-share-links.management.status.trashed-hint':
+    'O documento partilhado está no lixo, pelo que esta ligação fica inativa até o documento ser restaurado.',
+  'document-share-links.management.security.password': 'Palavra-passe',
+  'document-share-links.management.security.public': 'Público',
+  'document-share-links.management.never': 'Nunca',
+  'document-share-links.public.download': 'Transferir',
+  'document-share-links.public.download-error': 'Falha ao transferir o ficheiro',
+  'document-share-links.public.password.title': 'Palavra-passe necessária',
+  'document-share-links.public.password.description':
+    'Este documento está protegido. Introduza a palavra-passe para aceder.',
+  'document-share-links.public.password.label': 'Palavra-passe',
+  'document-share-links.public.password.placeholder': 'Introduza a palavra-passe',
+  'document-share-links.public.password.submit': 'Desbloquear',
+  'document-share-links.public.password.invalid': 'Palavra-passe incorreta',
+  'document-share-links.public.password.too-many-attempts':
+    'Demasiadas tentativas. Tente novamente mais tarde.',
+  'document-share-links.public.gone.title': 'Ligação indisponível',
+  'document-share-links.public.gone.description':
+    'Esta ligação de partilha expirou ou foi desativada.',
+  'document-share-links.public.not-found.title': 'Ligação não encontrada',
+  'document-share-links.public.not-found.description': 'Esta ligação de partilha não existe.',
 
   'trash.delete-all.button': 'Eliminar tudo',
   'trash.delete-all.confirm.title': 'Eliminar permanentemente todos os documentos?',
@@ -645,6 +769,37 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Filtrar etiquetas...',
   'tags.picker.create-new-with-name': 'Criar nova etiqueta "{{ name }}"',
   'tags.picker.create-new': 'Criar nova etiqueta',
+  'document-views.create': 'Criar vista',
+  'document-views.save-as-view': 'Guardar consulta como vista',
+  'document-views.update': 'Atualizar vista',
+  'document-views.delete': 'Eliminar vista',
+  'document-views.delete.confirm.title': 'Eliminar vista',
+  'document-views.delete.confirm.message': 'Tem a certeza de que pretende eliminar esta vista?',
+  'document-views.delete.confirm.confirm-button': 'Eliminar',
+  'document-views.delete.confirm.cancel-button': 'Cancelar',
+  'document-views.delete.success': 'Vista eliminada com sucesso',
+  'document-views.create.success': 'Vista "{{ name }}" criada com sucesso.',
+  'document-views.update.success': 'Vista "{{ name }}" atualizada com sucesso.',
+  'document-views.form.name.label': 'Nome',
+  'document-views.form.name.placeholder': 'Ex. Caixa de entrada',
+  'document-views.form.name.required': 'Introduza um nome de vista',
+  'document-views.form.name.max-length': 'O nome da vista deve ter menos de 100 caracteres',
+  'document-views.form.query.label': 'Consulta',
+  'document-views.form.query.placeholder': 'Ex. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Introduza uma consulta',
+  'document-views.form.query.max-length': 'A consulta deve ter menos de 500 caracteres',
+  'document-views.form.query.hint':
+    'Use a mesma sintaxe da barra de pesquisa de documentos. Ex. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Descrição',
+  'document-views.form.description.optional': '(opcional)',
+  'document-views.form.description.placeholder': 'Ex. Documentos a aguardar processamento',
+  'document-views.form.description.max-length': 'A descrição deve ter menos de 256 caracteres',
+  'document-views.actions.menu': 'Ações da vista',
+  'document-views.view.no-documents': 'Nenhum documento corresponde à consulta desta vista.',
+  'document-views.view.not-found': 'Vista não encontrada.',
+  'api-errors.document_views.already_exists':
+    'Já existe uma vista com este nome para esta organização',
+  'api-errors.document_views.not_found': 'Vista não encontrada',
 
   // Tagging rules
 
@@ -777,6 +932,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Ler etiquetas',
   'api-keys.permissions.tags.tags:update': 'Atualizar etiquetas',
   'api-keys.permissions.tags.tags:delete': 'Eliminar etiquetas',
+  'api-keys.permissions.custom-properties.title': 'Propriedades personalizadas',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Criar propriedades personalizadas',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Ler propriedades personalizadas',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Atualizar propriedades personalizadas',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Eliminar propriedades personalizadas',
   'api-keys.create.title': 'Criar chave API',
   'api-keys.create.description': 'Crie uma nova chave API para aceder à API do Papra.',
   'api-keys.create.success': 'A chave API foi criada com sucesso.',
@@ -860,6 +1024,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Tags',
   'layout.menu.custom-properties': 'Propriedades personalizadas',
   'layout.menu.tagging-rules': 'Regras de etiquetagem',
+  'layout.menu.share-links': 'Ligações de partilha',
   'layout.menu.deleted-documents': 'Documentos eliminados',
   'layout.menu.organization-settings': 'Definições',
   'layout.menu.api-keys': 'Chaves API',
@@ -870,6 +1035,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'E-mails de entrada',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Membros',
+  'layout.menu.document-views': 'Vistas',
   'layout.menu.invitations': 'Convites',
   'layout.menu.admin': 'Administração',
 
@@ -930,6 +1096,13 @@ export const translations: Partial<TranslationsDictionary> = {
     'Não é possível eliminar a organização com uma subscrição ativa. Por favor, cancele a sua subscrição primeiro usando o botão Gerir Subscrição acima.',
   'api-errors.webhooks.ssrf_unsafe_url':
     'O URL fornecido não é permitido. Os URLs de webhook não devem apontar para endereços IP privados ou reservados.',
+  'api-errors.users.still_owns_organizations':
+    'Este utilizador ainda é proprietário de uma ou mais organizações. Elimine essas organizações antes de eliminar o utilizador.',
+  'api-errors.plan_entitlements.already_exists': 'Este utilizador já tem um direito deste tipo.',
+  'api-errors.plan_entitlements.not_found': 'Direito do plano não encontrado.',
+  'api-errors.plan_entitlements.not_eligible': 'Este utilizador não é elegível para este direito.',
+  'api-errors.users.cannot_delete_self':
+    'Não pode eliminar a sua própria conta a partir do painel de administração.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Utilizador não encontrado',
   'api-errors.FAILED_TO_CREATE_USER': 'Falha ao criar utilizador',
@@ -1165,6 +1338,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Nome',
   'admin.user-detail.organizations.table.created': 'Criada',
+  'admin.user-detail.plan-entitlements.title': 'Direitos do plano',
+  'admin.user-detail.plan-entitlements.description':
+    'Direitos que melhoram o plano das organizações que este utilizador possui',
+  'admin.user-detail.plan-entitlements.empty': 'Sem direitos de plano',
+  'admin.user-detail.plan-entitlements.table.type': 'Tipo',
+  'admin.user-detail.plan-entitlements.table.source': 'Origem',
+  'admin.user-detail.plan-entitlements.table.granted': 'Concedido',
+  'admin.user-detail.plan-entitlements.table.expires': 'Expira',
+  'admin.user-detail.plan-entitlements.never-expires': 'Nunca',
+  'admin.user-detail.plan-entitlements.expired': 'Expirado',
+  'admin.user-detail.plan-entitlements.grant.button': 'Conceder direito',
+  'admin.user-detail.plan-entitlements.grant.title': 'Conceder direito do plano',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Conceda um direito de plano a este utilizador, opcionalmente com uma data de expiração.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Tipo de direito',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Definir uma data de expiração',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Escolha uma data',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Conceder direito',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Cancelar',
+  'admin.user-detail.plan-entitlements.grant.success': 'Direito concedido com sucesso.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Revogar',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Revogar direito?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'O utilizador perderá os benefícios do plano concedidos por este direito.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Revogar direito',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Cancelar',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Direito revogado com sucesso.',
+  'admin.user-detail.delete.title': 'Eliminar utilizador',
+  'admin.user-detail.delete.description':
+    'Elimina permanentemente esta conta de utilizador. Isto será propagado às suas adesões a organizações, sessões, definições de dois fatores e outros dados de autenticação. As organizações que ainda possui devem ser eliminadas ou transferidas primeiro.',
+  'admin.user-detail.delete.button': 'Eliminar utilizador',
+  'admin.user-detail.delete.self-warning':
+    'Não pode eliminar a sua própria conta a partir do painel de administração.',
+  'admin.user-detail.delete.confirm.title': 'Eliminar utilizador?',
+  'admin.user-detail.delete.confirm.message':
+    'Esta ação não pode ser anulada. Escreva o email do utilizador abaixo para confirmar.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Eliminar utilizador',
+  'admin.user-detail.delete.confirm.cancel-button': 'Cancelar',
+  'admin.user-detail.delete.success': 'Utilizador eliminado com sucesso.',
 
   // Common / Shared
 

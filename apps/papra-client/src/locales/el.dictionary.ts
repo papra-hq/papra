@@ -367,6 +367,38 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} που ταιριάζουν σε αυτό το ερώτημα',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} συνολικά',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} {{ count, =1:επιλεγμένο, επιλεγμένα }}',
+  'documents.list.batch.clear': 'Εκκαθάριση επιλογής',
+  'documents.list.batch.tag-action': 'Ετικέτα',
+  'documents.list.batch.trash-action': 'Κάδος',
+  'documents.list.batch.error': 'Η ομαδική ενέργεια απέτυχε. Δοκιμάστε ξανά.',
+  'documents.list.batch.select-all-matching':
+    'Επιλογή και των {{ count }} που ταιριάζουν σε αυτήν την αναζήτηση',
+  'documents.list.batch.select-all':
+    'Επιλογή και των {{ count }} {{ count, =1:εγγράφου, εγγράφων }}',
+  'documents.list.batch.all-matching-selected':
+    'Επιλέχθηκαν και τα {{ count }} {{ count, =1:έγγραφο, έγγραφα }} που ταιριάζουν σε αυτήν την αναζήτηση',
+  'documents.list.batch.all-selected':
+    'Επιλέχθηκαν και τα {{ count }} {{ count, =1:έγγραφο, έγγραφα }}',
+  'documents.list.batch.trash.confirm.title': 'Μετακίνηση στον κάδο',
+  'documents.list.batch.trash.confirm.description':
+    'Μετακίνηση {{ count }} {{ count, =1:εγγράφου, εγγράφων }} στον κάδο; Μπορείτε να τα επαναφέρετε αργότερα από τον κάδο.',
+  'documents.list.batch.trash.confirm.label': 'Μετακίνηση στον κάδο',
+  'documents.list.batch.trash.confirm.cancel': 'Άκυρο',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:έγγραφο, έγγραφα }} {{ count, =1:μετακινήθηκε, μετακινήθηκαν }} στον κάδο',
+  'documents.list.batch.tags.dialog.title': 'Ενημέρωση ετικετών',
+  'documents.list.batch.tags.dialog.description':
+    'Προσθέστε ή αφαιρέστε ετικέτες σε {{ count }} επιλεγμένα {{ count, =1:έγγραφο, έγγραφα }}.',
+  'documents.list.batch.tags.dialog.add-label': 'Ετικέτες προς προσθήκη',
+  'documents.list.batch.tags.dialog.remove-label': 'Ετικέτες προς αφαίρεση',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'Μια ετικέτα δεν μπορεί να προστεθεί και να αφαιρεθεί στην ίδια ενέργεια.',
+  'documents.list.batch.tags.dialog.submit': 'Εφαρμογή',
+  'documents.list.batch.tags.dialog.cancel': 'Άκυρο',
+  'documents.list.batch.tags.success':
+    'Ενημερώθηκαν οι ετικέτες σε {{ count }} {{ count, =1:έγγραφο, έγγραφα }}',
 
   'documents.tabs.info': 'Πληροφορίες',
   'documents.tabs.content': 'Περιεχόμενο',
@@ -393,8 +425,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Ημερομηνία ενημέρωσης',
   'documents.info.never': 'Ποτέ',
   'documents.info.document-date': 'Ημερομηνία',
+  'documents.list.table.headers.document-date': 'Ημερομηνία',
   'documents.info.no-date': 'Χωρίς ημερομηνία',
   'documents.info.today': 'Σήμερα',
+  'documents.notes.label': 'Σημειώσεις',
+  'documents.notes.placeholder': 'Προσθέστε σημειώσεις για αυτό το έγγραφο',
+  'documents.notes.saving': 'Αποθήκευση',
+  'documents.notes.saved': 'Αποθηκεύτηκε',
+  'documents.notes.save-error': 'Αποτυχία αποθήκευσης σημειώσεων',
 
   'custom-properties.types.text': 'Κείμενο',
   'custom-properties.types.number': 'Αριθμός',
@@ -566,6 +604,93 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Συνημμένα',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Σελίδα {{ page }}',
+  'document-share-links.share-action': 'Κοινή χρήση',
+  'document-share-links.copy': 'Αντιγραφή συνδέσμου',
+  'document-share-links.copied': 'Ο σύνδεσμος αντιγράφηκε στο πρόχειρο',
+  'document-share-links.copy-error': 'Αποτυχία αντιγραφής του συνδέσμου',
+  'document-share-links.enabled': 'Ο σύνδεσμος κοινής χρήσης ενεργοποιήθηκε',
+  'document-share-links.disabled': 'Ο σύνδεσμος κοινής χρήσης απενεργοποιήθηκε',
+  'document-share-links.deleted': 'Ο σύνδεσμος κοινής χρήσης διαγράφηκε',
+  'document-share-links.password-protected': 'Προστασία με κωδικό',
+  'document-share-links.no-password': 'Χωρίς κωδικό',
+  'document-share-links.never-expires': 'Δεν λήγει ποτέ',
+  'document-share-links.expires-on': 'Λήγει στις {{ date }}',
+  'document-share-links.list.title': 'Σύνδεσμοι κοινής χρήσης',
+  'document-share-links.list.description':
+    'Διαχειριστείτε τους συνδέσμους κοινής χρήσης για το "{{ name }}".',
+  'document-share-links.list.create-new': 'Δημιουργία νέου συνδέσμου',
+  'document-share-links.create.title': 'Δημιουργία συνδέσμου κοινής χρήσης',
+  'document-share-links.create.description':
+    'Δημιουργήστε έναν νέο σύνδεσμο κοινής χρήσης για αυτό το έγγραφο.',
+  'document-share-links.create.password.toggle': 'Απαίτηση κωδικού πρόσβασης',
+  'document-share-links.create.password.hint':
+    'Προαιρετικό, οι παραλήπτες θα πρέπει να τον εισαγάγουν πριν την πρόσβαση.',
+  'document-share-links.create.password.placeholder': 'Εισαγάγετε ή δημιουργήστε έναν κωδικό',
+  'document-share-links.create.password.generate': 'Δημιουργία',
+  'document-share-links.create.expiration.toggle': 'Ορισμός ημερομηνίας λήξης',
+  'document-share-links.create.expiration.hint':
+    'Προαιρετικό, ο σύνδεσμος θα λήξει αυτόματα μετά από αυτήν την ημερομηνία.',
+  'document-share-links.create.expiration.24h': '24 ώρες',
+  'document-share-links.create.expiration.7d': '7 ημέρες',
+  'document-share-links.create.expiration.30d': '30 ημέρες',
+  'document-share-links.create.expiration.custom': 'Προσαρμοσμένο',
+  'document-share-links.create.expiration.pick-date': 'Επιλέξτε ημερομηνία',
+  'document-share-links.create.cancel': 'Άκυρο',
+  'document-share-links.create.submit': 'Δημιουργία συνδέσμου',
+  'document-share-links.create.error': 'Αποτυχία δημιουργίας του συνδέσμου κοινής χρήσης',
+  'document-share-links.created.title': 'Ο σύνδεσμος κοινής χρήσης δημιουργήθηκε',
+  'document-share-links.created.description':
+    'Ο σύνδεσμος κοινής χρήσης είναι έτοιμος — αντιγράψτε τον και μοιραστείτε τον.',
+  'document-share-links.created.done': 'Έγινε',
+  'document-share-links.actions.menu': 'Ενέργειες',
+  'document-share-links.actions.open-document': 'Άνοιγμα εγγράφου',
+  'document-share-links.actions.enable': 'Ενεργοποίηση συνδέσμου',
+  'document-share-links.actions.disable': 'Απενεργοποίηση συνδέσμου',
+  'document-share-links.actions.stop-sharing': 'Διακοπή κοινής χρήσης',
+  'document-share-links.delete.confirm.title': 'Διαγραφή συνδέσμου κοινής χρήσης',
+  'document-share-links.delete.confirm.message':
+    'Όποιος έχει αυτόν τον σύνδεσμο θα χάσει αμέσως την πρόσβαση. Αυτό δεν μπορεί να αναιρεθεί.',
+  'document-share-links.delete.confirm.confirm-button': 'Διαγραφή συνδέσμου',
+  'document-share-links.delete.confirm.cancel-button': 'Άκυρο',
+  'document-share-links.management.title': 'Σύνδεσμοι κοινής χρήσης',
+  'document-share-links.management.description':
+    'Διαχειριστείτε κάθε σύνδεσμο κοινής χρήσης που δημιουργήθηκε σε αυτόν τον οργανισμό.',
+  'document-share-links.management.empty.title': 'Δεν υπάρχουν σύνδεσμοι κοινής χρήσης',
+  'document-share-links.management.empty.description':
+    'Οι σύνδεσμοι κοινής χρήσης που δημιουργούνται για έγγραφα αυτού του οργανισμού θα εμφανίζονται εδώ.',
+  'document-share-links.management.table.document': 'Έγγραφο',
+  'document-share-links.management.table.link': 'Σύνδεσμος',
+  'document-share-links.management.table.status': 'Κατάσταση',
+  'document-share-links.management.table.security': 'Ασφάλεια',
+  'document-share-links.management.table.expiry': 'Λήξη',
+  'document-share-links.management.table.last-accessed': 'Τελευταία πρόσβαση',
+  'document-share-links.management.table.actions': 'Ενέργειες',
+  'document-share-links.management.status.expired': 'Έληξε',
+  'document-share-links.management.status.enabled': 'Ενεργό',
+  'document-share-links.management.status.disabled': 'Ανενεργό',
+  'document-share-links.management.status.trashed': 'Έγγραφο στον κάδο',
+  'document-share-links.management.status.trashed-hint':
+    'Το κοινόχρηστο έγγραφο βρίσκεται στον κάδο, οπότε αυτός ο σύνδεσμος είναι ανενεργός μέχρι να επαναφερθεί το έγγραφο.',
+  'document-share-links.management.security.password': 'Κωδικός',
+  'document-share-links.management.security.public': 'Δημόσιο',
+  'document-share-links.management.never': 'Ποτέ',
+  'document-share-links.public.download': 'Λήψη',
+  'document-share-links.public.download-error': 'Αποτυχία λήψης του αρχείου',
+  'document-share-links.public.password.title': 'Απαιτείται κωδικός',
+  'document-share-links.public.password.description':
+    'Αυτό το έγγραφο προστατεύεται. Εισαγάγετε τον κωδικό για να αποκτήσετε πρόσβαση.',
+  'document-share-links.public.password.label': 'Κωδικός',
+  'document-share-links.public.password.placeholder': 'Εισαγάγετε τον κωδικό',
+  'document-share-links.public.password.submit': 'Ξεκλείδωμα',
+  'document-share-links.public.password.invalid': 'Λανθασμένος κωδικός',
+  'document-share-links.public.password.too-many-attempts':
+    'Πάρα πολλές προσπάθειες. Δοκιμάστε ξανά αργότερα.',
+  'document-share-links.public.gone.title': 'Ο σύνδεσμος δεν είναι διαθέσιμος',
+  'document-share-links.public.gone.description':
+    'Αυτός ο σύνδεσμος κοινής χρήσης έχει λήξει ή έχει απενεργοποιηθεί.',
+  'document-share-links.public.not-found.title': 'Ο σύνδεσμος δεν βρέθηκε',
+  'document-share-links.public.not-found.description':
+    'Αυτός ο σύνδεσμος κοινής χρήσης δεν υπάρχει.',
 
   'trash.delete-all.button': 'Διαγραφή όλων',
   'trash.delete-all.confirm.title': 'Οριστική διαγραφή όλων των εγγράφων;',
@@ -637,6 +762,41 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Φιλτράρισμα ετικετών...',
   'tags.picker.create-new-with-name': 'Δημιουργία νέας ετικέτας "{{ name }}"',
   'tags.picker.create-new': 'Δημιουργία νέας ετικέτας',
+  'document-views.create': 'Δημιουργία προβολής',
+  'document-views.save-as-view': 'Αποθήκευση ερωτήματος ως προβολή',
+  'document-views.update': 'Ενημέρωση προβολής',
+  'document-views.delete': 'Διαγραφή προβολής',
+  'document-views.delete.confirm.title': 'Διαγραφή προβολής',
+  'document-views.delete.confirm.message':
+    'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την προβολή;',
+  'document-views.delete.confirm.confirm-button': 'Διαγραφή',
+  'document-views.delete.confirm.cancel-button': 'Άκυρο',
+  'document-views.delete.success': 'Η προβολή διαγράφηκε με επιτυχία',
+  'document-views.create.success': 'Η προβολή "{{ name }}" δημιουργήθηκε με επιτυχία.',
+  'document-views.update.success': 'Η προβολή "{{ name }}" ενημερώθηκε με επιτυχία.',
+  'document-views.form.name.label': 'Όνομα',
+  'document-views.form.name.placeholder': 'Π.χ. Εισερχόμενα',
+  'document-views.form.name.required': 'Εισαγάγετε ένα όνομα προβολής',
+  'document-views.form.name.max-length':
+    'Το όνομα προβολής πρέπει να είναι μικρότερο από 100 χαρακτήρες',
+  'document-views.form.query.label': 'Ερώτημα',
+  'document-views.form.query.placeholder': 'Π.χ. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Εισαγάγετε ένα ερώτημα',
+  'document-views.form.query.max-length': 'Το ερώτημα πρέπει να είναι μικρότερο από 500 χαρακτήρες',
+  'document-views.form.query.hint':
+    'Χρησιμοποιήστε την ίδια σύνταξη με τη γραμμή αναζήτησης εγγράφων. Π.χ. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Περιγραφή',
+  'document-views.form.description.optional': '(προαιρετικό)',
+  'document-views.form.description.placeholder': 'Π.χ. Έγγραφα που περιμένουν επεξεργασία',
+  'document-views.form.description.max-length':
+    'Η περιγραφή πρέπει να είναι μικρότερη από 256 χαρακτήρες',
+  'document-views.actions.menu': 'Ενέργειες προβολής',
+  'document-views.view.no-documents':
+    'Κανένα έγγραφο δεν ταιριάζει με το ερώτημα αυτής της προβολής.',
+  'document-views.view.not-found': 'Η προβολή δεν βρέθηκε.',
+  'api-errors.document_views.already_exists':
+    'Υπάρχει ήδη μια προβολή με αυτό το όνομα για αυτόν τον οργανισμό',
+  'api-errors.document_views.not_found': 'Η προβολή δεν βρέθηκε',
 
   // Tagging rules
 
@@ -768,6 +928,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Προβολή ετικετών',
   'api-keys.permissions.tags.tags:update': 'Ενημέρωση ετικετών',
   'api-keys.permissions.tags.tags:delete': 'Διαγραφή ετικετών',
+  'api-keys.permissions.custom-properties.title': 'Προσαρμοσμένες ιδιότητες',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Δημιουργία προσαρμοσμένων ιδιοτήτων',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Ανάγνωση προσαρμοσμένων ιδιοτήτων',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Ενημέρωση προσαρμοσμένων ιδιοτήτων',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Διαγραφή προσαρμοσμένων ιδιοτήτων',
   'api-keys.create.title': 'Δημιουργία API key',
   'api-keys.create.description': 'Δημιουργήστε νέο API key για πρόσβαση στο Papra API.',
   'api-keys.create.success': 'Το API key δημιουργήθηκε με επιτυχία.',
@@ -849,6 +1018,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Ετικέτες',
   'layout.menu.custom-properties': 'Προσαρμοσμένες ιδιότητες',
   'layout.menu.tagging-rules': 'Κανόνες ετικετοποίησης',
+  'layout.menu.share-links': 'Σύνδεσμοι κοινής χρήσης',
   'layout.menu.deleted-documents': 'Διαγεγραμμένα έγγραφα',
   'layout.menu.organization-settings': 'Ρυθμίσεις',
   'layout.menu.api-keys': 'API keys',
@@ -859,6 +1029,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'Email εισαγωγής',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Μέλη',
+  'layout.menu.document-views': 'Προβολές',
   'layout.menu.invitations': 'Προσκλήσεις',
   'layout.menu.admin': 'Διαχείριση',
 
@@ -918,6 +1089,15 @@ export const translations: Partial<TranslationsDictionary> = {
     'Δεν είναι δυνατή η διαγραφή με ενεργή συνδρομή. Ακυρώστε πρώτα μέσω "Διαχείριση συνδρομής".',
   'api-errors.webhooks.ssrf_unsafe_url':
     'Η παρεχόμενη URL δεν επιτρέπεται. Οι URL webhook δεν πρέπει να δείχνουν σε ιδιωτικές ή δεσμευμένες διευθύνσεις IP.',
+  'api-errors.users.still_owns_organizations':
+    'Αυτός ο χρήστης εξακολουθεί να κατέχει έναν ή περισσότερους οργανισμούς. Διαγράψτε αυτούς τους οργανισμούς πριν διαγράψετε τον χρήστη.',
+  'api-errors.plan_entitlements.already_exists':
+    'Αυτός ο χρήστης έχει ήδη ένα δικαίωμα αυτού του τύπου.',
+  'api-errors.plan_entitlements.not_found': 'Το δικαίωμα προγράμματος δεν βρέθηκε.',
+  'api-errors.plan_entitlements.not_eligible':
+    'Αυτός ο χρήστης δεν είναι επιλέξιμος για αυτό το δικαίωμα.',
+  'api-errors.users.cannot_delete_self':
+    'Δεν μπορείτε να διαγράψετε τον δικό σας λογαριασμό από τον πίνακα διαχείρισης.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Ο χρήστης δεν βρέθηκε',
   'api-errors.FAILED_TO_CREATE_USER': 'Αποτυχία δημιουργίας χρήστη',
@@ -1148,6 +1328,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Όνομα',
   'admin.user-detail.organizations.table.created': 'Δημιουργήθηκε',
+  'admin.user-detail.plan-entitlements.title': 'Δικαιώματα προγράμματος',
+  'admin.user-detail.plan-entitlements.description':
+    'Δικαιώματα που αναβαθμίζουν το πρόγραμμα των οργανισμών που κατέχει αυτός ο χρήστης',
+  'admin.user-detail.plan-entitlements.empty': 'Δεν υπάρχουν δικαιώματα προγράμματος',
+  'admin.user-detail.plan-entitlements.table.type': 'Τύπος',
+  'admin.user-detail.plan-entitlements.table.source': 'Πηγή',
+  'admin.user-detail.plan-entitlements.table.granted': 'Χορηγήθηκε',
+  'admin.user-detail.plan-entitlements.table.expires': 'Λήγει',
+  'admin.user-detail.plan-entitlements.never-expires': 'Ποτέ',
+  'admin.user-detail.plan-entitlements.expired': 'Έληξε',
+  'admin.user-detail.plan-entitlements.grant.button': 'Χορήγηση δικαιώματος',
+  'admin.user-detail.plan-entitlements.grant.title': 'Χορήγηση δικαιώματος προγράμματος',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Χορηγήστε ένα δικαίωμα προγράμματος σε αυτόν τον χρήστη, προαιρετικά με ημερομηνία λήξης.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Τύπος δικαιώματος',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Ορισμός ημερομηνίας λήξης',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Επιλέξτε ημερομηνία',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Χορήγηση δικαιώματος',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Άκυρο',
+  'admin.user-detail.plan-entitlements.grant.success': 'Το δικαίωμα χορηγήθηκε με επιτυχία.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Ανάκληση',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Ανάκληση δικαιώματος;',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'Ο χρήστης θα χάσει τα οφέλη του προγράμματος που χορηγήθηκαν από αυτό το δικαίωμα.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Ανάκληση δικαιώματος',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Άκυρο',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Το δικαίωμα ανακλήθηκε με επιτυχία.',
+  'admin.user-detail.delete.title': 'Διαγραφή χρήστη',
+  'admin.user-detail.delete.description':
+    'Διαγράφει οριστικά αυτόν τον λογαριασμό χρήστη. Αυτό θα επεκταθεί στις συμμετοχές του σε οργανισμούς, στις συνεδρίες, στις ρυθμίσεις δύο παραγόντων και σε άλλα δεδομένα ταυτοποίησης. Οι οργανισμοί που εξακολουθεί να κατέχει πρέπει πρώτα να διαγραφούν ή να μεταβιβαστούν.',
+  'admin.user-detail.delete.button': 'Διαγραφή χρήστη',
+  'admin.user-detail.delete.self-warning':
+    'Δεν μπορείτε να διαγράψετε τον δικό σας λογαριασμό από τον πίνακα διαχείρισης.',
+  'admin.user-detail.delete.confirm.title': 'Διαγραφή χρήστη;',
+  'admin.user-detail.delete.confirm.message':
+    'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί. Πληκτρολογήστε το email του χρήστη παρακάτω για επιβεβαίωση.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Διαγραφή χρήστη',
+  'admin.user-detail.delete.confirm.cancel-button': 'Άκυρο',
+  'admin.user-detail.delete.success': 'Ο χρήστης διαγράφηκε με επιτυχία.',
 
   // Common / Shared
 

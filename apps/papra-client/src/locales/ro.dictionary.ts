@@ -369,6 +369,38 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:document, documente }} corespunzător acestei căutări',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:document, documente }} în total',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:document, documente }} {{ count, =1:selectat, selectate }}',
+  'documents.list.batch.clear': 'Șterge selecția',
+  'documents.list.batch.tag-action': 'Etichetează',
+  'documents.list.batch.trash-action': 'Coș de gunoi',
+  'documents.list.batch.error': 'Operațiunea în lot a eșuat. Încercați din nou.',
+  'documents.list.batch.select-all-matching':
+    'Selectează toate cele {{ count }} care corespund acestei căutări',
+  'documents.list.batch.select-all':
+    'Selectează cele {{ count }} {{ count, =1:document, documente }}',
+  'documents.list.batch.all-matching-selected':
+    'Toate cele {{ count }} {{ count, =1:document, documente }} care corespund acestei căutări sunt selectate',
+  'documents.list.batch.all-selected':
+    'Toate cele {{ count }} {{ count, =1:document, documente }} sunt selectate',
+  'documents.list.batch.trash.confirm.title': 'Mută în coșul de gunoi',
+  'documents.list.batch.trash.confirm.description':
+    'Mutați {{ count }} {{ count, =1:document, documente }} în coșul de gunoi? Le puteți restaura mai târziu din coș.',
+  'documents.list.batch.trash.confirm.label': 'Mută în coșul de gunoi',
+  'documents.list.batch.trash.confirm.cancel': 'Anulează',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:document, documente }} {{ count, =1:mutat, mutate }} în coșul de gunoi',
+  'documents.list.batch.tags.dialog.title': 'Actualizează etichetele',
+  'documents.list.batch.tags.dialog.description':
+    'Adăugați sau eliminați etichete pe {{ count }} {{ count, =1:document, documente }} {{ count, =1:selectat, selectate }}.',
+  'documents.list.batch.tags.dialog.add-label': 'Etichete de adăugat',
+  'documents.list.batch.tags.dialog.remove-label': 'Etichete de eliminat',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'O etichetă nu poate fi adăugată și eliminată în aceeași operațiune.',
+  'documents.list.batch.tags.dialog.submit': 'Aplică',
+  'documents.list.batch.tags.dialog.cancel': 'Anulează',
+  'documents.list.batch.tags.success':
+    'Etichete actualizate pe {{ count }} {{ count, =1:document, documente }}',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Conținut',
@@ -395,8 +427,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Actualizat la',
   'documents.info.never': 'Niciodată',
   'documents.info.document-date': 'Data',
+  'documents.list.table.headers.document-date': 'Data',
   'documents.info.no-date': 'Fără dată',
   'documents.info.today': 'Astăzi',
+  'documents.notes.label': 'Notițe',
+  'documents.notes.placeholder': 'Adăugați notițe despre acest document',
+  'documents.notes.saving': 'Se salvează',
+  'documents.notes.saved': 'Salvat',
+  'documents.notes.save-error': 'Salvarea notițelor a eșuat',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Număr',
@@ -566,6 +604,91 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Atașamente',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Pagina {{ page }}',
+  'document-share-links.share-action': 'Partajează',
+  'document-share-links.copy': 'Copiază linkul',
+  'document-share-links.copied': 'Link copiat în clipboard',
+  'document-share-links.copy-error': 'Copierea linkului a eșuat',
+  'document-share-links.enabled': 'Link de partajare activat',
+  'document-share-links.disabled': 'Link de partajare dezactivat',
+  'document-share-links.deleted': 'Link de partajare șters',
+  'document-share-links.password-protected': 'Protejat cu parolă',
+  'document-share-links.no-password': 'Fără parolă',
+  'document-share-links.never-expires': 'Nu expiră niciodată',
+  'document-share-links.expires-on': 'Expiră pe {{ date }}',
+  'document-share-links.list.title': 'Linkuri de partajare',
+  'document-share-links.list.description': 'Gestionați linkurile de partajare pentru „{{ name }}”.',
+  'document-share-links.list.create-new': 'Creează link nou',
+  'document-share-links.create.title': 'Creează un link de partajare',
+  'document-share-links.create.description':
+    'Creați un nou link de partajare pentru acest document.',
+  'document-share-links.create.password.toggle': 'Solicită o parolă',
+  'document-share-links.create.password.hint':
+    'Opțional, destinatarii vor trebui să o introducă înainte de a accesa.',
+  'document-share-links.create.password.placeholder': 'Introduceți sau generați o parolă',
+  'document-share-links.create.password.generate': 'Generează',
+  'document-share-links.create.expiration.toggle': 'Setează o dată de expirare',
+  'document-share-links.create.expiration.hint':
+    'Opțional, linkul va expira automat după această dată.',
+  'document-share-links.create.expiration.24h': '24 de ore',
+  'document-share-links.create.expiration.7d': '7 zile',
+  'document-share-links.create.expiration.30d': '30 de zile',
+  'document-share-links.create.expiration.custom': 'Personalizat',
+  'document-share-links.create.expiration.pick-date': 'Alegeți o dată',
+  'document-share-links.create.cancel': 'Anulează',
+  'document-share-links.create.submit': 'Creează linkul',
+  'document-share-links.create.error': 'Crearea linkului de partajare a eșuat',
+  'document-share-links.created.title': 'Link de partajare creat',
+  'document-share-links.created.description':
+    'Linkul de partajare este gata — copiați-l și partajați-l.',
+  'document-share-links.created.done': 'Gata',
+  'document-share-links.actions.menu': 'Acțiuni',
+  'document-share-links.actions.open-document': 'Deschide documentul',
+  'document-share-links.actions.enable': 'Activează linkul',
+  'document-share-links.actions.disable': 'Dezactivează linkul',
+  'document-share-links.actions.stop-sharing': 'Oprește partajarea',
+  'document-share-links.delete.confirm.title': 'Șterge linkul de partajare',
+  'document-share-links.delete.confirm.message':
+    'Oricine are acest link va pierde imediat accesul. Această acțiune nu poate fi anulată.',
+  'document-share-links.delete.confirm.confirm-button': 'Șterge linkul',
+  'document-share-links.delete.confirm.cancel-button': 'Anulează',
+  'document-share-links.management.title': 'Linkuri de partajare',
+  'document-share-links.management.description':
+    'Gestionați toate linkurile de partajare create în această organizație.',
+  'document-share-links.management.empty.title': 'Niciun link de partajare',
+  'document-share-links.management.empty.description':
+    'Linkurile de partajare create pentru documentele acestei organizații vor apărea aici.',
+  'document-share-links.management.table.document': 'Document',
+  'document-share-links.management.table.link': 'Link',
+  'document-share-links.management.table.status': 'Stare',
+  'document-share-links.management.table.security': 'Securitate',
+  'document-share-links.management.table.expiry': 'Expirare',
+  'document-share-links.management.table.last-accessed': 'Ultimul acces',
+  'document-share-links.management.table.actions': 'Acțiuni',
+  'document-share-links.management.status.expired': 'Expirat',
+  'document-share-links.management.status.enabled': 'Activat',
+  'document-share-links.management.status.disabled': 'Dezactivat',
+  'document-share-links.management.status.trashed': 'Document în coșul de gunoi',
+  'document-share-links.management.status.trashed-hint':
+    'Documentul partajat este în coșul de gunoi, așa că acest link este inactiv până la restaurarea documentului.',
+  'document-share-links.management.security.password': 'Parolă',
+  'document-share-links.management.security.public': 'Public',
+  'document-share-links.management.never': 'Niciodată',
+  'document-share-links.public.download': 'Descarcă',
+  'document-share-links.public.download-error': 'Descărcarea fișierului a eșuat',
+  'document-share-links.public.password.title': 'Parolă necesară',
+  'document-share-links.public.password.description':
+    'Acest document este protejat. Introduceți parola pentru a-l accesa.',
+  'document-share-links.public.password.label': 'Parolă',
+  'document-share-links.public.password.placeholder': 'Introduceți parola',
+  'document-share-links.public.password.submit': 'Deblochează',
+  'document-share-links.public.password.invalid': 'Parolă incorectă',
+  'document-share-links.public.password.too-many-attempts':
+    'Prea multe încercări. Încercați din nou mai târziu.',
+  'document-share-links.public.gone.title': 'Link indisponibil',
+  'document-share-links.public.gone.description':
+    'Acest link de partajare a expirat sau a fost dezactivat.',
+  'document-share-links.public.not-found.title': 'Link negăsit',
+  'document-share-links.public.not-found.description': 'Acest link de partajare nu există.',
 
   'trash.delete-all.button': 'Șterge tot',
   'trash.delete-all.confirm.title': 'Ștergi definitiv toate documentele?',
@@ -638,6 +761,41 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Filtrează etichete...',
   'tags.picker.create-new-with-name': 'Creează etichetă nouă "{{ name }}"',
   'tags.picker.create-new': 'Creează etichetă nouă',
+  'document-views.create': 'Creează vizualizare',
+  'document-views.save-as-view': 'Salvează interogarea ca vizualizare',
+  'document-views.update': 'Actualizează vizualizarea',
+  'document-views.delete': 'Șterge vizualizarea',
+  'document-views.delete.confirm.title': 'Șterge vizualizarea',
+  'document-views.delete.confirm.message': 'Sigur doriți să ștergeți această vizualizare?',
+  'document-views.delete.confirm.confirm-button': 'Șterge',
+  'document-views.delete.confirm.cancel-button': 'Anulează',
+  'document-views.delete.success': 'Vizualizare ștearsă cu succes',
+  'document-views.create.success': 'Vizualizarea „{{ name }}” a fost creată cu succes.',
+  'document-views.update.success': 'Vizualizarea „{{ name }}” a fost actualizată cu succes.',
+  'document-views.form.name.label': 'Nume',
+  'document-views.form.name.placeholder': 'Ex. Inbox',
+  'document-views.form.name.required': 'Introduceți un nume de vizualizare',
+  'document-views.form.name.max-length':
+    'Numele vizualizării trebuie să aibă mai puțin de 100 de caractere',
+  'document-views.form.query.label': 'Interogare',
+  'document-views.form.query.placeholder': 'Ex. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Introduceți o interogare',
+  'document-views.form.query.max-length':
+    'Interogarea trebuie să aibă mai puțin de 500 de caractere',
+  'document-views.form.query.hint':
+    'Folosiți aceeași sintaxă ca bara de căutare a documentelor. Ex. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Descriere',
+  'document-views.form.description.optional': '(opțional)',
+  'document-views.form.description.placeholder': 'Ex. Documente care așteaptă procesarea',
+  'document-views.form.description.max-length':
+    'Descrierea trebuie să aibă mai puțin de 256 de caractere',
+  'document-views.actions.menu': 'Acțiuni vizualizare',
+  'document-views.view.no-documents':
+    'Niciun document nu corespunde interogării acestei vizualizări.',
+  'document-views.view.not-found': 'Vizualizare negăsită.',
+  'api-errors.document_views.already_exists':
+    'O vizualizare cu acest nume există deja pentru această organizație',
+  'api-errors.document_views.not_found': 'Vizualizare negăsită',
 
   // Tagging rules
 
@@ -772,6 +930,15 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Citește etichete',
   'api-keys.permissions.tags.tags:update': 'Actualizează etichete',
   'api-keys.permissions.tags.tags:delete': 'Șterge etichete',
+  'api-keys.permissions.custom-properties.title': 'Proprietăți personalizate',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Creează proprietăți personalizate',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Citește proprietăți personalizate',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Actualizează proprietăți personalizate',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Șterge proprietăți personalizate',
   'api-keys.create.title': 'Creează cheie API',
   'api-keys.create.description': 'Creează o nouă cheie API pentru a accesa API-ul Papra.',
   'api-keys.create.success': 'Cheia API a fost creată cu succes.',
@@ -856,6 +1023,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Etichete',
   'layout.menu.custom-properties': 'Proprietăți personalizate',
   'layout.menu.tagging-rules': 'Reguli de etichetare',
+  'layout.menu.share-links': 'Linkuri de partajare',
   'layout.menu.deleted-documents': 'Documente șterse',
   'layout.menu.organization-settings': 'Setări organizație',
   'layout.menu.api-keys': 'Chei API',
@@ -866,6 +1034,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'Email-uri de primire',
   'layout.menu.webhooks': 'Webhook-uri',
   'layout.menu.members': 'Membri',
+  'layout.menu.document-views': 'Vizualizări',
   'layout.menu.invitations': 'Invitații',
   'layout.menu.admin': 'Administrare',
 
@@ -929,6 +1098,14 @@ export const translations: Partial<TranslationsDictionary> = {
     'Nu se poate șterge organizația cu un abonament activ. Vă rugăm să anulați mai întâi abonamentul folosind butonul Gestionați abonamentul de mai sus.',
   'api-errors.webhooks.ssrf_unsafe_url':
     'URL-ul furnizat nu este permis. URL-urile webhook nu trebuie să indice spre adrese IP private sau rezervate.',
+  'api-errors.users.still_owns_organizations':
+    'Acest utilizator deține încă una sau mai multe organizații. Ștergeți aceste organizații înainte de a șterge utilizatorul.',
+  'api-errors.plan_entitlements.already_exists': 'Acest utilizator are deja un drept de acest tip.',
+  'api-errors.plan_entitlements.not_found': 'Dreptul de plan nu a fost găsit.',
+  'api-errors.plan_entitlements.not_eligible':
+    'Acest utilizator nu este eligibil pentru acest drept.',
+  'api-errors.users.cannot_delete_self':
+    'Nu vă puteți șterge propriul cont din panoul de administrare.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Utilizatorul nu a fost găsit',
   'api-errors.FAILED_TO_CREATE_USER': 'Eroare la crearea utilizatorului',
@@ -1164,6 +1341,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Nume',
   'admin.user-detail.organizations.table.created': 'Creată',
+  'admin.user-detail.plan-entitlements.title': 'Drepturi de plan',
+  'admin.user-detail.plan-entitlements.description':
+    'Drepturi care îmbunătățesc planul organizațiilor deținute de acest utilizator',
+  'admin.user-detail.plan-entitlements.empty': 'Niciun drept de plan',
+  'admin.user-detail.plan-entitlements.table.type': 'Tip',
+  'admin.user-detail.plan-entitlements.table.source': 'Sursă',
+  'admin.user-detail.plan-entitlements.table.granted': 'Acordat',
+  'admin.user-detail.plan-entitlements.table.expires': 'Expiră',
+  'admin.user-detail.plan-entitlements.never-expires': 'Niciodată',
+  'admin.user-detail.plan-entitlements.expired': 'Expirat',
+  'admin.user-detail.plan-entitlements.grant.button': 'Acordă drept',
+  'admin.user-detail.plan-entitlements.grant.title': 'Acordă drept de plan',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Acordați un drept de plan acestui utilizator, opțional cu o dată de expirare.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Tip de drept',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Setează o dată de expirare',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Alegeți o dată',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Acordă drept',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Anulează',
+  'admin.user-detail.plan-entitlements.grant.success': 'Drept acordat cu succes.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Revocă',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Revocați dreptul?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'Utilizatorul va pierde beneficiile planului acordate de acest drept.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Revocă dreptul',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Anulează',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Drept revocat cu succes.',
+  'admin.user-detail.delete.title': 'Șterge utilizatorul',
+  'admin.user-detail.delete.description':
+    'Șterge definitiv acest cont de utilizator. Această acțiune se va extinde la apartenențele sale la organizații, sesiuni, setările cu doi factori și alte date de autentificare. Organizațiile pe care încă le deține trebuie mai întâi șterse sau transferate.',
+  'admin.user-detail.delete.button': 'Șterge utilizatorul',
+  'admin.user-detail.delete.self-warning':
+    'Nu vă puteți șterge propriul cont din panoul de administrare.',
+  'admin.user-detail.delete.confirm.title': 'Ștergeți utilizatorul?',
+  'admin.user-detail.delete.confirm.message':
+    'Această acțiune nu poate fi anulată. Tastați adresa de email a utilizatorului mai jos pentru a confirma.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Șterge utilizatorul',
+  'admin.user-detail.delete.confirm.cancel-button': 'Anulează',
+  'admin.user-detail.delete.success': 'Utilizator șters cu succes.',
 
   // Common / Shared
 

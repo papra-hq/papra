@@ -52,7 +52,7 @@ describe('signature', () => {
       const secret = 'secret-key';
       const signature = 'v2,POSJo83MmyWmTh3NJOtEpBZSn+CmdpjHSS05p3wYAVE=';
 
-      expect(
+      await expect(
         verifySignature({ serializedPayload, webhookId, timestamp, signature, secret }),
       ).rejects.toThrow(createUnsupportedSignatureVersionError());
     });
@@ -65,7 +65,7 @@ describe('signature', () => {
       const secret = 'secret-key';
       const signature = '';
 
-      expect(
+      await expect(
         verifySignature({ serializedPayload, webhookId, timestamp, signature, secret }),
       ).rejects.toThrow(createInvalidSignatureFormatError());
     });

@@ -6,6 +6,7 @@ import { keepPreviousData, useQuery } from '@tanstack/solid-query';
 import { createSignal, Show, Suspense } from 'solid-js';
 import {
   createdAtColumn,
+  documentDateColumn,
   DocumentsPaginatedList,
   standardActionsColumn,
   tagsColumn,
@@ -170,7 +171,12 @@ export const DocumentViewPage: Component = () => {
                     documentsCount={getData().documentsCount}
                     getPagination={getPagination}
                     setPagination={setPagination}
-                    extraColumns={[tagsColumn, createdAtColumn, standardActionsColumn]}
+                    extraColumns={[
+                      tagsColumn,
+                      documentDateColumn,
+                      createdAtColumn,
+                      standardActionsColumn,
+                    ]}
                   />
                 )}
               </Show>

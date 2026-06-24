@@ -57,7 +57,7 @@ const PermanentlyDeleteTrashDocumentButton: Component<{
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'documents', 'deleted'],
       });
 
@@ -117,7 +117,7 @@ const DeleteAllTrashDocumentsButton: Component<{ organizationId: string }> = (pr
       await deleteAllTrashDocuments({ organizationId: props.organizationId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'documents', 'deleted'],
       });
     },

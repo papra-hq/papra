@@ -1,0 +1,1 @@
+export const AI_DEFAULT_MODEL_ENV_KEY = 'AI_DEFAULT_MODEL';

@@ -9,6 +9,7 @@ import { MoreActionsMenu } from './more-actions-menu.component';
 import { ZoomSelector } from './zoom-selector.component';
 
 export const PdfViewerToolbar: Component<ToolbarProps> = (props) => {
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via Solid ref binding in JSX
   let pageNumberRef!: HTMLInputElement;
   const { t } = useI18n();
 

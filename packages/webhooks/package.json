@@ -46,7 +46,7 @@
     "tsee": "^1.3.4"
   },
   "devDependencies": {
-    "standardwebhooks": "^1.0.0",
+    "standardwebhooks": "1.0.0",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

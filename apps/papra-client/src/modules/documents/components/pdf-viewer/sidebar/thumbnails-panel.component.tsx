@@ -50,6 +50,7 @@ const PageThumbnail: Component<{
 
 export const ThumbnailsPanel: Component<ThumbnailsPanelProps> = (props) => {
   const { t } = useI18n();
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via Solid ref binding in JSX
   let containerRef!: HTMLDivElement;
   const [containerWidth, setContainerWidth] = createSignal(200);
 

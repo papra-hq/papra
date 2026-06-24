@@ -56,7 +56,7 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@types/mime-types": "^2.1.4",
+    "@types/mime-types": "2.1.4",
     "@types/node": "catalog:",
     "tsdown": "catalog:",
     "tsx": "catalog:",

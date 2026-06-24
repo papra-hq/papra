@@ -62,7 +62,7 @@ const MemberList: Component = () => {
     mutationFn: ({ memberId }: { memberId: string }) =>
       removeOrganizationMember({ organizationId: params.organizationId, memberId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', params.organizationId, 'members'],
       });
 

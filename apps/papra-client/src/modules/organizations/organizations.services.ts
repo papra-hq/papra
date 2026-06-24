@@ -166,3 +166,46 @@ export async function restoreOrganization({ organizationId }: { organizationId: 
     method: 'POST',
   });
 }
+
+export async function fetchOrganizationSettings({ organizationId }: { organizationId: string }) {
+  const { organizationSettings } = await apiClient<{
+    organizationSettings: {
+      ai: {
+        autoTagging: {
+          isEnabled: boolean;
+          canCreateNewTags: boolean;
+          maxTags: number;
+        };
+      };
+    };
+  }>({
+    path: `/api/organizations/${organizationId}/settings`,
+    method: 'GET',
+  });
+
+  return {
+    organizationSettings,
+  };
+}
+
+export async function updateOrganizationSettings({
+  organizationId,
+  organizationSettingsPartials,
+}: {
+  organizationId: string;
+  organizationSettingsPartials: {
+    ai?: {
+      autoTagging?: {
+        isEnabled?: boolean;
+        canCreateNewTags?: boolean;
+        maxTags?: number;
+      };
+    };
+  };
+}) {
+  await apiClient<void>({
+    path: `/api/organizations/${organizationId}/settings`,
+    method: 'PATCH',
+    body: organizationSettingsPartials,
+  });
+}

@@ -16,9 +16,6 @@ import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.rep
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable } from '../tags/tags.table';
 import { createInMemoryTaskServices } from '../tasks/tasks.test-utils';
-import { createWebhookRepository } from '../webhooks/webhooks.repository';
-import { createWebhookTriggerServices } from '../webhooks/webhooks.trigger.services';
-import { createDocumentActivityRepository } from './document-activity/document-activity.repository';
 import {
   createDocumentAlreadyExistsError,
   createDocumentSizeTooLargeError,
@@ -707,12 +704,6 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookTriggerServices = createWebhookTriggerServices({
-        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
-        webhookRepository: createWebhookRepository({ db }),
-      });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
-
       await extractAndSaveDocumentFileContent({
         documentId: 'document-1',
         organizationId: 'organization-1',
@@ -720,8 +711,6 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookTriggerServices,
-        documentActivityRepository,
         eventServices: createTestEventServices(),
       });
 
@@ -773,11 +762,6 @@ describe('documents usecases', () => {
         storageKey: 'organization-1/originals/document-1.txt',
       });
 
-      const webhookTriggerServices = createWebhookTriggerServices({
-        webhooksConfig: { isSsrfProtectionEnabled: false, webhookUrlAllowedHostnames: new Set() },
-        webhookRepository: createWebhookRepository({ db }),
-      });
-      const documentActivityRepository = createDocumentActivityRepository({ db });
       const eventServices = createTestEventServices();
 
       await extractAndSaveDocumentFileContent({
@@ -787,8 +771,6 @@ describe('documents usecases', () => {
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
-        webhookTriggerServices,
-        documentActivityRepository,
         eventServices,
       });
 

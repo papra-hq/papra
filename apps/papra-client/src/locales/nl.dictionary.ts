@@ -371,6 +371,38 @@ export const translations: Partial<TranslationsDictionary> = {
     '{{ count }} {{ count, =1:document, documenten }} komen overeen met deze zoekopdracht',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:document, documenten }} in totaal',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:document, documenten }} geselecteerd',
+  'documents.list.batch.clear': 'Selectie wissen',
+  'documents.list.batch.tag-action': 'Labelen',
+  'documents.list.batch.trash-action': 'Prullenbak',
+  'documents.list.batch.error': 'De bulkbewerking is mislukt. Probeer het opnieuw.',
+  'documents.list.batch.select-all-matching':
+    'Alle {{ count }} selecteren die overeenkomen met deze zoekopdracht',
+  'documents.list.batch.select-all':
+    'Alle {{ count }} {{ count, =1:document, documenten }} selecteren',
+  'documents.list.batch.all-matching-selected':
+    'Alle {{ count }} {{ count, =1:document, documenten }} die overeenkomen met deze zoekopdracht zijn geselecteerd',
+  'documents.list.batch.all-selected':
+    'Alle {{ count }} {{ count, =1:document, documenten }} zijn geselecteerd',
+  'documents.list.batch.trash.confirm.title': 'Naar prullenbak verplaatsen',
+  'documents.list.batch.trash.confirm.description':
+    '{{ count }} {{ count, =1:document, documenten }} naar de prullenbak verplaatsen? U kunt ze later vanuit de prullenbak herstellen.',
+  'documents.list.batch.trash.confirm.label': 'Naar prullenbak verplaatsen',
+  'documents.list.batch.trash.confirm.cancel': 'Annuleren',
+  'documents.list.batch.trash.success':
+    '{{ count }} {{ count, =1:document, documenten }} naar de prullenbak verplaatst',
+  'documents.list.batch.tags.dialog.title': 'Labels bijwerken',
+  'documents.list.batch.tags.dialog.description':
+    'Labels toevoegen of verwijderen bij {{ count }} geselecteerde {{ count, =1:document, documenten }}.',
+  'documents.list.batch.tags.dialog.add-label': 'Toe te voegen labels',
+  'documents.list.batch.tags.dialog.remove-label': 'Te verwijderen labels',
+  'documents.list.batch.tags.dialog.overlap-error':
+    'Een label kan niet in dezelfde bewerking worden toegevoegd en verwijderd.',
+  'documents.list.batch.tags.dialog.submit': 'Toepassen',
+  'documents.list.batch.tags.dialog.cancel': 'Annuleren',
+  'documents.list.batch.tags.success':
+    'Labels bijgewerkt op {{ count }} {{ count, =1:document, documenten }}',
 
   'documents.tabs.info': 'Info',
   'documents.tabs.content': 'Inhoud',
@@ -397,8 +429,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.info.updated-at': 'Bijgewerkt op',
   'documents.info.never': 'Nooit',
   'documents.info.document-date': 'Datum',
+  'documents.list.table.headers.document-date': 'Datum',
   'documents.info.no-date': 'Geen datum',
   'documents.info.today': 'Vandaag',
+  'documents.notes.label': 'Notities',
+  'documents.notes.placeholder': 'Voeg notities over dit document toe',
+  'documents.notes.saving': 'Bezig met opslaan',
+  'documents.notes.saved': 'Opgeslagen',
+  'documents.notes.save-error': 'Opslaan van notities mislukt',
 
   'custom-properties.types.text': 'Tekst',
   'custom-properties.types.number': 'Getal',
@@ -568,6 +606,88 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.sidebar.attachments': 'Bijlagen',
 
   'documents.pdf-viewer.thumbnails.page-alt': 'Pagina {{ page }}',
+  'document-share-links.share-action': 'Delen',
+  'document-share-links.copy': 'Link kopiëren',
+  'document-share-links.copied': 'Link gekopieerd naar klembord',
+  'document-share-links.copy-error': 'Kopiëren van link mislukt',
+  'document-share-links.enabled': 'Deellink ingeschakeld',
+  'document-share-links.disabled': 'Deellink uitgeschakeld',
+  'document-share-links.deleted': 'Deellink verwijderd',
+  'document-share-links.password-protected': 'Met wachtwoord beveiligd',
+  'document-share-links.no-password': 'Geen wachtwoord',
+  'document-share-links.never-expires': 'Verloopt nooit',
+  'document-share-links.expires-on': 'Verloopt op {{ date }}',
+  'document-share-links.list.title': 'Deellinks',
+  'document-share-links.list.description': 'Beheer deellinks voor "{{ name }}".',
+  'document-share-links.list.create-new': 'Nieuwe link maken',
+  'document-share-links.create.title': 'Een deellink maken',
+  'document-share-links.create.description': 'Maak een nieuwe deellink voor dit document.',
+  'document-share-links.create.password.toggle': 'Een wachtwoord vereisen',
+  'document-share-links.create.password.hint':
+    'Optioneel, ontvangers moeten het invoeren voordat ze toegang krijgen.',
+  'document-share-links.create.password.placeholder': 'Voer een wachtwoord in of genereer er een',
+  'document-share-links.create.password.generate': 'Genereren',
+  'document-share-links.create.expiration.toggle': 'Een vervaldatum instellen',
+  'document-share-links.create.expiration.hint':
+    'Optioneel, de link verloopt automatisch na deze datum.',
+  'document-share-links.create.expiration.24h': '24 uur',
+  'document-share-links.create.expiration.7d': '7 dagen',
+  'document-share-links.create.expiration.30d': '30 dagen',
+  'document-share-links.create.expiration.custom': 'Aangepast',
+  'document-share-links.create.expiration.pick-date': 'Kies een datum',
+  'document-share-links.create.cancel': 'Annuleren',
+  'document-share-links.create.submit': 'Link maken',
+  'document-share-links.create.error': 'Maken van deellink mislukt',
+  'document-share-links.created.title': 'Deellink gemaakt',
+  'document-share-links.created.description': 'Uw deellink is klaar — kopieer en deel hem.',
+  'document-share-links.created.done': 'Klaar',
+  'document-share-links.actions.menu': 'Acties',
+  'document-share-links.actions.open-document': 'Document openen',
+  'document-share-links.actions.enable': 'Link inschakelen',
+  'document-share-links.actions.disable': 'Link uitschakelen',
+  'document-share-links.actions.stop-sharing': 'Stoppen met delen',
+  'document-share-links.delete.confirm.title': 'Deellink verwijderen',
+  'document-share-links.delete.confirm.message':
+    'Iedereen met deze link verliest onmiddellijk de toegang. Dit kan niet ongedaan worden gemaakt.',
+  'document-share-links.delete.confirm.confirm-button': 'Link verwijderen',
+  'document-share-links.delete.confirm.cancel-button': 'Annuleren',
+  'document-share-links.management.title': 'Deellinks',
+  'document-share-links.management.description':
+    'Beheer alle deellinks die in deze organisatie zijn gemaakt.',
+  'document-share-links.management.empty.title': 'Geen deellinks',
+  'document-share-links.management.empty.description':
+    'Deellinks die voor documenten in deze organisatie zijn gemaakt, verschijnen hier.',
+  'document-share-links.management.table.document': 'Document',
+  'document-share-links.management.table.link': 'Link',
+  'document-share-links.management.table.status': 'Status',
+  'document-share-links.management.table.security': 'Beveiliging',
+  'document-share-links.management.table.expiry': 'Vervaldatum',
+  'document-share-links.management.table.last-accessed': 'Laatst geopend',
+  'document-share-links.management.table.actions': 'Acties',
+  'document-share-links.management.status.expired': 'Verlopen',
+  'document-share-links.management.status.enabled': 'Ingeschakeld',
+  'document-share-links.management.status.disabled': 'Uitgeschakeld',
+  'document-share-links.management.status.trashed': 'Document in prullenbak',
+  'document-share-links.management.status.trashed-hint':
+    'Het gedeelde document staat in de prullenbak, dus deze link is inactief tot het document is hersteld.',
+  'document-share-links.management.security.password': 'Wachtwoord',
+  'document-share-links.management.security.public': 'Openbaar',
+  'document-share-links.management.never': 'Nooit',
+  'document-share-links.public.download': 'Downloaden',
+  'document-share-links.public.download-error': 'Downloaden van bestand mislukt',
+  'document-share-links.public.password.title': 'Wachtwoord vereist',
+  'document-share-links.public.password.description':
+    'Dit document is beveiligd. Voer het wachtwoord in om er toegang toe te krijgen.',
+  'document-share-links.public.password.label': 'Wachtwoord',
+  'document-share-links.public.password.placeholder': 'Voer het wachtwoord in',
+  'document-share-links.public.password.submit': 'Ontgrendelen',
+  'document-share-links.public.password.invalid': 'Onjuist wachtwoord',
+  'document-share-links.public.password.too-many-attempts':
+    'Te veel pogingen. Probeer het later opnieuw.',
+  'document-share-links.public.gone.title': 'Link niet beschikbaar',
+  'document-share-links.public.gone.description': 'Deze deellink is verlopen of is uitgeschakeld.',
+  'document-share-links.public.not-found.title': 'Link niet gevonden',
+  'document-share-links.public.not-found.description': 'Deze deellink bestaat niet.',
 
   'trash.delete-all.button': 'Alles verwijderen',
   'trash.delete-all.confirm.title': 'Alle documenten permanent verwijderen?',
@@ -640,6 +760,39 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.picker.filter-placeholder': 'Labels filteren...',
   'tags.picker.create-new-with-name': 'Nieuw label "{{ name }}" aanmaken',
   'tags.picker.create-new': 'Nieuw label aanmaken',
+  'document-views.create': 'Weergave maken',
+  'document-views.save-as-view': 'Zoekopdracht opslaan als weergave',
+  'document-views.update': 'Weergave bijwerken',
+  'document-views.delete': 'Weergave verwijderen',
+  'document-views.delete.confirm.title': 'Weergave verwijderen',
+  'document-views.delete.confirm.message': 'Weet u zeker dat u deze weergave wilt verwijderen?',
+  'document-views.delete.confirm.confirm-button': 'Verwijderen',
+  'document-views.delete.confirm.cancel-button': 'Annuleren',
+  'document-views.delete.success': 'Weergave succesvol verwijderd',
+  'document-views.create.success': 'Weergave "{{ name }}" succesvol gemaakt.',
+  'document-views.update.success': 'Weergave "{{ name }}" succesvol bijgewerkt.',
+  'document-views.form.name.label': 'Naam',
+  'document-views.form.name.placeholder': 'Bijv. Postvak in',
+  'document-views.form.name.required': 'Voer een weergavenaam in',
+  'document-views.form.name.max-length': 'De weergavenaam moet minder dan 100 tekens bevatten',
+  'document-views.form.query.label': 'Zoekopdracht',
+  'document-views.form.query.placeholder': 'Bijv. tag:inbox AND -tag:archived',
+  'document-views.form.query.required': 'Voer een zoekopdracht in',
+  'document-views.form.query.max-length': 'De zoekopdracht moet minder dan 500 tekens bevatten',
+  'document-views.form.query.hint':
+    'Gebruik dezelfde syntaxis als de documentzoekbalk. Bijv. tag:inbox, has:tags, before:2024-01-01',
+  'document-views.form.description.label': 'Beschrijving',
+  'document-views.form.description.optional': '(optioneel)',
+  'document-views.form.description.placeholder': 'Bijv. Documenten die wachten op verwerking',
+  'document-views.form.description.max-length':
+    'De beschrijving moet minder dan 256 tekens bevatten',
+  'document-views.actions.menu': 'Weergaveacties',
+  'document-views.view.no-documents':
+    'Geen enkel document komt overeen met de zoekopdracht van deze weergave.',
+  'document-views.view.not-found': 'Weergave niet gevonden.',
+  'api-errors.document_views.already_exists':
+    'Er bestaat al een weergave met deze naam voor deze organisatie',
+  'api-errors.document_views.not_found': 'Weergave niet gevonden',
 
   // Tagging rules
 
@@ -771,6 +924,14 @@ export const translations: Partial<TranslationsDictionary> = {
   'api-keys.permissions.tags.tags:read': 'Labels lezen',
   'api-keys.permissions.tags.tags:update': 'Labels bijwerken',
   'api-keys.permissions.tags.tags:delete': 'Labels verwijderen',
+  'api-keys.permissions.custom-properties.title': 'Aangepaste eigenschappen',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Aangepaste eigenschappen maken',
+  'api-keys.permissions.custom-properties.custom-properties:read': 'Aangepaste eigenschappen lezen',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Aangepaste eigenschappen bijwerken',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Aangepaste eigenschappen verwijderen',
   'api-keys.create.title': 'API-sleutel aanmaken',
   'api-keys.create.description': 'Maak een nieuwe API-sleutel om de Papra API te gebruiken.',
   'api-keys.create.success': 'De API-sleutel is succesvol aangemaakt.',
@@ -854,6 +1015,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.tags': 'Labels',
   'layout.menu.custom-properties': 'Aangepaste eigenschappen',
   'layout.menu.tagging-rules': 'Labelregels',
+  'layout.menu.share-links': 'Deellinks',
   'layout.menu.deleted-documents': 'Verwijderde documenten',
   'layout.menu.organization-settings': 'Instellingen',
   'layout.menu.api-keys': 'API-sleutels',
@@ -864,6 +1026,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.menu.intake-emails': 'Intake-e-mails',
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Leden',
+  'layout.menu.document-views': 'Weergaven',
   'layout.menu.invitations': 'Uitnodigingen',
   'layout.menu.admin': 'Beheer',
 
@@ -924,6 +1087,14 @@ export const translations: Partial<TranslationsDictionary> = {
     'Kan de organisatie niet verwijderen vanwege een actief abonnement. Annuleer eerst uw abonnement via de knop Abonnement beheren.',
   'api-errors.webhooks.ssrf_unsafe_url':
     "De opgegeven URL is niet toegestaan. Webhook-URL's mogen niet verwijzen naar privé- of gereserveerde IP-adressen.",
+  'api-errors.users.still_owns_organizations':
+    'Deze gebruiker is nog eigenaar van een of meer organisaties. Verwijder die organisaties voordat u de gebruiker verwijdert.',
+  'api-errors.plan_entitlements.already_exists': 'Deze gebruiker heeft al een recht van dit type.',
+  'api-errors.plan_entitlements.not_found': 'Planrecht niet gevonden.',
+  'api-errors.plan_entitlements.not_eligible':
+    'Deze gebruiker komt niet in aanmerking voor dit recht.',
+  'api-errors.users.cannot_delete_self':
+    'U kunt uw eigen account niet verwijderen vanuit het beheerderspaneel.',
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Gebruiker niet gevonden',
   'api-errors.FAILED_TO_CREATE_USER': 'Kan gebruiker niet aanmaken',
@@ -1154,6 +1325,45 @@ export const translations: Partial<TranslationsDictionary> = {
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Naam',
   'admin.user-detail.organizations.table.created': 'Aangemaakt',
+  'admin.user-detail.plan-entitlements.title': 'Planrechten',
+  'admin.user-detail.plan-entitlements.description':
+    'Rechten die het plan verbeteren van de organisaties die deze gebruiker bezit',
+  'admin.user-detail.plan-entitlements.empty': 'Geen planrechten',
+  'admin.user-detail.plan-entitlements.table.type': 'Type',
+  'admin.user-detail.plan-entitlements.table.source': 'Bron',
+  'admin.user-detail.plan-entitlements.table.granted': 'Verleend',
+  'admin.user-detail.plan-entitlements.table.expires': 'Verloopt',
+  'admin.user-detail.plan-entitlements.never-expires': 'Nooit',
+  'admin.user-detail.plan-entitlements.expired': 'Verlopen',
+  'admin.user-detail.plan-entitlements.grant.button': 'Recht verlenen',
+  'admin.user-detail.plan-entitlements.grant.title': 'Planrecht verlenen',
+  'admin.user-detail.plan-entitlements.grant.description':
+    'Verleen deze gebruiker een planrecht, optioneel met een vervaldatum.',
+  'admin.user-detail.plan-entitlements.grant.type-label': 'Type recht',
+  'admin.user-detail.plan-entitlements.grant.expiration.toggle': 'Een vervaldatum instellen',
+  'admin.user-detail.plan-entitlements.grant.expiration.pick-date': 'Kies een datum',
+  'admin.user-detail.plan-entitlements.grant.submit': 'Recht verlenen',
+  'admin.user-detail.plan-entitlements.grant.cancel': 'Annuleren',
+  'admin.user-detail.plan-entitlements.grant.success': 'Recht succesvol verleend.',
+  'admin.user-detail.plan-entitlements.revoke.button': 'Intrekken',
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Recht intrekken?',
+  'admin.user-detail.plan-entitlements.revoke.confirm.message':
+    'De gebruiker verliest de planvoordelen die door dit recht zijn verleend.',
+  'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Recht intrekken',
+  'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Annuleren',
+  'admin.user-detail.plan-entitlements.revoke.success': 'Recht succesvol ingetrokken.',
+  'admin.user-detail.delete.title': 'Gebruiker verwijderen',
+  'admin.user-detail.delete.description':
+    'Verwijdert dit gebruikersaccount permanent. Dit werkt door op hun organisatielidmaatschappen, sessies, tweefactorinstellingen en andere authenticatiegegevens. Organisaties die ze nog bezitten, moeten eerst worden verwijderd of overgedragen.',
+  'admin.user-detail.delete.button': 'Gebruiker verwijderen',
+  'admin.user-detail.delete.self-warning':
+    'U kunt uw eigen account niet verwijderen vanuit het beheerderspaneel.',
+  'admin.user-detail.delete.confirm.title': 'Gebruiker verwijderen?',
+  'admin.user-detail.delete.confirm.message':
+    'Deze actie kan niet ongedaan worden gemaakt. Typ hieronder het e-mailadres van de gebruiker om te bevestigen.',
+  'admin.user-detail.delete.confirm.confirm-button': 'Gebruiker verwijderen',
+  'admin.user-detail.delete.confirm.cancel-button': 'Annuleren',
+  'admin.user-detail.delete.success': 'Gebruiker succesvol verwijderd.',
 
   // Common / Shared
 

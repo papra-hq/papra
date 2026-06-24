@@ -43,7 +43,7 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['organizations', props.taggingRule.organizationId, 'tagging-rules'],
       });
     },

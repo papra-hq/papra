@@ -1,5 +1,6 @@
 import { isNil } from '../shared/utils';
-import { PLAN_PRIORITY, type PlanId } from './plans.constants';
+import { PLAN_PRIORITY } from './plans.constants';
+import type { PlanId } from './plans.constants';
 import { createOrganizationPlanPriceIdNotSetError } from './plans.errors';
 
 export function getPriceIdForBillingInterval({

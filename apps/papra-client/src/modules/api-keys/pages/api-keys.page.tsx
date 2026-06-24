@@ -18,7 +18,7 @@ export const ApiKeyCard: Component<{ apiKey: ApiKey }> = (props) => {
   const deleteApiKeyMutation = useMutation(() => ({
     mutationFn: deleteApiKey,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['api-keys'] });
+      void queryClient.invalidateQueries({ queryKey: ['api-keys'] });
       createToast({
         message: t('api-keys.delete.success'),
       });
