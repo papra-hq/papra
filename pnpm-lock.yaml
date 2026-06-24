@@ -12,6 +12,9 @@ catalogs:
     '@corentinth/chisels':
       specifier: 2.1.0
       version: 2.1.0
+    '@iconify-json/tabler':
+      specifier: ^1.2.26
+      version: 1.2.35
     '@paralleldrive/cuid2':
       specifier: ^3.3.0
       version: 3.3.0
@@ -430,7 +433,7 @@ importers:
         version: 0.2.4(@cadence-mq/core@0.2.3)(@libsql/client@0.14.0)
       '@cadence-mq/driver-memory':
         specifier: ^0.2.0
-        version: 0.2.0(@cadence-mq/core@0.2.3)
+        version: 0.2.2(@cadence-mq/core@0.2.3)
       '@clack/prompts':
         specifier: 1.0.0-alpha.6
         version: 1.0.0-alpha.6
@@ -1682,10 +1685,10 @@ packages:
       '@cadence-mq/core': ^0.2.3
       '@libsql/client': ^0.15.9
 
-  '@cadence-mq/driver-memory@0.2.0':
-    resolution: {integrity: sha512-U/L5nkCu+BYO814oQAYbFYSNASha+6Om3Px3+Jm47YzFmSrQhrnX6fTyICVQFz+MflWndhke6Bh1mwik6nbrcw==}
+  '@cadence-mq/driver-memory@0.2.2':
+    resolution: {integrity: sha512-51dVDPDgwVoNpv1/2PNWMvJwxJyI8v2POfFqbPb3FAYKXKmWjpYAtcM4mNj+Uy7OkC/HtYpCIWfTmkzj2tH00g==}
     peerDependencies:
-      '@cadence-mq/core': ^0.2.0
+      '@cadence-mq/core': ^0.2.3
 
   '@capsizecss/unpack@4.0.0':
     resolution: {integrity: sha512-VERIM64vtTP1C4mxQ5thVT9fK0apjPFobqybMtA1UdUujWka24ERHbRHFGmpbbhp73MhV+KSsHQH9C6uOTdEQA==}
@@ -11690,7 +11693,7 @@ snapshots:
       '@cadence-mq/core': 0.2.3
       '@libsql/client': 0.14.0
 
-  '@cadence-mq/driver-memory@0.2.0(@cadence-mq/core@0.2.3)':
+  '@cadence-mq/driver-memory@0.2.2(@cadence-mq/core@0.2.3)':
     dependencies:
       '@cadence-mq/core': 0.2.3
 
