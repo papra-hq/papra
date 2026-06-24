@@ -445,7 +445,7 @@ importers:
         version: 0.0.1
       '@crowlog/async-context-plugin':
         specifier: ^2.1.0
-        version: 2.1.0
+        version: 2.1.1
       '@crowlog/logger':
         specifier: ^2.2.2
         version: 2.2.2
@@ -1831,8 +1831,8 @@ packages:
     peerDependencies:
       solid-js: ^1.8
 
-  '@crowlog/async-context-plugin@2.1.0':
-    resolution: {integrity: sha512-sf7gig7RonFvGPxPBrZqdJwI+NMbVcu4mJtCkqyk5pqvl1ZbY02Jv7YnfMs8gUtrq/2MsZUaoXA5UdSyCkNv0g==}
+  '@crowlog/async-context-plugin@2.1.1':
+    resolution: {integrity: sha512-WNeYcSWOjFdHKx3YHXPJjXhzXZFoZcUZhmrNFKN6gtbJ/pMvziAEVLcf32vAGR+JbANGdTtKszyxXl2wXGpYfA==}
     engines: {node: '>=22.0.0'}
 
   '@crowlog/logger@2.2.2':
@@ -11914,7 +11914,7 @@ snapshots:
       '@floating-ui/dom': 1.6.13
       solid-js: 1.9.10
 
-  '@crowlog/async-context-plugin@2.1.0': {}
+  '@crowlog/async-context-plugin@2.1.1': {}
 
   '@crowlog/logger@2.2.2': {}
 
