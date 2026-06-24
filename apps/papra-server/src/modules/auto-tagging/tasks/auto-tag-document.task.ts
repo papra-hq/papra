@@ -22,7 +22,7 @@ export async function registerAutoTagDocumentTask({
   config: Config;
   eventServices: EventServices;
 }) {
-  if (!config.ai.aiIsEnabled) {
+  if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {
     return;
   }
 

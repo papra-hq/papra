@@ -18,6 +18,7 @@ import { registerUsersRoutes } from '../users/users.routes';
 import { registerWebhooksRoutes } from '../webhooks/webhooks.routes';
 import { registerAuthRoutes } from './auth/auth.routes';
 import { registerHealthCheckRoutes } from './health-check/health-check.routes';
+import { registerOrganizationSettingsRoutes } from '../organizations/organization-settings/organization-settings.routes';
 
 export function registerRoutes(context: RouteDefinitionContext) {
   registerAuthRoutes(context);
@@ -27,6 +28,7 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerSubscriptionsRoutes(context);
   registerUsersRoutes(context);
   registerOrganizationsRoutes(context);
+  registerOrganizationSettingsRoutes(context);
   registerDocumentsRoutes(context);
   registerDocumentsBatchRoutes(context);
   registerTagsRoutes(context);

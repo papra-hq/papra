@@ -20,30 +20,47 @@ export function createResolveOrganizationSettingsUsecase({
     organizationId: string;
   }): Promise<{
     organizationSettings: OrganizationSettings;
-  }> => {
-    const { organizationRawSettings } =
-      await organizationSettingsRepository.getOrganizationSettings({
-        organizationId,
-      });
+  }> =>
+    resolveOrganizationSettings({
+      organizationId,
+      config,
+      organizationSettingsRepository,
+    });
+}
 
-    return {
-      organizationSettings: {
-        ai: {
-          autoTagging: {
-            isEnabled: organizationRawSettings?.aiAutoTaggingEnabled ?? false,
+export async function resolveOrganizationSettings({
+  organizationId,
+  config,
+  organizationSettingsRepository,
+}: {
+  organizationId: string;
 
-            canCreateNewTags: organizationRawSettings?.aiAutoTaggingCanCreateNewTags ?? false,
+  config: Config;
+  organizationSettingsRepository: OrganizationSettingsRepository;
+}): Promise<{
+  organizationSettings: OrganizationSettings;
+}> {
+  const { organizationRawSettings } = await organizationSettingsRepository.getOrganizationSettings({
+    organizationId,
+  });
 
-            maxTags:
-              organizationRawSettings?.aiAutoTaggingMaxTags ?? config.autoTagging.defaultMaxTags,
+  return {
+    organizationSettings: {
+      ai: {
+        autoTagging: {
+          isEnabled: organizationRawSettings?.aiAutoTaggingEnabled ?? false,
 
-            model:
-              parseOptionalModelId(organizationRawSettings?.aiAutoTaggingModelId) ??
-              config.autoTagging.model ??
-              config.ai.defaultModel,
-          },
+          canCreateNewTags: organizationRawSettings?.aiAutoTaggingCanCreateNewTags ?? false,
+
+          maxTags:
+            organizationRawSettings?.aiAutoTaggingMaxTags ?? config.autoTagging.defaultMaxTags,
+
+          model:
+            parseOptionalModelId(organizationRawSettings?.aiAutoTaggingModelId) ??
+            config.autoTagging.model ??
+            config.ai.defaultModel,
         },
       },
-    };
+    },
   };
 }

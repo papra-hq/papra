@@ -16,7 +16,7 @@ describe('config models', () => {
         - intakeEmails.isEnabled Whether intake emails are enabled
         - auth.providers.email.isEnabled Whether email/password authentication is enabled
         - organizations.deletedOrganizationsPurgeDaysDelay The delay in days before a soft-deleted organization is permanently purged
-        
+
         Any other config should not be exposed.`, () => {
       const config = overrideConfig({
         foo: 'bar',
@@ -78,6 +78,9 @@ describe('config models', () => {
           },
           organizations: {
             deletedOrganizationsPurgeDaysDelay: 30,
+          },
+          autoTagging: {
+            isEnabled: false,
           },
         },
       });

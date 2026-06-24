@@ -5,7 +5,7 @@ import type { AppConfigDefinition } from '../config/config.types';
 import { AI_DEFAULT_MODEL_ENV_KEY } from './ai.constants';
 
 export const aiConfig = {
-  aiIsEnabled: {
+  isEnabled: {
     doc: 'Whether AI features are enabled',
     schema: booleanishSchema,
     env: 'AI_IS_ENABLED',

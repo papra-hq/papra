@@ -17,6 +17,11 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
           icon: 'i-tabler-settings',
         },
         {
+          label: t('layout.menu.auto-tagging'),
+          href: `/organizations/${params.organizationId}/settings/auto-tagging`,
+          icon: 'i-tabler-tag',
+        },
+        {
           label: t('layout.menu.usage'),
           href: `/organizations/${params.organizationId}/settings/usage`,
           icon: 'i-tabler-chart-bar',
