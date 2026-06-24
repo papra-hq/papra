@@ -75,30 +75,30 @@ export const SidenavLayout: ParentComponent<{
             {(props.showSearch ?? true) && (
               <Button
                 variant="outline"
-                class="lg:min-w-64  justify-start"
+                class="lg:min-w-64 justify-start gap-2 px-2.5 sm:px-4"
                 onClick={openCommandPalette}
               >
-                <div class="i-tabler-search size-4 mr-2" />
-                {t('layout.search.placeholder')}
+                <div class="i-tabler-search size-4" />
+                <span class="hidden sm:inline">{t('layout.search.placeholder')}</span>
               </Button>
             )}
           </div>
 
           <div class="flex items-center gap-2">
             <GlobalDropArea onFilesDrop={uploadDocuments} />
-            <Button onClick={promptImport}>
+            <Button onClick={promptImport} class="px-2.5 sm:px-4">
               <div class="i-tabler-upload size-4" />
               <span class="hidden sm:inline ml-2">{t('layout.menu.import-document')}</span>
             </Button>
 
             <Show when={hasPermission('bo:access')}>
-              <Button as={A} href="/admin" variant="outline" class="hidden sm:flex gap-2">
+              <Button as={A} href="/admin" variant="outline" class="px-2.5 sm:px-4 gap-2">
                 <div class="i-tabler-settings size-4" />
-                {t('layout.menu.admin')}
+                <span class="hidden sm:inline">{t('layout.menu.admin')}</span>
               </Button>
             </Show>
 
-            <UserSettingsDropdown class="hidden sm:flex" />
+            <UserSettingsDropdown />
           </div>
         </div>
         <div class="flex-1 overflow-auto max-w-screen">
