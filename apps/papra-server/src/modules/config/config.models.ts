@@ -30,6 +30,9 @@ export function getPublicConfig({ config }: { config: Config }) {
     organizations: {
       deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay,
     },
+    autoTagging: {
+      isEnabled: config.autoTagging.isEnabled && config.ai.isEnabled,
+    },
   };
 
   return {

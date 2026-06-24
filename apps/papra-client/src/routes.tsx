@@ -53,6 +53,7 @@ import { UserSettingsPage } from './modules/users/pages/user-settings.page';
 import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
 import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
+import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
 
 export const routes: RouteDefinition[] = [
   {
@@ -212,6 +213,10 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/',
                 component: OrganizationsSettingsPage,
+              },
+              {
+                path: '/auto-tagging',
+                component: OrganizationsAutoTaggingSettingsPage,
               },
               {
                 path: '/usage',

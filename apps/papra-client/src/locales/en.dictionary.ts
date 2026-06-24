@@ -261,6 +261,21 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     'Cannot delete organization with an active subscription, please cancel your subscription above first.',
 
+  'organization.settings.auto-tagging.page.title': 'Auto Tagging Settings',
+  'organization.settings.auto-tagging.page.description':
+    'Auto tagging settings for your organization. This feature allows you to automatically tag content based on AI predictions.',
+  'organization.settings.auto-tagging.unavailable':
+    'Auto tagging is currently not available for your organization. Please contact support for more information.',
+  'organization.settings.auto-tagging.enabled.label': 'Enable auto tagging',
+  'organization.settings.auto-tagging.enabled.description':
+    'When enabled, documents added to this organization are automatically tagged by the AI.',
+  'organization.settings.auto-tagging.create-tags.label': 'Allow creating new tags',
+  'organization.settings.auto-tagging.create-tags.description':
+    'When enabled, the AI can create new tags. Otherwise, it can only use existing ones.',
+  'organization.settings.auto-tagging.max-tags.label': 'Maximum tags per document',
+  'organization.settings.auto-tagging.max-tags.description':
+    'The most tags the AI can apply to a single document (between {{ min }} and {{ max }}).',
+
   'organization.usage.page.title': 'Usage',
   'organization.usage.page.description': "View your organization's current usage and limits.",
   'organization.usage.storage.title': 'Document storage',
@@ -1005,6 +1020,7 @@ export const translations = {
   'layout.menu.settings': 'Settings',
   'layout.menu.account': 'Account',
   'layout.menu.general-settings': 'General settings',
+  'layout.menu.auto-tagging': 'Auto tagging',
   'layout.menu.usage': 'Usage',
   'layout.menu.intake-emails': 'Intake emails',
   'layout.menu.webhooks': 'Webhooks',
