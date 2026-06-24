@@ -33,7 +33,7 @@
     "@iconify-json/tabler": "catalog:",
     "@unocss/reset": "catalog:",
     "figue": "catalog:",
-    "marked": "^15.0.6",
+    "marked": "15.0.11",
     "typescript": "catalog:",
     "unocss": "catalog:",
     "vitest": "catalog:"
