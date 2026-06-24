@@ -50,6 +50,7 @@ import {
 import { createDocumentsRepository } from './documents.repository';
 import { extractDocumentText } from './documents.services';
 import { createStorageKey } from './storage/document-storage.usecases';
+import { coerceMimeTypeStream } from '../shared/mime-types/mime-types.usecases';
 
 type DocumentStorageContext = {
   storageKey: string;
@@ -131,18 +132,24 @@ export async function createDocument({
     },
   });
 
+  const { stream: mimeStream, mimeType: inferredMimeType } = await coerceMimeTypeStream({
+    fileStream,
+    fileName,
+    declaredMimeType: mimeType,
+  });
+
   // Create a PassThrough stream that will be used for saving the file
   // This allows us to use pipeline for better error handling
   const outputStream = new PassThrough();
 
-  const streamProcessingPromise = pipeline(fileStream, hashStream, byteCountStream, outputStream);
+  const streamProcessingPromise = pipeline(mimeStream, hashStream, byteCountStream, outputStream);
 
   // We optimistically save the file to leverage streaming, if the file already exists, we will delete it
   const [encryptionMetadata] = await Promise.all([
     documentsStorageService.saveFile({
       fileStream: outputStream,
       storageKey,
-      mimeType,
+      mimeType: inferredMimeType,
       fileName,
     }),
     streamProcessingPromise,
@@ -175,7 +182,7 @@ export async function createDocument({
         newFileStorageContext: { storageKey, ...encryptionMetadata },
         fileName,
         size,
-        mimeType,
+        mimeType: inferredMimeType,
         hash,
         userId,
         organizationId,
