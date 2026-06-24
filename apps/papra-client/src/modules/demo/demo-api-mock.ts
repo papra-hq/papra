@@ -1514,6 +1514,44 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   }),
 
   ...defineHandler({
+    path: '/api/organizations/:organizationId/settings',
+    method: 'GET',
+    handler: async ({ params: { organizationId } }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      return {
+        organizationSettings: {
+          ai: {
+            autoTagging: {
+              isEnabled: false,
+              canCreateNewTags: false,
+              maxTags: 10,
+            },
+          },
+        },
+      };
+    },
+  }),
+
+  ...defineHandler({
+    path: '/api/organizations/:organizationId/settings',
+    method: 'PATCH',
+    handler: async () => {
+      throw Object.assign(new FetchError('Not available in demo'), {
+        status: 501,
+        data: {
+          error: {
+            message: 'This feature is not available in demo',
+            code: 'demo.not_available',
+          },
+        },
+      });
+    },
+  }),
+
+  ...defineHandler({
     path: '/api/organizations/:organizationId/share-links',
     method: 'GET',
     handler: async () => ({ shareLinks: [] }),
