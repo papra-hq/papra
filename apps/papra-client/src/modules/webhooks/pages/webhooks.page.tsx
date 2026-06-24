@@ -102,7 +102,7 @@ export const WebhooksPage: Component = () => {
   }));
 
   return (
-    <div class="p-6 mt-10 pb-32 mx-auto max-w-screen-md w-full">
+    <div class="p-6 pb-32 mx-auto max-w-screen-md w-full">
       <div class="flex gap-4 items-center justify-between">
         <div>
           <h1 class="text-xl font-semibold mb-2">{t('webhooks.list.title')}</h1>
