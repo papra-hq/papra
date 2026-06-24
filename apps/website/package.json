@@ -30,7 +30,7 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@astrojs/mdx": "4.3.13",
+    "@astrojs/mdx": "4.3.14",
     "@iconify-json/tabler": "catalog:",
     "@unocss/reset": "catalog:",
     "sharp": "catalog:",
