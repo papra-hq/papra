@@ -1,16 +1,7 @@
 import type { Component, ParentComponent } from 'solid-js';
-import { A, useParams } from '@solidjs/router';
 import { For, Show, Suspense } from 'solid-js';
-
-import { useCommandPalette } from '@/modules/command-palette/command-palette.provider';
-
-import { useDocumentUpload } from '@/modules/documents/components/document-import-status.component';
-import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
-import { UsageWarningCard } from '@/modules/subscriptions/components/usage-warning-card';
 import { Button } from '@/modules/ui/components/button';
-import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
-import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { DropdownMenuRadioGroup, DropdownMenuRadioItem } from '../components/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '../components/sheet';
 
@@ -41,15 +32,9 @@ export const LanguageSwitcher: Component = () => {
 
 export const SidenavLayout: ParentComponent<{
   sideNav: Component;
-  showSearch?: boolean;
+  header?: Component;
+  topSection?: Component;
 }> = (props) => {
-  const params = useParams();
-  const { openCommandPalette } = useCommandPalette();
-  const { t } = useI18n();
-  const { hasPermission } = useCurrentUser();
-
-  const { promptImport, uploadDocuments } = useDocumentUpload();
-
   return (
     <div class="flex flex-row h-screen min-h-0">
       <div class="w-280px border-r border-r-border  flex-shrink-0 hidden lg:block bg-card">
@@ -57,49 +42,21 @@ export const SidenavLayout: ParentComponent<{
       </div>
 
       <div class="flex-1 min-h-0 flex flex-col">
-        <UsageWarningCard organizationId={params.organizationId} />
+        {props.topSection && <props.topSection />}
 
-        <div class="flex justify-between px-6 pt-4">
-          <div class="flex items-center">
-            <Sheet>
-              <SheetTrigger>
-                <Button variant="ghost" size="icon" class="lg:hidden mr-2">
-                  <div class="i-tabler-menu-2 size-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" class="bg-card p-0!">
-                <props.sideNav />
-              </SheetContent>
-            </Sheet>
-
-            {(props.showSearch ?? true) && (
-              <Button
-                variant="outline"
-                class="lg:min-w-64 justify-start gap-2 px-2.5 sm:px-4"
-                onClick={openCommandPalette}
-              >
-                <div class="i-tabler-search size-4" />
-                <span class="hidden sm:inline">{t('layout.search.placeholder')}</span>
+        <div class="flex items-center px-6 pt-4">
+          <Sheet>
+            <SheetTrigger>
+              <Button variant="ghost" size="icon" class="lg:hidden mr-2">
+                <div class="i-tabler-menu-2 size-6" />
               </Button>
-            )}
-          </div>
+            </SheetTrigger>
+            <SheetContent side="left" class="bg-card p-0!">
+              <props.sideNav />
+            </SheetContent>
+          </Sheet>
 
-          <div class="flex items-center gap-2">
-            <GlobalDropArea onFilesDrop={uploadDocuments} />
-            <Button onClick={promptImport} class="px-2.5 sm:px-4">
-              <div class="i-tabler-upload size-4" />
-              <span class="hidden sm:inline ml-2">{t('layout.menu.import-document')}</span>
-            </Button>
-
-            <Show when={hasPermission('bo:access')}>
-              <Button as={A} href="/admin" variant="outline" class="px-2.5 sm:px-4 gap-2">
-                <div class="i-tabler-settings size-4" />
-                <span class="hidden sm:inline">{t('layout.menu.admin')}</span>
-              </Button>
-            </Show>
-
-            <UserSettingsDropdown />
-          </div>
+          {props.header && <props.header />}
         </div>
         <div class="flex-1 overflow-auto max-w-screen">
           <Suspense>{props.children}</Suspense>
