@@ -327,7 +327,7 @@ importers:
         version: 2.3.0(@types/react@19.1.17)(react@19.2.7)(solid-js@1.9.10)(use-sync-external-store@1.6.0(react@19.2.7))
       '@solid-primitives/storage':
         specifier: ^4.3.2
-        version: 4.3.2(solid-js@1.9.10)
+        version: 4.3.4(solid-js@1.9.10)
       '@solidjs/router':
         specifier: ^0.14.10
         version: 0.14.10(solid-js@1.9.10)
@@ -4406,8 +4406,8 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/storage@4.3.2':
-    resolution: {integrity: sha512-Vkuk/AqgUOjz6k7Mo5yDFQBQg8KMQcZfaac/bxLApaza3e5c/iNllNvxZWPM9Vf+Gf4m5SgRbvgsm6dSLJ27Jw==}
+  '@solid-primitives/storage@4.3.4':
+    resolution: {integrity: sha512-GSxPAIuyxhJWOcv7n10iv3aid5oHN3KUgyA9IV0GYWlPpgyGs43aS9E85b0VXDLoH+D4ThNK8+2WEJ8B/S6Ccg==}
     peerDependencies:
       '@tauri-apps/plugin-store': '*'
       solid-js: ^1.6.12
@@ -4425,6 +4425,11 @@ packages:
 
   '@solid-primitives/utils@6.3.2':
     resolution: {integrity: sha512-hZ/M/qr25QOCcwDPOHtGjxTD8w2mNyVAYvcfgwzBHq2RwNqHNdDNsMZYap20+ruRwW4A3Cdkczyoz0TSxLCAPQ==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/utils@6.4.0':
+    resolution: {integrity: sha512-AeGTBg8Wtkh/0s+evyLtP8piQoS4wyqqQaAFs2HJcFMMjYAtUgo+ZPduRXLjPlqKVc2ejeR544oeqpbn8Egn8A==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -14352,17 +14357,17 @@ snapshots:
   '@solid-primitives/memo@1.3.10(solid-js@1.9.10)':
     dependencies:
       '@solid-primitives/scheduled': 1.4.4(solid-js@1.9.10)
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
   '@solid-primitives/mutation-observer@1.1.17(solid-js@1.9.10)':
     dependencies:
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
   '@solid-primitives/props@3.1.11(solid-js@1.9.10)':
     dependencies:
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
   '@solid-primitives/refs@1.0.8(solid-js@1.9.10)':
@@ -14375,7 +14380,7 @@ snapshots:
       '@solid-primitives/event-listener': 2.4.3(solid-js@1.9.10)
       '@solid-primitives/rootless': 1.5.2(solid-js@1.9.10)
       '@solid-primitives/static-store': 0.1.2(solid-js@1.9.10)
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
   '@solid-primitives/rootless@1.5.2(solid-js@1.9.10)':
@@ -14394,12 +14399,12 @@ snapshots:
 
   '@solid-primitives/static-store@0.1.2(solid-js@1.9.10)':
     dependencies:
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
-  '@solid-primitives/storage@4.3.2(solid-js@1.9.10)':
+  '@solid-primitives/storage@4.3.4(solid-js@1.9.10)':
     dependencies:
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.10)
+      '@solid-primitives/utils': 6.4.0(solid-js@1.9.10)
       solid-js: 1.9.10
 
   '@solid-primitives/trigger@1.1.0(solid-js@1.9.10)':
@@ -14408,6 +14413,10 @@ snapshots:
       solid-js: 1.9.10
 
   '@solid-primitives/utils@6.3.2(solid-js@1.9.10)':
+    dependencies:
+      solid-js: 1.9.10
+
+  '@solid-primitives/utils@6.4.0(solid-js@1.9.10)':
     dependencies:
       solid-js: 1.9.10
 
