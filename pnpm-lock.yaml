@@ -559,8 +559,8 @@ importers:
         version: 1.3.1(typescript@6.0.3)
     devDependencies:
       '@crowlog/pretty':
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.0.2
+        version: 2.0.2
       '@testcontainers/azurite':
         specifier: 11.5.1
         version: 11.5.1
@@ -1839,8 +1839,8 @@ packages:
     resolution: {integrity: sha512-Gc82qvlKT2dArG7wjOij4aV1itSMAf2hoblprGDMuR6khCXUc59WDwl2EU9aDbHMLwC2Mn1276TUfkNn2u1iDQ==}
     engines: {node: '>=22.0.0'}
 
-  '@crowlog/pretty@2.0.1':
-    resolution: {integrity: sha512-n94Ag8NYVrc5QWN3gsc2KPxh6Byg8Tb1uIccwwP5YAUpJEwWfsaLVikdXR4qu9QLaxtfqYCR3iUS963wYmZnaQ==}
+  '@crowlog/pretty@2.0.2':
+    resolution: {integrity: sha512-GXz2ZP2qhtegXn2qPK8t7XdAvP6Wo+F+RWTBBbTMEFQlRuey0QNF2Xls+XpXPyNkIRpLTSCwsrn3NEE6GyywmQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -11921,7 +11921,7 @@ snapshots:
 
   '@crowlog/logger@2.2.2': {}
 
-  '@crowlog/pretty@2.0.1':
+  '@crowlog/pretty@2.0.2':
     dependencies:
       picocolors: 1.1.1
 
