@@ -1,10 +1,12 @@
 import type { Component } from 'solid-js';
 import { createSignal, onCleanup } from 'solid-js';
+import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
 
 export const GlobalDropArea: Component<{ onFilesDrop?: (args: { files: File[] }) => void }> = (
   props,
 ) => {
+  const { t } = useI18n();
   const [isDragging, setIsDragging] = createSignal(false);
 
   const handleDragOver = (e: DragEvent) => {
@@ -51,8 +53,12 @@ export const GlobalDropArea: Component<{ onFilesDrop?: (args: { files: File[] })
     >
       <div class="flex items-center justify-center h-full text-center flex-col">
         <div class="i-tabler-file-plus text-6xl text-muted-foreground mx-auto" />
-        <div class="text-xl my-2 font-semibold text-muted-foreground">Drop files here</div>
-        <div class="text-base text-muted-foreground">Drag and drop files here to import them</div>
+        <div class="text-xl my-2 font-semibold text-muted-foreground">
+          {t('documents.import.drop-area.title')}
+        </div>
+        <div class="text-base text-muted-foreground">
+          {t('documents.import.drop-area.description')}
+        </div>
       </div>
     </div>
   );

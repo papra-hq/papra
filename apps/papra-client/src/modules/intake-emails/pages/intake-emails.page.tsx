@@ -161,7 +161,7 @@ const AllowedOriginsDialog: Component<{
                 </div>
                 <Button
                   variant="outline"
-                  aria-label="Delete allowed origin"
+                  aria-label={t('intake-emails.allowed-origins.delete.label')}
                   size="icon"
                   class="text-red"
                   onClick={() => deleteAllowedOrigin({ origin })}
@@ -393,7 +393,7 @@ export const IntakeEmailsPage: Component = () => {
                           <DropdownMenuTrigger
                             as={Button}
                             variant="outline"
-                            aria-label="More actions"
+                            aria-label={t('intake-emails.actions.more')}
                             size="icon"
                           >
                             <div class="i-tabler-dots-vertical size-4" />
