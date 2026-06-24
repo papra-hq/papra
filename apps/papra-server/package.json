@@ -103,7 +103,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/picomatch": "^4.0.0",
     "@vitest/coverage-v8": "catalog:",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "magicast": "^0.3.5",
     "memfs": "^4.17.2",
     "testcontainers": "^11.5.1",
