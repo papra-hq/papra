@@ -1,6 +1,5 @@
 import * as v from 'valibot';
 import { aiModelAdapterConfigListSchema } from './adapters/ai-adapters.schemas';
-import { parseModelId } from './ai.schemas.models';
 
 export const aiModelAdaptersEnvConfigSchema = v.pipe(
   v.string(),
@@ -13,4 +12,4 @@ export const aiModelsAdapterConfigSchema = v.union([
   aiModelAdaptersEnvConfigSchema,
 ]);
 
-export const aiModelIdSchema = v.pipe(v.string(), v.transform(parseModelId));
+export const aiModelIdSchema = v.string();
