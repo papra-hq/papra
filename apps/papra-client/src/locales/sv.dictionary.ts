@@ -235,6 +235,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Ange organisationsnamn',
   'organizations.create.form.submit': 'Skapa organisation',
   'organizations.create.success': 'Organisationen har skapats',
+  'organizations.switcher.create': 'Skapa ny organisation',
 
   'organizations.create-first.title': 'Skapa din organisation',
   'organizations.create-first.description':
@@ -432,6 +433,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Sparar',
   'documents.notes.saved': 'Sparat',
   'documents.notes.save-error': 'Det gick inte att spara anteckningarna',
+
+  'documents.management.details': 'Dokumentinformation',
+  'documents.management.rename': 'Byt namn på dokument',
+  'documents.management.delete': 'Radera dokument',
+
+  'documents.import.drop-area.title': 'Släpp filer här',
+  'documents.import.drop-area.description': 'Dra och släpp filer här för att importera dem',
+
+  'documents.list.select.all': 'Markera alla rader på denna sida',
+  'documents.list.select.row': 'Markera rad',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Nummer',
@@ -891,6 +902,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Lägg till tillåten adress',
   'intake-emails.allowed-origins.add.placeholder': 'T.ex. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Lägg till',
+  'intake-emails.allowed-origins.delete.label': 'Radera tillåtet ursprung',
+  'intake-emails.actions.more': 'Fler åtgärder',
   'intake-emails.allowed-origins.add.error.exists':
     'Den här e-postadressen finns redan i listan över tillåtna ursprung för denna inmatningsadress',
 
@@ -1024,9 +1037,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Mörkt läge',
   'layout.theme.system': 'Systemläge',
 
+  'layout.theme-switcher.label': 'Temaväljare',
+  'layout.language-switcher.label': 'Språkväljare',
+
   'layout.search.placeholder': 'Snabbsök',
   'layout.menu.import-document': 'Importera ett dokument',
 
+  'user-menu.trigger.label': 'Användarmeny',
   'user-menu.account-settings': 'Kontoinställningar',
   'user-menu.api-keys': 'API-nycklar',
   'user-menu.invitations': 'Inbjudningar',
@@ -1352,6 +1369,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Skriv "{{ text }}" för att bekräfta',
   'common.tables.rows-per-page': 'Rader per sida',
   'common.tables.pagination-info': 'Sida {{ currentPage }} av {{ totalPages }}',
+  'common.tables.first-page': 'Gå till första sidan',
+  'common.tables.previous-page': 'Gå till föregående sida',
+  'common.tables.next-page': 'Gå till nästa sida',
+  'common.tables.last-page': 'Gå till sista sidan',
   'common.back-to-home': 'Tillbaka hem',
 
   // About page
@@ -1371,6 +1392,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Gå med i vårt community',
   'about.links.sponsor': 'Sponsra',
   'about.links.sponsor-description': 'Stöd Papras utveckling',
+
+  'config.server-unreachable.title': 'Servern är inte tillgänglig',
+  'config.server-unreachable.description':
+    'Servern verkar inte vara tillgänglig. Om du är självhostad, kontrollera att servern körs och är korrekt konfigurerad. Du kan kontrollera konsolen för mer information.',
+  'config.server-unreachable.retry': 'Försök igen',
+  'config.server-unreachable.retry-error.title': 'Servern är fortfarande inte tillgänglig',
+  'config.server-unreachable.retry-error.description':
+    'Servern är fortfarande inte tillgänglig, försök igen senare.',
+
+  'coming-soon.title': 'Kommer snart',
+  'coming-soon.description': 'Den här funktionen kommer snart, kom tillbaka senare.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

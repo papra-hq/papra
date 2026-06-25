@@ -232,6 +232,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Введите название организации',
   'organizations.create.form.submit': 'Создать организацию',
   'organizations.create.success': 'Организация успешно создана',
+  'organizations.switcher.create': 'Создать новую организацию',
 
   'organizations.create-first.title': 'Создать организацию',
   'organizations.create-first.description':
@@ -430,6 +431,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Сохранение',
   'documents.notes.saved': 'Сохранено',
   'documents.notes.save-error': 'Не удалось сохранить заметки',
+
+  'documents.management.details': 'Сведения о документе',
+  'documents.management.rename': 'Переименовать документ',
+  'documents.management.delete': 'Удалить документ',
+
+  'documents.import.drop-area.title': 'Перетащите файлы сюда',
+  'documents.import.drop-area.description': 'Перетащите файлы сюда, чтобы импортировать их',
+
+  'documents.list.select.all': 'Выбрать все строки на этой странице',
+  'documents.list.select.row': 'Выбрать строку',
 
   'custom-properties.types.text': 'Текст',
   'custom-properties.types.number': 'Число',
@@ -900,6 +911,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Добавить разрешенный email отправителя',
   'intake-emails.allowed-origins.add.placeholder': 'Например: ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Добавить',
+  'intake-emails.allowed-origins.delete.label': 'Удалить разрешённого отправителя',
+  'intake-emails.actions.more': 'Дополнительные действия',
   'intake-emails.allowed-origins.add.error.exists':
     'Этот email уже есть в разрешённых отправителях для этого email для импорта',
 
@@ -1036,9 +1049,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Тёмная',
   'layout.theme.system': 'Системная',
 
+  'layout.theme-switcher.label': 'Переключатель темы',
+  'layout.language-switcher.label': 'Переключатель языка',
+
   'layout.search.placeholder': 'Быстрый поиск',
   'layout.menu.import-document': 'Импортировать документ',
 
+  'user-menu.trigger.label': 'Меню пользователя',
   'user-menu.account-settings': 'Настройки аккаунта',
   'user-menu.api-keys': 'API ключи',
   'user-menu.invitations': 'Приглашения',
@@ -1375,6 +1392,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Введите "{{ text }}", чтобы подтвердить',
   'common.tables.rows-per-page': 'Строк на странице',
   'common.tables.pagination-info': 'Страница {{ currentPage }} из {{ totalPages }}',
+  'common.tables.first-page': 'Перейти на первую страницу',
+  'common.tables.previous-page': 'Перейти на предыдущую страницу',
+  'common.tables.next-page': 'Перейти на следующую страницу',
+  'common.tables.last-page': 'Перейти на последнюю страницу',
   'common.back-to-home': 'Назад на главную',
 
   // About page
@@ -1394,6 +1415,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Присоединяйтесь к нашему сообществу',
   'about.links.sponsor': 'Спонсировать',
   'about.links.sponsor-description': 'Поддержите разработку Papra',
+
+  'config.server-unreachable.title': 'Сервер недоступен',
+  'config.server-unreachable.description':
+    'Сервер недоступен. Если вы размещаете его самостоятельно, убедитесь, что сервер запущен и правильно настроен. Дополнительную информацию можно найти в консоли.',
+  'config.server-unreachable.retry': 'Повторить попытку',
+  'config.server-unreachable.retry-error.title': 'Сервер всё ещё недоступен',
+  'config.server-unreachable.retry-error.description':
+    'Сервер по-прежнему недоступен, повторите попытку позже.',
+
+  'coming-soon.title': 'Скоро',
+  'coming-soon.description': 'Эта функция скоро появится, загляните позже.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

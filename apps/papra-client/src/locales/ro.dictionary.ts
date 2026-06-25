@@ -236,6 +236,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Introdu numele organizației',
   'organizations.create.form.submit': 'Creează organizația',
   'organizations.create.success': 'Organizația a fost creată cu succes',
+  'organizations.switcher.create': 'Creează o organizație nouă',
 
   'organizations.create-first.title': 'Creează organizația',
   'organizations.create-first.description':
@@ -435,6 +436,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Se salvează',
   'documents.notes.saved': 'Salvat',
   'documents.notes.save-error': 'Salvarea notițelor a eșuat',
+
+  'documents.management.details': 'Detalii document',
+  'documents.management.rename': 'Redenumește documentul',
+  'documents.management.delete': 'Șterge documentul',
+
+  'documents.import.drop-area.title': 'Plasează fișierele aici',
+  'documents.import.drop-area.description': 'Trage și plasează fișierele aici pentru a le importa',
+
+  'documents.list.select.all': 'Selectează toate rândurile de pe această pagină',
+  'documents.list.select.row': 'Selectează rândul',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Număr',
@@ -908,6 +919,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Adaugă adresa de e-mail de origine permisă',
   'intake-emails.allowed-origins.add.placeholder': 'Ex. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Adaugă',
+  'intake-emails.allowed-origins.delete.label': 'Șterge originea permisă',
+  'intake-emails.actions.more': 'Mai multe acțiuni',
   'intake-emails.allowed-origins.add.error.exists':
     'Acest e-mail este deja în originile permise pentru acest e-mail de primire',
 
@@ -1047,9 +1060,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Mod intunecat',
   'layout.theme.system': 'Modul sistemului',
 
+  'layout.theme-switcher.label': 'Selector de temă',
+  'layout.language-switcher.label': 'Selector de limbă',
+
   'layout.search.placeholder': 'Căutare rapidă',
   'layout.menu.import-document': 'Importă un document',
 
+  'user-menu.trigger.label': 'Meniu utilizator',
   'user-menu.account-settings': 'Setări cont',
   'user-menu.api-keys': 'Chei API',
   'user-menu.invitations': 'Invitații',
@@ -1386,6 +1403,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Tastează "{{ text }}" pentru confirmare',
   'common.tables.rows-per-page': 'Rânduri pe pagină',
   'common.tables.pagination-info': 'Pagina {{ currentPage }} din {{ totalPages }}',
+  'common.tables.first-page': 'Mergi la prima pagină',
+  'common.tables.previous-page': 'Mergi la pagina anterioară',
+  'common.tables.next-page': 'Mergi la pagina următoare',
+  'common.tables.last-page': 'Mergi la ultima pagină',
   'common.back-to-home': 'Înapoi la pagina principală',
 
   // About page
@@ -1405,6 +1426,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Alăturați-vă comunității noastre',
   'about.links.sponsor': 'Sponsorizează',
   'about.links.sponsor-description': 'Susține dezvoltarea Papra',
+
+  'config.server-unreachable.title': 'Server inaccesibil',
+  'config.server-unreachable.description':
+    'Serverul pare să fie inaccesibil. Dacă îl găzduiești singur, asigură-te că serverul rulează și este configurat corect. Poți verifica consola pentru mai multe informații.',
+  'config.server-unreachable.retry': 'Reîncearcă',
+  'config.server-unreachable.retry-error.title': 'Serverul este în continuare inaccesibil',
+  'config.server-unreachable.retry-error.description':
+    'Serverul rămâne inaccesibil, încearcă din nou mai târziu.',
+
+  'coming-soon.title': 'În curând',
+  'coming-soon.description': 'Această funcție va fi disponibilă în curând, revino mai târziu.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

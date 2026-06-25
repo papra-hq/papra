@@ -240,6 +240,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': "Veuillez entrer un nom pour l'organisation",
   'organizations.create.form.submit': "Créer l'organisation",
   'organizations.create.success': 'Organisation créée avec succès',
+  'organizations.switcher.create': 'Créer une nouvelle organisation',
 
   'organizations.create-first.title': 'Créer votre organisation',
   'organizations.create-first.description':
@@ -439,6 +440,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Enregistrement',
   'documents.notes.saved': 'Enregistré',
   'documents.notes.save-error': "Échec de l'enregistrement des notes",
+
+  'documents.management.details': 'Détails du document',
+  'documents.management.rename': 'Renommer le document',
+  'documents.management.delete': 'Supprimer le document',
+
+  'documents.import.drop-area.title': 'Déposez les fichiers ici',
+  'documents.import.drop-area.description': 'Glissez-déposez des fichiers ici pour les importer',
+
+  'documents.list.select.all': 'Sélectionner toutes les lignes de cette page',
+  'documents.list.select.row': 'Sélectionner la ligne',
 
   'custom-properties.types.text': 'Texte',
   'custom-properties.types.number': 'Nombre',
@@ -906,6 +917,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': "Ajouter une adresse d'origine autorisée",
   'intake-emails.allowed-origins.add.placeholder': 'Exemple: ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Ajouter',
+  'intake-emails.allowed-origins.delete.label': "Supprimer l'adresse d'origine autorisée",
+  'intake-emails.actions.more': "Plus d'actions",
   'intake-emails.allowed-origins.add.error.exists':
     "Cette adresse email est déjà dans les adresses d'origine autorisées pour cette adresse de réception",
 
@@ -1044,9 +1057,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Mode sombre',
   'layout.theme.system': 'Mode système',
 
+  'layout.theme-switcher.label': 'Sélecteur de thème',
+  'layout.language-switcher.label': 'Sélecteur de langue',
+
   'layout.search.placeholder': 'Recherche rapide',
   'layout.menu.import-document': 'Importer un document',
 
+  'user-menu.trigger.label': 'Menu utilisateur',
   'user-menu.account-settings': 'Paramètres du compte',
   'user-menu.api-keys': "Clés d'API",
   'user-menu.invitations': 'Invitations',
@@ -1384,6 +1401,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Saisissez "{{ text }}" pour confirmer',
   'common.tables.rows-per-page': 'Lignes par page',
   'common.tables.pagination-info': 'Page {{ currentPage }} sur {{ totalPages }}',
+  'common.tables.first-page': 'Aller à la première page',
+  'common.tables.previous-page': 'Aller à la page précédente',
+  'common.tables.next-page': 'Aller à la page suivante',
+  'common.tables.last-page': 'Aller à la dernière page',
   'common.back-to-home': "Retour à l'accueil",
 
   // About page
@@ -1403,6 +1424,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Rejoignez notre communauté',
   'about.links.sponsor': 'Soutenir',
   'about.links.sponsor-description': 'Soutenez le développement de Papra',
+
+  'config.server-unreachable.title': 'Serveur injoignable',
+  'config.server-unreachable.description':
+    "Le serveur semble injoignable. Si vous l'hébergez vous-même, assurez-vous qu'il est en cours d'exécution et correctement configuré. Vous pouvez consulter la console pour plus d'informations.",
+  'config.server-unreachable.retry': 'Réessayer',
+  'config.server-unreachable.retry-error.title': 'Serveur toujours injoignable',
+  'config.server-unreachable.retry-error.description':
+    'Le serveur reste injoignable, réessayez plus tard.',
+
+  'coming-soon.title': 'Bientôt disponible',
+  'coming-soon.description': 'Cette fonctionnalité sera bientôt disponible, revenez plus tard.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

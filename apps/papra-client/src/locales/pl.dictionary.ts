@@ -234,6 +234,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Wprowadź nazwę organizacji',
   'organizations.create.form.submit': 'Utwórz organizację',
   'organizations.create.success': 'Organizacja została pomyślnie utworzona',
+  'organizations.switcher.create': 'Utwórz nową organizację',
 
   'organizations.create-first.title': 'Utwórz swoją organizację',
   'organizations.create-first.description':
@@ -430,6 +431,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Zapisywanie',
   'documents.notes.saved': 'Zapisano',
   'documents.notes.save-error': 'Nie udało się zapisać notatek',
+
+  'documents.management.details': 'Szczegóły dokumentu',
+  'documents.management.rename': 'Zmień nazwę dokumentu',
+  'documents.management.delete': 'Usuń dokument',
+
+  'documents.import.drop-area.title': 'Upuść pliki tutaj',
+  'documents.import.drop-area.description': 'Przeciągnij i upuść pliki tutaj, aby je zaimportować',
+
+  'documents.list.select.all': 'Zaznacz wszystkie wiersze na tej stronie',
+  'documents.list.select.row': 'Zaznacz wiersz',
 
   'custom-properties.types.text': 'Tekst',
   'custom-properties.types.number': 'Liczba',
@@ -892,6 +903,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Dodaj dozwolony adres e-mail',
   'intake-emails.allowed-origins.add.placeholder': 'Przykład: ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Dodaj',
+  'intake-emails.allowed-origins.delete.label': 'Usuń dozwolone źródło',
+  'intake-emails.actions.more': 'Więcej akcji',
   'intake-emails.allowed-origins.add.error.exists':
     'Ten adres e-mail jest już w dozwolonych źródłach dla tego adresu e-mail do przyjęć.',
 
@@ -1027,9 +1040,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Tryb ciemny',
   'layout.theme.system': 'Tryb systemowy',
 
+  'layout.theme-switcher.label': 'Przełącznik motywu',
+  'layout.language-switcher.label': 'Przełącznik języka',
+
   'layout.search.placeholder': 'Szybkie wyszukiwanie',
   'layout.menu.import-document': 'Importuj dokument',
 
+  'user-menu.trigger.label': 'Menu użytkownika',
   'user-menu.account-settings': 'Ustawienia konta',
   'user-menu.api-keys': 'Klucze API',
   'user-menu.invitations': 'Zaproszenia',
@@ -1362,6 +1379,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Wpisz "{{ text }}", aby potwierdzić',
   'common.tables.rows-per-page': 'Wierszy na stronę',
   'common.tables.pagination-info': 'Strona {{ currentPage }} z {{ totalPages }}',
+  'common.tables.first-page': 'Przejdź do pierwszej strony',
+  'common.tables.previous-page': 'Przejdź do poprzedniej strony',
+  'common.tables.next-page': 'Przejdź do następnej strony',
+  'common.tables.last-page': 'Przejdź do ostatniej strony',
   'common.back-to-home': 'Wróć do strony głównej',
 
   // About page
@@ -1381,6 +1402,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Dołącz do naszej społeczności',
   'about.links.sponsor': 'Wesprzyj',
   'about.links.sponsor-description': 'Wesprzyj rozwój Papra',
+
+  'config.server-unreachable.title': 'Serwer niedostępny',
+  'config.server-unreachable.description':
+    'Serwer wydaje się niedostępny. Jeśli hostujesz go samodzielnie, upewnij się, że serwer jest uruchomiony i prawidłowo skonfigurowany. Więcej informacji znajdziesz w konsoli.',
+  'config.server-unreachable.retry': 'Spróbuj ponownie',
+  'config.server-unreachable.retry-error.title': 'Serwer nadal niedostępny',
+  'config.server-unreachable.retry-error.description':
+    'Serwer nadal jest niedostępny, spróbuj ponownie później.',
+
+  'coming-soon.title': 'Wkrótce',
+  'coming-soon.description': 'Ta funkcja będzie dostępna wkrótce, sprawdź ponownie później.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',
