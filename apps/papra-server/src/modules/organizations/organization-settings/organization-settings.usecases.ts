@@ -1,4 +1,4 @@
-import { parseOptionalModelId } from '../../ai/ai.schemas.models';
+import { parseModelId, parseOptionalModelId } from '../../ai/ai.schemas.models';
 import type { Config } from '../../config/config.types';
 import type { OrganizationSettingsRepository } from './organization-settings.repository';
 import type { OrganizationSettings } from './organization-settings.types';
@@ -57,8 +57,8 @@ export async function resolveOrganizationSettings({
 
           model:
             parseOptionalModelId(organizationRawSettings?.aiAutoTaggingModelId) ??
-            config.autoTagging.model ??
-            config.ai.defaultModel,
+            parseOptionalModelId(config.autoTagging.modelId) ??
+            parseModelId(config.ai.defaultModelId),
         },
       },
     },

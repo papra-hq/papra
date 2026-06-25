@@ -1,12 +1,23 @@
 import { isNilOrEmptyString } from '../shared/utils';
+import { ADAPTER_MODEL_SEPARATOR } from './ai.constants';
 
-export function parseModelId(modelId: string) {
-  const [adapterId, ...modelNameParts] = modelId.split(':');
-  const modelName = modelNameParts.join(':');
-
-  if (isNilOrEmptyString(adapterId) || isNilOrEmptyString(modelName)) {
+export function parseModelId(modelId: string): { adapterId?: string; modelName: string } {
+  if (isNilOrEmptyString(modelId)) {
     throw new Error(
-      `Invalid model identifier: ${modelId}. Expected format is "adapterId:modelName"`,
+      `Invalid model identifier: "${modelId}". Expected format is "adapterId${ADAPTER_MODEL_SEPARATOR}modelName"`,
+    );
+  }
+
+  if (!modelId.includes(ADAPTER_MODEL_SEPARATOR)) {
+    return { adapterId: undefined, modelName: modelId };
+  }
+
+  const [adapterId, ...modelNameParts] = modelId.split(ADAPTER_MODEL_SEPARATOR);
+  const modelName = modelNameParts.join(ADAPTER_MODEL_SEPARATOR);
+
+  if (isNilOrEmptyString(modelName)) {
+    throw new Error(
+      `Invalid model identifier: "${modelId}". Expected format is "adapterId${ADAPTER_MODEL_SEPARATOR}modelName"`,
     );
   }
 
