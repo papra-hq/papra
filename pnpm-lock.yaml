@@ -260,7 +260,7 @@ importers:
         version: 2.28.0(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       react-native-pdf:
         specifier: ^7.0.3
-        version: 7.0.3(react-native-blob-util@0.23.2(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7))(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
+        version: 7.0.4(react-native-blob-util@0.23.2(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7))(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
       react-native-reanimated:
         specifier: ~4.1.1
         version: 4.1.5(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7))(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7)
@@ -8710,8 +8710,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-pdf@7.0.3:
-    resolution: {integrity: sha512-zDtF6CGXPAfGptQZqX7LQK3CVQrIGsD+rYuBnMK0sVmd8mrq7ciwmWXINT+d92emMtZ7+PLnx1IQZIdsh0fphA==}
+  react-native-pdf@7.0.4:
+    resolution: {integrity: sha512-Uhxn5SSguMKvbwD50iIZfYPmYeKcX+9I3tc4J3HCbRExAN0uqXTAKx2pvbR2Y62umAj0JS274FcbSldQfoQfyg==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -19931,7 +19931,7 @@ snapshots:
       react: 19.2.7
       react-native: 0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7)
 
-  react-native-pdf@7.0.3(react-native-blob-util@0.23.2(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7))(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7):
+  react-native-pdf@7.0.4(react-native-blob-util@0.23.2(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7))(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.2.17)(react@19.2.7))(react@19.2.7):
     dependencies:
       crypto-js: 4.2.0
       deprecated-react-native-prop-types: 2.3.0
