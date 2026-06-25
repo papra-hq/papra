@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ site }) => {
 
 ## Blog Posts
 
-${posts.map((post) => `- [${post.data.title}](${getBlogPostUrl(post.slug)}): ${post.data.description}`).join('\n')}
+${posts.map((post) => `- [${post.data.title}](${getBlogPostUrl(post.id)}): ${post.data.description}`).join('\n')}
 
 ## Assets
 
