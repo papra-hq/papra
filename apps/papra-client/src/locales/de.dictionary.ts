@@ -241,6 +241,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Bitte geben Sie einen Organisationsnamen ein',
   'organizations.create.form.submit': 'Organisation erstellen',
   'organizations.create.success': 'Organisation erfolgreich erstellt',
+  'organizations.switcher.create': 'Neue Organisation erstellen',
 
   'organizations.create-first.title': 'Erstellen Sie Ihre Organisation',
   'organizations.create-first.description':
@@ -444,6 +445,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Wird gespeichert',
   'documents.notes.saved': 'Gespeichert',
   'documents.notes.save-error': 'Notizen konnten nicht gespeichert werden',
+
+  'documents.management.details': 'Dokumentdetails',
+  'documents.management.rename': 'Dokument umbenennen',
+  'documents.management.delete': 'Dokument löschen',
+
+  'documents.import.drop-area.title': 'Dateien hier ablegen',
+  'documents.import.drop-area.description': 'Dateien zum Importieren hierher ziehen und ablegen',
+
+  'documents.list.select.all': 'Alle Zeilen auf dieser Seite auswählen',
+  'documents.list.select.row': 'Zeile auswählen',
 
   'custom-properties.types.text': 'Text',
   'custom-properties.types.number': 'Zahl',
@@ -918,6 +929,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Zulässige Ursprungs-E-Mail hinzufügen',
   'intake-emails.allowed-origins.add.placeholder': 'Z.B. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Hinzufügen',
+  'intake-emails.allowed-origins.delete.label': 'Zulässigen Ursprung löschen',
+  'intake-emails.actions.more': 'Weitere Aktionen',
   'intake-emails.allowed-origins.add.error.exists':
     'Diese E-Mail ist bereits in den zulässigen Ursprüngen für diese Eingangse-Mail vorhanden',
 
@@ -1058,9 +1071,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Dunkler Modus',
   'layout.theme.system': 'Systemmodus',
 
+  'layout.theme-switcher.label': 'Design wechseln',
+  'layout.language-switcher.label': 'Sprache wechseln',
+
   'layout.search.placeholder': 'Schnellsuche',
   'layout.menu.import-document': 'Dokument importieren',
 
+  'user-menu.trigger.label': 'Benutzermenü',
   'user-menu.account-settings': 'Kontoeinstellungen',
   'user-menu.api-keys': 'API-Schlüssel',
   'user-menu.invitations': 'Einladungen',
@@ -1398,6 +1415,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Geben Sie "{{ text }}" ein zur Bestätigung',
   'common.tables.rows-per-page': 'Zeilen pro Seite',
   'common.tables.pagination-info': 'Seite {{ currentPage }} von {{ totalPages }}',
+  'common.tables.first-page': 'Zur ersten Seite',
+  'common.tables.previous-page': 'Zur vorherigen Seite',
+  'common.tables.next-page': 'Zur nächsten Seite',
+  'common.tables.last-page': 'Zur letzten Seite',
   'common.back-to-home': 'Zurück zur Startseite',
 
   // About page
@@ -1417,6 +1438,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Treten Sie unserer Community bei',
   'about.links.sponsor': 'Unterstützen',
   'about.links.sponsor-description': 'Unterstützen Sie die Entwicklung von Papra',
+
+  'config.server-unreachable.title': 'Server nicht erreichbar',
+  'config.server-unreachable.description':
+    'Der Server scheint nicht erreichbar zu sein. Wenn Sie selbst hosten, stellen Sie sicher, dass der Server läuft und korrekt konfiguriert ist. Weitere Informationen finden Sie möglicherweise in der Konsole.',
+  'config.server-unreachable.retry': 'Erneut versuchen',
+  'config.server-unreachable.retry-error.title': 'Server weiterhin nicht erreichbar',
+  'config.server-unreachable.retry-error.description':
+    'Der Server ist weiterhin nicht erreichbar, versuchen Sie es später erneut.',
+
+  'coming-soon.title': 'Demnächst verfügbar',
+  'coming-soon.description': 'Diese Funktion ist bald verfügbar, schauen Sie später wieder vorbei.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

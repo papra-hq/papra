@@ -239,6 +239,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Παρακαλώ εισαγάγετε όνομα οργανισμού',
   'organizations.create.form.submit': 'Δημιουργία οργανισμού',
   'organizations.create.success': 'Ο οργανισμός δημιουργήθηκε με επιτυχία',
+  'organizations.switcher.create': 'Δημιουργία νέου οργανισμού',
 
   'organizations.create-first.title': 'Δημιουργήστε τον οργανισμό σας',
   'organizations.create-first.description':
@@ -433,6 +434,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Αποθήκευση',
   'documents.notes.saved': 'Αποθηκεύτηκε',
   'documents.notes.save-error': 'Αποτυχία αποθήκευσης σημειώσεων',
+
+  'documents.management.details': 'Λεπτομέρειες εγγράφου',
+  'documents.management.rename': 'Μετονομασία εγγράφου',
+  'documents.management.delete': 'Διαγραφή εγγράφου',
+
+  'documents.import.drop-area.title': 'Αποθέστε τα αρχεία εδώ',
+  'documents.import.drop-area.description': 'Σύρετε και αποθέστε αρχεία εδώ για να τα εισαγάγετε',
+
+  'documents.list.select.all': 'Επιλογή όλων των γραμμών σε αυτή τη σελίδα',
+  'documents.list.select.row': 'Επιλογή γραμμής',
 
   'custom-properties.types.text': 'Κείμενο',
   'custom-properties.types.number': 'Αριθμός',
@@ -907,6 +918,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Προσθήκη επιτρεπόμενης διεύθυνσης',
   'intake-emails.allowed-origins.add.placeholder': 'Π.χ. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Προσθήκη',
+  'intake-emails.allowed-origins.delete.label': 'Διαγραφή επιτρεπόμενης διεύθυνσης',
+  'intake-emails.actions.more': 'Περισσότερες ενέργειες',
   'intake-emails.allowed-origins.add.error.exists': 'Αυτή η διεύθυνση υπάρχει ήδη',
 
   // API keys
@@ -1041,9 +1054,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Σκούρο θέμα',
   'layout.theme.system': 'Θέμα συστήματος',
 
+  'layout.theme-switcher.label': 'Επιλογέας θέματος',
+  'layout.language-switcher.label': 'Επιλογέας γλώσσας',
+
   'layout.search.placeholder': 'Γρήγορη αναζήτηση',
   'layout.menu.import-document': 'Εισαγωγή εγγράφου',
 
+  'user-menu.trigger.label': 'Μενού χρήστη',
   'user-menu.account-settings': 'Ρυθμίσεις λογαριασμού',
   'user-menu.api-keys': 'API keys',
   'user-menu.invitations': 'Προσκλήσεις',
@@ -1373,6 +1390,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Πληκτρολογήστε "{{ text }}" για επιβεβαίωση',
   'common.tables.rows-per-page': 'Γραμμές ανά σελίδα',
   'common.tables.pagination-info': 'Σελίδα {{ currentPage }} από {{ totalPages }}',
+  'common.tables.first-page': 'Μετάβαση στην πρώτη σελίδα',
+  'common.tables.previous-page': 'Μετάβαση στην προηγούμενη σελίδα',
+  'common.tables.next-page': 'Μετάβαση στην επόμενη σελίδα',
+  'common.tables.last-page': 'Μετάβαση στην τελευταία σελίδα',
   'common.back-to-home': 'Επιστροφή στην αρχική',
 
   // About page
@@ -1392,6 +1413,18 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Μπείτε στην κοινότητα',
   'about.links.sponsor': 'Υποστήριξη',
   'about.links.sponsor-description': 'Στηρίξτε την ανάπτυξη του Papra',
+
+  'config.server-unreachable.title': 'Ο διακομιστής δεν είναι προσβάσιμος',
+  'config.server-unreachable.description':
+    'Ο διακομιστής φαίνεται να μην είναι προσβάσιμος. Εάν κάνετε self-hosting, βεβαιωθείτε ότι ο διακομιστής εκτελείται και έχει ρυθμιστεί σωστά. Μπορείτε να ελέγξετε την κονσόλα για περισσότερες πληροφορίες.',
+  'config.server-unreachable.retry': 'Επανάληψη',
+  'config.server-unreachable.retry-error.title':
+    'Ο διακομιστής εξακολουθεί να μην είναι προσβάσιμος',
+  'config.server-unreachable.retry-error.description':
+    'Ο διακομιστής εξακολουθεί να μην είναι προσβάσιμος, δοκιμάστε ξανά αργότερα.',
+
+  'coming-soon.title': 'Σύντομα κοντά σας',
+  'coming-soon.description': 'Αυτή η λειτουργία θα είναι σύντομα διαθέσιμη, ελέγξτε ξανά αργότερα.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

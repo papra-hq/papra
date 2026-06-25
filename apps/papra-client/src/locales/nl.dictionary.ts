@@ -237,6 +237,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': 'Voer een organisatienaam in',
   'organizations.create.form.submit': 'Organisatie aanmaken',
   'organizations.create.success': 'Organisatie succesvol aangemaakt',
+  'organizations.switcher.create': 'Nieuwe organisatie maken',
 
   'organizations.create-first.title': 'Maak uw organisatie',
   'organizations.create-first.description':
@@ -437,6 +438,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Bezig met opslaan',
   'documents.notes.saved': 'Opgeslagen',
   'documents.notes.save-error': 'Opslaan van notities mislukt',
+
+  'documents.management.details': 'Documentdetails',
+  'documents.management.rename': 'Document hernoemen',
+  'documents.management.delete': 'Document verwijderen',
+
+  'documents.import.drop-area.title': 'Zet bestanden hier neer',
+  'documents.import.drop-area.description': 'Sleep bestanden hierheen om ze te importeren',
+
+  'documents.list.select.all': 'Alle rijen op deze pagina selecteren',
+  'documents.list.select.row': 'Rij selecteren',
 
   'custom-properties.types.text': 'Tekst',
   'custom-properties.types.number': 'Getal',
@@ -902,6 +913,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Toegestaan origineel e-mailadres toevoegen',
   'intake-emails.allowed-origins.add.placeholder': 'Bijv. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Toevoegen',
+  'intake-emails.allowed-origins.delete.label': 'Toegestane bron verwijderen',
+  'intake-emails.actions.more': 'Meer acties',
   'intake-emails.allowed-origins.add.error.exists':
     'Dit e-mailadres staat al in de toegestane bronnen voor deze intake-e-mail',
 
@@ -1038,9 +1051,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Donker thema',
   'layout.theme.system': 'Systeemstandaard',
 
+  'layout.theme-switcher.label': 'Themakiezer',
+  'layout.language-switcher.label': 'Taalkiezer',
+
   'layout.search.placeholder': 'Snel zoeken',
   'layout.menu.import-document': 'Een document importeren',
 
+  'user-menu.trigger.label': 'Gebruikersmenu',
   'user-menu.account-settings': 'Accountinstellingen',
   'user-menu.api-keys': 'API-sleutels',
   'user-menu.invitations': 'Uitnodigingen',
@@ -1370,6 +1387,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Typ "{{ text }}" om te bevestigen',
   'common.tables.rows-per-page': 'Rijen per pagina',
   'common.tables.pagination-info': 'Pagina {{ currentPage }} van {{ totalPages }}',
+  'common.tables.first-page': 'Ga naar de eerste pagina',
+  'common.tables.previous-page': 'Ga naar de vorige pagina',
+  'common.tables.next-page': 'Ga naar de volgende pagina',
+  'common.tables.last-page': 'Ga naar de laatste pagina',
   'common.back-to-home': 'Ga terug naar start',
 
   // About page
@@ -1389,6 +1410,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Word lid van onze community',
   'about.links.sponsor': 'Sponsor',
   'about.links.sponsor-description': 'Ondersteun de ontwikkeling van Papra',
+
+  'config.server-unreachable.title': 'Server onbereikbaar',
+  'config.server-unreachable.description':
+    'De server lijkt onbereikbaar te zijn. Als je zelf host, zorg er dan voor dat de server draait en correct is geconfigureerd. Je kunt de console raadplegen voor meer informatie.',
+  'config.server-unreachable.retry': 'Opnieuw proberen',
+  'config.server-unreachable.retry-error.title': 'Server nog steeds onbereikbaar',
+  'config.server-unreachable.retry-error.description':
+    'De server is nog steeds onbereikbaar, probeer het later opnieuw.',
+
+  'coming-soon.title': 'Binnenkort beschikbaar',
+  'coming-soon.description': 'Deze functie is binnenkort beschikbaar, kom later terug.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

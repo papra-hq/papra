@@ -220,6 +220,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': '请输入组织名称',
   'organizations.create.form.submit': '创建组织',
   'organizations.create.success': '组织创建成功',
+  'organizations.switcher.create': '创建新组织',
 
   'organizations.create-first.title': '创建您的组织',
   'organizations.create-first.description':
@@ -396,6 +397,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': '正在保存',
   'documents.notes.saved': '已保存',
   'documents.notes.save-error': '保存备注失败',
+
+  'documents.management.details': '文档详情',
+  'documents.management.rename': '重命名文档',
+  'documents.management.delete': '删除文档',
+
+  'documents.import.drop-area.title': '将文件拖放到此处',
+  'documents.import.drop-area.description': '将文件拖放到此处以导入',
+
+  'documents.list.select.all': '选择此页上的所有行',
+  'documents.list.select.row': '选择行',
 
   'custom-properties.types.text': '文本',
   'custom-properties.types.number': '数字',
@@ -835,6 +846,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': '添加允许的来源邮箱',
   'intake-emails.allowed-origins.add.placeholder': '例如：ada@papra.app',
   'intake-emails.allowed-origins.add.button': '添加',
+  'intake-emails.allowed-origins.delete.label': '删除允许的来源',
+  'intake-emails.actions.more': '更多操作',
   'intake-emails.allowed-origins.add.error.exists': '该邮箱已在此接收邮箱的允许来源列表中',
 
   // API keys
@@ -963,9 +976,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': '深色模式',
   'layout.theme.system': '跟随系统',
 
+  'layout.theme-switcher.label': '主题切换器',
+  'layout.language-switcher.label': '语言切换器',
+
   'layout.search.placeholder': '快速搜索',
   'layout.menu.import-document': '导入文档',
 
+  'user-menu.trigger.label': '用户菜单',
   'user-menu.account-settings': '账户设置',
   'user-menu.api-keys': 'API 密钥',
   'user-menu.invitations': '邀请',
@@ -1278,6 +1295,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': '输入 "{{ text }}" 以确认',
   'common.tables.rows-per-page': '每页行数',
   'common.tables.pagination-info': '第 {{ currentPage }} 页，共 {{ totalPages }} 页',
+  'common.tables.first-page': '转到第一页',
+  'common.tables.previous-page': '转到上一页',
+  'common.tables.next-page': '转到下一页',
+  'common.tables.last-page': '转到最后一页',
   'common.back-to-home': '返回首页',
 
   // About page
@@ -1296,6 +1317,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': '加入我们的社区',
   'about.links.sponsor': '赞助',
   'about.links.sponsor-description': '支持 Papra 开发',
+
+  'config.server-unreachable.title': '服务器无法访问',
+  'config.server-unreachable.description':
+    '服务器似乎无法访问。如果您是自托管，请确保服务器正在运行并已正确配置。您可以查看控制台以获取更多信息。',
+  'config.server-unreachable.retry': '重试',
+  'config.server-unreachable.retry-error.title': '服务器仍然无法访问',
+  'config.server-unreachable.retry-error.description': '服务器仍然无法访问，请稍后再试。',
+
+  'coming-soon.title': '即将推出',
+  'coming-soon.description': '此功能即将推出，请稍后再来查看。',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',
