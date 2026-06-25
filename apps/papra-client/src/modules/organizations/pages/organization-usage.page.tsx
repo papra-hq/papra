@@ -50,7 +50,7 @@ export const OrganizationUsagePage: Component = () => {
   }));
 
   return (
-    <div class="p-6 mt-10 pb-32 mx-auto max-w-screen-md w-full">
+    <div class="p-6 pb-32 mx-auto max-w-screen-md w-full">
       <Suspense>
         <Show when={query.data}>
           {(getData) => (

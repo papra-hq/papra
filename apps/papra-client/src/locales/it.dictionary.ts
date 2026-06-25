@@ -238,6 +238,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'organizations.create.form.name.required': "Inserisci il nome dell'organizzazione",
   'organizations.create.form.submit': 'Crea organizzazione',
   'organizations.create.success': 'Organizzazione creata con successo',
+  'organizations.switcher.create': 'Crea nuova organizzazione',
 
   'organizations.create-first.title': 'Crea la tua organizzazione',
   'organizations.create-first.description':
@@ -438,6 +439,16 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.notes.saving': 'Salvataggio',
   'documents.notes.saved': 'Salvato',
   'documents.notes.save-error': 'Impossibile salvare le note',
+
+  'documents.management.details': 'Dettagli del documento',
+  'documents.management.rename': 'Rinomina documento',
+  'documents.management.delete': 'Elimina documento',
+
+  'documents.import.drop-area.title': 'Rilascia i file qui',
+  'documents.import.drop-area.description': 'Trascina e rilascia i file qui per importarli',
+
+  'documents.list.select.all': 'Seleziona tutte le righe di questa pagina',
+  'documents.list.select.row': 'Seleziona riga',
 
   'custom-properties.types.text': 'Testo',
   'custom-properties.types.number': 'Numero',
@@ -905,6 +916,8 @@ export const translations: Partial<TranslationsDictionary> = {
   'intake-emails.allowed-origins.add.label': 'Aggiungi email origine consentita',
   'intake-emails.allowed-origins.add.placeholder': 'Es. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Aggiungi',
+  'intake-emails.allowed-origins.delete.label': 'Elimina origine consentita',
+  'intake-emails.actions.more': 'Altre azioni',
   'intake-emails.allowed-origins.add.error.exists':
     'Questa email è già tra le origini consentite per questa email di acquisizione',
 
@@ -1042,9 +1055,13 @@ export const translations: Partial<TranslationsDictionary> = {
   'layout.theme.dark': 'Modalità scura',
   'layout.theme.system': 'Modalità sistema',
 
+  'layout.theme-switcher.label': 'Selettore tema',
+  'layout.language-switcher.label': 'Selettore lingua',
+
   'layout.search.placeholder': 'Ricerca rapida',
   'layout.menu.import-document': 'Importa un documento',
 
+  'user-menu.trigger.label': 'Menu utente',
   'user-menu.account-settings': 'Impostazioni account',
   'user-menu.api-keys': 'Chiavi API',
   'user-menu.invitations': 'Inviti',
@@ -1379,6 +1396,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'common.confirm-modal.type-to-confirm': 'Digita "{{ text }}" per confermare',
   'common.tables.rows-per-page': 'Righe per pagina',
   'common.tables.pagination-info': 'Pagina {{ currentPage }} di {{ totalPages }}',
+  'common.tables.first-page': 'Vai alla prima pagina',
+  'common.tables.previous-page': 'Vai alla pagina precedente',
+  'common.tables.next-page': 'Vai alla pagina successiva',
+  'common.tables.last-page': "Vai all'ultima pagina",
   'common.back-to-home': 'Torna alla home',
 
   // About page
@@ -1398,6 +1419,17 @@ export const translations: Partial<TranslationsDictionary> = {
   'about.links.discord-description': 'Unisciti alla nostra community',
   'about.links.sponsor': 'Sostieni',
   'about.links.sponsor-description': 'Sostieni lo sviluppo di Papra',
+
+  'config.server-unreachable.title': 'Server irraggiungibile',
+  'config.server-unreachable.description':
+    "Il server sembra irraggiungibile. Se utilizzi un'installazione self-hosted, assicurati che il server sia in esecuzione e configurato correttamente. Puoi controllare la console per maggiori informazioni.",
+  'config.server-unreachable.retry': 'Riprova',
+  'config.server-unreachable.retry-error.title': 'Server ancora irraggiungibile',
+  'config.server-unreachable.retry-error.description':
+    'Il server è ancora irraggiungibile, riprova più tardi.',
+
+  'coming-soon.title': 'Prossimamente',
+  'coming-soon.description': 'Questa funzionalità sarà presto disponibile, torna più tardi.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',

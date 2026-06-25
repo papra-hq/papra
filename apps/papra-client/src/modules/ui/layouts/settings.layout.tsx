@@ -3,6 +3,7 @@ import { A } from '@solidjs/router';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { SideNav } from '@/modules/ui/components/sidenav';
 import { Button } from '../components/button';
+import { SidenavLayout } from './sidenav.layout';
 
 export const SettingsLayout: ParentComponent = (props) => {
   const { t } = useI18n();
@@ -30,8 +31,8 @@ export const SettingsLayout: ParentComponent = (props) => {
   ];
 
   return (
-    <div class="flex flex-row h-screen min-h-0">
-      <div class="w-280px border-r border-r-border  flex-shrink-0 hidden md:block bg-card">
+    <SidenavLayout
+      sideNav={() => (
         <SideNav
           mainMenu={getMainMenuItems()}
           header={() => (
@@ -43,8 +44,8 @@ export const SettingsLayout: ParentComponent = (props) => {
             </div>
           )}
         />
-      </div>
-      <div class="flex-1 min-h-0 flex flex-col">{props.children}</div>
-    </div>
+      )}
+      children={props.children}
+    />
   );
 };

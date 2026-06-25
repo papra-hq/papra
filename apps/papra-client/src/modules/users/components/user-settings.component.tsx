@@ -31,7 +31,7 @@ export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
         as={Button}
         class={cn('relative', props.class)}
         variant="outline"
-        aria-label="User menu"
+        aria-label={t('user-menu.trigger.label')}
         size="icon"
       >
         <div class="i-tabler-user size-4" />

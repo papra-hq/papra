@@ -161,7 +161,7 @@ const AllowedOriginsDialog: Component<{
                 </div>
                 <Button
                   variant="outline"
-                  aria-label="Delete allowed origin"
+                  aria-label={t('intake-emails.allowed-origins.delete.label')}
                   size="icon"
                   class="text-red"
                   onClick={() => deleteAllowedOrigin({ origin })}
@@ -185,7 +185,7 @@ export const IntakeEmailsPage: Component = () => {
 
   if (!config.intakeEmails.isEnabled) {
     return (
-      <div class="p-6 max-w-screen-md mx-auto mt-10">
+      <div class="p-6 max-w-screen-md mx-auto">
         <h1 class="text-xl font-semibold">{t('intake-emails.title')}</h1>
 
         <p class="text-muted-foreground mt-1">{t('intake-emails.description')}</p>
@@ -393,7 +393,7 @@ export const IntakeEmailsPage: Component = () => {
                           <DropdownMenuTrigger
                             as={Button}
                             variant="outline"
-                            aria-label="More actions"
+                            aria-label={t('intake-emails.actions.more')}
                             size="icon"
                           >
                             <div class="i-tabler-dots-vertical size-4" />

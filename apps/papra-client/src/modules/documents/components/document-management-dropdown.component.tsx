@@ -52,7 +52,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           href={`/organizations/${props.document.organizationId}/documents/${props.document.id}`}
         >
           <div class="i-tabler-info-circle size-4 mr-2" />
-          <span>Document details</span>
+          <span>{t('documents.management.details')}</span>
         </DropdownMenuItem>
 
         <Show when={getOpenWithApps().length > 0}>
@@ -105,12 +105,12 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           }
         >
           <div class="i-tabler-pencil size-4 mr-2" />
-          <span>Rename document</span>
+          <span>{t('documents.management.rename')}</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem class="cursor-pointer text-red" onClick={() => deleteDoc()}>
           <div class="i-tabler-trash size-4 mr-2" />
-          <span>Delete document</span>
+          <span>{t('documents.management.delete')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
