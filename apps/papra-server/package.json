@@ -101,7 +101,7 @@
     "@types/node": "catalog:",
     "@types/node-cron": "3.0.11",
     "@types/nodemailer": "8.0.1",
-    "@types/picomatch": "4.0.0",
+    "@types/picomatch": "4.0.3",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "0.25.10",
     "magicast": "0.3.5",
