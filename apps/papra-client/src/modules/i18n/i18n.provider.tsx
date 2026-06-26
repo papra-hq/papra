@@ -1,14 +1,7 @@
 import type { Accessor, ParentComponent, Setter } from 'solid-js';
 import type { TranslationsDictionary } from './locales.types';
-import { makePersisted } from '@solid-primitives/storage';
-import {
-  createContext,
-  createEffect,
-  createResource,
-  createSignal,
-  Show,
-  useContext,
-} from 'solid-js';
+import { createContext, createEffect, createResource, Show, useContext } from 'solid-js';
+import { createPersistedSignal } from '@/modules/shared/signals/persistence/persistence.signals';
 import { translations as defaultTranslations } from '../../locales/en.dictionary';
 import { locales } from './i18n.constants';
 import {
@@ -55,8 +48,8 @@ export const I18nProvider: ParentComponent = (props) => {
     preferredLocales: navigator.languages.map((x) => new Intl.Locale(x)),
     supportedLocales: locales.map((x) => new Intl.Locale(x.key)),
   });
-  const [getLocale, setLocale] = makePersisted(createSignal<Locale>(browserLocale), {
-    name: 'papra_locale',
+  const [getLocale, setLocale] = createPersistedSignal<Locale>(browserLocale, {
+    key: 'papra_locale',
     storage: localStorage,
   });
 

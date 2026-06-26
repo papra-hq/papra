@@ -1,8 +1,8 @@
 import type { Component } from 'solid-js';
-import { makePersisted } from '@solid-primitives/storage';
 import { useQuery } from '@tanstack/solid-query';
-import { createSignal, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
+import { createPersistedSignal } from '@/modules/shared/signals/persistence/persistence.signals';
 import { Button } from '@/modules/ui/components/button';
 import { fetchOrganizationUsage } from '../subscriptions.services';
 import { UpgradeDialog } from './upgrade-dialog.component';
@@ -13,8 +13,8 @@ export const UsageWarningCard: Component<{ organizationId: string }> = (props) =
   const { t } = useI18n();
   const getOrganizationId = () => props.organizationId;
   // TODO: mutualize the creation of the storage key
-  const [getDismissedDate, setDismissedDate] = makePersisted(createSignal<number | null>(null), {
-    name: `papra:${getOrganizationId()}:usage-warning-dismissed`,
+  const [getDismissedDate, setDismissedDate] = createPersistedSignal<number | null>(null, {
+    key: `papra:${getOrganizationId()}:usage-warning-dismissed`,
     storage: localStorage,
   });
 
