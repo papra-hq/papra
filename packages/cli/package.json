@@ -27,11 +27,9 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/cli.js",
-  "module": "./dist/cli.js",
   "types": "./dist/cli.d.ts",
   "exports": {
-    ".": "./dist/cli.js",
+    ".": "./dist/cli.mjs",
     "./package.json": "./package.json"
   },
   "scripts": {

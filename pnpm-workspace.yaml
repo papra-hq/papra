@@ -11,7 +11,7 @@ catalog:
   better-auth: 1.6.11
   p-limit: ^7.3.0
   sharp: ^0.34.5
-  tsdown: ^0.13.4
+  tsdown: ^0.22.3
   tsx: ^4.20.6
   typescript: ^6.0.3
   vitest: 4.1.9
