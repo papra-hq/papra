@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { format } from 'date-fns';
+import { formatDate } from '../../../utils/dates';
 import { resolveImage } from '../../../utils/urls';
 
 export type Props = {
@@ -32,7 +32,7 @@ const coverImage = await resolveImage(post.data.coverImage);
 
     <p class="text-muted-foreground my-2">{post.data.description}</p>
     <time class="text-muted-foreground block" datetime={post.data.publishedAt.toISOString()}>
-      {format(post.data.publishedAt, 'MMMM d, yyyy')}
+      {formatDate(post.data.publishedAt, { locale: Astro.currentLocale })}
     </time>
   </div>
 </article>
