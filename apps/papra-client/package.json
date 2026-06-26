@@ -31,7 +31,6 @@
     "@modular-forms/solid": "^0.25.1",
     "@papra/search-parser": "workspace:*",
     "@pdfslick/solid": "^2.3.0",
-    "@solid-primitives/storage": "^4.3.2",
     "@solidjs/router": "^0.14.10",
     "@tanstack/solid-query": "^5.90.3",
     "@tanstack/solid-table": "^8.21.3",
