@@ -78,7 +78,7 @@
     "mime-types": "^3.0.1",
     "nanoid": "^5.1.5",
     "node-cron": "^3.0.3",
-    "nodemailer": "^8.0.0",
+    "nodemailer": "^9.0.0",
     "p-limit": "catalog:",
     "p-queue": "^8.1.0",
     "picomatch": "^4.0.4",
