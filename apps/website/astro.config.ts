@@ -41,6 +41,10 @@ export default defineConfig({
   ],
 
   output: 'static',
+
+  // We don't need sessions, and to prevent cf from provisionning a KV store for us, we use the null driver.
+  session: { driver: { entrypoint: 'unstorage/drivers/null' } },
+
   adapter: cloudflare({
     // Keep build-time (sharp) image optimization for the static site instead of
     // the v14 default 'cloudflare-binding' runtime image service.
