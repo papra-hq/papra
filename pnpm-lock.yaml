@@ -389,6 +389,9 @@ importers:
       '@papra/lecture':
         specifier: workspace:*
         version: link:../../packages/lecture
+      '@papra/std':
+        specifier: workspace:*
+        version: link:../../packages/std
       '@types/node':
         specifier: 'catalog:'
         version: 26.0.0
@@ -464,6 +467,9 @@ importers:
       '@papra/search-parser':
         specifier: workspace:*
         version: link:../../packages/search-parser
+      '@papra/std':
+        specifier: workspace:*
+        version: link:../../packages/std
       '@papra/webhooks':
         specifier: workspace:*
         version: link:../../packages/webhooks
@@ -780,6 +786,9 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@napi-rs/canvas@0.1.100)
     devDependencies:
+      '@papra/std':
+        specifier: workspace:*
+        version: link:../std
       '@types/node':
         specifier: 'catalog:'
         version: 26.0.0
@@ -838,6 +847,15 @@ importers:
       unocss:
         specifier: 'catalog:'
         version: 66.6.0(postcss@8.5.15)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0))
+
+  packages/std:
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.9(@types/node@26.0.0)(@vitest/coverage-v8@4.0.3)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0))
 
   packages/webhooks:
     dependencies:

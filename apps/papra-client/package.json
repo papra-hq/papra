@@ -54,6 +54,7 @@
     "@iconify-json/tabler": "catalog:",
     "@papra/app-server": "workspace:*",
     "@papra/lecture": "workspace:*",
+    "@papra/std": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

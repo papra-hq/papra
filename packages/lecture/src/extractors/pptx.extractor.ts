@@ -1,7 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 import { defineTextExtractor } from '../extractors.models';
-import { stringify } from '../utils/string';
+import { stringify } from '@papra/std';
 
 export const pptxExtractorDefinition = defineTextExtractor({
   name: 'pptx',

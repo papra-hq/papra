@@ -8,6 +8,7 @@ import type {
 } from '@papra/search-parser';
 import type { Document } from '../../documents/documents.types';
 import { parseSearchQuery } from '@papra/search-parser';
+import { stringify } from '@papra/std';
 
 export function generatePropertyKey({ name }: { name: string }): string {
   return name.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
@@ -296,7 +297,7 @@ function buildCustomPropertyFilterCondition({
           return false;
         }
 
-        return someCorpusTokenStartsWith({ corpus: String(prop.value), prefix: value });
+        return someCorpusTokenStartsWith({ corpus: stringify(prop.value), prefix: value });
       }
       case 'select': {
         if (operator !== '=') {
@@ -326,7 +327,7 @@ function buildCustomPropertyFilterCondition({
           return false;
         }
 
-        return String(prop.value).toLowerCase() === value.toLowerCase();
+        return stringify(prop.value).toLowerCase() === value.toLowerCase();
       }
     }
   };

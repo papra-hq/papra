@@ -15,3 +15,11 @@ export function stringify(value: unknown): string {
   // number, boolean, bigint, symbol, function, null and undefined are all safe to coerce with String.
   return String(value);
 }
+
+export function ensureString(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  throw new TypeError(`Expected a string, but received: ${typeof value}`);
+}
