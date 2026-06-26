@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { createAdapterConfigSchema } from '../ai-adapters.schemas.models';
+import { createAdapterConfigSchema } from '../ai-adapters.factory.schemas';
 import { OPENAI_COMPATIBLE_ADAPTER_NAME } from './openai-compatible.ai-adapters.constants';
 
 export const openAiCompatibleAdapterConfigSchema = createAdapterConfigSchema(

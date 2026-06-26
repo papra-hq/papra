@@ -36,7 +36,7 @@ async function generateStructuredData<Schema extends GenericSchema>({
 }): Promise<InferOutput<Schema>> {
   const { adapter } = resolveModelAdapter({
     model,
-    adaptersConfig: config.ai.aiModelsAdapterConfig,
+    adaptersConfig: config.ai.adapters,
   });
 
   const jsonSchema = toStandardJsonSchema(schema);
