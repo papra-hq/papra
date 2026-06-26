@@ -1,54 +1,33 @@
-import { isNil } from '../../shared/utils';
-import type { ModelConfig } from '../ai.type';
+import type { AnyTextAdapter } from '@tanstack/ai';
+import type { Config } from '../../config/config.types';
+import { parseModelId } from '../ai.schemas.models';
 import { modelAdapterFactories } from './ai-adapters.registry';
-import type { AiModelAdapterListConfig } from './ai-adapters.schemas';
+import type { ModelAdapterNames } from './ai-adapters.registry';
+import { createError } from '../../shared/errors/errors';
 
-export function getAdapterConfig({
-  adapterId,
-  adaptersConfig,
+export function resolveTextAdapter({
+  modelId,
+  config,
 }: {
-  adapterId?: string;
-  adaptersConfig: AiModelAdapterListConfig;
-}) {
-  const adaptersCount = adaptersConfig.length;
+  modelId: string;
+  config: Config;
+}): AnyTextAdapter {
+  const { modelName, adapterId } = parseModelId(modelId);
 
-  if (adaptersCount === 0) {
-    throw new Error('No adapters configured');
+  const adapterName = adapterId ?? config.ai.defaultAdapterName;
+
+  const adapterFactory = modelAdapterFactories[adapterName as ModelAdapterNames];
+
+  if (!adapterFactory) {
+    throw createError({
+      code: 'ai.adapterNotFound',
+      message: `No adapter found for adapter name "${adapterName}"`,
+      statusCode: 500,
+      isInternal: true,
+    });
   }
 
-  if (adaptersCount > 1 && isNil(adapterId)) {
-    throw new Error('Multiple adapters configured, but no adapterId provided');
-  }
+  const adapter = adapterFactory({ config });
 
-  if (adaptersCount === 1 && isNil(adapterId)) {
-    return { adapterConfig: adaptersConfig[0]! };
-  }
-
-  const adapterConfig = adaptersConfig.find((adapter) => adapter.id === adapterId);
-
-  if (!adapterConfig) {
-    throw new Error(`Adapter config not found for adapterId: ${adapterId}`);
-  }
-
-  return { adapterConfig };
-}
-
-export function resolveModelAdapter({
-  model,
-  adaptersConfig,
-}: {
-  model: ModelConfig;
-  adaptersConfig: AiModelAdapterListConfig;
-}) {
-  const { modelName, adapterId } = model;
-
-  const { adapterConfig } = getAdapterConfig({ adapterId, adaptersConfig });
-
-  const factory = modelAdapterFactories[adapterConfig.adapter];
-
-  if (!factory) {
-    throw new Error(`Adapter factory not found for adapterId: ${adapterId}`);
-  }
-
-  return factory({ modelName, adapterConfig });
+  return adapter.getTextAdapter({ modelName });
 }

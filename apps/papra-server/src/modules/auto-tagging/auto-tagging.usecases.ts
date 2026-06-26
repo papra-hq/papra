@@ -1,7 +1,6 @@
 import type { AiServices } from '../ai/ai.services';
 import type { TagsRepository } from '../tags/tags.repository';
 import type { ResolveOrganizationSettingsUsecase } from '../organizations/organization-settings/organization-settings.usecases';
-import { ensureModel } from '../ai/ai.models';
 import type { DocumentsRepository } from '../documents/documents.repository';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
 import type { Logger } from '@crowlog/logger';
@@ -74,7 +73,7 @@ export async function autoTagDocument({
 
   const startedAt = Date.now();
   const response = await aiServices.generateStructuredData({
-    model: ensureModel(organizationSettings.ai.autoTagging.model),
+    modelId: organizationSettings.ai.autoTagging.modelId,
     schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags, maxTags }),
     systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
     userPrompt: buildAutoTaggingUserPrompt({ document }),

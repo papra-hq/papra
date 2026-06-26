@@ -1,8 +1,13 @@
-import { OPENAI_COMPATIBLE_ADAPTER_NAME } from './openai-compatible/openai-compatible.ai-adapters.constants';
-import { getOpenAiCompatibleModelAdapter } from './openai-compatible/openai-compatible.ai-adapters';
+import { objectKeys } from '@papra/std';
+import type { AiAdapterFactory } from './ai-adapters.types';
+import { buildOllamaAdapter, OLLAMA_ADAPTER_NAME } from './ollama/ollama.ai-adapters';
+import { buildOpenAiAdapter, OPENAI_ADAPTER_NAME } from './openai/openai.ai-adapters';
 
 export const modelAdapterFactories = {
-  [OPENAI_COMPATIBLE_ADAPTER_NAME]: getOpenAiCompatibleModelAdapter,
-};
+  [OLLAMA_ADAPTER_NAME]: buildOllamaAdapter,
+  [OPENAI_ADAPTER_NAME]: buildOpenAiAdapter,
+} satisfies Record<string, AiAdapterFactory>;
 
-export type ModelAdapterNames = keyof typeof modelAdapterFactories;
+export const modelAdapterNames = objectKeys(modelAdapterFactories);
+
+export type ModelAdapterNames = (typeof modelAdapterNames)[number];
