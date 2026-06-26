@@ -5,7 +5,7 @@ import { resolveImage } from '../../../utils/urls';
 
 export type Props = {
   post: {
-    slug: string;
+    id: string;
     data: {
       title: string;
       description: string;
@@ -20,12 +20,12 @@ const { post } = Astro.props;
 const coverImage = await resolveImage(post.data.coverImage);
 ---
 
-<article class="relative border max-w-700px mx-auto bg-card rounded-xl transition hover:border-primary overflow-hidden" aria-labelledby={post.slug}>
+<article class="relative border max-w-700px mx-auto bg-card rounded-xl transition hover:border-primary overflow-hidden" aria-labelledby={post.id}>
   {coverImage && <Image src={coverImage} alt={post.data.title} height={(630 * 700) / 1500} width={700} class="border-b" />}
 
   <div class="p-6">
-    <h3 class="font-medium text-2xl" id={post.slug}>
-      <a href={`/blog/${post.slug}/`} data-astro-prefetch class="outline-none after:absolute after:inset-0 after:content-['']">
+    <h3 class="font-medium text-2xl" id={post.id}>
+      <a href={`/blog/${post.id}/`} data-astro-prefetch class="outline-none after:absolute after:inset-0 after:content-['']">
         {post.data.title}
       </a>
     </h3>
