@@ -30,7 +30,7 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@astrojs/mdx": "^7.0.0",
+    "@astrojs/mdx": "7.0.0",
     "@iconify-json/tabler": "catalog:",
     "@unocss/reset": "catalog:",
     "sharp": "catalog:",
@@ -38,6 +38,6 @@
     "unocss": "catalog:",
     "unocss-preset-animations": "catalog:",
     "vitest": "catalog:",
-    "wrangler": "^4.105.0"
+    "wrangler": "4.105.0"
   }
 }
