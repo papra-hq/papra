@@ -451,7 +451,7 @@ importers:
         version: 2.2.2
       '@hono/node-server':
         specifier: ^2.0.2
-        version: 2.0.6(hono@4.12.25)
+        version: 2.0.6(hono@4.12.27)
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -514,7 +514,7 @@ importers:
         version: 7.0.1
       hono:
         specifier: ^4.12.18
-        version: 4.12.25
+        version: 4.12.27
       mime-types:
         specifier: ^3.0.1
         version: 3.0.2
@@ -7086,8 +7086,8 @@ packages:
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
-  hono@4.12.25:
-    resolution: {integrity: sha512-2NFaIyNVgJmBs/ecmtGzlmluTFs5cHEWGTdu0t1HBwYzoGXOL5nUQBRMXsXWla5i4KkG//QMzVP88m1+I3fdAQ==}
+  hono@4.12.27:
+    resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -13296,9 +13296,9 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
 
-  '@hono/node-server@2.0.6(hono@4.12.25)':
+  '@hono/node-server@2.0.6(hono@4.12.27)':
     dependencies:
-      hono: 4.12.25
+      hono: 4.12.27
 
   '@iconify-json/tabler@1.2.35':
     dependencies:
@@ -18003,7 +18003,7 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.12.25: {}
+  hono@4.12.27: {}
 
   hookable@5.5.3: {}
 
