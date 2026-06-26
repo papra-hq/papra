@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { defineTextExtractor } from '../extractors.models';
 import { getFileContentFromArchive } from '../utils/archive';
+import { stringify } from '../utils/string';
 
 export const docExtractorDefinition = defineTextExtractor({
   name: 'doc',
@@ -64,7 +65,7 @@ function extractTextFromDocx(parsed: unknown): string {
         // Handle text nodes
         const nodeObj = node as Record<string, unknown>;
         if (nodeObj['#text']) {
-          const trimmed = String(nodeObj['#text']).trim();
+          const trimmed = stringify(nodeObj['#text']).trim();
           if (trimmed) {
             texts.push(trimmed);
           }
