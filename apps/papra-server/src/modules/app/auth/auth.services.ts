@@ -40,7 +40,7 @@ export function getAuth({
     logger: {
       disabled: false,
       log: (baseLevel, message, ...args: unknown[]) => {
-        logger[baseLevel ?? 'info']({ ...args }, message);
+        logger[baseLevel ?? 'info']({ args }, message);
       },
     },
     emailAndPassword: {
