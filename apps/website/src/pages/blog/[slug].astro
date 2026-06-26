@@ -2,11 +2,11 @@
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
-import { format } from 'date-fns';
 import CorentinAvatar from '../../assets/corentin.jpg';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import Layout from '../../layouts/Layout.astro';
+import { formatDate } from '../../utils/dates';
 import { resolveImage } from '../../utils/urls';
 
 export async function getStaticPaths() {
@@ -55,7 +55,7 @@ const structuredData = {
 
         <div class="flex sm:justify-center items-center gap-1 text-muted-foreground mt-4">
           <time class="text-muted-foreground" datetime={data.publishedAt.toISOString()}>
-            {format(data.publishedAt, 'MMMM d, yyyy')}
+            {formatDate(data.publishedAt, { locale: Astro.currentLocale })}
           </time>
           <span class="text-muted-foreground"> - </span>
           By

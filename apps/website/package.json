@@ -26,7 +26,6 @@
     "astro-expressive-code": "^0.44.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
