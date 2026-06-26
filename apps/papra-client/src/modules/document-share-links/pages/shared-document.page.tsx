@@ -170,7 +170,7 @@ export const SharedDocumentPage: Component = () => {
   const aboutDialog = useAboutDialog();
 
   const documentQuery = useQuery(() => ({
-    queryKey: ['share-link', params.token, getAccessToken()],
+    queryKey: ['share-link', params.token, 'document', getAccessToken()],
     queryFn: () => fetchSharedDocument({ token: params.token, accessToken: getAccessToken() }),
     retry: false,
   }));

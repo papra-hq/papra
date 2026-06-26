@@ -91,6 +91,7 @@ export const DocumentViewPage: Component = () => {
       'documents',
       'document-view',
       params.documentViewId,
+      documentViewQuery.data?.documentView?.query ?? '',
       getPagination(),
     ],
     queryFn: () =>
