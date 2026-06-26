@@ -52,6 +52,7 @@
     "unpdf": "^1.4.0"
   },
   "devDependencies": {
+    "@papra/std": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "mime": "4.0.7",

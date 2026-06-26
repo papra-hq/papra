@@ -1,7 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { defineTextExtractor } from '../extractors.models';
 import { getFileContentFromArchive } from '../utils/archive';
-import { stringify } from '../utils/string';
+import { stringify } from '@papra/std';
 
 export const docExtractorDefinition = defineTextExtractor({
   name: 'doc',

@@ -1,0 +1,30 @@
+{
+  "name": "@papra/std",
+  "version": "0.1.1",
+  "description": "A collection of utility functions.",
+  "bugs": {
+    "url": "https://github.com/papra-hq/papra/issues"
+  },
+  "license": "MIT",
+  "author": "Corentin Thomasset <corentinth@proton.me> (https://corentin.tech)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papra-hq/papra",
+    "directory": "packages/std"
+  },
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

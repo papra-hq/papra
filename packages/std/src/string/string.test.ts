@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { stringify } from './string';
+import { stringify, ensureString } from './string';
 
 describe('string', () => {
   describe('stringify', () => {
@@ -45,6 +45,20 @@ describe('string', () => {
       circular.self = circular;
 
       expect(stringify(circular)).toBe('[object Object]');
+    });
+  });
+
+  describe('ensureString', () => {
+    test('returns strings unchanged and throws for non-string values', () => {
+      expect(ensureString('hello')).toBe('hello');
+      expect(ensureString('')).toBe('');
+
+      expect(() => ensureString(42)).toThrow(TypeError);
+      expect(() => ensureString(true)).toThrow(TypeError);
+      expect(() => ensureString(null)).toThrow(TypeError);
+      expect(() => ensureString(undefined)).toThrow(TypeError);
+      expect(() => ensureString({})).toThrow(TypeError);
+      expect(() => ensureString([])).toThrow(TypeError);
     });
   });
 });

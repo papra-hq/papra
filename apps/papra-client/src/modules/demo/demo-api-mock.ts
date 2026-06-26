@@ -24,6 +24,7 @@ import {
 import { findMany, getValues } from './demo.storage.models';
 import { generatePropertyKey, searchDemoDocuments } from './search/demo.search.services';
 import { demoUser } from './seed/users.fixtures';
+import { stringify } from '@papra/std';
 
 function assert(
   condition: unknown,
@@ -82,7 +83,7 @@ function hydratePropertyValue({
   }
 
   if (definition.type === 'select') {
-    const optionId = String(value);
+    const optionId = stringify(value);
     const option = definition.options.find((o) => o.id === optionId || o.key === optionId);
 
     if (!option) {
@@ -93,7 +94,7 @@ function hydratePropertyValue({
   }
 
   if (definition.type === 'multi_select') {
-    const ids = Array.isArray(value) ? value.map(String) : [String(value)];
+    const ids = Array.isArray(value) ? value.map(String) : [stringify(value)];
 
     return ids
       .map((id) => {
