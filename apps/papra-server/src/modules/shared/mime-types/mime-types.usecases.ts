@@ -1,21 +1,42 @@
 import { safely } from '@corentinth/chisels';
-import { fileTypeFromBlob } from 'file-type';
-import { isNilOrEmptyString } from '../utils';
+import { fileTypeStream } from 'file-type';
 import { getMimeTypeFromFileName } from './mime-types.models';
+import { Readable } from 'node:stream';
+import { MIME_TYPES } from './mime-types.constants';
 
-export async function coerceFileMimeType({ file }: { file: File }): Promise<{ mimeType: string }> {
-  const declaredMimeType = file.type;
+export async function coerceMimeTypeStream({
+  fileStream,
+  fileName,
+  declaredMimeType,
+}: {
+  fileStream: Readable;
+  fileName: string;
+  declaredMimeType?: string;
+}): Promise<{ stream: Readable; mimeType: string }> {
+  const iterator = fileStream[Symbol.asyncIterator]();
 
-  if (!isNilOrEmptyString(declaredMimeType) && declaredMimeType !== 'application/octet-stream') {
-    return { mimeType: declaredMimeType };
-  }
+  const safeStream = new ReadableStream<Uint8Array>({
+    type: 'bytes',
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      if (done) {
+        controller.close();
+        return;
+      }
+      controller.enqueue(value instanceof Uint8Array ? new Uint8Array(value) : Buffer.from(value));
+    },
+  });
 
-  const [detected] = await safely(fileTypeFromBlob(file));
-  if (detected) {
-    return { mimeType: detected.mime };
-  }
+  const [detectedStream] = await safely(fileTypeStream(safeStream));
 
-  const extensionMimeType = getMimeTypeFromFileName(file.name);
+  const mimeType =
+    detectedStream?.fileType?.mime ??
+    (declaredMimeType && declaredMimeType !== MIME_TYPES.OCTET_STREAM
+      ? declaredMimeType
+      : getMimeTypeFromFileName(fileName));
 
-  return { mimeType: extensionMimeType };
+  return {
+    stream: detectedStream ? Readable.fromWeb(detectedStream) : fileStream,
+    mimeType,
+  };
 }
