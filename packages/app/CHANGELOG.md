@@ -1,5 +1,44 @@
 # @papra/app
 
+## 26.5.1
+
+### Patch Changes
+
+- [#1179](https://github.com/papra-hq/papra/pull/1179) [`63ec093`](https://github.com/papra-hq/papra/commit/63ec0930487697b430c0816d592b16e272f1076d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Replace the AWS S3 SDK (`@aws-sdk/client-s3` + `@aws-sdk/lib-storage`) with the zero-dependency `s3mini` for document S3 storage. This removes 97 transitive packages (~23 MB unpacked) from the server, replacing them with a single more performant and dependency-free package.
+
+- [#1246](https://github.com/papra-hq/papra/pull/1246) [`677f81e`](https://github.com/papra-hq/papra/commit/677f81ed4086249be6b05eee516a4e7d6f70199d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Extracted and translated remaining hard coded texts, improving localization for non-English languages.
+
+- [#1200](https://github.com/papra-hq/papra/pull/1200) [`68fbacb`](https://github.com/papra-hq/papra/commit/68fbacbdef675dae0bd38520f475ce4d9d7550fe) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added AI auto-tagging. When document content is extracted, it can now be automatically tagged using AI. The system uses tag names and descriptions to determine the most relevant tags for the document, and can optionally create new tags if they don't already exist.
+
+- [#1240](https://github.com/papra-hq/papra/pull/1240) [`874354f`](https://github.com/papra-hq/papra/commit/874354ffa93587cb18e3f67261a9744ab8e55cbd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added mobile friendly hamburger menu in account settings.
+
+- [#1172](https://github.com/papra-hq/papra/pull/1172) [`0e970aa`](https://github.com/papra-hq/papra/commit/0e970aad33d57b4613fea10b2a95fe3fe4b032c9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Set S3 checksum verification headers to "when required" to fix Backblaze B2 storage issues.
+
+- [#1219](https://github.com/papra-hq/papra/pull/1219) [`aef57ce`](https://github.com/papra-hq/papra/commit/aef57cefc1f988d73df26718e743e34b61d34d77) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Pined the Dockerfile node version sha to reduce supply chain attack surface.
+
+- [#1152](https://github.com/papra-hq/papra/pull/1152) [`632ac0f`](https://github.com/papra-hq/papra/commit/632ac0f16f194c0a752b5b4c613f68cc51dc47a4) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix the document preview being shrunk by very long document name not containing common break characters (spaces, dashes, ...)
+
+- [#1184](https://github.com/papra-hq/papra/pull/1184) [`e2c3aa6`](https://github.com/papra-hq/papra/commit/e2c3aa61fca6bff8c73ce0cc83b3c59390f5088d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated tesseract.js to v7 which should increase extraction performance by 15 to 35% on images, [source](https://github.com/naptha/tesseract.js/releases/tag/v7.0.0).
+
+- [#1235](https://github.com/papra-hq/papra/pull/1235) [`ae42102`](https://github.com/papra-hq/papra/commit/ae421028a034fc1e74d3590996c069a99b264680) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added mobile friendly hamburger menu in organization settings.
+
+- [#1196](https://github.com/papra-hq/papra/pull/1196) [`4250141`](https://github.com/papra-hq/papra/commit/4250141cc96c6919b3c05b788da71fff3f23ad01) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added missing translations in all non-English languages.
+
+- [#1201](https://github.com/papra-hq/papra/pull/1201) [`167fb8c`](https://github.com/papra-hq/papra/commit/167fb8ca2535f383c7b0984ef1dfdfb599a06fe9) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Auto tagging can be configured per organization, with a dedicated page in organization settings. Owners can manage the following settings:
+  - Enable or disable auto tagging for their organization.
+  - Enable the creation of new tags if relevant tags do not exist.
+  - Configure the maximum number of tags that can be automatically added to a document.
+
+- [#1173](https://github.com/papra-hq/papra/pull/1173) [`c541b1f`](https://github.com/papra-hq/papra/commit/c541b1f670ba2e5a9860e0ea09c2a0e13ed18efb) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added the possibility to configure the file size polling interval for ingestion folder watchers.
+  - `INGESTION_FOLDER_WATCHER_FILE_STABILITY_THRESHOLD_MS`: The amount of time in milliseconds for a file size to remain constant before being consumed. This helps to avoid processing files that are still being written to (e.g., scanners, cameras, network shares, etc.).
+  - `INGESTION_FOLDER_WATCHER_FILE_STABILITY_POLL_INTERVAL_MS`: The interval in milliseconds at which the file size is polled while waiting for write to finish.
+
+- [#1192](https://github.com/papra-hq/papra/pull/1192) [`edbd368`](https://github.com/papra-hq/papra/commit/edbd368d82235165b494cc1311a68be4200f2609) Thanks [@Pallavikumarimdb](https://github.com/Pallavikumarimdb)! - Sort documents by document date instead of the created date.
+
+- [#1232](https://github.com/papra-hq/papra/pull/1232) [`e853d09`](https://github.com/papra-hq/papra/commit/e853d09182f3de2b5b86adfb4e8019c454c526cd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Make the top navigation bar mobile-friendly: the search, import, and admin buttons now collapse to icon-only on small screens, and the user settings dropdown is now available on mobile devices.
+
+- [#1155](https://github.com/papra-hq/papra/pull/1155) [`e6de1ee`](https://github.com/papra-hq/papra/commit/e6de1ee1cf827b0bca64d7fa502e1e81b7935b9a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix the displayed max organization count on the user admin page
+
 ## 26.5.0
 
 ### Minor Changes
