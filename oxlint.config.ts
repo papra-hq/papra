@@ -18,6 +18,8 @@ export default defineConfig({
     'import/no-mutable-exports': 'error',
     'import/no-named-default': 'error',
     'import/newline-after-import': ['error', { count: 1 }],
+
+    'unicorn/prefer-node-protocol': 'error',
   },
   ignorePatterns: [
     '.output/**',
