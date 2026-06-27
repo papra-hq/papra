@@ -1,5 +1,11 @@
 # @papra/webhooks
 
+## 0.3.4
+
+### Patch Changes
+
+- [#1276](https://github.com/papra-hq/papra/pull/1276) [`95cfbb0`](https://github.com/papra-hq/papra/commit/95cfbb0639ba263bfc21a64729eb1e87d0a6b89a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Excluded sourcemaps from package bundle
+
 ## 0.3.3
 
 ### Patch Changes
