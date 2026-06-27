@@ -56,13 +56,45 @@ import {
   useDownloadDocument,
   useRestoreDocument,
 } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities, updateDocument } from '../documents.services';
+import {
+  fetchDocument,
+  fetchDocumentActivities,
+  fetchOrganizationDocuments,
+  updateDocument,
+} from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
   value: string | JSX.Element;
   icon?: string;
 };
+
+const documentNavigationPageSize = 100;
+
+async function fetchAllNavigationDocuments({ organizationId }: { organizationId: string }) {
+  const documentsById = new Map<string, Document>();
+  let pageIndex = 0;
+  let documentsCount = 0;
+
+  do {
+    const page = await fetchOrganizationDocuments({
+      organizationId,
+      pageIndex,
+      pageSize: documentNavigationPageSize,
+    });
+    const previousDocumentsCount = documentsById.size;
+
+    page.documents.forEach((document) => documentsById.set(document.id, document));
+    documentsCount = page.documentsCount;
+    pageIndex += 1;
+
+    if (documentsById.size === previousDocumentsCount) {
+      break;
+    }
+  } while (documentsById.size < documentsCount);
+
+  return { documents: Array.from(documentsById.values()), documentsCount };
+}
 
 const DocumentNotes: Component<{ documentId: string; organizationId: string; notes?: string }> = (
   props,
@@ -340,10 +372,41 @@ export const DocumentPage: Component = () => {
     initialPageParam: 0,
   }));
 
+  const documentNavigationQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
+    queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
+  }));
+
+  const getNavigationDocuments = () => documentNavigationQuery.data?.documents ?? [];
+  const getCurrentDocumentIndex = () =>
+    getNavigationDocuments().findIndex((document) => document.id === params.documentId);
+  const getPreviousDocument = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex > 0 ? getNavigationDocuments()[currentIndex - 1] : undefined;
+  };
+  const getNextDocument = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex >= 0 ? getNavigationDocuments()[currentIndex + 1] : undefined;
+  };
+  const getDocumentPositionLabel = () => {
+    const currentIndex = getCurrentDocumentIndex();
+    const documentsCount = getNavigationDocuments().length;
+
+    if (documentsCount === 0 || currentIndex < 0) {
+      return 'Document';
+    }
+
+    return `${currentIndex + 1} of ${documentsCount}`;
+  };
+  const navigateToDocument = (documentId: string) =>
+    navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
+
   const deleteDoc = async () => {
     if (!documentQuery.data) {
       return;
     }
+
+    const fallbackDocument = getNextDocument() ?? getPreviousDocument();
 
     const { hasDeleted } = await deleteDocument({
       documentId: params.documentId,
@@ -355,11 +418,16 @@ export const DocumentPage: Component = () => {
       return;
     }
 
+    if (fallbackDocument) {
+      navigateToDocument(fallbackDocument.id);
+      return;
+    }
+
     navigate(`/organizations/${params.organizationId}/documents`);
   };
 
   return (
-    <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
+    <div class="p-6 pb-28 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
         <div class="md:flex-1 md:min-w-0 md:border-r">
           <Show when={documentQuery.data?.document}>
@@ -388,7 +456,7 @@ export const DocumentPage: Component = () => {
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
-                  <div class="flex gap-2 mb-2">
+                  <div class="flex flex-wrap gap-2 mb-2 max-w-full">
                     <Button
                       onClick={() =>
                         downloadDocument({
@@ -409,6 +477,7 @@ export const DocumentPage: Component = () => {
                     />
 
                     <Button
+                      class="min-w-0"
                       onClick={() =>
                         openShareDialog({
                           documentId: getDocument().id,
@@ -425,6 +494,7 @@ export const DocumentPage: Component = () => {
 
                     {getDocument().isDeleted ? (
                       <Button
+                        class="min-w-0"
                         variant="destructive"
                         size="sm"
                         onClick={() => restore({ document: getDocument() })}
@@ -434,7 +504,7 @@ export const DocumentPage: Component = () => {
                         {t('documents.actions.restore')}
                       </Button>
                     ) : (
-                      <Button variant="destructive" size="sm" onClick={deleteDoc}>
+                      <Button class="min-w-0" variant="destructive" size="sm" onClick={deleteDoc}>
                         <div class="i-tabler-trash size-4 mr-2" />
                         {t('documents.actions.delete')}
                       </Button>
@@ -607,11 +677,49 @@ export const DocumentPage: Component = () => {
         </div>
 
         <div class="flex-1 min-h-50vh">
-          <Show when={documentQuery.data?.document}>
-            {(getDocument) => <DocumentPreview document={getDocument()} />}
+          <Show keyed when={documentQuery.data?.document}>
+            {(document) => <DocumentPreview document={document} />}
           </Show>
         </div>
       </Suspense>
+
+      <div class="fixed bottom-6 left-1/2 z-20 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 rounded-full border bg-background/95 p-2 shadow-lg backdrop-blur sm:gap-2">
+        <Button
+          onClick={() => {
+            const previousDocument = getPreviousDocument();
+            if (previousDocument) {
+              navigateToDocument(previousDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getPreviousDocument()}
+          class="rounded-full px-2 sm:px-3"
+        >
+          <div class="i-tabler-chevron-left size-4 mr-2" />
+          Previous
+        </Button>
+
+        <span class="min-w-16 shrink-0 text-center text-xs text-muted-foreground sm:min-w-24 sm:text-sm">
+          {getDocumentPositionLabel()}
+        </span>
+
+        <Button
+          onClick={() => {
+            const nextDocument = getNextDocument();
+            if (nextDocument) {
+              navigateToDocument(nextDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getNextDocument()}
+          class="rounded-full px-2 sm:px-3"
+        >
+          Next
+          <div class="i-tabler-chevron-right size-4 ml-2" />
+        </Button>
+      </div>
     </div>
   );
 };
