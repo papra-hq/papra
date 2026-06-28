@@ -7,6 +7,7 @@ import { createTagsRepository } from '../../tags/tags.repository';
 import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
 import type { Config } from '../../config/config.types';
+import { buildExtractDocumentTextUsecase } from '../content-extraction/content-extraction.usecases';
 
 export async function registerExtractDocumentFileContentTask({
   taskServices,
@@ -37,15 +38,20 @@ export async function registerExtractDocumentFileContentTask({
         ocrLanguages: string[];
       };
 
+      const extractDocumentText = buildExtractDocumentTextUsecase({
+        ocrLanguages,
+        config,
+      });
+
       await extractAndSaveDocumentFileContent({
         documentId,
         organizationId,
-        ocrLanguages,
         documentsRepository,
         documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
         eventServices,
+        extractDocumentText,
       });
 
       if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {

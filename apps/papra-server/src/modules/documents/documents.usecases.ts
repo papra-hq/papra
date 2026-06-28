@@ -48,8 +48,8 @@ import {
   generateDocumentId as generateDocumentIdImpl,
 } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { extractDocumentText } from './documents.services';
 import { createStorageKey } from './storage/document-storage.usecases';
+import type { ExtractDocumentTextUsecase } from './content-extraction/content-extraction.usecases';
 
 type DocumentStorageContext = {
   storageKey: string;
@@ -578,19 +578,19 @@ export async function extractAndSaveDocumentFileContent({
   organizationId,
   documentsRepository,
   documentsStorageService,
-  ocrLanguages,
   taggingRulesRepository,
   tagsRepository,
   eventServices,
+  extractDocumentText,
 }: {
   documentId: string;
-  ocrLanguages?: string[];
   organizationId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
   taggingRulesRepository: TaggingRulesRepository;
   tagsRepository: TagsRepository;
   eventServices: EventServices;
+  extractDocumentText: ExtractDocumentTextUsecase;
 }) {
   const { document } = await documentsRepository.getDocumentById({ documentId, organizationId });
 
@@ -611,7 +611,7 @@ export async function extractAndSaveDocumentFileContent({
     mimeType: document.mimeType,
   });
 
-  const { text } = await extractDocumentText({ file, ocrLanguages });
+  const { text } = await extractDocumentText({ file });
 
   const { document: updatedDocument } = await updateDocument({
     documentId,

@@ -14,7 +14,7 @@ export const mistralAdapterConfig = {
     doc: 'API key for the Mistral API',
     schema: v.string(),
     env: 'MISTRAL_API_KEY',
-    default: 'mistral-api-key',
+    default: '',
     showInDocumentation: false,
   },
 } as const satisfies AppConfigDefinition;

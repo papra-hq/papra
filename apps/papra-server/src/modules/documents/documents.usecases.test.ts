@@ -712,6 +712,9 @@ describe('documents usecases', () => {
         taggingRulesRepository,
         tagsRepository,
         eventServices: createTestEventServices(),
+        extractDocumentText: async ({ file }) => ({
+          text: await collectReadableStreamToString({ stream: file.stream() }),
+        }),
       });
 
       const documentRecords = await db.select().from(documentsTable);
@@ -772,6 +775,9 @@ describe('documents usecases', () => {
         taggingRulesRepository,
         tagsRepository,
         eventServices,
+        extractDocumentText: async ({ file }) => ({
+          text: await collectReadableStreamToString({ stream: file.stream() }),
+        }),
       });
 
       expect(eventServices.getEmittedEvents().map(({ eventName }) => eventName)).to.eql([
