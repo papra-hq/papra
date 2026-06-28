@@ -1,10 +1,12 @@
+import type { ContentExtractionStrategyName } from './content-extraction-strategies.constants';
+import type { ContentExtractionStrategyFactory } from './content-extraction-strategies.types';
 import { buildLectureContentExtractionStrategy } from './lecture/lecture.content-extraction-strategy';
 import { buildMistralOcrContentExtractionStrategy } from './mistral-ocr/mistral-ocr.content-extraction-strategy';
 
 export const strategiesRegistry = {
   'internal': buildLectureContentExtractionStrategy,
   'mistral-ocr': buildMistralOcrContentExtractionStrategy,
-};
+} satisfies Record<ContentExtractionStrategyName, ContentExtractionStrategyFactory>;
 
 export function getContentExtractionStrategy({ strategyName }: { strategyName: string }) {
   const strategyBuilder = strategiesRegistry[strategyName as keyof typeof strategiesRegistry];
