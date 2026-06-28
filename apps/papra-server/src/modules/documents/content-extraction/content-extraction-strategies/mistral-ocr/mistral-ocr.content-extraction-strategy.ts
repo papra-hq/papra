@@ -13,7 +13,6 @@ export function buildMistralOcrContentExtractionStrategy({
   const { baseUrl, apiKey } = config.ai.adapters.mistral;
 
   return {
-    name: 'mistral-ocr',
     canExtractTextFromDocument: async ({ file }) => {
       if (isNilOrEmptyString(apiKey)) {
         return false;
@@ -21,6 +20,7 @@ export function buildMistralOcrContentExtractionStrategy({
 
       return isMistralOcrAbleToExtractTextFromDocument({ file, mimeTypesAllowList });
     },
+
     extractTextFromDocument: async ({ file }) => {
       const { text, processedPagesCount } = await extractTextWithMistralOcr({
         file,

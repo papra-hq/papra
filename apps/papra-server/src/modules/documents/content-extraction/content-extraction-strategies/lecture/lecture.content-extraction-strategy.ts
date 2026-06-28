@@ -3,8 +3,8 @@ import { extractTextFromFile } from '@papra/lecture';
 
 export function buildLectureContentExtractionStrategy(): ContentExtractionStrategy {
   return {
-    name: 'internal',
     canExtractTextFromDocument: async () => true,
+
     extractTextFromDocument: async ({ file, ocrLanguages }) => {
       const { textContent, extractorType } = await extractTextFromFile({
         file,
