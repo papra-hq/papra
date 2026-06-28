@@ -1,14 +1,16 @@
 import { objectKeys } from '@papra/std';
 import type { AiAdapterFactory } from './ai-adapters.types';
-import { buildOllamaAdapter, OLLAMA_ADAPTER_NAME } from './ollama/ollama.ai-adapters';
-import { buildOpenAiAdapter, OPENAI_ADAPTER_NAME } from './openai/openai.ai-adapters';
-import { buildMistralAdapter, MISTRAL_ADAPTER_NAME } from './mistral/mistral.ai-adapters';
+import { buildOllamaAdapter } from './ollama/ollama.ai-adapters';
+import { buildOpenAiAdapter } from './openai/openai.ai-adapters';
+import { buildMistralAdapter } from './mistral/mistral.ai-adapters';
+import type { AiAdapterName } from './ai-adapters.constants';
+import { AI_ADAPTERS } from './ai-adapters.constants';
 
 export const modelAdapterFactories = {
-  [OLLAMA_ADAPTER_NAME]: buildOllamaAdapter,
-  [OPENAI_ADAPTER_NAME]: buildOpenAiAdapter,
-  [MISTRAL_ADAPTER_NAME]: buildMistralAdapter,
-} satisfies Record<string, AiAdapterFactory>;
+  [AI_ADAPTERS.ollama]: buildOllamaAdapter,
+  [AI_ADAPTERS.openai]: buildOpenAiAdapter,
+  [AI_ADAPTERS.mistral]: buildMistralAdapter,
+} satisfies Record<AiAdapterName, AiAdapterFactory>;
 
 export const modelAdapterNames = objectKeys(modelAdapterFactories);
 
