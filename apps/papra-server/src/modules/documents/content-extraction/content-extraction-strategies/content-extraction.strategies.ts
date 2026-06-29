@@ -1,3 +1,4 @@
+import { buildAzureDiContentExtractionStrategy } from './azure-di/azure-di.content-extraction-strategy';
 import type { ContentExtractionStrategyName } from './content-extraction-strategies.constants';
 import type { ContentExtractionStrategyFactory } from './content-extraction-strategies.types';
 import { buildDoclingContentExtractionStrategy } from './docling/docling.content-extraction-strategy';
@@ -8,6 +9,7 @@ export const strategiesRegistry = {
   'internal': buildLectureContentExtractionStrategy,
   'mistral-ocr': buildMistralOcrContentExtractionStrategy,
   'docling': buildDoclingContentExtractionStrategy,
+  'azure-di': buildAzureDiContentExtractionStrategy,
 } satisfies Record<ContentExtractionStrategyName, ContentExtractionStrategyFactory>;
 
 export function getContentExtractionStrategy({ strategyName }: { strategyName: string }) {
