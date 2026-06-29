@@ -63,38 +63,48 @@ describe('database-fts5 repository models', () => {
       ).to.eql('"documents"."created_at" desc, "documents"."id" desc');
     });
 
-    test('sort by name, the name is sorted case-insensitively', () => {
+    test('sort by name, the name is sorted case-insensitively, with createdAt as fallback', () => {
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'name', order: 'desc' } })),
-      ).to.eql('"documents"."name" COLLATE NOCASE desc, "documents"."id" desc');
+      ).to.eql(
+        '"documents"."name" COLLATE NOCASE desc, "documents"."created_at" desc, "documents"."id" desc',
+      );
 
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'name', order: 'asc' } })),
-      ).to.eql('"documents"."name" COLLATE NOCASE asc, "documents"."id" asc');
+      ).to.eql(
+        '"documents"."name" COLLATE NOCASE asc, "documents"."created_at" asc, "documents"."id" asc',
+      );
     });
 
-    test('sort by documentDate asc', () => {
+    test('sort by documentDate asc, with createdAt as fallback', () => {
       expect(
         toOrderByClause(
           makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'asc' } }),
         ),
-      ).to.eql('"documents"."document_date" asc, "documents"."id" asc');
+      ).to.eql(
+        '"documents"."document_date" asc, "documents"."created_at" asc, "documents"."id" asc',
+      );
 
       expect(
         toOrderByClause(
           makeSearchOrderByClauses({ sort: { field: 'documentDate', order: 'desc' } }),
         ),
-      ).to.eql('"documents"."document_date" desc, "documents"."id" desc');
+      ).to.eql(
+        '"documents"."document_date" desc, "documents"."created_at" desc, "documents"."id" desc',
+      );
     });
 
-    test('sort by updatedAt desc', () => {
+    test('sort by updatedAt desc, with createdAt as fallback', () => {
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'updatedAt', order: 'desc' } })),
-      ).to.eql('"documents"."updated_at" desc, "documents"."id" desc');
+      ).to.eql(
+        '"documents"."updated_at" desc, "documents"."created_at" desc, "documents"."id" desc',
+      );
 
       expect(
         toOrderByClause(makeSearchOrderByClauses({ sort: { field: 'updatedAt', order: 'asc' } })),
-      ).to.eql('"documents"."updated_at" asc, "documents"."id" asc');
+      ).to.eql('"documents"."updated_at" asc, "documents"."created_at" asc, "documents"."id" asc');
     });
   });
 });
