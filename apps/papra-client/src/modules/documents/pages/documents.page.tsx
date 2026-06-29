@@ -11,6 +11,7 @@ import { useConfirmModal } from '@/modules/shared/confirm';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { createParamSynchronizedSignal } from '@/modules/shared/signals/params';
+import { buildLocalStorageKey } from '@/modules/shared/signals/persistence/persistence.models';
 import { resolveSetterValue } from '@/modules/shared/signals/setters';
 import { cn } from '@/modules/shared/style/cn';
 import { useDebounce } from '@/modules/shared/utils/timing';
@@ -44,7 +45,9 @@ export const DocumentsPage: Component = () => {
     defaultValue: '',
   });
   const debouncedSearchQuery = useDebounce(getSearchQuery, 300);
-  const [getPagination, setPagination] = createParamSynchronizedPagination();
+  const [getPagination, setPagination] = createParamSynchronizedPagination({
+    localStorageKey: buildLocalStorageKey('documents', 'pageSize'),
+  });
   const [getRowSelection, setRowSelection] = createSignal<RowSelectionState>({});
   const [getSelectAllMatchingQuery, setSelectAllMatchingQuery] = createSignal(false);
   const [getTagDialogOpen, setTagDialogOpen] = createSignal(false);
