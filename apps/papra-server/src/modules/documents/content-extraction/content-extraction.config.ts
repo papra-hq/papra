@@ -5,6 +5,7 @@ import {
   CONTENT_EXTRACTION_STRATEGIES,
   CONTENT_EXTRACTION_STRATEGY_NAMES,
 } from './content-extraction-strategies/content-extraction-strategies.constants';
+import { doclingConfig } from './content-extraction-strategies/docling/docling.content-extraction-strategy.config';
 
 export const documentContentExtractionConfig = {
   extractionStrategies: {
@@ -12,6 +13,7 @@ export const documentContentExtractionConfig = {
       `Content extraction strategy, it can be a single strategy name like \`${CONTENT_EXTRACTION_STRATEGIES.internal}\`, or a comma-separated list of strategy names, in order of preference, like \`${[CONTENT_EXTRACTION_STRATEGIES.mistralOcr, CONTENT_EXTRACTION_STRATEGIES.internal].join(',')}\`. The first strategy that can extract text from the document will be used, and if a strategy fails processing a document, the next one will try. Available strategies are:`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.internal}\`: Uses the internal \`lecture\` library to extract text from documents, which support all common document formats and uses Tesseract for OCR. This strategy is always available, great to use as a fallback when other strategies fail.`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.mistralOcr}\`: Uses the Mistral OCR API to extract text from documents. This strategy requires a valid Mistral API key.`,
+      `- \`${CONTENT_EXTRACTION_STRATEGIES.docling}\`: Uses a Docling server to extract text from documents. This strategy requires a running [Docling server](https://github.com/docling-project/docling-serve).`,
     ].join('\n'),
     schema: v.pipe(
       v.string(),
@@ -25,5 +27,6 @@ export const documentContentExtractionConfig = {
   },
   strategy: {
     mistralOcr: mistralOcrConfig,
+    docling: doclingConfig,
   },
 } as const satisfies AppConfigDefinition;
