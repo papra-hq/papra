@@ -10,7 +10,7 @@ import type { Database } from '../../../../app/database/database.types';
 import type { CustomPropertyDefinitionsByKey } from './query-builder.custom-properties';
 import type { QueryResult } from './query-builder.types';
 import { and, eq, inArray, isNotNull, not, or, sql } from 'drizzle-orm';
-import { isValidDate } from '../../../../shared/date';
+import { getDateValue as sharedGetDateValue, isValidDate } from '../../../../shared/date';
 import { tagIdRegex } from '../../../../tags/tags.constants';
 import { normalizeTagName } from '../../../../tags/tags.repository.models';
 import { documentsTagsTable, tagsTable } from '../../../../tags/tags.table';
@@ -292,11 +292,7 @@ export function handleHasTagsFilter({
 }
 
 function getDateValue({ value, now }: { value: string; now: Date }): Date {
-  if (value === 'now') {
-    return now;
-  }
-
-  return new Date(value);
+  return sharedGetDateValue(value, now);
 }
 
 export function handleDocumentDateFilter({
