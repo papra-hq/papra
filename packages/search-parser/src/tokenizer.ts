@@ -101,12 +101,29 @@ export function tokenize({
     stopAtQuote?: boolean;
   }): string => {
     let value = '';
+    let parenDepth = 0;
 
     while (pos < query.length) {
       const char = peek();
 
-      if (!char || stopCondition(char)) {
+      if (!char) {
         break;
+      }
+
+      if (char === '(') {
+        parenDepth++;
+      }
+
+      if (parenDepth === 0 && stopCondition(char)) {
+        break;
+      }
+
+      if (char === ')') {
+        if (parenDepth > 0) {
+          parenDepth--;
+        } else {
+          break;
+        }
       }
 
       if (stopAtQuote && char === '"') {

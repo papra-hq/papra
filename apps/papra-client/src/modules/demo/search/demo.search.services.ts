@@ -8,7 +8,7 @@ import type {
 } from '@papra/search-parser';
 import type { Document } from '../../documents/documents.types';
 import { parseSearchQuery } from '@papra/search-parser';
-import { stringify } from '@papra/std';
+import { getDateValue as sharedGetDateValue, stringify } from '@papra/std';
 
 export function generatePropertyKey({ name }: { name: string }): string {
   return name.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
@@ -154,11 +154,7 @@ function buildHasTagsFilter({ expression }: { expression: FilterExpression }): D
 }
 
 function getDateValue({ value, now = new Date() }: { value: string; now?: Date }): Date {
-  if (value === 'now') {
-    return now;
-  }
-
-  return new Date(value);
+  return sharedGetDateValue(value, now);
 }
 
 function buildDateFilterCondition({

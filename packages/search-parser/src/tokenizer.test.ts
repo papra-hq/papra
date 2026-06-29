@@ -125,6 +125,41 @@ describe('tokenizer', () => {
             { type: 'EOF' },
           ],
         },
+        {
+          query: 'date:>now.year',
+          expectedTokens: [
+            { type: 'FILTER', field: 'date', operator: '>', value: 'now.year' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: 'date:>now.month',
+          expectedTokens: [
+            { type: 'FILTER', field: 'date', operator: '>', value: 'now.month' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: 'date:>now.minusYear(1)',
+          expectedTokens: [
+            { type: 'FILTER', field: 'date', operator: '>', value: 'now.minusYear(1)' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: 'date:>(now - 1y)',
+          expectedTokens: [
+            { type: 'FILTER', field: 'date', operator: '>', value: '(now - 1y)' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: 'date:>"(now - 1y)"',
+          expectedTokens: [
+            { type: 'FILTER', field: 'date', operator: '>', value: '(now - 1y)' },
+            { type: 'EOF' },
+          ],
+        },
       ];
 
       for (const { query, expectedTokens, maxTokens = 100 } of queries) {
