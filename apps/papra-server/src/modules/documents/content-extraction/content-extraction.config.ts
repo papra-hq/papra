@@ -6,6 +6,7 @@ import {
   CONTENT_EXTRACTION_STRATEGY_NAMES,
 } from './content-extraction-strategies/content-extraction-strategies.constants';
 import { doclingConfig } from './content-extraction-strategies/docling/docling.content-extraction-strategy.config';
+import { azureDiConfig } from './content-extraction-strategies/azure-di/azure-di.content-extraction-strategy.config';
 
 export const documentContentExtractionConfig = {
   extractionStrategies: {
@@ -14,6 +15,7 @@ export const documentContentExtractionConfig = {
       `- \`${CONTENT_EXTRACTION_STRATEGIES.internal}\`: Uses the internal \`lecture\` library to extract text from documents, which support all common document formats and uses Tesseract for OCR. This strategy is always available, great to use as a fallback when other strategies fail.`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.mistralOcr}\`: Uses the Mistral OCR API to extract text from documents. This strategy requires a valid Mistral API key.`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.docling}\`: Uses a Docling server to extract text from documents. This strategy requires a running [Docling server](https://github.com/docling-project/docling-serve).`,
+      `- \`${CONTENT_EXTRACTION_STRATEGIES.azureDi}\`: Uses the Azure Document Intelligence service to extract text from documents. This strategy requires a valid Azure Document Intelligence endpoint and API key.`,
     ].join('\n'),
     schema: v.pipe(
       v.string(),
@@ -28,5 +30,6 @@ export const documentContentExtractionConfig = {
   strategy: {
     mistralOcr: mistralOcrConfig,
     docling: doclingConfig,
+    azureDi: azureDiConfig,
   },
 } as const satisfies AppConfigDefinition;
