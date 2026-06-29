@@ -25,6 +25,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
