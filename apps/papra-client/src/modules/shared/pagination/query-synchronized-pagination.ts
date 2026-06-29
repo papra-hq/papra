@@ -20,20 +20,24 @@ export function createParamSynchronizedPagination({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const getPagination: Accessor<Pagination> = () => {
-    const pageIndex = Number(asSingleParam(searchParams[pageIndexParamName]) ?? defaultPageIndex);
+    const urlPageIndex = Number(asSingleParam(searchParams[pageIndexParamName]));
+    const pageIndex =
+      Number.isInteger(urlPageIndex) && urlPageIndex >= 0 ? urlPageIndex : defaultPageIndex;
 
     let initialPageSize = defaultPageSize;
     if (localStorageKey) {
       const stored = localStorage.getItem(localStorageKey);
       if (stored !== null) {
         const parsed = Number(stored);
-        if (!isNaN(parsed)) {
+        if (Number.isInteger(parsed) && parsed > 0) {
           initialPageSize = parsed;
         }
       }
     }
 
-    const pageSize = Number(asSingleParam(searchParams[pageSizeParamName]) ?? initialPageSize);
+    const urlPageSize = Number(asSingleParam(searchParams[pageSizeParamName]));
+    const pageSize =
+      Number.isInteger(urlPageSize) && urlPageSize > 0 ? urlPageSize : initialPageSize;
 
     return { pageIndex, pageSize };
   };

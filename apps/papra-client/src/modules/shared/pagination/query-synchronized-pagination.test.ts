@@ -62,6 +62,52 @@ describe('createParamSynchronizedPagination', () => {
   test('should fallback to localStorage when URL parameter is missing', () => {
     localStorage.setItem('papra:documents:pageSize', '50');
 
+    return new Promise<void>((resolve) => {
+      createRoot((dispose) => {
+        const [getPagination] = createParamSynchronizedPagination({
+          localStorageKey: 'papra:documents:pageSize',
+        });
+        expect(getPagination()).toEqual({ pageIndex: 0, pageSize: 50 });
+        
+        setTimeout(() => {
+          // Assert that the effect synchronizes this missing parameter back to the URL
+          expect(setSearchParamsMock).toHaveBeenCalledWith(
+            {
+              pageSize: '50',
+            },
+            { replace: true }
+          );
+          dispose();
+          resolve();
+        }, 0);
+      });
+    });
+  });
+
+  test('should reject invalid values in localStorage and fallback to default', () => {
+    localStorage.setItem('papra:documents:pageSize', '-5');
+    createRoot((dispose) => {
+      const [getPagination] = createParamSynchronizedPagination({
+        localStorageKey: 'papra:documents:pageSize',
+      });
+      expect(getPagination()).toEqual({ pageIndex: 0, pageSize: 15 });
+      dispose();
+    });
+
+    localStorage.setItem('papra:documents:pageSize', 'abc');
+    createRoot((dispose) => {
+      const [getPagination] = createParamSynchronizedPagination({
+        localStorageKey: 'papra:documents:pageSize',
+      });
+      expect(getPagination()).toEqual({ pageIndex: 0, pageSize: 15 });
+      dispose();
+    });
+  });
+
+  test('should reject invalid URL parameters and fallback to localStorage/default', () => {
+    localStorage.setItem('papra:documents:pageSize', '50');
+    searchParamsStore.pageSize = '-100';
+
     createRoot((dispose) => {
       const [getPagination] = createParamSynchronizedPagination({
         localStorageKey: 'papra:documents:pageSize',
