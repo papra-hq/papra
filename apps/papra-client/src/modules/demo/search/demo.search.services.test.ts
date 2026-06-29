@@ -62,6 +62,28 @@ describe('demo search services', () => {
         createdAt: new Date('2023-07-01'),
         customProperties: [{ key: 'invoicenumber', type: 'text', value: 'INV-001' }],
       },
+      {
+        id: 'doc_8',
+        name: 'Case File',
+        content: 'Reviewed case file.',
+        tags: [],
+        createdAt: new Date('2023-08-01'),
+        customProperties: [
+          {
+            key: 'status',
+            type: 'select',
+            value: { optionId: 'opt_status_archived', name: 'Archived' },
+          },
+          {
+            key: 'labels',
+            type: 'multi_select',
+            value: [
+              { optionId: 'opt_label_urgent', name: 'Urgent' },
+              { optionId: 'opt_label_review', name: 'Review' },
+            ],
+          },
+        ],
+      },
     ] as unknown as Document[];
 
     const queries = [
@@ -71,17 +93,27 @@ describe('demo search services', () => {
       { query: 'tag:cooking', expectedIds: ['doc_1', 'doc_4'] },
       { query: 'tag:cooking butter', expectedIds: ['doc_4'] },
       { query: 'tag:work created:>2023-03-01', expectedIds: ['doc_5', 'doc_7'] },
-      { query: '-tag:work', expectedIds: ['doc_1', 'doc_3', 'doc_4', 'doc_6'] },
+      { query: '-tag:work', expectedIds: ['doc_1', 'doc_3', 'doc_4', 'doc_6', 'doc_8'] },
       { query: 'has:tags', expectedIds: ['doc_1', 'doc_2', 'doc_3', 'doc_4', 'doc_5', 'doc_7'] },
-      { query: '-has:tags', expectedIds: ['doc_6'] },
-      { query: 'NOT has:tags', expectedIds: ['doc_6'] },
-      { query: '-has:tags OR tag:personal', expectedIds: ['doc_3', 'doc_4', 'doc_6'] },
+      { query: '-has:tags', expectedIds: ['doc_6', 'doc_8'] },
+      { query: 'NOT has:tags', expectedIds: ['doc_6', 'doc_8'] },
+      { query: '-has:tags OR tag:personal', expectedIds: ['doc_3', 'doc_4', 'doc_6', 'doc_8'] },
       { query: 'ncakes', expectedIds: [] },
       { query: 'name:ncakes', expectedIds: [] },
       { query: 'content:ncakes', expectedIds: [] },
       { query: 'InvoiceNumber:INV', expectedIds: ['doc_7'] },
       { query: 'invoicenumber:INV', expectedIds: ['doc_7'] },
       { query: 'INVOICENUMBER:INV', expectedIds: ['doc_7'] },
+      // select custom property — matched by option key (lowercased option name) or option id
+      { query: 'status:archived', expectedIds: ['doc_8'] },
+      { query: 'status:Archived', expectedIds: ['doc_8'] },
+      { query: 'status:opt_status_archived', expectedIds: ['doc_8'] },
+      { query: 'status:pending', expectedIds: [] },
+      { query: 'has:status', expectedIds: ['doc_8'] },
+      // multi_select custom property — matches if any option matches
+      { query: 'labels:urgent', expectedIds: ['doc_8'] },
+      { query: 'labels:review', expectedIds: ['doc_8'] },
+      { query: 'labels:missing', expectedIds: [] },
     ];
 
     for (const { query, expectedIds } of queries) {

@@ -217,6 +217,21 @@ function buildHasCustomPropertyFilter({ propertyKey }: { propertyKey: string }):
   };
 }
 
+function selectOptionMatches({ option, value }: { option: unknown; value: string }): boolean {
+  // Hydrated select values are shaped like `{ optionId, name }` (mirroring the real API),
+  // but raw seed/string values are also tolerated. Match against any available identifier.
+  const candidates =
+    typeof option === 'object' && option !== null
+      ? [(option as { optionId?: unknown }).optionId, (option as { name?: unknown }).name]
+      : [option];
+
+  const lowerValue = value.toLowerCase();
+
+  return candidates.some(
+    (candidate) => typeof candidate === 'string' && candidate.toLowerCase() === lowerValue,
+  );
+}
+
 function buildCustomPropertyFilterCondition({
   field,
   expression,
@@ -304,23 +319,16 @@ function buildCustomPropertyFilterCondition({
           return false;
         }
 
-        const propValue = prop.value as { key: string; name: string } | string;
-        const propKey = typeof propValue === 'object' ? propValue.key : propValue;
-
-        return propKey.toLowerCase() === value.toLowerCase();
+        return selectOptionMatches({ option: prop.value, value });
       }
       case 'multi_select': {
         if (operator !== '=') {
           return false;
         }
 
-        const propValues = prop.value as Array<{ key: string; name: string } | string>;
+        const propValues = prop.value as unknown[];
 
-        return propValues.some((v) => {
-          const optKey = typeof v === 'object' ? v.key : v;
-
-          return optKey.toLowerCase() === value.toLowerCase();
-        });
+        return propValues.some((option) => selectOptionMatches({ option, value }));
       }
       default: {
         if (operator !== '=') {
