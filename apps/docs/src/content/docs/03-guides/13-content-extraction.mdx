@@ -1,0 +1,156 @@
+---
+title: Content extraction
+description: Configure how Papra extracts text from your documents, including OCR and external extraction providers.
+slug: guides/content-extraction
+---
+
+This guide explains how Papra extracts text from your documents and how to configure the available extraction strategies, including external providers and OCR.
+
+## What is content extraction?
+
+When a document is added to Papra, its text content is extracted so it can be searched and used by other features such as [auto tagging](/guides/auto-tagging). Different document formats, and different quality requirements, call for different extraction methods, so Papra supports several **extraction strategies**.
+
+## Choosing strategies
+
+The strategies Papra uses are controlled by the `CONTENT_EXTRACTION_STRATEGY` environment variable. It accepts a single strategy name or a comma-separated list, in order of preference:
+
+```bash
+# Single strategy (default)
+CONTENT_EXTRACTION_STRATEGY=internal
+
+# Try Mistral OCR first, fall back to the internal strategy
+CONTENT_EXTRACTION_STRATEGY=mistral-ocr,internal
+```
+
+When multiple strategies are listed:
+
+- The first strategy that can handle the document (based on its mime type, see [mime type filtering](#mime-type-filtering)) is used.
+- If that strategy fails to process the document, the next eligible strategy is tried.
+
+:::tip
+Keep `internal` as the last strategy in the list. It is always available and works on all common formats, making it a reliable fallback when an external provider is unavailable or errors out.
+:::
+
+## Available strategies
+
+| Strategy | Description | Requires |
+| --- | --- | --- |
+| `internal` | Built-in extraction using the `lecture` library, with Tesseract for OCR. Supports all common formats and is always available. | Nothing |
+| `mistral-ocr` | OCR via the Mistral OCR API. | Mistral API key |
+| `docling` | Extraction via a self-hosted Docling server. | Running Docling server |
+| `azure-di` | Extraction via Azure Document Intelligence. | Azure endpoint + API key |
+| `custom-http` | Extraction via any HTTP service you provide. | Your own HTTP endpoint |
+
+### Internal
+
+The default strategy. It uses the bundled `lecture` library to extract text from common document formats and falls back to Tesseract OCR for images and scanned documents. No configuration is required, and it is always available.
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=internal
+```
+
+### Mistral OCR
+
+Uses the [Mistral OCR API](https://mistral.ai/) to extract text. It reuses the Mistral adapter credentials from the [LLM configuration](/guides/llm-configuration), so set `MISTRAL_API_KEY` (and optionally `MISTRAL_BASE_URL`).
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=mistral-ocr,internal
+MISTRAL_API_KEY=your-mistral-api-key
+```
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MISTRAL_API_KEY` | – | API key for the Mistral API (shared with the Mistral LLM adapter). |
+| `MISTRAL_OCR_MODEL_NAME` | `mistral-ocr-latest` | The Mistral OCR model to use. |
+| `MISTRAL_OCR_MIME_TYPES_ALLOW_LIST` | `application/pdf,image/*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
+
+### Docling
+
+Uses a self-hosted [Docling server](https://github.com/docling-project/docling-serve) to extract text.
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=docling,internal
+DOCLING_BASE_URL=http://docling:5001
+```
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DOCLING_BASE_URL` | `http://localhost:5001` | Base URL of the Docling service. |
+| `DOCLING_API_KEY` | – | Optional API key, sent as the `X-API-Key` header. On the Docling side this maps to `DOCLING_SERVE_API_KEY`. |
+| `DOCLING_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
+
+### Azure Document Intelligence
+
+Uses the [Azure Document Intelligence](https://azure.microsoft.com/products/ai-services/ai-document-intelligence) service.
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=azure-di,internal
+AZURE_DI_ENDPOINT=https://your-resource.cognitiveservices.azure.com
+AZURE_DI_API_KEY=your-azure-api-key
+```
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `AZURE_DI_ENDPOINT` | – | Endpoint of the Azure Document Intelligence resource. |
+| `AZURE_DI_API_KEY` | – | API key, sent as the `Ocp-Apim-Subscription-Key` header. |
+| `AZURE_DI_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
+| `AZURE_DI_POLLING_ATTEMPTS` | `10` | Number of times to poll for the result of a processing job. |
+| `AZURE_DI_POLLING_DELAY_MS` | `2000` | Delay in milliseconds between polling attempts. |
+
+### Custom HTTP
+
+Sends the document to an HTTP service you provide and reads the extracted text from the response. This lets you plug in any extraction backend without writing a Papra adapter. Can be used with n8n, Zapier, or any other service that can receive a file and return text.
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=custom-http,internal
+CONTENT_EXTRACTION_CUSTOM_HTTP_URL=https://extractor.example.com/extract
+CONTENT_EXTRACTION_CUSTOM_HTTP_HEADERS={"Authorization":"Bearer your-token"}
+```
+
+Papra makes a `POST` request to the configured URL with the document, then reads the extracted text from the response.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_URL` | – | URL of your HTTP extraction service. |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_HEADERS` | `{}` | Extra headers as a JSON object, e.g. `{"Authorization":"Bearer <token>"}`. The `Content-Type` header is set automatically based on the upload format. |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_UPLOAD_FORMAT` | `form-data` | How the document is sent: `form-data` or `json` (see below). |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_RESPONSE_FORMAT` | `json` | How the response is read: `json` or `text` (see below). |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_JSON_RESPONSE_TEXT_PATH` | `text` | For `json` responses, the dot path to the extracted text, e.g. `data.content`. |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_REQUEST_TIMEOUT_MS` | `30000` | Request timeout in milliseconds. |
+| `CONTENT_EXTRACTION_CUSTOM_HTTP_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
+
+**Upload formats** (how Papra sends the document):
+
+- `form-data`: a `multipart/form-data` request with the document file in the `file` field.
+- `json`: a JSON body with the document base64-encoded:
+  ```json
+  { "document": { "filename": "file.pdf", "type": "application/pdf", "content": "<base64-encoded-content>" } }
+  ```
+
+**Response formats** (how Papra reads the extracted text):
+
+- `json`: the response is parsed as JSON and the text is read from the path in `CONTENT_EXTRACTION_CUSTOM_HTTP_JSON_RESPONSE_TEXT_PATH` (e.g. `text`, or `data.content`).
+- `text`: the entire response body is used as the extracted text.
+
+## Mime type filtering
+
+Every strategy except `internal` accepts a mime types allow list that can limits which documents it handles. If a document's mime type does not match, the strategy is skipped and the next one in the list is tried.
+
+The list is comma-separated and supports wildcards and negations:
+
+- `*` matches all formats.
+- `image/*` matches all image mime types.
+- Prefix an entry with `!` to negate it: `*,!image/png` allows everything except PNG.
+- Negations always take precedence over allows, even more specific ones: `image/png,!image/*` rejects PNG.
+
+For example, to use Azure Document Intelligence only for PDFs and fall back to the internal strategy for everything else:
+
+```bash
+CONTENT_EXTRACTION_STRATEGY=azure-di,internal
+AZURE_DI_MIME_TYPES_ALLOW_LIST=application/pdf
+```
+
+## Related guides
+
+- [LLM configuration](/guides/llm-configuration)
+- [Document auto tagging](/guides/auto-tagging)
