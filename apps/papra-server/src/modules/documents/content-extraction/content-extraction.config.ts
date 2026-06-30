@@ -7,6 +7,7 @@ import {
 } from './content-extraction-strategies/content-extraction-strategies.constants';
 import { doclingConfig } from './content-extraction-strategies/docling/docling.content-extraction-strategy.config';
 import { azureDiConfig } from './content-extraction-strategies/azure-di/azure-di.content-extraction-strategy.config';
+import { customHttpConfig } from './content-extraction-strategies/custom-http/custom-http.content-extraction-strategy.config';
 
 export const documentContentExtractionConfig = {
   extractionStrategies: {
@@ -16,6 +17,7 @@ export const documentContentExtractionConfig = {
       `- \`${CONTENT_EXTRACTION_STRATEGIES.mistralOcr}\`: Uses the Mistral OCR API to extract text from documents. This strategy requires a valid Mistral API key.`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.docling}\`: Uses a Docling server to extract text from documents. This strategy requires a running [Docling server](https://github.com/docling-project/docling-serve).`,
       `- \`${CONTENT_EXTRACTION_STRATEGIES.azureDi}\`: Uses the Azure Document Intelligence service to extract text from documents. This strategy requires a valid Azure Document Intelligence endpoint and API key.`,
+      `- \`${CONTENT_EXTRACTION_STRATEGIES.customHttp}\`: Uses a custom HTTP service to extract text from documents. This makes a POST request to the configured URL with the document file, see \`CONTENT_EXTRACTION_CUSTOM_HTTP_\` environment variables for configuration.`,
     ].join('\n'),
     schema: v.pipe(
       v.string(),
@@ -31,5 +33,6 @@ export const documentContentExtractionConfig = {
     mistralOcr: mistralOcrConfig,
     docling: doclingConfig,
     azureDi: azureDiConfig,
+    customHttp: customHttpConfig,
   },
 } as const satisfies AppConfigDefinition;
