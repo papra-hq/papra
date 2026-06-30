@@ -9,12 +9,14 @@ export const azureDiConfig = {
     env: 'AZURE_DI_ENDPOINT',
     schema: v.optional(urlSchema),
     default: undefined,
+    showInDocumentation: false,
   },
   apiKey: {
     doc: 'The API key for the Azure Document Intelligence service, will be set as `Ocp-Apim-Subscription-Key` header in requests to the Azure Document Intelligence service.',
     env: 'AZURE_DI_API_KEY',
     schema: v.string(),
     default: '',
+    showInDocumentation: false,
   },
   mimeTypesAllowList: {
     doc: 'The list of mime types that the Azure Document Inteligence strategy will be used for. If the document mime type is not in this list, the strategy will be skipped. Comma separated list. Supports wildcards, e.g. "image/*" matches all image mime types, and "*" matches all formats. Prefix an entry with "!" to negate it, e.g. "*,!image/png" allows everything except PNG. Negations always take precedence over allows, even more specific ones (e.g. "image/png,!image/*" rejects PNG).',
@@ -32,17 +34,20 @@ export const azureDiConfig = {
       ),
     ),
     default: '*',
+    showInDocumentation: false,
   },
   pollingAttempts: {
     doc: 'The number of attempts to poll the Azure Document Intelligence service for the result of a document processing job.',
     env: 'AZURE_DI_POLLING_ATTEMPTS',
     schema: coercedStrictlyPositiveIntegerSchema,
     default: 10,
+    showInDocumentation: false,
   },
   pollingDelayMs: {
     doc: 'The delay in milliseconds between polling attempts to the Azure Document Intelligence service for the result of a document processing job.',
     env: 'AZURE_DI_POLLING_DELAY_MS',
     schema: coercedStrictlyPositiveIntegerSchema,
     default: 2000,
+    showInDocumentation: false,
   },
 } as const satisfies AppConfigDefinition;
