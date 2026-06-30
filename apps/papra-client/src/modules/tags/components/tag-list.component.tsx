@@ -67,7 +67,7 @@ const TagPicker: Component<{
     highlightNext,
     highlightPrevious,
     getListItems,
-    getNormalizedFilterQuery,
+    getTrimmedFilterQuery,
   } = useTagPicker({
     getAvailableTags: () => tagsQuery.data?.tags ?? [],
     getSelectedTagIds: () => props.selectedTags?.map((tag) => tag.id) ?? [],
@@ -166,7 +166,7 @@ const TagPicker: Component<{
       <CreateTagModal
         open={getIsTagCreationModalOpen()}
         onOpenChange={setIsTagCreationModalOpen}
-        initialName={getNormalizedFilterQuery()}
+        initialName={getTrimmedFilterQuery()}
         onTagCreated={handleTagCreated}
         organizationId={props.organizationId}
       />
