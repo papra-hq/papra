@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { AI_DEFAULT_MODEL_ENV_KEY } from './ai.constants';
 import { AI_ADAPTERS_NAMES, AI_DEFAULT_ADAPTER_NAME } from './adapters/ai-adapters.constants';
 import { openAiAdaptersConfig } from './adapters/openai-compatible/openai-compatible.config';
+import { anthropicAdaptersConfig } from './adapters/anthropic/anthropic.ai-adapters.config';
 
 export const aiConfig = {
   isEnabled: {
@@ -14,7 +15,10 @@ export const aiConfig = {
     default: false,
     showInDocumentation: false,
   },
-  adapters: openAiAdaptersConfig,
+  adapters: {
+    anthropic: anthropicAdaptersConfig,
+    ...openAiAdaptersConfig,
+  },
   defaultAdapterName: {
     doc: `Default AI adapter to use when no specific adapter is specified in the model id. Available adapters: ${AI_ADAPTERS_NAMES.join(', ')}`,
     schema: v.picklist(AI_ADAPTERS_NAMES),
