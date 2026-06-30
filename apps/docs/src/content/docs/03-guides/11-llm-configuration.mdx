@@ -1,0 +1,125 @@
+---
+title: LLM configuration
+description: Configure LLM providers in Papra to enable AI features like auto tagging and content analysis.
+slug: guides/llm-configuration
+---
+
+This guide explains how to configure LLM providers in Papra. Once a provider is configured, it can be used to power AI features like [document auto tagging](/guides/auto-tagging).
+
+## Enabling AI features
+
+AI features are disabled by default. To enable them, set the master switch:
+
+```bash
+AI_IS_ENABLED=true
+```
+
+You then need to configure at least one provider (see below) and pick a default model.
+
+## Model nomenclature
+
+In order to use different models from potentially different providers, Papra uses a specific nomenclature to identify a model: `<adapter>://<model_name>`.
+
+For example:
+- `openai://gpt-4o-mini`
+- `ollama://qwen3:8b`
+- `anthropic://claude-haiku-4-5`
+- `mistral://mistral-small-latest`
+- `openrouter://openai/gpt-5.1`
+
+The `<adapter>` part is the id of one of the built-in adapters (see [Supported providers](#supported-providers)). 
+
+## Default model
+
+The `AI_DEFAULT_MODEL` variable defines which model is used by AI features when no more specific model is configured:
+
+```bash
+AI_DEFAULT_MODEL=openai://gpt-4o-mini
+```
+
+Individual features can override this. For example, auto tagging reads `AUTO_TAGGING_MODEL` first and falls back to `AI_DEFAULT_MODEL` if it is not set.
+
+## Supported providers
+
+Papra ships with adapters for the most common providers, plus support for any OpenAI-compatible API. Each adapter is configured with its own environment variables.
+
+Don't hesitate to [reach out](https://github.com/papra-hq/papra/issues) if you want to see a provider added to Papra.
+
+### OpenAI-compatible providers
+
+These adapters all speak the OpenAI API format and share the same two settings: a base URL and an API key. The defaults already point to each provider's hosted API, so for the cloud providers you usually only need to set the API key.
+
+| Adapter (`<adapter>`) | Provider | API key | Base URL (default) |
+| --- | --- | --- | --- |
+| `openai` | OpenAI | `OPENAI_API_KEY` | `OPENAI_BASE_URL` (`https://api.openai.com/v1`) |
+| `mistral` | Mistral | `MISTRAL_API_KEY` | `MISTRAL_BASE_URL` (`https://api.mistral.ai/v1`) |
+| `deepseek` | DeepSeek | `DEEPSEEK_API_KEY` | `DEEPSEEK_BASE_URL` (`https://api.deepseek.com/v1`) |
+| `openrouter` | OpenRouter | `OPENROUTER_API_KEY` | `OPENROUTER_BASE_URL` (`https://openrouter.ai/api/v1`) |
+| `cocore` | co/core | `COCORE_API_KEY` | `COCORE_BASE_URL` (`https://cocore.dev/api/v1`) |
+| `ollama` | Ollama | `OLLAMA_API_KEY` (default `ollama`) | `OLLAMA_BASE_URL` (`http://localhost:11434/v1`) |
+| `lmstudio` | LM Studio | `LMSTUDIO_API_KEY` (default `lm-studio`) | `LMSTUDIO_BASE_URL` (`http://localhost:1234/v1`) |
+| `vllm` | vLLM | `VLLM_API_KEY` (default `not-needed`) | `VLLM_BASE_URL` (`http://localhost:8000/v1`) |
+
+:::note
+The base URL must include the API version path expected by the provider (e.g. the `/v1` suffix for OpenAI-compatible APIs). The defaults already include it, so only override the base URL if you are pointing at a self-hosted or proxied endpoint.
+:::
+
+### Anthropic
+
+Anthropic uses its own API and adapter (`anthropic`):
+
+| Setting | Environment variable |
+| --- | --- |
+| API key | `ANTHROPIC_API_KEY` |
+| Base URL (optional) | `ANTHROPIC_BASE_URL` |
+
+### Any other OpenAI-compatible provider
+
+Because the OpenAI-compatible adapters are just a base URL and an API key, you can point any of them at another service. The most common approach is to reuse the `openai` adapter and override its base URL:
+
+```bash
+OPENAI_BASE_URL=https://your-provider.example.com/v1
+OPENAI_API_KEY=your-api-key
+AI_DEFAULT_MODEL=openai://your-model-name
+```
+
+## Examples
+
+### OpenAI
+
+```bash
+AI_IS_ENABLED=true
+OPENAI_API_KEY=sk-...
+AI_DEFAULT_MODEL=openai://gpt-4o-mini
+```
+
+### Anthropic
+
+```bash
+AI_IS_ENABLED=true
+ANTHROPIC_API_KEY=sk-ant-...
+AI_DEFAULT_MODEL=anthropic://claude-haiku-4-5
+```
+
+### Ollama (local)
+
+A local Ollama install is reachable on its default URL, so you only need to point Papra at the right adapter and model:
+
+```bash
+AI_IS_ENABLED=true
+AI_DEFAULT_MODEL=ollama://qwen3:8b
+```
+
+If Ollama runs on another host or port, override the base URL (keep the `/v1` suffix):
+
+```bash
+OLLAMA_BASE_URL=http://ollama:11434/v1
+```
+
+:::tip
+When running Papra in Docker, `localhost` refers to the container itself. To reach an Ollama or LM Studio instance running on the host, use `http://host.docker.internal:11434/v1` (or the host's IP) instead of `localhost`.
+:::
+
+## Next steps
+
+- [Set up document auto tagging](/guides/auto-tagging)
