@@ -6,7 +6,7 @@ export type OrganizationSettings = {
       isEnabled: boolean;
       canCreateNewTags: boolean;
       maxTags: number;
-      modelId: string;
+      modelId?: string;
     };
   };
 };
