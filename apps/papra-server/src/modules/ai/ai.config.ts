@@ -12,7 +12,6 @@ export const aiConfig = {
     schema: booleanishSchema,
     env: 'AI_IS_ENABLED',
     default: false,
-    showInDocumentation: false,
   },
   adapters: {
     anthropic: anthropicAdaptersConfig,
@@ -23,6 +22,5 @@ export const aiConfig = {
     schema: v.optional(aiModelIdSchema),
     env: AI_DEFAULT_MODEL_ENV_KEY,
     default: undefined,
-    showInDocumentation: false,
   },
 } as const satisfies AppConfigDefinition;
