@@ -197,7 +197,7 @@ export const CreateTagModal: Component<{
   };
 
   const createTagMutation = useMutation(() => ({
-    mutationFn: (data: { name: string; color: string; description: string }) =>
+    mutationFn: async (data: { name: string; color: string; description: string }) =>
       createTag({
         name: data.name,
         color: data.color.toLowerCase(),
@@ -262,7 +262,7 @@ const UpdateTagModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const updateTagMutation = useMutation(() => ({
-    mutationFn: (data: { name: string; color: string; description: string }) =>
+    mutationFn: async (data: { name: string; color: string; description: string }) =>
       updateTag({
         name: data.name,
         color: data.color.toLowerCase(),
@@ -325,7 +325,7 @@ export const TagsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
-    queryFn: () => fetchTags({ organizationId: params.organizationId }),
+    queryFn: async () => fetchTags({ organizationId: params.organizationId }),
   }));
 
   const del = async ({ tag }: { tag: TagType }) => {
@@ -437,7 +437,7 @@ export const TagsPage: Component = () => {
               size="icon"
               variant="outline"
               class="size-7 text-red"
-              onClick={() => del({ tag: data.row.original })}
+              onClick={async () => del({ tag: data.row.original })}
             >
               <div class="i-tabler-trash size-4" />
             </Button>

@@ -22,7 +22,7 @@ export const DocumentContentEditionPanel: Component<{
   const [getContent, setContent] = createSignal(props.content);
 
   const updateMutation = useMutation(() => ({
-    mutationFn: ({ content }: { content: string }) =>
+    mutationFn: async ({ content }: { content: string }) =>
       updateDocument({
         documentId: props.documentId,
         organizationId: props.organizationId,

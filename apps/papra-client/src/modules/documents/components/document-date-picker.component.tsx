@@ -17,7 +17,7 @@ export function DocumentDatePicker(props: { document: Document; organizationId: 
   const { getErrorMessage } = useI18nApiErrors();
 
   const updateDateMutation = useMutation(() => ({
-    mutationFn: (date: Date | null) =>
+    mutationFn: async (date: Date | null) =>
       updateDocument({
         documentId: props.document.id,
         organizationId: props.organizationId,

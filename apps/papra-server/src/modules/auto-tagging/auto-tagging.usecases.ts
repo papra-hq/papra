@@ -92,8 +92,8 @@ export async function autoTagDocument({
 
   // TODO: introduce a createTags method with a new checkIfOrganizationCanCreateNewTag
   const createdTagsResults = await Promise.allSettled(
-    tagsToCreate.map(({ name, description }) =>
-      limit(() =>
+    tagsToCreate.map(async ({ name, description }) =>
+      limit(async () =>
         createTag({
           organizationId,
           color: '#CCCCCC',

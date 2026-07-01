@@ -82,7 +82,7 @@ export const ApiKeysPage: Component = () => {
   const { t } = useI18n();
   const query = useQuery(() => ({
     queryKey: ['api-keys'],
-    queryFn: () => fetchApiKeys(),
+    queryFn: async () => fetchApiKeys(),
   }));
 
   return (

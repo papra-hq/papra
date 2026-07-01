@@ -23,7 +23,7 @@ import 'virtual:uno.css';
 import './app.css';
 
 const DemoIndicator = isDemoMode
-  ? lazy(() =>
+  ? lazy(async () =>
       import('./modules/demo/demo.provider').then((mod) => ({ default: mod.DemoIndicator })),
     )
   : null;

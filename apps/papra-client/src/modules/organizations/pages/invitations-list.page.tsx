@@ -56,7 +56,7 @@ const InvitationActions: Component<{ invitation: OrganizationInvitation }> = (pr
   const { confirm } = useConfirmModal();
 
   const cancelMutation = useMutation(() => ({
-    mutationFn: (invitationId: string) => cancelInvitation({ invitationId }),
+    mutationFn: async (invitationId: string) => cancelInvitation({ invitationId }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['organizations', props.invitation.organizationId, 'invitations'],
@@ -65,7 +65,7 @@ const InvitationActions: Component<{ invitation: OrganizationInvitation }> = (pr
   }));
 
   const resendMutation = useMutation(() => ({
-    mutationFn: (invitationId: string) => resendInvitation({ invitationId }),
+    mutationFn: async (invitationId: string) => resendInvitation({ invitationId }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['organizations', props.invitation.organizationId, 'invitations'],
@@ -155,7 +155,7 @@ const InvitationsList: Component = () => {
   const { t } = useI18n();
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'invitations'],
-    queryFn: () => fetchOrganizationInvitations({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganizationInvitations({ organizationId: params.organizationId }),
   }));
 
   const table = createSolidTable({

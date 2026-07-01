@@ -20,7 +20,7 @@ export const UsageWarningCard: Component<{ organizationId: string }> = (props) =
 
   const query = useQuery(() => ({
     queryKey: ['organizations', getOrganizationId(), 'usage'],
-    queryFn: () => fetchOrganizationUsage({ organizationId: getOrganizationId() }),
+    queryFn: async () => fetchOrganizationUsage({ organizationId: getOrganizationId() }),
     refetchOnWindowFocus: false,
   }));
 

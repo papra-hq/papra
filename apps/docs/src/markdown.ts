@@ -14,5 +14,5 @@ renderer.heading = function ({ text, depth }) {
 };
 
 export function renderMarkdown(markdown: string) {
-  return marked.parse(markdown, { renderer });
+  return marked.parse(markdown, { renderer, async: false });
 }

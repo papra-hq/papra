@@ -77,7 +77,7 @@ export const DocumentViewPage: Component = () => {
 
   const documentViewQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'document-views', params.documentViewId],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocumentView({
         organizationId: params.organizationId,
         documentViewId: params.documentViewId,
@@ -94,7 +94,7 @@ export const DocumentViewPage: Component = () => {
       documentViewQuery.data?.documentView?.query ?? '',
       getPagination(),
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchOrganizationDocuments({
         organizationId: params.organizationId,
         searchQuery: documentViewQuery.data?.documentView?.query ?? '',

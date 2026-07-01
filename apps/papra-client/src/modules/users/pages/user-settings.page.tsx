@@ -154,7 +154,7 @@ export const UserSettingsPage: Component = () => {
                 <UpdateFullNameCard name={getUser().name} />
                 <TwoFactorCard
                   twoFactorEnabled={getUser().twoFactorEnabled}
-                  onUpdate={() => query.refetch()}
+                  onUpdate={async () => query.refetch()}
                 />
                 <LogoutCard />
               </div>

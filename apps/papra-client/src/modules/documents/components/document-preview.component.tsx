@@ -15,7 +15,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Card } from '@/modules/ui/components/card';
 import { fetchDocumentFile } from '../documents.services';
 
-const PdfViewer = lazy(() =>
+const PdfViewer = lazy(async () =>
   import('./pdf-viewer/simple-pdf-viewer.component').then((m) => ({ default: m.SimplePdfViewer })),
 );
 
@@ -23,7 +23,7 @@ const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
 const txtLikeMimeType = ['application/yaml', 'application/json', 'application/xml'];
 
-function blobToString(blob: Blob): Promise<string> {
+async function blobToString(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
@@ -112,7 +112,7 @@ async function isBlobTextSafe(blob: Blob): Promise<boolean> {
 }
 
 const TextFromBlob: Component<{ blob: Blob }> = (props) => {
-  const [txt] = createResource(() => blobToString(props.blob));
+  const [txt] = createResource(async () => blobToString(props.blob));
 
   return (
     <Card class="p-6 overflow-auto max-h-800px max-w-full text-xs">
@@ -201,7 +201,7 @@ export const DocumentPreview: Component<{ document: Document }> = (props) => {
       props.document.id,
       'file',
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocumentFile({
         documentId: props.document.id,
         organizationId: props.document.organizationId,

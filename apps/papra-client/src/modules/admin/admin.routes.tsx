@@ -5,7 +5,7 @@ import { NotFoundPage } from '../shared/pages/not-found.page';
 
 export const adminRoutes: RouteDefinition = {
   path: '/admin/*',
-  component: lazy(() => import('./layouts/admin.layout')),
+  component: lazy(async () => import('./layouts/admin.layout')),
   children: [
     {
       path: '/',
@@ -13,23 +13,23 @@ export const adminRoutes: RouteDefinition = {
     },
     {
       path: '/users',
-      component: lazy(() => import('./users/pages/list-users.page')),
+      component: lazy(async () => import('./users/pages/list-users.page')),
     },
     {
       path: '/users/:userId',
-      component: lazy(() => import('./users/pages/user-detail.page')),
+      component: lazy(async () => import('./users/pages/user-detail.page')),
     },
     {
       path: '/analytics',
-      component: lazy(() => import('./analytics/pages/analytics.page')),
+      component: lazy(async () => import('./analytics/pages/analytics.page')),
     },
     {
       path: '/organizations',
-      component: lazy(() => import('./organizations/pages/list-organizations.page')),
+      component: lazy(async () => import('./organizations/pages/list-organizations.page')),
     },
     {
       path: '/organizations/:organizationId',
-      component: lazy(() => import('./organizations/pages/organization-detail.page')),
+      component: lazy(async () => import('./organizations/pages/organization-detail.page')),
     },
     {
       path: '/*404',

@@ -6,7 +6,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { fetchDocument, fetchDocumentFile } from '../documents.services';
 
-const PdfViewer = lazy(() =>
+const PdfViewer = lazy(async () =>
   import('../components/pdf-viewer/full-pdf-viewer.component').then((m) => ({
     default: m.PdfViewer,
   })),
@@ -20,13 +20,13 @@ export const DocumentPdfViewerPage: Component = () => {
 
   const documentQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
   const documentFileQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', params.documentId, 'file'],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocumentFile({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 

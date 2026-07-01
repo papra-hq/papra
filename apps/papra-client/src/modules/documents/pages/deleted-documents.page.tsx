@@ -27,7 +27,7 @@ const RestoreDocumentButton: Component<{ document: Document }> = (props) => {
     <Button
       variant="outline"
       size="sm"
-      onClick={() => restore({ document: props.document })}
+      onClick={async () => restore({ document: props.document })}
       isLoading={getIsRestoring()}
     >
       {getIsRestoring() ? (
@@ -171,7 +171,7 @@ export const DeletedDocumentsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'deleted', getPagination()],
-    queryFn: () =>
+    queryFn: async () =>
       fetchOrganizationDeletedDocuments({
         organizationId: params.organizationId,
         ...getPagination(),

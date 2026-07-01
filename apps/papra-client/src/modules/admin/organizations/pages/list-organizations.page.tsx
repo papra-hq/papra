@@ -29,7 +29,7 @@ export const AdminListOrganizationsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', search(), pagination()],
-    queryFn: () =>
+    queryFn: async () =>
       listOrganizations({
         search: search() || undefined,
         pageIndex: pagination().pageIndex,

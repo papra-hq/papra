@@ -3,7 +3,7 @@ import type { Storage, StorageValue } from 'unstorage';
 export async function getValues<T extends StorageValue>(storage: Storage<T>): Promise<T[]> {
   const keys = await storage.getKeys();
 
-  const values = (await Promise.all(keys.map((key) => storage.getItem(key)))) as T[];
+  const values = (await Promise.all(keys.map(async (key) => storage.getItem(key)))) as T[];
 
   return values;
 }

@@ -30,7 +30,7 @@ export const OrganizationPage: Component = () => {
 
   const documentsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', getPagination()],
-    queryFn: () =>
+    queryFn: async () =>
       fetchOrganizationDocuments({
         organizationId: params.organizationId,
         ...getPagination(),
@@ -40,7 +40,7 @@ export const OrganizationPage: Component = () => {
 
   const statsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'stats'],
-    queryFn: () => getOrganizationDocumentsStats({ organizationId: params.organizationId }),
+    queryFn: async () => getOrganizationDocumentsStats({ organizationId: params.organizationId }),
   }));
 
   const { promptImport } = useDocumentUpload();

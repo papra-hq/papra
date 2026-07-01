@@ -43,7 +43,7 @@ const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'subscription'],
-    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
+    queryFn: async () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
   }));
 
   const shouldShowUpgradeCTA = () => {
@@ -88,7 +88,7 @@ const OrganizationLayoutSideNav: Component = () => {
 
   const documentViewsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'document-views'],
-    queryFn: () => fetchDocumentViews({ organizationId: params.organizationId }),
+    queryFn: async () => fetchDocumentViews({ organizationId: params.organizationId }),
   }));
 
   const getDocumentViewsSections = () => {
@@ -173,7 +173,7 @@ const OrganizationLayoutSideNav: Component = () => {
 
   const organizationQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
-    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
   createEffect(
@@ -275,7 +275,7 @@ export const OrganizationLayout: ParentComponent = (props) => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
-    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
   createEffect(

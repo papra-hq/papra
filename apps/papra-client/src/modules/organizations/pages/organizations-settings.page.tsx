@@ -47,7 +47,7 @@ const DeleteOrganizationCard: Component<{ organization: Organization }> = (props
   // Fetch subscription to check if organization has an active subscription
   const subscriptionQuery = useQuery(() => ({
     queryKey: ['organizations', props.organization.id, 'subscription'],
-    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organization.id }),
+    queryFn: async () => fetchOrganizationSubscription({ organizationId: props.organization.id }),
     enabled: config.isSubscriptionsEnabled,
   }));
 
@@ -263,7 +263,7 @@ export const OrganizationsSettingsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId],
-    queryFn: () => fetchOrganization({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganization({ organizationId: params.organizationId }),
   }));
 
   return (

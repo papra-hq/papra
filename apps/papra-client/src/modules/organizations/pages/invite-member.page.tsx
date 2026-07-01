@@ -40,7 +40,7 @@ export const InviteMemberPage: Component = () => {
   const tRole = (role: InvitableRole) => t(`organizations.members.roles.${role}`);
 
   const inviteMemberMutation = useMutation(() => ({
-    mutationFn: ({ email, role }: { email: string; role: InvitableRole }) =>
+    mutationFn: async ({ email, role }: { email: string; role: InvitableRole }) =>
       inviteOrganizationMember({
         organizationId: params.organizationId,
         email,

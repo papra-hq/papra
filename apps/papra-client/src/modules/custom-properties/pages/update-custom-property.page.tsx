@@ -25,7 +25,7 @@ export const UpdateCustomPropertyPage: Component = () => {
       'custom-properties',
       params.propertyDefinitionId,
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchCustomPropertyDefinition({
         organizationId: params.organizationId,
         propertyDefinitionId: params.propertyDefinitionId,
@@ -73,7 +73,7 @@ export const UpdateCustomPropertyPage: Component = () => {
           <CustomPropertyDefinitionForm
             organizationId={params.organizationId}
             propertyDefinition={getDefinition()}
-            onSubmit={({ propertyDefinition }) =>
+            onSubmit={async ({ propertyDefinition }) =>
               updateMutation.mutateAsync({ propertyDefinition })
             }
             submitButton={
