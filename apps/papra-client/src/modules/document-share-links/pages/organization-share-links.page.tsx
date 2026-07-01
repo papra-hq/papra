@@ -53,7 +53,7 @@ export const OrganizationShareLinksPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'share-links'],
-    queryFn: () => fetchOrganizationShareLinks({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganizationShareLinks({ organizationId: params.organizationId }),
   }));
 
   const table = createSolidTable({

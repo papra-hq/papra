@@ -23,7 +23,7 @@ export const RenameDocumentDialog: Component<{
   const { t } = useI18n();
 
   const renameDocumentMutation = useMutation(() => ({
-    mutationFn: ({ name }: { name: string }) =>
+    mutationFn: async ({ name }: { name: string }) =>
       updateDocument({ documentId: props.documentId, organizationId: props.organizationId, name }),
     onSuccess: async () => {
       createToast({

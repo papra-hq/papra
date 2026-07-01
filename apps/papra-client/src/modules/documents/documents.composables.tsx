@@ -12,7 +12,7 @@ import {
   restoreDocument,
 } from './documents.services';
 
-export function invalidateOrganizationDocumentsQuery({
+export async function invalidateOrganizationDocumentsQuery({
   organizationId,
 }: {
   organizationId: string;
@@ -46,11 +46,11 @@ export function useDownloadDocument() {
         const [document, documentFile] = await Promise.all([
           queryClient.fetchQuery({
             queryKey: ['organizations', organizationId, 'documents', documentId],
-            queryFn: () => fetchDocument({ documentId, organizationId }),
+            queryFn: async () => fetchDocument({ documentId, organizationId }),
           }),
           queryClient.fetchQuery({
             queryKey: ['organizations', organizationId, 'documents', documentId, 'file'],
-            queryFn: () => fetchDocumentFile({ documentId, organizationId }),
+            queryFn: async () => fetchDocumentFile({ documentId, organizationId }),
           }),
         ]);
 

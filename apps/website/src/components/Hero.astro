@@ -1,14 +1,10 @@
 ---
 import { config } from '../app.config';
 import { useI18n } from '../i18n/i18n';
-import { LOCALES } from '../i18n/i18n.constants';
 import { Image } from 'astro:assets';
 import HeroScreenshot from '../assets/papra-screenshot.png';
 import { GITHUB_REPO_URL } from '../socials';
 
-export async function getStaticPaths() {
-    return LOCALES.map(locale => ({ params: { locale } }));
-}
 const { t } = useI18n({ locale: Astro.currentLocale });
 
 const pils = [

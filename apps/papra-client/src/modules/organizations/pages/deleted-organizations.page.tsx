@@ -126,7 +126,7 @@ export const DeletedOrganizationsPage: Component = () => {
                     </div>
 
                     <Button
-                      onClick={() => handleRestore(organization.id)}
+                      onClick={async () => handleRestore(organization.id)}
                       disabled={restoreMutation.isPending}
                       variant="outline"
                       size="sm"

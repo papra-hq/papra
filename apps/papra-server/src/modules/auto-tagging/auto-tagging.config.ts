@@ -13,8 +13,8 @@ export const autoTaggingConfig = {
     default: true,
     showInDocumentation: false,
   },
-  model: {
-    doc: 'Default AI model to use when no specific model is specified, the format is <adapterId>:<modelName>, e.g. "ollama:llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
+  modelId: {
+    doc: 'AI model to use for auto-tagging, the format is <adapterId>://<modelName>, e.g. "ollama://llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
     schema: v.optional(aiModelIdSchema),
     env: ['AUTO_TAGGING_MODEL', AI_DEFAULT_MODEL_ENV_KEY],
     default: undefined,

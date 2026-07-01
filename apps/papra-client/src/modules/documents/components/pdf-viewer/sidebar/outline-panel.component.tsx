@@ -40,7 +40,7 @@ const OutlineItem: Component<{
         <button
           type="button"
           class="flex-1 rounded-sm text-left text-xs px-1 py-0.5 hover:bg-accent hover:text-accent-foreground text-sm transition-colors truncate"
-          onClick={() => props.store.pdfSlick?.linkService?.goToDestination(props.dest)}
+          onClick={async () => props.store.pdfSlick?.linkService?.goToDestination(props.dest)}
         >
           {props.title}
         </button>

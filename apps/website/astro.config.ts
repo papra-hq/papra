@@ -41,7 +41,19 @@ export default defineConfig({
   ],
 
   output: 'static',
-  adapter: cloudflare(),
+
+  // We don't need sessions, and to prevent cf from provisionning a KV store for us, we use the null driver.
+  session: { driver: { entrypoint: 'unstorage/drivers/null' } },
+
+  adapter: cloudflare({
+    // Keep build-time (sharp) image optimization for the static site instead of
+    // the v14 default 'cloudflare-binding' runtime image service.
+    imageService: 'compile',
+  }),
+
+  // Astro v7 changed the default to 'jsx' (strips whitespace between inline
+  // elements like React). Keep the previous behavior to avoid layout regressions.
+  compressHTML: true,
 
   i18n: {
     locales: LOCALES.map((locale) => locale), // Because astro expects string[] and not readonly string[]

@@ -164,7 +164,7 @@ const AllowedOriginsDialog: Component<{
                   aria-label={t('intake-emails.allowed-origins.delete.label')}
                   size="icon"
                   class="text-red"
-                  onClick={() => deleteAllowedOrigin({ origin })}
+                  onClick={async () => deleteAllowedOrigin({ origin })}
                 >
                   <div class="i-tabler-trash size-4" />
                 </Button>
@@ -220,7 +220,7 @@ export const IntakeEmailsPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'intake-emails'],
-    queryFn: () => fetchIntakeEmails({ organizationId: params.organizationId }),
+    queryFn: async () => fetchIntakeEmails({ organizationId: params.organizationId }),
   }));
 
   const createEmail = async () => {

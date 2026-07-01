@@ -65,6 +65,19 @@ export const sidebar = [
         label: 'Storage Key Patterns',
         slug: 'guides/storage-key-patterns',
       },
+      // Uncomment post release
+      // {
+      //   label: 'Content Extraction',
+      //   slug: 'guides/content-extraction',
+      // },
+      // {
+      //   label: 'LLM Configuration',
+      //   slug: 'guides/llm-configuration',
+      // },
+      // {
+      //   label: 'Document Auto Tagging',
+      //   slug: 'guides/auto-tagging',
+      // },
     ],
   },
   {

@@ -18,6 +18,10 @@ export default defineConfig({
     'import/no-mutable-exports': 'error',
     'import/no-named-default': 'error',
     'import/newline-after-import': ['error', { count: 1 }],
+
+    'unicorn/prefer-node-protocol': 'error',
+    'typescript/promise-function-async': 'error',
+    'typescript/use-unknown-in-catch-callback-variable': 'error',
   },
   ignorePatterns: [
     '.output/**',

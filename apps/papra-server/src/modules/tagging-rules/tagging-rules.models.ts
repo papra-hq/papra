@@ -1,3 +1,4 @@
+import { stringify } from '@papra/std';
 import type { Document } from '../documents/documents.types';
 
 export function getDocumentFieldValue({ document, field }: { document: Document; field: string }) {
@@ -5,5 +6,5 @@ export function getDocumentFieldValue({ document, field }: { document: Document;
     ? document[field as keyof Document]
     : undefined;
 
-  return { fieldValue: String(fieldValue ?? '') };
+  return { fieldValue: stringify(fieldValue ?? '') };
 }

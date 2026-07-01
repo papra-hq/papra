@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
-function getDocsSections(): Promise<
+async function getDocsSections(): Promise<
   { label: string; items: { label: string; url: string; description: string }[] }[]
 > {
-  return fetch('https://docs.papra.app/docs-navigation.json').then((res) => res.json());
+  return fetch('https://docs.papra.app/docs-navigation.json').then(async (res) => res.json());
 }
 
 export const GET: APIRoute = async ({ site }) => {
@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ site }) => {
 
 ## Blog Posts
 
-${posts.map((post) => `- [${post.data.title}](${getBlogPostUrl(post.slug)}): ${post.data.description}`).join('\n')}
+${posts.map((post) => `- [${post.data.title}](${getBlogPostUrl(post.id)}): ${post.data.description}`).join('\n')}
 
 ## Assets
 

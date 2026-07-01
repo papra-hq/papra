@@ -55,7 +55,7 @@ const TagPicker: Component<{
   const [getIsTagCreationModalOpen, setIsTagCreationModalOpen] = createSignal(false);
   const tagsQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'tags'],
-    queryFn: () => fetchTags({ organizationId: props.organizationId }),
+    queryFn: async () => fetchTags({ organizationId: props.organizationId }),
   }));
 
   const {
@@ -67,7 +67,7 @@ const TagPicker: Component<{
     highlightNext,
     highlightPrevious,
     getListItems,
-    getNormalizedFilterQuery,
+    getTrimmedFilterQuery,
   } = useTagPicker({
     getAvailableTags: () => tagsQuery.data?.tags ?? [],
     getSelectedTagIds: () => props.selectedTags?.map((tag) => tag.id) ?? [],
@@ -166,7 +166,7 @@ const TagPicker: Component<{
       <CreateTagModal
         open={getIsTagCreationModalOpen()}
         onOpenChange={setIsTagCreationModalOpen}
-        initialName={getNormalizedFilterQuery()}
+        initialName={getTrimmedFilterQuery()}
         onTagCreated={handleTagCreated}
         organizationId={props.organizationId}
       />
@@ -258,7 +258,7 @@ export const DocumentTagsList: Component<
     setDocumentsTags(tags);
 
     await Promise.all(
-      addedTags.map((tag) =>
+      addedTags.map(async (tag) =>
         addTagToDocument({
           documentId: props.documentId,
           organizationId: props.organizationId,
@@ -268,7 +268,7 @@ export const DocumentTagsList: Component<
     );
 
     await Promise.all(
-      removedTags.map((tag) =>
+      removedTags.map(async (tag) =>
         removeTagFromDocument({
           documentId: props.documentId,
           organizationId: props.organizationId,

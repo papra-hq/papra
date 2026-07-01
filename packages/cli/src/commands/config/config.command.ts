@@ -74,7 +74,7 @@ export const configCommand = defineCommand({
       run: async () => {
         const group = await prompts.group(
           {
-            apiUrl: () =>
+            apiUrl: async () =>
               prompts.text({
                 message: 'Enter your instance URL (e.g. https://api.papra.app)',
                 validate: (value) => {
@@ -87,7 +87,7 @@ export const configCommand = defineCommand({
                   return result.issues.map(({ message }) => message).join('\n');
                 },
               }),
-            apiKey: () =>
+            apiKey: async () =>
               prompts.text({
                 message: `Enter your API key (can be be found in your User Settings)`,
                 validate: (value) => {

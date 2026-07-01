@@ -1,16 +1,10 @@
 import * as v from 'valibot';
-import { aiModelAdapterConfigListSchema } from './adapters/ai-adapters.schemas';
-import { parseModelId } from './ai.schemas.models';
+import { isValidModelId } from './ai.models';
 
-export const aiModelAdaptersEnvConfigSchema = v.pipe(
+export const aiModelIdSchema = v.pipe(
   v.string(),
-  v.parseJson(),
-  aiModelAdapterConfigListSchema,
+  v.check(
+    isValidModelId,
+    'Invalid model identifier. Expected format is "adapterId://modelName", e.g. "openai://gpt-4"',
+  ),
 );
-
-export const aiModelsAdapterConfigSchema = v.union([
-  aiModelAdapterConfigListSchema,
-  aiModelAdaptersEnvConfigSchema,
-]);
-
-export const aiModelIdSchema = v.pipe(v.string(), v.transform(parseModelId));

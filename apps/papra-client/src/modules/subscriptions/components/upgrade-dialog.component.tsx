@@ -331,12 +331,12 @@ export const UpgradeDialog: Component<UpgradeDialogProps> = (props) => {
           <PlanCard {...currentPlan} billingInterval={getBillingInterval()} />
           <PlanCard
             {...plusPlan}
-            onUpgrade={() => onUpgrade(PLAN_IDS.PLUS)}
+            onUpgrade={async () => onUpgrade(PLAN_IDS.PLUS)}
             billingInterval={getBillingInterval()}
           />
           <PlanCard
             {...proPlan}
-            onUpgrade={() => onUpgrade(PLAN_IDS.PRO)}
+            onUpgrade={async () => onUpgrade(PLAN_IDS.PRO)}
             billingInterval={getBillingInterval()}
           />
         </div>

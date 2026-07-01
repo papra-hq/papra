@@ -1,6 +1,5 @@
 import type { Config } from '../config/config.types';
-import type { ModelConfig } from './ai.type';
-import { resolveModelAdapter } from './adapters/ai-adapters.usecases';
+import { resolveTextAdapter } from './adapters/ai-adapters.usecases';
 import { chat as tanstackChat } from '@tanstack/ai';
 import { toStandardJsonSchema } from '@valibot/to-json-schema';
 import type { GenericSchema, InferOutput } from 'valibot';
@@ -12,8 +11,8 @@ export function createAiServices({ config }: { config: Config }) {
   // `Schema` type parameter to its constraint, making the result `unknown`. A thin generic
   // wrapper preserves inference so callers get back InferOutput<Schema>.
   return {
-    generateStructuredData: <Schema extends GenericSchema>(args: {
-      model: ModelConfig;
+    generateStructuredData: async <Schema extends GenericSchema>(args: {
+      modelId: string;
       schema: Schema;
       userPrompt: string;
       systemPrompt?: string;
@@ -22,21 +21,21 @@ export function createAiServices({ config }: { config: Config }) {
 }
 
 async function generateStructuredData<Schema extends GenericSchema>({
-  model,
+  modelId,
   schema,
   userPrompt,
   systemPrompt,
   config,
 }: {
-  model: ModelConfig;
+  modelId: string;
   schema: Schema;
   userPrompt: string;
   systemPrompt?: string;
   config: Config;
 }): Promise<InferOutput<Schema>> {
-  const { adapter } = resolveModelAdapter({
-    model,
-    adaptersConfig: config.ai.aiModelsAdapterConfig,
+  const adapter = resolveTextAdapter({
+    modelId,
+    config,
   });
 
   const jsonSchema = toStandardJsonSchema(schema);

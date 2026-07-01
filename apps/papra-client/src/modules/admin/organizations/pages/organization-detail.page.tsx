@@ -36,7 +36,7 @@ const OrganizationBasicInfo: Component<{ organizationId: string }> = (props) => 
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', props.organizationId, 'basic'],
-    queryFn: () => getOrganizationBasicInfo({ organizationId: props.organizationId }),
+    queryFn: async () => getOrganizationBasicInfo({ organizationId: props.organizationId }),
   }));
 
   return (
@@ -86,7 +86,7 @@ const OrganizationMembers: Component<{ organizationId: string }> = (props) => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', props.organizationId, 'members'],
-    queryFn: () => getOrganizationMembers({ organizationId: props.organizationId }),
+    queryFn: async () => getOrganizationMembers({ organizationId: props.organizationId }),
   }));
 
   return (
@@ -163,7 +163,7 @@ const OrganizationIntakeEmails: Component<{ organizationId: string }> = (props) 
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', props.organizationId, 'intake-emails'],
-    queryFn: () => getOrganizationIntakeEmails({ organizationId: props.organizationId }),
+    queryFn: async () => getOrganizationIntakeEmails({ organizationId: props.organizationId }),
   }));
 
   return (
@@ -223,7 +223,7 @@ const OrganizationWebhooks: Component<{ organizationId: string }> = (props) => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', props.organizationId, 'webhooks'],
-    queryFn: () => getOrganizationWebhooks({ organizationId: props.organizationId }),
+    queryFn: async () => getOrganizationWebhooks({ organizationId: props.organizationId }),
   }));
 
   return (
@@ -282,7 +282,7 @@ const OrganizationStats: Component<{ organizationId: string }> = (props) => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'organizations', props.organizationId, 'stats'],
-    queryFn: () => getOrganizationStats({ organizationId: props.organizationId }),
+    queryFn: async () => getOrganizationStats({ organizationId: props.organizationId }),
   }));
 
   return (

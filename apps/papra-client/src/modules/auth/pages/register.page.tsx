@@ -202,7 +202,7 @@ export const RegisterPage: Component = () => {
                   <SsoProviderButton
                     name={provider.name}
                     icon={provider.icon}
-                    onClick={() => registerWithProvider(provider)}
+                    onClick={async () => registerWithProvider(provider)}
                     label={t('auth.register.register-with-provider', { provider: provider.name })}
                   />
                 )}

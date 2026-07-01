@@ -58,6 +58,7 @@ export function makeSearchOrderByClauses({ sort }: { sort: DocumentSearchSort })
 
   const orderByClauses = [
     orderDirection(sortColumn),
+    ...(sort.field !== 'createdAt' ? [orderDirection(documentsTable.createdAt)] : []),
     orderDirection(documentsTable.id), // tie-breaker to ensure deterministic order
   ];
 

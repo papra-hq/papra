@@ -1,4 +1,3 @@
-import type { ModelConfig } from '../../ai/ai.type';
 import type { organizationSettingsTable } from './organization-settings.tables';
 
 export type OrganizationSettings = {
@@ -7,7 +6,7 @@ export type OrganizationSettings = {
       isEnabled: boolean;
       canCreateNewTags: boolean;
       maxTags: number;
-      model?: ModelConfig;
+      modelId?: string;
     };
   };
 };

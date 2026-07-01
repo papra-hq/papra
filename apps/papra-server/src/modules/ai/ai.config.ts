@@ -1,8 +1,10 @@
-import { aiModelIdSchema, aiModelsAdapterConfigSchema } from './ai.schemas';
+import { aiModelIdSchema } from './ai.schemas';
 import { booleanishSchema } from '../config/config.schemas';
-import * as v from 'valibot';
 import type { AppConfigDefinition } from '../config/config.types';
+import * as v from 'valibot';
 import { AI_DEFAULT_MODEL_ENV_KEY } from './ai.constants';
+import { openAiAdaptersConfig } from './adapters/openai-compatible/openai-compatible.config';
+import { anthropicAdaptersConfig } from './adapters/anthropic/anthropic.ai-adapters.config';
 
 export const aiConfig = {
   isEnabled: {
@@ -12,15 +14,12 @@ export const aiConfig = {
     default: false,
     showInDocumentation: false,
   },
-  aiModelsAdapterConfig: {
-    doc: 'List of AI models adapter configurations',
-    schema: aiModelsAdapterConfigSchema,
-    env: 'AI_ADAPTERS',
-    default: [],
-    showInDocumentation: false,
+  adapters: {
+    anthropic: anthropicAdaptersConfig,
+    ...openAiAdaptersConfig,
   },
-  defaultModel: {
-    doc: 'Default AI model to use when no specific model is specified, the format is <adapterId>:<modelName>, e.g. "ollama:llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
+  defaultModelId: {
+    doc: 'Default AI model to use when no specific model is specified, the format is <adapterId>://<modelName>, e.g. "ollama://llama3.1:8b".',
     schema: v.optional(aiModelIdSchema),
     env: AI_DEFAULT_MODEL_ENV_KEY,
     default: undefined,

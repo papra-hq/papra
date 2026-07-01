@@ -1,27 +1,43 @@
-import type { ModelConfig } from '../ai.type';
+import type { Config } from '../../config/config.types';
+import { parseModelId } from '../ai.models';
 import { modelAdapterFactories } from './ai-adapters.registry';
-import type { AiModelAdapterListConfig } from './ai-adapters.schemas';
+import type { ModelAdapterNames } from './ai-adapters.registry';
+import { createError } from '../../shared/errors/errors';
+import type { AiAdapter, AiTextAdapter } from './ai-adapters.types';
 
-export function resolveModelAdapter({
-  model,
-  adaptersConfig,
+export function resolveAdapter({
+  adapterId,
+  config,
 }: {
-  model: ModelConfig;
-  adaptersConfig: AiModelAdapterListConfig;
-}) {
-  const { modelName, adapterId } = model;
+  adapterId: string;
+  config: Config;
+}): AiAdapter {
+  const adapterFactory = modelAdapterFactories[adapterId as ModelAdapterNames];
 
-  const adapterConfig = adaptersConfig.find((adapter) => adapter.id === adapterId);
-
-  if (!adapterConfig) {
-    throw new Error(`Adapter config not found for adapterId: ${adapterId}`);
+  if (!adapterFactory) {
+    throw createError({
+      code: 'ai.adapterNotFound',
+      message: `No adapter found for adapter name "${adapterId}"`,
+      statusCode: 500,
+      isInternal: true,
+    });
   }
 
-  const factory = modelAdapterFactories[adapterConfig.adapter];
+  const adapter = adapterFactory({ config });
 
-  if (!factory) {
-    throw new Error(`Adapter factory not found for adapterId: ${adapterId}`);
-  }
+  return adapter;
+}
 
-  return factory({ modelName, adapterConfig });
+export function resolveTextAdapter({
+  modelId,
+  config,
+}: {
+  modelId: string;
+  config: Config;
+}): AiTextAdapter {
+  const { modelName, adapterId } = parseModelId(modelId);
+
+  const adapter = resolveAdapter({ adapterId, config });
+
+  return adapter.getTextAdapter({ modelName });
 }

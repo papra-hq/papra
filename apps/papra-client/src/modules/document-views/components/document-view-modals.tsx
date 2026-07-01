@@ -133,7 +133,7 @@ export const CreateDocumentViewModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const mutation = useMutation(() => ({
-    mutationFn: (data: { name: string; query: string; description?: string }) =>
+    mutationFn: async (data: { name: string; query: string; description?: string }) =>
       createDocumentView({
         organizationId: props.organizationId,
         name: data.name,
@@ -195,7 +195,7 @@ export const UpdateDocumentViewModal: Component<{
   const { getErrorMessage } = useI18nApiErrors({ t });
 
   const mutation = useMutation(() => ({
-    mutationFn: (data: { name: string; query: string; description?: string }) =>
+    mutationFn: async (data: { name: string; query: string; description?: string }) =>
       updateDocumentView({
         organizationId: props.organizationId,
         documentViewId: props.documentView.id,

@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { defineTextExtractor } from '../extractors.models';
 import { getFileContentFromArchive } from '../utils/archive';
+import { stringify } from '@papra/std';
 
 export const odpExtractorDefinition = defineTextExtractor({
   name: 'odp',
@@ -53,7 +54,7 @@ function extractTextFromOdp(parsed: unknown): string {
 
         // Handle text nodes
         if (nodeObj['#text']) {
-          const trimmed = String(nodeObj['#text']).trim();
+          const trimmed = stringify(nodeObj['#text']).trim();
           if (trimmed) {
             texts.push(trimmed);
           }

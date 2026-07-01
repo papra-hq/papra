@@ -46,7 +46,7 @@ export const OrganizationUsagePage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'usage'],
-    queryFn: () => fetchOrganizationUsage({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganizationUsage({ organizationId: params.organizationId }),
   }));
 
   return (

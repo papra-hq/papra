@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { defineTextExtractor } from '../extractors.models';
 import { getFileContentFromArchive } from '../utils/archive';
+import { stringify } from '@papra/std';
 
 type XmlNode = Record<string, unknown>;
 
@@ -28,7 +29,7 @@ function extractText(node: unknown): string {
     return '';
   }
   if (typeof node !== 'object') {
-    return String(node).trim();
+    return stringify(node).trim();
   }
   if (Array.isArray(node)) {
     return node.map(extractText).filter(Boolean).join(' ');
@@ -36,7 +37,7 @@ function extractText(node: unknown): string {
   const obj = node as XmlNode;
   const parts: string[] = [];
   if (obj['#text'] != null) {
-    const t = String(obj['#text']).trim();
+    const t = stringify(obj['#text']).trim();
     if (t) {
       parts.push(t);
     }

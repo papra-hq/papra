@@ -8,7 +8,7 @@ export type HttpClientOptions<R extends ResponseType = 'json'> = Omit<
   'baseURL'
 > & { url: string; baseUrl?: string };
 
-function baseHttpClient<A, R extends ResponseType = 'json'>({
+async function baseHttpClient<A, R extends ResponseType = 'json'>({
   url,
   baseUrl,
   ...rest

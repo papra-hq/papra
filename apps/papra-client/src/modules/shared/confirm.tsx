@@ -47,7 +47,7 @@ export const ConfirmModalProvider: ParentComponent = (props) => {
   const [getResolve, setResolve] = createSignal<((isConfirmed: boolean) => void) | undefined>();
   const [getTypedText, setTypedText] = createSignal<string>('');
 
-  const confirm = ({
+  const confirm = async ({
     title,
     message,
     confirmButton,

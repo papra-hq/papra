@@ -358,7 +358,7 @@ export const LoginPage: Component = () => {
                       <SsoProviderButton
                         name={provider.name}
                         icon={provider.icon}
-                        onClick={() => loginWithProvider(provider)}
+                        onClick={async () => loginWithProvider(provider)}
                         label={t('auth.login.login-with-provider', { provider: provider.name })}
                       />
                     )}

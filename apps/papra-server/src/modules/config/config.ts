@@ -40,6 +40,7 @@ import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
+import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
 
 export const configDefinition = {
   env: {
@@ -159,6 +160,7 @@ export const configDefinition = {
   database: databaseConfig,
   documents: documentsConfig,
   documentsStorage: documentStorageConfig,
+  documentContentExtraction: documentContentExtractionConfig,
   documentSearch: documentSearchConfig,
   auth: authConfig,
   ingestionFolder: ingestionFolderConfig,

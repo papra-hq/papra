@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 import { defineTextExtractor } from '../extractors.models';
+import { stringify } from '@papra/std';
 
 type XmlNode = Record<string, unknown>;
 
@@ -28,10 +29,10 @@ function extractTText(t: unknown): string {
     return '';
   }
   if (typeof t !== 'object') {
-    return String(t);
+    return stringify(t);
   }
   const obj = t as XmlNode;
-  return obj['#text'] != null ? String(obj['#text']) : '';
+  return obj['#text'] != null ? stringify(obj['#text']) : '';
 }
 
 export const xlsxExtractorDefinition = defineTextExtractor({
@@ -145,9 +146,9 @@ export const xlsxExtractorDefinition = defineTextExtractor({
             text = extractSharedString(inlineStr);
           } else if (cellType === 'str' && value != null) {
             // formula result string
-            text = String(value);
+            text = stringify(value);
           } else if (value != null) {
-            text = String(value);
+            text = stringify(value);
           }
 
           if (text.trim()) {

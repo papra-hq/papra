@@ -27,7 +27,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
   const { openShareDialog } = useShareDocumentDialog();
   const { t } = useI18n();
 
-  const deleteDoc = () =>
+  const deleteDoc = async () =>
     deleteDocument({
       documentId: props.document.id,
       organizationId: props.document.organizationId,
@@ -69,7 +69,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() =>
+          onClick={async () =>
             downloadDocument({
               documentId: props.document.id,
               organizationId: props.document.organizationId,
@@ -108,7 +108,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           <span>{t('documents.management.rename')}</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem class="cursor-pointer text-red" onClick={() => deleteDoc()}>
+        <DropdownMenuItem class="cursor-pointer text-red" onClick={async () => deleteDoc()}>
           <div class="i-tabler-trash size-4 mr-2" />
           <span>{t('documents.management.delete')}</span>
         </DropdownMenuItem>

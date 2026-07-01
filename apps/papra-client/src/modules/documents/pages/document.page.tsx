@@ -109,7 +109,7 @@ const DocumentNotes: Component<{ documentId: string; organizationId: string; not
   onCleanup(() => clearTimeout(fadeTimeout));
 
   const updateNotesMutation = useMutation(() => ({
-    mutationFn: ({ notes }: { notes: string }) =>
+    mutationFn: async ({ notes }: { notes: string }) =>
       updateDocument({
         documentId: props.documentId,
         organizationId: props.organizationId,
@@ -339,13 +339,13 @@ export const DocumentPage: Component = () => {
 
   const documentQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', params.documentId],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
   const customPropertyDefinitionsQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'custom-properties'],
-    queryFn: () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
+    queryFn: async () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
   }));
 
   const activityPageSize = 20;
@@ -458,7 +458,7 @@ export const DocumentPage: Component = () => {
 
                   <div class="flex flex-wrap gap-2 mb-2 max-w-full">
                     <Button
-                      onClick={() =>
+                      onClick={async () =>
                         downloadDocument({
                           organizationId: getDocument().organizationId,
                           documentId: getDocument().id,
@@ -497,7 +497,7 @@ export const DocumentPage: Component = () => {
                         class="min-w-0"
                         variant="destructive"
                         size="sm"
-                        onClick={() => restore({ document: getDocument() })}
+                        onClick={async () => restore({ document: getDocument() })}
                         isLoading={getIsRestoring()}
                       >
                         <div class="i-tabler-refresh size-4 mr-2" />
@@ -659,7 +659,7 @@ export const DocumentPage: Component = () => {
                             >
                               <Button
                                 variant="outline"
-                                onClick={() => activityQuery.fetchNextPage()}
+                                onClick={async () => activityQuery.fetchNextPage()}
                                 isLoading={activityQuery.isFetchingNextPage}
                               >
                                 {t('activity.load-more')}

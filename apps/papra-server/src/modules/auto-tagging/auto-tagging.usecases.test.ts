@@ -20,7 +20,7 @@ function createTestResolveOrganizationSettings(
           isEnabled: true,
           canCreateNewTags: false,
           maxTags: 5,
-          model: { adapterId: 'openai', modelName: 'gpt-4' },
+          modelId: 'gpt-4',
           ...autoTagging,
         },
       },

@@ -42,7 +42,7 @@ const PasswordGate: Component<{
   const [getPassword, setPassword] = createSignal('');
 
   const verifyMutation = useMutation(() => ({
-    mutationFn: () => verifySharePassword({ token: props.token, password: getPassword() }),
+    mutationFn: async () => verifySharePassword({ token: props.token, password: getPassword() }),
     onSuccess: ({ accessToken }) => props.onUnlocked({ accessToken }),
     onError: (error) => {
       const message = isHttpErrorWithStatusCode({ error, statusCode: 429 })
@@ -101,7 +101,7 @@ const SharedDocumentCard: Component<{
   const { t } = useI18n();
 
   const downloadMutation = useMutation(() => ({
-    mutationFn: () =>
+    mutationFn: async () =>
       fetchSharedDocumentFile({ token: props.token, accessToken: props.accessToken }),
     onSuccess: ({ blob }) => {
       const url = URL.createObjectURL(blob);
@@ -114,7 +114,8 @@ const SharedDocumentCard: Component<{
 
   const previewQuery = useQuery(() => ({
     queryKey: ['share-link', props.token, 'file', props.accessToken],
-    queryFn: () => fetchSharedDocumentFile({ token: props.token, accessToken: props.accessToken }),
+    queryFn: async () =>
+      fetchSharedDocumentFile({ token: props.token, accessToken: props.accessToken }),
     enabled: isPreviewable(props.document.mimeType),
     retry: false,
     refetchOnWindowFocus: false,
@@ -170,8 +171,9 @@ export const SharedDocumentPage: Component = () => {
   const aboutDialog = useAboutDialog();
 
   const documentQuery = useQuery(() => ({
-    queryKey: ['share-link', params.token, getAccessToken()],
-    queryFn: () => fetchSharedDocument({ token: params.token, accessToken: getAccessToken() }),
+    queryKey: ['share-link', params.token, 'document', getAccessToken()],
+    queryFn: async () =>
+      fetchSharedDocument({ token: params.token, accessToken: getAccessToken() }),
     retry: false,
   }));
 

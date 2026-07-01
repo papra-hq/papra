@@ -1,4 +1,3 @@
-import { parseOptionalModelId } from '../../ai/ai.schemas.models';
 import type { Config } from '../../config/config.types';
 import type { OrganizationSettingsRepository } from './organization-settings.repository';
 import type { OrganizationSettings } from './organization-settings.types';
@@ -55,10 +54,10 @@ export async function resolveOrganizationSettings({
           maxTags:
             organizationRawSettings?.aiAutoTaggingMaxTags ?? config.autoTagging.defaultMaxTags,
 
-          model:
-            parseOptionalModelId(organizationRawSettings?.aiAutoTaggingModelId) ??
-            config.autoTagging.model ??
-            config.ai.defaultModel,
+          modelId:
+            organizationRawSettings?.aiAutoTaggingModelId ??
+            config.autoTagging.modelId ??
+            config.ai.defaultModelId,
         },
       },
     },

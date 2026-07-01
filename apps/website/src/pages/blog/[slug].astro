@@ -1,19 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import { format } from 'date-fns';
+import { getCollection, render } from 'astro:content';
 import CorentinAvatar from '../../assets/corentin.jpg';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import Layout from '../../layouts/Layout.astro';
+import { formatDate } from '../../utils/dates';
 import { resolveImage } from '../../utils/urls';
 
 export async function getStaticPaths() {
   const blog = await getCollection('blog');
 
   return blog.map(post => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
@@ -24,8 +24,8 @@ export type Props = {
 
 const { post } = Astro.props;
 
-const { data, render } = post;
-const { Content } = await render();
+const { data } = post;
+const { Content } = await render(post);
 
 const ogImage = await resolveImage(data.ogImage);
 const ogImageUrl = ogImage ? new URL(ogImage.src, Astro.site).toString() : undefined;
@@ -55,7 +55,7 @@ const structuredData = {
 
         <div class="flex sm:justify-center items-center gap-1 text-muted-foreground mt-4">
           <time class="text-muted-foreground" datetime={data.publishedAt.toISOString()}>
-            {format(data.publishedAt, 'MMMM d, yyyy')}
+            {formatDate(data.publishedAt, { locale: Astro.currentLocale })}
           </time>
           <span class="text-muted-foreground"> - </span>
           By

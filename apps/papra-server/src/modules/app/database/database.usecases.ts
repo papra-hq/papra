@@ -2,6 +2,7 @@ import type { SQLiteSelect } from 'drizzle-orm/sqlite-core';
 import type { ArrayElement } from '../../shared/types';
 import type { Database } from './database.types';
 import { sql } from 'drizzle-orm';
+import { ensureString } from '@papra/std';
 
 export function createIterator<T extends SQLiteSelect>({
   query,
@@ -53,5 +54,5 @@ export async function getRuntimeTableColumns({
 }): Promise<string[]> {
   const { rows } = await db.run(sql`SELECT name FROM pragma_table_info(${tableName})`);
 
-  return rows.map((row) => String(row.name));
+  return rows.map((row) => ensureString(row.name));
 }

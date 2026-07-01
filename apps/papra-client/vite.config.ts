@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import type { Plugin } from 'vite';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -51,9 +52,13 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@pdfslick/solid'],
   },
-  // test: {
-  //   exclude: [...configDefaults.exclude, '**/*.e2e.test.ts'],
-  // },
+  test: {
+    isolate: false,
+    environment: 'node',
+    env: {
+      TZ: 'UTC',
+    },
+  },
 });
 
 function getPdfjsAssetsDirectoryPath(): string {
@@ -69,6 +74,7 @@ function getPdfjsAssetsDirectoryPath(): string {
 function cleanDemoAssetsPlugin(): Plugin {
   return {
     name: 'clean-demo-assets',
+    apply: 'build',
     closeBundle() {
       if (!isDemoMode) {
         const startedAt = Date.now();

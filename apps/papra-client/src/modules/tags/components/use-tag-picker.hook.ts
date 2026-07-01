@@ -34,7 +34,8 @@ export function useTagPicker(options: UseTagPickerOptions) {
 
   const initiallySelectedTagIds = options.getSelectedTagIds?.() ?? [];
 
-  const getNormalizedFilterQuery = createMemo(() => filterQuery().trim().toLowerCase());
+  const getTrimmedFilterQuery = createMemo(() => filterQuery().trim());
+  const getNormalizedFilterQuery = createMemo(() => getTrimmedFilterQuery().toLowerCase());
 
   const getTagsListItems = createMemo<TagPickerListItemTag[]>(() =>
     options
@@ -85,7 +86,7 @@ export function useTagPicker(options: UseTagPickerOptions) {
       ...nonInitiallySelectedTagsItems,
       ...toArrayIf(shouldShowCreateOption(), {
         type: 'create-new-tag-button',
-        name: getNormalizedFilterQuery(),
+        name: getTrimmedFilterQuery(),
       } as const),
     ];
   });
@@ -170,6 +171,7 @@ export function useTagPicker(options: UseTagPickerOptions) {
     filterQuery,
     setFilterQuery,
     getNormalizedFilterQuery,
+    getTrimmedFilterQuery,
     getTagsListItems,
     highlighted,
     highlightNext,

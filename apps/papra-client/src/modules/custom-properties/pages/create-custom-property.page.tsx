@@ -48,7 +48,9 @@ export const CreateCustomPropertyPage: Component = () => {
 
       <CustomPropertyDefinitionForm
         organizationId={params.organizationId}
-        onSubmit={({ propertyDefinition }) => createMutation.mutateAsync({ propertyDefinition })}
+        onSubmit={async ({ propertyDefinition }) =>
+          createMutation.mutateAsync({ propertyDefinition })
+        }
         submitButton={
           <Button type="submit" isLoading={createMutation.isPending}>
             {t('custom-properties.create.submit')}

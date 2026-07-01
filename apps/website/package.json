@@ -15,28 +15,28 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.6",
-    "@astrojs/cloudflare": "^12.6.10",
-    "@astrojs/rss": "^4.0.11",
-    "@astrojs/sitemap": "^3.3.0",
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/cloudflare": "^14.0.1",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.3",
     "@branchlet/core": "^1.0.0",
     "@corentinth/chisels": "catalog:",
     "astro": "catalog:",
     "astro-capo": "^0.0.1",
-    "astro-expressive-code": "^0.41.1",
+    "astro-expressive-code": "^0.44.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@astrojs/mdx": "4.3.13",
+    "@astrojs/mdx": "7.0.0",
     "@iconify-json/tabler": "catalog:",
     "@unocss/reset": "catalog:",
     "sharp": "catalog:",
     "typescript": "catalog:",
     "unocss": "catalog:",
     "unocss-preset-animations": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "wrangler": "4.105.0"
   }
 }

@@ -45,7 +45,7 @@ export const AdminUserDetailPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'users', params.userId],
-    queryFn: () => getUserDetail({ userId: params.userId }),
+    queryFn: async () => getUserDetail({ userId: params.userId }),
   }));
 
   const handleRevokeEntitlement = async (planEntitlement: { id: string; type: string }) => {
@@ -396,7 +396,7 @@ export const AdminUserDetailPage: Component = () => {
                                       size="sm"
                                       variant="ghost"
                                       class="text-destructive"
-                                      onClick={() => handleRevokeEntitlement(entitlement)}
+                                      onClick={async () => handleRevokeEntitlement(entitlement)}
                                     >
                                       {t('admin.user-detail.plan-entitlements.revoke.button')}
                                     </Button>
@@ -432,7 +432,7 @@ export const AdminUserDetailPage: Component = () => {
                     variant="destructive"
                     class="flex-shrink-0"
                     disabled={data().user.id === currentUser.id}
-                    onClick={() => handleDelete(data().user)}
+                    onClick={async () => handleDelete(data().user)}
                   >
                     {t('admin.user-detail.delete.button')}
                   </Button>

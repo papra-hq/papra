@@ -1,4 +1,4 @@
-export function promptUploadFiles({
+export async function promptUploadFiles({
   acceptedTypes,
 }: {
   acceptedTypes?: string;

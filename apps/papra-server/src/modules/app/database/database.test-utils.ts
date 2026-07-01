@@ -33,6 +33,7 @@ import {
 import { accountsTable, sessionsTable, twoFactorTable } from '../auth/auth.tables';
 import { setupDatabase } from './database';
 import { planEntitlementsTable } from '../../plan-entitlements/plan-entitlements.tables';
+import { stringify } from '@papra/std';
 
 export { createInMemoryDatabase, seedDatabase };
 
@@ -124,7 +125,7 @@ export async function serializeSchema({ db }: { db: Database }) {
   ]);
 
   return Array.from(result.values())
-    .flatMap(({ rows }) => rows.map(({ sql }) => minifyQuery(String(sql))))
+    .flatMap(({ rows }) => rows.map(({ sql }) => minifyQuery(stringify(sql))))
     .join('\n');
 }
 

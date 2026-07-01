@@ -24,7 +24,9 @@ export const CreateWebhookPage: Component = () => {
   const createWebhookMutation = useMutation(() => ({
     mutationFn: createWebhook,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'webhooks'],
+      });
 
       createToast({
         type: 'success',

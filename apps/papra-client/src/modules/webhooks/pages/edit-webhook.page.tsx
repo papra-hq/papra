@@ -50,9 +50,11 @@ export const EditWebhookForm: Component<{ webhook: Webhook }> = (props) => {
         throw createI18nApiError({ error });
       }
 
-      await queryClient.invalidateQueries({ queryKey: ['webhooks', params.organizationId] });
       await queryClient.invalidateQueries({
-        queryKey: ['webhook', params.organizationId, params.webhookId],
+        queryKey: ['organizations', params.organizationId, 'webhooks'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'webhooks', params.webhookId],
       });
 
       createToast({
@@ -202,8 +204,8 @@ export const EditWebhookPage: Component = () => {
   const params = useParams();
 
   const webhookQuery = useQuery(() => ({
-    queryKey: ['webhook', params.organizationId, params.webhookId],
-    queryFn: () =>
+    queryKey: ['organizations', params.organizationId, 'webhooks', params.webhookId],
+    queryFn: async () =>
       fetchWebhook({
         organizationId: params.organizationId,
         webhookId: params.webhookId,

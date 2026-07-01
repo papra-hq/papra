@@ -1,8 +1,8 @@
 import type { ParentComponent } from 'solid-js';
 import type { Organization } from '../organizations.types';
-import { makePersisted } from '@solid-primitives/storage';
 import { useQuery } from '@tanstack/solid-query';
-import { createContext, createSignal, Show, useContext } from 'solid-js';
+import { createContext, Show, useContext } from 'solid-js';
+import { createPersistedSignal } from '@/modules/shared/signals/persistence/persistence.signals';
 import { fetchOrganizations } from '../organizations.services';
 
 const currentOrganizationContext = createContext<{
@@ -22,9 +22,9 @@ export function useCurrentOrganization() {
 }
 
 export const CurrentOrganizationProvider: ParentComponent = (props) => {
-  const [getCurrentOrganizationId, setCurrentOrganizationId] = makePersisted(
-    createSignal<string | null>(null),
-    { name: 'papra_current_organization_id', storage: localStorage },
+  const [getCurrentOrganizationId, setCurrentOrganizationId] = createPersistedSignal<string | null>(
+    null,
+    { key: 'papra_current_organization_id', storage: localStorage },
   );
 
   const query = useQuery(() => ({

@@ -52,7 +52,7 @@ export const ShareLinkActions: Component<{ shareLink: ShareLink; withGoToDocumen
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() => copyShareLink({ url: props.shareLink.url })}
+          onClick={async () => copyShareLink({ url: props.shareLink.url })}
         >
           <div class="i-tabler-copy size-4 mr-2" />
           <span>{t('document-share-links.copy')}</span>
@@ -60,7 +60,7 @@ export const ShareLinkActions: Component<{ shareLink: ShareLink; withGoToDocumen
 
         <DropdownMenuItem
           class="cursor-pointer"
-          onClick={() =>
+          onClick={async () =>
             toggleShareLink({
               organizationId: props.shareLink.organizationId,
               shareLinkId: props.shareLink.id,
@@ -80,7 +80,7 @@ export const ShareLinkActions: Component<{ shareLink: ShareLink; withGoToDocumen
 
         <DropdownMenuItem
           class="cursor-pointer text-red"
-          onClick={() =>
+          onClick={async () =>
             deleteShareLink({
               organizationId: props.shareLink.organizationId,
               shareLinkId: props.shareLink.id,

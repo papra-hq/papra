@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 import { defineTextExtractor } from '../extractors.models';
+import { stringify } from '@papra/std';
 
 export const pptxExtractorDefinition = defineTextExtractor({
   name: 'pptx',
@@ -75,7 +76,7 @@ function extractTextFromSlide(parsed: unknown): string {
 
         // Handle text nodes
         if (nodeObj['#text']) {
-          const trimmed = String(nodeObj['#text']).trim();
+          const trimmed = stringify(nodeObj['#text']).trim();
           if (trimmed) {
             texts.push(trimmed);
           }
