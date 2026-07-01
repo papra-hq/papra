@@ -73,25 +73,29 @@ const documentNavigationPageSize = 100;
 
 async function fetchAllNavigationDocuments({ organizationId }: { organizationId: string }) {
   const documentsById = new Map<string, Document>();
-  let pageIndex = 0;
-  let documentsCount = 0;
+  const firstPage = await fetchOrganizationDocuments({
+    organizationId,
+    pageIndex: 0,
+    pageSize: documentNavigationPageSize,
+  });
+  const documentsCount = firstPage.documentsCount;
 
-  do {
-    const page = await fetchOrganizationDocuments({
-      organizationId,
-      pageIndex,
-      pageSize: documentNavigationPageSize,
-    });
-    const previousDocumentsCount = documentsById.size;
+  firstPage.documents.forEach((document) => documentsById.set(document.id, document));
 
+  const pagesCount = Math.ceil(documentsCount / documentNavigationPageSize);
+  const remainingPages = await Promise.all(
+    Array.from({ length: Math.max(pagesCount - 1, 0) }, (_, index) =>
+      fetchOrganizationDocuments({
+        organizationId,
+        pageIndex: index + 1,
+        pageSize: documentNavigationPageSize,
+      }),
+    ),
+  );
+
+  remainingPages.forEach((page) => {
     page.documents.forEach((document) => documentsById.set(document.id, document));
-    documentsCount = page.documentsCount;
-    pageIndex += 1;
-
-    if (documentsById.size === previousDocumentsCount) {
-      break;
-    }
-  } while (documentsById.size < documentsCount);
+  });
 
   return { documents: Array.from(documentsById.values()), documentsCount };
 }
