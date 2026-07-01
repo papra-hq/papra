@@ -11,20 +11,17 @@ export const autoTaggingConfig = {
     schema: booleanishSchema,
     env: 'AUTO_TAGGING_ENABLED',
     default: true,
-    showInDocumentation: false,
   },
   modelId: {
     doc: 'AI model to use for auto-tagging, the format is <adapterId>://<modelName>, e.g. "ollama://llama3.1:8b", where the <adapterId> is the id of the adapter defined in the AI_ADAPTERS env variable.',
     schema: v.optional(aiModelIdSchema),
     env: ['AUTO_TAGGING_MODEL', AI_DEFAULT_MODEL_ENV_KEY],
     default: undefined,
-    showInDocumentation: false,
   },
   defaultMaxTags: {
     doc: 'The default maximum number of tags that can be assigned by AI auto-tagging. This can be overridden per organization in the organization settings.',
     schema: strictlyPositiveIntegerSchema,
     env: 'AUTO_TAGGING_DEFAULT_MAX_TAGS',
     default: 5,
-    showInDocumentation: false,
   },
 } as const satisfies AppConfigDefinition;
