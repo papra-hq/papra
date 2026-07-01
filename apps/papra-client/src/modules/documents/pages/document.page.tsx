@@ -6,6 +6,7 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/solid-query';
 import {
   createEffect,
+  createMemo,
   createSignal,
   For,
   Match,
@@ -381,18 +382,19 @@ export const DocumentPage: Component = () => {
     queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
   }));
 
-  const getNavigationDocuments = () => documentNavigationQuery.data?.documents ?? [];
-  const getCurrentDocumentIndex = () =>
-    getNavigationDocuments().findIndex((document) => document.id === params.documentId);
-  const getPreviousDocument = () => {
+  const getNavigationDocuments = createMemo(() => documentNavigationQuery.data?.documents ?? []);
+  const getCurrentDocumentIndex = createMemo(() =>
+    getNavigationDocuments().findIndex((document) => document.id === params.documentId),
+  );
+  const getPreviousDocument = createMemo(() => {
     const currentIndex = getCurrentDocumentIndex();
     return currentIndex > 0 ? getNavigationDocuments()[currentIndex - 1] : undefined;
-  };
-  const getNextDocument = () => {
+  });
+  const getNextDocument = createMemo(() => {
     const currentIndex = getCurrentDocumentIndex();
     return currentIndex >= 0 ? getNavigationDocuments()[currentIndex + 1] : undefined;
-  };
-  const getDocumentPositionLabel = () => {
+  });
+  const getDocumentPositionLabel = createMemo(() => {
     const currentIndex = getCurrentDocumentIndex();
     const documentsCount = getNavigationDocuments().length;
 
@@ -401,7 +403,7 @@ export const DocumentPage: Component = () => {
     }
 
     return `${currentIndex + 1} of ${documentsCount}`;
-  };
+  });
   const navigateToDocument = (documentId: string) =>
     navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
 
