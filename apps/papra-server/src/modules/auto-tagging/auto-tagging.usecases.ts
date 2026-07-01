@@ -16,6 +16,7 @@ import {
   buildAutoTaggingUserPrompt,
   getTagsActions,
 } from './auto-tagging.models';
+import { ensureModelId } from '../ai/ai.models';
 
 export async function autoTagDocument({
   aiServices,
@@ -73,7 +74,7 @@ export async function autoTagDocument({
 
   const startedAt = Date.now();
   const response = await aiServices.generateStructuredData({
-    modelId: organizationSettings.ai.autoTagging.modelId,
+    modelId: ensureModelId(organizationSettings.ai.autoTagging.modelId),
     schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags, maxTags }),
     systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
     userPrompt: buildAutoTaggingUserPrompt({ document }),

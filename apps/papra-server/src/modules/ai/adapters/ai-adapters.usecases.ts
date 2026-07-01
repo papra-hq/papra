@@ -1,5 +1,5 @@
 import type { Config } from '../../config/config.types';
-import { parseModelId } from '../ai.schemas.models';
+import { parseModelId } from '../ai.models';
 import { modelAdapterFactories } from './ai-adapters.registry';
 import type { ModelAdapterNames } from './ai-adapters.registry';
 import { createError } from '../../shared/errors/errors';
@@ -9,17 +9,15 @@ export function resolveAdapter({
   adapterId,
   config,
 }: {
-  adapterId?: string;
+  adapterId: string;
   config: Config;
 }): AiAdapter {
-  const adapterName = adapterId ?? config.ai.defaultAdapterName;
-
-  const adapterFactory = modelAdapterFactories[adapterName as ModelAdapterNames];
+  const adapterFactory = modelAdapterFactories[adapterId as ModelAdapterNames];
 
   if (!adapterFactory) {
     throw createError({
       code: 'ai.adapterNotFound',
-      message: `No adapter found for adapter name "${adapterName}"`,
+      message: `No adapter found for adapter name "${adapterId}"`,
       statusCode: 500,
       isInternal: true,
     });
