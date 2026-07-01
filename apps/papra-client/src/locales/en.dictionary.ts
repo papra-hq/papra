@@ -422,6 +422,10 @@ export const translations = {
   'documents.actions.cancel': 'Cancel',
   'documents.actions.save': 'Save',
   'documents.actions.saving': 'Saving...',
+  'documents.viewer-navigation.fallback': 'Document',
+  'documents.viewer-navigation.position': '{{ current }} of {{ total }}',
+  'documents.viewer-navigation.previous': 'Previous',
+  'documents.viewer-navigation.next': 'Next',
   'documents.content.alert':
     'The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.',
   'documents.content.empty-placeholder':

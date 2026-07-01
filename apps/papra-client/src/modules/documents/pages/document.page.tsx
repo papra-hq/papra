@@ -399,10 +399,13 @@ export const DocumentPage: Component = () => {
     const documentsCount = getNavigationDocuments().length;
 
     if (documentsCount === 0 || currentIndex < 0) {
-      return 'Document';
+      return t('documents.viewer-navigation.fallback');
     }
 
-    return `${currentIndex + 1} of ${documentsCount}`;
+    return t('documents.viewer-navigation.position', {
+      current: currentIndex + 1,
+      total: documentsCount,
+    });
   });
   const navigateToDocument = (documentId: string) =>
     navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
@@ -703,7 +706,7 @@ export const DocumentPage: Component = () => {
           class="rounded-full px-2 sm:px-3"
         >
           <div class="i-tabler-chevron-left size-4 mr-2" />
-          Previous
+          {t('documents.viewer-navigation.previous')}
         </Button>
 
         <span class="min-w-16 shrink-0 text-center text-xs text-muted-foreground sm:min-w-24 sm:text-sm">
@@ -722,7 +725,7 @@ export const DocumentPage: Component = () => {
           disabled={!getNextDocument()}
           class="rounded-full px-2 sm:px-3"
         >
-          Next
+          {t('documents.viewer-navigation.next')}
           <div class="i-tabler-chevron-right size-4 ml-2" />
         </Button>
       </div>
