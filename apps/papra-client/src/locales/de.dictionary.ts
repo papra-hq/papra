@@ -425,6 +425,10 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Abbrechen',
   'documents.actions.save': 'Speichern',
   'documents.actions.saving': 'Speichern...',
+  'documents.viewer-navigation.fallback': 'Dokument',
+  'documents.viewer-navigation.position': '{{ current }} von {{ total }}',
+  'documents.viewer-navigation.previous': 'Zurück',
+  'documents.viewer-navigation.next': 'Weiter',
   'documents.content.alert':
     'Der Inhalt des Dokuments wird beim Hochladen automatisch aus dem Dokument extrahiert. Er wird nur für Such- und Indexierungszwecke verwendet.',
   'documents.content.empty-placeholder':
