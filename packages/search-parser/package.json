@@ -1,6 +1,6 @@
 {
   "name": "@papra/search-parser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A typesafe, dependency-free, error-resilient AST-based search query parser for TypeScript. Supports logical operators, grouping, filters, and more.",
   "keywords": [
     "filter",
