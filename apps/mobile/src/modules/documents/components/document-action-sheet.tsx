@@ -128,11 +128,43 @@ export function DocumentActionSheet({
                   apiClient,
                 });
 
-                onDeleted?.(document);
+                queryClient.setQueryData<{
+                  documents: CoerceDates<Document>[];
+                  documentsCount: number;
+                }>(
+                  ['organizations', document.organizationId, 'documents', 'viewer-navigation'],
+                  (
+                    navigationData:
+                      | { documents: CoerceDates<Document>[]; documentsCount: number }
+                      | undefined,
+                  ) => {
+                    if (navigationData == null) {
+                      return navigationData;
+                    }
+
+                    const nextDocuments = navigationData.documents.filter(
+                      (navigationDocument: CoerceDates<Document>) =>
+                        navigationDocument.id !== document.id,
+                    );
+                    const removedDocumentsCount =
+                      navigationData.documents.length - nextDocuments.length;
+
+                    return {
+                      ...navigationData,
+                      documents: nextDocuments,
+                      documentsCount: Math.max(
+                        navigationData.documentsCount - removedDocumentsCount,
+                        0,
+                      ),
+                    };
+                  },
+                );
 
                 await queryClient.invalidateQueries({
                   queryKey: ['organizations', document.organizationId, 'documents'],
                 });
+
+                onDeleted?.(document);
               } catch {
                 showAlert({
                   title: 'Error',
