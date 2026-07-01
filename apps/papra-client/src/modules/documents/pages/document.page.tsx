@@ -686,8 +686,8 @@ export const DocumentPage: Component = () => {
         </div>
 
         <div class="flex-1 min-h-50vh">
-          <Show keyed when={documentQuery.data?.document}>
-            {(document) => <DocumentPreview document={document} />}
+          <Show keyed when={documentQuery.data?.document.id}>
+            {() => <DocumentPreview document={documentQuery.data!.document} />}
           </Show>
         </div>
       </Suspense>
