@@ -1,5 +1,11 @@
 ---
-'@papra/app': patch
+'@papra/app': minor
 ---
 
-Add support for AI based OCR integration for document content extraction, with fallback and configurable strategies for different document types.
+Add support for external document content extraction/ocr, with multiple provider, and support for combining providers using document type filtering and fallback. Currently supported providers are:
+
+- Mistral OCR
+- Azure Document Intelligence
+- Docling server
+- Custom HTTP endpoint (configurable)
+- Internal Papra extraction engine (default)
