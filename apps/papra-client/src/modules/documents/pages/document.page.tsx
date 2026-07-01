@@ -339,6 +339,7 @@ export const DocumentPage: Component = () => {
   const { deleteDocument } = useDeleteDocument();
   const { downloadDocument } = useDownloadDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { config } = useConfig();
   const { openRenameDialog } = useRenameDocumentDialog();
@@ -396,6 +397,7 @@ export const DocumentPage: Component = () => {
   const documentNavigationQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
     queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
+    staleTime: 1000 * 60 * 5,
   }));
 
   const getNavigationDocuments = createMemo(() => documentNavigationQuery.data?.documents ?? []);
@@ -442,6 +444,30 @@ export const DocumentPage: Component = () => {
     if (!hasDeleted) {
       return;
     }
+
+    queryClient.setQueryData<{ documents: Document[]; documentsCount: number }>(
+      ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
+      (navigationData) => {
+        if (navigationData == null) {
+          return navigationData;
+        }
+
+        const nextDocuments = navigationData.documents.filter(
+          (navigationDocument) => navigationDocument.id !== params.documentId,
+        );
+        const removedDocumentsCount =
+          navigationData.documents.length - nextDocuments.length;
+
+        return {
+          ...navigationData,
+          documents: nextDocuments,
+          documentsCount: Math.max(
+            navigationData.documentsCount - removedDocumentsCount,
+            0,
+          ),
+        };
+      },
+    );
 
     if (fallbackDocument) {
       navigateToDocument(fallbackDocument.id);
