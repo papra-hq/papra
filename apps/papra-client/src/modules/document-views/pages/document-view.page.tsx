@@ -16,6 +16,7 @@ import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
+import { buildLocalStorageKey } from '@/modules/shared/signals/persistence/persistence.models';
 import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import {
@@ -34,7 +35,9 @@ export const DocumentViewPage: Component = () => {
   const { t } = useI18n();
   const { confirm } = useConfirmModal();
   const { getErrorMessage } = useI18nApiErrors({ t });
-  const [getPagination, setPagination] = createParamSynchronizedPagination();
+  const [getPagination, setPagination] = createParamSynchronizedPagination({
+    localStorageKey: buildLocalStorageKey('document-views', 'pageSize'),
+  });
   const [getIsUpdateOpen, setIsUpdateOpen] = createSignal(false);
 
   const deleteDocumentViewConfirm = async () => {
