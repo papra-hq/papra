@@ -91,7 +91,7 @@ export const DocumentsPage: Component = () => {
       getSortField(),
       getSortOrder(),
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchOrganizationDocuments({
         organizationId: params.organizationId,
         searchQuery: debouncedSearchQuery(),

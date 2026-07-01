@@ -50,7 +50,7 @@ const MemberList: Component = () => {
   const { confirm } = useConfirmModal();
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'members'],
-    queryFn: () => fetchOrganizationMembers({ organizationId: params.organizationId }),
+    queryFn: async () => fetchOrganizationMembers({ organizationId: params.organizationId }),
   }));
   const { getErrorMessage } = useI18nApiErrors({ t });
 
@@ -59,7 +59,7 @@ const MemberList: Component = () => {
   });
 
   const removeMemberMutation = useMutation(() => ({
-    mutationFn: ({ memberId }: { memberId: string }) =>
+    mutationFn: async ({ memberId }: { memberId: string }) =>
       removeOrganizationMember({ organizationId: params.organizationId, memberId }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -73,7 +73,7 @@ const MemberList: Component = () => {
   }));
 
   const updateMemberRoleMutation = useMutation(() => ({
-    mutationFn: ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) =>
+    mutationFn: async ({ memberId, role }: { memberId: string; role: OrganizationMemberRole }) =>
       updateOrganizationMemberRole({ organizationId: params.organizationId, memberId, role }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -145,7 +145,7 @@ const MemberList: Component = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem
-                  onClick={() => handleDelete({ memberId: data.row.original.id })}
+                  onClick={async () => handleDelete({ memberId: data.row.original.id })}
                   disabled={
                     data.row.original.role === ORGANIZATION_ROLES.OWNER || !getIsAtLeastAdmin()
                   }
@@ -161,7 +161,7 @@ const MemberList: Component = () => {
                   </DropdownMenuGroupLabel>
                   <DropdownMenuRadioGroup
                     value={data.row.original.role}
-                    onChange={(role) =>
+                    onChange={async (role) =>
                       handleUpdateMemberRole({
                         memberId: data.row.original.id,
                         role: role as OrganizationMemberRole,

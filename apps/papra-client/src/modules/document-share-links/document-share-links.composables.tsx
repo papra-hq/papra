@@ -4,7 +4,7 @@ import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
 import { deleteShareLink, updateShareLink } from './document-share-links.services';
 
-export function invalidateShareLinksQueries({ organizationId }: { organizationId: string }) {
+export async function invalidateShareLinksQueries({ organizationId }: { organizationId: string }) {
   return queryClient.invalidateQueries({
     queryKey: ['organizations', organizationId, 'share-links'],
   });

@@ -100,7 +100,7 @@ export const WebhooksPage: Component = () => {
   const params = useParams();
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'webhooks'],
-    queryFn: () => fetchWebhooks({ organizationId: params.organizationId }),
+    queryFn: async () => fetchWebhooks({ organizationId: params.organizationId }),
   }));
 
   return (

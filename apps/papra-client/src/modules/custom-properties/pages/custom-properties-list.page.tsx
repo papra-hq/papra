@@ -111,7 +111,7 @@ export const CustomPropertiesPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'custom-properties'],
-    queryFn: () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
+    queryFn: async () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
   }));
 
   const table = createSolidTable({

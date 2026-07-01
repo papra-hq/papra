@@ -17,7 +17,7 @@ export const UpdateTaggingRulePage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tagging-rules', params.taggingRuleId],
-    queryFn: () =>
+    queryFn: async () =>
       getTaggingRule({
         organizationId: params.organizationId,
         taggingRuleId: params.taggingRuleId,

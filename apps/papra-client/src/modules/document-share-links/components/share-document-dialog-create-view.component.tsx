@@ -82,7 +82,7 @@ export const ShareDocumentDialogCreateView: Component<{
   };
 
   const createMutation = useMutation(() => ({
-    mutationFn: () =>
+    mutationFn: async () =>
       createShareLink({
         organizationId: props.document.organizationId,
         documentId: props.document.id,

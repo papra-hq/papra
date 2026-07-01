@@ -205,7 +205,7 @@ export const EditWebhookPage: Component = () => {
 
   const webhookQuery = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'webhooks', params.webhookId],
-    queryFn: () =>
+    queryFn: async () =>
       fetchWebhook({
         organizationId: params.organizationId,
         webhookId: params.webhookId,

@@ -31,7 +31,7 @@ export const AdminListUsersPage: Component = () => {
 
   const query = useQuery(() => ({
     queryKey: ['admin', 'users', search(), pagination()],
-    queryFn: () =>
+    queryFn: async () =>
       listUsers({
         search: search() || undefined,
         ...pagination(),

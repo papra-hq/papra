@@ -35,7 +35,7 @@ function assert(
   }
 }
 
-function toBase64(file: File): Promise<string> {
+async function toBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -44,8 +44,8 @@ function toBase64(file: File): Promise<string> {
   });
 }
 
-function fromBase64(base64: string) {
-  return fetch(base64).then((res) => res.blob());
+async function fromBase64(base64: string) {
+  return fetch(base64).then(async (res) => res.blob());
 }
 
 async function serializeFile(file: File): Promise<DocumentFile> {
@@ -143,7 +143,7 @@ async function resolveBatchTargetDocumentIds({
 }): Promise<string[]> {
   if ('documentIds' in filter) {
     const documents = await Promise.all(
-      filter.documentIds.map((id) => documentStorage.getItem(`${organizationId}:${id}`)),
+      filter.documentIds.map(async (id) => documentStorage.getItem(`${organizationId}:${id}`)),
     );
 
     assert(
@@ -586,7 +586,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       );
 
       await Promise.all(
-        tagDocuments.map((tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
+        tagDocuments.map(async (tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
       );
     },
   }),
@@ -628,7 +628,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       );
 
       await Promise.all(
-        tagDocuments.map((tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
+        tagDocuments.map(async (tagDocument) => tagDocumentStorage.removeItem(tagDocument.id)),
       );
     },
   }),
@@ -820,7 +820,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(addTagIds.length + removeTagIds.length > 0, { status: 400 });
 
       const requestedTagIds = [...new Set([...addTagIds, ...removeTagIds])];
-      const requestedTags = await Promise.all(requestedTagIds.map((id) => tagStorage.getItem(id)));
+      const requestedTags = await Promise.all(
+        requestedTagIds.map(async (id) => tagStorage.getItem(id)),
+      );
 
       assert(
         requestedTags.every((tag) => tag?.organizationId === organizationId),
@@ -862,7 +864,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             (td) => td.documentId === documentId && td.tagId === tagId,
           );
 
-          await Promise.all(toRemove.map((td) => tagDocumentStorage.removeItem(td.id)));
+          await Promise.all(toRemove.map(async (td) => tagDocumentStorage.removeItem(td.id)));
 
           if (toRemove.length > 0) {
             removedPairs.push({ documentId, tagId });
@@ -889,7 +891,9 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       );
 
       await Promise.all(
-        documents.map((document) => documentStorage.removeItem(`${organizationId}:${document.id}`)),
+        documents.map(async (document) =>
+          documentStorage.removeItem(`${organizationId}:${document.id}`),
+        ),
       );
     },
   }),
@@ -1318,7 +1322,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       );
 
       await Promise.all(
-        values.map((v) =>
+        values.map(async (v) =>
           documentCustomPropertyValueStorage.removeItem(`${v.documentId}:${propertyDefinitionId}`),
         ),
       );

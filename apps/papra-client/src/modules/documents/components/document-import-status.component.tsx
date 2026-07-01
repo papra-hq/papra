@@ -84,7 +84,7 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
 
   const organizationLimitsQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'subscription'],
-    queryFn: () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
+    queryFn: async () => fetchOrganizationSubscription({ organizationId: props.organizationId }),
     refetchOnWindowFocus: false,
   }));
 

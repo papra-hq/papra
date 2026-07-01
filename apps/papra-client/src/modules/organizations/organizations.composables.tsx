@@ -73,7 +73,7 @@ export function useCurrentUserRole({ organizationId }: { organizationId?: string
 
   const query = useQuery(() => ({
     queryKey: ['organizations', getOrganizationId(), 'members', 'me'],
-    queryFn: () => getMembership({ organizationId: getOrganizationId() }),
+    queryFn: async () => getMembership({ organizationId: getOrganizationId() }),
   }));
 
   const getRole = () => query.data?.member.role;

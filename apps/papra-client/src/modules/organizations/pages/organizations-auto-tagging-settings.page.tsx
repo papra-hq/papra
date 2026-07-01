@@ -88,7 +88,7 @@ const AutoTaggingSettingsCard: Component<{
         <Switch
           class="flex items-center justify-between gap-4"
           checked={props.settings.isEnabled}
-          onChange={(isEnabled) => updateSettings({ isEnabled })}
+          onChange={async (isEnabled) => updateSettings({ isEnabled })}
         >
           <div class="flex flex-col gap-0.5">
             <SwitchLabel class={textfieldLabel({ label: true })}>
@@ -108,7 +108,7 @@ const AutoTaggingSettingsCard: Component<{
         <Switch
           class="flex items-center justify-between gap-4"
           checked={props.settings.canCreateNewTags}
-          onChange={(canCreateNewTags) => updateSettings({ canCreateNewTags })}
+          onChange={async (canCreateNewTags) => updateSettings({ canCreateNewTags })}
           disabled={!props.settings.isEnabled}
         >
           <div class="flex flex-col gap-0.5">
@@ -128,7 +128,7 @@ const AutoTaggingSettingsCard: Component<{
           class="flex items-center justify-between gap-4"
           rawValue={getMaxTags()}
           onRawValueChange={setMaxTags}
-          onChange={() => commitMaxTags()}
+          onChange={async () => commitMaxTags()}
           minValue={MIN_MAX_TAGS}
           maxValue={MAX_MAX_TAGS}
           step={1}

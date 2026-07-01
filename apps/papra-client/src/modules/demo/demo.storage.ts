@@ -193,7 +193,7 @@ export async function seedDemoStorage() {
       }),
     );
 
-    const customPropertyValuePromises = (fixture.customProperties ?? []).map((prop) => {
+    const customPropertyValuePromises = (fixture.customProperties ?? []).map(async (prop) => {
       const definition = customPropertyDefinitions.find((def) => def.key === prop.key);
 
       if (!definition) {

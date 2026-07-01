@@ -5,8 +5,7 @@ function createHook<T = any>() {
 
   return {
     on: (callback: (args: T) => void | Promise<void>) => callbacks.push(callback),
-    // oxlint-disable-next-line typescript/await-thenable
-    trigger: (args: T) => Promise.all(callbacks.map((callback) => callback(args))),
+    trigger: async (args: T) => Promise.all(callbacks.map(async (callback) => callback(args))),
     removeHandler: (callback: (args: T) => void) => {
       callbacks = callbacks.filter((cb) => cb !== callback);
     },
@@ -17,7 +16,7 @@ function createWaitForHook(): { waitFor: () => Promise<void>; trigger: () => voi
   let resolves: (() => void)[] = [];
 
   return {
-    waitFor: () => new Promise((resolve) => resolves.push(resolve)),
+    waitFor: async () => new Promise((resolve) => resolves.push(resolve)),
     trigger: () => {
       resolves.forEach((resolve) => resolve());
       resolves = [];

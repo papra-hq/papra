@@ -11,7 +11,7 @@ export function createAiServices({ config }: { config: Config }) {
   // `Schema` type parameter to its constraint, making the result `unknown`. A thin generic
   // wrapper preserves inference so callers get back InferOutput<Schema>.
   return {
-    generateStructuredData: <Schema extends GenericSchema>(args: {
+    generateStructuredData: async <Schema extends GenericSchema>(args: {
       modelId: string;
       schema: Schema;
       userPrompt: string;

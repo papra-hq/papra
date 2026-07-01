@@ -27,7 +27,7 @@ export const ShareDocumentDialog: Component<{
       'document',
       props.document.id,
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchDocumentShareLinks({
         organizationId: props.document.organizationId,
         documentId: props.document.id,

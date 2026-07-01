@@ -457,7 +457,7 @@ const UserRelationPropertyEditor: Component<{
 
   const membersQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'members'],
-    queryFn: () => fetchOrganizationMembers({ organizationId: props.organizationId }),
+    queryFn: async () => fetchOrganizationMembers({ organizationId: props.organizationId }),
     enabled: open(),
   }));
 
@@ -577,7 +577,7 @@ const DocumentRelationPropertyEditor: Component<{
       'documents',
       { searchQuery: debouncedSearch() },
     ],
-    queryFn: () =>
+    queryFn: async () =>
       fetchOrganizationDocuments({
         organizationId: props.organizationId,
         searchQuery: debouncedSearch(),
@@ -742,7 +742,7 @@ const PropertyValueEditor: Component<{
   const { getErrorMessage } = useI18nApiErrors();
 
   const mutation = useMutation(() => ({
-    mutationFn: (value: string | number | boolean | string[] | null) => {
+    mutationFn: async (value: string | number | boolean | string[] | null) => {
       if (value === null) {
         return deleteDocumentCustomPropertyValue({
           organizationId: props.organizationId,
@@ -757,7 +757,7 @@ const PropertyValueEditor: Component<{
         value,
       });
     },
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({
         queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
       }),

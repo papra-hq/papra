@@ -73,7 +73,7 @@ export const GrantPlanEntitlementDialog: Component<{
   };
 
   const grantMutation = useMutation(() => ({
-    mutationFn: () =>
+    mutationFn: async () =>
       grantPlanEntitlement({
         userId: props.userId,
         type: getType()!,

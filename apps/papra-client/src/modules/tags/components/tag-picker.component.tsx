@@ -25,7 +25,7 @@ export const DocumentTagPicker: Component<{
 
   const query = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'tags'],
-    queryFn: () => fetchTags({ organizationId: props.organizationId }),
+    queryFn: async () => fetchTags({ organizationId: props.organizationId }),
   }));
 
   const options = () => query.data?.tags || [];
