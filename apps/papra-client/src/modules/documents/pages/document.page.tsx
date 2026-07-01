@@ -425,6 +425,22 @@ export const DocumentPage: Component = () => {
       total: documentsCount,
     });
   });
+  const getFallbackDocumentFromNavigationData = (
+    navigationData: { documents: Document[] } | undefined,
+  ) => {
+    const navigationDocuments = navigationData?.documents ?? [];
+    const currentIndex = navigationDocuments.findIndex(
+      (document) => document.id === params.documentId,
+    );
+
+    if (currentIndex < 0) {
+      return undefined;
+    }
+
+    return (
+      navigationDocuments[currentIndex + 1] ?? navigationDocuments[currentIndex - 1]
+    );
+  };
   const navigateToDocument = (documentId: string) =>
     navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
 
@@ -433,7 +449,12 @@ export const DocumentPage: Component = () => {
       return;
     }
 
-    const fallbackDocument = getNextDocument() ?? getPreviousDocument();
+    let navigationDataBeforeDelete = documentNavigationQuery.data;
+
+    if (navigationDataBeforeDelete == null) {
+      const navigationQueryResult = await documentNavigationQuery.refetch();
+      navigationDataBeforeDelete = navigationQueryResult.data;
+    }
 
     const { hasDeleted } = await deleteDocument({
       documentId: params.documentId,
@@ -444,6 +465,8 @@ export const DocumentPage: Component = () => {
     if (!hasDeleted) {
       return;
     }
+
+    const fallbackDocument = getFallbackDocumentFromNavigationData(navigationDataBeforeDelete);
 
     queryClient.setQueryData<{ documents: Document[]; documentsCount: number }>(
       ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
