@@ -4,11 +4,11 @@ packages:
   - packages/*/demo
 
 catalog:
-  '@better-auth/expo': 1.6.11
+  '@better-auth/expo': 1.6.22
   '@corentinth/chisels': 2.1.0
   '@types/node': ^26.0.0
   '@vitest/coverage-v8': ^4.0.3
-  better-auth: 1.6.11
+  better-auth: 1.6.22
   p-limit: ^7.3.0
   sharp: ^0.34.5
   tsdown: ^0.22.3
