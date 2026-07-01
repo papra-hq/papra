@@ -84,19 +84,35 @@ async function fetchAllNavigationDocuments({ organizationId }: { organizationId:
   firstPage.documents.forEach((document) => documentsById.set(document.id, document));
 
   const pagesCount = Math.ceil(documentsCount / documentNavigationPageSize);
-  const remainingPages = await Promise.all(
-    Array.from({ length: Math.max(pagesCount - 1, 0) }, (_, index) =>
-      fetchOrganizationDocuments({
-        organizationId,
-        pageIndex: index + 1,
-        pageSize: documentNavigationPageSize,
-      }),
-    ),
+  const remainingPageIndices = Array.from(
+    { length: Math.max(pagesCount - 1, 0) },
+    (_, index) => index + 1,
   );
+  const navigationDocumentsFetchConcurrency = 5;
 
-  remainingPages.forEach((page) => {
-    page.documents.forEach((document) => documentsById.set(document.id, document));
-  });
+  for (
+    let index = 0;
+    index < remainingPageIndices.length;
+    index += navigationDocumentsFetchConcurrency
+  ) {
+    const pageIndicesBatch = remainingPageIndices.slice(
+      index,
+      index + navigationDocumentsFetchConcurrency,
+    );
+    const pages = await Promise.all(
+      pageIndicesBatch.map((pageIndex) =>
+        fetchOrganizationDocuments({
+          organizationId,
+          pageIndex,
+          pageSize: documentNavigationPageSize,
+        }),
+      ),
+    );
+
+    pages.forEach((page) => {
+      page.documents.forEach((document) => documentsById.set(document.id, document));
+    });
+  }
 
   return { documents: Array.from(documentsById.values()), documentsCount };
 }

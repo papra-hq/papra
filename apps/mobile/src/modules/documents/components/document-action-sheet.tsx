@@ -160,7 +160,7 @@ export function DocumentActionSheet({
                   },
                 );
 
-                await queryClient.invalidateQueries({
+                void queryClient.invalidateQueries({
                   queryKey: ['organizations', document.organizationId, 'documents'],
                 });
 
