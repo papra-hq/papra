@@ -3,10 +3,7 @@ import type { BinaryOperator } from 'drizzle-orm';
 import type { QueryResult } from './query-builder.types';
 import { eq, gt, gte, lt, lte, sql } from 'drizzle-orm';
 import { documentsFtsTable } from '../database-fts5.tables';
-
-function joinColumnNames(columns: string[]): string {
-  return columns.join(' ');
-}
+import { buildFts5ColumnMatchTerm } from '../database-fts5.models';
 
 export function formatFts5QueryValue({
   value,
@@ -17,13 +14,17 @@ export function formatFts5QueryValue({
   organizationId: string;
   matchingColumns?: string[];
 }) {
-  const formattedValue = value.trim().replace(/["'‘’“”]/g, ' '); // Replace various quote characters with space so they don't interfere with FTS5 syntax
-
   const queryString = [
-    `${documentsFtsTable.organizationId.name}:"${organizationId}"`,
-    matchingColumns.length === 0
-      ? `"${formattedValue}"*`
-      : `{${joinColumnNames(matchingColumns)}}:"${formattedValue}"*`,
+    buildFts5ColumnMatchTerm({
+      columnNames: [documentsFtsTable.organizationId.name],
+      value: organizationId,
+      isExactMatch: true,
+    }),
+    buildFts5ColumnMatchTerm({
+      columnNames: matchingColumns,
+      value,
+      isExactMatch: false,
+    }),
   ].join(' ');
 
   return { queryString };
