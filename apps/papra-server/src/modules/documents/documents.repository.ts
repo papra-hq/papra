@@ -13,6 +13,10 @@ import { omitUndefined } from '../shared/objects';
 import { isDefined, isNil, uniq } from '../shared/utils';
 import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
 import { documentsTable } from './documents.table';
+import { documentsTagsTable } from '../tags/tags.table';
+import { documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
+import { documentShareLinksTable } from '../document-share-links/document-share-links.table';
+import { documentsFtsTable } from './document-search/database-fts5/database-fts5.tables';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
 
@@ -37,6 +41,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       updateDocument,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
+      moveDocument,
     },
     { db },
   );
@@ -570,3 +575,55 @@ export async function areAllDocumentsInOrganization({
 
   return documentIds.every((documentId) => foundDocumentIds.has(documentId));
 }
+
+async function moveDocument({
+  documentId,
+  sourceOrganizationId,
+  targetOrganizationId,
+  db,
+}: {
+  documentId: string;
+  sourceOrganizationId: string;
+  targetOrganizationId: string;
+  db: Database;
+}) {
+  return await db.transaction(async (tx) => {
+    const [document] = await tx
+      .update(documentsTable)
+      .set({ organizationId: targetOrganizationId })
+      .where(
+        and(
+          eq(documentsTable.id, documentId),
+          eq(documentsTable.organizationId, sourceOrganizationId),
+        ),
+      )
+      .returning();
+
+    if (isNil(document)) {
+      throw createDocumentNotFoundError();
+    }
+
+    // Delete all tags for the document
+    await tx.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
+
+    // Delete all custom property values for the document
+    await tx
+      .delete(documentCustomPropertyValuesTable)
+      .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
+
+    // Update associated share links organization ID
+    await tx
+      .update(documentShareLinksTable)
+      .set({ organizationId: targetOrganizationId })
+      .where(eq(documentShareLinksTable.documentId, documentId));
+
+    // Update documents FTS5 search index organization ID
+    await tx
+      .update(documentsFtsTable)
+      .set({ organizationId: targetOrganizationId })
+      .where(eq(documentsFtsTable.documentId, documentId));
+
+    return { document };
+  });
+}
+

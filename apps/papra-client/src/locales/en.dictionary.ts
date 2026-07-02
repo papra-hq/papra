@@ -444,7 +444,17 @@ export const translations = {
 
   'documents.management.details': 'Document details',
   'documents.management.rename': 'Rename document',
+  'documents.management.move': 'Move document',
   'documents.management.delete': 'Delete document',
+
+  'documents.move.title': 'Move Document',
+  'documents.move.warning': 'Moving this document will clear all tags and custom property values, as they belong to the source organization.',
+  'documents.move.select-label': 'Select target organization',
+  'documents.move.select-placeholder': 'Select an organization',
+  'documents.move.cancel': 'Cancel',
+  'documents.move.submit': 'Move',
+  'documents.move.success': 'Document moved successfully',
+  'documents.move.error': 'Error moving document',
 
   'documents.import.drop-area.title': 'Drop files here',
   'documents.import.drop-area.description': 'Drag and drop files here to import them',

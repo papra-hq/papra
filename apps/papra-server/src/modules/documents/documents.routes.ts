@@ -6,7 +6,9 @@ import { getUser } from '../app/auth/auth.models';
 import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
-import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+import { ensureUserIsInOrganization, getOrganizationStorageLimits } from '../organizations/organizations.usecases';
+import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
+import { createError } from '../shared/errors/errors';
 import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
@@ -17,7 +19,7 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createTagsRepository } from '../tags/tags.repository';
 import { DEFAULT_DOCUMENT_SEARCH_SORT } from './document-search/document-search.constants';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
-import { createDocumentIsNotDeletedError } from './documents.errors';
+import { createDocumentIsNotDeletedError, createDocumentSizeTooLargeError } from './documents.errors';
 import {
   formatDocumentForApi,
   formatDocumentsForApi,
@@ -42,6 +44,7 @@ import {
   restoreDocument,
   trashDocument,
   updateDocument,
+  moveDocument,
 } from './documents.usecases';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
@@ -56,6 +59,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
   setupUpdateDocumentRoute(context);
+  setupMoveDocumentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
@@ -521,3 +525,95 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
     },
   );
 }
+
+function setupMoveDocumentRoute({
+  app,
+  db,
+  eventServices,
+  config,
+  planEntitlementDefinitionRegistry,
+}: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/documents/:documentId/move',
+    requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
+    validateJsonBody(
+      v.strictObject({
+        targetOrganizationId: organizationIdSchema,
+      }),
+    ),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+      const { targetOrganizationId } = context.req.valid('json');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      // 1. Verify user is in source organization
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      // 2. Verify user is in target organization
+      await ensureUserIsInOrganization({
+        userId,
+        organizationId: targetOrganizationId,
+        organizationsRepository,
+      });
+
+      // 3. Verify target is not the same
+      if (organizationId === targetOrganizationId) {
+        throw createError({
+          message: 'Source and target organizations must be different',
+          code: 'documents.move.same_organization',
+          statusCode: 400,
+        });
+      }
+
+      // 4. Verify document exists in source organization
+      const { document } = await getDocumentOrThrow({
+        documentId,
+        organizationId,
+        documentsRepository,
+      });
+
+      // 5. Verify plan limits for target organization
+      const plansRepository = createPlansRepository({ config });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+
+      const { availableDocumentStorageBytes, maxFileSize } = await getOrganizationStorageLimits({
+        organizationId: targetOrganizationId,
+        plansRepository,
+        subscriptionsRepository,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+        documentsRepository,
+      });
+
+      if (document.originalSize > maxFileSize) {
+        throw createDocumentSizeTooLargeError();
+      }
+
+      if (document.originalSize > availableDocumentStorageBytes) {
+        throw createOrganizationDocumentStorageLimitReachedError();
+      }
+
+      // 6. Move the document
+      const { document: movedDocument } = await moveDocument({
+        documentId,
+        sourceOrganizationId: organizationId,
+        targetOrganizationId,
+        userId,
+        documentsRepository,
+        eventServices,
+      });
+
+      return context.json({ document: formatDocumentForApi({ document: movedDocument }) });
+    },
+  );
+}
+

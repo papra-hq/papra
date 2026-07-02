@@ -1,10 +1,14 @@
-import { desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createDocumentAlreadyExistsError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
+import { documentsTagsTable } from '../tags/tags.table';
+import { customPropertyDefinitionsTable, documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
+import { documentShareLinksTable } from '../document-share-links/document-share-links.table';
+import { documentsFtsTable } from './document-search/database-fts5/database-fts5.tables';
 
 describe('documents repository', () => {
   describe('crud operations on document collection', () => {
@@ -350,6 +354,95 @@ describe('documents repository', () => {
           organizationId: 'org-1',
         }),
       ).to.eql(true);
+    });
+  });
+
+  describe('moveDocument', () => {
+    test('successfully moves a document, updates organizationId in documents, share links, FTS index, and deletes tags and custom property values', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [
+          { id: 'org-1', name: 'Org 1' },
+          { id: 'org-2', name: 'Org 2' },
+        ],
+        documents: [
+          {
+            id: 'doc-1',
+            organizationId: 'org-1',
+            createdBy: 'user-1',
+            name: 'Doc 1',
+            originalName: 'doc-1.pdf',
+            originalStorageKey: 'key-1',
+            originalSha256Hash: 'hash1',
+            mimeType: 'application/pdf',
+          },
+        ],
+        tags: [
+          { id: 'tag-1', organizationId: 'org-1', name: 'Tag 1', color: 'red' },
+        ],
+        documentsTags: [
+          { documentId: 'doc-1', tagId: 'tag-1' },
+        ],
+      });
+
+      // Insert custom property definitions and values
+      await db.insert(customPropertyDefinitionsTable).values({
+        id: 'def-1',
+        organizationId: 'org-1',
+        name: 'Prop 1',
+        key: 'prop_1',
+        type: 'text',
+      });
+      await db.insert(documentCustomPropertyValuesTable).values({
+        id: 'val-1',
+        documentId: 'doc-1',
+        propertyDefinitionId: 'def-1',
+        textValue: 'Value 1',
+      });
+
+      // Insert share link
+      await db.insert(documentShareLinksTable).values({
+        id: 'link-1',
+        organizationId: 'org-1',
+        documentId: 'doc-1',
+        token: 'token-1',
+      });
+
+      // Insert FTS record
+      await db.insert(documentsFtsTable).values({
+        documentId: 'doc-1',
+        organizationId: 'org-1',
+        name: 'Doc 1',
+        content: 'content 1',
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.moveDocument({
+        documentId: 'doc-1',
+        sourceOrganizationId: 'org-1',
+        targetOrganizationId: 'org-2',
+      });
+
+      expect(document.organizationId).toBe('org-2');
+
+      // Verify tags deleted
+      const tags = await db.select().from(documentsTagsTable).where(eq(documentsTagsTable.documentId, 'doc-1'));
+      expect(tags).to.have.length(0);
+
+      // Verify custom properties deleted
+      const customPropValues = await db.select().from(documentCustomPropertyValuesTable).where(eq(documentCustomPropertyValuesTable.documentId, 'doc-1'));
+      expect(customPropValues).to.have.length(0);
+
+      // Verify share link updated
+      const shareLinks = await db.select().from(documentShareLinksTable).where(eq(documentShareLinksTable.documentId, 'doc-1'));
+      expect(shareLinks).to.have.length(1);
+      expect(shareLinks[0]!.organizationId).toBe('org-2');
+
+      // Verify FTS updated
+      const fts = await db.select().from(documentsFtsTable).where(eq(documentsFtsTable.documentId, 'doc-1'));
+      expect(fts).to.have.length(1);
+      expect(fts[0]!.organizationId).toBe('org-2');
     });
   });
 });

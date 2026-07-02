@@ -40,7 +40,7 @@ export { createInMemoryDatabase, seedDatabase };
 async function createInMemoryDatabase(
   seedOptions: Omit<Parameters<typeof seedDatabase>[0], 'db'> | undefined = {},
 ) {
-  const { db } = setupDatabase({ url: ':memory:' });
+  const { db } = setupDatabase({ url: `file:test-${Math.random()}.db` });
 
   await runMigrations({
     db,
