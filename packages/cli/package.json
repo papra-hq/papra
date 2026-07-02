@@ -1,6 +1,6 @@
 {
   "name": "@papra/cli",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Command line interface for Papra, the document archiving platform.",
   "keywords": [
     "archiving",
