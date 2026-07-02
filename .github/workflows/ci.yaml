@@ -48,5 +48,9 @@ jobs:
       - name: Build the apps
         run: pnpm -r --parallel -F "./apps/*" build
 
+      # Boot the built server bundle to catch runtime-only failures the build step cannot detect
+      - name: Smoke test the server
+        run: pnpm -F "@papra/app-server" test:smoke
+
       - name: Ensure no non-excluded files are changed for the whole repo
         run: git diff --exit-code > /dev/null || (echo "After running the CI, some un-committed changes were detected. Please ensure cleanness before merging." && exit 1)
