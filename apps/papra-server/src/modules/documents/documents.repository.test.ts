@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { createDocumentAlreadyExistsError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentSameOrganizationError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 import { documentsTagsTable } from '../tags/tags.table';
@@ -443,6 +443,37 @@ describe('documents repository', () => {
       const fts = await db.select().from(documentsFtsTable).where(eq(documentsFtsTable.documentId, 'doc-1'));
       expect(fts).to.have.length(1);
       expect(fts[0]!.organizationId).toBe('org-2');
+    });
+
+    test('throws same organization error if targetOrganizationId is equal to sourceOrganizationId', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [
+          { id: 'org-1', name: 'Org 1' },
+        ],
+        documents: [
+          {
+            id: 'doc-1',
+            organizationId: 'org-1',
+            createdBy: 'user-1',
+            name: 'Doc 1',
+            originalName: 'doc-1.pdf',
+            originalStorageKey: 'key-1',
+            originalSha256Hash: 'hash1',
+            mimeType: 'application/pdf',
+          },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.moveDocument({
+          documentId: 'doc-1',
+          sourceOrganizationId: 'org-1',
+          targetOrganizationId: 'org-1',
+        }),
+      ).rejects.toThrow(createDocumentSameOrganizationError());
     });
   });
 });

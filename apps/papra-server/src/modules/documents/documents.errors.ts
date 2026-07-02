@@ -30,3 +30,9 @@ export const createDocumentSizeTooLargeError = createErrorFactory({
   code: 'document.size_too_large',
   statusCode: 413,
 });
+
+export const createDocumentSameOrganizationError = createErrorFactory({
+  message: 'Source and target organizations must be different.',
+  code: 'document.same_organization',
+  statusCode: 400,
+});

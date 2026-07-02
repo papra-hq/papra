@@ -1,7 +1,7 @@
 import type { Component, ParentComponent } from 'solid-js';
 import { useLocation, useNavigate } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
-import { createContext, createSignal, useContext, Show, For } from 'solid-js';
+import { createContext, createSignal, createEffect, useContext, Show, For } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/ui/components/dialog';
@@ -22,6 +22,12 @@ export const MoveDocumentDialog: Component<{
   const navigate = useNavigate();
   const location = useLocation();
   const [getTargetOrgId, setTargetOrgId] = createSignal<string | undefined>(undefined);
+
+  createEffect(() => {
+    if (!props.isOpen) {
+      setTargetOrgId(undefined);
+    }
+  });
 
   const orgsQuery = useQuery(() => ({
     queryKey: ['organizations'],
@@ -75,7 +81,7 @@ export const MoveDocumentDialog: Component<{
     <Dialog onOpenChange={props.setIsOpen} open={props.isOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('documents.move.title')}</DialogTitle>
+          <DialogTitle>{t('documents.move.title')}: {props.documentName}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} class="space-y-4">

@@ -11,7 +11,7 @@ import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/objects';
 import { isDefined, isNil, uniq } from '../shared/utils';
-import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotFoundError, createDocumentSameOrganizationError } from './documents.errors';
 import { documentsTable } from './documents.table';
 import { documentsTagsTable } from '../tags/tags.table';
 import { documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
@@ -587,6 +587,10 @@ async function moveDocument({
   targetOrganizationId: string;
   db: Database;
 }) {
+  if (sourceOrganizationId === targetOrganizationId) {
+    throw createDocumentSameOrganizationError();
+  }
+
   return await db.transaction(async (tx) => {
     const [document] = await tx
       .update(documentsTable)
