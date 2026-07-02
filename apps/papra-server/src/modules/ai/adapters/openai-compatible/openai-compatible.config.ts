@@ -13,14 +13,12 @@ export const openAiAdaptersConfig = mapValues(
         schema: urlSchema,
         env: `${adapter.envPrefix}_BASE_URL`,
         default: adapter.defaultBaseUrl,
-        showInDocumentation: false,
       },
       apiKey: {
         doc: `API key for the ${adapter.label} API.`,
         schema: v.string(),
         env: `${adapter.envPrefix}_API_KEY`,
         default: adapter.defaultApiKey ?? '',
-        showInDocumentation: false,
       },
     }) as const,
 );

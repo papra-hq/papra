@@ -27,7 +27,6 @@ export const documentContentExtractionConfig = {
     ),
     env: 'CONTENT_EXTRACTION_STRATEGY',
     default: CONTENT_EXTRACTION_STRATEGIES.internal,
-    showInDocumentation: false,
   },
   strategy: {
     mistralOcr: mistralOcrConfig,
