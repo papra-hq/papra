@@ -12,7 +12,8 @@
     "@papra/docs",
     "@papra/search-parser-demo",
     "@papra/website",
-    "@papra/std"
+    "@papra/std",
+    "@papra/lecture"
   ],
   "privatePackages": {
     "tag": true,
