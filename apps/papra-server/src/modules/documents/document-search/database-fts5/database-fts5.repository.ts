@@ -2,7 +2,7 @@ import type { Database } from '../../../app/database/database.types';
 import type { DocumentSearchSort } from '../document-search.constants';
 import type { DocumentSearchableData, DocumentUpdate } from '../document-search.types';
 import { injectArguments } from '@corentinth/chisels';
-import { eq, getTableColumns, inArray, sql } from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { customPropertyDefinitionsTable } from '../../../custom-properties/custom-properties.table';
 import { isNonEmptyArray } from '../../../shared/arrays/arrays.utils';
 import { omit, omitUndefined } from '../../../shared/objects';
@@ -10,6 +10,7 @@ import { documentsTable } from '../../documents.table';
 import { DEFAULT_DOCUMENT_SEARCH_SORT } from '../document-search.constants';
 import { makeSearchOrderByClauses, makeSearchWhereClause } from './database-fts5.repository.models';
 import { documentsFtsTable } from './database-fts5.tables';
+import { buildFts5ColumnMatchTerm } from './database-fts5.models';
 
 export type DocumentSearchRepository = ReturnType<typeof createDocumentSearchRepository>;
 
@@ -160,7 +161,19 @@ async function updateDocuments({ updates, db }: { updates: DocumentUpdate[]; db:
       return db
         .update(documentsFtsTable)
         .set(dataToUpdate)
-        .where(eq(documentsFtsTable.documentId, documentId));
+        .where(
+          and(
+            eq(documentsFtsTable.documentId, documentId),
+            eq(
+              documentsFtsTable,
+              buildFts5ColumnMatchTerm({
+                columnNames: [documentsFtsTable.documentId.name],
+                value: documentId,
+                isExactMatch: true,
+              }),
+            ),
+          ),
+        );
     })
     .filter((query) => query !== null);
 
@@ -176,5 +189,21 @@ async function deleteDocuments({ documentIds, db }: { documentIds: string[]; db:
     return;
   }
 
-  await db.delete(documentsFtsTable).where(inArray(documentsFtsTable.documentId, documentIds));
+  await db.delete(documentsFtsTable).where(
+    and(
+      inArray(documentsFtsTable.documentId, documentIds),
+      eq(
+        documentsFtsTable,
+        documentIds
+          .map((documentId) =>
+            buildFts5ColumnMatchTerm({
+              columnNames: [documentsFtsTable.documentId.name],
+              value: documentId,
+              isExactMatch: true,
+            }),
+          )
+          .join(' OR '),
+      ),
+    ),
+  );
 }

@@ -1,5 +1,13 @@
 # @papra/lecture
 
+## 0.5.1
+
+### Patch Changes
+
+- [#1276](https://github.com/papra-hq/papra/pull/1276) [`95cfbb0`](https://github.com/papra-hq/papra/commit/95cfbb0639ba263bfc21a64729eb1e87d0a6b89a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Excluded sourcemaps from package bundle
+
+- [#1184](https://github.com/papra-hq/papra/pull/1184) [`e2c3aa6`](https://github.com/papra-hq/papra/commit/e2c3aa61fca6bff8c73ce0cc83b3c59390f5088d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Updated tesseract.js to v7 which should increase extraction performance by 15 to 35% on images, [source](https://github.com/naptha/tesseract.js/releases/tag/v7.0.0).
+
 ## 0.5.0
 
 ### Minor Changes

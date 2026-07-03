@@ -32,7 +32,7 @@ describe('query-builder', async () => {
 
       expect(stringifySqlQuery(sqlQuery)).to.eql({
         query: `"documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)`,
-        params: ['organization_id:"org_1" {name}:"important"*'],
+        params: ['organization_id:"org_1" name:"important"*'],
       });
     });
 
@@ -47,7 +47,7 @@ describe('query-builder', async () => {
 
       expect(stringifySqlQuery(sqlQuery)).to.eql({
         query: `"documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)`,
-        params: ['organization_id:"org_1" {name}:"important (draft)"*'],
+        params: ['organization_id:"org_1" name:"important (draft)"*'],
       });
     });
 
@@ -81,7 +81,7 @@ describe('query-builder', async () => {
 
       expect(stringifySqlQuery(sqlQuery)).to.eql({
         query: `"documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)`,
-        params: ['organization_id:"org_1" {content}:"confidential"*'],
+        params: ['organization_id:"org_1" content:"confidential"*'],
       });
     });
 
@@ -96,7 +96,7 @@ describe('query-builder', async () => {
 
       expect(stringifySqlQuery(sqlQuery)).to.eql({
         query: `"documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?)`,
-        params: ['organization_id:"org_1" {content}:"confidential [v2]"*'],
+        params: ['organization_id:"org_1" content:"confidential [v2]"*'],
       });
     });
 
@@ -445,7 +445,7 @@ describe('query-builder', async () => {
         query: `("documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?) and "documents"."id" in (select distinct "document_id" from "documents_fts" where "documents_fts" = ?))`,
         params: [
           'organization_id:"org_1" {name content}:"invoice"*',
-          'organization_id:"org_1" {name}:"Q3"*',
+          'organization_id:"org_1" name:"Q3"*',
         ],
       });
     });

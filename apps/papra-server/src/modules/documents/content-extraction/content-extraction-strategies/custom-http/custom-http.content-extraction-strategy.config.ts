@@ -17,14 +17,12 @@ export const customHttpConfig = {
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_URL',
     schema: v.optional(urlSchema),
     default: undefined,
-    showInDocumentation: false,
   },
   headers: {
     doc: 'Custom headers to include in requests to the Custom HTTP service. Content-type header will be automatically set based on the uploadFormat, so it should not be included in this list. The headers should be specified as a JSON object, e.g. `{"Authorization": "Bearer <token>"}`.',
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_HEADERS',
     schema: headersDefinitionStringSchema,
     default: '{}',
-    showInDocumentation: false,
   },
   uploadFormat: {
     doc: [
@@ -35,14 +33,12 @@ export const customHttpConfig = {
     schema: v.picklist(UPLOAD_FORMATS),
     default: UPLOAD_FORMAT.FORM_DATA,
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_UPLOAD_FORMAT',
-    showInDocumentation: false,
   },
   requestTimeout: {
     doc: 'The timeout in milliseconds for requests to the Custom HTTP service.',
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_REQUEST_TIMEOUT_MS',
     schema: coercedStrictlyPositiveIntegerSchema,
     default: 30 * IN_MS.SECOND,
-    showInDocumentation: false,
   },
   responseFormat: {
     doc: [
@@ -53,7 +49,6 @@ export const customHttpConfig = {
     schema: v.picklist(RESPONSE_FORMATS),
     default: RESPONSE_FORMAT.JSON,
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_RESPONSE_FORMAT',
-    showInDocumentation: false,
   },
   jsonResponseTextPath: {
     doc: '',
@@ -72,7 +67,6 @@ export const customHttpConfig = {
     ),
     default: 'text',
     env: 'CONTENT_EXTRACTION_CUSTOM_HTTP_JSON_RESPONSE_TEXT_PATH',
-    showInDocumentation: false,
   },
   mimeTypesAllowList: {
     doc: 'The list of mime types that the Custom HTTP strategy will be used for. If the document mime type is not in this list, the strategy will be skipped. Comma separated list. Supports wildcards, e.g. "image/*" matches all image mime types, and "*" matches all formats. Prefix an entry with "!" to negate it, e.g. "*,!image/png" allows everything except PNG. Negations always take precedence over allows, even more specific ones (e.g. "image/png,!image/*" rejects PNG).',
@@ -90,6 +84,5 @@ export const customHttpConfig = {
       ),
     ),
     default: '*',
-    showInDocumentation: false,
   },
 } as const satisfies AppConfigDefinition;

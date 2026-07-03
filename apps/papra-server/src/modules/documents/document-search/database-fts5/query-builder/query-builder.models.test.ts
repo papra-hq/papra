@@ -22,7 +22,7 @@ describe('query-builder models', () => {
           matchingColumns: ['name'],
         }),
       ).to.eql({
-        queryString: 'organization_id:"org_1" {name}:"foobar"*',
+        queryString: 'organization_id:"org_1" name:"foobar"*',
       });
     });
 

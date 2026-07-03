@@ -11,7 +11,9 @@
     "@papra/app-server",
     "@papra/docs",
     "@papra/search-parser-demo",
-    "@papra/website"
+    "@papra/website",
+    "@papra/std",
+    "@papra/lecture"
   ],
   "privatePackages": {
     "tag": true,

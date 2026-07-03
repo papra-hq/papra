@@ -1,5 +1,14 @@
 # @papra/cli
 
+## 0.2.5
+
+### Patch Changes
+
+- [#1276](https://github.com/papra-hq/papra/pull/1276) [`95cfbb0`](https://github.com/papra-hq/papra/commit/95cfbb0639ba263bfc21a64729eb1e87d0a6b89a) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Excluded sourcemaps from package bundle
+
+- Updated dependencies [[`95cfbb0`](https://github.com/papra-hq/papra/commit/95cfbb0639ba263bfc21a64729eb1e87d0a6b89a)]:
+  - @papra/api-sdk@1.3.1
+
 ## 0.2.4
 
 ### Patch Changes
