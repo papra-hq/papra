@@ -3,10 +3,13 @@ import type { Props as HeaddProps } from '../components/Head.astro';
 import Head from '../components/Head.astro';
 import { DEFAULT_LOCALE } from '../i18n/i18n.constants';
 import '../styles/app.css';
+import { cn } from '../utils/cn';
 
-type Props = {} & HeaddProps;
+type Props = {
+  class?: string;
+} & HeaddProps;
 
-const { ...headProps } = Astro.props;
+const { class: className, ...headProps  } = Astro.props;
 
 const locale = Astro.currentLocale ?? DEFAULT_LOCALE;
 ---
@@ -14,7 +17,7 @@ const locale = Astro.currentLocale ?? DEFAULT_LOCALE;
 <!doctype html>
 <html lang={locale}>
   <Head {...headProps} />
-  <body class="bg-background font-sans antialiased min-h-screen text-foreground text-sm" data-kb-theme="dark">
+  <body class={cn(`bg-background font-sans antialiased min-h-screen text-foreground text-sm ${className}`)} data-kb-theme="dark">
     <slot />
   </body>
 </html>

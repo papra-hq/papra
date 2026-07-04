@@ -1,0 +1,138 @@
+---
+import { cn } from '../utils/cn';
+import Layout from './Layout.astro';
+
+type Category = {
+  title: string;
+  sections: Section[];
+};
+
+type Section = {
+  title: string;
+  items: Item[];
+};
+
+type Item = {
+  title: string;
+  url: string;
+};
+
+const categories: Category[] = [
+  {
+    title: 'Using Papra',
+    sections: [
+      {
+        title: 'Getting Started',
+        items: [
+          {
+            title: 'Introduction',
+            url: '/docs/introduction',
+          },
+          {
+            title: 'Quickstart',
+            url: '/docs/quickstart',
+          },
+        ],
+      },
+      {
+        title: 'Features',
+        items: [
+          {
+            title: 'Features Overview',
+            url: '/docs/features',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Self-hosting',
+    sections: [
+      {
+        title: 'Installation',
+        items: [
+          {
+            title: 'Using Docker',
+            url: '/docs/self-hosting/using-docker',
+          },
+          {
+            title: 'Using Docker Compose',
+            url: '/docs/self-hosting/using-docker-compose',
+          },
+        ],
+      },
+    ],
+  },
+];
+
+function getFirstItem(category: Category): Item | null {
+  for (const section of category.sections) {
+    if (section.items.length > 0) {
+      return section.items[0];
+    }
+  }
+  return null;
+}
+
+const currentCategory = categories[0];
+const currentSection = currentCategory.sections[0];
+---
+
+<Layout class="bg-#121212 relative">
+  <div class="absolute top-0 left-50% transform -translate-x-50% w-400px h-250px sm:w-700px sm:h-300px rounded-full bg-gradient-to-b from-primary/50 to-transparent blur-3xl opacity-30 z-0 pointer-events-none"></div>
+
+  <header class="border-b sticky top-0 left-0 right-0 z-100 bg-#121212">
+    <div class="max-w-1400px mx-auto pt-4 px-6">
+      <div class="pb-3">
+        <a href="/docs" class="text-lg font-semibold group flex items-center gap-2 transition">
+          <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
+          Papra
+        </a>
+      </div>
+
+      <div class="flex items-center gap-6 overflow-x-auto">
+        {
+          categories.map((category) => {
+            const firstItem = getFirstItem(category);
+            if (!firstItem) return null;
+            return (
+              <a href={firstItem.url} class="text-13px font-medium border-b border-transparent hover:border-primary transition py-2 block">
+                {category.title}
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-1400px mx-auto flex">
+    <nav class="border-r max-w-300px w-full hidden md:block overflow-y-auto pl-2 pr-4 flex-shrink-0 fixed h-full">
+      {
+        currentCategory.sections.map((section, index) => (
+          <div class={cn('py-4', index !== 0 ? 'border-t' : '')}>
+            <h3 class="text-13px font-medium mb-2 pl-4">{section.title}</h3>
+            <ul>
+              {section.items.map((item) => (
+                <li>
+                  <a href={item.url} class="text-sm text-muted-foreground hover:(bg-muted text-foreground) transition py-1 block px-4 rounded-xl py-1.5">
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </nav>
+
+    <div class="flex-1">
+      <main class="max-w-728px mx-auto px-6 py-6">
+        <div class="text-sm font-bold mb-2 text-primary">
+          {currentSection.title}
+        </div>
+        <slot />
+      </main>
+    </div>
+  </div>
+</Layout>
