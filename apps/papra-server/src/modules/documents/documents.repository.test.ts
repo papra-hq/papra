@@ -512,5 +512,122 @@ describe('documents repository', () => {
         }),
       ).rejects.toThrow(createDocumentSameOrganizationError());
     });
+
+    test('compensating rollback: deletes new storage file on database transaction failure', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [
+          { id: 'org-1', name: 'Org 1' },
+          { id: 'org-2', name: 'Org 2' },
+        ],
+        documents: [
+          {
+            id: 'doc-1',
+            organizationId: 'org-1',
+            createdBy: 'user-1',
+            name: 'Doc 1',
+            originalName: 'doc-1.pdf',
+            originalStorageKey: 'org-1/originals/doc-1.pdf',
+            originalSha256Hash: 'hash1',
+            mimeType: 'application/pdf',
+          },
+        ],
+      });
+
+      const { createInMemoryDocumentStorageServices } = await import('./storage/documents.storage.services.test-utils');
+      const storageService = createInMemoryDocumentStorageServices();
+
+      const { createReadableStream } = await import('../shared/streams/readable-stream');
+      
+      await storageService.saveFile({
+        fileStream: createReadableStream({ content: 'test content' }),
+        fileName: 'doc-1.pdf',
+        mimeType: 'application/pdf',
+        storageKey: 'org-1/originals/doc-1.pdf',
+      });
+
+      const originalTransaction = db.transaction.bind(db);
+      db.transaction = async (cb: any, config?: any) => {
+        return originalTransaction(async (tx) => {
+          const originalUpdate = tx.update.bind(tx);
+          tx.update = (table: any) => {
+            if (table === documentsTable) {
+              throw new Error('Simulated database write failure');
+            }
+            return originalUpdate(table);
+          };
+          return cb(tx);
+        }, config);
+      };
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.moveDocument({
+          documentId: 'doc-1',
+          sourceOrganizationId: 'org-1',
+          targetOrganizationId: 'org-2',
+          documentsStorageService: storageService,
+        }),
+      ).rejects.toThrow('Simulated database write failure');
+
+      const targetStorageKey = 'org-2/originals/doc-1.pdf';
+      const newExists = await storageService.fileExists({ storageKey: targetStorageKey });
+      expect(newExists).toBe(false);
+
+      const originalExists = await storageService.fileExists({ storageKey: 'org-1/originals/doc-1.pdf' });
+      expect(originalExists).toBe(true);
+    });
+
+    test('successfully moves document and updates storage: deletes old file and saves new file', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [
+          { id: 'org-1', name: 'Org 1' },
+          { id: 'org-2', name: 'Org 2' },
+        ],
+        documents: [
+          {
+            id: 'doc-1',
+            organizationId: 'org-1',
+            createdBy: 'user-1',
+            name: 'Doc 1',
+            originalName: 'doc-1.pdf',
+            originalStorageKey: 'org-1/originals/doc-1.pdf',
+            originalSha256Hash: 'hash1',
+            mimeType: 'application/pdf',
+          },
+        ],
+      });
+
+      const { createInMemoryDocumentStorageServices } = await import('./storage/documents.storage.services.test-utils');
+      const storageService = createInMemoryDocumentStorageServices();
+
+      const { createReadableStream } = await import('../shared/streams/readable-stream');
+      
+      await storageService.saveFile({
+        fileStream: createReadableStream({ content: 'test content' }),
+        fileName: 'doc-1.pdf',
+        mimeType: 'application/pdf',
+        storageKey: 'org-1/originals/doc-1.pdf',
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      const { document } = await documentsRepository.moveDocument({
+        documentId: 'doc-1',
+        sourceOrganizationId: 'org-1',
+        targetOrganizationId: 'org-2',
+        documentsStorageService: storageService,
+      });
+
+      expect(document!.organizationId).toBe('org-2');
+
+      const originalExists = await storageService.fileExists({ storageKey: 'org-1/originals/doc-1.pdf' });
+      expect(originalExists).toBe(false);
+
+      const newExists = await storageService.fileExists({ storageKey: 'org-2/originals/doc-1.pdf' });
+      expect(newExists).toBe(true);
+    });
   });
 });

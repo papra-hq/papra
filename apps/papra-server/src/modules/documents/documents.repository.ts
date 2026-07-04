@@ -595,86 +595,121 @@ async function moveDocument({
     throw createDocumentSameOrganizationError();
   }
 
-  return await db.transaction(async (tx) => {
-    const documentToMove = await tx
-      .select()
-      .from(documentsTable)
-      .where(eq(documentsTable.id, documentId))
-      .then(([doc]) => doc);
+  const documentToMove = await db
+    .select()
+    .from(documentsTable)
+    .where(eq(documentsTable.id, documentId))
+    .then(([doc]) => doc);
 
-    if (isNil(documentToMove)) {
-      throw createDocumentNotFoundError();
-    }
+  if (isNil(documentToMove)) {
+    throw createDocumentNotFoundError();
+  }
 
-    if (documentToMove.organizationId !== sourceOrganizationId) {
-      throw createDocumentNotFoundError();
-    }
+  if (documentToMove.organizationId !== sourceOrganizationId) {
+    throw createDocumentNotFoundError();
+  }
 
-    const { originalDocumentStorageKey: newStorageKey } = buildOriginalDocumentKey({
-      documentId,
-      fileName: documentToMove.originalName,
-      organizationId: targetOrganizationId,
+  const { originalDocumentStorageKey: newStorageKey } = buildOriginalDocumentKey({
+    documentId,
+    fileName: documentToMove.originalName,
+    organizationId: targetOrganizationId,
+  });
+
+  let encryptionFields = {};
+  let savedNewFile = false;
+
+  if (documentsStorageService) {
+    const exists = await documentsStorageService.fileExists({
+      storageKey: documentToMove.originalStorageKey,
     });
 
-    let encryptionFields = {};
-
-    if (documentsStorageService) {
-      const exists = await documentsStorageService.fileExists({
+    if (exists) {
+      const { fileStream } = await documentsStorageService.getFileStream({
         storageKey: documentToMove.originalStorageKey,
+        fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
+        fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
+        fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
       });
 
-      if (exists) {
-        const { fileStream } = await documentsStorageService.getFileStream({
-          storageKey: documentToMove.originalStorageKey,
-          fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
-          fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
-          fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
-        });
+      encryptionFields = await documentsStorageService.saveFile({
+        fileStream,
+        fileName: documentToMove.originalName,
+        mimeType: documentToMove.mimeType,
+        storageKey: newStorageKey,
+      });
 
-        encryptionFields = await documentsStorageService.saveFile({
-          fileStream,
-          fileName: documentToMove.originalName,
-          mimeType: documentToMove.mimeType,
-          storageKey: newStorageKey,
-        });
+      savedNewFile = true;
+    }
+  }
 
-        await documentsStorageService.deleteFile({
-          storageKey: documentToMove.originalStorageKey,
-        });
+  try {
+    const result = await db.transaction(async (tx) => {
+      const docTx = await tx
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, documentId))
+        .then(([doc]) => doc);
+
+      if (isNil(docTx) || docTx.organizationId !== sourceOrganizationId) {
+        throw createDocumentNotFoundError();
       }
+
+      const [document] = await tx
+        .update(documentsTable)
+        .set({
+          organizationId: targetOrganizationId,
+          originalStorageKey: newStorageKey,
+          ...encryptionFields,
+        })
+        .where(eq(documentsTable.id, documentId))
+        .returning();
+
+      if (isNil(document)) {
+        throw createDocumentNotFoundError();
+      }
+
+      // Delete all tags for the document
+      await tx.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
+
+      // Delete all custom property values for the document
+      await tx
+        .delete(documentCustomPropertyValuesTable)
+        .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
+
+      // Update associated share links organization ID
+      await tx
+        .update(documentShareLinksTable)
+        .set({ organizationId: targetOrganizationId })
+        .where(eq(documentShareLinksTable.documentId, documentId));
+
+      // Update documents FTS5 search index organization ID
+      await tx
+        .update(documentsFtsTable)
+        .set({ organizationId: targetOrganizationId })
+        .where(eq(documentsFtsTable.documentId, documentId));
+
+      return { document };
+    });
+
+    if (savedNewFile && documentsStorageService) {
+      await documentsStorageService.deleteFile({
+        storageKey: documentToMove.originalStorageKey,
+      });
     }
 
-    const [document] = await tx
-      .update(documentsTable)
-      .set({
-        organizationId: targetOrganizationId,
-        originalStorageKey: newStorageKey,
-        ...encryptionFields,
-      })
-      .where(eq(documentsTable.id, documentId))
-      .returning();
-
-    // Delete all tags for the document
-    await tx.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
-
-    // Delete all custom property values for the document
-    await tx
-      .delete(documentCustomPropertyValuesTable)
-      .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
-
-    // Update associated share links organization ID
-    await tx
-      .update(documentShareLinksTable)
-      .set({ organizationId: targetOrganizationId })
-      .where(eq(documentShareLinksTable.documentId, documentId));
-
-    // Update documents FTS5 search index organization ID
-    await tx
-      .update(documentsFtsTable)
-      .set({ organizationId: targetOrganizationId })
-      .where(eq(documentsFtsTable.documentId, documentId));
-
-    return { document };
-  });
+    return result;
+  } catch (error) {
+    if (savedNewFile && documentsStorageService) {
+      try {
+        await documentsStorageService.deleteFile({
+          storageKey: newStorageKey,
+        });
+      } catch (deleteError) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to clean up storage on rollback', deleteError);
+      }
+    }
+    throw error;
+  }
 }
 
