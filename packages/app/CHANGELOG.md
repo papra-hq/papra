@@ -1,5 +1,19 @@
 # @papra/app
 
+## 26.6.1
+
+### Patch Changes
+
+- [#1312](https://github.com/papra-hq/papra/pull/1312) [`aded832`](https://github.com/papra-hq/papra/commit/aded8322985b945b3e3776dd7031852be20cb093) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Greatly improved the performances when updating and deleting document from the sezarch index, avoiding unnecessary table scans. Noticeable improvement on large document collections (10k+ documents).
+
+- [#1313](https://github.com/papra-hq/papra/pull/1313) [`94f2a68`](https://github.com/papra-hq/papra/commit/94f2a683c1fdb543dd84d8541a4ea70b291471f5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added visual loading state to the rename document modal.
+
+- [#1317](https://github.com/papra-hq/papra/pull/1317) [`35ce235`](https://github.com/papra-hq/papra/commit/35ce235c23a0eef488a05cc747fc7f60eebcf301) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix the coercion of `AUTO_TAGGING_DEFAULT_MAX_TAGS` that caused a validation error when the value is a string instead of a number. Now correctly converts the string to a number, preventing the validation error.
+
+- [#1320](https://github.com/papra-hq/papra/pull/1320) [`2ef3148`](https://github.com/papra-hq/papra/commit/2ef314835ee380869dd28d9924737ae86eaf8602) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix auto tagging schema definition for some ai providers (notably OpenAI and Anthropic), as they do not support all JSON schema features. It's really nice to have a common spec, if only all providers respected it...
+
+- [#1323](https://github.com/papra-hq/papra/pull/1323) [`74d98b2`](https://github.com/papra-hq/papra/commit/74d98b2317e88c3d52389d472279c7fb049927df) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added better logging when an error occurs during the structured data generation.
+
 ## 26.6.0
 
 ### Minor Changes
