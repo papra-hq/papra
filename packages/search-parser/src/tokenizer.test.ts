@@ -160,6 +160,27 @@ describe('tokenizer', () => {
             { type: 'EOF' },
           ],
         },
+        {
+          query: 'foo(bar) OR baz',
+          expectedTokens: [
+            { type: 'TEXT', value: 'foo' },
+            { type: 'LPAREN' },
+            { type: 'TEXT', value: 'bar' },
+            { type: 'RPAREN' },
+            { type: 'OR' },
+            { type: 'TEXT', value: 'baz' },
+            { type: 'EOF' },
+          ],
+        },
+        {
+          query: '(hello)',
+          expectedTokens: [
+            { type: 'LPAREN' },
+            { type: 'TEXT', value: 'hello' },
+            { type: 'RPAREN' },
+            { type: 'EOF' },
+          ],
+        },
       ];
 
       for (const { query, expectedTokens, maxTokens = 100 } of queries) {
