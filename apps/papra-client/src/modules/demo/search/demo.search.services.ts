@@ -44,24 +44,24 @@ function buildTextCondition({ expression }: { expression: TextExpression }): Doc
     someCorpusTokenStartsWith({ corpus: [document.name, document.content], prefix: searchText });
 }
 
-function buildAndCondition({ expression }: { expression: AndExpression }): DocumentCondition {
+function buildAndCondition({ expression, now }: { expression: AndExpression; now?: Date }): DocumentCondition {
   const conditions = expression.operands.map((operand) =>
-    buildExpressionCondition({ expression: operand }),
+    buildExpressionCondition({ expression: operand, now }),
   );
 
   return ({ document }) => conditions.every((condition) => condition({ document }));
 }
 
-function buildOrCondition({ expression }: { expression: OrExpression }): DocumentCondition {
+function buildOrCondition({ expression, now }: { expression: OrExpression; now?: Date }): DocumentCondition {
   const conditions = expression.operands.map((operand) =>
-    buildExpressionCondition({ expression: operand }),
+    buildExpressionCondition({ expression: operand, now }),
   );
 
   return ({ document }) => conditions.some((condition) => condition({ document }));
 }
 
-function buildNotCondition({ expression }: { expression: NotExpression }): DocumentCondition {
-  const condition = buildExpressionCondition({ expression: expression.operand });
+function buildNotCondition({ expression, now }: { expression: NotExpression; now?: Date }): DocumentCondition {
+  const condition = buildExpressionCondition({ expression: expression.operand, now });
 
   return ({ document }) => !condition({ document });
 }
@@ -113,11 +113,13 @@ function buildContentFilterCondition({
 
 function buildCreatedFilterCondition({
   expression,
+  now,
 }: {
   expression: FilterExpression;
+  now?: Date;
 }): DocumentCondition {
   const { value, operator } = expression;
-  const dateValue = getDateValue({ value });
+  const dateValue = getDateValue({ value, now });
 
   if (Number.isNaN(dateValue.getTime())) {
     return () => false;
@@ -159,11 +161,13 @@ function getDateValue({ value, now = new Date() }: { value: string; now?: Date }
 
 function buildDateFilterCondition({
   expression,
+  now,
 }: {
   expression: FilterExpression;
+  now?: Date;
 }): DocumentCondition {
   const { value, operator } = expression;
-  const dateValue = getDateValue({ value });
+  const dateValue = getDateValue({ value, now });
 
   if (Number.isNaN(dateValue.getTime())) {
     return () => false;
@@ -231,9 +235,11 @@ function selectOptionMatches({ option, value }: { option: unknown; value: string
 function buildCustomPropertyFilterCondition({
   field,
   expression,
+  now,
 }: {
   field: string;
   expression: FilterExpression;
+  now?: Date;
 }): DocumentCondition {
   const { value, operator } = expression;
   const normalizedField = generatePropertyKey({ name: field });
@@ -280,7 +286,7 @@ function buildCustomPropertyFilterCondition({
         }
       }
       case 'date': {
-        const dateValue = getDateValue({ value });
+        const dateValue = getDateValue({ value, now });
 
         if (Number.isNaN(dateValue.getTime())) {
           return false;
@@ -339,16 +345,22 @@ function buildCustomPropertyFilterCondition({
 
 const KNOWN_FILTER_FIELDS = new Set(['tag', 'name', 'content', 'created', 'date', 'has']);
 
-function buildExpressionCondition({ expression }: { expression: Expression }): DocumentCondition {
+function buildExpressionCondition({
+  expression,
+  now,
+}: {
+  expression: Expression;
+  now?: Date;
+}): DocumentCondition {
   switch (expression.type) {
     case 'text':
       return buildTextCondition({ expression });
     case 'and':
-      return buildAndCondition({ expression });
+      return buildAndCondition({ expression, now });
     case 'or':
-      return buildOrCondition({ expression });
+      return buildOrCondition({ expression, now });
     case 'not':
-      return buildNotCondition({ expression });
+      return buildNotCondition({ expression, now });
     case 'filter':
       switch (expression.field) {
         case 'tag':
@@ -358,9 +370,9 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
         case 'content':
           return buildContentFilterCondition({ expression });
         case 'created':
-          return buildCreatedFilterCondition({ expression });
+          return buildCreatedFilterCondition({ expression, now });
         case 'date':
-          return buildDateFilterCondition({ expression });
+          return buildDateFilterCondition({ expression, now });
         case 'has':
           switch (expression.value) {
             case 'tags':
@@ -374,7 +386,7 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
         default:
           // Unknown field — treat as a custom property key filter
           if (!KNOWN_FILTER_FIELDS.has(expression.field)) {
-            return buildCustomPropertyFilterCondition({ field: expression.field, expression });
+            return buildCustomPropertyFilterCondition({ field: expression.field, expression, now });
           }
 
           return falseCondition;
@@ -389,9 +401,11 @@ function buildExpressionCondition({ expression }: { expression: Expression }): D
 export function searchDemoDocuments({
   query,
   documents,
+  now,
 }: {
   query: string;
   documents: Document[];
+  now?: Date;
 }) {
   if (query.trim() === '') {
     return documents;
@@ -399,7 +413,7 @@ export function searchDemoDocuments({
 
   const { expression } = parseSearchQuery({ query });
 
-  const condition = buildExpressionCondition({ expression });
+  const condition = buildExpressionCondition({ expression, now });
 
   return documents.filter((document) => condition({ document }));
 }

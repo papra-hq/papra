@@ -154,5 +154,22 @@ describe('date', () => {
       const now = new Date('2026-06-29T22:32:09Z');
       expect(getDateValue('(now - 1y)', now)).to.eql(new Date('2025-06-29T22:32:09Z'));
     });
+
+    test('rejects malformed prefixes and trailing text', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(Number.isNaN(getDateValue('nowhere', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.yearly', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.yearInvalid', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.year - 1y invalid', now).getTime())).toBe(true);
+    });
+
+    test('clamps days to the last valid day of the target month in month arithmetic', () => {
+      // May 31 + 1 month -> June 30
+      const endOfMay = new Date('2026-05-31T12:00:00Z');
+      expect(getDateValue('now + 1m', endOfMay)).to.eql(new Date('2026-06-30T12:00:00Z'));
+
+      // May 31 - 3 months -> Feb 28
+      expect(getDateValue('now - 3m', endOfMay)).to.eql(new Date('2026-02-28T12:00:00Z'));
+    });
   });
 });

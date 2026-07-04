@@ -11,7 +11,7 @@ export function getDateValue(value: string, now: Date): Date {
     return now;
   }
 
-  if (clean.startsWith('now')) {
+  if (clean.startsWith('now.') || clean.startsWith('now-') || clean.startsWith('now+') || clean.startsWith('now ')) {
     let baseDate = new Date(now);
     let remaining = '';
 
@@ -42,7 +42,7 @@ export function getDateValue(value: string, now: Date): Date {
 
     // We can repeatedly parse modifiers
     while (remaining.length > 0) {
-      // 1. Match method chain, e.g> .minusYear(1), .plusDays(5), etc.
+      // 1. Match method chain, e.g. .minusYear(1), .plusDays(5), etc.
       const methodMatch = remaining.match(/^\.(minus|plus)(Year|Month|Week|Day)s?\(\s*(\d+)\s*\)/i);
       if (methodMatch) {
         const [fullMatch, operation, unit, quantityStr] = methodMatch;
@@ -53,7 +53,7 @@ export function getDateValue(value: string, now: Date): Date {
         continue;
       }
 
-      // 2. Match arithmetic operator at the start of remaining: e.g> - 1y, + 2m, -30d
+      // 2. Match arithmetic operator at the start of remaining: e.g. - 1y, + 2m, -30d
       const arithmeticMatch = remaining.match(/^([+-])\s*(\d+)\s*([ymwd])/i);
       if (arithmeticMatch) {
         const [fullMatch, operator, quantityStr, unit] = arithmeticMatch;
@@ -68,6 +68,11 @@ export function getDateValue(value: string, now: Date): Date {
       break;
     }
 
+    // If there is trailing text remaining after parsing, it is invalid!
+    if (remaining.length > 0) {
+      return new Date(NaN);
+    }
+
     return current;
   }
 
@@ -80,6 +85,13 @@ function applyUnitModifier(date: Date, unit: string, amount: number): Date {
   if (normalizedUnit === 'year' || normalizedUnit === 'y') {
     result.setFullYear(result.getFullYear() + amount);
   } else if (normalizedUnit === 'month' || normalizedUnit === 'm') {
+    const targetDate = new Date(result.getFullYear(), result.getMonth() + amount, 1);
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = targetDate.getMonth();
+    const lastDayOfTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+    if (result.getDate() > lastDayOfTargetMonth) {
+      result.setDate(lastDayOfTargetMonth);
+    }
     result.setMonth(result.getMonth() + amount);
   } else if (normalizedUnit === 'week' || normalizedUnit === 'w') {
     result.setDate(result.getDate() + amount * 7);
