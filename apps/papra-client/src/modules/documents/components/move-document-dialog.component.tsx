@@ -63,8 +63,10 @@ export const MoveDocumentDialog: Component<{
       }
     },
     onError: (error: any) => {
+      // eslint-disable-next-line no-console
+      console.error('Failed to move document:', error);
       createToast({
-        message: error?.message || t('documents.move.error'),
+        message: t('documents.move.error'),
         type: 'error',
       });
     }
@@ -81,7 +83,7 @@ export const MoveDocumentDialog: Component<{
     <Dialog onOpenChange={props.setIsOpen} open={props.isOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('documents.move.title')}: {props.documentName}</DialogTitle>
+          <DialogTitle>{t('documents.move.title', { name: props.documentName })}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} class="space-y-4">

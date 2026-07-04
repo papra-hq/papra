@@ -17,6 +17,8 @@ import { documentsTagsTable } from '../tags/tags.table';
 import { documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
 import { documentShareLinksTable } from '../document-share-links/document-share-links.table';
 import { documentsFtsTable } from './document-search/database-fts5/database-fts5.tables';
+import { buildOriginalDocumentKey } from './documents.models';
+import type { StorageServices } from './storage/drivers/drivers.models';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
 
@@ -581,31 +583,76 @@ async function moveDocument({
   sourceOrganizationId,
   targetOrganizationId,
   db,
+  documentsStorageService,
 }: {
   documentId: string;
   sourceOrganizationId: string;
   targetOrganizationId: string;
   db: Database;
+  documentsStorageService?: StorageServices;
 }) {
   if (sourceOrganizationId === targetOrganizationId) {
     throw createDocumentSameOrganizationError();
   }
 
   return await db.transaction(async (tx) => {
-    const [document] = await tx
-      .update(documentsTable)
-      .set({ organizationId: targetOrganizationId })
-      .where(
-        and(
-          eq(documentsTable.id, documentId),
-          eq(documentsTable.organizationId, sourceOrganizationId),
-        ),
-      )
-      .returning();
+    const documentToMove = await tx
+      .select()
+      .from(documentsTable)
+      .where(eq(documentsTable.id, documentId))
+      .then(([doc]) => doc);
 
-    if (isNil(document)) {
+    if (isNil(documentToMove)) {
       throw createDocumentNotFoundError();
     }
+
+    if (documentToMove.organizationId !== sourceOrganizationId) {
+      throw createDocumentNotFoundError();
+    }
+
+    const { originalDocumentStorageKey: newStorageKey } = buildOriginalDocumentKey({
+      documentId,
+      fileName: documentToMove.originalName,
+      organizationId: targetOrganizationId,
+    });
+
+    let encryptionFields = {};
+
+    if (documentsStorageService) {
+      const exists = await documentsStorageService.fileExists({
+        storageKey: documentToMove.originalStorageKey,
+      });
+
+      if (exists) {
+        const { fileStream } = await documentsStorageService.getFileStream({
+          storageKey: documentToMove.originalStorageKey,
+          fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
+          fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
+          fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
+        });
+
+        encryptionFields = await documentsStorageService.saveFile({
+          fileStream,
+          fileName: documentToMove.originalName,
+          mimeType: documentToMove.mimeType,
+          storageKey: newStorageKey,
+        });
+
+        await documentsStorageService.deleteFile({
+          storageKey: documentToMove.originalStorageKey,
+        });
+      }
+    }
+
+    const [document] = await tx
+      .update(documentsTable)
+      .set({
+        organizationId: targetOrganizationId,
+        originalStorageKey: newStorageKey,
+        ...encryptionFields,
+      })
+      .where(eq(documentsTable.id, documentId))
+      .returning();
 
     // Delete all tags for the document
     await tx.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));

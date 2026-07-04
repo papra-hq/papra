@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
-import { createDocumentAlreadyExistsError, createDocumentSameOrganizationError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentSameOrganizationError, createDocumentNotFoundError } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
 import { documentsTagsTable } from '../tags/tags.table';
@@ -424,7 +424,12 @@ describe('documents repository', () => {
         targetOrganizationId: 'org-2',
       });
 
-      expect(document.organizationId).toBe('org-2');
+      expect(document!.organizationId).toBe('org-2');
+      expect(document!.originalStorageKey).toBe('org-2/originals/doc-1.pdf');
+      expect(document!.name).toBe('Doc 1');
+      expect(document!.originalName).toBe('doc-1.pdf');
+      expect(document!.originalSha256Hash).toBe('hash1');
+      expect(document!.mimeType).toBe('application/pdf');
 
       // Verify tags deleted
       const tags = await db.select().from(documentsTagsTable).where(eq(documentsTagsTable.documentId, 'doc-1'));
@@ -443,6 +448,38 @@ describe('documents repository', () => {
       const fts = await db.select().from(documentsFtsTable).where(eq(documentsFtsTable.documentId, 'doc-1'));
       expect(fts).to.have.length(1);
       expect(fts[0]!.organizationId).toBe('org-2');
+    });
+
+    test('throws not found error if sourceOrganizationId does not match the document’s actual organizationId', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'user-1@example.com' }],
+        organizations: [
+          { id: 'org-1', name: 'Org 1' },
+          { id: 'org-2', name: 'Org 2' },
+        ],
+        documents: [
+          {
+            id: 'doc-1',
+            organizationId: 'org-1',
+            createdBy: 'user-1',
+            name: 'Doc 1',
+            originalName: 'doc-1.pdf',
+            originalStorageKey: 'key-1',
+            originalSha256Hash: 'hash1',
+            mimeType: 'application/pdf',
+          },
+        ],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.moveDocument({
+          documentId: 'doc-1',
+          sourceOrganizationId: 'org-2',
+          targetOrganizationId: 'org-3',
+        }),
+      ).rejects.toThrow(createDocumentNotFoundError());
     });
 
     test('throws same organization error if targetOrganizationId is equal to sourceOrganizationId', async () => {

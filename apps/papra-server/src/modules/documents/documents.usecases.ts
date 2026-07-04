@@ -804,6 +804,7 @@ export async function moveDocument({
   userId,
   documentsRepository,
   eventServices,
+  documentsStorageService,
 }: {
   documentId: string;
   sourceOrganizationId: string;
@@ -811,11 +812,13 @@ export async function moveDocument({
   userId?: string;
   documentsRepository: DocumentsRepository;
   eventServices: EventServices;
+  documentsStorageService?: DocumentStorageService;
 }) {
   const { document } = await documentsRepository.moveDocument({
     documentId,
     sourceOrganizationId,
     targetOrganizationId,
+    documentsStorageService,
   });
 
   eventServices.emitEvent({

@@ -19,7 +19,11 @@ import { createSubscriptionsRepository } from '../subscriptions/subscriptions.re
 import { createTagsRepository } from '../tags/tags.repository';
 import { DEFAULT_DOCUMENT_SEARCH_SORT } from './document-search/document-search.constants';
 import { searchOrganizationDocuments } from './document-search/document-search.usecase';
-import { createDocumentIsNotDeletedError, createDocumentSizeTooLargeError } from './documents.errors';
+import {
+  createDocumentIsNotDeletedError,
+  createDocumentSizeTooLargeError,
+  createDocumentSameOrganizationError,
+} from './documents.errors';
 import {
   formatDocumentForApi,
   formatDocumentsForApi,
@@ -532,6 +536,7 @@ function setupMoveDocumentRoute({
   eventServices,
   config,
   planEntitlementDefinitionRegistry,
+  documentsStorageService,
 }: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/documents/:documentId/move',
@@ -566,11 +571,7 @@ function setupMoveDocumentRoute({
 
       // 3. Verify target is not the same
       if (organizationId === targetOrganizationId) {
-        throw createError({
-          message: 'Source and target organizations must be different',
-          code: 'documents.move.same_organization',
-          statusCode: 400,
-        });
+        throw createDocumentSameOrganizationError();
       }
 
       // 4. Verify document exists in source organization
@@ -610,6 +611,7 @@ function setupMoveDocumentRoute({
         userId,
         documentsRepository,
         eventServices,
+        documentsStorageService,
       });
 
       return context.json({ document: formatDocumentForApi({ document: movedDocument }) });

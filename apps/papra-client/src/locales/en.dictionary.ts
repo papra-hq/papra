@@ -447,7 +447,7 @@ export const translations = {
   'documents.management.move': 'Move document',
   'documents.management.delete': 'Delete document',
 
-  'documents.move.title': 'Move Document',
+  'documents.move.title': 'Move Document: {name}',
   'documents.move.warning': 'Moving this document will clear all tags and custom property values, as they belong to the source organization.',
   'documents.move.select-label': 'Select target organization',
   'documents.move.select-placeholder': 'Select an organization',
