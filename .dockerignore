@@ -7,7 +7,9 @@ node_modules
 
 .dockerignore
 .env
+.env.*
 **/.env
+**/.env.*
 Dockerfile
 fly.toml
 
