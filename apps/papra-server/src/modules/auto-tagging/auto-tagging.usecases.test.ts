@@ -9,6 +9,7 @@ import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createTagsRepository } from '../tags/tags.repository';
 import { documentsTagsTable, tagsTable } from '../tags/tags.table';
 import { autoTagDocument } from './auto-tagging.usecases';
+import type { AutoTaggingResponse } from './auto-tagging.models';
 
 function createTestResolveOrganizationSettings(
   autoTagging: Partial<{ isEnabled: boolean; canCreateNewTags: boolean; maxTags: number }> = {},
@@ -28,7 +29,7 @@ function createTestResolveOrganizationSettings(
   });
 }
 
-function createTestAiServices({ response }: { response: unknown }) {
+function createTestAiServices({ response }: { response: AutoTaggingResponse }) {
   const generateStructuredData = vi.fn().mockResolvedValue(response);
 
   return {
@@ -78,7 +79,7 @@ describe('auto-tagging usecases', () => {
         ],
       });
       const { aiServices, generateStructuredData } = createTestAiServices({
-        response: ['Finance'],
+        response: { existingTags: ['Finance'] },
       });
 
       await autoTagDocument({
@@ -100,7 +101,9 @@ describe('auto-tagging usecases', () => {
         organizations: [{ id: 'org_1', name: 'Org 1' }],
         documents: [baseDocument],
       });
-      const { aiServices, generateStructuredData } = createTestAiServices({ response: [] });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: { existingTags: [] },
+      });
 
       await autoTagDocument({
         ...deps,
@@ -140,7 +143,7 @@ describe('auto-tagging usecases', () => {
           },
         ],
       });
-      const { aiServices } = createTestAiServices({ response: ['Finance'] });
+      const { aiServices } = createTestAiServices({ response: { existingTags: ['Finance'] } });
 
       await autoTagDocument({
         ...deps,
@@ -166,7 +169,7 @@ describe('auto-tagging usecases', () => {
         documents: [baseDocument],
       });
       const { aiServices } = createTestAiServices({
-        response: [{ name: 'Invoice', description: 'Invoices and receipts' }],
+        response: { newTags: [{ name: 'Invoice', description: 'Invoices and receipts' }] },
       });
 
       await autoTagDocument({

@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { uniq } from '../shared/utils';
 
 function buildTagLine({ name, description }: { name: string; description?: string | null }) {
   return description ? `- ${name}: ${description}` : `- ${name}`;
@@ -50,92 +51,59 @@ export function buildAutoTaggingUserPrompt({
   return [`Document name: ${document.name}`, 'Document content:', document.content].join('\n');
 }
 
-type AutoTaggingResponse = v.InferOutput<ReturnType<typeof buildAutoTaggingSchema>>;
+export type AutoTaggingResponse = {
+  existingTags?: string[];
+  newTags?: { name: string; description?: string }[];
+};
 
 export function buildAutoTaggingSchema({
   existingTags,
-  maxTags,
   canCreateNewTags,
 }: {
   existingTags: { name: string; description?: string | null }[];
-  maxTags: number;
   canCreateNewTags: boolean;
-}) {
-  if (existingTags.length === 0) {
-    return v.pipe(
-      v.array(
-        v.object({
-          name: v.string(),
-          description: v.optional(v.string()),
-        }),
-      ),
-      v.maxLength(maxTags),
-    );
+}): v.GenericSchema<AutoTaggingResponse> {
+  const hasExistingTags = existingTags.length > 0;
+
+  if (canCreateNewTags && hasExistingTags) {
+    return v.object({
+      existingTags: v.array(v.picklist(existingTags.map((tag) => tag.name))),
+      newTags: v.array(v.object({ name: v.string(), description: v.optional(v.string()) })),
+    });
   }
 
-  if (!canCreateNewTags) {
-    return v.pipe(v.array(v.picklist(existingTags.map((tag) => tag.name))), v.maxLength(maxTags));
+  if (canCreateNewTags && !hasExistingTags) {
+    return v.object({
+      newTags: v.array(v.object({ name: v.string(), description: v.optional(v.string()) })),
+    });
   }
 
-  return v.pipe(
-    v.array(
-      v.union([
-        v.object({
-          type: v.literal('existing'),
-          name: v.picklist(existingTags.map((tag) => tag.name)),
-        }),
-        v.object({
-          type: v.literal('new'),
-          name: v.string(),
-          description: v.optional(v.string()),
-        }),
-      ]),
-    ),
-    v.maxLength(maxTags),
-  );
+  return v.object({
+    existingTags: v.array(v.picklist(existingTags.map((tag) => tag.name))),
+  });
 }
 
 export function getTagsActions({
-  requestedTags,
+  autoTaggingResponse,
   existingTags,
+  maxTags,
 }: {
-  requestedTags: AutoTaggingResponse;
+  autoTaggingResponse: AutoTaggingResponse;
   existingTags: { name: string; id: string }[];
-}) {
-  const tagIdsToAdd: string[] = [];
-  const tagsToCreate: { name: string; description?: string }[] = [];
+  maxTags: number;
+}): {
+  tagIdsToAdd: string[];
+  tagsToCreate: { name: string; description?: string }[];
+} {
+  const { existingTags: requestedExistingTagNames = [], newTags = [] } = autoTaggingResponse;
 
   const existingTagNamesMap = new Map(existingTags.map((tag) => [tag.name, tag.id]));
 
-  const addExistingTagByName = (tagName: string) => {
-    const existingTag = existingTagNamesMap.get(tagName);
-    if (existingTag) {
-      tagIdsToAdd.push(existingTag);
-    }
-  };
+  const tagIdsToAdd = uniq(
+    requestedExistingTagNames.map((tagName) => existingTagNamesMap.get(tagName)).filter(Boolean),
+  ).slice(0, maxTags);
 
-  for (const tag of requestedTags) {
-    // Prediction returns a string array when they are only existing tags, none to create
-    if (typeof tag === 'string') {
-      addExistingTagByName(tag);
-      continue;
-    }
-
-    if ('type' in tag) {
-      if (tag.type === 'existing') {
-        addExistingTagByName(tag.name);
-        continue;
-      }
-
-      if (tag.type === 'new') {
-        tagsToCreate.push({ name: tag.name, description: tag.description });
-        continue;
-      }
-    }
-
-    tagsToCreate.push({ name: tag.name, description: tag.description });
-    continue;
-  }
+  const tagsToCreate = newTags.slice(0, maxTags - tagIdsToAdd.length);
 
   return { tagIdsToAdd, tagsToCreate };
 }
