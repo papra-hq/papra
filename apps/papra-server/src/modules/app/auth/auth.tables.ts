@@ -1,32 +1,25 @@
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../../shared/db/columns.helpers';
 import { usersTable } from '../../users/users.table';
 
-export const sessionsTable = sqliteTable(
-  'auth_sessions',
-  {
-    ...createPrimaryKeyField({ prefix: 'auth_ses' }),
-    ...createTimestampColumns(),
+export const sessionsTable = sqliteTable('auth_sessions', {
+  ...createPrimaryKeyField({ prefix: 'auth_ses' }),
+  ...createTimestampColumns(),
 
-    token: text('token').notNull(),
-    userId: text('user_id').references(() => usersTable.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-    }),
-    expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
-    ipAddress: text('ip_address'),
-    userAgent: text('user_agent'),
-    activeOrganizationId: text('active_organization_id').references(() => organizationsTable.id, {
-      onDelete: 'set null',
-      onUpdate: 'cascade',
-    }),
-  },
-  (table) => [
-    // To select sessions by token
-    index('auth_sessions_token_index').on(table.token),
-  ],
-);
+  token: text('token').notNull(),
+  userId: text('user_id').references(() => usersTable.id, {
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+  }),
+  expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  activeOrganizationId: text('active_organization_id').references(() => organizationsTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
+});
 
 export const accountsTable = sqliteTable('auth_accounts', {
   ...createPrimaryKeyField({ prefix: 'auth_acc' }),
@@ -47,21 +40,14 @@ export const accountsTable = sqliteTable('auth_accounts', {
   password: text('password'),
 });
 
-export const verificationsTable = sqliteTable(
-  'auth_verifications',
-  {
-    ...createPrimaryKeyField({ prefix: 'auth_ver' }),
-    ...createTimestampColumns(),
+export const verificationsTable = sqliteTable('auth_verifications', {
+  ...createPrimaryKeyField({ prefix: 'auth_ver' }),
+  ...createTimestampColumns(),
 
-    identifier: text('identifier').notNull(),
-    value: text('value').notNull(),
-    expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
-  },
-  (table) => [
-    // To select verifications by identifier
-    index('auth_verifications_identifier_index').on(table.identifier),
-  ],
-);
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+});
 
 export const twoFactorTable = sqliteTable('auth_two_factor', {
   ...createPrimaryKeyField({ prefix: 'auth_2fa' }),

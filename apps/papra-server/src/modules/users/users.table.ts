@@ -1,18 +1,14 @@
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 
-export const usersTable = sqliteTable(
-  'users',
-  {
-    ...createPrimaryKeyField({ prefix: 'usr' }),
-    ...createTimestampColumns(),
+export const usersTable = sqliteTable('users', {
+  ...createPrimaryKeyField({ prefix: 'usr' }),
+  ...createTimestampColumns(),
 
-    email: text('email').notNull().unique(),
-    emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
-    name: text('name'),
-    image: text('image'),
-    maxOrganizationCount: integer('max_organization_count', { mode: 'number' }),
-    twoFactorEnabled: integer('two_factor_enabled', { mode: 'boolean' }).notNull().default(false),
-  },
-  (table) => [index('users_email_index').on(table.email)],
-);
+  email: text('email').notNull().unique(),
+  emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
+  name: text('name'),
+  image: text('image'),
+  maxOrganizationCount: integer('max_organization_count', { mode: 'number' }),
+  twoFactorEnabled: integer('two_factor_enabled', { mode: 'boolean' }).notNull().default(false),
+});

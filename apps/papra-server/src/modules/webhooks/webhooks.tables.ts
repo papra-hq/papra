@@ -1,5 +1,5 @@
 import { EVENT_NAMES } from '@papra/webhooks';
-import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
@@ -23,19 +23,15 @@ export const webhooksTable = sqliteTable('webhooks', {
   }),
 });
 
-export const webhookEventsTable = sqliteTable(
-  'webhook_events',
-  {
-    ...createPrimaryKeyField({ prefix: 'wbh_ev' }),
-    ...createTimestampColumns(),
+export const webhookEventsTable = sqliteTable('webhook_events', {
+  ...createPrimaryKeyField({ prefix: 'wbh_ev' }),
+  ...createTimestampColumns(),
 
-    webhookId: text('webhook_id')
-      .notNull()
-      .references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
-    eventName: text('event_name', { enum: EVENT_NAMES }).notNull(),
-  },
-  (t) => [unique('webhook_events_webhook_id_event_name_unique').on(t.webhookId, t.eventName)],
-);
+  webhookId: text('webhook_id')
+    .notNull()
+    .references(() => webhooksTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  eventName: text('event_name', { enum: EVENT_NAMES }).notNull(),
+});
 
 export const webhookDeliveriesTable = sqliteTable('webhook_deliveries', {
   ...createPrimaryKeyField({ prefix: 'wbh_dlv' }),
