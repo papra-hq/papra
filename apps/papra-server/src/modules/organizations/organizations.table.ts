@@ -30,8 +30,6 @@ export const organizationsTable = sqliteTable(
     scheduledPurgeAt: integer('scheduled_purge_at', { mode: 'timestamp_ms' }),
   },
   (t) => [
-    // Used to list organizations to purge
-    index('organizations_deleted_at_purge_at_index').on(t.deletedAt, t.scheduledPurgeAt),
     // For a user to list their deleted organizations for possible restoration
     index('organizations_deleted_by_deleted_at_index').on(t.deletedBy, t.deletedAt),
   ],
