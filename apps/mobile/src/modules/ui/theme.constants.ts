@@ -6,27 +6,27 @@
 import { Platform } from 'react-native';
 
 const lightColors = {
-  foreground: '#0a0a0a',
-  background: '#fafafa',
+  foreground: '#1c1a16',
+  background: '#f6f4f1',
   primary: '#fe7d4d',
   primaryForeground: '#0a0a0a',
   muted: '#f3f3f3',
   mutedForeground: '#737373',
   border: '#e5e5e5',
-  secondaryBackground: '#f3f3f3',
+  secondaryBackground: '#ffffff',
   destructive: '#d32f2f',
   destructiveBackground: '#ffe0e0',
 };
 
 const darkColors: ThemeColors = {
-  foreground: '#fafafa',
-  background: '#141414',
+  foreground: '#f2efea',
+  background: '#111010',
   primary: '#d9ff7a',
   primaryForeground: '#0a0a0a',
   muted: '#262626',
-  mutedForeground: '#a3a3a3',
+  mutedForeground: '#a59f96',
   border: '#262626',
-  secondaryBackground: '#111111',
+  secondaryBackground: '#1b1a18',
   destructive: '#ff6b6b',
   destructiveBackground: '#2a1a1a',
 };
