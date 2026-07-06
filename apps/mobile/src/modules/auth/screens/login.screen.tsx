@@ -185,8 +185,7 @@ export function LoginScreen() {
                   onPress={async () => handleSocialSignIn(provider.providerId)}
                 >
                   <Text style={styles.socialButtonText}>
-                    Continue with
-                    {provider.providerName}
+                    {`Continue with ${provider.providerName}`}
                   </Text>
                 </TouchableOpacity>
               ))}
