@@ -2,7 +2,7 @@ import * as v from 'valibot';
 import type { AppConfigDefinition } from '../config/config.types';
 import { AI_DEFAULT_MODEL_ENV_KEY } from '../ai/ai.constants';
 import { aiModelIdSchema } from '../ai/ai.schemas';
-import { strictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
+import { coercedStrictlyPositiveIntegerSchema } from '../shared/schemas/number.schemas';
 import { booleanishSchema } from '../config/config.schemas';
 
 export const autoTaggingConfig = {
@@ -20,7 +20,7 @@ export const autoTaggingConfig = {
   },
   defaultMaxTags: {
     doc: 'The default maximum number of tags that can be assigned by AI auto-tagging. This can be overridden per organization in the organization settings.',
-    schema: strictlyPositiveIntegerSchema,
+    schema: coercedStrictlyPositiveIntegerSchema,
     env: 'AUTO_TAGGING_DEFAULT_MAX_TAGS',
     default: 5,
   },

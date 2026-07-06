@@ -102,7 +102,7 @@ export function DocumentsListScreen() {
             <TouchableOpacity
               onPress={() => {
                 router.push({
-                  pathname: '/(app)/document/view',
+                  pathname: '/(app)/document/details',
                   params: {
                     documentId: item.id,
                     organizationId: item.organizationId,

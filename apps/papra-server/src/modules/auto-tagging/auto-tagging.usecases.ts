@@ -18,6 +18,37 @@ import {
 } from './auto-tagging.models';
 import { ensureModelId } from '../ai/ai.models';
 
+export async function promptForAutoTagging({
+  aiServices,
+  document,
+  existingTags,
+  canCreateNewTags,
+  maxTags,
+  modelId,
+}: {
+  aiServices: AiServices;
+  document: { content: string; name: string };
+  existingTags: { id: string; name: string; description?: string | null }[];
+  canCreateNewTags: boolean;
+  maxTags: number;
+  modelId: string;
+}) {
+  const autoTaggingResponse = await aiServices.generateStructuredData({
+    modelId,
+    schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags }),
+    systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
+    userPrompt: buildAutoTaggingUserPrompt({ document }),
+  });
+
+  const { tagIdsToAdd, tagsToCreate } = getTagsActions({
+    autoTaggingResponse,
+    existingTags,
+    maxTags,
+  });
+
+  return { tagIdsToAdd, tagsToCreate };
+}
+
 export async function autoTagDocument({
   aiServices,
   documentId,
@@ -73,20 +104,16 @@ export async function autoTagDocument({
   }
 
   const startedAt = Date.now();
-  const response = await aiServices.generateStructuredData({
+  const { tagIdsToAdd, tagsToCreate } = await promptForAutoTagging({
+    aiServices,
+    document,
+    existingTags,
+    canCreateNewTags,
+    maxTags,
     modelId: ensureModelId(organizationSettings.ai.autoTagging.modelId),
-    schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags, maxTags }),
-    systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
-    userPrompt: buildAutoTaggingUserPrompt({ document }),
   });
   const durationMs = Date.now() - startedAt;
-
-  logger.info({ durationMs, documentId, organizationId }, 'Auto-tagging completed');
-
-  const { tagIdsToAdd, tagsToCreate } = getTagsActions({
-    requestedTags: response,
-    existingTags,
-  });
+  logger.info({ documentId, organizationId, durationMs }, 'Auto-tagging completed');
 
   const limit = pLimit(5);
 
