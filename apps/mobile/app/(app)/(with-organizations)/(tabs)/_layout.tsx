@@ -37,6 +37,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color }) => (
+            <Icon name="search" size={30} color={color} style={{ height: 30 }} />
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
+      <Tabs.Screen
         name="import"
         options={{
           title: 'Import',

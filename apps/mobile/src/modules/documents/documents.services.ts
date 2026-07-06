@@ -4,7 +4,6 @@ import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
-import { documentsLocalStorage } from './documents.local-storage';
 
 export function getFormData(pojo: Record<string, string | FormDataValue | Blob>): FormData {
   const formData = new FormData();
@@ -44,37 +43,38 @@ export async function fetchOrganizationDocuments({
   organizationId,
   pageIndex,
   pageSize,
-  filters,
+  searchQuery,
+  sortField,
+  sortOrder,
 
   apiClient,
 }: {
   organizationId: string;
   pageIndex: number;
   pageSize: number;
-  filters?: {
-    tags?: string[];
-  };
+  searchQuery?: string;
+  sortField?: 'createdAt' | 'updatedAt' | 'name' | 'documentDate';
+  sortOrder?: 'asc' | 'desc';
 
   apiClient: ApiClient;
 }) {
-  const { documents: apiDocuments, documentsCount } = await apiClient<{
+  const { documents, documentsCount } = await apiClient<{
     documents: Document[];
     documentsCount: number;
   }>({
     method: 'GET',
     path: `/api/organizations/${organizationId}/documents`,
     query: {
+      searchQuery,
       pageIndex,
       pageSize,
-      ...filters,
+      sortField,
+      sortOrder,
     },
   });
 
-  const remote = apiDocuments.map(coerceDates);
-  const local = await documentsLocalStorage.getUnsyncedDocumentsByOrganization(organizationId);
-  const documents = [...local, ...remote];
   return {
-    documentsCount: documentsCount + local.length,
+    documentsCount,
     documents: documents.map(coerceDates),
   };
 }
