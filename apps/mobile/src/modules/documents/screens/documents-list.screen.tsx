@@ -1,13 +1,22 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
 import { OrganizationPickerDrawer } from '@/modules/organizations/components/organization-picker-drawer';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
+import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { fetchOrganizationDocuments } from '../documents.services';
 import { syncUnsyncedDocuments } from '../documents.sync.services';
@@ -55,8 +64,29 @@ export function DocumentsListScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <View style={styles.topRow}>
+          <OrganizationPickerButton variant="plain" onPress={() => setIsDrawerVisible(true)} />
+          <TouchableOpacity
+            style={styles.userButton}
+            onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/settings')}
+            accessibilityRole="button"
+            accessibilityLabel="User settings"
+          >
+            <Icon name="user" size={20} color={themeColors.foreground} />
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.title}>Documents</Text>
-        <OrganizationPickerButton onPress={() => setIsDrawerVisible(true)} />
+
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/search')}
+          accessibilityRole="button"
+          accessibilityLabel="Search documents"
+        >
+          <Icon name="search" size={18} color={themeColors.mutedForeground} />
+          <Text style={styles.searchButtonText}>Search documents</Text>
+        </TouchableOpacity>
       </View>
 
       {documentsQuery.isLoading ? (
@@ -97,15 +127,44 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
     },
     header: {
       padding: 16,
-      paddingTop: 20,
+      paddingTop: 12,
       gap: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: themeColors.border,
+    },
+    topRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    userButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: themeColors.secondaryBackground,
+      borderWidth: 1,
+      borderColor: themeColors.border,
     },
     title: {
       fontSize: 28,
       fontWeight: 'bold',
       color: themeColors.foreground,
+    },
+    searchButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      height: 44,
+      paddingHorizontal: 12,
+      borderWidth: 1,
+      borderColor: themeColors.border,
+      borderRadius: 8,
+      backgroundColor: themeColors.secondaryBackground,
+    },
+    searchButtonText: {
+      fontSize: 16,
+      color: themeColors.mutedForeground,
     },
   });
 }

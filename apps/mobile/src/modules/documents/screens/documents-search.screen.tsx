@@ -1,7 +1,7 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
@@ -29,6 +29,17 @@ export function DocumentsSearchScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const searchInputRef = useRef<TextInput>(null);
+
+  // autoFocus only applies on mount, but the tab screen stays mounted
+  // after the first visit; the delay lets the tab transition settle so
+  // the keyboard reliably opens
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => searchInputRef.current?.focus(), 100);
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   useEffect(() => {
     const timeout = setTimeout(
@@ -82,12 +93,12 @@ export function DocumentsSearchScreen() {
         <View style={styles.searchInputContainer}>
           <Icon name="search" size={18} color={themeColors.mutedForeground} />
           <TextInput
+            ref={searchInputRef}
             style={styles.searchInput}
             placeholder="Search documents"
             placeholderTextColor={themeColors.mutedForeground}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            autoFocus
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
