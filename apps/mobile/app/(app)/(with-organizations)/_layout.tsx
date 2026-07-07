@@ -15,6 +15,14 @@ export default function WithOrganizationsLayout() {
             animation: 'slide_from_bottom',
           }}
         />
+        <Stack.Screen
+          name="share"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
     </OrganizationsProvider>
   );

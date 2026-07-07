@@ -16,9 +16,18 @@ import { useOrganizations } from '../organizations.provider';
 type OrganizationPickerDrawerProps = {
   visible: boolean;
   onClose: () => void;
+  // When provided, the drawer acts as a controlled picker and does not
+  // change the app-wide current organization
+  selectedOrganizationId?: string | null;
+  onSelectOrganization?: (organizationId: string) => void;
 };
 
-export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPickerDrawerProps) {
+export function OrganizationPickerDrawer({
+  visible,
+  onClose,
+  selectedOrganizationId,
+  onSelectOrganization,
+}: OrganizationPickerDrawerProps) {
   const themeColors = useThemeColor();
   const router = useRouter();
   const { organizations, currentOrganizationId, setCurrentOrganizationId, isLoading } =
@@ -26,8 +35,15 @@ export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPicke
 
   const styles = createStyles({ themeColors });
 
+  const highlightedOrganizationId =
+    onSelectOrganization === undefined ? currentOrganizationId : selectedOrganizationId;
+
   const handleSelectOrganization = async (organizationId: string) => {
-    await setCurrentOrganizationId(organizationId);
+    if (onSelectOrganization) {
+      onSelectOrganization(organizationId);
+    } else {
+      await setCurrentOrganizationId(organizationId);
+    }
     onClose();
   };
 
@@ -56,7 +72,7 @@ export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPicke
                 <TouchableOpacity
                   style={[
                     styles.orgItem,
-                    item.id === currentOrganizationId && styles.orgItemSelected,
+                    item.id === highlightedOrganizationId && styles.orgItemSelected,
                   ]}
                   onPress={() => {
                     void handleSelectOrganization(item.id);
@@ -65,12 +81,12 @@ export function OrganizationPickerDrawer({ visible, onClose }: OrganizationPicke
                   <Text
                     style={[
                       styles.orgName,
-                      item.id === currentOrganizationId && styles.orgNameSelected,
+                      item.id === highlightedOrganizationId && styles.orgNameSelected,
                     ]}
                   >
                     {item.name}
                   </Text>
-                  {item.id === currentOrganizationId && (
+                  {item.id === highlightedOrganizationId && (
                     <Icon name="check" style={styles.checkmark} />
                   )}
                 </TouchableOpacity>
