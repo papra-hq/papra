@@ -4,15 +4,20 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+    "production": {
+      "node": "26.1.0",
+      "autoIncrement": true
     },
     "preview": {
-      "distribution": "internal"
+      "extends": "production",
+      "distribution": "internal",
+      "autoIncrement": false
     },
-    "production": {
-      "autoIncrement": true
+    "development": {
+      "extends": "production",
+      "developmentClient": true,
+      "distribution": "internal",
+      "autoIncrement": false
     }
   },
   "submit": {
