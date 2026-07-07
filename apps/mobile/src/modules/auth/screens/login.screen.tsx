@@ -21,6 +21,7 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useServerConfig } from '../../config/hooks/use-server-config';
 import { getEnabledOAuthProviders } from '../auth.models';
 import { BackToServerSelectionButton } from '../components/back-to-server-selection';
+import { TwoFactorVerificationForm } from '../components/two-factor-verification';
 
 const loginSchema = v.object({
   email: v.pipe(v.string(), v.email('Please enter a valid email')),
@@ -35,6 +36,7 @@ export function LoginScreen() {
   const insets = useSafeAreaInsets();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
   const { serverConfig, isLoading: isConfigLoading } = useServerConfig();
 
   const form = useForm({
@@ -57,6 +59,15 @@ export function LoginScreen() {
 
         if (response.error) {
           throw new Error(response.error.message);
+        }
+
+        if (
+          response.data &&
+          'twoFactorRedirect' in response.data &&
+          response.data.twoFactorRedirect
+        ) {
+          setRequiresTwoFactor(true);
+          return;
         }
 
         router.replace('/(app)/(with-organizations)/(tabs)/list');
@@ -97,6 +108,30 @@ export function LoginScreen() {
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={themeColors.primary} />
       </View>
+    );
+  }
+
+  if (requiresTwoFactor) {
+    return (
+      <KeyboardAvoidingView
+        style={{ ...styles.container, paddingTop: insets.top }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <Text style={styles.title}>Two-Factor Authentication</Text>
+            <Text style={styles.subtitle}>Verify your identity to continue</Text>
+          </View>
+
+          <TwoFactorVerificationForm
+            onSuccess={() => router.replace('/(app)/(with-organizations)/(tabs)/list')}
+            onBack={() => setRequiresTwoFactor(false)}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 
