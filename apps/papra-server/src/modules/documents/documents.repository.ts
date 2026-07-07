@@ -623,23 +623,25 @@ async function moveDocument({
       storageKey: documentToMove.originalStorageKey,
     });
 
-    if (exists) {
-      const { fileStream } = await documentsStorageService.getFileStream({
-        storageKey: documentToMove.originalStorageKey,
-        fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
-        fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
-        fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
-      });
-
-      encryptionFields = await documentsStorageService.saveFile({
-        fileStream,
-        fileName: documentToMove.originalName,
-        mimeType: documentToMove.mimeType,
-        storageKey: newStorageKey,
-      });
-
-      savedNewFile = true;
+    if (!exists) {
+      throw createDocumentNotFoundError();
     }
+
+    const { fileStream } = await documentsStorageService.getFileStream({
+      storageKey: documentToMove.originalStorageKey,
+      fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
+      fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
+      fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
+    });
+
+    encryptionFields = await documentsStorageService.saveFile({
+      fileStream,
+      fileName: documentToMove.originalName,
+      mimeType: documentToMove.mimeType,
+      storageKey: newStorageKey,
+    });
+
+    savedNewFile = true;
   }
 
   try {
@@ -692,9 +694,14 @@ async function moveDocument({
     });
 
     if (savedNewFile && documentsStorageService) {
-      await documentsStorageService.deleteFile({
-        storageKey: documentToMove.originalStorageKey,
-      });
+      try {
+        await documentsStorageService.deleteFile({
+          storageKey: documentToMove.originalStorageKey,
+        });
+      } catch (deleteError) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to clean up old storage file', deleteError);
+      }
     }
 
     return result;
