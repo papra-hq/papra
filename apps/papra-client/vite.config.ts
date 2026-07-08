@@ -17,6 +17,7 @@ export default defineConfig({
   plugins: [
     unoCssPlugin(),
     solidPlugin(),
+    apiChaosPlugin(),
     cleanDemoAssetsPlugin(),
     viteStaticCopy({
       targets: [
@@ -60,6 +61,58 @@ export default defineConfig({
     },
   },
 });
+
+/**
+ * Dev-only chaos middleware to reproduce production-like network conditions:
+ * - CHAOS_DELAY: latency in ms added to matching /api requests (default 2000, only active when CHAOS_DELAY or CHAOS_SLOW is set)
+ * - CHAOS_SLOW: regex of paths to delay (default '/api/organizations/org_')
+ * - CHAOS_FAIL: regex of paths to fail with a 500
+ *
+ * Example: CHAOS_DELAY=2000 pnpm dev
+ */
+function apiChaosPlugin(): Plugin {
+  return {
+    name: 'api-chaos',
+    apply: 'serve',
+    configureServer(server) {
+      const isEnabled = true;
+
+      if (!isEnabled) {
+        return;
+      }
+
+      const delayMs = Number(env.CHAOS_DELAY ?? 500);
+      const slowPattern = new RegExp(env.CHAOS_SLOW ?? '/api/organizations/org_');
+      const failPattern = env.CHAOS_FAIL ? new RegExp(env.CHAOS_FAIL) : null;
+
+      // oxlint-disable-next-line no-console
+      console.log(
+        `[api-chaos] enabled — delaying ${slowPattern} by ~${delayMs}ms${failPattern ? `, failing ${failPattern}` : ''}`,
+      );
+
+      server.middlewares.use((req, res, next) => {
+        if (!req.url?.startsWith('/api/')) {
+          return next();
+        }
+
+        if (failPattern?.test(req.url)) {
+          res.statusCode = 500;
+          res.setHeader('content-type', 'application/json');
+          res.end('{"error":{"message":"chaos","code":"chaos"}}');
+          return;
+        }
+
+        if (slowPattern.test(req.url)) {
+          // Jitter so concurrent queries resolve in varying orders, like production
+          setTimeout(next, delayMs + Math.random() * 500);
+          return;
+        }
+
+        next();
+      });
+    },
+  };
+}
 
 function getPdfjsAssetsDirectoryPath(): string {
   const require = createRequire(import.meta.url);

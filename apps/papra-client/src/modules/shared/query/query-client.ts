@@ -17,6 +17,8 @@ export const queryClient = new QueryClient({
   },
 });
 
+window.queryClient = queryClient;
+
 export function clearQueryCache() {
   queryClient.clear();
 }
