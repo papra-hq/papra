@@ -7,13 +7,16 @@ import { coerceDates, getFormData } from '../shared/http/http-client.models';
 export async function uploadDocument({
   file,
   organizationId,
+  folderId,
 }: {
   file: File;
   organizationId: string;
+  folderId?: string | null;
 }) {
   const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'POST',
     path: `/api/organizations/${organizationId}/documents`,
+    query: folderId ? { folderId } : undefined,
     body: getFormData({ file }),
   });
 
@@ -193,6 +196,7 @@ export async function updateDocument({
   name,
   notes,
   documentDate,
+  folderId,
 }: {
   documentId: string;
   organizationId: string;
@@ -200,11 +204,12 @@ export async function updateDocument({
   name?: string;
   notes?: string;
   documentDate?: Date | null;
+  folderId?: string | null;
 }) {
   const { document } = await apiClient<{ document: AsDto<Document> }>({
     method: 'PATCH',
     path: `/api/organizations/${organizationId}/documents/${documentId}`,
-    body: { content, name, documentDate, notes },
+    body: { content, name, documentDate, notes, folderId },
   });
 
   return {

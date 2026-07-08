@@ -8,6 +8,7 @@ import { registerDocumentViewsRoutes } from '../document-views/document-views.ro
 import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
 import { registerDocumentsBatchRoutes } from '../documents/documents-batch/documents-batch.routes';
 import { registerDocumentsRoutes } from '../documents/documents.routes';
+import { registerFoldersRoutes } from '../folders/folders.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
 import { registerOrganizationsRoutes } from '../organizations/organizations.routes';
@@ -30,6 +31,7 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerOrganizationsRoutes(context);
   registerOrganizationSettingsRoutes(context);
   registerDocumentsRoutes(context);
+  registerFoldersRoutes(context);
   registerDocumentsBatchRoutes(context);
   registerTagsRoutes(context);
   registerDocumentViewsRoutes(context);

@@ -80,6 +80,7 @@ describe('documents models', () => {
           document: {
             id: 'doc_1',
             organizationId: 'org_1',
+            folderId: null,
             createdBy: 'user_1',
             deletedAt: null,
             deletedBy: null,
@@ -111,6 +112,7 @@ describe('documents models', () => {
         mimeType: 'text/plain',
         name: 'file.txt',
         organizationId: 'org_1',
+            folderId: null,
         originalName: 'file.txt',
         originalSha256Hash: '1234567890',
         originalSize: 100,

@@ -51,6 +51,7 @@ import { SettingsLayout } from './modules/ui/layouts/settings.layout';
 import { CurrentUserProvider } from './modules/users/composables/useCurrentUser';
 import { UserSettingsPage } from './modules/users/pages/user-settings.page';
 import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
+import { FolderPage } from './modules/folders/pages/folder.page';
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
 import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
 import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
@@ -153,6 +154,14 @@ export const routes: RouteDefinition[] = [
                   {
                     path: '/tags',
                     component: TagsPage,
+                  },
+                  {
+                    path: '/folders',
+                    component: FolderPage,
+                  },
+                  {
+                    path: '/folders/:folderId',
+                    component: FolderPage,
                   },
                   {
                     path: '/views/:documentViewId',

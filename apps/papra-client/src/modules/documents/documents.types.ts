@@ -6,6 +6,7 @@ import type { DOCUMENT_ACTIVITY_EVENTS } from './documents.constants';
 export type Document = {
   id: string;
   organizationId: string;
+  folderId?: string | null;
   name: string;
   mimeType: string;
   originalSize: number;

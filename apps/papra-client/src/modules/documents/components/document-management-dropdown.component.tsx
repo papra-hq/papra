@@ -2,8 +2,9 @@ import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
 import type { Component } from 'solid-js';
 import type { Document } from '../documents.types';
 import { A } from '@solidjs/router';
-import { Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
+import { MoveDocumentDialog } from '@/modules/folders/components/move-document-dialog.component';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import {
@@ -26,6 +27,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
   const { openRenameDialog } = useRenameDocumentDialog();
   const { openShareDialog } = useShareDocumentDialog();
   const { t } = useI18n();
+  const [getIsMoveDialogOpen, setIsMoveDialogOpen] = createSignal(false);
 
   const deleteDoc = async () =>
     deleteDocument({
@@ -94,6 +96,11 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           <span>{t('document-share-links.share-action')}</span>
         </DropdownMenuItem>
 
+        <DropdownMenuItem class="cursor-pointer" onClick={() => setIsMoveDialogOpen(true)}>
+          <div class="i-tabler-folder-symlink size-4 mr-2" />
+          <span>{t('folders.move-to-folder')}</span>
+        </DropdownMenuItem>
+
         <DropdownMenuItem
           class="cursor-pointer"
           onClick={() =>
@@ -113,6 +120,14 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           <span>{t('documents.management.delete')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <Show when={getIsMoveDialogOpen()}>
+        <MoveDocumentDialog
+          open={getIsMoveDialogOpen()}
+          onOpenChange={setIsMoveDialogOpen}
+          document={props.document}
+        />
+      </Show>
     </DropdownMenu>
   );
 };

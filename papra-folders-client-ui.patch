@@ -1,0 +1,1035 @@
+diff --git a/apps/papra-client/src/locales/en.dictionary.ts b/apps/papra-client/src/locales/en.dictionary.ts
+index 10c2f8e..571d1df 100644
+--- a/apps/papra-client/src/locales/en.dictionary.ts
++++ b/apps/papra-client/src/locales/en.dictionary.ts
+@@ -772,6 +772,41 @@ export const translations = {
+   'tags.picker.search-placeholder': 'Search tags...',
+   'tags.picker.filter-placeholder': 'Filter tags...',
+   'tags.picker.create-new-with-name': 'Create new tag "{{ name }}"',
++
++  // Folders
++
++  'folders.title': 'Folders',
++  'folders.root-label': 'Home',
++  'folders.new-folder': 'New folder',
++  'folders.upload-here': 'Upload here',
++  'folders.empty.title': 'This folder is empty',
++  'folders.empty.description': 'Create a subfolder or upload a document to get started.',
++  'folders.create.title': 'New folder',
++  'folders.create.success': 'Folder "{{ name }}" created',
++  'folders.rename.title': 'Rename folder',
++  'folders.rename.success': 'Folder renamed',
++  'folders.form.name.label': 'Folder name',
++  'folders.form.name.placeholder': 'Eg. Invoices',
++  'folders.form.name.required': 'Please enter a folder name',
++  'folders.delete': 'Delete folder',
++  'folders.delete.confirm.title': 'Delete folder',
++  'folders.delete.confirm.message': 'Are you sure you want to delete this folder?',
++  'folders.delete.confirm.not-empty-message':
++    'This folder still contains subfolders or documents. Delete it and everything inside anyway?',
++  'folders.delete.confirm.confirm-button': 'Delete',
++  'folders.delete.confirm.cancel-button': 'Cancel',
++  'folders.delete.success': 'Folder deleted',
++  'folders.move-to-folder': 'Move to folder',
++  'folders.move.title': 'Move document',
++  'folders.move.select-placeholder': 'Select a destination folder',
++  'folders.move.success': 'Document moved',
++  'folders.subfolders.actions.rename': 'Rename',
++  'folders.subfolders.actions.delete': 'Delete',
++  'folders.documents-count': '{{ count }} documents',
++  'folders.upload.success': 'Document uploaded',
++  'folders.table.headers.name': 'Name',
++  'folders.table.headers.size': 'Size',
++  'folders.table.headers.created': 'Created',
+   'tags.picker.create-new': 'Create new tag',
+ 
+   // Document views
+diff --git a/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx b/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
+index 9172e8f..5307057 100644
+--- a/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
++++ b/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
+@@ -2,8 +2,9 @@ import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
+ import type { Component } from 'solid-js';
+ import type { Document } from '../documents.types';
+ import { A } from '@solidjs/router';
+-import { Show } from 'solid-js';
++import { createSignal, Show } from 'solid-js';
+ import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
++import { MoveDocumentDialog } from '@/modules/folders/components/move-document-dialog.component';
+ import { useI18n } from '@/modules/i18n/i18n.provider';
+ import { Button } from '@/modules/ui/components/button';
+ import {
+@@ -26,6 +27,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+   const { openRenameDialog } = useRenameDocumentDialog();
+   const { openShareDialog } = useShareDocumentDialog();
+   const { t } = useI18n();
++  const [getIsMoveDialogOpen, setIsMoveDialogOpen] = createSignal(false);
+ 
+   const deleteDoc = async () =>
+     deleteDocument({
+@@ -94,6 +96,11 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+           <span>{t('document-share-links.share-action')}</span>
+         </DropdownMenuItem>
+ 
++        <DropdownMenuItem class="cursor-pointer" onClick={() => setIsMoveDialogOpen(true)}>
++          <div class="i-tabler-folder-symlink size-4 mr-2" />
++          <span>{t('folders.move-to-folder')}</span>
++        </DropdownMenuItem>
++
+         <DropdownMenuItem
+           class="cursor-pointer"
+           onClick={() =>
+@@ -113,6 +120,14 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+           <span>{t('documents.management.delete')}</span>
+         </DropdownMenuItem>
+       </DropdownMenuContent>
++
++      <Show when={getIsMoveDialogOpen()}>
++        <MoveDocumentDialog
++          open={getIsMoveDialogOpen()}
++          onOpenChange={setIsMoveDialogOpen}
++          document={props.document}
++        />
++      </Show>
+     </DropdownMenu>
+   );
+ };
+diff --git a/apps/papra-client/src/modules/documents/documents.services.ts b/apps/papra-client/src/modules/documents/documents.services.ts
+index 5e97364..894e217 100644
+--- a/apps/papra-client/src/modules/documents/documents.services.ts
++++ b/apps/papra-client/src/modules/documents/documents.services.ts
+@@ -7,13 +7,16 @@ import { coerceDates, getFormData } from '../shared/http/http-client.models';
+ export async function uploadDocument({
+   file,
+   organizationId,
++  folderId,
+ }: {
+   file: File;
+   organizationId: string;
++  folderId?: string | null;
+ }) {
+   const { document } = await apiClient<{ document: AsDto<Document> }>({
+     method: 'POST',
+     path: `/api/organizations/${organizationId}/documents`,
++    query: folderId ? { folderId } : undefined,
+     body: getFormData({ file }),
+   });
+ 
+@@ -193,6 +196,7 @@ export async function updateDocument({
+   name,
+   notes,
+   documentDate,
++  folderId,
+ }: {
+   documentId: string;
+   organizationId: string;
+@@ -200,11 +204,12 @@ export async function updateDocument({
+   name?: string;
+   notes?: string;
+   documentDate?: Date | null;
++  folderId?: string | null;
+ }) {
+   const { document } = await apiClient<{ document: AsDto<Document> }>({
+     method: 'PATCH',
+     path: `/api/organizations/${organizationId}/documents/${documentId}`,
+-    body: { content, name, documentDate, notes },
++    body: { content, name, documentDate, notes, folderId },
+   });
+ 
+   return {
+diff --git a/apps/papra-client/src/modules/documents/documents.types.ts b/apps/papra-client/src/modules/documents/documents.types.ts
+index 895c8cf..53c2d42 100644
+--- a/apps/papra-client/src/modules/documents/documents.types.ts
++++ b/apps/papra-client/src/modules/documents/documents.types.ts
+@@ -6,6 +6,7 @@ import type { DOCUMENT_ACTIVITY_EVENTS } from './documents.constants';
+ export type Document = {
+   id: string;
+   organizationId: string;
++  folderId?: string | null;
+   name: string;
+   mimeType: string;
+   originalSize: number;
+diff --git a/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx b/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx
+new file mode 100644
+index 0000000..191f2da
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx
+@@ -0,0 +1,176 @@
++import type { DialogTriggerProps } from '@kobalte/core/dialog';
++import type { Component, JSX, ValidComponent } from 'solid-js';
++import { useMutation } from '@tanstack/solid-query';
++import { createSignal } from 'solid-js';
++import * as v from 'valibot';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { createForm } from '@/modules/shared/form/form';
++import { makeReturnVoidAsync } from '@/modules/shared/functions/void';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import {
++  Dialog,
++  DialogContent,
++  DialogHeader,
++  DialogTitle,
++  DialogTrigger,
++} from '@/modules/ui/components/dialog';
++import { createToast } from '@/modules/ui/components/sonner';
++import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
++import { createFolder, updateFolder } from '../folders.services';
++import type { Folder } from '../folders.types';
++
++export const CreateFolderDialog: Component<{
++  children?: <T extends ValidComponent | HTMLElement>(props: DialogTriggerProps<T>) => JSX.Element;
++  organizationId: string;
++  parentId?: string | null;
++  onCreated?: (args: { folder: Folder }) => void | Promise<void>;
++}> = (props) => {
++  const [getIsModalOpen, setIsModalOpen] = createSignal(false);
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const createFolderMutation = useMutation(() => ({
++    mutationFn: async (data: { name: string }) =>
++      createFolder({
++        name: data.name,
++        parentId: props.parentId ?? null,
++        organizationId: props.organizationId,
++      }),
++    onSuccess: async ({ folder }, variables) => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++
++      createToast({
++        message: t('folders.create.success', { name: variables.name }),
++        type: 'success',
++      });
++      setIsModalOpen(false);
++      void props.onCreated?.({ folder });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const { Form, Field } = createForm({
++    onSubmit: makeReturnVoidAsync(createFolderMutation.mutateAsync),
++    schema: v.object({
++      name: v.pipe(v.string(), v.trim(), v.nonEmpty(t('folders.form.name.required'))),
++    }),
++  });
++
++  return (
++    <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
++      {props.children && <DialogTrigger as={props.children} />}
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.create.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Form>
++          <Field name="name">
++            {(field, inputProps) => (
++              <TextFieldRoot class="flex flex-col gap-1 mb-4">
++                <TextFieldLabel for="name">{t('folders.form.name.label')}</TextFieldLabel>
++                <TextField
++                  type="text"
++                  id="name"
++                  {...inputProps}
++                  autoFocus
++                  value={field.value}
++                  aria-invalid={Boolean(field.error)}
++                  placeholder={t('folders.form.name.placeholder')}
++                />
++                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
++              </TextFieldRoot>
++            )}
++          </Field>
++
++          <div class="flex justify-end mt-6">
++            <Button type="submit" isLoading={createFolderMutation.isPending}>
++              {t('folders.create.title')}
++            </Button>
++          </div>
++        </Form>
++      </DialogContent>
++    </Dialog>
++  );
++};
++
++export const RenameFolderDialog: Component<{
++  open: boolean;
++  onOpenChange: (open: boolean) => void;
++  organizationId: string;
++  folder: Folder;
++}> = (props) => {
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const updateFolderMutation = useMutation(() => ({
++    mutationFn: async (data: { name: string }) =>
++      updateFolder({
++        organizationId: props.organizationId,
++        folderId: props.folder.id,
++        name: data.name,
++      }),
++    onSuccess: async () => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++
++      createToast({ message: t('folders.rename.success'), type: 'success' });
++      props.onOpenChange(false);
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const { Form, Field } = createForm({
++    onSubmit: makeReturnVoidAsync(updateFolderMutation.mutateAsync),
++    schema: v.object({
++      name: v.pipe(v.string(), v.trim(), v.nonEmpty(t('folders.form.name.required'))),
++    }),
++    initialValues: { name: props.folder.name },
++  });
++
++  return (
++    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.rename.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Form>
++          <Field name="name">
++            {(field, inputProps) => (
++              <TextFieldRoot class="flex flex-col gap-1 mb-4">
++                <TextFieldLabel for="name">{t('folders.form.name.label')}</TextFieldLabel>
++                <TextField
++                  type="text"
++                  id="name"
++                  {...inputProps}
++                  autoFocus
++                  value={field.value}
++                  aria-invalid={Boolean(field.error)}
++                />
++                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
++              </TextFieldRoot>
++            )}
++          </Field>
++
++          <div class="flex justify-end mt-6">
++            <Button type="submit" isLoading={updateFolderMutation.isPending}>
++              {t('folders.rename.title')}
++            </Button>
++          </div>
++        </Form>
++      </DialogContent>
++    </Dialog>
++  );
++};
+diff --git a/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx b/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx
+new file mode 100644
+index 0000000..06b4134
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx
+@@ -0,0 +1,120 @@
++import type { Component } from 'solid-js';
++import type { Document } from '@/modules/documents/documents.types';
++import { useMutation, useQuery } from '@tanstack/solid-query';
++import { createMemo } from 'solid-js';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/ui/components/dialog';
++import {
++  Select,
++  SelectContent,
++  SelectItem,
++  SelectTrigger,
++  SelectValue,
++} from '@/modules/ui/components/select';
++import { createToast } from '@/modules/ui/components/sonner';
++import { updateDocument } from '@/modules/documents/documents.services';
++import { invalidateOrganizationDocumentsQuery } from '@/modules/documents/documents.composables';
++import { fetchOrganizationFolders } from '../folders.services';
++import { buildIndentedFolderList } from '../composables/folder-tree';
++import type { Folder } from '../folders.types';
++
++type FolderOption = { id: string | null; label: string };
++
++export const MoveDocumentDialog: Component<{
++  open: boolean;
++  onOpenChange: (open: boolean) => void;
++  document: Document;
++}> = (props) => {
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const foldersQuery = useQuery(() => ({
++    queryKey: ['organizations', props.document.organizationId, 'folders'],
++    queryFn: async () =>
++      fetchOrganizationFolders({ organizationId: props.document.organizationId }),
++  }));
++
++  const getOptions = createMemo<FolderOption[]>(() => {
++    const folders = foldersQuery.data?.folders ?? [];
++    const { indentedFolders } = buildIndentedFolderList({ folders });
++
++    return [
++      { id: null, label: t('folders.root-label') },
++      ...indentedFolders.map(({ folder, depth }: { folder: Folder; depth: number }) => ({
++        id: folder.id,
++        label: `${'— '.repeat(depth)}${folder.name}`,
++      })),
++    ];
++  });
++
++  const moveMutation = useMutation(() => ({
++    mutationFn: async (folderId: string | null) =>
++      updateDocument({
++        documentId: props.document.id,
++        organizationId: props.document.organizationId,
++        folderId,
++      }),
++    onSuccess: async () => {
++      await Promise.all([
++        invalidateOrganizationDocumentsQuery({ organizationId: props.document.organizationId }),
++        queryClient.invalidateQueries({
++          queryKey: ['organizations', props.document.organizationId, 'folders'],
++          refetchType: 'all',
++        }),
++      ]);
++
++      createToast({ message: t('folders.move.success'), type: 'success' });
++      props.onOpenChange(false);
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  return (
++    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.move.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Select<FolderOption>
++          options={getOptions()}
++          optionValue="id"
++          optionTextValue="label"
++          value={getOptions().find((option) => option.id === (props.document.folderId ?? null))}
++          onChange={(value) => {
++            if (!value) {
++              return;
++            }
++            moveMutation.mutate(value.id);
++          }}
++          itemComponent={(itemProps) => (
++            <SelectItem class="cursor-pointer" item={itemProps.item}>
++              {itemProps.item.rawValue.label}
++            </SelectItem>
++          )}
++        >
++          <SelectTrigger>
++            <SelectValue<FolderOption>>{(state) => state.selectedOption()?.label}</SelectValue>
++          </SelectTrigger>
++          <SelectContent />
++        </Select>
++
++        <div class="flex justify-end mt-6">
++          <Button
++            type="button"
++            variant="outline"
++            onClick={() => props.onOpenChange(false)}
++            disabled={moveMutation.isPending}
++          >
++            {t('folders.delete.confirm.cancel-button')}
++          </Button>
++        </div>
++      </DialogContent>
++    </Dialog>
++  );
++};
+diff --git a/apps/papra-client/src/modules/folders/composables/folder-tree.ts b/apps/papra-client/src/modules/folders/composables/folder-tree.ts
+new file mode 100644
+index 0000000..9088a39
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/composables/folder-tree.ts
+@@ -0,0 +1,62 @@
++import type { Folder } from '../folders.types';
++
++// Builds a depth-annotated, parent-first ordering of folders so a flat
++// <Select> can render simple indentation and still look like a tree.
++export function buildIndentedFolderList({ folders }: { folders: Folder[] }) {
++  const byParentId = new Map<string | null, Folder[]>();
++
++  for (const folder of folders) {
++    const siblings = byParentId.get(folder.parentId) ?? [];
++    siblings.push(folder);
++    byParentId.set(folder.parentId, siblings);
++  }
++
++  for (const siblings of byParentId.values()) {
++    siblings.sort((a, b) => a.name.localeCompare(b.name));
++  }
++
++  const result: Array<{ folder: Folder; depth: number }> = [];
++
++  const visit = (parentId: string | null, depth: number) => {
++    const children = byParentId.get(parentId) ?? [];
++    for (const child of children) {
++      result.push({ folder: child, depth });
++      visit(child.id, depth + 1);
++    }
++  };
++
++  visit(null, 0);
++
++  return { indentedFolders: result };
++}
++
++// Walks parentId pointers from a target folder back up to the root, using an
++// already-fetched flat folder list (cheap client-side alternative to another
++// network round trip per breadcrumb segment).
++export function buildFolderPath({
++  folders,
++  folderId,
++}: {
++  folders: Folder[];
++  folderId?: string | null;
++}) {
++  const byId = new Map(folders.map((folder) => [folder.id, folder]));
++  const path: Folder[] = [];
++
++  let currentId = folderId ?? null;
++  const seen = new Set<string>();
++
++  while (currentId && !seen.has(currentId)) {
++    seen.add(currentId);
++    const folder = byId.get(currentId);
++
++    if (!folder) {
++      break;
++    }
++
++    path.unshift(folder);
++    currentId = folder.parentId;
++  }
++
++  return { path };
++}
+diff --git a/apps/papra-client/src/modules/folders/folders.services.ts b/apps/papra-client/src/modules/folders/folders.services.ts
+new file mode 100644
+index 0000000..8773dd7
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/folders.services.ts
+@@ -0,0 +1,113 @@
++import type { AsDto } from '../shared/http/http-client.types';
++import type { Document } from '../documents/documents.types';
++import type { Folder } from './folders.types';
++import { apiClient } from '../shared/http/api-client';
++import { coerceDates } from '../shared/http/http-client.models';
++
++export async function fetchOrganizationFolders({ organizationId }: { organizationId: string }) {
++  const { folders } = await apiClient<{ folders: AsDto<Folder>[] }>({
++    path: `/api/organizations/${organizationId}/folders`,
++    method: 'GET',
++  });
++
++  return {
++    folders: folders.map(coerceDates),
++  };
++}
++
++export async function fetchFolderContents({
++  organizationId,
++  folderId,
++}: {
++  organizationId: string;
++  folderId?: string | null;
++}) {
++  const { folders, documents } = await apiClient<{
++    folders: AsDto<Folder>[];
++    documents: AsDto<Document>[];
++  }>({
++    path: `/api/organizations/${organizationId}/folders/contents`,
++    method: 'GET',
++    query: folderId ? { folderId } : undefined,
++  });
++
++  return {
++    folders: folders.map(coerceDates),
++    documents: documents.map(coerceDates),
++  };
++}
++
++export async function fetchFolder({
++  organizationId,
++  folderId,
++}: {
++  organizationId: string;
++  folderId: string;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'GET',
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function createFolder({
++  organizationId,
++  name,
++  parentId,
++}: {
++  organizationId: string;
++  name: string;
++  parentId?: string | null;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders`,
++    method: 'POST',
++    body: { name, parentId },
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function updateFolder({
++  organizationId,
++  folderId,
++  name,
++  parentId,
++}: {
++  organizationId: string;
++  folderId: string;
++  name?: string;
++  parentId?: string | null;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'PATCH',
++    body: { name, parentId },
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function deleteFolder({
++  organizationId,
++  folderId,
++  force,
++}: {
++  organizationId: string;
++  folderId: string;
++  force?: boolean;
++}) {
++  await apiClient({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'DELETE',
++    query: force ? { force: 'true' } : undefined,
++  });
++}
+diff --git a/apps/papra-client/src/modules/folders/folders.types.ts b/apps/papra-client/src/modules/folders/folders.types.ts
+new file mode 100644
+index 0000000..c9acd45
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/folders.types.ts
+@@ -0,0 +1,9 @@
++export type Folder = {
++  id: string;
++  organizationId: string;
++  parentId: string | null;
++  name: string;
++  documentsCount?: number;
++  createdAt: Date;
++  updatedAt: Date;
++};
+diff --git a/apps/papra-client/src/modules/folders/pages/folder.page.tsx b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+new file mode 100644
+index 0000000..acc8c57
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+@@ -0,0 +1,325 @@
++import type { DialogTriggerProps } from '@kobalte/core/dialog';
++import type { Component } from 'solid-js';
++import { formatBytes } from '@corentinth/chisels';
++import { A, useParams } from '@solidjs/router';
++import { useMutation, useQuery } from '@tanstack/solid-query';
++import { createMemo, createSignal, For, Show } from 'solid-js';
++import { getDocumentIcon } from '@/modules/documents/document.models';
++import { DocumentManagementDropdown } from '@/modules/documents/components/document-management-dropdown.component';
++import { invalidateOrganizationDocumentsQuery } from '@/modules/documents/documents.composables';
++import { uploadDocument } from '@/modules/documents/documents.services';
++import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { useConfirmModal } from '@/modules/shared/confirm';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import { EmptyState } from '@/modules/ui/components/empty';
++import { createToast } from '@/modules/ui/components/sonner';
++import {
++  Table,
++  TableBody,
++  TableCell,
++  TableHead,
++  TableHeader,
++  TableRow,
++} from '@/modules/ui/components/table';
++import { buildFolderPath } from '../composables/folder-tree';
++import { CreateFolderDialog, RenameFolderDialog } from '../components/folder-dialogs.component';
++import { deleteFolder, fetchFolderContents, fetchOrganizationFolders } from '../folders.services';
++import type { Folder } from '../folders.types';
++import {
++  DropdownMenu,
++  DropdownMenuContent,
++  DropdownMenuItem,
++  DropdownMenuTrigger,
++} from '@/modules/ui/components/dropdown-menu';
++
++const FolderCard: Component<{ organizationId: string; folder: Folder }> = (props) => {
++  const { t } = useI18n();
++  const { confirm } = useConfirmModal();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++  const [getIsRenameOpen, setIsRenameOpen] = createSignal(false);
++
++  const deleteMutation = useMutation(() => ({
++    mutationFn: async ({ force }: { force: boolean }) =>
++      deleteFolder({ organizationId: props.organizationId, folderId: props.folder.id, force }),
++    onSuccess: async () => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++      createToast({ message: t('folders.delete.success'), type: 'success' });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const handleDelete = async () => {
++    const confirmed = await confirm({
++      title: t('folders.delete.confirm.title'),
++      message: t('folders.delete.confirm.message'),
++      confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
++      cancelButton: { text: t('folders.delete.confirm.cancel-button') },
++    });
++
++    if (!confirmed) {
++      return;
++    }
++
++    try {
++      await deleteMutation.mutateAsync({ force: false });
++    } catch (error) {
++      // 409 folders.not_empty -> offer a force-delete as a second confirmation
++      const status = (error as { statusCode?: number })?.statusCode;
++
++      if (status !== 409) {
++        return;
++      }
++
++      const confirmedForce = await confirm({
++        title: t('folders.delete.confirm.title'),
++        message: t('folders.delete.confirm.not-empty-message'),
++        confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
++        cancelButton: { text: t('folders.delete.confirm.cancel-button') },
++      });
++
++      if (confirmedForce) {
++        await deleteMutation.mutateAsync({ force: true });
++      }
++    }
++  };
++
++  return (
++    <div class="flex items-center gap-2 border rounded-lg p-3 hover:bg-accent/30 transition">
++      <A
++        href={`/organizations/${props.organizationId}/folders/${props.folder.id}`}
++        class="flex items-center gap-2 flex-1 min-w-0"
++      >
++        <div class="i-tabler-folder-filled size-6 text-primary flex-shrink-0" />
++        <div class="min-w-0">
++          <div class="font-medium truncate">{props.folder.name}</div>
++          <div class="text-xs text-muted-foreground">
++            {t('folders.documents-count', { count: props.folder.documentsCount ?? 0 })}
++          </div>
++        </div>
++      </A>
++
++      <DropdownMenu>
++        <DropdownMenuTrigger
++          as={(triggerProps: DialogTriggerProps) => (
++            <Button variant="ghost" size="icon" {...triggerProps}>
++              <div class="i-tabler-dots-vertical size-4" />
++            </Button>
++          )}
++        />
++        <DropdownMenuContent class="w-40">
++          <DropdownMenuItem class="cursor-pointer" onClick={() => setIsRenameOpen(true)}>
++            <div class="i-tabler-pencil size-4 mr-2" />
++            <span>{t('folders.subfolders.actions.rename')}</span>
++          </DropdownMenuItem>
++          <DropdownMenuItem class="cursor-pointer text-red" onClick={handleDelete}>
++            <div class="i-tabler-trash size-4 mr-2" />
++            <span>{t('folders.subfolders.actions.delete')}</span>
++          </DropdownMenuItem>
++        </DropdownMenuContent>
++      </DropdownMenu>
++
++      <Show when={getIsRenameOpen()}>
++        <RenameFolderDialog
++          open={getIsRenameOpen()}
++          onOpenChange={setIsRenameOpen}
++          organizationId={props.organizationId}
++          folder={props.folder}
++        />
++      </Show>
++    </div>
++  );
++};
++
++export const FolderPage: Component = () => {
++  const params = useParams<{ organizationId: string; folderId?: string }>();
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++  let fileInputRef: HTMLInputElement | undefined;
++
++  const currentFolderId = () => params.folderId ?? null;
++
++  const contentsQuery = useQuery(() => ({
++    queryKey: ['organizations', params.organizationId, 'folders', 'contents', currentFolderId()],
++    queryFn: async () =>
++      fetchFolderContents({ organizationId: params.organizationId, folderId: currentFolderId() }),
++  }));
++
++  // Flat list is cheap (capped per-org) and lets us build the breadcrumb path
++  // client-side without one request per ancestor.
++  const allFoldersQuery = useQuery(() => ({
++    queryKey: ['organizations', params.organizationId, 'folders'],
++    queryFn: async () => fetchOrganizationFolders({ organizationId: params.organizationId }),
++  }));
++
++  const getBreadcrumbPath = createMemo(() => {
++    const folders = allFoldersQuery.data?.folders ?? [];
++    const { path } = buildFolderPath({ folders, folderId: currentFolderId() });
++    return path;
++  });
++
++  const uploadMutation = useMutation(() => ({
++    mutationFn: async (file: File) =>
++      uploadDocument({
++        file,
++        organizationId: params.organizationId,
++        folderId: currentFolderId(),
++      }),
++    onSuccess: async () => {
++      await Promise.all([
++        contentsQuery.refetch(),
++        invalidateOrganizationDocumentsQuery({ organizationId: params.organizationId }),
++        queryClient.invalidateQueries({
++          queryKey: ['organizations', params.organizationId, 'folders'],
++          refetchType: 'all',
++        }),
++      ]);
++      createToast({ message: t('folders.upload.success'), type: 'success' });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const handleFileSelected = (event: Event) => {
++    const input = event.currentTarget as HTMLInputElement;
++    const file = input.files?.[0];
++    if (file) {
++      void uploadMutation.mutateAsync(file);
++    }
++    input.value = '';
++  };
++
++  const getIsEmpty = () =>
++    (contentsQuery.data?.folders.length ?? 0) === 0 &&
++    (contentsQuery.data?.documents.length ?? 0) === 0;
++
++  return (
++    <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
++      <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
++        <div class="flex items-center gap-1 flex-wrap text-sm">
++          <A
++            href={`/organizations/${params.organizationId}/folders`}
++            class="flex items-center gap-1 hover:underline font-medium"
++            classList={{ 'text-muted-foreground': Boolean(currentFolderId()) }}
++          >
++            <div class="i-tabler-home size-4" />
++            {t('folders.root-label')}
++          </A>
++          <For each={getBreadcrumbPath()}>
++            {(folder, index) => (
++              <>
++                <div class="i-tabler-chevron-right size-3.5 text-muted-foreground" />
++                <A
++                  href={`/organizations/${params.organizationId}/folders/${folder.id}`}
++                  class="hover:underline"
++                  classList={{
++                    'font-medium': index() === getBreadcrumbPath().length - 1,
++                    'text-muted-foreground': index() !== getBreadcrumbPath().length - 1,
++                  }}
++                >
++                  {folder.name}
++                </A>
++              </>
++            )}
++          </For>
++        </div>
++
++        <div class="flex gap-2 flex-shrink-0">
++          <CreateFolderDialog organizationId={params.organizationId} parentId={currentFolderId()}>
++            {(dialogProps) => (
++              <Button variant="outline" {...dialogProps}>
++                <div class="i-tabler-folder-plus size-4 mr-2" />
++                {t('folders.new-folder')}
++              </Button>
++            )}
++          </CreateFolderDialog>
++
++          <input
++            ref={(el) => (fileInputRef = el)}
++            type="file"
++            class="hidden"
++            onChange={handleFileSelected}
++          />
++          <Button onClick={() => fileInputRef?.click()} isLoading={uploadMutation.isPending}>
++            <div class="i-tabler-upload size-4 mr-2" />
++            {t('folders.upload-here')}
++          </Button>
++        </div>
++      </div>
++
++      <Show when={contentsQuery.data}>
++        {(getData) => (
++          <Show
++            when={!getIsEmpty()}
++            fallback={
++              <EmptyState
++                title={t('folders.empty.title')}
++                icon="i-tabler-folder-open"
++                description={t('folders.empty.description')}
++              />
++            }
++          >
++            <Show when={getData().folders.length > 0}>
++              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
++                <For each={getData().folders}>
++                  {(folder) => (
++                    <FolderCard organizationId={params.organizationId} folder={folder} />
++                  )}
++                </For>
++              </div>
++            </Show>
++
++            <Show when={getData().documents.length > 0}>
++              <Table>
++                <TableHeader>
++                  <TableRow>
++                    <TableHead>{t('folders.table.headers.name')}</TableHead>
++                    <TableHead>{t('folders.table.headers.size')}</TableHead>
++                    <TableHead>{t('folders.table.headers.created')}</TableHead>
++                    <TableHead />
++                  </TableRow>
++                </TableHeader>
++                <TableBody>
++                  <For each={getData().documents}>
++                    {(document) => (
++                      <TableRow>
++                        <TableCell>
++                          <A
++                            href={`/organizations/${params.organizationId}/documents/${document.id}`}
++                            class="flex items-center gap-2 hover:underline"
++                          >
++                            <div
++                              class={`${getDocumentIcon({ document })} size-5 text-primary flex-shrink-0`}
++                            />
++                            <span class="truncate">{document.name}</span>
++                          </A>
++                        </TableCell>
++                        <TableCell class="text-muted-foreground">
++                          {formatBytes({ bytes: document.originalSize, base: 1000 })}
++                        </TableCell>
++                        <TableCell class="text-muted-foreground">
++                          <RelativeTime date={document.createdAt} />
++                        </TableCell>
++                        <TableCell class="text-right">
++                          <DocumentManagementDropdown document={document} />
++                        </TableCell>
++                      </TableRow>
++                    )}
++                  </For>
++                </TableBody>
++              </Table>
++            </Show>
++          </Show>
++        )}
++      </Show>
++    </div>
++  );
++};
+diff --git a/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx b/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
+index b0eecb6..b86d683 100644
+--- a/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
++++ b/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
+@@ -123,6 +123,11 @@ const OrganizationLayoutSideNav: Component = () => {
+           icon: 'i-tabler-file-text',
+           href: `/organizations/${params.organizationId}/documents`,
+         },
++        {
++          label: t('folders.title'),
++          icon: 'i-tabler-folder',
++          href: `/organizations/${params.organizationId}/folders`,
++        },
+         {
+           label: t('layout.menu.tags'),
+           icon: 'i-tabler-tag',
+diff --git a/apps/papra-client/src/routes.tsx b/apps/papra-client/src/routes.tsx
+index 7d1a076..ec73c62 100644
+--- a/apps/papra-client/src/routes.tsx
++++ b/apps/papra-client/src/routes.tsx
+@@ -51,6 +51,7 @@ import { SettingsLayout } from './modules/ui/layouts/settings.layout';
+ import { CurrentUserProvider } from './modules/users/composables/useCurrentUser';
+ import { UserSettingsPage } from './modules/users/pages/user-settings.page';
+ import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
++import { FolderPage } from './modules/folders/pages/folder.page';
+ import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
+ import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
+ import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
+@@ -154,6 +155,14 @@ export const routes: RouteDefinition[] = [
+                     path: '/tags',
+                     component: TagsPage,
+                   },
++                  {
++                    path: '/folders',
++                    component: FolderPage,
++                  },
++                  {
++                    path: '/folders/:folderId',
++                    component: FolderPage,
++                  },
+                   {
+                     path: '/views/:documentViewId',
+                     component: DocumentViewPage,

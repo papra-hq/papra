@@ -34,6 +34,12 @@ export const API_KEY_PERMISSIONS = {
     UPDATE: 'custom-properties:update',
     DELETE: 'custom-properties:delete',
   },
+  FOLDERS: {
+    CREATE: 'folders:create',
+    READ: 'folders:read',
+    UPDATE: 'folders:update',
+    DELETE: 'folders:delete',
+  },
 } as const;
 
 export const API_KEY_PERMISSIONS_VALUES = Object.values(API_KEY_PERMISSIONS).flatMap(

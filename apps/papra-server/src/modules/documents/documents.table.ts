@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { foldersTable } from '../folders/folders.table';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { usersTable } from '../users/users.table';
@@ -11,6 +12,11 @@ export const documentsTable = sqliteTable('documents', {
   organizationId: text('organization_id')
     .notNull()
     .references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  // Null folderId means the document lives at the organization root.
+  folderId: text('folder_id').references(() => foldersTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
   createdBy: text('created_by').references(() => usersTable.id, {
     onDelete: 'set null',
     onUpdate: 'cascade',

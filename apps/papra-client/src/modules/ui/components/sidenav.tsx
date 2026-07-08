@@ -15,7 +15,8 @@ export type SideNavMenuItem = {
 export type SideNavSection = {
   label?: string;
   action?: JSX.Element;
-  items: SideNavMenuItem[];
+  items?: SideNavMenuItem[];
+  content?: JSX.Element;
 };
 
 const MenuItemButton: Component<SideNavMenuItem> = (props) => {
@@ -64,7 +65,9 @@ export const SideNav: Component<{
                   </div>
                 )}
                 <nav class="flex flex-col gap-0.5">
-                  <For each={section.items}>{(menuItem) => <MenuItemButton {...menuItem} />}</For>
+                  {section.content ?? (
+                    <For each={section.items}>{(menuItem) => <MenuItemButton {...menuItem} />}</For>
+                  )}
                 </nav>
               </div>
             )}

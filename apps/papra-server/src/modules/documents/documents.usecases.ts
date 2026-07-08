@@ -61,6 +61,7 @@ export async function createDocument({
   mimeType,
   userId,
   organizationId,
+  folderId,
   ocrLanguages = [],
   isContentExtractionEnabled = true,
   storagePatternConfig,
@@ -82,6 +83,7 @@ export async function createDocument({
   mimeType: string;
   userId?: string;
   organizationId: string;
+  folderId?: string | null;
   ocrLanguages?: string[];
   isContentExtractionEnabled?: boolean;
   storagePatternConfig: StoragePatternConfig;
@@ -163,6 +165,7 @@ export async function createDocument({
         existingDocument,
         fileName,
         organizationId,
+        folderId,
         documentsRepository,
         newDocumentStorageKey: storageKey,
         tagsRepository,
@@ -179,6 +182,7 @@ export async function createDocument({
         hash,
         userId,
         organizationId,
+        folderId,
         documentsRepository,
         documentsStorageService,
         plansRepository,
@@ -248,6 +252,7 @@ export function createDocumentCreationUsecase({
     mimeType: string;
     userId?: string;
     organizationId: string;
+    folderId?: string | null;
   }) => createDocument({ taskServices, documentsStorageService, eventServices, ...args, ...deps });
 }
 
@@ -256,6 +261,7 @@ async function handleExistingDocument({
   fileName,
   userId,
   organizationId,
+  folderId,
   documentsRepository,
   tagsRepository,
   taggingRulesRepository,
@@ -268,6 +274,7 @@ async function handleExistingDocument({
   fileName: string;
   userId?: string;
   organizationId: string;
+  folderId?: string | null;
   documentsRepository: DocumentsRepository;
   tagsRepository: TagsRepository;
   taggingRulesRepository: TaggingRulesRepository;
@@ -295,6 +302,7 @@ async function handleExistingDocument({
       organizationId,
       name: fileName,
       userId,
+      folderId,
     }),
   ]);
 
@@ -315,6 +323,7 @@ async function createNewDocument({
   hash,
   userId,
   organizationId,
+  folderId,
   plansRepository,
   subscriptionsRepository,
   planEntitlementsRepository,
@@ -334,6 +343,7 @@ async function createNewDocument({
   hash: string;
   userId?: string;
   organizationId: string;
+  folderId?: string | null;
   documentId: string;
   documentsRepository: DocumentsRepository;
   documentsStorageService: DocumentStorageService;
@@ -374,6 +384,7 @@ async function createNewDocument({
       id: documentId,
       name: fileName,
       organizationId,
+      folderId: folderId ?? null,
       originalName: fileName,
       createdBy: userId,
       originalSize: size,
@@ -780,6 +791,7 @@ export async function updateDocument({
     content?: string;
     documentDate?: Date | null;
     notes?: string;
+    folderId?: string | null;
   };
 }) {
   // It throws if the document does not exist

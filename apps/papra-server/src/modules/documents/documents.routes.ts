@@ -4,6 +4,9 @@ import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
+import { createFolderNotFoundError } from '../folders/folders.errors';
+import { createFoldersRepository } from '../folders/folders.repository';
+import { folderIdSchema } from '../folders/folders.schemas';
 import { organizationIdSchema } from '../organizations/organization.schemas';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
@@ -69,12 +72,27 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
         organizationId: organizationIdSchema,
       }),
     ),
+    validateQuery(
+      v.strictObject({
+        folderId: v.optional(folderIdSchema),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
+      const { folderId } = context.req.valid('query');
 
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      if (folderId) {
+        const foldersRepository = createFoldersRepository({ db });
+        const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
+
+        if (!folder) {
+          throw createFolderNotFoundError();
+        }
+      }
 
       // Get organization's plan-specific upload limit
       const plansRepository = createPlansRepository({ config });
@@ -106,6 +124,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
         mimeType,
         userId,
         organizationId,
+        folderId,
       });
 
       return context.json({ document: formatDocumentForApi({ document }) });
@@ -500,7 +519,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, documentId } = context.req.valid('param');
-      const { content, documentDate, name, notes } = context.req.valid('json');
+      const { content, documentDate, name, notes, folderId } = context.req.valid('json');
 
       const documentsRepository = createDocumentsRepository({ db });
       const organizationsRepository = createOrganizationsRepository({ db });
@@ -508,13 +527,22 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
 
+      if (folderId) {
+        const foldersRepository = createFoldersRepository({ db });
+        const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
+
+        if (!folder) {
+          throw createFolderNotFoundError();
+        }
+      }
+
       const { document } = await updateDocument({
         documentId,
         organizationId,
         userId,
         documentsRepository,
         eventServices,
-        changes: { content, documentDate, name, notes },
+        changes: { content, documentDate, name, notes, folderId },
       });
 
       return context.json({ document: formatDocumentForApi({ document }) });

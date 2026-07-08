@@ -1217,6 +1217,7 @@ describe('documents usecases', () => {
               fileEncryptionAlgorithm: null,
               fileEncryptionKekVersion: null,
               fileEncryptionKeyWrapped: null,
+              folderId: null,
               id: 'document-1',
               isDeleted: false,
               mimeType: 'text/plain',

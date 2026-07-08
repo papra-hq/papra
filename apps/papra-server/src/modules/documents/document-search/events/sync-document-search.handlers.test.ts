@@ -56,6 +56,7 @@ describe('sync-document-search event handlers', () => {
       const document: Document = {
         id: 'doc-1',
         organizationId: 'organization-1',
+            folderId: null,
         name: 'Test Document',
         originalName: 'test-document.pdf',
         content: 'searchable content',
@@ -102,6 +103,7 @@ describe('sync-document-search event handlers', () => {
       const document: Document = {
         id: 'doc-1',
         organizationId: 'organization-1',
+            folderId: null,
         name: 'Updated Document',
         originalName: 'updated-document.pdf',
         content: 'updated content',
@@ -260,6 +262,7 @@ describe('sync-document-search event handlers', () => {
       const document: Document = {
         id: 'doc-1',
         organizationId: 'organization-1',
+            folderId: null,
         name: 'Test Document',
         originalName: 'test-document.pdf',
         content: 'searchable content',

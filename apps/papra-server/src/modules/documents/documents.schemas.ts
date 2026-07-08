@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { folderIdSchema } from '../folders/folders.schemas';
 import { createRegexSchema } from '../shared/schemas/string.schemas';
 import {
   documentSearchSortFields,
@@ -14,14 +15,16 @@ export const updateDocumentBodySchema = v.pipe(
     content: v.optional(v.string()),
     documentDate: v.optional(v.nullable(v.pipe(v.string(), v.toDate()))),
     notes: v.optional(v.pipe(v.string(), v.maxLength(2048))),
+    folderId: v.optional(v.nullable(folderIdSchema)),
   }),
   v.check(
     (data) =>
       data.name !== undefined ||
       data.content !== undefined ||
       data.documentDate !== undefined ||
-      data.notes !== undefined,
-    "At least one of 'name', 'content', 'documentDate' or 'notes' must be provided",
+      data.notes !== undefined ||
+      data.folderId !== undefined,
+    "At least one of 'name', 'content', 'documentDate', 'notes' or 'folderId' must be provided",
   ),
 );
 

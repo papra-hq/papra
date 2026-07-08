@@ -1,0 +1,2378 @@
+diff --git a/apps/papra-client/src/locales/en.dictionary.ts b/apps/papra-client/src/locales/en.dictionary.ts
+index 10c2f8e..571d1df 100644
+--- a/apps/papra-client/src/locales/en.dictionary.ts
++++ b/apps/papra-client/src/locales/en.dictionary.ts
+@@ -772,6 +772,41 @@ export const translations = {
+   'tags.picker.search-placeholder': 'Search tags...',
+   'tags.picker.filter-placeholder': 'Filter tags...',
+   'tags.picker.create-new-with-name': 'Create new tag "{{ name }}"',
++
++  // Folders
++
++  'folders.title': 'Folders',
++  'folders.root-label': 'Home',
++  'folders.new-folder': 'New folder',
++  'folders.upload-here': 'Upload here',
++  'folders.empty.title': 'This folder is empty',
++  'folders.empty.description': 'Create a subfolder or upload a document to get started.',
++  'folders.create.title': 'New folder',
++  'folders.create.success': 'Folder "{{ name }}" created',
++  'folders.rename.title': 'Rename folder',
++  'folders.rename.success': 'Folder renamed',
++  'folders.form.name.label': 'Folder name',
++  'folders.form.name.placeholder': 'Eg. Invoices',
++  'folders.form.name.required': 'Please enter a folder name',
++  'folders.delete': 'Delete folder',
++  'folders.delete.confirm.title': 'Delete folder',
++  'folders.delete.confirm.message': 'Are you sure you want to delete this folder?',
++  'folders.delete.confirm.not-empty-message':
++    'This folder still contains subfolders or documents. Delete it and everything inside anyway?',
++  'folders.delete.confirm.confirm-button': 'Delete',
++  'folders.delete.confirm.cancel-button': 'Cancel',
++  'folders.delete.success': 'Folder deleted',
++  'folders.move-to-folder': 'Move to folder',
++  'folders.move.title': 'Move document',
++  'folders.move.select-placeholder': 'Select a destination folder',
++  'folders.move.success': 'Document moved',
++  'folders.subfolders.actions.rename': 'Rename',
++  'folders.subfolders.actions.delete': 'Delete',
++  'folders.documents-count': '{{ count }} documents',
++  'folders.upload.success': 'Document uploaded',
++  'folders.table.headers.name': 'Name',
++  'folders.table.headers.size': 'Size',
++  'folders.table.headers.created': 'Created',
+   'tags.picker.create-new': 'Create new tag',
+ 
+   // Document views
+diff --git a/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx b/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
+index 9172e8f..5307057 100644
+--- a/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
++++ b/apps/papra-client/src/modules/documents/components/document-management-dropdown.component.tsx
+@@ -2,8 +2,9 @@ import type { DropdownMenuSubTriggerProps } from '@kobalte/core/dropdown-menu';
+ import type { Component } from 'solid-js';
+ import type { Document } from '../documents.types';
+ import { A } from '@solidjs/router';
+-import { Show } from 'solid-js';
++import { createSignal, Show } from 'solid-js';
+ import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
++import { MoveDocumentDialog } from '@/modules/folders/components/move-document-dialog.component';
+ import { useI18n } from '@/modules/i18n/i18n.provider';
+ import { Button } from '@/modules/ui/components/button';
+ import {
+@@ -26,6 +27,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+   const { openRenameDialog } = useRenameDocumentDialog();
+   const { openShareDialog } = useShareDocumentDialog();
+   const { t } = useI18n();
++  const [getIsMoveDialogOpen, setIsMoveDialogOpen] = createSignal(false);
+ 
+   const deleteDoc = async () =>
+     deleteDocument({
+@@ -94,6 +96,11 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+           <span>{t('document-share-links.share-action')}</span>
+         </DropdownMenuItem>
+ 
++        <DropdownMenuItem class="cursor-pointer" onClick={() => setIsMoveDialogOpen(true)}>
++          <div class="i-tabler-folder-symlink size-4 mr-2" />
++          <span>{t('folders.move-to-folder')}</span>
++        </DropdownMenuItem>
++
+         <DropdownMenuItem
+           class="cursor-pointer"
+           onClick={() =>
+@@ -113,6 +120,14 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
+           <span>{t('documents.management.delete')}</span>
+         </DropdownMenuItem>
+       </DropdownMenuContent>
++
++      <Show when={getIsMoveDialogOpen()}>
++        <MoveDocumentDialog
++          open={getIsMoveDialogOpen()}
++          onOpenChange={setIsMoveDialogOpen}
++          document={props.document}
++        />
++      </Show>
+     </DropdownMenu>
+   );
+ };
+diff --git a/apps/papra-client/src/modules/documents/documents.services.ts b/apps/papra-client/src/modules/documents/documents.services.ts
+index 5e97364..894e217 100644
+--- a/apps/papra-client/src/modules/documents/documents.services.ts
++++ b/apps/papra-client/src/modules/documents/documents.services.ts
+@@ -7,13 +7,16 @@ import { coerceDates, getFormData } from '../shared/http/http-client.models';
+ export async function uploadDocument({
+   file,
+   organizationId,
++  folderId,
+ }: {
+   file: File;
+   organizationId: string;
++  folderId?: string | null;
+ }) {
+   const { document } = await apiClient<{ document: AsDto<Document> }>({
+     method: 'POST',
+     path: `/api/organizations/${organizationId}/documents`,
++    query: folderId ? { folderId } : undefined,
+     body: getFormData({ file }),
+   });
+ 
+@@ -193,6 +196,7 @@ export async function updateDocument({
+   name,
+   notes,
+   documentDate,
++  folderId,
+ }: {
+   documentId: string;
+   organizationId: string;
+@@ -200,11 +204,12 @@ export async function updateDocument({
+   name?: string;
+   notes?: string;
+   documentDate?: Date | null;
++  folderId?: string | null;
+ }) {
+   const { document } = await apiClient<{ document: AsDto<Document> }>({
+     method: 'PATCH',
+     path: `/api/organizations/${organizationId}/documents/${documentId}`,
+-    body: { content, name, documentDate, notes },
++    body: { content, name, documentDate, notes, folderId },
+   });
+ 
+   return {
+diff --git a/apps/papra-client/src/modules/documents/documents.types.ts b/apps/papra-client/src/modules/documents/documents.types.ts
+index 895c8cf..53c2d42 100644
+--- a/apps/papra-client/src/modules/documents/documents.types.ts
++++ b/apps/papra-client/src/modules/documents/documents.types.ts
+@@ -6,6 +6,7 @@ import type { DOCUMENT_ACTIVITY_EVENTS } from './documents.constants';
+ export type Document = {
+   id: string;
+   organizationId: string;
++  folderId?: string | null;
+   name: string;
+   mimeType: string;
+   originalSize: number;
+diff --git a/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx b/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx
+new file mode 100644
+index 0000000..191f2da
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/components/folder-dialogs.component.tsx
+@@ -0,0 +1,176 @@
++import type { DialogTriggerProps } from '@kobalte/core/dialog';
++import type { Component, JSX, ValidComponent } from 'solid-js';
++import { useMutation } from '@tanstack/solid-query';
++import { createSignal } from 'solid-js';
++import * as v from 'valibot';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { createForm } from '@/modules/shared/form/form';
++import { makeReturnVoidAsync } from '@/modules/shared/functions/void';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import {
++  Dialog,
++  DialogContent,
++  DialogHeader,
++  DialogTitle,
++  DialogTrigger,
++} from '@/modules/ui/components/dialog';
++import { createToast } from '@/modules/ui/components/sonner';
++import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
++import { createFolder, updateFolder } from '../folders.services';
++import type { Folder } from '../folders.types';
++
++export const CreateFolderDialog: Component<{
++  children?: <T extends ValidComponent | HTMLElement>(props: DialogTriggerProps<T>) => JSX.Element;
++  organizationId: string;
++  parentId?: string | null;
++  onCreated?: (args: { folder: Folder }) => void | Promise<void>;
++}> = (props) => {
++  const [getIsModalOpen, setIsModalOpen] = createSignal(false);
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const createFolderMutation = useMutation(() => ({
++    mutationFn: async (data: { name: string }) =>
++      createFolder({
++        name: data.name,
++        parentId: props.parentId ?? null,
++        organizationId: props.organizationId,
++      }),
++    onSuccess: async ({ folder }, variables) => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++
++      createToast({
++        message: t('folders.create.success', { name: variables.name }),
++        type: 'success',
++      });
++      setIsModalOpen(false);
++      void props.onCreated?.({ folder });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const { Form, Field } = createForm({
++    onSubmit: makeReturnVoidAsync(createFolderMutation.mutateAsync),
++    schema: v.object({
++      name: v.pipe(v.string(), v.trim(), v.nonEmpty(t('folders.form.name.required'))),
++    }),
++  });
++
++  return (
++    <Dialog open={getIsModalOpen()} onOpenChange={setIsModalOpen}>
++      {props.children && <DialogTrigger as={props.children} />}
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.create.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Form>
++          <Field name="name">
++            {(field, inputProps) => (
++              <TextFieldRoot class="flex flex-col gap-1 mb-4">
++                <TextFieldLabel for="name">{t('folders.form.name.label')}</TextFieldLabel>
++                <TextField
++                  type="text"
++                  id="name"
++                  {...inputProps}
++                  autoFocus
++                  value={field.value}
++                  aria-invalid={Boolean(field.error)}
++                  placeholder={t('folders.form.name.placeholder')}
++                />
++                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
++              </TextFieldRoot>
++            )}
++          </Field>
++
++          <div class="flex justify-end mt-6">
++            <Button type="submit" isLoading={createFolderMutation.isPending}>
++              {t('folders.create.title')}
++            </Button>
++          </div>
++        </Form>
++      </DialogContent>
++    </Dialog>
++  );
++};
++
++export const RenameFolderDialog: Component<{
++  open: boolean;
++  onOpenChange: (open: boolean) => void;
++  organizationId: string;
++  folder: Folder;
++}> = (props) => {
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const updateFolderMutation = useMutation(() => ({
++    mutationFn: async (data: { name: string }) =>
++      updateFolder({
++        organizationId: props.organizationId,
++        folderId: props.folder.id,
++        name: data.name,
++      }),
++    onSuccess: async () => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++
++      createToast({ message: t('folders.rename.success'), type: 'success' });
++      props.onOpenChange(false);
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const { Form, Field } = createForm({
++    onSubmit: makeReturnVoidAsync(updateFolderMutation.mutateAsync),
++    schema: v.object({
++      name: v.pipe(v.string(), v.trim(), v.nonEmpty(t('folders.form.name.required'))),
++    }),
++    initialValues: { name: props.folder.name },
++  });
++
++  return (
++    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.rename.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Form>
++          <Field name="name">
++            {(field, inputProps) => (
++              <TextFieldRoot class="flex flex-col gap-1 mb-4">
++                <TextFieldLabel for="name">{t('folders.form.name.label')}</TextFieldLabel>
++                <TextField
++                  type="text"
++                  id="name"
++                  {...inputProps}
++                  autoFocus
++                  value={field.value}
++                  aria-invalid={Boolean(field.error)}
++                />
++                {field.error && <div class="text-red-500 text-sm">{field.error}</div>}
++              </TextFieldRoot>
++            )}
++          </Field>
++
++          <div class="flex justify-end mt-6">
++            <Button type="submit" isLoading={updateFolderMutation.isPending}>
++              {t('folders.rename.title')}
++            </Button>
++          </div>
++        </Form>
++      </DialogContent>
++    </Dialog>
++  );
++};
+diff --git a/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx b/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx
+new file mode 100644
+index 0000000..06b4134
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/components/move-document-dialog.component.tsx
+@@ -0,0 +1,120 @@
++import type { Component } from 'solid-js';
++import type { Document } from '@/modules/documents/documents.types';
++import { useMutation, useQuery } from '@tanstack/solid-query';
++import { createMemo } from 'solid-js';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/ui/components/dialog';
++import {
++  Select,
++  SelectContent,
++  SelectItem,
++  SelectTrigger,
++  SelectValue,
++} from '@/modules/ui/components/select';
++import { createToast } from '@/modules/ui/components/sonner';
++import { updateDocument } from '@/modules/documents/documents.services';
++import { invalidateOrganizationDocumentsQuery } from '@/modules/documents/documents.composables';
++import { fetchOrganizationFolders } from '../folders.services';
++import { buildIndentedFolderList } from '../composables/folder-tree';
++import type { Folder } from '../folders.types';
++
++type FolderOption = { id: string | null; label: string };
++
++export const MoveDocumentDialog: Component<{
++  open: boolean;
++  onOpenChange: (open: boolean) => void;
++  document: Document;
++}> = (props) => {
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++
++  const foldersQuery = useQuery(() => ({
++    queryKey: ['organizations', props.document.organizationId, 'folders'],
++    queryFn: async () =>
++      fetchOrganizationFolders({ organizationId: props.document.organizationId }),
++  }));
++
++  const getOptions = createMemo<FolderOption[]>(() => {
++    const folders = foldersQuery.data?.folders ?? [];
++    const { indentedFolders } = buildIndentedFolderList({ folders });
++
++    return [
++      { id: null, label: t('folders.root-label') },
++      ...indentedFolders.map(({ folder, depth }: { folder: Folder; depth: number }) => ({
++        id: folder.id,
++        label: `${'— '.repeat(depth)}${folder.name}`,
++      })),
++    ];
++  });
++
++  const moveMutation = useMutation(() => ({
++    mutationFn: async (folderId: string | null) =>
++      updateDocument({
++        documentId: props.document.id,
++        organizationId: props.document.organizationId,
++        folderId,
++      }),
++    onSuccess: async () => {
++      await Promise.all([
++        invalidateOrganizationDocumentsQuery({ organizationId: props.document.organizationId }),
++        queryClient.invalidateQueries({
++          queryKey: ['organizations', props.document.organizationId, 'folders'],
++          refetchType: 'all',
++        }),
++      ]);
++
++      createToast({ message: t('folders.move.success'), type: 'success' });
++      props.onOpenChange(false);
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  return (
++    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
++      <DialogContent>
++        <DialogHeader>
++          <DialogTitle>{t('folders.move.title')}</DialogTitle>
++        </DialogHeader>
++
++        <Select<FolderOption>
++          options={getOptions()}
++          optionValue="id"
++          optionTextValue="label"
++          value={getOptions().find((option) => option.id === (props.document.folderId ?? null))}
++          onChange={(value) => {
++            if (!value) {
++              return;
++            }
++            moveMutation.mutate(value.id);
++          }}
++          itemComponent={(itemProps) => (
++            <SelectItem class="cursor-pointer" item={itemProps.item}>
++              {itemProps.item.rawValue.label}
++            </SelectItem>
++          )}
++        >
++          <SelectTrigger>
++            <SelectValue<FolderOption>>{(state) => state.selectedOption()?.label}</SelectValue>
++          </SelectTrigger>
++          <SelectContent />
++        </Select>
++
++        <div class="flex justify-end mt-6">
++          <Button
++            type="button"
++            variant="outline"
++            onClick={() => props.onOpenChange(false)}
++            disabled={moveMutation.isPending}
++          >
++            {t('folders.delete.confirm.cancel-button')}
++          </Button>
++        </div>
++      </DialogContent>
++    </Dialog>
++  );
++};
+diff --git a/apps/papra-client/src/modules/folders/composables/folder-tree.ts b/apps/papra-client/src/modules/folders/composables/folder-tree.ts
+new file mode 100644
+index 0000000..9088a39
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/composables/folder-tree.ts
+@@ -0,0 +1,62 @@
++import type { Folder } from '../folders.types';
++
++// Builds a depth-annotated, parent-first ordering of folders so a flat
++// <Select> can render simple indentation and still look like a tree.
++export function buildIndentedFolderList({ folders }: { folders: Folder[] }) {
++  const byParentId = new Map<string | null, Folder[]>();
++
++  for (const folder of folders) {
++    const siblings = byParentId.get(folder.parentId) ?? [];
++    siblings.push(folder);
++    byParentId.set(folder.parentId, siblings);
++  }
++
++  for (const siblings of byParentId.values()) {
++    siblings.sort((a, b) => a.name.localeCompare(b.name));
++  }
++
++  const result: Array<{ folder: Folder; depth: number }> = [];
++
++  const visit = (parentId: string | null, depth: number) => {
++    const children = byParentId.get(parentId) ?? [];
++    for (const child of children) {
++      result.push({ folder: child, depth });
++      visit(child.id, depth + 1);
++    }
++  };
++
++  visit(null, 0);
++
++  return { indentedFolders: result };
++}
++
++// Walks parentId pointers from a target folder back up to the root, using an
++// already-fetched flat folder list (cheap client-side alternative to another
++// network round trip per breadcrumb segment).
++export function buildFolderPath({
++  folders,
++  folderId,
++}: {
++  folders: Folder[];
++  folderId?: string | null;
++}) {
++  const byId = new Map(folders.map((folder) => [folder.id, folder]));
++  const path: Folder[] = [];
++
++  let currentId = folderId ?? null;
++  const seen = new Set<string>();
++
++  while (currentId && !seen.has(currentId)) {
++    seen.add(currentId);
++    const folder = byId.get(currentId);
++
++    if (!folder) {
++      break;
++    }
++
++    path.unshift(folder);
++    currentId = folder.parentId;
++  }
++
++  return { path };
++}
+diff --git a/apps/papra-client/src/modules/folders/folders.services.ts b/apps/papra-client/src/modules/folders/folders.services.ts
+new file mode 100644
+index 0000000..8773dd7
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/folders.services.ts
+@@ -0,0 +1,113 @@
++import type { AsDto } from '../shared/http/http-client.types';
++import type { Document } from '../documents/documents.types';
++import type { Folder } from './folders.types';
++import { apiClient } from '../shared/http/api-client';
++import { coerceDates } from '../shared/http/http-client.models';
++
++export async function fetchOrganizationFolders({ organizationId }: { organizationId: string }) {
++  const { folders } = await apiClient<{ folders: AsDto<Folder>[] }>({
++    path: `/api/organizations/${organizationId}/folders`,
++    method: 'GET',
++  });
++
++  return {
++    folders: folders.map(coerceDates),
++  };
++}
++
++export async function fetchFolderContents({
++  organizationId,
++  folderId,
++}: {
++  organizationId: string;
++  folderId?: string | null;
++}) {
++  const { folders, documents } = await apiClient<{
++    folders: AsDto<Folder>[];
++    documents: AsDto<Document>[];
++  }>({
++    path: `/api/organizations/${organizationId}/folders/contents`,
++    method: 'GET',
++    query: folderId ? { folderId } : undefined,
++  });
++
++  return {
++    folders: folders.map(coerceDates),
++    documents: documents.map(coerceDates),
++  };
++}
++
++export async function fetchFolder({
++  organizationId,
++  folderId,
++}: {
++  organizationId: string;
++  folderId: string;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'GET',
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function createFolder({
++  organizationId,
++  name,
++  parentId,
++}: {
++  organizationId: string;
++  name: string;
++  parentId?: string | null;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders`,
++    method: 'POST',
++    body: { name, parentId },
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function updateFolder({
++  organizationId,
++  folderId,
++  name,
++  parentId,
++}: {
++  organizationId: string;
++  folderId: string;
++  name?: string;
++  parentId?: string | null;
++}) {
++  const { folder } = await apiClient<{ folder: AsDto<Folder> }>({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'PATCH',
++    body: { name, parentId },
++  });
++
++  return {
++    folder: coerceDates(folder),
++  };
++}
++
++export async function deleteFolder({
++  organizationId,
++  folderId,
++  force,
++}: {
++  organizationId: string;
++  folderId: string;
++  force?: boolean;
++}) {
++  await apiClient({
++    path: `/api/organizations/${organizationId}/folders/${folderId}`,
++    method: 'DELETE',
++    query: force ? { force: 'true' } : undefined,
++  });
++}
+diff --git a/apps/papra-client/src/modules/folders/folders.types.ts b/apps/papra-client/src/modules/folders/folders.types.ts
+new file mode 100644
+index 0000000..c9acd45
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/folders.types.ts
+@@ -0,0 +1,9 @@
++export type Folder = {
++  id: string;
++  organizationId: string;
++  parentId: string | null;
++  name: string;
++  documentsCount?: number;
++  createdAt: Date;
++  updatedAt: Date;
++};
+diff --git a/apps/papra-client/src/modules/folders/pages/folder.page.tsx b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+new file mode 100644
+index 0000000..acc8c57
+--- /dev/null
++++ b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+@@ -0,0 +1,325 @@
++import type { DialogTriggerProps } from '@kobalte/core/dialog';
++import type { Component } from 'solid-js';
++import { formatBytes } from '@corentinth/chisels';
++import { A, useParams } from '@solidjs/router';
++import { useMutation, useQuery } from '@tanstack/solid-query';
++import { createMemo, createSignal, For, Show } from 'solid-js';
++import { getDocumentIcon } from '@/modules/documents/document.models';
++import { DocumentManagementDropdown } from '@/modules/documents/components/document-management-dropdown.component';
++import { invalidateOrganizationDocumentsQuery } from '@/modules/documents/documents.composables';
++import { uploadDocument } from '@/modules/documents/documents.services';
++import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
++import { useI18n } from '@/modules/i18n/i18n.provider';
++import { useConfirmModal } from '@/modules/shared/confirm';
++import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
++import { queryClient } from '@/modules/shared/query/query-client';
++import { Button } from '@/modules/ui/components/button';
++import { EmptyState } from '@/modules/ui/components/empty';
++import { createToast } from '@/modules/ui/components/sonner';
++import {
++  Table,
++  TableBody,
++  TableCell,
++  TableHead,
++  TableHeader,
++  TableRow,
++} from '@/modules/ui/components/table';
++import { buildFolderPath } from '../composables/folder-tree';
++import { CreateFolderDialog, RenameFolderDialog } from '../components/folder-dialogs.component';
++import { deleteFolder, fetchFolderContents, fetchOrganizationFolders } from '../folders.services';
++import type { Folder } from '../folders.types';
++import {
++  DropdownMenu,
++  DropdownMenuContent,
++  DropdownMenuItem,
++  DropdownMenuTrigger,
++} from '@/modules/ui/components/dropdown-menu';
++
++const FolderCard: Component<{ organizationId: string; folder: Folder }> = (props) => {
++  const { t } = useI18n();
++  const { confirm } = useConfirmModal();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++  const [getIsRenameOpen, setIsRenameOpen] = createSignal(false);
++
++  const deleteMutation = useMutation(() => ({
++    mutationFn: async ({ force }: { force: boolean }) =>
++      deleteFolder({ organizationId: props.organizationId, folderId: props.folder.id, force }),
++    onSuccess: async () => {
++      await queryClient.invalidateQueries({
++        queryKey: ['organizations', props.organizationId, 'folders'],
++        refetchType: 'all',
++      });
++      createToast({ message: t('folders.delete.success'), type: 'success' });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const handleDelete = async () => {
++    const confirmed = await confirm({
++      title: t('folders.delete.confirm.title'),
++      message: t('folders.delete.confirm.message'),
++      confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
++      cancelButton: { text: t('folders.delete.confirm.cancel-button') },
++    });
++
++    if (!confirmed) {
++      return;
++    }
++
++    try {
++      await deleteMutation.mutateAsync({ force: false });
++    } catch (error) {
++      // 409 folders.not_empty -> offer a force-delete as a second confirmation
++      const status = (error as { statusCode?: number })?.statusCode;
++
++      if (status !== 409) {
++        return;
++      }
++
++      const confirmedForce = await confirm({
++        title: t('folders.delete.confirm.title'),
++        message: t('folders.delete.confirm.not-empty-message'),
++        confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
++        cancelButton: { text: t('folders.delete.confirm.cancel-button') },
++      });
++
++      if (confirmedForce) {
++        await deleteMutation.mutateAsync({ force: true });
++      }
++    }
++  };
++
++  return (
++    <div class="flex items-center gap-2 border rounded-lg p-3 hover:bg-accent/30 transition">
++      <A
++        href={`/organizations/${props.organizationId}/folders/${props.folder.id}`}
++        class="flex items-center gap-2 flex-1 min-w-0"
++      >
++        <div class="i-tabler-folder-filled size-6 text-primary flex-shrink-0" />
++        <div class="min-w-0">
++          <div class="font-medium truncate">{props.folder.name}</div>
++          <div class="text-xs text-muted-foreground">
++            {t('folders.documents-count', { count: props.folder.documentsCount ?? 0 })}
++          </div>
++        </div>
++      </A>
++
++      <DropdownMenu>
++        <DropdownMenuTrigger
++          as={(triggerProps: DialogTriggerProps) => (
++            <Button variant="ghost" size="icon" {...triggerProps}>
++              <div class="i-tabler-dots-vertical size-4" />
++            </Button>
++          )}
++        />
++        <DropdownMenuContent class="w-40">
++          <DropdownMenuItem class="cursor-pointer" onClick={() => setIsRenameOpen(true)}>
++            <div class="i-tabler-pencil size-4 mr-2" />
++            <span>{t('folders.subfolders.actions.rename')}</span>
++          </DropdownMenuItem>
++          <DropdownMenuItem class="cursor-pointer text-red" onClick={handleDelete}>
++            <div class="i-tabler-trash size-4 mr-2" />
++            <span>{t('folders.subfolders.actions.delete')}</span>
++          </DropdownMenuItem>
++        </DropdownMenuContent>
++      </DropdownMenu>
++
++      <Show when={getIsRenameOpen()}>
++        <RenameFolderDialog
++          open={getIsRenameOpen()}
++          onOpenChange={setIsRenameOpen}
++          organizationId={props.organizationId}
++          folder={props.folder}
++        />
++      </Show>
++    </div>
++  );
++};
++
++export const FolderPage: Component = () => {
++  const params = useParams<{ organizationId: string; folderId?: string }>();
++  const { t } = useI18n();
++  const { getErrorMessage } = useI18nApiErrors({ t });
++  let fileInputRef: HTMLInputElement | undefined;
++
++  const currentFolderId = () => params.folderId ?? null;
++
++  const contentsQuery = useQuery(() => ({
++    queryKey: ['organizations', params.organizationId, 'folders', 'contents', currentFolderId()],
++    queryFn: async () =>
++      fetchFolderContents({ organizationId: params.organizationId, folderId: currentFolderId() }),
++  }));
++
++  // Flat list is cheap (capped per-org) and lets us build the breadcrumb path
++  // client-side without one request per ancestor.
++  const allFoldersQuery = useQuery(() => ({
++    queryKey: ['organizations', params.organizationId, 'folders'],
++    queryFn: async () => fetchOrganizationFolders({ organizationId: params.organizationId }),
++  }));
++
++  const getBreadcrumbPath = createMemo(() => {
++    const folders = allFoldersQuery.data?.folders ?? [];
++    const { path } = buildFolderPath({ folders, folderId: currentFolderId() });
++    return path;
++  });
++
++  const uploadMutation = useMutation(() => ({
++    mutationFn: async (file: File) =>
++      uploadDocument({
++        file,
++        organizationId: params.organizationId,
++        folderId: currentFolderId(),
++      }),
++    onSuccess: async () => {
++      await Promise.all([
++        contentsQuery.refetch(),
++        invalidateOrganizationDocumentsQuery({ organizationId: params.organizationId }),
++        queryClient.invalidateQueries({
++          queryKey: ['organizations', params.organizationId, 'folders'],
++          refetchType: 'all',
++        }),
++      ]);
++      createToast({ message: t('folders.upload.success'), type: 'success' });
++    },
++    onError: (error) => {
++      createToast({ message: getErrorMessage({ error }), type: 'error' });
++    },
++  }));
++
++  const handleFileSelected = (event: Event) => {
++    const input = event.currentTarget as HTMLInputElement;
++    const file = input.files?.[0];
++    if (file) {
++      void uploadMutation.mutateAsync(file);
++    }
++    input.value = '';
++  };
++
++  const getIsEmpty = () =>
++    (contentsQuery.data?.folders.length ?? 0) === 0 &&
++    (contentsQuery.data?.documents.length ?? 0) === 0;
++
++  return (
++    <div class="p-6 mt-4 pb-32 mx-auto max-w-5xl">
++      <div class="flex justify-between sm:items-center pb-6 gap-4 flex-col sm:flex-row">
++        <div class="flex items-center gap-1 flex-wrap text-sm">
++          <A
++            href={`/organizations/${params.organizationId}/folders`}
++            class="flex items-center gap-1 hover:underline font-medium"
++            classList={{ 'text-muted-foreground': Boolean(currentFolderId()) }}
++          >
++            <div class="i-tabler-home size-4" />
++            {t('folders.root-label')}
++          </A>
++          <For each={getBreadcrumbPath()}>
++            {(folder, index) => (
++              <>
++                <div class="i-tabler-chevron-right size-3.5 text-muted-foreground" />
++                <A
++                  href={`/organizations/${params.organizationId}/folders/${folder.id}`}
++                  class="hover:underline"
++                  classList={{
++                    'font-medium': index() === getBreadcrumbPath().length - 1,
++                    'text-muted-foreground': index() !== getBreadcrumbPath().length - 1,
++                  }}
++                >
++                  {folder.name}
++                </A>
++              </>
++            )}
++          </For>
++        </div>
++
++        <div class="flex gap-2 flex-shrink-0">
++          <CreateFolderDialog organizationId={params.organizationId} parentId={currentFolderId()}>
++            {(dialogProps) => (
++              <Button variant="outline" {...dialogProps}>
++                <div class="i-tabler-folder-plus size-4 mr-2" />
++                {t('folders.new-folder')}
++              </Button>
++            )}
++          </CreateFolderDialog>
++
++          <input
++            ref={(el) => (fileInputRef = el)}
++            type="file"
++            class="hidden"
++            onChange={handleFileSelected}
++          />
++          <Button onClick={() => fileInputRef?.click()} isLoading={uploadMutation.isPending}>
++            <div class="i-tabler-upload size-4 mr-2" />
++            {t('folders.upload-here')}
++          </Button>
++        </div>
++      </div>
++
++      <Show when={contentsQuery.data}>
++        {(getData) => (
++          <Show
++            when={!getIsEmpty()}
++            fallback={
++              <EmptyState
++                title={t('folders.empty.title')}
++                icon="i-tabler-folder-open"
++                description={t('folders.empty.description')}
++              />
++            }
++          >
++            <Show when={getData().folders.length > 0}>
++              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
++                <For each={getData().folders}>
++                  {(folder) => (
++                    <FolderCard organizationId={params.organizationId} folder={folder} />
++                  )}
++                </For>
++              </div>
++            </Show>
++
++            <Show when={getData().documents.length > 0}>
++              <Table>
++                <TableHeader>
++                  <TableRow>
++                    <TableHead>{t('folders.table.headers.name')}</TableHead>
++                    <TableHead>{t('folders.table.headers.size')}</TableHead>
++                    <TableHead>{t('folders.table.headers.created')}</TableHead>
++                    <TableHead />
++                  </TableRow>
++                </TableHeader>
++                <TableBody>
++                  <For each={getData().documents}>
++                    {(document) => (
++                      <TableRow>
++                        <TableCell>
++                          <A
++                            href={`/organizations/${params.organizationId}/documents/${document.id}`}
++                            class="flex items-center gap-2 hover:underline"
++                          >
++                            <div
++                              class={`${getDocumentIcon({ document })} size-5 text-primary flex-shrink-0`}
++                            />
++                            <span class="truncate">{document.name}</span>
++                          </A>
++                        </TableCell>
++                        <TableCell class="text-muted-foreground">
++                          {formatBytes({ bytes: document.originalSize, base: 1000 })}
++                        </TableCell>
++                        <TableCell class="text-muted-foreground">
++                          <RelativeTime date={document.createdAt} />
++                        </TableCell>
++                        <TableCell class="text-right">
++                          <DocumentManagementDropdown document={document} />
++                        </TableCell>
++                      </TableRow>
++                    )}
++                  </For>
++                </TableBody>
++              </Table>
++            </Show>
++          </Show>
++        )}
++      </Show>
++    </div>
++  );
++};
+diff --git a/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx b/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
+index b0eecb6..b86d683 100644
+--- a/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
++++ b/apps/papra-client/src/modules/ui/layouts/organization.layout.tsx
+@@ -123,6 +123,11 @@ const OrganizationLayoutSideNav: Component = () => {
+           icon: 'i-tabler-file-text',
+           href: `/organizations/${params.organizationId}/documents`,
+         },
++        {
++          label: t('folders.title'),
++          icon: 'i-tabler-folder',
++          href: `/organizations/${params.organizationId}/folders`,
++        },
+         {
+           label: t('layout.menu.tags'),
+           icon: 'i-tabler-tag',
+diff --git a/apps/papra-client/src/routes.tsx b/apps/papra-client/src/routes.tsx
+index 7d1a076..ec73c62 100644
+--- a/apps/papra-client/src/routes.tsx
++++ b/apps/papra-client/src/routes.tsx
+@@ -51,6 +51,7 @@ import { SettingsLayout } from './modules/ui/layouts/settings.layout';
+ import { CurrentUserProvider } from './modules/users/composables/useCurrentUser';
+ import { UserSettingsPage } from './modules/users/pages/user-settings.page';
+ import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page';
++import { FolderPage } from './modules/folders/pages/folder.page';
+ import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
+ import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
+ import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
+@@ -154,6 +155,14 @@ export const routes: RouteDefinition[] = [
+                     path: '/tags',
+                     component: TagsPage,
+                   },
++                  {
++                    path: '/folders',
++                    component: FolderPage,
++                  },
++                  {
++                    path: '/folders/:folderId',
++                    component: FolderPage,
++                  },
+                   {
+                     path: '/views/:documentViewId',
+                     component: DocumentViewPage,
+diff --git a/apps/papra-server/src/migrations/list/0027-folders.migration.ts b/apps/papra-server/src/migrations/list/0027-folders.migration.ts
+new file mode 100644
+index 0000000..994fc60
+--- /dev/null
++++ b/apps/papra-server/src/migrations/list/0027-folders.migration.ts
+@@ -0,0 +1,51 @@
++import type { Migration } from '../migrations.types';
++import { sql } from 'drizzle-orm';
++import { getRuntimeTableColumns } from '../../modules/app/database/database.usecases';
++
++export const foldersMigration = {
++  name: 'folders',
++
++  up: async ({ db }) => {
++    await db.run(sql`
++      CREATE TABLE IF NOT EXISTS "folders" (
++        "id" text PRIMARY KEY NOT NULL,
++        "created_at" integer NOT NULL,
++        "updated_at" integer NOT NULL,
++        "organization_id" text NOT NULL,
++        "parent_id" text,
++        "name" text NOT NULL,
++        FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade,
++        FOREIGN KEY ("parent_id") REFERENCES "folders"("id") ON UPDATE cascade ON DELETE cascade
++      );
++    `);
++
++    await db.run(sql`
++      CREATE INDEX IF NOT EXISTS "folders_organization_id_idx" ON "folders" ("organization_id");
++    `);
++
++    await db.run(sql`
++      CREATE INDEX IF NOT EXISTS "folders_parent_id_idx" ON "folders" ("parent_id");
++    `);
++
++    // SQLite's ALTER TABLE ADD COLUMN has no IF NOT EXISTS form, so guard
++    // manually — this migration must be safe to replay (e.g. after the
++    // migrations tracking table is dropped and all migrations rerun).
++    const existingColumns = await getRuntimeTableColumns({ tableName: 'documents', db });
++
++    if (!existingColumns.includes('folder_id')) {
++      await db.run(sql`
++        ALTER TABLE "documents" ADD COLUMN "folder_id" text REFERENCES "folders"("id") ON UPDATE cascade ON DELETE set null;
++      `);
++    }
++
++    await db.run(sql`
++      CREATE INDEX IF NOT EXISTS "documents_folder_id_idx" ON "documents" ("folder_id");
++    `);
++  },
++
++  down: async ({ db }) => {
++    await db.run(sql`DROP INDEX IF EXISTS "documents_folder_id_idx"`);
++    await db.run(sql`ALTER TABLE "documents" DROP COLUMN "folder_id"`);
++    await db.run(sql`DROP TABLE IF EXISTS "folders"`);
++  },
++} satisfies Migration;
+diff --git a/apps/papra-server/src/migrations/migrations.registry.test.ts b/apps/papra-server/src/migrations/migrations.registry.test.ts
+index 0ba95e1..859310a 100644
+--- a/apps/papra-server/src/migrations/migrations.registry.test.ts
++++ b/apps/papra-server/src/migrations/migrations.registry.test.ts
+@@ -101,6 +101,7 @@ describe('migrations registry', () => {
+         CREATE INDEX "document_share_links_organization_id_document_id_index" ON "document_share_links" ("organization_id", "document_id");
+         CREATE UNIQUE INDEX "document_share_links_token_unique" ON "document_share_links" ("token");
+         CREATE INDEX documents_file_encryption_kek_version_index ON documents (file_encryption_kek_version);
++        CREATE INDEX "documents_folder_id_idx" ON "documents" ("folder_id");
+         CREATE INDEX "documents_is_deleted_deleted_at_index" ON "documents" ("is_deleted", "deleted_at");
+         CREATE INDEX documents_organization_id_document_date_index ON documents(organization_id, document_date);
+         CREATE INDEX "documents_organization_id_is_deleted_created_at_index" ON "documents" ("organization_id","is_deleted","created_at");
+@@ -109,6 +110,8 @@ describe('migrations registry', () => {
+         CREATE INDEX "documents_organization_id_size_index" ON "documents" ("organization_id","original_size");
+         CREATE INDEX "documents_original_sha256_hash_index" ON "documents" ("original_sha256_hash");
+         CREATE INDEX "documents_tags_tag_id_document_id_index" ON "documents_tags" ("tag_id", "document_id");
++        CREATE INDEX "folders_organization_id_idx" ON "folders" ("organization_id");
++        CREATE INDEX "folders_parent_id_idx" ON "folders" ("parent_id");
+         CREATE UNIQUE INDEX "intake_emails_email_address_unique" ON "intake_emails" ("email_address");
+         CREATE INDEX "intake_emails_organization_id_index" ON "intake_emails" ("organization_id");
+         CREATE INDEX "key_hash_index" ON "api_keys" ("key_hash");
+@@ -144,7 +147,7 @@ describe('migrations registry', () => {
+         CREATE TABLE "document_custom_property_values" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "document_id" text NOT NULL REFERENCES "documents"("id") ON DELETE CASCADE ON UPDATE CASCADE, "property_definition_id" text NOT NULL REFERENCES "custom_property_definitions"("id") ON DELETE CASCADE ON UPDATE CASCADE, "text_value" text, "number_value" real, "date_value" integer, "boolean_value" integer, "select_option_id" text REFERENCES "custom_property_select_options"("id") ON DELETE CASCADE ON UPDATE CASCADE, "user_id" text REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE, "related_document_id" text REFERENCES "documents"("id") ON DELETE CASCADE ON UPDATE CASCADE );
+         CREATE TABLE "document_share_links" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "document_id" text NOT NULL, "created_by" text, "token" text NOT NULL, "expires_at" integer, "password_hash" text, "is_enabled" integer DEFAULT true NOT NULL, "last_accessed_at" integer, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null );
+         CREATE TABLE "document_views" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "name" text NOT NULL, "query" text NOT NULL, "description" text, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE("organization_id", "name") );
+-        CREATE TABLE "documents" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "is_deleted" integer DEFAULT false NOT NULL, "deleted_at" integer, "organization_id" text NOT NULL, "created_by" text, "deleted_by" text, "original_name" text NOT NULL, "original_size" integer DEFAULT 0 NOT NULL, "original_storage_key" text NOT NULL, "original_sha256_hash" text NOT NULL, "name" text NOT NULL, "mime_type" text NOT NULL, "content" text DEFAULT '' NOT NULL, file_encryption_key_wrapped TEXT, file_encryption_kek_version TEXT, file_encryption_algorithm TEXT, document_date INTEGER, notes TEXT, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("deleted_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null );
++        CREATE TABLE "documents" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "is_deleted" integer DEFAULT false NOT NULL, "deleted_at" integer, "organization_id" text NOT NULL, "created_by" text, "deleted_by" text, "original_name" text NOT NULL, "original_size" integer DEFAULT 0 NOT NULL, "original_storage_key" text NOT NULL, "original_sha256_hash" text NOT NULL, "name" text NOT NULL, "mime_type" text NOT NULL, "content" text DEFAULT '' NOT NULL, file_encryption_key_wrapped TEXT, file_encryption_kek_version TEXT, file_encryption_algorithm TEXT, document_date INTEGER, notes TEXT, "folder_id" text REFERENCES "folders"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("created_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null, FOREIGN KEY ("deleted_by") REFERENCES "users"("id") ON UPDATE cascade ON DELETE set null );
+         CREATE VIRTUAL TABLE documents_fts USING fts5( document_id, organization_id, name, content, prefix='2 3 4' );
+         CREATE TABLE 'documents_fts_config'(k PRIMARY KEY, v) WITHOUT ROWID;
+         CREATE TABLE 'documents_fts_content'(id INTEGER PRIMARY KEY, c0, c1, c2, c3);
+@@ -152,6 +155,7 @@ describe('migrations registry', () => {
+         CREATE TABLE 'documents_fts_docsize'(id INTEGER PRIMARY KEY, sz BLOB);
+         CREATE TABLE 'documents_fts_idx'(segid, term, pgno, PRIMARY KEY(segid, term)) WITHOUT ROWID;
+         CREATE TABLE "documents_tags" ( "document_id" text NOT NULL, "tag_id" text NOT NULL, PRIMARY KEY("document_id", "tag_id"), FOREIGN KEY ("document_id") REFERENCES "documents"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON UPDATE cascade ON DELETE cascade );
++        CREATE TABLE "folders" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "parent_id" text, "name" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("parent_id") REFERENCES "folders"("id") ON UPDATE cascade ON DELETE cascade );
+         CREATE TABLE "intake_emails" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "email_address" text NOT NULL, "organization_id" text NOT NULL, "allowed_origins" text DEFAULT '[]' NOT NULL, "is_enabled" integer DEFAULT true NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
+         CREATE TABLE "kv_store" ( "key" text PRIMARY KEY NOT NULL, "value" text NOT NULL, "expires_at" integer );
+         CREATE TABLE migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, run_at INTEGER NOT NULL);
+diff --git a/apps/papra-server/src/migrations/migrations.registry.ts b/apps/papra-server/src/migrations/migrations.registry.ts
+index 0973214..5202f76 100644
+--- a/apps/papra-server/src/migrations/migrations.registry.ts
++++ b/apps/papra-server/src/migrations/migrations.registry.ts
+@@ -26,6 +26,7 @@ import { documentViewsMigration } from './list/0023-document-views.migration';
+ import { userPlanEntitlementsMigration } from './list/0024-user-plan-entitlements.migration';
+ import { addOrganizationSettingsTableMigration } from './list/0025-add-organization-settings-table.migration';
+ import { addIndexesMigration } from './list/0026-add-indexes.migration';
++import { foldersMigration } from './list/0027-folders.migration';
+ 
+ export const migrations: Migration[] = [
+   initialSchemaSetupMigration,
+@@ -54,4 +55,5 @@ export const migrations: Migration[] = [
+   userPlanEntitlementsMigration,
+   addOrganizationSettingsTableMigration,
+   addIndexesMigration,
++  foldersMigration,
+ ];
+diff --git a/apps/papra-server/src/modules/api-keys/api-keys.constants.ts b/apps/papra-server/src/modules/api-keys/api-keys.constants.ts
+index 22f04bb..feb7b7a 100644
+--- a/apps/papra-server/src/modules/api-keys/api-keys.constants.ts
++++ b/apps/papra-server/src/modules/api-keys/api-keys.constants.ts
+@@ -34,6 +34,12 @@ export const API_KEY_PERMISSIONS = {
+     UPDATE: 'custom-properties:update',
+     DELETE: 'custom-properties:delete',
+   },
++  FOLDERS: {
++    CREATE: 'folders:create',
++    READ: 'folders:read',
++    UPDATE: 'folders:update',
++    DELETE: 'folders:delete',
++  },
+ } as const;
+ 
+ export const API_KEY_PERMISSIONS_VALUES = Object.values(API_KEY_PERMISSIONS).flatMap(
+diff --git a/apps/papra-server/src/modules/app/server.routes.ts b/apps/papra-server/src/modules/app/server.routes.ts
+index 53d26c1..2184ca5 100644
+--- a/apps/papra-server/src/modules/app/server.routes.ts
++++ b/apps/papra-server/src/modules/app/server.routes.ts
+@@ -8,6 +8,7 @@ import { registerDocumentViewsRoutes } from '../document-views/document-views.ro
+ import { registerDocumentActivityRoutes } from '../documents/document-activity/document-activity.routes';
+ import { registerDocumentsBatchRoutes } from '../documents/documents-batch/documents-batch.routes';
+ import { registerDocumentsRoutes } from '../documents/documents.routes';
++import { registerFoldersRoutes } from '../folders/folders.routes';
+ import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
+ import { registerInvitationsRoutes } from '../invitations/invitations.routes';
+ import { registerOrganizationsRoutes } from '../organizations/organizations.routes';
+@@ -30,6 +31,7 @@ export function registerRoutes(context: RouteDefinitionContext) {
+   registerOrganizationsRoutes(context);
+   registerOrganizationSettingsRoutes(context);
+   registerDocumentsRoutes(context);
++  registerFoldersRoutes(context);
+   registerDocumentsBatchRoutes(context);
+   registerTagsRoutes(context);
+   registerDocumentViewsRoutes(context);
+diff --git a/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts b/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
+index a4bd7c3..cadedee 100644
+--- a/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
++++ b/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
+@@ -56,6 +56,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
++            folderId: null,
+         name: 'Test Document',
+         originalName: 'test-document.pdf',
+         content: 'searchable content',
+@@ -102,6 +103,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
++            folderId: null,
+         name: 'Updated Document',
+         originalName: 'updated-document.pdf',
+         content: 'updated content',
+@@ -260,6 +262,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
++            folderId: null,
+         name: 'Test Document',
+         originalName: 'test-document.pdf',
+         content: 'searchable content',
+diff --git a/apps/papra-server/src/modules/documents/documents.models.test.ts b/apps/papra-server/src/modules/documents/documents.models.test.ts
+index 3c504e6..d51d013 100644
+--- a/apps/papra-server/src/modules/documents/documents.models.test.ts
++++ b/apps/papra-server/src/modules/documents/documents.models.test.ts
+@@ -80,6 +80,7 @@ describe('documents models', () => {
+           document: {
+             id: 'doc_1',
+             organizationId: 'org_1',
++            folderId: null,
+             createdBy: 'user_1',
+             deletedAt: null,
+             deletedBy: null,
+@@ -111,6 +112,7 @@ describe('documents models', () => {
+         mimeType: 'text/plain',
+         name: 'file.txt',
+         organizationId: 'org_1',
++            folderId: null,
+         originalName: 'file.txt',
+         originalSha256Hash: '1234567890',
+         originalSize: 100,
+diff --git a/apps/papra-server/src/modules/documents/documents.repository.ts b/apps/papra-server/src/modules/documents/documents.repository.ts
+index ada3aef..3837be9 100644
+--- a/apps/papra-server/src/modules/documents/documents.repository.ts
++++ b/apps/papra-server/src/modules/documents/documents.repository.ts
+@@ -246,12 +246,14 @@ async function restoreDocument({
+   organizationId,
+   name,
+   userId,
++  folderId,
+   db,
+ }: {
+   documentId: string;
+   organizationId: string;
+   name?: string;
+   userId?: string;
++  folderId?: string | null;
+   db: Database;
+ }) {
+   const [document] = await db
+@@ -262,6 +264,7 @@ async function restoreDocument({
+       deletedAt: null,
+       ...(isDefined(name) ? { name, originalName: name } : {}),
+       ...(isDefined(userId) ? { createdBy: userId } : {}),
++      ...(folderId !== undefined ? { folderId } : {}),
+     })
+     .where(
+       and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
+@@ -456,6 +459,7 @@ async function updateDocument({
+   content,
+   documentDate,
+   notes,
++  folderId,
+   db,
+ }: {
+   documentId: string;
+@@ -464,11 +468,12 @@ async function updateDocument({
+   content?: string;
+   documentDate?: Date | null;
+   notes?: string;
++  folderId?: string | null;
+   db: Database;
+ }) {
+   const [document] = await db
+     .update(documentsTable)
+-    .set(omitUndefined({ name, content, documentDate, notes }))
++    .set(omitUndefined({ name, content, documentDate, notes, folderId }))
+     .where(
+       and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
+     )
+diff --git a/apps/papra-server/src/modules/documents/documents.routes.ts b/apps/papra-server/src/modules/documents/documents.routes.ts
+index 67e072a..7422bb0 100644
+--- a/apps/papra-server/src/modules/documents/documents.routes.ts
++++ b/apps/papra-server/src/modules/documents/documents.routes.ts
+@@ -4,6 +4,9 @@ import * as v from 'valibot';
+ import { requireAuthentication } from '../app/auth/auth.middleware';
+ import { getUser } from '../app/auth/auth.models';
+ import { createCustomPropertiesRepository } from '../custom-properties/custom-properties.repository';
++import { createFolderNotFoundError } from '../folders/folders.errors';
++import { createFoldersRepository } from '../folders/folders.repository';
++import { folderIdSchema } from '../folders/folders.schemas';
+ import { organizationIdSchema } from '../organizations/organization.schemas';
+ import { createOrganizationsRepository } from '../organizations/organizations.repository';
+ import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
+@@ -69,13 +72,28 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
+         organizationId: organizationIdSchema,
+       }),
+     ),
++    validateQuery(
++      v.strictObject({
++        folderId: v.optional(folderIdSchema),
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId } = context.req.valid('param');
++      const { folderId } = context.req.valid('query');
+ 
+       const organizationsRepository = createOrganizationsRepository({ db });
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+ 
++      if (folderId) {
++        const foldersRepository = createFoldersRepository({ db });
++        const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
++
++        if (!folder) {
++          throw createFolderNotFoundError();
++        }
++      }
++
+       // Get organization's plan-specific upload limit
+       const plansRepository = createPlansRepository({ config });
+       const subscriptionsRepository = createSubscriptionsRepository({ db });
+@@ -106,6 +124,7 @@ function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
+         mimeType,
+         userId,
+         organizationId,
++        folderId,
+       });
+ 
+       return context.json({ document: formatDocumentForApi({ document }) });
+@@ -500,7 +519,7 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, documentId } = context.req.valid('param');
+-      const { content, documentDate, name, notes } = context.req.valid('json');
++      const { content, documentDate, name, notes, folderId } = context.req.valid('json');
+ 
+       const documentsRepository = createDocumentsRepository({ db });
+       const organizationsRepository = createOrganizationsRepository({ db });
+@@ -508,13 +527,22 @@ function setupUpdateDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+       await ensureDocumentExists({ documentId, organizationId, documentsRepository });
+ 
++      if (folderId) {
++        const foldersRepository = createFoldersRepository({ db });
++        const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
++
++        if (!folder) {
++          throw createFolderNotFoundError();
++        }
++      }
++
+       const { document } = await updateDocument({
+         documentId,
+         organizationId,
+         userId,
+         documentsRepository,
+         eventServices,
+-        changes: { content, documentDate, name, notes },
++        changes: { content, documentDate, name, notes, folderId },
+       });
+ 
+       return context.json({ document: formatDocumentForApi({ document }) });
+diff --git a/apps/papra-server/src/modules/documents/documents.schemas.ts b/apps/papra-server/src/modules/documents/documents.schemas.ts
+index 6319b00..497b114 100644
+--- a/apps/papra-server/src/modules/documents/documents.schemas.ts
++++ b/apps/papra-server/src/modules/documents/documents.schemas.ts
+@@ -1,4 +1,5 @@
+ import * as v from 'valibot';
++import { folderIdSchema } from '../folders/folders.schemas';
+ import { createRegexSchema } from '../shared/schemas/string.schemas';
+ import {
+   documentSearchSortFields,
+@@ -14,14 +15,16 @@ export const updateDocumentBodySchema = v.pipe(
+     content: v.optional(v.string()),
+     documentDate: v.optional(v.nullable(v.pipe(v.string(), v.toDate()))),
+     notes: v.optional(v.pipe(v.string(), v.maxLength(2048))),
++    folderId: v.optional(v.nullable(folderIdSchema)),
+   }),
+   v.check(
+     (data) =>
+       data.name !== undefined ||
+       data.content !== undefined ||
+       data.documentDate !== undefined ||
+-      data.notes !== undefined,
+-    "At least one of 'name', 'content', 'documentDate' or 'notes' must be provided",
++      data.notes !== undefined ||
++      data.folderId !== undefined,
++    "At least one of 'name', 'content', 'documentDate', 'notes' or 'folderId' must be provided",
+   ),
+ );
+ 
+diff --git a/apps/papra-server/src/modules/documents/documents.table.ts b/apps/papra-server/src/modules/documents/documents.table.ts
+index c72dc3b..5783a6f 100644
+--- a/apps/papra-server/src/modules/documents/documents.table.ts
++++ b/apps/papra-server/src/modules/documents/documents.table.ts
+@@ -1,4 +1,5 @@
+ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
++import { foldersTable } from '../folders/folders.table';
+ import { organizationsTable } from '../organizations/organizations.table';
+ import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
+ import { usersTable } from '../users/users.table';
+@@ -11,6 +12,11 @@ export const documentsTable = sqliteTable('documents', {
+   organizationId: text('organization_id')
+     .notNull()
+     .references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
++  // Null folderId means the document lives at the organization root.
++  folderId: text('folder_id').references(() => foldersTable.id, {
++    onDelete: 'set null',
++    onUpdate: 'cascade',
++  }),
+   createdBy: text('created_by').references(() => usersTable.id, {
+     onDelete: 'set null',
+     onUpdate: 'cascade',
+diff --git a/apps/papra-server/src/modules/documents/documents.usecases.test.ts b/apps/papra-server/src/modules/documents/documents.usecases.test.ts
+index cd1d82e..fd50e86 100644
+--- a/apps/papra-server/src/modules/documents/documents.usecases.test.ts
++++ b/apps/papra-server/src/modules/documents/documents.usecases.test.ts
+@@ -1217,6 +1217,7 @@ describe('documents usecases', () => {
+               fileEncryptionAlgorithm: null,
+               fileEncryptionKekVersion: null,
+               fileEncryptionKeyWrapped: null,
++              folderId: null,
+               id: 'document-1',
+               isDeleted: false,
+               mimeType: 'text/plain',
+diff --git a/apps/papra-server/src/modules/documents/documents.usecases.ts b/apps/papra-server/src/modules/documents/documents.usecases.ts
+index 08b636d..b5587d6 100644
+--- a/apps/papra-server/src/modules/documents/documents.usecases.ts
++++ b/apps/papra-server/src/modules/documents/documents.usecases.ts
+@@ -61,6 +61,7 @@ export async function createDocument({
+   mimeType,
+   userId,
+   organizationId,
++  folderId,
+   ocrLanguages = [],
+   isContentExtractionEnabled = true,
+   storagePatternConfig,
+@@ -82,6 +83,7 @@ export async function createDocument({
+   mimeType: string;
+   userId?: string;
+   organizationId: string;
++  folderId?: string | null;
+   ocrLanguages?: string[];
+   isContentExtractionEnabled?: boolean;
+   storagePatternConfig: StoragePatternConfig;
+@@ -163,6 +165,7 @@ export async function createDocument({
+         existingDocument,
+         fileName,
+         organizationId,
++        folderId,
+         documentsRepository,
+         newDocumentStorageKey: storageKey,
+         tagsRepository,
+@@ -179,6 +182,7 @@ export async function createDocument({
+         hash,
+         userId,
+         organizationId,
++        folderId,
+         documentsRepository,
+         documentsStorageService,
+         plansRepository,
+@@ -248,6 +252,7 @@ export function createDocumentCreationUsecase({
+     mimeType: string;
+     userId?: string;
+     organizationId: string;
++    folderId?: string | null;
+   }) => createDocument({ taskServices, documentsStorageService, eventServices, ...args, ...deps });
+ }
+ 
+@@ -256,6 +261,7 @@ async function handleExistingDocument({
+   fileName,
+   userId,
+   organizationId,
++  folderId,
+   documentsRepository,
+   tagsRepository,
+   taggingRulesRepository,
+@@ -268,6 +274,7 @@ async function handleExistingDocument({
+   fileName: string;
+   userId?: string;
+   organizationId: string;
++  folderId?: string | null;
+   documentsRepository: DocumentsRepository;
+   tagsRepository: TagsRepository;
+   taggingRulesRepository: TaggingRulesRepository;
+@@ -295,6 +302,7 @@ async function handleExistingDocument({
+       organizationId,
+       name: fileName,
+       userId,
++      folderId,
+     }),
+   ]);
+ 
+@@ -315,6 +323,7 @@ async function createNewDocument({
+   hash,
+   userId,
+   organizationId,
++  folderId,
+   plansRepository,
+   subscriptionsRepository,
+   planEntitlementsRepository,
+@@ -334,6 +343,7 @@ async function createNewDocument({
+   hash: string;
+   userId?: string;
+   organizationId: string;
++  folderId?: string | null;
+   documentId: string;
+   documentsRepository: DocumentsRepository;
+   documentsStorageService: DocumentStorageService;
+@@ -374,6 +384,7 @@ async function createNewDocument({
+       id: documentId,
+       name: fileName,
+       organizationId,
++      folderId: folderId ?? null,
+       originalName: fileName,
+       createdBy: userId,
+       originalSize: size,
+@@ -780,6 +791,7 @@ export async function updateDocument({
+     content?: string;
+     documentDate?: Date | null;
+     notes?: string;
++    folderId?: string | null;
+   };
+ }) {
+   // It throws if the document does not exist
+diff --git a/apps/papra-server/src/modules/folders/folders.constants.ts b/apps/papra-server/src/modules/folders/folders.constants.ts
+new file mode 100644
+index 0000000..29b95fd
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.constants.ts
+@@ -0,0 +1,10 @@
++import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
++
++export const folderIdPrefix = 'folder';
++export const folderIdRegex = createPrefixedIdRegex({ prefix: folderIdPrefix });
++
++// Mirrors tags.constants-style limits; keeps a self-hosted instance from
++// accidentally growing an unbounded folder tree per organization.
++export const MAX_FOLDERS_PER_ORGANIZATION = 5000;
++export const MAX_FOLDER_NAME_LENGTH = 128;
++export const MAX_FOLDER_NESTING_DEPTH = 20;
+diff --git a/apps/papra-server/src/modules/folders/folders.errors.ts b/apps/papra-server/src/modules/folders/folders.errors.ts
+new file mode 100644
+index 0000000..d79a44a
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.errors.ts
+@@ -0,0 +1,37 @@
++import { createErrorFactory } from '../shared/errors/errors';
++
++export const createFolderNotFoundError = createErrorFactory({
++  message: 'Folder not found',
++  code: 'folders.not_found',
++  statusCode: 404,
++});
++
++export const createFolderAlreadyExistsError = createErrorFactory({
++  message: 'A folder with this name already exists in this location',
++  code: 'folders.already_exists',
++  statusCode: 409,
++});
++
++export const createOrganizationFolderLimitReachedError = createErrorFactory({
++  message: 'The maximum number of folders for this organization has been reached.',
++  code: 'folders.organization_limit_reached',
++  statusCode: 403,
++});
++
++export const createFolderCircularReferenceError = createErrorFactory({
++  message: 'A folder cannot be moved into itself or one of its own descendants',
++  code: 'folders.circular_reference',
++  statusCode: 400,
++});
++
++export const createFolderMaxDepthExceededError = createErrorFactory({
++  message: 'This move would exceed the maximum allowed folder nesting depth',
++  code: 'folders.max_depth_exceeded',
++  statusCode: 400,
++});
++
++export const createFolderNotEmptyError = createErrorFactory({
++  message: 'This folder still contains subfolders or documents. Move or delete them first, or use force delete.',
++  code: 'folders.not_empty',
++  statusCode: 409,
++});
+diff --git a/apps/papra-server/src/modules/folders/folders.repository.ts b/apps/papra-server/src/modules/folders/folders.repository.ts
+new file mode 100644
+index 0000000..dd85164
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.repository.ts
+@@ -0,0 +1,326 @@
++import type { Database } from '../app/database/database.types';
++import { and, count, eq, getTableColumns, inArray, isNull, sql } from 'drizzle-orm';
++import { injectArguments, safely } from '@corentinth/chisels';
++import { documentsTable } from '../documents/documents.table';
++import { isUniqueConstraintError } from '../shared/db/constraints.models';
++import { omitUndefined } from '../shared/objects';
++import { isDefined } from '../shared/utils';
++import {
++  createFolderAlreadyExistsError,
++  createFolderNotFoundError,
++} from './folders.errors';
++import { foldersTable } from './folders.table';
++
++export type FoldersRepository = ReturnType<typeof createFoldersRepository>;
++
++export function createFoldersRepository({ db }: { db: Database }) {
++  return injectArguments(
++    {
++      createFolder,
++      getFolderById,
++      getFoldersByIds,
++      getOrganizationFolders,
++      getOrganizationFoldersCount,
++      getChildFolders,
++      getFolderContents,
++      updateFolder,
++      deleteFolder,
++      getAllDescendantFolderIds,
++      getFolderDepth,
++    },
++    { db },
++  );
++}
++
++async function createFolder({
++  folder,
++  db,
++}: {
++  folder: { name: string; organizationId: string; parentId?: string | null };
++  db: Database;
++}) {
++  const [result, error] = await safely(db.insert(foldersTable).values(folder).returning());
++
++  if (isUniqueConstraintError({ error })) {
++    throw createFolderAlreadyExistsError();
++  }
++
++  if (error) {
++    throw error;
++  }
++
++  const [createdFolder] = result;
++
++  return { folder: createdFolder };
++}
++
++async function getFolderById({
++  folderId,
++  organizationId,
++  db,
++}: {
++  folderId: string;
++  organizationId: string;
++  db: Database;
++}) {
++  const [folder] = await db
++    .select()
++    .from(foldersTable)
++    .where(and(eq(foldersTable.id, folderId), eq(foldersTable.organizationId, organizationId)));
++
++  return { folder };
++}
++
++async function getFoldersByIds({
++  folderIds,
++  organizationId,
++  db,
++}: {
++  folderIds: string[];
++  organizationId: string;
++  db: Database;
++}) {
++  if (folderIds.length === 0) {
++    return { folders: [] };
++  }
++
++  const folders = await db
++    .select()
++    .from(foldersTable)
++    .where(
++      and(inArray(foldersTable.id, folderIds), eq(foldersTable.organizationId, organizationId)),
++    );
++
++  return { folders };
++}
++
++// Returns every folder in the organization along with direct subfolder + direct
++// document counts, so a client can render a full folder tree in one request.
++async function getOrganizationFolders({
++  organizationId,
++  db,
++}: {
++  organizationId: string;
++  db: Database;
++}) {
++  const documentCounts = db
++    .select({
++      folderId: documentsTable.folderId,
++      documentsCount: count(documentsTable.id).as('documentsCount'),
++    })
++    .from(documentsTable)
++    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
++    .groupBy(documentsTable.folderId)
++    .as('document_counts');
++
++  const folders = await db
++    .select({
++      ...getTableColumns(foldersTable),
++      documentsCount: sql<number>`COALESCE(${documentCounts.documentsCount}, 0)`.as(
++        'documentsCount',
++      ),
++    })
++    .from(foldersTable)
++    .leftJoin(documentCounts, eq(foldersTable.id, documentCounts.folderId))
++    .where(eq(foldersTable.organizationId, organizationId))
++    .orderBy(foldersTable.name);
++
++  return { folders };
++}
++
++async function getOrganizationFoldersCount({
++  organizationId,
++  db,
++}: {
++  organizationId: string;
++  db: Database;
++}) {
++  const [result] = await db
++    .select({ foldersCount: count() })
++    .from(foldersTable)
++    .where(eq(foldersTable.organizationId, organizationId));
++
++  return { foldersCount: result?.foldersCount ?? 0 };
++}
++
++async function getChildFolders({
++  organizationId,
++  parentId,
++  db,
++}: {
++  organizationId: string;
++  parentId: string | null;
++  db: Database;
++}) {
++  const folders = await db
++    .select()
++    .from(foldersTable)
++    .where(
++      and(
++        eq(foldersTable.organizationId, organizationId),
++        parentId === null ? isNull(foldersTable.parentId) : eq(foldersTable.parentId, parentId),
++      ),
++    )
++    .orderBy(foldersTable.name);
++
++  return { folders };
++}
++
++// Direct contents of a folder (subfolders + non-deleted documents), for a
++// Google-Drive-style "browse this folder" view.
++async function getFolderContents({
++  organizationId,
++  folderId,
++  db,
++}: {
++  organizationId: string;
++  folderId: string | null;
++  db: Database;
++}) {
++  const [{ folders }, documents] = await Promise.all([
++    getChildFolders({ organizationId, parentId: folderId, db }),
++    db
++      .select()
++      .from(documentsTable)
++      .where(
++        and(
++          eq(documentsTable.organizationId, organizationId),
++          eq(documentsTable.isDeleted, false),
++          folderId === null
++            ? isNull(documentsTable.folderId)
++            : eq(documentsTable.folderId, folderId),
++        ),
++      )
++      .orderBy(documentsTable.name),
++  ]);
++
++  return { folders, documents };
++}
++
++async function updateFolder({
++  folderId,
++  organizationId,
++  name,
++  parentId,
++  db,
++}: {
++  folderId: string;
++  organizationId: string;
++  name?: string;
++  parentId?: string | null;
++  db: Database;
++}) {
++  const [result, error] = await safely(
++    db
++      .update(foldersTable)
++      .set(omitUndefined({ name, parentId }))
++      .where(and(eq(foldersTable.id, folderId), eq(foldersTable.organizationId, organizationId)))
++      .returning(),
++  );
++
++  if (isUniqueConstraintError({ error })) {
++    throw createFolderAlreadyExistsError();
++  }
++
++  if (error) {
++    throw error;
++  }
++
++  const [folder] = result;
++
++  if (!folder) {
++    throw createFolderNotFoundError();
++  }
++
++  return { folder };
++}
++
++async function deleteFolder({
++  folderId,
++  organizationId,
++  db,
++}: {
++  folderId: string;
++  organizationId: string;
++  db: Database;
++}) {
++  const deleteResult = await db
++    .delete(foldersTable)
++    .where(and(eq(foldersTable.id, folderId), eq(foldersTable.organizationId, organizationId)))
++    .returning({ id: foldersTable.id });
++
++  if (deleteResult.length === 0) {
++    throw createFolderNotFoundError();
++  }
++}
++
++// Iterative BFS over parentId to collect every descendant of a folder.
++// Used to reject moves that would create a cycle (folder into its own child).
++async function getAllDescendantFolderIds({
++  folderId,
++  organizationId,
++  db,
++}: {
++  folderId: string;
++  organizationId: string;
++  db: Database;
++}): Promise<{ descendantIds: string[] }> {
++  const descendantIds: string[] = [];
++  let frontier = [folderId];
++
++  while (frontier.length > 0) {
++    const children = await db
++      .select({ id: foldersTable.id })
++      .from(foldersTable)
++      .where(
++        and(
++          eq(foldersTable.organizationId, organizationId),
++          inArray(foldersTable.parentId, frontier),
++        ),
++      );
++
++    const childIds = children.map(({ id }) => id);
++    descendantIds.push(...childIds);
++    frontier = childIds;
++  }
++
++  return { descendantIds };
++}
++
++// Walks parentId up to the root to compute nesting depth (root folder = depth 1).
++async function getFolderDepth({
++  folderId,
++  organizationId,
++  db,
++}: {
++  folderId: string | null;
++  organizationId: string;
++  db: Database;
++}): Promise<{ depth: number }> {
++  let depth = 0;
++  let currentId = folderId;
++
++  // Guard against any unexpected cycle in stored data so this can never hang.
++  const seen = new Set<string>();
++
++  while (isDefined(currentId) && currentId !== null) {
++    if (seen.has(currentId)) {
++      break;
++    }
++    seen.add(currentId);
++
++    const [folder] = await db
++      .select({ parentId: foldersTable.parentId })
++      .from(foldersTable)
++      .where(and(eq(foldersTable.id, currentId), eq(foldersTable.organizationId, organizationId)));
++
++    if (!folder) {
++      break;
++    }
++
++    depth += 1;
++    currentId = folder.parentId;
++  }
++
++  return { depth };
++}
+diff --git a/apps/papra-server/src/modules/folders/folders.routes.ts b/apps/papra-server/src/modules/folders/folders.routes.ts
+new file mode 100644
+index 0000000..74df741
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.routes.ts
+@@ -0,0 +1,204 @@
++import type { RouteDefinitionContext } from '../app/server.types';
++import * as v from 'valibot';
++import { API_KEY_PERMISSIONS } from '../api-keys/api-keys.constants';
++import { requireAuthentication } from '../app/auth/auth.middleware';
++import { getUser } from '../app/auth/auth.models';
++import { organizationIdSchema } from '../organizations/organization.schemas';
++import { createOrganizationsRepository } from '../organizations/organizations.repository';
++import { ensureUserIsInOrganization } from '../organizations/organizations.usecases';
++import { formatDocumentsForApi } from '../documents/documents.models';
++import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
++import { createFolderNotFoundError } from './folders.errors';
++import { createFoldersRepository } from './folders.repository';
++import {
++  createFolderBodySchema,
++  folderIdSchema,
++  updateFolderBodySchema,
++} from './folders.schemas';
++import { createFolder, deleteFolder, moveOrRenameFolder } from './folders.usecases';
++
++export function registerFoldersRoutes(context: RouteDefinitionContext) {
++  setupCreateFolderRoute(context);
++  setupGetOrganizationFoldersRoute(context);
++  setupGetFolderContentsRoute(context);
++  setupGetFolderRoute(context);
++  setupUpdateFolderRoute(context);
++  setupDeleteFolderRoute(context);
++}
++
++function setupCreateFolderRoute({ app, db }: RouteDefinitionContext) {
++  app.post(
++    '/api/organizations/:organizationId/folders',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.CREATE] }),
++    validateParams(v.strictObject({ organizationId: organizationIdSchema })),
++    validateJsonBody(createFolderBodySchema),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId } = context.req.valid('param');
++      const { name, parentId } = context.req.valid('json');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      const { folder } = await createFolder({
++        organizationId,
++        name,
++        parentId,
++        foldersRepository,
++      });
++
++      return context.json({ folder });
++    },
++  );
++}
++
++// Flat list of every folder in the org (with direct document counts), meant
++// for building a full tree client-side without N round trips.
++function setupGetOrganizationFoldersRoute({ app, db }: RouteDefinitionContext) {
++  app.get(
++    '/api/organizations/:organizationId/folders',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.READ] }),
++    validateParams(v.strictObject({ organizationId: organizationIdSchema })),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId } = context.req.valid('param');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      const { folders } = await foldersRepository.getOrganizationFolders({ organizationId });
++
++      return context.json({ folders });
++    },
++  );
++}
++
++// Google-Drive-style "browse" endpoint: direct subfolders + direct documents.
++// Omit folderId (or pass nothing) to browse the organization root.
++function setupGetFolderContentsRoute({ app, db }: RouteDefinitionContext) {
++  app.get(
++    '/api/organizations/:organizationId/folders/contents',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.READ] }),
++    validateParams(v.strictObject({ organizationId: organizationIdSchema })),
++    validateQuery(v.strictObject({ folderId: v.optional(folderIdSchema) })),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId } = context.req.valid('param');
++      const { folderId } = context.req.valid('query');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      if (folderId) {
++        const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
++        if (!folder) {
++          throw createFolderNotFoundError();
++        }
++      }
++
++      const { folders, documents } = await foldersRepository.getFolderContents({
++        organizationId,
++        folderId: folderId ?? null,
++      });
++
++      return context.json({
++        folders,
++        documents: formatDocumentsForApi({ documents }),
++      });
++    },
++  );
++}
++
++function setupGetFolderRoute({ app, db }: RouteDefinitionContext) {
++  app.get(
++    '/api/organizations/:organizationId/folders/:folderId',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.READ] }),
++    validateParams(
++      v.strictObject({ organizationId: organizationIdSchema, folderId: folderIdSchema }),
++    ),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId, folderId } = context.req.valid('param');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
++
++      if (!folder) {
++        throw createFolderNotFoundError();
++      }
++
++      return context.json({ folder });
++    },
++  );
++}
++
++function setupUpdateFolderRoute({ app, db }: RouteDefinitionContext) {
++  app.patch(
++    '/api/organizations/:organizationId/folders/:folderId',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.UPDATE] }),
++    validateParams(
++      v.strictObject({ organizationId: organizationIdSchema, folderId: folderIdSchema }),
++    ),
++    validateJsonBody(updateFolderBodySchema),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId, folderId } = context.req.valid('param');
++      const { name, parentId } = context.req.valid('json');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      const { folder } = await moveOrRenameFolder({
++        folderId,
++        organizationId,
++        name,
++        parentId,
++        foldersRepository,
++      });
++
++      return context.json({ folder });
++    },
++  );
++}
++
++function setupDeleteFolderRoute({ app, db }: RouteDefinitionContext) {
++  app.delete(
++    '/api/organizations/:organizationId/folders/:folderId',
++    requireAuthentication({ apiKeyPermissions: [API_KEY_PERMISSIONS.FOLDERS.DELETE] }),
++    validateParams(
++      v.strictObject({ organizationId: organizationIdSchema, folderId: folderIdSchema }),
++    ),
++    validateQuery(v.strictObject({ force: v.optional(v.picklist(['true', 'false']), 'false') })),
++    async (context) => {
++      const { userId } = getUser({ context });
++      const { organizationId, folderId } = context.req.valid('param');
++      const { force } = context.req.valid('query');
++
++      const foldersRepository = createFoldersRepository({ db });
++      const organizationsRepository = createOrganizationsRepository({ db });
++
++      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
++
++      await deleteFolder({
++        folderId,
++        organizationId,
++        force: force === 'true',
++        foldersRepository,
++      });
++
++      return context.body(null, 204);
++    },
++  );
++}
+diff --git a/apps/papra-server/src/modules/folders/folders.schemas.ts b/apps/papra-server/src/modules/folders/folders.schemas.ts
+new file mode 100644
+index 0000000..6fea247
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.schemas.ts
+@@ -0,0 +1,28 @@
++import * as v from 'valibot';
++import { createRegexSchema } from '../shared/schemas/string.schemas';
++import { folderIdRegex, MAX_FOLDER_NAME_LENGTH } from './folders.constants';
++
++export const folderIdSchema = createRegexSchema(folderIdRegex);
++
++export const folderNameSchema = v.pipe(
++  v.string(),
++  v.trim(),
++  v.minLength(1),
++  v.maxLength(MAX_FOLDER_NAME_LENGTH),
++);
++
++export const createFolderBodySchema = v.strictObject({
++  name: folderNameSchema,
++  parentId: v.optional(v.nullable(folderIdSchema)),
++});
++
++export const updateFolderBodySchema = v.pipe(
++  v.strictObject({
++    name: v.optional(folderNameSchema),
++    parentId: v.optional(v.nullable(folderIdSchema)),
++  }),
++  v.check(
++    (data) => data.name !== undefined || data.parentId !== undefined,
++    "At least one of 'name' or 'parentId' must be provided",
++  ),
++);
+diff --git a/apps/papra-server/src/modules/folders/folders.table.ts b/apps/papra-server/src/modules/folders/folders.table.ts
+new file mode 100644
+index 0000000..a494c7e
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.table.ts
+@@ -0,0 +1,21 @@
++import { sqliteTable, text, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
++import { organizationsTable } from '../organizations/organizations.table';
++import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
++import { folderIdPrefix } from './folders.constants';
++
++export const foldersTable = sqliteTable('folders', {
++  ...createPrimaryKeyField({ prefix: folderIdPrefix }),
++  ...createTimestampColumns(),
++
++  organizationId: text('organization_id')
++    .notNull()
++    .references(() => organizationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
++
++  // Self-referencing FK: null parentId means the folder lives at the organization root.
++  parentId: text('parent_id').references((): AnySQLiteColumn => foldersTable.id, {
++    onDelete: 'cascade',
++    onUpdate: 'cascade',
++  }),
++
++  name: text('name').notNull(),
++});
+diff --git a/apps/papra-server/src/modules/folders/folders.types.ts b/apps/papra-server/src/modules/folders/folders.types.ts
+new file mode 100644
+index 0000000..fa335e9
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.types.ts
+@@ -0,0 +1,7 @@
++import type { Expand } from '@corentinth/chisels';
++import type { foldersTable } from './folders.table';
++
++export type DbInsertableFolder = Expand<typeof foldersTable.$inferInsert>;
++export type DbSelectableFolder = Expand<typeof foldersTable.$inferSelect>;
++
++export type Folder = DbSelectableFolder;
+diff --git a/apps/papra-server/src/modules/folders/folders.usecases.ts b/apps/papra-server/src/modules/folders/folders.usecases.ts
+new file mode 100644
+index 0000000..88df2e7
+--- /dev/null
++++ b/apps/papra-server/src/modules/folders/folders.usecases.ts
+@@ -0,0 +1,168 @@
++import type { FoldersRepository } from './folders.repository';
++import {
++  createFolderCircularReferenceError,
++  createFolderMaxDepthExceededError,
++  createFolderNotEmptyError,
++  createFolderNotFoundError,
++  createOrganizationFolderLimitReachedError,
++} from './folders.errors';
++import { MAX_FOLDER_NESTING_DEPTH, MAX_FOLDERS_PER_ORGANIZATION } from './folders.constants';
++
++export async function ensureParentFolderExists({
++  parentId,
++  organizationId,
++  foldersRepository,
++}: {
++  parentId?: string | null;
++  organizationId: string;
++  foldersRepository: FoldersRepository;
++}) {
++  if (!parentId) {
++    return;
++  }
++
++  const { folder } = await foldersRepository.getFolderById({ folderId: parentId, organizationId });
++
++  if (!folder) {
++    throw createFolderNotFoundError();
++  }
++}
++
++export async function checkIfOrganizationCanCreateNewFolder({
++  organizationId,
++  foldersRepository,
++}: {
++  organizationId: string;
++  foldersRepository: FoldersRepository;
++}) {
++  const { foldersCount } = await foldersRepository.getOrganizationFoldersCount({ organizationId });
++
++  if (foldersCount >= MAX_FOLDERS_PER_ORGANIZATION) {
++    throw createOrganizationFolderLimitReachedError();
++  }
++}
++
++export async function createFolder({
++  organizationId,
++  name,
++  parentId,
++  foldersRepository,
++}: {
++  organizationId: string;
++  name: string;
++  parentId?: string | null;
++  foldersRepository: FoldersRepository;
++}) {
++  await checkIfOrganizationCanCreateNewFolder({ organizationId, foldersRepository });
++  await ensureParentFolderExists({ parentId, organizationId, foldersRepository });
++
++  if (parentId) {
++    const { depth } = await foldersRepository.getFolderDepth({ folderId: parentId, organizationId });
++
++    if (depth + 1 >= MAX_FOLDER_NESTING_DEPTH) {
++      throw createFolderMaxDepthExceededError();
++    }
++  }
++
++  const { folder } = await foldersRepository.createFolder({
++    folder: { name, organizationId, parentId: parentId ?? null },
++  });
++
++  return { folder };
++}
++
++// Moving/renaming shares one endpoint (PATCH); only re-validate depth/cycles
++// when parentId actually changes.
++export async function moveOrRenameFolder({
++  folderId,
++  organizationId,
++  name,
++  parentId,
++  foldersRepository,
++}: {
++  folderId: string;
++  organizationId: string;
++  name?: string;
++  parentId?: string | null;
++  foldersRepository: FoldersRepository;
++}) {
++  const { folder: existingFolder } = await foldersRepository.getFolderById({
++    folderId,
++    organizationId,
++  });
++
++  if (!existingFolder) {
++    throw createFolderNotFoundError();
++  }
++
++  if (parentId !== undefined && parentId !== existingFolder.parentId) {
++    if (parentId === folderId) {
++      throw createFolderCircularReferenceError();
++    }
++
++    if (parentId !== null) {
++      await ensureParentFolderExists({ parentId, organizationId, foldersRepository });
++
++      const { descendantIds } = await foldersRepository.getAllDescendantFolderIds({
++        folderId,
++        organizationId,
++      });
++
++      if (descendantIds.includes(parentId)) {
++        throw createFolderCircularReferenceError();
++      }
++
++      const { depth } = await foldersRepository.getFolderDepth({
++        folderId: parentId,
++        organizationId,
++      });
++
++      if (depth + 1 >= MAX_FOLDER_NESTING_DEPTH) {
++        throw createFolderMaxDepthExceededError();
++      }
++    }
++  }
++
++  const { folder } = await foldersRepository.updateFolder({
++    folderId,
++    organizationId,
++    name,
++    parentId,
++  });
++
++  return { folder };
++}
++
++// By default refuses to delete a non-empty folder (mirrors most cloud drives'
++// "move to trash" safety net); pass force to cascade-delete subfolders and
++// leave contained documents orphaned at root (folderId set null by FK).
++export async function deleteFolder({
++  folderId,
++  organizationId,
++  force = false,
++  foldersRepository,
++}: {
++  folderId: string;
++  organizationId: string;
++  force?: boolean;
++  foldersRepository: FoldersRepository;
++}) {
++  const { folder } = await foldersRepository.getFolderById({ folderId, organizationId });
++
++  if (!folder) {
++    throw createFolderNotFoundError();
++  }
++
++  if (!force) {
++    const { folders: childFolders, documents } = await foldersRepository.getFolderContents({
++      organizationId,
++      folderId,
++    });
++
++    if (childFolders.length > 0 || documents.length > 0) {
++      throw createFolderNotEmptyError();
++    }
++  }
++
++  await foldersRepository.deleteFolder({ folderId, organizationId });
++}

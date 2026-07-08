@@ -36,6 +36,9 @@ import { useCommandPalette } from '@/modules/command-palette/command-palette.pro
 import { useCurrentUser } from '@/modules/users/composables/useCurrentUser';
 import { GlobalDropArea } from '@/modules/documents/components/global-drop-area.component';
 import { UserSettingsDropdown } from '@/modules/users/components/user-settings.component';
+import { FolderTreeNav } from '@/modules/folders/components/folder-tree-nav.component';
+import { PinnedFoldersNav } from '@/modules/folders/components/pinned-folders-nav.component';
+import { CreateFolderDialog } from '@/modules/folders/components/folder-dialogs.component';
 
 const UpgradeCTAFooter: Component<{ organizationId: string }> = (props) => {
   const { t } = useI18n();
@@ -149,6 +152,40 @@ const OrganizationLayoutSideNav: Component = () => {
           href: `/organizations/${params.organizationId}/members`,
         },
       ],
+    },
+    {
+      content: <PinnedFoldersNav />,
+    },
+    {
+      label: t('folders.title'),
+      action: (
+        <CreateFolderDialog organizationId={params.organizationId}>
+          {(dialogProps) => (
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-6 text-muted-foreground hover:text-foreground"
+              {...dialogProps}
+            >
+              <div class="i-tabler-plus size-4" />
+            </Button>
+          )}
+        </CreateFolderDialog>
+      ),
+      content: (
+        <>
+          <A
+            href={`/organizations/${params.organizationId}/folders`}
+            class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md hover:bg-accent/50 transition dark:text-muted-foreground"
+            activeClass="bg-accent/50! text-accent-foreground!"
+            end
+          >
+            <div class="i-tabler-folder-open size-4 opacity-50 flex-shrink-0" />
+            {t('folders.root-label')}
+          </A>
+          <FolderTreeNav />
+        </>
+      ),
     },
     ...getDocumentViewsSections(),
   ];

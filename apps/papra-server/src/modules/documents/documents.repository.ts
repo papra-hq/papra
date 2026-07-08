@@ -246,12 +246,14 @@ async function restoreDocument({
   organizationId,
   name,
   userId,
+  folderId,
   db,
 }: {
   documentId: string;
   organizationId: string;
   name?: string;
   userId?: string;
+  folderId?: string | null;
   db: Database;
 }) {
   const [document] = await db
@@ -262,6 +264,7 @@ async function restoreDocument({
       deletedAt: null,
       ...(isDefined(name) ? { name, originalName: name } : {}),
       ...(isDefined(userId) ? { createdBy: userId } : {}),
+      ...(folderId !== undefined ? { folderId } : {}),
     })
     .where(
       and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
@@ -456,6 +459,7 @@ async function updateDocument({
   content,
   documentDate,
   notes,
+  folderId,
   db,
 }: {
   documentId: string;
@@ -464,11 +468,12 @@ async function updateDocument({
   content?: string;
   documentDate?: Date | null;
   notes?: string;
+  folderId?: string | null;
   db: Database;
 }) {
   const [document] = await db
     .update(documentsTable)
-    .set(omitUndefined({ name, content, documentDate, notes }))
+    .set(omitUndefined({ name, content, documentDate, notes, folderId }))
     .where(
       and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     )
