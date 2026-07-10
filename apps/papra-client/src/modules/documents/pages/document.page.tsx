@@ -6,6 +6,7 @@ import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/solid-query';
 import {
   createEffect,
+  createMemo,
   createSignal,
   For,
   Match,
@@ -56,13 +57,65 @@ import {
   useDownloadDocument,
   useRestoreDocument,
 } from '../documents.composables';
-import { fetchDocument, fetchDocumentActivities, updateDocument } from '../documents.services';
+import {
+  fetchDocument,
+  fetchDocumentActivities,
+  fetchOrganizationDocuments,
+  updateDocument,
+} from '../documents.services';
 
 type KeyValueItem = {
   label: string | JSX.Element;
   value: string | JSX.Element;
   icon?: string;
 };
+
+const documentNavigationPageSize = 100;
+
+async function fetchAllNavigationDocuments({ organizationId }: { organizationId: string }) {
+  const documentsById = new Map<string, Document>();
+  const firstPage = await fetchOrganizationDocuments({
+    organizationId,
+    pageIndex: 0,
+    pageSize: documentNavigationPageSize,
+  });
+  const documentsCount = firstPage.documentsCount;
+
+  firstPage.documents.forEach((document) => documentsById.set(document.id, document));
+
+  const pagesCount = Math.ceil(documentsCount / documentNavigationPageSize);
+  const remainingPageIndices = Array.from(
+    { length: Math.max(pagesCount - 1, 0) },
+    (_, index) => index + 1,
+  );
+  const navigationDocumentsFetchConcurrency = 5;
+
+  for (
+    let index = 0;
+    index < remainingPageIndices.length;
+    index += navigationDocumentsFetchConcurrency
+  ) {
+    const pageIndicesBatch = remainingPageIndices.slice(
+      index,
+      index + navigationDocumentsFetchConcurrency,
+    );
+    const pages = await Promise.all(
+      pageIndicesBatch.map((pageIndex) =>
+        fetchOrganizationDocuments({
+          organizationId,
+          pageIndex,
+          pageSize: documentNavigationPageSize,
+        }),
+      ),
+    );
+
+    pages.forEach((page) => {
+      page.documents.forEach((document) => documentsById.set(document.id, document));
+    });
+  }
+
+  return { documents: Array.from(documentsById.values()), documentsCount };
+}
 
 const DocumentNotes: Component<{ documentId: string; organizationId: string; notes?: string }> = (
   props,
@@ -286,6 +339,7 @@ export const DocumentPage: Component = () => {
   const { deleteDocument } = useDeleteDocument();
   const { downloadDocument } = useDownloadDocument();
   const { restore, getIsRestoring } = useRestoreDocument();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { config } = useConfig();
   const { openRenameDialog } = useRenameDocumentDialog();
@@ -340,9 +394,66 @@ export const DocumentPage: Component = () => {
     initialPageParam: 0,
   }));
 
+  const documentNavigationQuery = useQuery(() => ({
+    queryKey: ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
+    queryFn: () => fetchAllNavigationDocuments({ organizationId: params.organizationId }),
+    staleTime: 1000 * 60 * 5,
+  }));
+
+  const getNavigationDocuments = createMemo(() => documentNavigationQuery.data?.documents ?? []);
+  const getCurrentDocumentIndex = createMemo(() =>
+    getNavigationDocuments().findIndex((document) => document.id === params.documentId),
+  );
+  const getPreviousDocument = createMemo(() => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex > 0 ? getNavigationDocuments()[currentIndex - 1] : undefined;
+  });
+  const getNextDocument = createMemo(() => {
+    const currentIndex = getCurrentDocumentIndex();
+    return currentIndex >= 0 ? getNavigationDocuments()[currentIndex + 1] : undefined;
+  });
+  const getDocumentPositionLabel = createMemo(() => {
+    const currentIndex = getCurrentDocumentIndex();
+    const documentsCount = getNavigationDocuments().length;
+
+    if (documentsCount === 0 || currentIndex < 0) {
+      return t('documents.viewer-navigation.fallback');
+    }
+
+    return t('documents.viewer-navigation.position', {
+      current: currentIndex + 1,
+      total: documentsCount,
+    });
+  });
+  const getFallbackDocumentFromNavigationData = (
+    navigationData: { documents: Document[] } | undefined,
+  ) => {
+    const navigationDocuments = navigationData?.documents ?? [];
+    const currentIndex = navigationDocuments.findIndex(
+      (document) => document.id === params.documentId,
+    );
+
+    if (currentIndex < 0) {
+      return undefined;
+    }
+
+    return (
+      navigationDocuments[currentIndex + 1] ?? navigationDocuments[currentIndex - 1]
+    );
+  };
+  const navigateToDocument = (documentId: string) =>
+    navigate(`/organizations/${params.organizationId}/documents/${documentId}`);
+
   const deleteDoc = async () => {
     if (!documentQuery.data) {
       return;
+    }
+
+    let navigationDataBeforeDelete = documentNavigationQuery.data;
+
+    if (navigationDataBeforeDelete == null) {
+      const navigationQueryResult = await documentNavigationQuery.refetch();
+      navigationDataBeforeDelete = navigationQueryResult.data;
     }
 
     const { hasDeleted } = await deleteDocument({
@@ -355,11 +466,42 @@ export const DocumentPage: Component = () => {
       return;
     }
 
+    const fallbackDocument = getFallbackDocumentFromNavigationData(navigationDataBeforeDelete);
+
+    queryClient.setQueryData<{ documents: Document[]; documentsCount: number }>(
+      ['organizations', params.organizationId, 'documents', 'viewer-navigation'],
+      (navigationData) => {
+        if (navigationData == null) {
+          return navigationData;
+        }
+
+        const nextDocuments = navigationData.documents.filter(
+          (navigationDocument) => navigationDocument.id !== params.documentId,
+        );
+        const removedDocumentsCount =
+          navigationData.documents.length - nextDocuments.length;
+
+        return {
+          ...navigationData,
+          documents: nextDocuments,
+          documentsCount: Math.max(
+            navigationData.documentsCount - removedDocumentsCount,
+            0,
+          ),
+        };
+      },
+    );
+
+    if (fallbackDocument) {
+      navigateToDocument(fallbackDocument.id);
+      return;
+    }
+
     navigate(`/organizations/${params.organizationId}/documents`);
   };
 
   return (
-    <div class="p-6 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
+    <div class="p-6 pb-28 flex gap-6 h-full flex-col md:flex-row max-w-7xl mx-auto">
       <Suspense>
         <div class="md:flex-1 md:min-w-0 md:border-r">
           <Show when={documentQuery.data?.document}>
@@ -388,7 +530,7 @@ export const DocumentPage: Component = () => {
                   </Button>
                   <p class="text-sm text-muted-foreground mb-6">{getDocument().id}</p>
 
-                  <div class="flex gap-2 mb-2">
+                  <div class="flex flex-wrap gap-2 mb-2 max-w-full">
                     <Button
                       onClick={async () =>
                         downloadDocument({
@@ -409,6 +551,7 @@ export const DocumentPage: Component = () => {
                     />
 
                     <Button
+                      class="min-w-0"
                       onClick={() =>
                         openShareDialog({
                           documentId: getDocument().id,
@@ -425,6 +568,7 @@ export const DocumentPage: Component = () => {
 
                     {getDocument().isDeleted ? (
                       <Button
+                        class="min-w-0"
                         variant="destructive"
                         size="sm"
                         onClick={async () => restore({ document: getDocument() })}
@@ -434,7 +578,7 @@ export const DocumentPage: Component = () => {
                         {t('documents.actions.restore')}
                       </Button>
                     ) : (
-                      <Button variant="destructive" size="sm" onClick={deleteDoc}>
+                      <Button class="min-w-0" variant="destructive" size="sm" onClick={deleteDoc}>
                         <div class="i-tabler-trash size-4 mr-2" />
                         {t('documents.actions.delete')}
                       </Button>
@@ -607,11 +751,49 @@ export const DocumentPage: Component = () => {
         </div>
 
         <div class="flex-1 min-h-50vh">
-          <Show when={documentQuery.data?.document}>
-            {(getDocument) => <DocumentPreview document={getDocument()} />}
+          <Show keyed when={documentQuery.data?.document.id}>
+            {() => <DocumentPreview document={documentQuery.data!.document} />}
           </Show>
         </div>
       </Suspense>
+
+      <div class="fixed bottom-6 left-1/2 z-20 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 rounded-full border bg-background/95 p-2 shadow-lg backdrop-blur sm:gap-2">
+        <Button
+          onClick={() => {
+            const previousDocument = getPreviousDocument();
+            if (previousDocument) {
+              navigateToDocument(previousDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getPreviousDocument()}
+          class="rounded-full px-2 sm:px-3"
+        >
+          <div class="i-tabler-chevron-left size-4 mr-2" />
+          {t('documents.viewer-navigation.previous')}
+        </Button>
+
+        <span class="min-w-16 shrink-0 text-center text-xs text-muted-foreground sm:min-w-24 sm:text-sm">
+          {getDocumentPositionLabel()}
+        </span>
+
+        <Button
+          onClick={() => {
+            const nextDocument = getNextDocument();
+            if (nextDocument) {
+              navigateToDocument(nextDocument.id);
+            }
+          }}
+          variant="outline"
+          size="sm"
+          disabled={!getNextDocument()}
+          class="rounded-full px-2 sm:px-3"
+        >
+          {t('documents.viewer-navigation.next')}
+          <div class="i-tabler-chevron-right size-4 ml-2" />
+        </Button>
+      </div>
     </div>
   );
 };
