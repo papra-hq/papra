@@ -3,6 +3,7 @@ import type { Document } from '@/modules/documents/documents.types';
 import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
+import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import {
@@ -13,9 +14,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { useAuthClient } from '@/modules/api/providers/api.provider';
+import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
-import { fetchDocumentFile } from '@/modules/documents/documents.services';
+import { deleteDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -25,20 +26,24 @@ type DocumentActionSheetProps = {
   document: CoerceDates<Document> | undefined;
   onClose: () => void;
   excludedActions?: ActionsKey[];
+  onDeleted?: () => void;
 };
 
-export type ActionsKey = 'view' | 'share';
+export type ActionsKey = 'view' | 'share' | 'delete';
 
 export function DocumentActionSheet({
   visible,
   document,
   onClose,
   excludedActions = [],
+  onDeleted,
 }: DocumentActionSheetProps) {
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
   const authClient = useAuthClient();
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
 
   if (document === undefined) {
     return null;
@@ -103,13 +108,55 @@ export function DocumentActionSheet({
     }
   };
 
+  const handleDelete = () => {
+    onClose();
+
+    showAlert({
+      title: 'Delete Document',
+      message: `Are you sure you want to delete "${document.name}"? It will be moved to the trash.`,
+      buttons: [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteDocument({
+                organizationId: document.organizationId,
+                documentId: document.id,
+                apiClient,
+              });
+
+              await queryClient.invalidateQueries({
+                queryKey: ['organizations', document.organizationId, 'documents'],
+              });
+
+              onDeleted?.();
+            } catch {
+              showAlert({
+                title: 'Error',
+                message: 'Failed to delete document',
+              });
+            }
+          },
+        },
+      ],
+    });
+  };
+
   // Extract MIME type subtype, fallback to full MIME type if subtype is missing
   const mimeParts = document.mimeType.split('/');
   const mimeSubtype = mimeParts[1];
   const displayMimeType =
     mimeSubtype != null && mimeSubtype !== '' ? mimeSubtype.toUpperCase() : document.mimeType;
 
-  const actions: { key: ActionsKey; label: string; icon: IconName; onPress: () => void }[] = [
+  const actions: {
+    key: ActionsKey;
+    label: string;
+    icon: IconName;
+    onPress: () => void;
+    destructive?: boolean;
+  }[] = [
     {
       key: 'view',
       label: 'View document',
@@ -121,6 +168,13 @@ export function DocumentActionSheet({
       label: 'Share',
       icon: 'share',
       onPress: handleDownloadAndShare,
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: 'trash-2',
+      onPress: handleDelete,
+      destructive: true,
     },
   ];
   const filteredActions = actions.filter((action) => !excludedActions.includes(action.key));
@@ -160,9 +214,24 @@ export function DocumentActionSheet({
                     activeOpacity={0.6}
                   >
                     <View style={styles.actionIconContainer}>
-                      <Icon name={action.icon} size={20} color={themeColors.foreground} />
+                      <Icon
+                        name={action.icon}
+                        size={20}
+                        color={
+                          action.destructive === true
+                            ? themeColors.destructive
+                            : themeColors.foreground
+                        }
+                      />
                     </View>
-                    <Text style={styles.actionText}>{action.label}</Text>
+                    <Text
+                      style={[
+                        styles.actionText,
+                        action.destructive === true && { color: themeColors.destructive },
+                      ]}
+                    >
+                      {action.label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>

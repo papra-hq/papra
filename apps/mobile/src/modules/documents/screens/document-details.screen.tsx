@@ -406,6 +406,7 @@ export function DocumentDetailsScreen() {
         document={document}
         onClose={() => setIsActionSheetVisible(false)}
         excludedActions={['view']}
+        onDeleted={() => router.back()}
       />
 
       {renderContent()}

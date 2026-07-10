@@ -97,6 +97,21 @@ export async function fetchDocument({
   };
 }
 
+export async function deleteDocument({
+  organizationId,
+  documentId,
+  apiClient,
+}: {
+  organizationId: string;
+  documentId: string;
+  apiClient: ApiClient;
+}) {
+  await apiClient({
+    method: 'DELETE',
+    path: `/api/organizations/${organizationId}/documents/${documentId}`,
+  });
+}
+
 export async function fetchDocumentFile({
   document,
   organizationId,

@@ -264,6 +264,7 @@ export default function DocumentViewScreen() {
         document={documentFile?.doc}
         onClose={() => setIsActionSheetVisible(false)}
         excludedActions={['view']}
+        onDeleted={() => router.dismissTo('/(app)/(with-organizations)/(tabs)/list')}
       />
 
       {renderContent()}
