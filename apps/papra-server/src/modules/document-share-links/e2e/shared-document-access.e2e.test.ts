@@ -233,4 +233,71 @@ describe('shared document access e2e', () => {
     expect(restoredFileResponse.status).toBe(200);
     expect(await restoredFileResponse.text()).toBe('File content.');
   });
+
+  test('a document in a soft-deleted organization is no longer reachable through its share link, and access resumes once the organization is restored', async () => {
+    const { app } = await createTestApp();
+
+    const createResponse = await app.request(
+      '/api/organizations/org_222222222222222222222222/documents/doc_333333333333333333333333/share-links',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      },
+      { loggedInUserId: 'usr_111111111111111111111111' },
+    );
+
+    expect(createResponse.status).toBe(201);
+    const { shareLink } = (await createResponse.json()) as { shareLink: { token: string } };
+
+    // Sanity check: the link works while the organization is live.
+    expect((await app.request(`/api/share-links/${shareLink.token}/document`)).status).toBe(200);
+
+    // Soft-delete the organization.
+    const deleteResponse = await app.request(
+      '/api/organizations/org_222222222222222222222222',
+      { method: 'DELETE' },
+      { loggedInUserId: 'usr_111111111111111111111111' },
+    );
+    expect(deleteResponse.status).toBe(204);
+
+    // Public access to both the metadata and the file must stop with a 410 Gone.
+    const deletedOrgDocumentResponse = await app.request(
+      `/api/share-links/${shareLink.token}/document`,
+    );
+    expect(deletedOrgDocumentResponse.status).toBe(410);
+    expect(await deletedOrgDocumentResponse.json()).toMatchObject({
+      error: { code: 'share_link.gone' },
+    });
+
+    const deletedOrgFileResponse = await app.request(
+      `/api/share-links/${shareLink.token}/document/file`,
+    );
+    expect(deletedOrgFileResponse.status).toBe(410);
+    expect(await deletedOrgFileResponse.json()).toMatchObject({
+      error: { code: 'share_link.gone' },
+    });
+
+    // Restoring the organization brings the same link back to life.
+    const restoreResponse = await app.request(
+      '/api/organizations/org_222222222222222222222222/restore',
+      { method: 'POST' },
+      { loggedInUserId: 'usr_111111111111111111111111' },
+    );
+    expect(restoreResponse.status).toBe(204);
+
+    const restoredDocumentResponse = await app.request(
+      `/api/share-links/${shareLink.token}/document`,
+    );
+    expect(restoredDocumentResponse.status).toBe(200);
+    expect(await restoredDocumentResponse.json()).toEqual({
+      document: { name: 'invoice.pdf', size: 1024, mimeType: 'application/pdf' },
+    });
+
+    const restoredFileResponse = await app.request(
+      `/api/share-links/${shareLink.token}/document/file`,
+    );
+    expect(restoredFileResponse.status).toBe(200);
+    expect(await restoredFileResponse.text()).toBe('File content.');
+  });
 });
