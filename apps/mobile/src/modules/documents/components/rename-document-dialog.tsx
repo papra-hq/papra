@@ -1,5 +1,5 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -29,6 +29,7 @@ export function RenameDocumentDialog({
   const { showAlert } = useAlert();
   const styles = createStyles({ themeColors });
   const [documentName, setDocumentName] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   // Reset name when modal becomes visible
   useEffect(() => {
@@ -36,6 +37,12 @@ export function RenameDocumentDialog({
       setDocumentName(defaultName);
     }
   }, [visible, defaultName]);
+
+  // autoFocus doesn't open the keyboard inside a Modal: it fires before the
+  // modal is presented, so focus manually once it is (delayed for Android)
+  const focusInput = () => {
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
 
   const handleConfirm = () => {
     if (documentName.trim() === '') {
@@ -56,7 +63,13 @@ export function RenameDocumentDialog({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleCancel}
+      onShow={focusInput}
+    >
       <TouchableWithoutFeedback onPress={handleCancel}>
         <View style={styles.backdrop}>
           <TouchableWithoutFeedback>
@@ -67,12 +80,12 @@ export function RenameDocumentDialog({
 
               <View style={styles.inputContainer}>
                 <TextInput
+                  ref={inputRef}
                   style={styles.input}
                   value={documentName}
                   onChangeText={setDocumentName}
                   placeholder="Enter document name"
                   placeholderTextColor={themeColors.mutedForeground}
-                  autoFocus
                   onSubmitEditing={handleConfirm}
                 />
               </View>
