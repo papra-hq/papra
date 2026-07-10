@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
@@ -14,6 +15,8 @@ import {
   updateShareLink,
   verifySharePassword,
 } from './document-share-links.usecases';
+import { createOrganizationsRepository } from '../organizations/organizations.repository';
+import { organizationsTable } from '../organizations/organizations.table';
 
 const config = overrideConfig({ auth: { secret: 'test-secret-that-is-at-least-32-chars-long' } });
 
@@ -38,8 +41,9 @@ async function setup({ now = '2026-05-12T00:00:00Z' }: { now?: string } = {}) {
 
   const shareLinksRepository = createShareLinksRepository({ db });
   const documentsRepository = createDocumentsRepository({ db });
+  const organizationsRepository = createOrganizationsRepository({ db });
 
-  return { clock, db, shareLinksRepository, documentsRepository };
+  return { clock, db, shareLinksRepository, documentsRepository, organizationsRepository };
 }
 
 describe('document-share-links usecases', () => {
@@ -139,15 +143,20 @@ describe('document-share-links usecases', () => {
 
   describe('resolveUsableShareLinkByToken', () => {
     test('throws 404 when the token is unknown', async () => {
-      const { clock, shareLinksRepository } = await setup();
+      const { clock, shareLinksRepository, organizationsRepository } = await setup();
 
       await expect(
-        resolveUsableShareLinkByToken({ shareLinkToken: 'unknown', shareLinksRepository, clock }),
+        resolveUsableShareLinkByToken({
+          shareLinkToken: 'unknown',
+          shareLinksRepository,
+          organizationsRepository,
+          clock,
+        }),
       ).rejects.toThrowError('Share link not found.');
     });
 
     test('throws 410 when the link is disabled', async () => {
-      const { clock, db, shareLinksRepository } = await setup();
+      const { clock, db, shareLinksRepository, organizationsRepository } = await setup();
       await db.insert(documentShareLinksTable).values({
         id: 'dsl_1',
         organizationId: 'org_1',
@@ -160,13 +169,16 @@ describe('document-share-links usecases', () => {
         resolveUsableShareLinkByToken({
           shareLinkToken: 't'.repeat(64),
           shareLinksRepository,
+          organizationsRepository,
           clock,
         }),
       ).rejects.toThrowError('no longer available');
     });
 
     test('throws 410 when the link is expired', async () => {
-      const { clock, db, shareLinksRepository } = await setup({ now: '2026-05-20T00:00:00Z' });
+      const { clock, db, shareLinksRepository, organizationsRepository } = await setup({
+        now: '2026-05-20T00:00:00Z',
+      });
       await db.insert(documentShareLinksTable).values({
         id: 'dsl_1',
         organizationId: 'org_1',
@@ -179,6 +191,30 @@ describe('document-share-links usecases', () => {
         resolveUsableShareLinkByToken({
           shareLinkToken: 't'.repeat(64),
           shareLinksRepository,
+          organizationsRepository,
+          clock,
+        }),
+      ).rejects.toThrowError('no longer available');
+    });
+
+    test('throws 410 when the organization is soft-deleted', async () => {
+      const { clock, db, shareLinksRepository, organizationsRepository } = await setup();
+      await db.insert(documentShareLinksTable).values({
+        id: 'dsl_1',
+        organizationId: 'org_1',
+        documentId: 'doc_1',
+        token: 't'.repeat(64),
+      });
+      await db
+        .update(organizationsTable)
+        .set({ deletedAt: new Date('2026-05-11T00:00:00Z') })
+        .where(eq(organizationsTable.id, 'org_1'));
+
+      await expect(
+        resolveUsableShareLinkByToken({
+          shareLinkToken: 't'.repeat(64),
+          shareLinksRepository,
+          organizationsRepository,
           clock,
         }),
       ).rejects.toThrowError('no longer available');
@@ -187,7 +223,8 @@ describe('document-share-links usecases', () => {
 
   describe('verifySharePassword + ensureShareLinkAccessGranted', () => {
     test('a correct password yields an access token that grants access to the document', async () => {
-      const { clock, shareLinksRepository, documentsRepository } = await setup();
+      const { clock, shareLinksRepository, documentsRepository, organizationsRepository } =
+        await setup();
 
       const { shareLink } = await createShareLink({
         organizationId: 'org_1',
@@ -203,6 +240,7 @@ describe('document-share-links usecases', () => {
         shareLinkToken: shareLink.token,
         password: 'hunter2',
         shareLinksRepository,
+        organizationsRepository,
         config,
         clock,
       });
@@ -212,7 +250,8 @@ describe('document-share-links usecases', () => {
     });
 
     test('an incorrect password is rejected', async () => {
-      const { clock, shareLinksRepository, documentsRepository } = await setup();
+      const { clock, shareLinksRepository, documentsRepository, organizationsRepository } =
+        await setup();
       const { shareLink } = await createShareLink({
         organizationId: 'org_1',
         documentId: 'doc_1',
@@ -228,6 +267,7 @@ describe('document-share-links usecases', () => {
           shareLinkToken: shareLink.token,
           password: 'wrong',
           shareLinksRepository,
+          organizationsRepository,
           config,
           clock,
         }),
@@ -235,7 +275,8 @@ describe('document-share-links usecases', () => {
     });
 
     test('verifying a password on a non-protected link throws', async () => {
-      const { clock, shareLinksRepository, documentsRepository } = await setup();
+      const { clock, shareLinksRepository, documentsRepository, organizationsRepository } =
+        await setup();
       const { shareLink } = await createShareLink({
         organizationId: 'org_1',
         documentId: 'doc_1',
@@ -250,6 +291,7 @@ describe('document-share-links usecases', () => {
           shareLinkToken: shareLink.token,
           password: 'whatever',
           shareLinksRepository,
+          organizationsRepository,
           config,
           clock,
         }),
@@ -302,7 +344,8 @@ describe('document-share-links usecases', () => {
     });
 
     test('rotating the password invalidates previously issued access tokens', async () => {
-      const { clock, shareLinksRepository, documentsRepository } = await setup();
+      const { clock, shareLinksRepository, documentsRepository, organizationsRepository } =
+        await setup();
       const { shareLink } = await createShareLink({
         organizationId: 'org_1',
         documentId: 'doc_1',
@@ -317,6 +360,7 @@ describe('document-share-links usecases', () => {
         shareLinkToken: shareLink.token,
         password: 'hunter2',
         shareLinksRepository,
+        organizationsRepository,
         config,
         clock,
       });
@@ -340,7 +384,8 @@ describe('document-share-links usecases', () => {
 
   describe('getSharedDocument', () => {
     test('returns the document for a non-protected, usable link and records the access time', async () => {
-      const { clock, shareLinksRepository, documentsRepository } = await setup();
+      const { clock, shareLinksRepository, documentsRepository, organizationsRepository } =
+        await setup();
       const { shareLink } = await createShareLink({
         organizationId: 'org_1',
         documentId: 'doc_1',
@@ -355,6 +400,7 @@ describe('document-share-links usecases', () => {
         accessToken: undefined,
         shareLinksRepository,
         documentsRepository,
+        organizationsRepository,
         config,
         clock,
       });

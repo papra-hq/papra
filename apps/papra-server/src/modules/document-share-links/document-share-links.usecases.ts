@@ -23,6 +23,7 @@ import {
   shouldTouchShareLinkLastAccessedAt,
 } from './document-share-links.models';
 import { hashPassword, verifyPassword } from './document-share-links.password';
+import type { OrganizationsRepository } from '../organizations/organizations.repository';
 
 function isShareLinkExpired({
   shareLink,
@@ -153,16 +154,26 @@ export async function getShareLinkDocumentOrThrow({
 export async function resolveUsableShareLinkByToken({
   shareLinkToken,
   shareLinksRepository,
+  organizationsRepository,
   clock = systemClock,
 }: {
   shareLinkToken: string;
   shareLinksRepository: ShareLinksRepository;
+  organizationsRepository: OrganizationsRepository;
   clock?: Clock;
 }) {
   const { shareLink } = await shareLinksRepository.getShareLinkByToken({ token: shareLinkToken });
 
   if (!shareLink) {
     throw createShareLinkNotFoundError();
+  }
+
+  const { organization } = await organizationsRepository.getOrganizationById({
+    organizationId: shareLink.organizationId,
+  });
+
+  if (!organization || !isNil(organization.deletedAt)) {
+    throw createShareLinkGoneError();
   }
 
   if (!shareLink.isEnabled || isShareLinkExpired({ shareLink, clock })) {
@@ -206,18 +217,21 @@ export async function verifySharePassword({
   shareLinkToken,
   password,
   shareLinksRepository,
+  organizationsRepository,
   config,
   clock = systemClock,
 }: {
   shareLinkToken: string;
   password: string;
   shareLinksRepository: ShareLinksRepository;
+  organizationsRepository: OrganizationsRepository;
   config: Config;
   clock?: Clock;
 }) {
   const { shareLink } = await resolveUsableShareLinkByToken({
     shareLinkToken,
     shareLinksRepository,
+    organizationsRepository,
     clock,
   });
 
@@ -270,6 +284,7 @@ export async function getSharedDocument({
   accessToken,
   shareLinksRepository,
   documentsRepository,
+  organizationsRepository,
   config,
   clock = systemClock,
 }: {
@@ -277,12 +292,14 @@ export async function getSharedDocument({
   accessToken: string | undefined;
   shareLinksRepository: ShareLinksRepository;
   documentsRepository: DocumentsRepository;
+  organizationsRepository: OrganizationsRepository;
   config: Config;
   clock?: Clock;
 }) {
   const { shareLink } = await resolveUsableShareLinkByToken({
     shareLinkToken,
     shareLinksRepository,
+    organizationsRepository,
     clock,
   });
 

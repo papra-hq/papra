@@ -215,12 +215,14 @@ function setupGetSharedDocumentRoute({ app, db, config, kvStore }: RouteDefiniti
 
       const shareLinksRepository = createShareLinksRepository({ db });
       const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
 
       const { document } = await getSharedDocument({
         shareLinkToken,
         accessToken,
         shareLinksRepository,
         documentsRepository,
+        organizationsRepository,
         config,
       });
 
@@ -246,10 +248,13 @@ function setupVerifySharePasswordRoute({ app, db, config, kvStore }: RouteDefini
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
       const { accessToken } = await verifySharePassword({
         shareLinkToken,
         password,
         shareLinksRepository,
+        organizationsRepository,
         config,
       });
 
@@ -280,9 +285,12 @@ function setupGetSharedDocumentFileRoute({
       });
 
       const shareLinksRepository = createShareLinksRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
       const { shareLink } = await resolveUsableShareLinkByToken({
         shareLinkToken,
         shareLinksRepository,
+        organizationsRepository,
       });
 
       await ensureShareLinkAccessGranted({ shareLink, accessToken, config });
