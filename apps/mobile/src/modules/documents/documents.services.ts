@@ -112,6 +112,24 @@ export async function deleteDocument({
   });
 }
 
+export async function renameDocument({
+  organizationId,
+  documentId,
+  name,
+  apiClient,
+}: {
+  organizationId: string;
+  documentId: string;
+  name: string;
+  apiClient: ApiClient;
+}) {
+  await apiClient({
+    method: 'PATCH',
+    path: `/api/organizations/${organizationId}/documents/${documentId}`,
+    body: { name },
+  });
+}
+
 export async function fetchDocumentFile({
   document,
   organizationId,

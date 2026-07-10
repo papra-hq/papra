@@ -6,6 +6,7 @@ import { formatBytes } from '@corentinth/chisels';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
+import { useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -16,7 +17,12 @@ import {
 } from 'react-native';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { configLocalStorage } from '@/modules/config/config.local-storage';
-import { deleteDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import { RenameDocumentDialog } from '@/modules/documents/components/rename-document-dialog';
+import {
+  deleteDocument,
+  fetchDocumentFile,
+  renameDocument,
+} from '@/modules/documents/documents.services';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -29,7 +35,7 @@ type DocumentActionSheetProps = {
   onDeleted?: () => void;
 };
 
-export type ActionsKey = 'view' | 'share' | 'delete';
+export type ActionsKey = 'view' | 'rename' | 'share' | 'delete';
 
 export function DocumentActionSheet({
   visible,
@@ -44,6 +50,7 @@ export function DocumentActionSheet({
   const authClient = useAuthClient();
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
+  const [isRenameDialogVisible, setIsRenameDialogVisible] = useState(false);
 
   if (document === undefined) {
     return null;
@@ -108,6 +115,44 @@ export function DocumentActionSheet({
     }
   };
 
+  const handleRename = () => {
+    // Keep the sheet mounted: onClose() would unmount this component (and the
+    // dialog with it) when the parent conditionally renders the sheet.
+    setIsRenameDialogVisible(true);
+  };
+
+  const handleRenameCancel = () => {
+    setIsRenameDialogVisible(false);
+    onClose();
+  };
+
+  const handleRenameConfirm = async (name: string) => {
+    setIsRenameDialogVisible(false);
+    onClose();
+
+    if (name === document.name) {
+      return;
+    }
+
+    try {
+      await renameDocument({
+        organizationId: document.organizationId,
+        documentId: document.id,
+        name,
+        apiClient,
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', document.organizationId, 'documents'],
+      });
+    } catch {
+      showAlert({
+        title: 'Error',
+        message: 'Failed to rename document',
+      });
+    }
+  };
+
   const handleDelete = () => {
     onClose();
 
@@ -164,6 +209,12 @@ export function DocumentActionSheet({
       onPress: handleView,
     },
     {
+      key: 'rename',
+      label: 'Rename',
+      icon: 'edit-2',
+      onPress: handleRename,
+    },
+    {
       key: 'share',
       label: 'Share',
       icon: 'share',
@@ -180,66 +231,80 @@ export function DocumentActionSheet({
   const filteredActions = actions.filter((action) => !excludedActions.includes(action.key));
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={styles.sheet}>
-              <View style={styles.handleBar} />
+    <>
+      <RenameDocumentDialog
+        visible={isRenameDialogVisible}
+        defaultName={document.name}
+        onConfirm={handleRenameConfirm}
+        onCancel={handleRenameCancel}
+      />
 
-              <View style={styles.header}>
-                <View style={styles.fileIconContainer}>
-                  <Icon name="file-text" size={24} color={themeColors.primary} />
-                </View>
-                <View style={styles.headerContent}>
-                  <Text style={styles.documentName} numberOfLines={2}>
-                    {document.name}
-                  </Text>
-                  <Text style={styles.documentMeta}>
-                    {displayMimeType}
-                    {' · '}
-                    {formatBytes({ bytes: document.originalSize })}
-                    {' · '}
-                    {formatDate(document.createdAt.toISOString())}
-                  </Text>
-                </View>
-              </View>
+      <Modal
+        visible={visible && !isRenameDialogVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.sheet}>
+                <View style={styles.handleBar} />
 
-              <View style={styles.actions}>
-                {filteredActions.map((action) => (
-                  <TouchableOpacity
-                    key={action.key}
-                    style={styles.actionRow}
-                    onPress={action.onPress}
-                    activeOpacity={0.6}
-                  >
-                    <View style={styles.actionIconContainer}>
-                      <Icon
-                        name={action.icon}
-                        size={20}
-                        color={
-                          action.destructive === true
-                            ? themeColors.destructive
-                            : themeColors.foreground
-                        }
-                      />
-                    </View>
-                    <Text
-                      style={[
-                        styles.actionText,
-                        action.destructive === true && { color: themeColors.destructive },
-                      ]}
-                    >
-                      {action.label}
+                <View style={styles.header}>
+                  <View style={styles.fileIconContainer}>
+                    <Icon name="file-text" size={24} color={themeColors.primary} />
+                  </View>
+                  <View style={styles.headerContent}>
+                    <Text style={styles.documentName} numberOfLines={2}>
+                      {document.name}
                     </Text>
-                  </TouchableOpacity>
-                ))}
+                    <Text style={styles.documentMeta}>
+                      {displayMimeType}
+                      {' · '}
+                      {formatBytes({ bytes: document.originalSize })}
+                      {' · '}
+                      {formatDate(document.createdAt.toISOString())}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.actions}>
+                  {filteredActions.map((action) => (
+                    <TouchableOpacity
+                      key={action.key}
+                      style={styles.actionRow}
+                      onPress={action.onPress}
+                      activeOpacity={0.6}
+                    >
+                      <View style={styles.actionIconContainer}>
+                        <Icon
+                          name={action.icon}
+                          size={20}
+                          color={
+                            action.destructive === true
+                              ? themeColors.destructive
+                              : themeColors.foreground
+                          }
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.actionText,
+                          action.destructive === true && { color: themeColors.destructive },
+                        ]}
+                      >
+                        {action.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 }
 
