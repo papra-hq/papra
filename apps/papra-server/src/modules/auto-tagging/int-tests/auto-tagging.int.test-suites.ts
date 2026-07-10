@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 import type { Config } from '../../config/config.types';
 import { createAiServices } from '../../ai/ai.services';
 import { promptForAutoTagging } from '../auto-tagging.usecases';
+import type { Logger } from '@crowlog/logger';
 
 const document = {
   name: 'acme-invoice-2026-06.pdf',
@@ -30,7 +31,8 @@ export function runAutoTaggingTestSuite({
   config: Config;
   timeout?: number;
 }) {
-  const aiServices = createAiServices({ config });
+  // oxlint-disable-next-line no-console
+  const aiServices = createAiServices({ config, logger: { error: console.error } as Logger });
 
   test('auto-tagging should correctly identify tags for a document', { timeout }, async () => {
     const { tagIdsToAdd, tagsToCreate } = await promptForAutoTagging({
