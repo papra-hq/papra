@@ -319,7 +319,7 @@ export const translations = {
   'organizations.invite-member.form.submit': 'Convida a l\'organització',
   'organizations.invite-member.success.message': 'Membre convidat',
   'organizations.invite-member.success.description':
-    'El correu electrònic ha sigut convidat a l\'organització.',
+    'S\'ha convidat l\'adreça de correu electrònic a l\'organització.',
   'organizations.invite-member.error.message': 'No s\'ha pogut convidar el membre',
 
   'organizations.invitations.title': 'Invitacions',
@@ -375,7 +375,7 @@ export const translations = {
   'documents.list.table.headers.tags': 'Etiquetes',
   'documents.list.search.placeholder': 'Cerca documents...',
   'documents.list.search.total-count-with-query':
-    '{{ count }} {{ count, =1:document, documents }} que coincideixen amb aquesta cerca',
+    '{{ count }} {{ count, =1:document que coincideix, documents que coincideixen }} amb aquesta cerca',
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:document, documents }} en total',
 
@@ -531,9 +531,9 @@ export const translations = {
   'documents.rename.success': 'Document reanomenat correctament',
   'documents.rename.cancel': 'Cancel·la',
 
-  'import-documents.title.error': '{{ count }} documents han fallat',
-  'import-documents.title.success': '{{ count }} documents importats',
-  'import-documents.title.pending': '{{ count }} / {{ total }} documents importats',
+  'import-documents.title.error': '{{ count }} {{ count, =1:document ha fallat, documents han fallat }}',
+  'import-documents.title.success': '{{ count }} {{ count, =1:document importat, documents importats }}',
+  'import-documents.title.pending': '{{ count }} / {{ total }} {{ count, =1:document importat, documents importats }}',
   'import-documents.title.none': 'Importa documents',
   'import-documents.no-import-in-progress': 'No hi ha cap importació de documents en curs',
 
@@ -892,11 +892,11 @@ export const translations = {
   'intake-emails.empty.description':
     'Genera una adreça de correu electrònic d\'entrada per ingerir fàcilment fitxers adjunts de correus electrònics.',
   'intake-emails.empty.generate': 'Genera un correu electrònic d\'entrada',
-  'intake-emails.count': '{{ count }} correu electrònic d\'entrada(es) per aquesta organització',
+  'intake-emails.count': '{{ count }} {{ count, =1:correu electrònic d\'entrada, correus electrònics d\'entrada }} per a aquesta organització',
   'intake-emails.new': 'Nou correu electrònic d\'entrada',
   'intake-emails.disabled-label': '(Deshabilitat)',
   'intake-emails.no-origins': 'No hi ha orígens de correu electrònic permesos',
-  'intake-emails.allowed-origins': 'Permès des de {{ count }} adreça(es)',
+  'intake-emails.allowed-origins': 'Permès des de {{ count }} {{ count, =1:adreça, adreces }}',
   'intake-emails.actions.enable': 'Habilita',
   'intake-emails.actions.disable': 'Deshabilita',
   'intake-emails.actions.manage-origins': 'Gestiona les adreces d\'origen',
@@ -1163,7 +1163,7 @@ export const translations = {
 
   // Color picker
 
-  'color-picker.hue': 'To (Hue)',
+  'color-picker.hue': 'Tonalitat',
   'color-picker.saturation': 'Saturació',
   'color-picker.lightness': 'Lluminositat',
   'color-picker.select-color': 'Selecciona color',
@@ -1197,7 +1197,7 @@ export const translations = {
   'subscriptions.upgrade-dialog.upgrade-now': 'Actualitza ara',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Oferta de temps limitat',
   'subscriptions.upgrade-dialog.promo-banner.description':
-    'Obté un {{ percent }}% de descompte en tots els plans per a sempre per organització com a usuari pioner! L\'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, menys d\'un dia}}.',
+    'Obtingues un {{ percent }}% de descompte en tots els plans per sempre per organització com a usuari pioner! L\'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, menys d\'un dia}}.',
 
   'subscriptions.plan.free.name': 'Pla gratuït',
   'subscriptions.plan.plus.name': 'Plus',
