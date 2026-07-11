@@ -205,7 +205,7 @@ export const translations = {
     'Estàs segur que vols restaurar aquesta organització? Es tornarà a moure a la teva llista d\'organitzacions actives.',
   'organizations.list.deleted.restore-confirm.confirm-button': 'Restaura l\'organització',
   'organizations.list.deleted.deleted-at': 'Suprimida el {{ date }}',
-  'organizations.list.deleted.purge-at': 'Serà eliminada permanentment el {{ data }}',
+  'organizations.list.deleted.purge-at': 'Serà eliminada permanentment el {{ date }}',
   'organizations.list.deleted.days-remaining':
     '({{ daysUntilPurge, =1:{daysUntilPurge} dia, {daysUntilPurge} dies }} restants)',
 
@@ -426,7 +426,7 @@ export const translations = {
     'El contingut del document s\'extreu automàticament en pujar-lo. Només s\'utilitza per les finalitats de cerca i indexació.',
   'documents.content.empty-placeholder':
     'Aquest document no té contingut extret, pots definir-lo manualment aquí.',
-  'documents.info.id': 'Indentificador',
+  'documents.info.id': 'Identificador',
   'documents.info.name': 'Nom',
   'documents.info.type': 'Tipus',
   'documents.info.size': 'Mida',
@@ -651,7 +651,7 @@ export const translations = {
   'document-share-links.create.submit': 'Crea l\'enllaç',
   'document-share-links.create.error': 'No s\'ha pogut crear l\'enllaç compartit',
   'document-share-links.created.title': 'Enllaç compartit creat',
-  'document-share-links.created.description': 'El tue enllaç compartit està llest — copia\'l i comparteix-lo.',
+  'document-share-links.created.description': 'El teu enllaç compartit està llest — copia\'l i comparteix-lo.',
   'document-share-links.created.done': 'Fet',
   'document-share-links.actions.menu': 'Accions',
   'document-share-links.actions.open-document': 'Obre el document',
@@ -1148,7 +1148,7 @@ export const translations = {
 
   // Not found
 
-  'not-found.title': '404 - Not Found',
+  'not-found.title': '404 - Pàgina no trobada',
   'not-found.description':
     'Ho sentim, la pàgina que cerques no sembla existir. Comprova l\'URL i torna-ho a provar.',
 
@@ -1197,7 +1197,7 @@ export const translations = {
   'subscriptions.upgrade-dialog.upgrade-now': 'Actualitza ara',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Oferta de temps limitat',
   'subscriptions.upgrade-dialog.promo-banner.description':
-    'Obté un {{ percent }}% de descompte en tots els plans per a sempre per organització com a usuari pioner! L\'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, less than 1 day }}.',
+    'Obté un {{ percent }}% de descompte en tots els plans per a sempre per organització com a usuari pioner! L\'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, menys d\'un dia}}.',
 
   'subscriptions.plan.free.name': 'Pla gratuït',
   'subscriptions.plan.plus.name': 'Plus',
@@ -1334,7 +1334,7 @@ export const translations = {
   'admin.user-detail.organizations.title': 'Organitzacions ({{ count }})',
   'admin.user-detail.organizations.description': 'Organitzacions a les quals pertany aquest usuari',
   'admin.user-detail.organizations.empty': 'No és membre de cap organització',
-  'admin.user-detail.organizations.table.id': 'Indetificador',
+  'admin.user-detail.organizations.table.id': 'Identificador',
   'admin.user-detail.organizations.table.name': 'Nom',
   'admin.user-detail.organizations.table.created': 'Creat',
   'admin.user-detail.plan-entitlements.title': 'Drets de pla',
