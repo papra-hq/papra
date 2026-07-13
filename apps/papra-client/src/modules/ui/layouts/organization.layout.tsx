@@ -22,6 +22,7 @@ import { UpgradeDialog } from '@/modules/subscriptions/components/upgrade-dialog
 import { fetchOrganizationSubscription } from '@/modules/subscriptions/subscriptions.services';
 import { SideNav } from '@/modules/ui/components/sidenav';
 import { Button } from '../components/button';
+import { Skeleton } from '../components/skeleton';
 import {
   Select,
   SelectContent,
@@ -204,62 +205,77 @@ const OrganizationLayoutSideNav: Component = () => {
       footer={() => <UpgradeCTAFooter organizationId={params.organizationId} />}
       header={() => (
         <div class="p-4 pb-0 min-w-0 max-w-full">
-          <Select
-            class="w-full"
-            options={[...(organizationsQuery.data?.organizations ?? []), { id: 'create' }]}
-            optionValue="id"
-            optionTextValue="name"
-            value={organizationsQuery.data?.organizations.find(
-              (organization) => organization.id === params.organizationId,
-            )}
-            onChange={(value) => {
-              if (!value || value.id === params.organizationId) {
-                return;
-              }
+          <Show
+            when={organizationsQuery.data}
+            fallback={
+              <div class="flex items-center gap-2 min-w-0 p-2 border rounded-lg">
+                <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary flex-shrink-0">
+                  <div class="i-tabler-file-text size-5.5" />
+                </span>
 
-              return (
-                value &&
-                (value.id === 'create'
-                  ? navigate('/organizations/create')
-                  : navigate(`/organizations/${value.id}`))
-              );
-            }}
-            itemComponent={(props) =>
-              props.item.rawValue.id === 'create' ? (
-                <SelectItem class="cursor-pointer" item={props.item}>
-                  <div class="flex items-center gap-2 text-muted-foreground">
-                    <div class="i-tabler-plus size-4" />
-                    <div>{t('organizations.switcher.create')}</div>
-                  </div>
-                </SelectItem>
-              ) : (
-                <SelectItem class="cursor-pointer" item={props.item}>
-                  {props.item.rawValue.name}
-                </SelectItem>
-              )
+                <Skeleton class="h-4 flex-1" />
+              </div>
             }
           >
-            <SelectTrigger
-              class="hover:bg-accent/50 transition rounded-lg h-auto pl-2"
-              caretIcon={<div class="i-tabler-chevron-down size-4 opacity-50 ml-2 flex-shrink-0" />}
+            <Select
+              class="w-full"
+              options={[...(organizationsQuery.data?.organizations ?? []), { id: 'create' }]}
+              optionValue="id"
+              optionTextValue="name"
+              value={organizationsQuery.data?.organizations.find(
+                (organization) => organization.id === params.organizationId,
+              )}
+              onChange={(value) => {
+                if (!value || value.id === params.organizationId) {
+                  return;
+                }
+
+                return (
+                  value &&
+                  (value.id === 'create'
+                    ? navigate('/organizations/create')
+                    : navigate(`/organizations/${value.id}`))
+                );
+              }}
+              itemComponent={(props) =>
+                props.item.rawValue.id === 'create' ? (
+                  <SelectItem class="cursor-pointer" item={props.item}>
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                      <div class="i-tabler-plus size-4" />
+                      <div>{t('organizations.switcher.create')}</div>
+                    </div>
+                  </SelectItem>
+                ) : (
+                  <SelectItem class="cursor-pointer" item={props.item}>
+                    {props.item.rawValue.name}
+                  </SelectItem>
+                )
+              }
             >
-              <SelectValue<Organization | undefined> class="flex items-center gap-2 min-w-0">
-                {(state) => (
-                  <>
-                    <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
-                      <div class="i-tabler-file-text size-5.5" />
-                    </span>
+              <SelectTrigger
+                class="hover:bg-accent/50 transition rounded-lg h-auto pl-2"
+                caretIcon={
+                  <div class="i-tabler-chevron-down size-4 opacity-50 ml-2 flex-shrink-0" />
+                }
+              >
+                <SelectValue<Organization | undefined> class="flex items-center gap-2 min-w-0">
+                  {(state) => (
+                    <>
+                      <span class="p-1.5 rounded text-lg font-bold flex items-center bg-muted light:border dark:bg-primary/10 text-primary transition flex-shrink-0">
+                        <div class="i-tabler-file-text size-5.5" />
+                      </span>
 
-                    <span class="truncate text-base font-medium">
-                      {state.selectedOption()?.name}
-                    </span>
-                  </>
-                )}
-              </SelectValue>
-            </SelectTrigger>
+                      <span class="truncate text-base font-medium">
+                        {state.selectedOption()?.name}
+                      </span>
+                    </>
+                  )}
+                </SelectValue>
+              </SelectTrigger>
 
-            <SelectContent />
-          </Select>
+              <SelectContent />
+            </Select>
+          </Show>
         </div>
       )}
     />
