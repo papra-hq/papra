@@ -1,12 +1,12 @@
 import type { RouteDefinitionContext } from '../app/server.types';
-import * as v from 'valibot';
-import { requireAuthentication } from '../app/auth/auth.middleware';
-import { getUser } from '../app/auth/auth.models';
+import { registerAuthenticatedEndpoint } from '../api/contract.registration';
 import { getPermissionsForRoles } from '../roles/roles.methods';
 import { createRolesRepository } from '../roles/roles.repository';
-import { pick } from '../shared/objects';
-import { validateJsonBody } from '../shared/validation/validation';
 import { createUsersRepository } from './users.repository';
+import {
+  getCurrentUserEndpointContract,
+  updateCurrentUserEndpointContract,
+} from './users.routes.contract';
 
 export function registerUsersRoutes(context: RouteDefinitionContext) {
   setupGetCurrentUserRoute(context);
@@ -14,48 +14,41 @@ export function registerUsersRoutes(context: RouteDefinitionContext) {
 }
 
 function setupGetCurrentUserRoute({ app, db }: RouteDefinitionContext) {
-  app.get('/api/users/me', requireAuthentication(), async (context) => {
-    const { userId } = getUser({ context });
+  registerAuthenticatedEndpoint({
+    app,
+    contract: getCurrentUserEndpointContract,
+    handler: async ({ userId }) => {
+      const usersRepository = createUsersRepository({ db });
+      const rolesRepository = createRolesRepository({ db });
 
-    const usersRepository = createUsersRepository({ db });
-    const rolesRepository = createRolesRepository({ db });
+      const [{ user }, { roles }] = await Promise.all([
+        usersRepository.getUserByIdOrThrow({ userId }),
+        rolesRepository.getUserRoles({ userId }),
+      ]);
 
-    const [{ user }, { roles }] = await Promise.all([
-      usersRepository.getUserByIdOrThrow({ userId }),
-      rolesRepository.getUserRoles({ userId }),
-    ]);
+      const { permissions } = getPermissionsForRoles({ roles });
 
-    const { permissions } = getPermissionsForRoles({ roles });
-
-    return context.json({
-      user: {
-        ...pick(user, ['id', 'email', 'name', 'createdAt', 'updatedAt', 'twoFactorEnabled']),
-
-        permissions,
-      },
-    });
+      return {
+        status: 200,
+        body: { user: { ...user, permissions } },
+      };
+    },
   });
 }
 
 function setupUpdateUserRoute({ app, db }: RouteDefinitionContext) {
-  app.put(
-    '/api/users/me',
-    requireAuthentication(),
-    validateJsonBody(
-      v.strictObject({
-        name: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(50)),
-      }),
-    ),
-    async (context) => {
-      const { userId } = getUser({ context });
-
-      const { name } = context.req.valid('json');
-
+  registerAuthenticatedEndpoint({
+    app,
+    contract: updateCurrentUserEndpointContract,
+    handler: async ({ userId, body }) => {
       const usersRepository = createUsersRepository({ db });
 
-      const { user } = await usersRepository.updateUser({ userId, name });
+      const { user } = await usersRepository.updateUser({ userId, name: body.name });
 
-      return context.json({ user });
+      return {
+        status: 200,
+        body: { user },
+      };
     },
-  );
+  });
 }
