@@ -1,7 +1,7 @@
 import type { RouteDefinition } from '@solidjs/router';
 import { Navigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { Match, Show, Suspense, Switch } from 'solid-js';
+import { Match, Show, Switch } from 'solid-js';
 import { adminRoutes } from './modules/admin/admin.routes';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
@@ -71,36 +71,32 @@ export const routes: RouteDefinition[] = [
           }));
 
           return (
-            <>
-              <Suspense>
-                <Show when={query.data?.organizations}>
-                  {(getOrgs) => (
-                    <Switch>
-                      <Match
-                        when={
-                          getLatestOrganizationId() &&
-                          getOrgs().some((org) => org.id === getLatestOrganizationId())
-                        }
-                      >
-                        <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
-                      </Match>
+            <Show when={query.data?.organizations}>
+              {(getOrgs) => (
+                <Switch>
+                  <Match
+                    when={
+                      getLatestOrganizationId() &&
+                      getOrgs().some((org) => org.id === getLatestOrganizationId())
+                    }
+                  >
+                    <Navigate href={`/organizations/${getLatestOrganizationId()}`} />
+                  </Match>
 
-                      <Match when={getOrgs().length === 1}>
-                        <Navigate href={`/organizations/${getOrgs()[0]?.id ?? ''}`} />
-                      </Match>
+                  <Match when={getOrgs().length === 1}>
+                    <Navigate href={`/organizations/${getOrgs()[0]?.id ?? ''}`} />
+                  </Match>
 
-                      <Match when={getOrgs().length > 0}>
-                        <Navigate href="/organizations" />
-                      </Match>
+                  <Match when={getOrgs().length > 0}>
+                    <Navigate href="/organizations" />
+                  </Match>
 
-                      <Match when={getOrgs().length === 0}>
-                        <Navigate href="/organizations/first" />
-                      </Match>
-                    </Switch>
-                  )}
-                </Show>
-              </Suspense>
-            </>
+                  <Match when={getOrgs().length === 0}>
+                    <Navigate href="/organizations/first" />
+                  </Match>
+                </Switch>
+              )}
+            </Show>
           );
         },
       },
