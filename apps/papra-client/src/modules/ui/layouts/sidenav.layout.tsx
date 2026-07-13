@@ -1,5 +1,5 @@
 import type { Component, ParentComponent } from 'solid-js';
-import { createEffect, createSignal, For, on, Show, Suspense } from 'solid-js';
+import { createEffect, createSignal, For, on, Show } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { DropdownMenuRadioGroup, DropdownMenuRadioItem } from '../components/dropdown-menu';
@@ -70,9 +70,7 @@ export const SidenavLayout: ParentComponent<{
 
           {props.header && <props.header />}
         </div>
-        <div class="flex-1 overflow-auto max-w-screen">
-          <Suspense>{props.children}</Suspense>
-        </div>
+        <div class="flex-1 overflow-auto max-w-screen">{props.children}</div>
       </div>
     </div>
   );

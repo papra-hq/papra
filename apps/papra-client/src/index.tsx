@@ -3,7 +3,7 @@
 import { Router } from '@solidjs/router';
 import { QueryClientProvider } from '@tanstack/solid-query';
 
-import { lazy, Suspense } from 'solid-js';
+import { lazy } from 'solid-js';
 import { render } from 'solid-js/web';
 import { CommandPaletteProvider } from './modules/command-palette/command-palette.provider';
 import { isDemoMode } from './modules/config/config';
@@ -34,7 +34,7 @@ render(() => {
       <Router
         children={routes}
         root={(props) => (
-          <Suspense>
+          <>
             <PageViewTracker />
             <IdentifyUser />
             <I18nProvider>
@@ -59,7 +59,7 @@ render(() => {
                 </ThemeProvider>
               </ConfirmModalProvider>
             </I18nProvider>
-          </Suspense>
+          </>
         )}
       />
     </QueryClientProvider>
