@@ -272,23 +272,23 @@ export const routes: RouteDefinition[] = [
     ],
   },
   {
-    path: '/login',
+    path: authPagesPaths.login,
     component: () => <PublicOnlyPage children={<LoginPage />} />,
   },
   {
-    path: '/register',
+    path: authPagesPaths.register,
     component: () => <PublicOnlyPage children={<RegisterPage />} />,
   },
   {
-    path: '/reset-password',
+    path: authPagesPaths.resetPassword,
     component: () => <PublicOnlyPage children={<ResetPasswordPage />} />,
   },
   {
-    path: '/request-password-reset',
+    path: authPagesPaths.requestPasswordReset,
     component: () => <PublicOnlyPage children={<RequestPasswordResetPage />} />,
   },
   {
-    path: '/email-validation-required',
+    path: authPagesPaths.emailValidationRequired,
     component: () => <PublicOnlyPage children={<EmailValidationRequiredPage />} />,
   },
   {
