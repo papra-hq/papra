@@ -13,4 +13,9 @@ export const ssoProviders = [
 
 export const authPagesPaths = {
   emailVerification: '/email-verification',
+  login: '/login',
+  register: '/register',
+  resetPassword: '/reset-password',
+  requestPasswordReset: '/request-password-reset',
+  emailValidationRequired: '/email-validation-required',
 };

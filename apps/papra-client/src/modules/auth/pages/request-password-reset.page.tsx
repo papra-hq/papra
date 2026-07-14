@@ -11,6 +11,8 @@ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/component
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { requestPasswordReset } from '../auth.services';
 import { OpenEmailProvider } from '../components/open-email-provider.component';
+import { authPagesPaths } from '../auth.constants';
+import { useAuthRedirect } from '../composables/use-auth-redirect.composable';
 
 export const ResetPasswordForm: Component<{
   onSubmit: (args: { email: string }) => Promise<void>;
@@ -63,6 +65,7 @@ export const ResetPasswordForm: Component<{
 export const RequestPasswordResetPage: Component = () => {
   const [getHasPasswordResetBeenRequested, setHasPasswordResetBeenRequested] = createSignal(false);
   const [getEmail, setEmail] = createSignal<string | undefined>(undefined);
+  const { getLoginPathWithRedirect, getPathWithRedirect } = useAuthRedirect();
 
   const { t } = useI18n();
   const { config } = useConfig();
@@ -70,7 +73,7 @@ export const RequestPasswordResetPage: Component = () => {
 
   onMount(() => {
     if (!config.auth.isPasswordResetEnabled || !config.auth.providers.email.isEnabled) {
-      navigate('/login');
+      navigate(getLoginPathWithRedirect());
     }
   });
 
@@ -78,7 +81,7 @@ export const RequestPasswordResetPage: Component = () => {
     const { error } = await requestPasswordReset({
       email,
       redirectTo: buildUrl({
-        path: '/reset-password',
+        path: getPathWithRedirect(authPagesPaths.resetPassword),
         baseUrl: config.baseUrl,
       }),
     });
@@ -117,7 +120,7 @@ export const RequestPasswordResetPage: Component = () => {
 
           <Button
             as={A}
-            href="/login"
+            href={getLoginPathWithRedirect()}
             class="w-full"
             variant={getHasPasswordResetBeenRequested() ? 'default' : 'ghost'}
           >

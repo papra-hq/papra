@@ -3,10 +3,12 @@ import { A, useSearchParams } from '@solidjs/router';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { Button } from '@/modules/ui/components/button';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
+import { useAuthRedirect } from '../composables/use-auth-redirect.composable';
 
 export const EmailVerificationPage: Component = () => {
   const { t } = useI18n();
   const [searchParams] = useSearchParams();
+  const { getLoginPathWithRedirect } = useAuthRedirect();
 
   const getHasError = () => Boolean(searchParams.error);
 
@@ -23,7 +25,7 @@ export const EmailVerificationPage: Component = () => {
                 {t('auth.email-verification.error.description')}
               </p>
 
-              <Button as={A} href="/login" class="gap-2" variant="secondary">
+              <Button as={A} href={getLoginPathWithRedirect()} class="gap-2" variant="secondary">
                 <div class="i-tabler-arrow-left size-4" />
                 {t('auth.email-verification.error.back')}
               </Button>
@@ -37,7 +39,7 @@ export const EmailVerificationPage: Component = () => {
                 {t('auth.email-verification.success.description')}
               </p>
 
-              <Button as={A} href="/login" class="gap-2">
+              <Button as={A} href={getLoginPathWithRedirect()} class="gap-2">
                 {t('auth.email-verification.success.login')}
                 <div class="i-tabler-arrow-right size-4" />
               </Button>

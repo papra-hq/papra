@@ -22,10 +22,12 @@ import { AuthLegalLinks } from '../components/legal-links.component';
 import { NoAuthProviderWarning } from '../components/no-auth-provider';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
 import { TotpField } from '../components/verify-otp.component';
+import { useAuthRedirect } from '../composables/use-auth-redirect.composable';
 
 const TotpVerificationForm: Component = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { getPostAuthRedirect } = useAuthRedirect();
   const [trustDevice, setTrustDevice] = createSignal(false);
   const [totpCode, setTotpCode] = createSignal('');
 
@@ -39,7 +41,7 @@ const TotpVerificationForm: Component = () => {
       }
     },
     onSuccess: () => {
-      navigate('/');
+      navigate(getPostAuthRedirect());
     },
   }));
 
@@ -79,6 +81,7 @@ const TotpVerificationForm: Component = () => {
 const BackupCodeVerificationForm: Component = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { getPostAuthRedirect } = useAuthRedirect();
   const [trustDevice, setTrustDevice] = createSignal(false);
 
   const { form, Form, Field } = createForm({
@@ -93,7 +96,7 @@ const BackupCodeVerificationForm: Component = () => {
         throw new Error(error.message);
       }
 
-      navigate('/');
+      navigate(getPostAuthRedirect());
     },
     schema: v.object({
       code: v.pipe(v.string(), v.nonEmpty(t('auth.login.two-factor.code.required'))),
@@ -194,6 +197,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
   const { config } = useConfig();
   const { t } = useI18n();
   const { createI18nApiError } = useI18nApiErrors({ t });
+  const { getPathWithRedirect } = useAuthRedirect();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -201,8 +205,10 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         email,
         password,
         rememberMe,
-        // This URL is where the user will be redirected after email verification
-        callbackURL: buildUrl({ baseUrl: config.baseUrl, path: authPagesPaths.emailVerification }),
+        callbackURL: buildUrl({
+          baseUrl: config.baseUrl,
+          path: getPathWithRedirect(authPagesPaths.emailVerification),
+        }),
       });
 
       if (loginResult && 'twoFactorRedirect' in loginResult && loginResult.twoFactorRedirect) {
@@ -211,7 +217,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
       }
 
       if (isEmailVerificationRequiredError({ error })) {
-        navigate('/email-validation-required');
+        navigate(getPathWithRedirect(authPagesPaths.emailValidationRequired));
       }
 
       if (error) {
@@ -289,7 +295,12 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         </Field>
 
         <Show when={config.auth.isPasswordResetEnabled}>
-          <Button variant="link" as={A} class="inline p-0! h-auto" href="/request-password-reset">
+          <Button
+            variant="link"
+            as={A}
+            class="inline p-0! h-auto"
+            href={getPathWithRedirect(authPagesPaths.requestPasswordReset)}
+          >
             {t('auth.login.form.forgot-password.label')}
           </Button>
         </Show>
@@ -307,12 +318,13 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
 export const LoginPage: Component = () => {
   const { config } = useConfig();
   const { t } = useI18n();
+  const { getRedirectPath, getRegisterPathWithRedirect } = useAuthRedirect();
 
   const [getShowEmailLoginForm, setShowEmailLoginForm] = createSignal(false);
   const [showTwoFactorForm, setShowTwoFactorForm] = createSignal(false);
 
   const loginWithProvider = async (provider: SsoProviderConfig) => {
-    await authWithProvider({ provider, config });
+    await authWithProvider({ provider, config, redirectPath: getRedirectPath() });
   };
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
@@ -369,7 +381,12 @@ export const LoginPage: Component = () => {
               <Show when={config.auth.isRegistrationEnabled}>
                 <p class="text-muted-foreground mt-4">
                   {t('auth.login.no-account')}{' '}
-                  <Button variant="link" as={A} class="inline px-0" href="/register">
+                  <Button
+                    variant="link"
+                    as={A}
+                    class="inline px-0"
+                    href={getRegisterPathWithRedirect()}
+                  >
                     {t('auth.login.register')}
                   </Button>
                 </p>

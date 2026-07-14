@@ -9,6 +9,8 @@ import { Button } from '@/modules/ui/components/button';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
 import { AuthLayout } from '../../ui/layouts/auth-layout.component';
 import { resetPassword } from '../auth.services';
+import { authPagesPaths } from '../auth.constants';
+import { useAuthRedirect } from '../composables/use-auth-redirect.composable';
 
 export const ResetPasswordForm: Component<{
   onSubmit: (args: { newPassword: string }) => Promise<void>;
@@ -62,11 +64,12 @@ export const ResetPasswordPage: Component = () => {
   const [getHasPasswordBeenReset, setHasPasswordBeenReset] = createSignal(false);
   const [searchParams] = useSearchParams();
   const token = searchParams.token;
+  const { getLoginPathWithRedirect } = useAuthRedirect();
 
   const { t } = useI18n();
 
   if (!token || typeof token !== 'string') {
-    return <Navigate href="/login" />;
+    return <Navigate href={authPagesPaths.login} />;
   }
 
   const { config } = useConfig();
@@ -74,7 +77,7 @@ export const ResetPasswordPage: Component = () => {
 
   onMount(() => {
     if (!config.auth.isPasswordResetEnabled || !config.auth.providers.email.isEnabled) {
-      navigate('/login');
+      navigate(getLoginPathWithRedirect());
     }
   });
 
@@ -101,7 +104,7 @@ export const ResetPasswordPage: Component = () => {
             <>
               <div class="text-muted-foreground mt-1 mb-4">{t('auth.reset-password.reset')}</div>
 
-              <Button as={A} href="/login" class="w-full">
+              <Button as={A} href={getLoginPathWithRedirect()} class="w-full">
                 {t('auth.reset-password.back-to-login')}
                 <div class="i-tabler-login-2 ml-2 size-4" />
               </Button>

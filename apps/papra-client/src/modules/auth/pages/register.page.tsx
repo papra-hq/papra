@@ -18,12 +18,14 @@ import { authWithProvider, signUp } from '../auth.services';
 import { AuthLegalLinks } from '../components/legal-links.component';
 import { NoAuthProviderWarning } from '../components/no-auth-provider';
 import { SsoProviderButton } from '../components/sso-provider-button.component';
+import { useAuthRedirect } from '../composables/use-auth-redirect.composable';
 
 export const EmailRegisterForm: Component = () => {
   const { config } = useConfig();
   const navigate = useNavigate();
   const { t } = useI18n();
   const { createI18nApiError } = useI18nApiErrors({ t });
+  const { getPostAuthRedirect, getPathWithRedirect } = useAuthRedirect();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, name }) => {
@@ -31,8 +33,10 @@ export const EmailRegisterForm: Component = () => {
         email,
         password,
         name,
-        // This URL is where the user will be redirected after email verification
-        callbackURL: buildUrl({ baseUrl: config.baseUrl, path: authPagesPaths.emailVerification }),
+        callbackURL: buildUrl({
+          baseUrl: config.baseUrl,
+          path: getPathWithRedirect(authPagesPaths.emailVerification),
+        }),
       });
 
       if (error) {
@@ -40,11 +44,11 @@ export const EmailRegisterForm: Component = () => {
       }
 
       if (config.auth.isEmailVerificationRequired) {
-        navigate('/email-validation-required');
+        navigate(getPathWithRedirect(authPagesPaths.emailValidationRequired));
         return;
       }
 
-      navigate('/');
+      navigate(getPostAuthRedirect());
     },
     schema: v.object({
       email: v.pipe(
@@ -134,6 +138,7 @@ export const EmailRegisterForm: Component = () => {
 export const RegisterPage: Component = () => {
   const { config } = useConfig();
   const { t } = useI18n();
+  const { getRedirectPath, getLoginPathWithRedirect } = useAuthRedirect();
 
   if (!config.auth.isRegistrationEnabled) {
     return (
@@ -147,7 +152,7 @@ export const RegisterPage: Component = () => {
 
             <p class="text-muted-foreground mt-4">
               {t('auth.register.have-account')}{' '}
-              <Button variant="link" as={A} class="inline px-0" href="/login">
+              <Button variant="link" as={A} class="inline px-0" href={getLoginPathWithRedirect()}>
                 {t('auth.register.login')}
               </Button>
             </p>
@@ -160,7 +165,7 @@ export const RegisterPage: Component = () => {
   const [getShowEmailRegister, setShowEmailRegister] = createSignal(false);
 
   const registerWithProvider = async (provider: SsoProviderConfig) => {
-    await authWithProvider({ provider, config });
+    await authWithProvider({ provider, config, redirectPath: getRedirectPath() });
   };
 
   const getHasSsoProviders = () => getEnabledSsoProviderConfigs({ config }).length > 0;
@@ -212,7 +217,7 @@ export const RegisterPage: Component = () => {
 
           <p class="text-muted-foreground mt-4">
             {t('auth.register.have-account')}{' '}
-            <Button variant="link" as={A} class="inline px-0" href="/login">
+            <Button variant="link" as={A} class="inline px-0" href={getLoginPathWithRedirect()}>
               {t('auth.register.login')}
             </Button>
           </p>

@@ -7,6 +7,7 @@ import { buildTimeConfig, isDemoMode } from '../config/config';
 import { queryClient } from '../shared/query/query-client';
 import { trackingServices } from '../tracking/tracking.services';
 import { createDemoAuthClient } from './auth.demo.services';
+import { buildUrl } from '@corentinth/chisels';
 
 export function createAuthClient() {
   const client = createBetterAuthClient({
@@ -49,18 +50,25 @@ export const {
 export async function authWithProvider({
   provider,
   config,
+  redirectPath,
 }: {
   provider: SsoProviderConfig;
   config: Config;
+  redirectPath?: string;
 }) {
   const isCustomProvider = config.auth.providers.customs.some(
     ({ providerId }) => providerId === provider.key,
   );
 
+  const oauthCallbackUrl = buildUrl({
+    baseUrl: config.baseUrl,
+    path: redirectPath,
+  });
+
   if (isCustomProvider) {
     const { error } = await signIn.oauth2({
       providerId: provider.key,
-      callbackURL: config.baseUrl,
+      callbackURL: oauthCallbackUrl,
     });
 
     if (error) {
@@ -72,7 +80,7 @@ export async function authWithProvider({
 
   const { error } = await signIn.social({
     provider: provider.key as 'github' | 'google',
-    callbackURL: config.baseUrl,
+    callbackURL: oauthCallbackUrl,
   });
 
   if (error) {
