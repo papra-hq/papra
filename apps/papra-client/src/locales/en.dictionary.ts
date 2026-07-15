@@ -1224,11 +1224,11 @@ export const translations = {
 
   // Plan entitlements
 
-  'plan-entitlements.claim.selfhst.title': 'Claim your selfh.st perk',
+  'plan-entitlements.claim.selfhst.title': 'Claim your selfh.st Insider perk',
   'plan-entitlements.claim.selfhst.description':
-    "As a selfh.st premium supporter, you're entitled to a bigger Papra free tier: twice the document storage, email intakes and members on all the free organizations you own.",
+    "As a selfh.st Insider, you're entitled to a bigger Papra free tier: twice the document storage, email intakes and members on all the free organizations you own.",
   'plan-entitlements.claim.selfhst.email-notice':
-    'We will verify that your Papra account email {{ email }} has an active selfh.st premium subscription.',
+    'We will verify that your Papra account email {{ email }} has an active selfh.st Insider membership.',
   'plan-entitlements.claim.selfhst.claim-button': 'Claim perk',
   'plan-entitlements.claim.selfhst.success.title': 'Perk claimed!',
   'plan-entitlements.claim.selfhst.success.description':
@@ -1237,7 +1237,7 @@ export const translations = {
   'plan-entitlements.claim.selfhst.already-claimed.description':
     'Your selfh.st perk is already active on this account.',
   'plan-entitlements.claim.selfhst.errors.not-eligible':
-    'We could not find an active selfh.st premium subscription for {{ email }}. Make sure your Papra account uses the same email as your selfh.st account.',
+    'We could not find an active selfh.st Insider membership for {{ email }}. Make sure your Papra account uses the same email as your selfh.st account.',
   'plan-entitlements.claim.selfhst.errors.claims-disabled':
     'Claiming this perk is currently disabled. Please try again later.',
   'plan-entitlements.claim.selfhst.errors.rate-limited':
