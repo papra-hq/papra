@@ -9,7 +9,7 @@ export function buildAzureDiContentExtractionStrategy({
 }: {
   config: Config;
 }): ContentExtractionStrategy {
-  const { endpoint, apiKey, mimeTypesAllowList, pollingAttempts, pollingDelayMs } =
+  const { endpoint, apiKey, mimeTypesAllowList, pollingAttempts, pollingDelayMs, timeoutMs } =
     config.documentContentExtraction.strategy.azureDi;
 
   return {
@@ -35,6 +35,7 @@ export function buildAzureDiContentExtractionStrategy({
         apiKey,
         pollingAttempts,
         pollingDelayMs,
+        timeoutMs,
       });
 
       return { text };

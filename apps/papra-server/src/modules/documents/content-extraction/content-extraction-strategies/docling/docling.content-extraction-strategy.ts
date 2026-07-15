@@ -8,7 +8,8 @@ export function buildDoclingContentExtractionStrategy({
 }: {
   config: Config;
 }): ContentExtractionStrategy {
-  const { baseUrl, apiKey, mimeTypesAllowList } = config.documentContentExtraction.strategy.docling;
+  const { baseUrl, apiKey, mimeTypesAllowList, timeoutMs } =
+    config.documentContentExtraction.strategy.docling;
 
   return {
     canExtractTextFromDocument: async ({ file }) => {
@@ -23,6 +24,7 @@ export function buildDoclingContentExtractionStrategy({
         file,
         baseUrl,
         apiKey,
+        timeoutMs,
       });
 
       return { text };
