@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import { createTestClock } from '../shared/clock/clock.test-utils';
 import { createUsersRepository } from '../users/users.repository';
 import { createPlanEntitlementsRepository } from './plan-entitlements.repository';
@@ -11,6 +12,7 @@ import {
 import {
   claimUserPlanEntitlement,
   grantUserPlanEntitlement,
+  resolveOrganizationEntitlementCouponId,
   reverifyUserClaimedPlanEntitlements,
 } from './plan-entitlements.usecases';
 
@@ -562,6 +564,125 @@ describe('plan-entitlements usecases', () => {
 
       expect(user1Entitlements[0]?.expiresAt).to.eql(new Date('2026-06-10T00:00:00Z'));
       expect(user2Entitlements[0]?.expiresAt).to.eql(new Date('2026-06-11T12:00:00Z'));
+    });
+  });
+
+  describe('resolveOrganizationEntitlementCouponId', () => {
+    test('when the organization owner has an active entitlement whose driver defines a subscription discount coupon, the coupon id is resolved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'usr_1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        planEntitlements: [
+          {
+            id: 'pla_ent_aaaaaaaaaaaaaaaaaaaaaaaa',
+            userId: 'usr_1',
+            type: 'selfhst-premium',
+            source: 'user-claim',
+            grantedAt: new Date('2026-01-01'),
+          },
+        ],
+      });
+
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const planEntitlementDefinitionRegistry = createTestPlanEntitlementRegistry({
+        driver: createTestPlanEntitlementDriver({ subscriptionDiscountCouponId: 'coupon-1' }),
+      });
+
+      const { couponId } = await resolveOrganizationEntitlementCouponId({
+        organizationId: 'org_1',
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+      });
+
+      expect(couponId).to.eql('coupon-1');
+    });
+
+    test('when the entitlement driver does not define a subscription discount coupon, no coupon id is resolved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'usr_1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        planEntitlements: [
+          {
+            id: 'pla_ent_aaaaaaaaaaaaaaaaaaaaaaaa',
+            userId: 'usr_1',
+            type: 'selfhst-premium',
+            source: 'user-claim',
+            grantedAt: new Date('2026-01-01'),
+          },
+        ],
+      });
+
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const planEntitlementDefinitionRegistry = createTestPlanEntitlementRegistry({
+        driver: createTestPlanEntitlementDriver({ subscriptionDiscountCouponId: undefined }),
+      });
+
+      const { couponId } = await resolveOrganizationEntitlementCouponId({
+        organizationId: 'org_1',
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+      });
+
+      expect(couponId).to.eql(undefined);
+    });
+
+    test('when the organization has no active entitlement, no coupon id is resolved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'usr_1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+      });
+
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const planEntitlementDefinitionRegistry = createTestPlanEntitlementRegistry({
+        driver: createTestPlanEntitlementDriver({ subscriptionDiscountCouponId: 'coupon-1' }),
+      });
+
+      const { couponId } = await resolveOrganizationEntitlementCouponId({
+        organizationId: 'org_1',
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+      });
+
+      expect(couponId).to.eql(undefined);
+    });
+
+    test('when no driver exists for the entitlement type, no coupon id is resolved', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'usr_1', email: 'user-1@example.com' }],
+        organizations: [{ id: 'org_1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'org_1', userId: 'usr_1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        planEntitlements: [
+          {
+            id: 'pla_ent_aaaaaaaaaaaaaaaaaaaaaaaa',
+            userId: 'usr_1',
+            type: 'selfhst-premium',
+            source: 'user-claim',
+            grantedAt: new Date('2026-01-01'),
+          },
+        ],
+      });
+
+      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const planEntitlementDefinitionRegistry = createEmptyTestPlanEntitlementRegistry();
+
+      const { couponId } = await resolveOrganizationEntitlementCouponId({
+        organizationId: 'org_1',
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+      });
+
+      expect(couponId).to.eql(undefined);
     });
   });
 });

@@ -25,6 +25,7 @@ export const selfhstPlanEntitlementsFactory: PlanEntitlementDriverFactory = ({ c
       return isValid;
     },
     planId: PLAN_IDS.FREE_EXTENDED,
+    subscriptionDiscountCouponId: selfhstConfig.subscriptionDiscountCouponId,
     claimValidityDuration: SELFHST_ENTITLEMENT_CLAIM_VALIDITY_DURATION,
     ineligibilityGraceDuration: SELFHST_ENTITLEMENT_INELIGIBILITY_GRACE_DURATION,
   };

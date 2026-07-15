@@ -248,6 +248,40 @@ async function reverifyUserClaimedPlanEntitlement({
   });
 }
 
+export async function resolveOrganizationEntitlementCouponId({
+  organizationId,
+  planEntitlementsRepository,
+  planEntitlementDefinitionRegistry,
+  logger = createLogger({ namespace: 'resolveOrganizationEntitlementCouponId' }),
+}: {
+  organizationId: string;
+  planEntitlementsRepository: PlanEntitlementsRepository;
+  planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
+  logger?: Logger;
+}): Promise<{ couponId: string | undefined }> {
+  const { planEntitlement } = await planEntitlementsRepository.getActiveEntitlementForOrganization({
+    organizationId,
+  });
+
+  if (!planEntitlement) {
+    return { couponId: undefined };
+  }
+
+  const { type } = planEntitlement;
+
+  const { planEntitlementDriver } = planEntitlementDefinitionRegistry.getPlanEntitlementDriver({
+    type,
+  });
+
+  if (isNil(planEntitlementDriver)) {
+    logger.error({ type }, 'No plan entitlement driver found for type');
+
+    return { couponId: undefined };
+  }
+
+  return { couponId: planEntitlementDriver.subscriptionDiscountCouponId };
+}
+
 export async function resolveOrganizationPlanEntitlements({
   organizationId,
   planEntitlementsRepository,
