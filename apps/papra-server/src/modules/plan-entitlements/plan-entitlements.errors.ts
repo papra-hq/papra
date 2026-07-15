@@ -23,3 +23,9 @@ export const createPlanEntitlementNotEligibleError = createErrorFactory({
   code: 'plan_entitlements.not_eligible',
   statusCode: 400,
 });
+
+export const createPlanEntitlementClaimsNotEnabledError = createErrorFactory({
+  message: 'Claims for this entitlement are not enabled',
+  code: 'plan_entitlements.claims_not_enabled',
+  statusCode: 403,
+});

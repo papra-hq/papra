@@ -49,13 +49,12 @@ function registerGrantPlanEntitlementRoute({
       const usersRepository = createUsersRepository({ db });
       const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
 
-      await usersRepository.getUserByIdOrThrow({ userId });
-
       const { planEntitlement } = await grantUserPlanEntitlement({
         userId,
         type,
         expiresAt,
         source: PLAN_ENTITLEMENT_SOURCES.ADMIN,
+        usersRepository,
         planEntitlementsRepository,
         planEntitlementDefinitionRegistry,
       });
