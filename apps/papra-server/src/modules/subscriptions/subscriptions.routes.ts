@@ -15,6 +15,7 @@ import {
 import { FREE_PLANS_IDS, PLAN_IDS } from '../plans/plans.constants';
 import { getPriceIdForBillingInterval } from '../plans/plans.models';
 import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { resolveOrganizationEntitlementCouponId } from '../plan-entitlements/plan-entitlements.usecases';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
 import { getHeader } from '../shared/headers/headers.models';
@@ -150,6 +151,12 @@ function setupCreateCheckoutSessionRoute({
         organizationsRepository,
       });
 
+      const { couponId: entitlementCouponId } = await resolveOrganizationEntitlementCouponId({
+        organizationId,
+        planEntitlementsRepository,
+        planEntitlementDefinitionRegistry,
+      });
+
       // Step 1: Expire any active checkout sessions before creating a new one
       // This allows subscriptions to be canceled (can't cancel while checkout is active)
       await subscriptionsServices.expireActiveCheckoutSessions({ customerId });
@@ -180,6 +187,7 @@ function setupCreateCheckoutSessionRoute({
         customerId,
         priceId,
         organizationId,
+        entitlementCouponId,
       });
 
       return context.json({ checkoutUrl });

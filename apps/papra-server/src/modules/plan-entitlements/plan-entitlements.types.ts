@@ -5,6 +5,7 @@ export type PlanEntitlementDriver = {
   verifyEligibility: (params: { user: { id: string; email: string } }) => Promise<boolean>;
   getIsEnabledForNewClaims: () => Promise<boolean>;
   planId: PlanId;
+  subscriptionDiscountCouponId?: string;
   claimValidityDuration: Temporal.DurationLike;
   ineligibilityGraceDuration: Temporal.DurationLike;
 };

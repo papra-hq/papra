@@ -10,6 +10,13 @@ export const selfhstEntitlementsConfig = {
     env: 'SELFHST_ENTITLEMENTS_IS_ENABLED_FOR_NEW_CLAIMS',
     showInDocumentation: false,
   },
+  subscriptionDiscountCouponId: {
+    doc: 'The Stripe coupon ID applied at checkout for users holding a selfhst entitlement.',
+    schema: v.optional(v.string()),
+    default: undefined,
+    env: 'SELFHST_ENTITLEMENTS_SUBSCRIPTION_DISCOUNT_COUPON_ID',
+    showInDocumentation: false,
+  },
   entitlementVerification: {
     endpoint: {
       doc: 'The endpoint to verify the selfhst entitlement.',
