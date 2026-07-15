@@ -8,6 +8,7 @@ import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants'
 import { PLAN_IDS } from '../../plans/plans.constants';
 import { documentsTable } from '../documents.table';
 import { createInMemoryDocumentStorageServices } from '../storage/documents.storage.services.test-utils';
+import { getFileNameWithoutExtension } from '../../shared/files/file-names';
 
 describe('documents e2e', () => {
   describe('document upload', () => {
@@ -57,7 +58,7 @@ describe('documents e2e', () => {
       const { document } = (await createDocumentResponse.json()) as { document: Document };
 
       expect(document).to.include({
-        name: 'invoice.txt',
+        name: 'invoice',
         mimeType: 'text/plain',
         originalSha256Hash: 'd80fa6177614300f12fd51d065c06c2e1154653662aefb2794807ef31daf4039',
         originalSize: 18,
@@ -265,7 +266,7 @@ describe('documents e2e', () => {
         const { document } = (await createDocumentResponse.json()) as { document: Document };
 
         // Each filename should be preserved correctly
-        expect(document.name).to.eql(testCase.filename);
+        expect(document.name).to.eql(getFileNameWithoutExtension({ fileName: testCase.filename }));
         expect(document.originalName).to.eql(testCase.filename);
 
         // Retrieve the document
@@ -348,7 +349,7 @@ describe('documents e2e', () => {
       const { document } = (await createDocumentResponse.json()) as { document: Document };
 
       expect(document).to.include({
-        name: 'large-document.txt',
+        name: 'large-document',
         mimeType: 'text/plain',
         originalSize: fileSizeBytes,
       });
@@ -418,7 +419,7 @@ describe('documents e2e', () => {
       const { document } = (await createDocumentResponse.json()) as { document: Document };
 
       expect(document).to.include({
-        name: 'very-large-document.txt',
+        name: 'very-large-document',
         mimeType: 'text/plain',
         originalSize: fileSizeBytes,
       });
