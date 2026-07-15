@@ -1,7 +1,7 @@
 import type { RouteDefinition } from '@solidjs/router';
 import { Navigate, useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
-import { Match, Show, Switch } from 'solid-js';
+import { Match, Show, Switch, lazy } from 'solid-js';
 import { adminRoutes } from './modules/admin/admin.routes';
 import { ApiKeysPage } from './modules/api-keys/pages/api-keys.page';
 import { CreateApiKeyPage } from './modules/api-keys/pages/create-api-key.page';
@@ -245,6 +245,14 @@ export const routes: RouteDefinition[] = [
             component: CreateFirstOrganizationPage,
           },
         ],
+      },
+      {
+        path: '/claim/selfhst',
+        component: lazy(async () =>
+          import('./modules/plan-entitlements/pages/claim-selfhst.page').then((module) => ({
+            default: module.ClaimSelfhstPage,
+          })),
+        ),
       },
       adminRoutes,
     ],

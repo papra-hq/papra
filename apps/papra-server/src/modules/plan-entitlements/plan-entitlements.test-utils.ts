@@ -9,6 +9,8 @@ export function createTestPlanEntitlementDriver(
     planId: PLAN_IDS.FREE_EXTENDED,
     verifyEligibility: async () => true,
     getIsEnabledForNewClaims: async () => true,
+    claimValidityDuration: { hours: 45 * 24 },
+    ineligibilityGraceDuration: { hours: 7 * 24 },
     ...overrides,
   };
 }

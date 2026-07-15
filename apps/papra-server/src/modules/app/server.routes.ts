@@ -11,6 +11,7 @@ import { registerDocumentsRoutes } from '../documents/documents.routes';
 import { registerIntakeEmailsRoutes } from '../intake-emails/intake-emails.routes';
 import { registerInvitationsRoutes } from '../invitations/invitations.routes';
 import { registerOrganizationsRoutes } from '../organizations/organizations.routes';
+import { registerPlanEntitlementsRoutes } from '../plan-entitlements/plan-entitlements.routes';
 import { registerSubscriptionsRoutes } from '../subscriptions/subscriptions.routes';
 import { registerTaggingRulesRoutes } from '../tagging-rules/tagging-rules.routes';
 import { registerTagsRoutes } from '../tags/tags.routes';
@@ -40,5 +41,6 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerDocumentActivityRoutes(context);
   registerCustomPropertiesRoutes(context);
   registerDocumentShareLinksRoutes(context);
+  registerPlanEntitlementsRoutes(context);
   registerAdminRoutes(context);
 }
