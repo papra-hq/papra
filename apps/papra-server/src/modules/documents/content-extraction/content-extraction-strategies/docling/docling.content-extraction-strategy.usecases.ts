@@ -1,5 +1,4 @@
 import { ofetch } from 'ofetch';
-import { IN_MS } from '../../../../shared/units';
 import * as v from 'valibot';
 import { stripDoclingImagePlaceholders } from './docling.content-extraction-strategy.models';
 
@@ -14,10 +13,12 @@ export async function extractTextWithDoclingServer({
   file,
   baseUrl,
   apiKey,
+  timeoutMs,
 }: {
   file: File;
   baseUrl: string;
   apiKey?: string;
+  timeoutMs: number;
 }) {
   const url = `${baseUrl.replace(/\/$/, '')}/v1/convert/file`;
 
@@ -32,7 +33,7 @@ export async function extractTextWithDoclingServer({
       // 'Content-Type': 'multipart/form-data',
       ...(apiKey ? { 'X-Api-Key': apiKey } : {}),
     },
-    timeout: 30 * IN_MS.SECOND,
+    timeout: timeoutMs,
     body,
   });
 

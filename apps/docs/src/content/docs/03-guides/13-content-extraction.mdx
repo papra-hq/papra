@@ -62,6 +62,7 @@ MISTRAL_API_KEY=your-mistral-api-key
 | --- | --- | --- |
 | `MISTRAL_API_KEY` | – | API key for the Mistral API (shared with the Mistral LLM adapter). |
 | `MISTRAL_OCR_MODEL_NAME` | `mistral-ocr-latest` | The Mistral OCR model to use. |
+| `MISTRAL_OCR_REQUEST_TIMEOUT_MS` | `300000` | Request timeout in milliseconds. |
 | `MISTRAL_OCR_MIME_TYPES_ALLOW_LIST` | `application/pdf,image/*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
 
 ### Docling
@@ -77,6 +78,7 @@ DOCLING_BASE_URL=http://docling:5001
 | --- | --- | --- |
 | `DOCLING_BASE_URL` | `http://localhost:5001` | Base URL of the Docling service. |
 | `DOCLING_API_KEY` | – | Optional API key, sent as the `X-API-Key` header. On the Docling side this maps to `DOCLING_SERVE_API_KEY`. |
+| `DOCLING_REQUEST_TIMEOUT_MS` | `300000` | Request timeout in milliseconds. |
 | `DOCLING_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
 
 ### Azure Document Intelligence
@@ -93,6 +95,7 @@ AZURE_DI_API_KEY=your-azure-api-key
 | --- | --- | --- |
 | `AZURE_DI_ENDPOINT` | – | Endpoint of the Azure Document Intelligence resource. |
 | `AZURE_DI_API_KEY` | – | API key, sent as the `Ocp-Apim-Subscription-Key` header. |
+| `AZURE_DI_REQUEST_TIMEOUT_MS` | `300000` | Request timeout in milliseconds, applied to the job creation and polling requests. |
 | `AZURE_DI_MIME_TYPES_ALLOW_LIST` | `*` | Mime types this strategy handles. See [mime type filtering](#mime-type-filtering). |
 | `AZURE_DI_POLLING_ATTEMPTS` | `10` | Number of times to poll for the result of a processing job. |
 | `AZURE_DI_POLLING_DELAY_MS` | `2000` | Delay in milliseconds between polling attempts. |

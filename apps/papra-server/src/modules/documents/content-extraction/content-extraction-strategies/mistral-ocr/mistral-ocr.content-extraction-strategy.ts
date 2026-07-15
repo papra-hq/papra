@@ -9,7 +9,8 @@ export function buildMistralOcrContentExtractionStrategy({
 }: {
   config: Config;
 }): ContentExtractionStrategy {
-  const { modelName, mimeTypesAllowList } = config.documentContentExtraction.strategy.mistralOcr;
+  const { modelName, mimeTypesAllowList, timeoutMs } =
+    config.documentContentExtraction.strategy.mistralOcr;
   const { baseUrl, apiKey } = config.ai.adapters.mistral;
 
   return {
@@ -27,6 +28,7 @@ export function buildMistralOcrContentExtractionStrategy({
         modelName,
         baseUrl,
         apiKey,
+        timeoutMs,
       });
 
       return { text, extractionContext: { processedPagesCount } };

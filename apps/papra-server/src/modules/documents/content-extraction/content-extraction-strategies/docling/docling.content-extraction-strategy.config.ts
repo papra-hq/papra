@@ -1,6 +1,8 @@
 import * as v from 'valibot';
 import type { AppConfigDefinition } from '../../../../config/config.types';
 import { urlSchema } from '../../../../config/config.schemas';
+import { coercedStrictlyPositiveIntegerSchema } from '../../../../shared/schemas/number.schemas';
+import { IN_MS } from '../../../../shared/units';
 
 export const doclingConfig = {
   baseUrl: {
@@ -14,6 +16,12 @@ export const doclingConfig = {
     env: 'DOCLING_API_KEY',
     schema: v.optional(v.string()),
     default: undefined,
+  },
+  timeoutMs: {
+    doc: 'The timeout in milliseconds for requests to the Docling service.',
+    env: 'DOCLING_REQUEST_TIMEOUT_MS',
+    schema: coercedStrictlyPositiveIntegerSchema,
+    default: 5 * IN_MS.MINUTE,
   },
   mimeTypesAllowList: {
     doc: 'The list of mime types that the Docling strategy will be used for. If the document mime type is not in this list, the strategy will be skipped. Comma separated list. Supports wildcards, e.g. "image/*" matches all image mime types, and "*" matches all formats. Prefix an entry with "!" to negate it, e.g. "*,!image/png" allows everything except PNG. Negations always take precedence over allows, even more specific ones (e.g. "image/png,!image/*" rejects PNG).',
