@@ -8,7 +8,7 @@ import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextArea } from '@/modules/ui/components/textarea';
 import { TextFieldRoot } from '@/modules/ui/components/textfield';
-import { updateDocument } from '../documents.services';
+import { reprocessDocument, updateDocument } from '../documents.services';
 
 export const DocumentContentEditionPanel: Component<{
   documentId: string;
@@ -37,6 +37,23 @@ export const DocumentContentEditionPanel: Component<{
     },
     onError: () => {
       createToast({ type: 'error', message: 'Failed to update document content' });
+    },
+  }));
+
+  const reprocessMutation = useMutation(() => ({
+    mutationFn: async () =>
+      reprocessDocument({
+        documentId: props.documentId,
+        organizationId: props.organizationId,
+      }),
+    onSuccess: () => {
+      createToast({ type: 'success', message: t('documents.actions.recalculate-ocr-success') });
+      void queryClient.invalidateQueries({
+        queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
+      });
+    },
+    onError: () => {
+      createToast({ type: 'error', message: t('documents.actions.recalculate-ocr-error') });
     },
   }));
 
@@ -69,6 +86,13 @@ export const DocumentContentEditionPanel: Component<{
         />
       </TextFieldRoot>
       <div class="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          onClick={() => reprocessMutation.mutate()}
+          isLoading={reprocessMutation.isPending}
+        >
+          {t('documents.actions.recalculate-ocr')}
+        </Button>
         <Show
           when={isEditing()}
           fallback={

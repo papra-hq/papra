@@ -422,6 +422,9 @@ export const translations = {
   'documents.actions.cancel': 'Cancel',
   'documents.actions.save': 'Save',
   'documents.actions.saving': 'Saving...',
+  'documents.actions.recalculate-ocr': 'Recalculate OCR',
+  'documents.actions.recalculate-ocr-success': 'OCR recalculation started',
+  'documents.actions.recalculate-ocr-error': 'Failed to start OCR recalculation',
   'documents.content.alert':
     'The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.',
   'documents.content.empty-placeholder':
