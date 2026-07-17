@@ -8,9 +8,11 @@ export type ApiClient = ReturnType<typeof createApiClient>;
 export function createApiClient({
   baseUrl,
   getAuthCookie,
+  customHeaders = {},
 }: {
   baseUrl: string;
   getAuthCookie: () => string;
+  customHeaders?: Record<string, string>;
 }) {
   return async <T, R extends ResponseType = 'json'>({
     path,
@@ -21,6 +23,7 @@ export function createApiClient({
       url: path,
       credentials: Platform.OS === 'web' ? 'include' : 'omit',
       headers: {
+        ...customHeaders,
         ...(Platform.OS === 'web'
           ? {}
           : {

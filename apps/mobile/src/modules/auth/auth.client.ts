@@ -7,9 +7,18 @@ import { APP_SCHEME } from '../app/app.constants';
 
 export type AuthClient = ReturnType<typeof createAuthClient>;
 
-export function createAuthClient({ baseUrl }: { baseUrl: string }) {
+export function createAuthClient({
+  baseUrl,
+  customHeaders = {},
+}: {
+  baseUrl: string;
+  customHeaders?: Record<string, string>;
+}) {
   return createBetterAuthClient({
     baseURL: baseUrl,
+    fetchOptions: {
+      headers: customHeaders,
+    },
     plugins: [
       twoFactorClient(),
       expoClient({
