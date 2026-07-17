@@ -1,7 +1,8 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
+import type { CustomHeader } from '../config.models';
 import { safelySync } from '@corentinth/chisels';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -20,8 +21,9 @@ import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { MANAGED_SERVER_URL } from '../config.constants';
 import { configLocalStorage } from '../config.local-storage';
-import { validateServerUrl } from '../config.models';
+import { validateCustomHeaders, validateServerUrl } from '../config.models';
 import { pingServer } from '../config.services';
+import { configQueryOptions } from '../config.queries';
 
 function getDefaultCustomServerUrl() {
   if (!__DEV__) {
@@ -41,10 +43,28 @@ export function ServerSelectionScreen() {
 
   const [selectedOption, setSelectedOption] = useState<'managed' | 'self-hosted'>('managed');
   const [customUrl, setCustomUrl] = useState(getDefaultCustomServerUrl());
+  const [customHeaderRows, setCustomHeaderRows] = useState<(CustomHeader & { id: number })[]>([]);
+  const [areCustomHeadersExpanded, setAreCustomHeadersExpanded] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
+  const nextHeaderRowId = useRef(0);
 
   const isSelfHosted = selectedOption === 'self-hosted';
   const canContinue = !isValidating && (!isSelfHosted || customUrl.trim() !== '');
+
+  const addCustomHeaderRow = () => {
+    const id = nextHeaderRowId.current;
+    nextHeaderRowId.current += 1;
+
+    setCustomHeaderRows((rows) => [...rows, { id, name: '', value: '' }]);
+  };
+
+  const updateCustomHeaderRow = ({ id, ...patch }: { id: number } & Partial<CustomHeader>) => {
+    setCustomHeaderRows((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
+  };
+
+  const deleteCustomHeaderRow = ({ id }: { id: number }) => {
+    setCustomHeaderRows((rows) => rows.filter((row) => row.id !== id));
+  };
 
   const handleContinue = async () => {
     const rawUrl = isSelfHosted ? customUrl : MANAGED_SERVER_URL;
@@ -63,8 +83,21 @@ export function ServerSelectionScreen() {
       return;
     }
 
+    const [customHeaders, headersValidationError] = safelySync(() =>
+      validateCustomHeaders({ headers: isSelfHosted ? customHeaderRows : [] }),
+    );
+
+    if (headersValidationError) {
+      showAlert({
+        title: 'Invalid Custom Header',
+        message: headersValidationError.message,
+      });
+      setIsValidating(false);
+      return;
+    }
+
     try {
-      await pingServer({ url });
+      await pingServer({ url, headers: customHeaders });
     } catch {
       showAlert({
         title: 'Connection Failed',
@@ -75,14 +108,19 @@ export function ServerSelectionScreen() {
     }
 
     try {
-      await configLocalStorage.setApiServerBaseUrl({ apiServerBaseUrl: url });
-      await queryClient.invalidateQueries({ queryKey: ['api-server-url'] });
+      await configLocalStorage.setApiServerConfig({
+        apiServerConfig: { baseUrl: url, customHeaders },
+      });
+      await queryClient.invalidateQueries({ queryKey: configQueryOptions.queryKey });
 
       router.replace('/auth/login');
-    } catch {
+    } catch (error) {
       showAlert({
         title: 'Something Went Wrong',
-        message: 'Could not save the server configuration. Please try again.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Could not save the server configuration. Please try again.',
       });
     } finally {
       setIsValidating(false);
@@ -153,6 +191,76 @@ export function ServerSelectionScreen() {
                 keyboardType="url"
                 editable={!isValidating}
               />
+
+              <TouchableOpacity
+                style={styles.customHeadersToggle}
+                onPress={() => setAreCustomHeadersExpanded((isExpanded) => !isExpanded)}
+                disabled={isValidating}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: areCustomHeadersExpanded, disabled: isValidating }}
+              >
+                <Icon
+                  name={areCustomHeadersExpanded ? 'chevron-down' : 'chevron-right'}
+                  size={18}
+                  color={themeColors.mutedForeground}
+                />
+                <Text style={styles.customHeadersToggleLabel}>
+                  Custom headers
+                  {customHeaderRows.length > 0 ? ` (${customHeaderRows.length})` : ''}
+                </Text>
+              </TouchableOpacity>
+
+              {areCustomHeadersExpanded && (
+                <View style={styles.customHeadersList}>
+                  {customHeaderRows.map((row) => (
+                    <View key={row.id} style={styles.customHeaderRow}>
+                      <TextInput
+                        style={[styles.input, styles.customHeaderInput]}
+                        placeholder="Name"
+                        placeholderTextColor={themeColors.mutedForeground}
+                        value={row.name}
+                        onChangeText={(name) => updateCustomHeaderRow({ id: row.id, name })}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        editable={!isValidating}
+                      />
+                      <TextInput
+                        style={[
+                          styles.input,
+                          styles.customHeaderInput,
+                          styles.customHeaderValueInput,
+                        ]}
+                        placeholder="Value"
+                        placeholderTextColor={themeColors.mutedForeground}
+                        value={row.value}
+                        onChangeText={(value) => updateCustomHeaderRow({ id: row.id, value })}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        editable={!isValidating}
+                      />
+                      <TouchableOpacity
+                        style={styles.customHeaderDeleteButton}
+                        onPress={() => deleteCustomHeaderRow({ id: row.id })}
+                        disabled={isValidating}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Delete header ${row.name || 'row'}`}
+                      >
+                        <Icon name="trash-2" size={18} color={themeColors.mutedForeground} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+
+                  <TouchableOpacity
+                    style={styles.addHeaderButton}
+                    onPress={addCustomHeaderRow}
+                    disabled={isValidating}
+                    accessibilityRole="button"
+                  >
+                    <Icon name="plus" size={16} color={themeColors.foreground} />
+                    <Text style={styles.addHeaderButtonLabel}>Add header</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </>
           )}
         </View>
@@ -261,6 +369,56 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       fontSize: 16,
       color: themeColors.foreground,
       backgroundColor: themeColors.secondaryBackground,
+    },
+    customHeadersToggle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingVertical: 8,
+    },
+    customHeadersToggleLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: themeColors.mutedForeground,
+    },
+    customHeadersList: {
+      gap: 8,
+    },
+    customHeaderRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    customHeaderInput: {
+      flex: 1,
+      height: 44,
+      paddingHorizontal: 12,
+      fontSize: 14,
+    },
+    customHeaderValueInput: {
+      flex: 1.4,
+    },
+    customHeaderDeleteButton: {
+      height: 44,
+      width: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    addHeaderButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      height: 44,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: themeColors.border,
+      borderRadius: 8,
+    },
+    addHeaderButtonLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: themeColors.foreground,
     },
     footer: {
       paddingHorizontal: 24,

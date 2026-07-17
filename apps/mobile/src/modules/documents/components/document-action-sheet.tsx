@@ -16,7 +16,6 @@ import {
   View,
 } from 'react-native';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { RenameDocumentDialog } from '@/modules/documents/components/rename-document-dialog';
 import {
   deleteDocument,
@@ -79,16 +78,6 @@ export function DocumentActionSheet({
   const handleDownloadAndShare = async () => {
     onClose();
 
-    const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-
-    if (baseUrl == null) {
-      showAlert({
-        title: 'Error',
-        message: 'Base URL not found',
-      });
-      return;
-    }
-
     const canShare = await Sharing.isAvailableAsync();
     if (!canShare) {
       showAlert({
@@ -102,7 +91,6 @@ export function DocumentActionSheet({
       const fileUri = await fetchDocumentFile({
         document,
         organizationId: document.organizationId,
-        baseUrl,
         authClient,
       });
 

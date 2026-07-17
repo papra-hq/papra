@@ -4,6 +4,7 @@ import type { AuthClient } from '../auth/auth.client';
 import type { Document } from './documents.types';
 import * as FileSystem from 'expo-file-system/legacy';
 import { coerceDates } from '../api/api.models';
+import { configLocalStorage } from '../config/config.local-storage';
 
 export function getFormData(pojo: Record<string, string | FormDataValue | Blob>): FormData {
   const formData = new FormData();
@@ -133,17 +134,23 @@ export async function renameDocument({
 export async function fetchDocumentFile({
   document,
   organizationId,
-  baseUrl,
   authClient,
 }: {
   document: CoerceDates<Document>;
   organizationId: string;
-  baseUrl: string;
   authClient: AuthClient;
 }) {
+  const apiServerConfig = await configLocalStorage.getApiServerConfig();
+
+  if (apiServerConfig == null) {
+    throw new Error('Server configuration not found');
+  }
+
+  const { baseUrl, customHeaders } = apiServerConfig;
   const cookies = authClient.getCookie();
   const uri = `${baseUrl}/api/organizations/${organizationId}/documents/${document.id}/file`;
   const headers = {
+    ...customHeaders,
     'Cookie': cookies,
     'Content-Type': document.mimeType,
   };

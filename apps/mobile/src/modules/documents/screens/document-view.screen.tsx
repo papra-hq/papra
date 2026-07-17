@@ -18,7 +18,6 @@ import {
 import Pdf from 'react-native-pdf';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
@@ -176,15 +175,9 @@ export default function DocumentViewScreen() {
         throw new Error('Document not loaded');
       }
 
-      const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-      if (baseUrl == null) {
-        throw new Error('Base URL not found');
-      }
-
       const fileUri = await fetchDocumentFile({
         document: documentQuery.data.document,
         organizationId,
-        baseUrl,
         authClient,
       });
 

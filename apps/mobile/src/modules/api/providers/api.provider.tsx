@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createApiClient } from '@/modules/api/api.client';
 import { createAuthClient } from '@/modules/auth/auth.client';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
+import { configQueryOptions } from '@/modules/config/config.queries';
 
 type ApiProviderProps = {
   children: ReactNode;
@@ -18,22 +18,25 @@ export function ApiProvider({ children }: ApiProviderProps) {
   const [authClient, setAuthClient] = useState<AuthClient | undefined>(undefined);
   const [apiClient, setApiClient] = useState<ApiClient | undefined>(undefined);
 
-  const { data: baseUrl } = useQuery({
-    queryKey: ['api-server-url'],
-    queryFn: configLocalStorage.getApiServerBaseUrl,
-  });
+  const { data: apiServerConfig } = useQuery(configQueryOptions);
 
   useEffect(() => {
-    if (baseUrl == null) {
+    if (apiServerConfig == null) {
       return;
     }
 
-    const authClient = createAuthClient({ baseUrl });
+    const { baseUrl, customHeaders } = apiServerConfig;
+
+    const authClient = createAuthClient({ baseUrl, customHeaders });
     setAuthClient(() => authClient);
 
-    const apiClient = createApiClient({ baseUrl, getAuthCookie: () => authClient.getCookie() });
+    const apiClient = createApiClient({
+      baseUrl,
+      customHeaders,
+      getAuthCookie: () => authClient.getCookie(),
+    });
     setApiClient(() => apiClient);
-  }, [baseUrl]);
+  }, [apiServerConfig]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { validateServerUrl } from './config.models';
+import { validateCustomHeaders, validateServerUrl } from './config.models';
 
 describe('config models', () => {
   describe('validateServerUrl', () => {
@@ -42,6 +42,107 @@ describe('config models', () => {
       expect(validateServerUrl({ url: 'https://example.com/papra' })).to.eql(
         'https://example.com/papra',
       );
+    });
+  });
+
+  describe('validateCustomHeaders', () => {
+    test('headers are trimmed and returned as a record', () => {
+      expect(
+        validateCustomHeaders({
+          headers: [
+            { name: '  X-Api-Key  ', value: '  secret  ' },
+            { name: 'Authorization', value: 'Basic dXNlcjpwYXNz' },
+          ],
+        }),
+      ).to.eql({
+        'X-Api-Key': 'secret',
+        'Authorization': 'Basic dXNlcjpwYXNz',
+      });
+    });
+
+    test('fully empty rows are ignored', () => {
+      expect(
+        validateCustomHeaders({
+          headers: [
+            { name: '', value: '' },
+            { name: '  ', value: '' },
+            { name: 'X-Foo', value: 'bar' },
+          ],
+        }),
+      ).to.eql({ 'X-Foo': 'bar' });
+
+      expect(validateCustomHeaders({ headers: [] })).to.eql({});
+    });
+
+    test('a header with a value but no name is rejected', () => {
+      expect(() => validateCustomHeaders({ headers: [{ name: '', value: 'foo' }] })).toThrow(
+        'Header names cannot be empty.',
+      );
+    });
+
+    test('header names with invalid characters are rejected', () => {
+      expect(() => validateCustomHeaders({ headers: [{ name: 'X Foo', value: 'bar' }] })).toThrow(
+        'The header name "X Foo" is invalid.',
+      );
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'X-Foo:', value: 'bar' }] }),
+      ).toThrow();
+      expect(() => validateCustomHeaders({ headers: [{ name: 'X-Fôo', value: 'bar' }] })).toThrow();
+    });
+
+    test('headers managed by the app are denied, regardless of casing', () => {
+      expect(() => validateCustomHeaders({ headers: [{ name: 'Cookie', value: 'a=b' }] })).toThrow(
+        'The header "Cookie" is managed by the app and cannot be overridden.',
+      );
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'cookie', value: 'a=b' }] }),
+      ).toThrow();
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'HOST', value: 'evil.com' }] }),
+      ).toThrow();
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'Content-Type', value: 'text/plain' }] }),
+      ).toThrow();
+      expect(() => validateCustomHeaders({ headers: [{ name: 'Origin', value: 'x' }] })).toThrow();
+      expect(() => validateCustomHeaders({ headers: [{ name: 'Referer', value: 'x' }] })).toThrow();
+    });
+
+    test('headers with denied prefixes are rejected', () => {
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'Proxy-Authorization', value: 'x' }] }),
+      ).toThrow();
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'Sec-Fetch-Mode', value: 'cors' }] }),
+      ).toThrow();
+      expect(() =>
+        validateCustomHeaders({
+          headers: [{ name: 'Access-Control-Request-Method', value: 'GET' }],
+        }),
+      ).toThrow();
+    });
+
+    test('values containing newlines are rejected', () => {
+      expect(() =>
+        validateCustomHeaders({ headers: [{ name: 'X-Foo', value: 'bar\r\nbaz' }] }),
+      ).toThrow('The value of the header "X-Foo" is invalid.');
+    });
+
+    test('common reverse-proxy auth headers are allowed', () => {
+      expect(
+        validateCustomHeaders({
+          headers: [
+            { name: 'Authorization', value: 'Bearer token' },
+            { name: 'CF-Access-Client-Id', value: 'id' },
+            { name: 'CF-Access-Client-Secret', value: 'secret' },
+            { name: 'X-Forwarded-User', value: 'corentin' },
+          ],
+        }),
+      ).to.eql({
+        'Authorization': 'Bearer token',
+        'CF-Access-Client-Id': 'id',
+        'CF-Access-Client-Secret': 'secret',
+        'X-Forwarded-User': 'corentin',
+      });
     });
   });
 });

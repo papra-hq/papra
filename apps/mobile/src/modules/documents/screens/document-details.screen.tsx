@@ -18,7 +18,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Icon } from '@/modules/ui/components/icon';
@@ -146,12 +145,7 @@ export function DocumentDetailsScreen() {
       throw new Error('Document not loaded');
     }
 
-    const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-    if (baseUrl == null) {
-      throw new Error('Base URL not found');
-    }
-
-    return fetchDocumentFile({ document, organizationId, baseUrl, authClient });
+    return fetchDocumentFile({ document, organizationId, authClient });
   };
 
   const handleOpen = () => {
