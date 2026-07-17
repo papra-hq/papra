@@ -299,8 +299,9 @@ export function DocumentDetailsScreen() {
             <Text style={styles.sectionTitle}>Tags</Text>
             <View style={styles.tagsContainer}>
               {document.tags.map((tag) => (
-                <View key={tag.id} style={[styles.tag, { backgroundColor: `${tag.color}10` }]}>
-                  <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
+                <View key={tag.id} style={styles.tag}>
+                  <View style={[styles.tagDot, { backgroundColor: tag.color }]} />
+                  <Text style={styles.tagText}>{tag.name}</Text>
                 </View>
               ))}
             </View>
@@ -514,14 +515,24 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       gap: 8,
     },
     tag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
       paddingHorizontal: 10,
       paddingVertical: 6,
       borderRadius: 6,
+      backgroundColor: themeColors.muted,
+    },
+    tagDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
     },
     tagText: {
       fontSize: 13,
       fontWeight: '500',
       lineHeight: 13,
+      color: themeColors.mutedForeground,
     },
     card: {
       backgroundColor: themeColors.secondaryBackground,
