@@ -10,6 +10,8 @@ import { DocumentActionSheet } from '@/modules/documents/components/document-act
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
+const maxVisibleTags = 3;
+
 type DocumentsListProps = {
   documents: CoerceDates<Document>[];
   emptyState: {
@@ -94,19 +96,26 @@ export function DocumentsList({
                       <Icon name="upload" size={12} color={themeColors.primary} />
                     </View>
                   )}
-                  {item.tags.length > 0 && (
-                    <View style={styles.tagsContainer}>
-                      {item.tags.map((tag) => (
-                        <View
-                          key={tag.id}
-                          style={[styles.tag, { backgroundColor: `${tag.color}10` }]}
-                        >
-                          <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
                 </View>
+                {item.tags.length > 0 && (
+                  <View style={styles.tagsContainer}>
+                    {item.tags.slice(0, maxVisibleTags).map((tag) => (
+                      <View
+                        key={tag.id}
+                        style={[styles.tag, { backgroundColor: `${tag.color}10` }]}
+                      >
+                        <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
+                      </View>
+                    ))}
+                    {item.tags.length > maxVisibleTags && (
+                      <View style={[styles.tag, { backgroundColor: themeColors.muted }]}>
+                        <Text style={[styles.tagText, { color: themeColors.mutedForeground }]}>
+                          +{item.tags.length - maxVisibleTags}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
               <TouchableOpacity
                 style={styles.moreButton}
@@ -195,6 +204,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: 8,
+      marginTop: 6,
     },
     tag: {
       paddingHorizontal: 10,
