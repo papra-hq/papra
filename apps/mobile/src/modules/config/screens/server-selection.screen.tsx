@@ -111,6 +111,10 @@ export function ServerSelectionScreen() {
       await configLocalStorage.setApiServerConfig({
         apiServerConfig: { baseUrl: url, customHeaders },
       });
+
+      queryClient.removeQueries({
+        predicate: ({ queryKey }) => queryKey !== configQueryOptions.queryKey,
+      });
       await queryClient.invalidateQueries({ queryKey: configQueryOptions.queryKey });
 
       router.replace('/auth/login');
