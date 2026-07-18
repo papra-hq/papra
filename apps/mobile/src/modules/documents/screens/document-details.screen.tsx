@@ -20,6 +20,7 @@ import * as Sharing from 'expo-sharing';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -299,10 +300,7 @@ export function DocumentDetailsScreen() {
             <Text style={styles.sectionTitle}>Tags</Text>
             <View style={styles.tagsContainer}>
               {document.tags.map((tag) => (
-                <View key={tag.id} style={styles.tag}>
-                  <View style={[styles.tagDot, { backgroundColor: tag.color }]} />
-                  <Text style={styles.tagText}>{tag.name}</Text>
-                </View>
+                <Tag key={tag.id} name={tag.name} color={tag.color} />
               ))}
             </View>
           </View>
@@ -513,26 +511,6 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: 8,
-    },
-    tag: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 6,
-      backgroundColor: themeColors.muted,
-    },
-    tagDot: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
-    },
-    tagText: {
-      fontSize: 13,
-      fontWeight: '500',
-      lineHeight: 13,
-      color: themeColors.mutedForeground,
     },
     card: {
       backgroundColor: themeColors.secondaryBackground,
