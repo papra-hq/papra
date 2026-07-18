@@ -48,9 +48,6 @@ export const DocumentContentEditionPanel: Component<{
       }),
     onSuccess: () => {
       createToast({ type: 'success', message: t('documents.actions.recalculate-ocr-success') });
-      void queryClient.invalidateQueries({
-        queryKey: ['organizations', props.organizationId, 'documents', props.documentId],
-      });
     },
     onError: () => {
       createToast({ type: 'error', message: t('documents.actions.recalculate-ocr-error') });
@@ -90,6 +87,7 @@ export const DocumentContentEditionPanel: Component<{
           variant="outline"
           onClick={() => reprocessMutation.mutate()}
           isLoading={reprocessMutation.isPending}
+          disabled={isEditing()}
         >
           {t('documents.actions.recalculate-ocr')}
         </Button>
