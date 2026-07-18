@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
+import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
@@ -100,15 +101,10 @@ export function DocumentsList({
                 {item.tags.length > 0 && (
                   <View style={styles.tagsContainer}>
                     {item.tags.slice(0, maxVisibleTags).map((tag) => (
-                      <View key={tag.id} style={styles.tag}>
-                        <View style={[styles.tagDot, { backgroundColor: tag.color }]} />
-                        <Text style={styles.tagText}>{tag.name}</Text>
-                      </View>
+                      <Tag key={tag.id} name={tag.name} color={tag.color} />
                     ))}
                     {item.tags.length > maxVisibleTags && (
-                      <View style={styles.tag}>
-                        <Text style={styles.tagText}>+{item.tags.length - maxVisibleTags}</Text>
-                      </View>
+                      <Tag name={`+${item.tags.length - maxVisibleTags}`} />
                     )}
                   </View>
                 )}
@@ -201,26 +197,6 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexWrap: 'wrap',
       gap: 8,
       marginTop: 6,
-    },
-    tag: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 6,
-      backgroundColor: themeColors.muted,
-    },
-    tagDot: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
-    },
-    tagText: {
-      fontSize: 12,
-      fontWeight: '500',
-      lineHeight: 12,
-      color: themeColors.mutedForeground,
     },
     unsyncedBadge: {
       flexDirection: 'row',
