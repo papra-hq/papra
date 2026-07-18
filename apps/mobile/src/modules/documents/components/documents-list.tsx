@@ -10,6 +10,8 @@ import { DocumentActionSheet } from '@/modules/documents/components/document-act
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
+const maxVisibleTags = 3;
+
 type DocumentsListProps = {
   documents: CoerceDates<Document>[];
   emptyState: {
@@ -94,19 +96,22 @@ export function DocumentsList({
                       <Icon name="upload" size={12} color={themeColors.primary} />
                     </View>
                   )}
-                  {item.tags.length > 0 && (
-                    <View style={styles.tagsContainer}>
-                      {item.tags.map((tag) => (
-                        <View
-                          key={tag.id}
-                          style={[styles.tag, { backgroundColor: `${tag.color}10` }]}
-                        >
-                          <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
                 </View>
+                {item.tags.length > 0 && (
+                  <View style={styles.tagsContainer}>
+                    {item.tags.slice(0, maxVisibleTags).map((tag) => (
+                      <View key={tag.id} style={styles.tag}>
+                        <View style={[styles.tagDot, { backgroundColor: tag.color }]} />
+                        <Text style={styles.tagText}>{tag.name}</Text>
+                      </View>
+                    ))}
+                    {item.tags.length > maxVisibleTags && (
+                      <View style={styles.tag}>
+                        <Text style={styles.tagText}>+{item.tags.length - maxVisibleTags}</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
               <TouchableOpacity
                 style={styles.moreButton}
@@ -195,16 +200,27 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: 8,
+      marginTop: 6,
     },
     tag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
       paddingHorizontal: 10,
       paddingVertical: 6,
       borderRadius: 6,
+      backgroundColor: themeColors.muted,
+    },
+    tagDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
     },
     tagText: {
       fontSize: 12,
       fontWeight: '500',
       lineHeight: 12,
+      color: themeColors.mutedForeground,
     },
     unsyncedBadge: {
       flexDirection: 'row',
