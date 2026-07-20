@@ -27,6 +27,7 @@ import { userPlanEntitlementsMigration } from './list/0024-user-plan-entitlement
 import { addOrganizationSettingsTableMigration } from './list/0025-add-organization-settings-table.migration';
 import { addIndexesMigration } from './list/0026-add-indexes.migration';
 import { foldersMigration } from './list/0027-folders.migration';
+import { backupsMigration } from './list/0028-backups.migration';
 
 export const migrations: Migration[] = [
   initialSchemaSetupMigration,
@@ -56,4 +57,5 @@ export const migrations: Migration[] = [
   addOrganizationSettingsTableMigration,
   addIndexesMigration,
   foldersMigration,
+  backupsMigration,
 ];

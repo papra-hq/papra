@@ -7,6 +7,7 @@ import * as v from 'valibot';
 import { authConfig } from '../app/auth/auth.config';
 import { ensureAuthSecretIsNotDefaultInProduction } from '../app/auth/auth.config.models';
 import { databaseConfig } from '../app/database/database.config';
+import { backupsConfig } from '../backups/backups.config';
 import { customPropertiesConfig } from '../custom-properties/custom-properties.config';
 import { documentShareLinksConfig } from '../document-share-links/document-share-links.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
@@ -179,6 +180,7 @@ export const configDefinition = {
   planEntitlements: planEntitlementsConfig,
   ai: aiConfig,
   autoTagging: autoTaggingConfig,
+  backups: backupsConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

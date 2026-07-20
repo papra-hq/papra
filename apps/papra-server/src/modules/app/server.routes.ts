@@ -1,6 +1,7 @@
 import type { RouteDefinitionContext } from './server.types';
 import { registerAdminRoutes } from '../admin/admin.routes';
 import { registerApiKeysRoutes } from '../api-keys/api-keys.routes';
+import { registerBackupsRoutes } from '../backups/backups.routes';
 import { registerConfigRoutes } from '../config/config.routes';
 import { registerCustomPropertiesRoutes } from '../custom-properties/custom-properties.routes';
 import { registerDocumentShareLinksRoutes } from '../document-share-links/document-share-links.routes';
@@ -43,4 +44,5 @@ export function registerRoutes(context: RouteDefinitionContext) {
   registerCustomPropertiesRoutes(context);
   registerDocumentShareLinksRoutes(context);
   registerAdminRoutes(context);
+  registerBackupsRoutes(context);
 }

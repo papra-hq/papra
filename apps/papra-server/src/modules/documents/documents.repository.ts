@@ -34,6 +34,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationDocuments,
       getAllOrganizationDocumentsIterator,
       getAllOrganizationUndeletedDocumentsIterator,
+      getAllOrganizationUndeletedDocumentsForBackup,
       updateDocument,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
@@ -431,6 +432,27 @@ function getAllOrganizationDocumentsIterator({
   }>;
 }
 
+// Full-row (not just id + storage key) fetch of every non-deleted document in an
+// org. Used by the backups module to build a backup manifest + know which
+// storage keys to download. Not paginated: for very large libraries this should
+// move to the iterator pattern used just below, but for typical self-hosted
+// instance sizes a single query is simpler and fine.
+async function getAllOrganizationUndeletedDocumentsForBackup({
+  organizationId,
+  db,
+}: {
+  organizationId: string;
+  db: Database;
+}) {
+  const documents = await db
+    .select()
+    .from(documentsTable)
+    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
+    .orderBy(documentsTable.createdAt);
+
+  return { documents };
+}
+
 function getAllOrganizationUndeletedDocumentsIterator({
   organizationId,
   batchSize = 100,
@@ -460,6 +482,7 @@ async function updateDocument({
   documentDate,
   notes,
   folderId,
+  createdAt,
   db,
 }: {
   documentId: string;
@@ -469,11 +492,14 @@ async function updateDocument({
   documentDate?: Date | null;
   notes?: string;
   folderId?: string | null;
+  // Only ever set by backup restore, to preserve the original document's dates
+  // instead of leaving it stamped with the moment it was restored.
+  createdAt?: Date;
   db: Database;
 }) {
   const [document] = await db
     .update(documentsTable)
-    .set(omitUndefined({ name, content, documentDate, notes, folderId }))
+    .set(omitUndefined({ name, content, documentDate, notes, folderId, createdAt }))
     .where(
       and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
     )

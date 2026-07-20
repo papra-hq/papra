@@ -152,9 +152,29 @@ async function getChildFolders({
   parentId: string | null;
   db: Database;
 }) {
+  // Same counting join as getOrganizationFolders. Previously this was a plain
+  // folder select with no count at all, which is why folder cards on the
+  // "browse" view (Home page, subfolder listings) always showed 0 documents
+  // regardless of actual content — the count field just wasn't there.
+  const documentCounts = db
+    .select({
+      folderId: documentsTable.folderId,
+      documentsCount: count(documentsTable.id).as('documentsCount'),
+    })
+    .from(documentsTable)
+    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
+    .groupBy(documentsTable.folderId)
+    .as('document_counts');
+
   const folders = await db
-    .select()
+    .select({
+      ...getTableColumns(foldersTable),
+      documentsCount: sql<number>`COALESCE(${documentCounts.documentsCount}, 0)`.as(
+        'documentsCount',
+      ),
+    })
     .from(foldersTable)
+    .leftJoin(documentCounts, eq(foldersTable.id, documentCounts.folderId))
     .where(
       and(
         eq(foldersTable.organizationId, organizationId),

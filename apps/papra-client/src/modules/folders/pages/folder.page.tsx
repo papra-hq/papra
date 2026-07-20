@@ -1,7 +1,7 @@
 import type { DialogTriggerProps } from '@kobalte/core/dialog';
 import type { Component } from 'solid-js';
 import { formatBytes } from '@corentinth/chisels';
-import { A, useParams } from '@solidjs/router';
+import { A, useNavigate, useParams } from '@solidjs/router';
 import { useMutation, useQuery } from '@tanstack/solid-query';
 import { createMemo, createSignal, For, Show } from 'solid-js';
 import { getDocumentIcon } from '@/modules/documents/document.models';
@@ -140,8 +140,11 @@ const FolderCard: Component<{ organizationId: string; folder: Folder }> = (props
 
 export const FolderPage: Component = () => {
   const params = useParams<{ organizationId: string; folderId?: string }>();
+  const navigate = useNavigate();
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
+  const { confirm } = useConfirmModal();
+  const [getIsCurrentFolderRenameOpen, setIsCurrentFolderRenameOpen] = createSignal(false);
   let fileInputRef: HTMLInputElement | undefined;
 
   const currentFolderId = () => params.folderId ?? null;
@@ -164,6 +167,62 @@ export const FolderPage: Component = () => {
     const { path } = buildFolderPath({ folders, folderId: currentFolderId() });
     return path;
   });
+
+  const getCurrentFolder = () => getBreadcrumbPath().at(-1) ?? null;
+
+  const deleteCurrentFolderMutation = useMutation(() => ({
+    mutationFn: async ({ force }: { force: boolean }) => {
+      const folder = getCurrentFolder();
+      if (!folder) {
+        throw new Error('No current folder to delete');
+      }
+      return deleteFolder({ organizationId: params.organizationId, folderId: folder.id, force });
+    },
+    onSuccess: async () => {
+      const folder = getCurrentFolder();
+      await queryClient.invalidateQueries({
+        queryKey: ['organizations', params.organizationId, 'folders'],
+        refetchType: 'all',
+      });
+      createToast({ message: t('folders.delete.success'), type: 'success' });
+      const parentId = folder?.parentId ?? null;
+      navigate(parentId ? `/organizations/${params.organizationId}/folders/${parentId}` : `/organizations/${params.organizationId}/folders`);
+    },
+    onError: (error) => {
+      createToast({ message: getErrorMessage({ error }), type: 'error' });
+    },
+  }));
+
+  const handleDeleteCurrentFolder = async () => {
+    const confirmed = await confirm({
+      title: t('folders.delete.confirm.title'),
+      message: t('folders.delete.confirm.message'),
+      confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
+      cancelButton: { text: t('folders.delete.confirm.cancel-button') },
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteCurrentFolderMutation.mutateAsync({ force: false });
+    } catch (error) {
+      const status = (error as { statusCode?: number })?.statusCode;
+      if (status !== 409) {
+        return;
+      }
+
+      const confirmedForce = await confirm({
+        title: t('folders.delete.confirm.title'),
+        message: t('folders.delete.confirm.not-empty-message'),
+        confirmButton: { text: t('folders.delete.confirm.confirm-button'), variant: 'destructive' },
+        cancelButton: { text: t('folders.delete.confirm.cancel-button') },
+      });
+      if (confirmedForce) {
+        await deleteCurrentFolderMutation.mutateAsync({ force: true });
+      }
+    }
+  };
 
   const uploadMutation = useMutation(() => ({
     mutationFn: async (file: File) =>
@@ -252,8 +311,37 @@ export const FolderPage: Component = () => {
             <div class="i-tabler-upload size-4 mr-2" />
             {t('folders.upload-here')}
           </Button>
+
+          <Show when={currentFolderId()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger as={Button} variant="outline" size="icon">
+                <div class="i-tabler-dots-vertical size-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-48">
+                <DropdownMenuItem class="cursor-pointer" onClick={() => setIsCurrentFolderRenameOpen(true)}>
+                  <div class="i-tabler-pencil size-4 mr-2" />
+                  <span>{t('folders.subfolders.actions.rename')}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem class="cursor-pointer text-red" onClick={handleDeleteCurrentFolder}>
+                  <div class="i-tabler-trash size-4 mr-2" />
+                  <span>{t('folders.subfolders.actions.delete')}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </Show>
         </div>
       </div>
+
+      <Show when={getIsCurrentFolderRenameOpen() && getCurrentFolder()}>
+        {(folder) => (
+          <RenameFolderDialog
+            open={getIsCurrentFolderRenameOpen()}
+            onOpenChange={setIsCurrentFolderRenameOpen}
+            organizationId={params.organizationId}
+            folder={folder()}
+          />
+        )}
+      </Show>
 
       <Show when={contentsQuery.data}>
         {(getData) => (

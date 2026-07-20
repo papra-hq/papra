@@ -24,6 +24,11 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
           icon: 'i-tabler-tag',
         },
         {
+          label: 'Backups',
+          href: `/organizations/${params.organizationId}/settings/backups`,
+          icon: 'i-tabler-cloud-upload',
+        },
+        {
           label: t('layout.menu.usage'),
           href: `/organizations/${params.organizationId}/settings/usage`,
           icon: 'i-tabler-chart-bar',

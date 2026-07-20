@@ -55,6 +55,7 @@ import { FolderPage } from './modules/folders/pages/folder.page';
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
 import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
 import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
+import { BackupsSettingsPage } from './modules/backups/pages/backups.page';
 
 export const routes: RouteDefinition[] = [
   {
@@ -226,6 +227,10 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/auto-tagging',
                 component: OrganizationsAutoTaggingSettingsPage,
+              },
+              {
+                path: '/backups',
+                component: BackupsSettingsPage,
               },
               {
                 path: '/usage',

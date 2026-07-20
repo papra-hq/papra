@@ -68,6 +68,7 @@
     "@tanstack/ai-anthropic": "^0.16.0",
     "@tanstack/ai-openai": "^0.15.10",
     "@valibot/to-json-schema": "^1.6.0",
+    "basic-ftp": "^5.0.5",
     "better-auth": "catalog:",
     "busboy": "^1.6.0",
     "c12": "^3.0.4",
