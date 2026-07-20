@@ -1,5 +1,4 @@
 import type { HttpClientOptions, ResponseType } from './http.client';
-import { Platform } from 'react-native';
 import { httpClient } from './http.client';
 import { headersInitToObject } from './api.models';
 
@@ -21,14 +20,10 @@ export function createApiClient({
     return httpClient<T, R>({
       baseUrl,
       url: path,
-      credentials: Platform.OS === 'web' ? 'include' : 'omit',
+      credentials: 'omit',
       headers: {
         ...customHeaders,
-        ...(Platform.OS === 'web'
-          ? {}
-          : {
-              Cookie: getAuthCookie(),
-            }),
+        Cookie: getAuthCookie(),
         ...headersInitToObject(rest.headers),
       },
       ...rest,
