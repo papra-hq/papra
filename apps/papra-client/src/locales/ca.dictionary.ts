@@ -2,23 +2,27 @@ export const translations = {
   // Authentication
 
   'auth.request-password-reset.title': 'Restableix la teva contrasenya',
-  'auth.request-password-reset.description': 'Introdueix el teu correu electrònic per restablir la contrasenya.',
+  'auth.request-password-reset.description':
+    'Introdueix el teu correu electrònic per restablir la contrasenya.',
   'auth.request-password-reset.requested':
     "Si existeix un compte per a aquest correu, t'hem enviat un missatge per restablir la contrasenya.",
-  'auth.request-password-reset.back-to-login': 'Torna a l\'inici de sessió',
+  'auth.request-password-reset.back-to-login': "Torna a l'inici de sessió",
   'auth.request-password-reset.form.email.label': 'Correu electrònic',
   'auth.request-password-reset.form.email.placeholder': 'Exemple: ada@papra.app',
-  'auth.request-password-reset.form.email.required': 'Si us plau, introdueix la teva adreça de correu electrònic',
-  'auth.request-password-reset.form.email.invalid': 'Aquesta adreça de correu electrònic no és vàlida',
+  'auth.request-password-reset.form.email.required':
+    'Si us plau, introdueix la teva adreça de correu electrònic',
+  'auth.request-password-reset.form.email.invalid':
+    'Aquesta adreça de correu electrònic no és vàlida',
   'auth.request-password-reset.form.submit': 'Sol·licita el restabliment de la contrasenya',
 
   'auth.reset-password.title': 'Restableix la teva contrasenya',
   'auth.reset-password.description': 'Introdueix la teva nova contrasenya per restablir-la.',
   'auth.reset-password.reset': 'La teva contrasenya ha estat restablerta.',
-  'auth.reset-password.back-to-login': 'Torna a l\'inici de sessió',
+  'auth.reset-password.back-to-login': "Torna a l'inici de sessió",
   'auth.reset-password.form.new-password.label': 'Nova contrasenya',
   'auth.reset-password.form.new-password.placeholder': 'Exemple: **********',
-  'auth.reset-password.form.new-password.required': 'Si us plau, introdueix la teva nova contrasenya',
+  'auth.reset-password.form.new-password.required':
+    'Si us plau, introdueix la teva nova contrasenya',
   'auth.reset-password.form.new-password.min-length':
     'La contrasenya ha de tenir almenys {{ minLength }} caràcters',
   'auth.reset-password.form.new-password.max-length':
@@ -28,10 +32,11 @@ export const translations = {
   'auth.email-provider.open': 'Obre {{ provider }}',
 
   'auth.login.title': 'Inicia la sessió a Papra',
-  'auth.login.description': 'Introdueix el teu correu electrònic o utilitza l\'inici de sessió social per accedir al teu compte de Papra.',
+  'auth.login.description':
+    "Introdueix el teu correu electrònic o utilitza l'inici de sessió social per accedir al teu compte de Papra.",
   'auth.login.login-with-provider': 'Inicia la sessió amb {{ provider }}',
   'auth.login.no-account': 'No tens un compte?',
-  'auth.login.register': 'Registra\'t',
+  'auth.login.register': "Registra't",
   'auth.login.form.email.label': 'Correu electrònic',
   'auth.login.form.email.placeholder': 'Exemple: ada@papra.app',
   'auth.login.form.email.required': 'Si us plau, introdueix la teva adreça de correu electrònic',
@@ -39,38 +44,38 @@ export const translations = {
   'auth.login.form.password.label': 'Contrasenya',
   'auth.login.form.password.placeholder': 'Estableix una contrasenya',
   'auth.login.form.password.required': 'Si us plau, introdueix la teva contrasenya',
-  'auth.login.form.remember-me.label': 'Recorda\'m',
+  'auth.login.form.remember-me.label': "Recorda'm",
   'auth.login.form.forgot-password.label': 'Has oblidat la contrasenya?',
   'auth.login.form.submit': 'Inicia la sessió',
 
   'auth.login.two-factor.title': 'Autenticació de doble factor',
   'auth.login.two-factor.description.totp':
-    'Introdueix el codi de verificació de 6 dígits de la teva aplicació d\'autenticació.',
+    "Introdueix el codi de verificació de 6 dígits de la teva aplicació d'autenticació.",
   'auth.login.two-factor.description.backup-code':
     'Introdueix un dels teus codis de recuperació per accedir al teu compte.',
-  'auth.login.two-factor.code.label.totp': 'Codi d\'autenticació',
+  'auth.login.two-factor.code.label.totp': "Codi d'autenticació",
   'auth.login.two-factor.code.label.backup-code': 'Codi de recuperació',
   'auth.login.two-factor.code.placeholder.backup-code': 'Introdueix el codi de recuperació',
   'auth.login.two-factor.code.required': 'Si us plau, introdueix el codi de verificació',
   'auth.login.two-factor.trust-device.label': 'Confia en aquest dispositiu durant 30 dies',
-  'auth.login.two-factor.back': 'Torna a l\'inici de sessió',
+  'auth.login.two-factor.back': "Torna a l'inici de sessió",
   'auth.login.two-factor.submit': 'Verifica',
   'auth.login.two-factor.verification-failed':
     'La verificació ha fallat. Si us plau, comprova el teu codi i torna-ho a provar.',
   'auth.login.two-factor.use-backup-code': 'Utilitza el codi de recuperació',
-  'auth.login.two-factor.use-totp': 'Utilitza l\'aplicació d\'autenticació',
+  'auth.login.two-factor.use-totp': "Utilitza l'aplicació d'autenticació",
 
-  'auth.register.title': 'Registra\'t a Papra',
+  'auth.register.title': "Registra't a Papra",
   'auth.register.description': 'Crea un compte per començar a utilitzar Papra.',
-  'auth.register.register-with-email': 'Registra\'t amb el correu electrònic',
-  'auth.register.register-with-provider': 'Registra\'t amb {{ provider }}',
+  'auth.register.register-with-email': "Registra't amb el correu electrònic",
+  'auth.register.register-with-provider': "Registra't amb {{ provider }}",
   'auth.register.providers.google': 'Google',
   'auth.register.providers.github': 'GitHub',
   'auth.register.have-account': 'Ja tens un compte?',
   'auth.register.login': 'Inicia la sessió',
   'auth.register.registration-disabled.title': 'El registre està deshabilitat',
   'auth.register.registration-disabled.description':
-    'La creació de nous comptes està actualment deshabilitada en aquesta instància de Papra. Només els usuaris amb comptes existents poden iniciar sessió. Si creus que es tracta d\'un error, posa\'t en contacte amb l\'administrador d\'aquesta instància.',
+    "La creació de nous comptes està actualment deshabilitada en aquesta instància de Papra. Només els usuaris amb comptes existents poden iniciar sessió. Si creus que es tracta d'un error, posa't en contacte amb l'administrador d'aquesta instància.",
   'auth.register.form.email.label': 'Correu electrònic',
   'auth.register.form.email.placeholder': 'Exemple: ada@papra.app',
   'auth.register.form.email.required': 'Si us plau, introdueix la teva adreça de correu electrònic',
@@ -78,39 +83,41 @@ export const translations = {
   'auth.register.form.password.label': 'Contrasenya',
   'auth.register.form.password.placeholder': 'Estableix una contrasenya',
   'auth.register.form.password.required': 'Si us plau, introdueix la teva contrasenya',
-  'auth.register.form.password.min-length': 'La contrasenya ha de tenir almenys {{ minLength }} caràcters',
-  'auth.register.form.password.max-length': 'La contrasenya ha de tenir menys de {{ maxLength }} caràcters',
+  'auth.register.form.password.min-length':
+    'La contrasenya ha de tenir almenys {{ minLength }} caràcters',
+  'auth.register.form.password.max-length':
+    'La contrasenya ha de tenir menys de {{ maxLength }} caràcters',
   'auth.register.form.name.label': 'Nom',
   'auth.register.form.name.placeholder': 'Exemple: Ada Lovelace',
   'auth.register.form.name.required': 'Si us plau, introdueix el teu nom',
   'auth.register.form.name.max-length': 'El nom ha de tenir menys de {{ maxLength }} caràcters',
-  'auth.register.form.submit': 'Registra\'t',
+  'auth.register.form.submit': "Registra't",
 
   'auth.email-validation-required.title': 'Verifica el teu correu electrònic',
   'auth.email-validation-required.description':
-    'S\'ha enviat un correu de verificació a la teva adreça electrònica. Si us plau, verifica-la fent clic a l\'enllaç del missatge.',
+    "S'ha enviat un correu de verificació a la teva adreça electrònica. Si us plau, verifica-la fent clic a l'enllaç del missatge.",
 
   'auth.email-verification.success.title': 'Correu electrònic verificat',
   'auth.email-verification.success.description':
     'El teu correu electrònic ha estat verificat correctament. Ja pots iniciar sessió al teu compte.',
-  'auth.email-verification.success.login': 'Ves a l\'inici de sessió',
+  'auth.email-verification.success.login': "Ves a l'inici de sessió",
   'auth.email-verification.error.title': 'La verificació ha fallat',
   'auth.email-verification.error.description':
-    'L\'enllaç de verificació ha caducat o no és vàlid. Si us plau, sol·licita un nou correu de verificació iniciant sessió.',
-  'auth.email-verification.error.back': 'Torna a l\'inici de sessió',
+    "L'enllaç de verificació ha caducat o no és vàlid. Si us plau, sol·licita un nou correu de verificació iniciant sessió.",
+  'auth.email-verification.error.back': "Torna a l'inici de sessió",
 
   'auth.legal-links.description':
     'En continuar, reconeixes que entens i acceptes els {{ terms }} i la {{ privacy }}.',
   'auth.legal-links.terms': 'Termes del servei',
   'auth.legal-links.privacy': 'Política de privacitat',
 
-  'auth.no-auth-provider.title': 'No hi ha cap proveïdor d\'autenticació',
+  'auth.no-auth-provider.title': "No hi ha cap proveïdor d'autenticació",
   'auth.no-auth-provider.description':
-    'No hi ha proveïdors d\'autenticació habilitats en aquesta instància de Papra. Si us plau, posa\'t en contacte amb l\'administrador de la instància perquè els habiliti.',
+    "No hi ha proveïdors d'autenticació habilitats en aquesta instància de Papra. Si us plau, posa't en contacte amb l'administrador de la instància perquè els habiliti.",
 
   // User settings
 
-  'user.settings.title': 'Configuració de l\'usuari',
+  'user.settings.title': "Configuració de l'usuari",
   'user.settings.description': 'Gestiona la configuració del teu compte aquí.',
 
   'user.settings.email.title': 'Correu electrònic',
@@ -118,78 +125,86 @@ export const translations = {
   'user.settings.email.label': 'Correu electrònic',
 
   'user.settings.name.title': 'Nom complet',
-  'user.settings.name.description': 'El teu nom complet es mostra als altres membres de l\'organització.',
+  'user.settings.name.description':
+    "El teu nom complet es mostra als altres membres de l'organització.",
   'user.settings.name.label': 'Nom complet',
   'user.settings.name.placeholder': 'Ex. John Doe',
   'user.settings.name.update': 'Actualitza el nom',
   'user.settings.name.updated': 'El teu nom complet ha estat actualitzat',
 
   'user.settings.logout.title': 'Tanca la sessió',
-  'user.settings.logout.description': 'Tanca la sessió del teu compte. Pots tornar a iniciar-la més tard.',
+  'user.settings.logout.description':
+    'Tanca la sessió del teu compte. Pots tornar a iniciar-la més tard.',
   'user.settings.logout.button': 'Tanca la sessió',
 
   'user.settings.two-factor.title': 'Autenticació de doble factor',
   'user.settings.two-factor.description': 'Afegeix una capa extra de seguretat al teu compte.',
   'user.settings.two-factor.status.enabled': 'Habilitat',
   'user.settings.two-factor.status.disabled': 'Deshabilitat',
-  'user.settings.two-factor.enable-button': 'Habilita l\'autenticació de doble factor',
-  'user.settings.two-factor.disable-button': 'Deshabilita l\'autenticació de doble factor',
+  'user.settings.two-factor.enable-button': "Habilita l'autenticació de doble factor",
+  'user.settings.two-factor.disable-button': "Deshabilita l'autenticació de doble factor",
   'user.settings.two-factor.regenerate-codes-button': 'Regenera els codis de recuperació',
 
-  'user.settings.two-factor.enable-dialog.title': 'Habilita l\'autenticació de doble factor',
-  'user.settings.two-factor.enable-dialog.description': 'Introdueix la teva contrasenya per habilitar l\'autenticació de doble factor.',
+  'user.settings.two-factor.enable-dialog.title': "Habilita l'autenticació de doble factor",
+  'user.settings.two-factor.enable-dialog.description':
+    "Introdueix la teva contrasenya per habilitar l'autenticació de doble factor.",
   'user.settings.two-factor.enable-dialog.password.label': 'Contrasenya',
   'user.settings.two-factor.enable-dialog.password.placeholder': 'Introdueix la teva contrasenya',
-  'user.settings.two-factor.enable-dialog.password.required': 'Si us plau, introdueix la teva contrasenya',
+  'user.settings.two-factor.enable-dialog.password.required':
+    'Si us plau, introdueix la teva contrasenya',
   'user.settings.two-factor.enable-dialog.cancel': 'Cancel·la',
   'user.settings.two-factor.enable-dialog.submit': 'Continua',
 
-  'user.settings.two-factor.setup-dialog.title': 'Configura l\'autenticació de doble factor',
+  'user.settings.two-factor.setup-dialog.title': "Configura l'autenticació de doble factor",
   'user.settings.two-factor.setup-dialog.step1.title': 'Pas 1: Escaneja el codi QR',
   'user.settings.two-factor.setup-dialog.step1.description':
-    'Escaneja el codi QR o introdueix manualment la clau de configuració a la teva aplicació d\'autenticació.',
+    "Escaneja el codi QR o introdueix manualment la clau de configuració a la teva aplicació d'autenticació.",
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Copia la clau de configuració',
   'user.settings.two-factor.setup-dialog.step2.title': 'Pas 2: Verifica el codi',
   'user.settings.two-factor.setup-dialog.step2.description':
-    'Introdueix el codi de 6 dígits generat per la teva aplicació d\'autenticació per verificar i habilitar l\'autenticació de doble factor.',
+    "Introdueix el codi de 6 dígits generat per la teva aplicació d'autenticació per verificar i habilitar l'autenticació de doble factor.",
   'user.settings.two-factor.setup-dialog.cancel': 'Cancel·la',
-  'user.settings.two-factor.setup-dialog.verify': 'Verifica i habilita l\'autenticació de doble factor',
+  'user.settings.two-factor.setup-dialog.verify':
+    "Verifica i habilita l'autenticació de doble factor",
 
   'user.settings.two-factor.backup-codes-dialog.title': 'Codis de recuperació',
   'user.settings.two-factor.backup-codes-dialog.description':
-    'Guarda aquests codis de recuperació en un lloc segur. Els pots utilitzar per accedir al teu compte si perds l\'accés a la teva aplicació d\'autenticació.',
+    "Guarda aquests codis de recuperació en un lloc segur. Els pots utilitzar per accedir al teu compte si perds l'accés a la teva aplicació d'autenticació.",
   'user.settings.two-factor.backup-codes-dialog.copy': 'Copia els codis de recuperació',
   'user.settings.two-factor.backup-codes-dialog.download': 'Descarrega els codis de recuperació',
   'user.settings.two-factor.backup-codes-dialog.download-filename': 'papra-2fa-backup-codes.txt',
   'user.settings.two-factor.backup-codes-dialog.close': 'He guardat els meus codis',
 
-  'user.settings.two-factor.disable-dialog.title': 'Deshabilita l\'autenticació de doble factor',
+  'user.settings.two-factor.disable-dialog.title': "Deshabilita l'autenticació de doble factor",
   'user.settings.two-factor.disable-dialog.description':
-    'Introdueix la teva contrasenya per deshabilitar l\'autenticació de doble factor. Això farà que el teu compte sigui menys segur.',
+    "Introdueix la teva contrasenya per deshabilitar l'autenticació de doble factor. Això farà que el teu compte sigui menys segur.",
   'user.settings.two-factor.disable-dialog.password.label': 'Contrasenya',
   'user.settings.two-factor.disable-dialog.password.placeholder': 'Introdueix la teva contrasenya',
-  'user.settings.two-factor.disable-dialog.password.required': 'Si us plau, introdueix la teva contrasenya',
+  'user.settings.two-factor.disable-dialog.password.required':
+    'Si us plau, introdueix la teva contrasenya',
   'user.settings.two-factor.disable-dialog.cancel': 'Cancel·la',
-  'user.settings.two-factor.disable-dialog.submit': 'Deshabilita l\'autenticació de doble factor',
+  'user.settings.two-factor.disable-dialog.submit': "Deshabilita l'autenticació de doble factor",
 
   'user.settings.two-factor.regenerate-dialog.title': 'Regenera els codis de recuperació',
   'user.settings.two-factor.regenerate-dialog.description':
     'Això invalidarà tots els codis de recuperació existents i en generarà de nous. Introdueix la teva contrasenya per continuar.',
   'user.settings.two-factor.regenerate-dialog.password.label': 'Contrasenya',
-  'user.settings.two-factor.regenerate-dialog.password.placeholder': 'Introdueix la teva contrasenya',
-  'user.settings.two-factor.regenerate-dialog.password.required': 'Si us plau, introdueix la teva contrasenya',
+  'user.settings.two-factor.regenerate-dialog.password.placeholder':
+    'Introdueix la teva contrasenya',
+  'user.settings.two-factor.regenerate-dialog.password.required':
+    'Si us plau, introdueix la teva contrasenya',
   'user.settings.two-factor.regenerate-dialog.cancel': 'Cancel·la',
   'user.settings.two-factor.regenerate-dialog.submit': 'Regenera els codis',
 
-  'user.settings.two-factor.enabled': 'L\'autenticació de doble factor ha estat habilitada',
-  'user.settings.two-factor.disabled': 'L\'autenticació de doble factor ha estat deshabilitada',
+  'user.settings.two-factor.enabled': "L'autenticació de doble factor ha estat habilitada",
+  'user.settings.two-factor.disabled': "L'autenticació de doble factor ha estat deshabilitada",
   'user.settings.two-factor.codes-regenerated': 'Els codis de recuperació han estat regenerats',
 
   // Organizations
 
   'organizations.list.title': 'Les teves organitzacions',
   'organizations.list.description':
-    'Les organitzacions són una manera d\'agrupar els teus documents i gestionar-ne l\'accés. Pots crear múltiples organitzacions i convidar els membres del teu equip a col·laborar.',
+    "Les organitzacions són una manera d'agrupar els teus documents i gestionar-ne l'accés. Pots crear múltiples organitzacions i convidar els membres del teu equip a col·laborar.",
   'organizations.list.create-new': 'Crea una organització nova',
   'organizations.list.back': 'Torna a les organitzacions',
   'organizations.list.deleted.title': 'Organitzacions suprimides',
@@ -200,10 +215,10 @@ export const translations = {
     'Quan suprimeixis una organització, apareixerà aquí durant {{ days }} dies abans de ser eliminada permanentment.',
   'organizations.list.deleted.restore': 'Restaura',
   'organizations.list.deleted.restore-success': 'Organització restaurada correctament',
-  'organizations.list.deleted.restore-confirm.title': 'Restaura l\'organització',
+  'organizations.list.deleted.restore-confirm.title': "Restaura l'organització",
   'organizations.list.deleted.restore-confirm.message':
-    'Estàs segur que vols restaurar aquesta organització? Es tornarà a moure a la teva llista d\'organitzacions actives.',
-  'organizations.list.deleted.restore-confirm.confirm-button': 'Restaura l\'organització',
+    "Estàs segur que vols restaurar aquesta organització? Es tornarà a moure a la teva llista d'organitzacions actives.",
+  'organizations.list.deleted.restore-confirm.confirm-button': "Restaura l'organització",
   'organizations.list.deleted.deleted-at': 'Suprimida el {{ date }}',
   'organizations.list.deleted.purge-at': 'Serà eliminada permanentment el {{ date }}',
   'organizations.list.deleted.days-remaining':
@@ -219,91 +234,93 @@ export const translations = {
 
   'organizations.create.title': 'Crea una organització nova',
   'organizations.create.description':
-    'Els teus documents s\'agruparan per organització. Pots crear múltiples organitzacions per separar els teus documents, per exemple, per a documents personals i de treball.',
+    "Els teus documents s'agruparan per organització. Pots crear múltiples organitzacions per separar els teus documents, per exemple, per a documents personals i de treball.",
   'organizations.create.back': 'Enrere',
   'organizations.create.error.max-count-reached':
-    'Has arribat al nombre màxim d\'organitzacions que pots crear; si en necessites més, posa\'t en contacte amb el suport tècnic.',
-  'organizations.create.form.name.label': 'Nom de l\'organització',
+    "Has arribat al nombre màxim d'organitzacions que pots crear; si en necessites més, posa't en contacte amb el suport tècnic.",
+  'organizations.create.form.name.label': "Nom de l'organització",
   'organizations.create.form.name.placeholder': 'Ex. Acme Inc.',
-  'organizations.create.form.name.required': 'Si us plau, introdueix el nom de l\'organització',
-  'organizations.create.form.submit': 'Crea l\'organització',
+  'organizations.create.form.name.required': "Si us plau, introdueix el nom de l'organització",
+  'organizations.create.form.submit': "Crea l'organització",
   'organizations.create.success': 'Organització creada correctament',
   'organizations.switcher.create': 'Crea una organització nova',
 
   'organizations.create-first.title': 'Crea la teva organització',
   'organizations.create-first.description':
-    'Els teus documents s\'agruparan per organització. Pots crear múltiples organitzacions per separar els teus documents, per exemple, per a documents personals i de treball.',
+    "Els teus documents s'agruparan per organització. Pots crear múltiples organitzacions per separar els teus documents, per exemple, per a documents personals i de treball.",
   'organizations.create-first.default-name': 'La meva organització',
   'organizations.create-first.user-name': "L'organització de {{ name }}",
 
-  'organization.settings.title': 'Configuració de l\'organització',
-  'organization.settings.page.title': 'Configuració de l\'organització',
-  'organization.settings.page.description': 'Gestiona la configuració de la teva organització aquí.',
-  'organization.settings.name.title': 'Nom de l\'organització',
+  'organization.settings.title': "Configuració de l'organització",
+  'organization.settings.page.title': "Configuració de l'organització",
+  'organization.settings.page.description':
+    'Gestiona la configuració de la teva organització aquí.',
+  'organization.settings.name.title': "Nom de l'organització",
   'organization.settings.name.update': 'Actualitza el nom',
   'organization.settings.name.placeholder': 'Ex. Acme Inc.',
-  'organization.settings.name.updated': 'Nom de l\'organització actualitzat',
+  'organization.settings.name.updated': "Nom de l'organització actualitzat",
   'organization.settings.subscription.title': 'Subscripció',
   'organization.settings.subscription.description':
     'Gestiona la teva facturació, factures i mètodes de pagament.',
   'organization.settings.subscription.manage': 'Gestiona la subscripció',
-  'organization.settings.subscription.error': 'No s\'ha pogut obtenir l\'URL del portal del client',
-  'organization.settings.delete.title': 'Suprimeix l\'organització',
+  'organization.settings.subscription.error': "No s'ha pogut obtenir l'URL del portal del client",
+  'organization.settings.delete.title': "Suprimeix l'organització",
   'organization.settings.delete.description':
     'Suprimir aquesta organització eliminarà permanentment totes les dades associades.',
-  'organization.settings.delete.confirm.title': 'Suprimeix l\'organització',
+  'organization.settings.delete.confirm.title': "Suprimeix l'organització",
   'organization.settings.delete.confirm.message':
-    'Estàs segur que vols suprimir aquesta organització? L\'organització es marcarà per a suprimir i s\'eliminarà permanentment després de {{ days }} dies. Durant aquest període, pots restaurar-la des de la teva llista d\'organitzacions. Tots els documents i dades s\'eliminaran permanentment després d\'aquest termini.',
-  'organization.settings.delete.confirm.confirm-button': 'Suprimeix l\'organització',
+    "Estàs segur que vols suprimir aquesta organització? L'organització es marcarà per a suprimir i s'eliminarà permanentment després de {{ days }} dies. Durant aquest període, pots restaurar-la des de la teva llista d'organitzacions. Tots els documents i dades s'eliminaran permanentment després d'aquest termini.",
+  'organization.settings.delete.confirm.confirm-button': "Suprimeix l'organització",
   'organization.settings.delete.confirm.cancel-button': 'Cancel·la',
   'organization.settings.delete.success': 'Organització suprimida',
   'organization.settings.delete.only-owner':
-    'Només el propietari de l\'organització pot suprimir-la.',
+    "Només el propietari de l'organització pot suprimir-la.",
   'organization.settings.delete.has-active-subscription':
-    'No es pot suprimir l\'organització amb una subscripció activa; si us plau, primer cancel·la la teva subscripció.',
+    "No es pot suprimir l'organització amb una subscripció activa; si us plau, primer cancel·la la teva subscripció.",
 
-  'organization.settings.auto-tagging.page.title': 'Configuració de l\'etiquetatge automàtic',
+  'organization.settings.auto-tagging.page.title': "Configuració de l'etiquetatge automàtic",
   'organization.settings.auto-tagging.page.description':
-    'Configuració de l\'etiquetatge automàtic per a la teva organització. Aquesta funció permet etiquetar contingut automàticament basant-se en prediccions de la IA.',
+    "Configuració de l'etiquetatge automàtic per a la teva organització. Aquesta funció permet etiquetar contingut automàticament basant-se en prediccions de la IA.",
   'organization.settings.auto-tagging.unavailable':
-    'L\'etiquetatge automàtic no està disponible actualment per a la teva organització. Si us plau, posa\'t en contacte amb el suport per a més informació.',
-  'organization.settings.auto-tagging.enabled.label': 'Habilita l\'etiquetatge automàtic',
+    "L'etiquetatge automàtic no està disponible actualment per a la teva organització. Si us plau, posa't en contacte amb el suport per a més informació.",
+  'organization.settings.auto-tagging.enabled.label': "Habilita l'etiquetatge automàtic",
   'organization.settings.auto-tagging.enabled.description':
-    'Quan s\'habilita, els documents afegits a aquesta organització són etiquetats automàticament per la IA.',
+    "Quan s'habilita, els documents afegits a aquesta organització són etiquetats automàticament per la IA.",
   'organization.settings.auto-tagging.create-tags.label': 'Permet crear etiquetes noves',
   'organization.settings.auto-tagging.create-tags.description':
-    'Quan s\'habilita, la IA pot crear etiquetes noves. En cas contrari, només pot utilitzar les existents.',
-  'organization.settings.auto-tagging.max-tags.label': 'Màxim d\'etiquetes per document',
+    "Quan s'habilita, la IA pot crear etiquetes noves. En cas contrari, només pot utilitzar les existents.",
+  'organization.settings.auto-tagging.max-tags.label': "Màxim d'etiquetes per document",
   'organization.settings.auto-tagging.max-tags.description':
-    'El nombre màxim d\'etiquetes que la IA pot aplicar a un sol document (entre {{ min }} i {{ max }}).',
+    "El nombre màxim d'etiquetes que la IA pot aplicar a un sol document (entre {{ min }} i {{ max }}).",
 
   'organization.usage.page.title': 'Ús',
-  'organization.usage.page.description': 'Consulta l\'ús i els límits actuals de la teva organització.',
+  'organization.usage.page.description':
+    "Consulta l'ús i els límits actuals de la teva organització.",
   'organization.usage.storage.title': 'Emmagatzematge de documents',
   'organization.usage.storage.description': 'Emmagatzematge total utilitzat pels teus documents',
-  'organization.usage.intake-emails.title': 'Correus electrònics d\'entrada',
-  'organization.usage.intake-emails.description': 'Nombre de correus electrònics d\'entrada',
+  'organization.usage.intake-emails.title': "Correus electrònics d'entrada",
+  'organization.usage.intake-emails.description': "Nombre de correus electrònics d'entrada",
   'organization.usage.members.title': 'Membres',
-  'organization.usage.members.description': 'Nombre de membres a l\'organització',
+  'organization.usage.members.description': "Nombre de membres a l'organització",
   'organization.usage.unlimited': 'Il·limitat',
 
   'organizations.members.title': 'Membres',
   'organizations.members.description': 'Gestiona els membres de la teva organització',
   'organizations.members.invite-member': 'Convida un membre',
   'organizations.members.invite-member-disabled-tooltip':
-    'Només els administradors o propietaris poden convidar membres a l\'organització',
-  'organizations.members.remove-from-organization': 'Elimina de l\'organització',
+    "Només els administradors o propietaris poden convidar membres a l'organització",
+  'organizations.members.remove-from-organization': "Elimina de l'organització",
   'organizations.members.role': 'Rol',
   'organizations.members.roles.owner': 'Propietari',
   'organizations.members.roles.admin': 'Administrador',
   'organizations.members.roles.member': 'Membre',
   'organizations.members.delete.confirm.title': 'Elimina el membre',
   'organizations.members.delete.confirm.message':
-    'Estàs segur que vols eliminar aquest membre de l\'organització?',
+    "Estàs segur que vols eliminar aquest membre de l'organització?",
   'organizations.members.delete.confirm.confirm-button': 'Elimina',
   'organizations.members.delete.confirm.cancel-button': 'Cancel·la',
-  'organizations.members.delete.success': 'Membre eliminat de l\'organització',
-  'organizations.members.update-role.success': 'S\'ha actualitzat el rol del membre',
+  'organizations.members.delete.success': "Membre eliminat de l'organització",
+  'organizations.members.update-role.success': "S'ha actualitzat el rol del membre",
   'organizations.members.table.headers.name': 'Nom',
   'organizations.members.table.headers.email': 'Correu electrònic',
   'organizations.members.table.headers.role': 'Rol',
@@ -314,13 +331,14 @@ export const translations = {
   'organizations.invite-member.description': 'Convida un membre a la teva organització',
   'organizations.invite-member.form.email.label': 'Correu electrònic',
   'organizations.invite-member.form.email.placeholder': 'Exemple: ada@papra.app',
-  'organizations.invite-member.form.email.required': 'Si us plau, introdueix un correu electrònic vàlid',
+  'organizations.invite-member.form.email.required':
+    'Si us plau, introdueix un correu electrònic vàlid',
   'organizations.invite-member.form.role.label': 'Rol',
-  'organizations.invite-member.form.submit': 'Convida a l\'organització',
+  'organizations.invite-member.form.submit': "Convida a l'organització",
   'organizations.invite-member.success.message': 'Membre convidat',
   'organizations.invite-member.success.description':
-    'S\'ha convidat l\'adreça de correu electrònic a l\'organització.',
-  'organizations.invite-member.error.message': 'No s\'ha pogut convidar el membre',
+    "S'ha convidat l'adreça de correu electrònic a l'organització.",
+  'organizations.invite-member.error.message': "No s'ha pogut convidar el membre",
 
   'organizations.invitations.title': 'Invitacions',
   'organizations.invitations.description': 'Gestiona les invitacions de la teva organització',
@@ -366,7 +384,7 @@ export const translations = {
   'documents.list.no-documents.title': 'No hi ha documents',
   'documents.list.no-documents.description':
     'Encara no hi ha documents en aquesta organització. Comença pujant-ne alguns.',
-  'documents.list.no-results': 'No s\'han trobat documents',
+  'documents.list.no-results': "No s'han trobat documents",
   'documents.list.table.headers.file-name': 'Nom del fitxer',
   'documents.list.table.headers.document-date': 'Data',
   'documents.list.table.headers.created': 'Creat',
@@ -379,17 +397,20 @@ export const translations = {
   'documents.list.search.total-count-no-query':
     '{{ count }} {{ count, =1:document, documents }} en total',
 
-  'documents.list.batch.selected-count': '{{ count }} {{ count, =1:document seleccionat, documents seleccionats }}',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:document seleccionat, documents seleccionats }}',
   'documents.list.batch.clear': 'Neteja la selecció',
   'documents.list.batch.tag-action': 'Etiqueta',
   'documents.list.batch.trash-action': 'Paperera',
-  'documents.list.batch.error': 'L\'operació per lots ha fallat. Si us plau, torna-ho a provar.',
-  'documents.list.batch.select-all-matching': 'Selecciona tots els {{ count }} que coincideixen amb aquesta cerca',
-  'documents.list.batch.select-all': 'Selecciona tots els {{ count }} {{ count, =1:document, documents }}',
+  'documents.list.batch.error': "L'operació per lots ha fallat. Si us plau, torna-ho a provar.",
+  'documents.list.batch.select-all-matching':
+    'Selecciona tots els {{ count }} que coincideixen amb aquesta cerca',
+  'documents.list.batch.select-all':
+    'Selecciona tots els {{ count }} {{ count, =1:document, documents }}',
   'documents.list.batch.all-matching-selected':
-    'S\'han seleccionat tots els {{ count }} {{ count, =1:document, documents }} que coincideixen amb aquesta cerca',
+    "S'han seleccionat tots els {{ count }} {{ count, =1:document, documents }} que coincideixen amb aquesta cerca",
   'documents.list.batch.all-selected':
-    'S\'han seleccionat tots els {{ count }} {{ count, =1:document, documents }}',
+    "S'han seleccionat tots els {{ count }} {{ count, =1:document, documents }}",
   'documents.list.batch.trash.confirm.title': 'Mou a la paperera',
   'documents.list.batch.trash.confirm.description':
     'Vols moure {{ count }} {{ count, =1:document, documents }} a la paperera? Els pots restaurar més tard des de la paperera.',
@@ -413,9 +434,9 @@ export const translations = {
   'documents.tabs.content': 'Contingut',
   'documents.tabs.activity': 'Activitat',
   'documents.deleted.message':
-    'Aquest document ha estat suprimit i s\'eliminarà permanentment en {{ days }} dies.',
+    "Aquest document ha estat suprimit i s'eliminarà permanentment en {{ days }} dies.",
   'documents.actions.download.title': 'Descarrega',
-  'documents.actions.download.error': 'No s\'ha pogut descarregar el document',
+  'documents.actions.download.error': "No s'ha pogut descarregar el document",
   'documents.actions.restore': 'Restaura',
   'documents.actions.delete': 'Suprimeix',
   'documents.actions.edit': 'Edita',
@@ -423,7 +444,7 @@ export const translations = {
   'documents.actions.save': 'Desa',
   'documents.actions.saving': 'Desant...',
   'documents.content.alert':
-    'El contingut del document s\'extreu automàticament en pujar-lo. Només s\'utilitza per les finalitats de cerca i indexació.',
+    "El contingut del document s'extreu automàticament en pujar-lo. Només s'utilitza per les finalitats de cerca i indexació.",
   'documents.content.empty-placeholder':
     'Aquest document no té contingut extret, pots definir-lo manualment aquí.',
   'documents.info.id': 'Identificador',
@@ -440,14 +461,15 @@ export const translations = {
   'documents.notes.placeholder': 'Afegeix algunes notes sobre aquest document',
   'documents.notes.saving': 'Desant',
   'documents.notes.saved': 'Desat',
-  'documents.notes.save-error': 'No s\'han pogut desar les notes',
+  'documents.notes.save-error': "No s'han pogut desar les notes",
 
   'documents.management.details': 'Detalls del document',
   'documents.management.rename': 'Canvia el nom del document',
   'documents.management.delete': 'Suprimeix el document',
 
   'documents.import.drop-area.title': 'Deixa anar els fitxers aquí',
-  'documents.import.drop-area.description': 'Arrossega i deixa anar els fitxers aquí per importar-los',
+  'documents.import.drop-area.description':
+    'Arrossega i deixa anar els fitxers aquí per importar-los',
 
   'documents.list.select.all': 'Selecciona totes les files en aquesta pàgina',
   'documents.list.select.row': 'Selecciona la fila',
@@ -467,7 +489,7 @@ export const translations = {
   'custom-properties.list.create-button': 'Crea una propietat',
   'custom-properties.list.empty.title': 'Propietats personalitzades',
   'custom-properties.list.empty.description':
-    'Les propietats personalitzades et permeten afegir metadades estructurades als teus documents, com ara dates de caducitat, noms d\'empreses o imports.',
+    "Les propietats personalitzades et permeten afegir metadades estructurades als teus documents, com ara dates de caducitat, noms d'empreses o imports.",
   'custom-properties.list.table.name': 'Nom',
   'custom-properties.list.table.type': 'Tipus',
   'custom-properties.list.table.description': 'Descripció',
@@ -479,17 +501,17 @@ export const translations = {
     'Estàs segur que vols suprimir la propietat personalitzada "{{ name }}"? Aquesta acció no es pot desfer.',
   'custom-properties.list.delete.confirm-button': 'Suprimeix',
   'custom-properties.list.delete.success': 'Propietat personalitzada suprimida correctament',
-  'custom-properties.list.delete.error': 'No s\'ha pogut suprimir la propietat personalitzada',
+  'custom-properties.list.delete.error': "No s'ha pogut suprimir la propietat personalitzada",
 
   'custom-properties.create.title': 'Crea una propietat personalitzada',
   'custom-properties.create.submit': 'Crea la propietat',
   'custom-properties.create.success': 'Propietat personalitzada creada correctament',
-  'custom-properties.create.error': 'No s\'ha pogut crear la propietat personalitzada',
+  'custom-properties.create.error': "No s'ha pogut crear la propietat personalitzada",
 
   'custom-properties.update.title': 'Actualitza la propietat personalitzada',
   'custom-properties.update.submit': 'Desa els canvis',
   'custom-properties.update.success': 'Propietat personalitzada actualitzada correctament',
-  'custom-properties.update.error': 'No s\'ha pogut actualitzar la propietat personalitzada',
+  'custom-properties.update.error': "No s'ha pogut actualitzar la propietat personalitzada",
 
   'custom-properties.form.name.label': 'Nom',
   'custom-properties.form.name.placeholder': 'ex. import de la factura',
@@ -497,20 +519,25 @@ export const translations = {
   'custom-properties.form.name.max-length': 'El nom ha de tenir com a màxim 255 caràcters',
   'custom-properties.form.description.label': 'Descripció',
   'custom-properties.form.description.optional': '(opcional)',
-  'custom-properties.form.description.placeholder': 'Descriu per a què s\'utilitza aquesta propietat',
-  'custom-properties.form.description.max-length': 'La descripció ha de tenir com a màxim 1000 caràcters',
+  'custom-properties.form.description.placeholder':
+    "Descriu per a què s'utilitza aquesta propietat",
+  'custom-properties.form.description.max-length':
+    'La descripció ha de tenir com a màxim 1000 caràcters',
   'custom-properties.form.type.label': 'Tipus',
-  'custom-properties.form.type.immutable': 'El tipus de la propietat no es pot canviar després de crear-la.',
+  'custom-properties.form.type.immutable':
+    'El tipus de la propietat no es pot canviar després de crear-la.',
   'custom-properties.form.options.title': 'Opcions',
-  'custom-properties.form.options.description': 'Defineix les opcions disponibles per a aquesta propietat.',
-  'custom-properties.form.options.name.placeholder': 'Nom de l\'opció',
-  'custom-properties.form.options.name.required': 'El nom de l\'opció és obligatori',
-  'custom-properties.form.options.name.max-length': 'El nom de l\'opció ha de tenir com a màxim 255 caràcters',
+  'custom-properties.form.options.description':
+    'Defineix les opcions disponibles per a aquesta propietat.',
+  'custom-properties.form.options.name.placeholder': "Nom de l'opció",
+  'custom-properties.form.options.name.required': "El nom de l'opció és obligatori",
+  'custom-properties.form.options.name.max-length':
+    "El nom de l'opció ha de tenir com a màxim 255 caràcters",
   'custom-properties.form.options.validation.required': 'Si us plau, afegeix almenys una opció',
   'custom-properties.form.options.add': 'Afegeix opció',
   'custom-properties.form.cancel': 'Cancel·la',
   'custom-properties.form.save-error':
-    'S\'ha produït un error en desar la definició de la propietat. Si us plau, torna-ho a provar.',
+    "S'ha produït un error en desar la definició de la propietat. Si us plau, torna-ho a provar.",
 
   'documents.custom-properties.section-title': 'Propietats',
   'documents.custom-properties.no-value': 'No definit',
@@ -531,9 +558,12 @@ export const translations = {
   'documents.rename.success': 'Document reanomenat correctament',
   'documents.rename.cancel': 'Cancel·la',
 
-  'import-documents.title.error': '{{ count }} {{ count, =1:document ha fallat, documents han fallat }}',
-  'import-documents.title.success': '{{ count }} {{ count, =1:document importat, documents importats }}',
-  'import-documents.title.pending': '{{ count }} / {{ total }} {{ count, =1:document importat, documents importats }}',
+  'import-documents.title.error':
+    '{{ count }} {{ count, =1:document ha fallat, documents han fallat }}',
+  'import-documents.title.success':
+    '{{ count }} {{ count, =1:document importat, documents importats }}',
+  'import-documents.title.pending':
+    '{{ count }} / {{ total }} {{ count, =1:document importat, documents importats }}',
   'import-documents.title.none': 'Importa documents',
   'import-documents.no-import-in-progress': 'No hi ha cap importació de documents en curs',
 
@@ -542,12 +572,13 @@ export const translations = {
   'documents.deleted.empty.description':
     'No tens cap document suprimit. Els documents que se suprimeixen es mouran a la paperera durant {{ days }} dies.',
   'documents.deleted.retention-notice':
-    'Tots els documents suprimits s\'emmagatzemen a la paperera durant {{ days }} dies. Passat aquest temps, els documents seran eliminats permanentment i no podràs restaurar-los.',
+    "Tots els documents suprimits s'emmagatzemen a la paperera durant {{ days }} dies. Passat aquest temps, els documents seran eliminats permanentment i no podràs restaurar-los.",
   'documents.deleted.deleted-at': 'Suprimit',
-  'documents.deleted.restoring': 'S\'està restaurant...',
-  'documents.deleted.deleting': 'S\'està suprimint...',
+  'documents.deleted.restoring': "S'està restaurant...",
+  'documents.deleted.deleting': "S'està suprimint...",
 
-  'documents.preview.unknown-file-type': 'No hi ha previsualització disponible per a aquest tipus de fitxer',
+  'documents.preview.unknown-file-type':
+    'No hi ha previsualització disponible per a aquest tipus de fitxer',
   'documents.preview.binary-file':
     'Aquest sembla ser un fitxer binari i no es pot mostrar com a text',
 
@@ -562,7 +593,7 @@ export const translations = {
   'documents.pdf-viewer.toolbar.show-sidebar': 'Mostra la barra lateral',
   'documents.pdf-viewer.toolbar.previous-page': 'Pàgina anterior',
   'documents.pdf-viewer.toolbar.next-page': 'Pàgina següent',
-  'documents.pdf-viewer.toolbar.fit-width': 'Ajusta a l\'amplada',
+  'documents.pdf-viewer.toolbar.fit-width': "Ajusta a l'amplada",
   'documents.pdf-viewer.toolbar.fit-page': 'Ajusta a la pàgina',
   'documents.pdf-viewer.toolbar.rotate-clockwise': 'Gira en sentit horari',
   'documents.pdf-viewer.toolbar.download': 'Descarrega',
@@ -573,14 +604,14 @@ export const translations = {
   'documents.pdf-viewer.zoom.auto': 'Automàtic',
   'documents.pdf-viewer.zoom.actual-size': 'Mida real',
   'documents.pdf-viewer.zoom.page-fit': 'Ajusta a la pàgina',
-  'documents.pdf-viewer.zoom.page-width': 'Ajusta a l\'amplada',
+  'documents.pdf-viewer.zoom.page-width': "Ajusta a l'amplada",
 
   'documents.pdf-viewer.more-actions.label': 'Més accions',
   'documents.pdf-viewer.more-actions.presentation-mode': 'Mode de presentació',
   'documents.pdf-viewer.more-actions.download': 'Descarrega',
   'documents.pdf-viewer.more-actions.print': 'Imprimeix',
   'documents.pdf-viewer.more-actions.go-to-first-page': 'Vés a la primera pàgina',
-  'documents.pdf-viewer.more-actions.go-to-last-page': 'Vés a l\'última pàgina',
+  'documents.pdf-viewer.more-actions.go-to-last-page': "Vés a l'última pàgina",
   'documents.pdf-viewer.more-actions.rotate-clockwise': 'Gira en sentit horari',
   'documents.pdf-viewer.more-actions.rotate-counterclockwise': 'Gira en sentit antihorari',
   'documents.pdf-viewer.more-actions.page-scrolling': 'Desplaçament de pàgina',
@@ -619,9 +650,9 @@ export const translations = {
 
   // Document share links
   'document-share-links.share-action': 'Comparteix',
-  'document-share-links.copy': 'Copia l\'enllaç',
+  'document-share-links.copy': "Copia l'enllaç",
   'document-share-links.copied': 'Enllaç copiat al porta-retalls',
-  'document-share-links.copy-error': 'No s\'ha pogut copiar l\'enllaç',
+  'document-share-links.copy-error': "No s'ha pogut copiar l'enllaç",
   'document-share-links.enabled': 'Enllaç compartit habilitat',
   'document-share-links.disabled': 'Enllaç compartit deshabilitat',
   'document-share-links.deleted': 'Enllaç compartit suprimit',
@@ -636,39 +667,40 @@ export const translations = {
   'document-share-links.create.description': 'Crea un enllaç compartit nou per a aquest document.',
   'document-share-links.create.password.toggle': 'Requereix una contrasenya',
   'document-share-links.create.password.hint':
-    'Opcional, els destinataris l\'hauran d\'introduir abans d\'accedir-hi.',
+    "Opcional, els destinataris l'hauran d'introduir abans d'accedir-hi.",
   'document-share-links.create.password.placeholder': 'Introdueix o genera una contrasenya',
   'document-share-links.create.password.generate': 'Genera',
   'document-share-links.create.expiration.toggle': 'Estableix una data de caducitat',
   'document-share-links.create.expiration.hint':
-    'Opcional, l\'enllaç caducarà automàticament després d\'aquesta data.',
+    "Opcional, l'enllaç caducarà automàticament després d'aquesta data.",
   'document-share-links.create.expiration.24h': '24 hores',
   'document-share-links.create.expiration.7d': '7 dies',
   'document-share-links.create.expiration.30d': '30 dies',
   'document-share-links.create.expiration.custom': 'Personalitzat',
   'document-share-links.create.expiration.pick-date': 'Tria una data',
   'document-share-links.create.cancel': 'Cancel·la',
-  'document-share-links.create.submit': 'Crea l\'enllaç',
-  'document-share-links.create.error': 'No s\'ha pogut crear l\'enllaç compartit',
+  'document-share-links.create.submit': "Crea l'enllaç",
+  'document-share-links.create.error': "No s'ha pogut crear l'enllaç compartit",
   'document-share-links.created.title': 'Enllaç compartit creat',
-  'document-share-links.created.description': 'El teu enllaç compartit està llest — copia\'l i comparteix-lo.',
+  'document-share-links.created.description':
+    "El teu enllaç compartit està llest — copia'l i comparteix-lo.",
   'document-share-links.created.done': 'Fet',
   'document-share-links.actions.menu': 'Accions',
   'document-share-links.actions.open-document': 'Obre el document',
-  'document-share-links.actions.enable': 'Habilita l\'enllaç',
-  'document-share-links.actions.disable': 'Deshabilita l\'enllaç',
+  'document-share-links.actions.enable': "Habilita l'enllaç",
+  'document-share-links.actions.disable': "Deshabilita l'enllaç",
   'document-share-links.actions.stop-sharing': 'Deixa de compartir',
-  'document-share-links.delete.confirm.title': 'Suprimeix l\'enllaç compartit',
+  'document-share-links.delete.confirm.title': "Suprimeix l'enllaç compartit",
   'document-share-links.delete.confirm.message':
-    'Qualsevol persona amb aquest enllaç perdrà l\'accés immediatament. Aquesta acció no es pot desfer.',
-  'document-share-links.delete.confirm.confirm-button': 'Suprimeix l\'enllaç',
+    "Qualsevol persona amb aquest enllaç perdrà l'accés immediatament. Aquesta acció no es pot desfer.",
+  'document-share-links.delete.confirm.confirm-button': "Suprimeix l'enllaç",
   'document-share-links.delete.confirm.cancel-button': 'Cancel·la',
   'document-share-links.management.title': 'Enllaços compartits',
   'document-share-links.management.description':
     'Gestiona tots els enllaços compartits creats en aquesta organització.',
   'document-share-links.management.empty.title': 'No hi ha enllaços compartits',
   'document-share-links.management.empty.description':
-    'Els enllaços compartits creats per als documents d\'aquesta organització apareixeran aquí.',
+    "Els enllaços compartits creats per als documents d'aquesta organització apareixeran aquí.",
   'document-share-links.management.table.document': 'Document',
   'document-share-links.management.table.link': 'Enllaç',
   'document-share-links.management.table.status': 'Estat',
@@ -686,7 +718,7 @@ export const translations = {
   'document-share-links.management.security.public': 'Públic',
   'document-share-links.management.never': 'Mai',
   'document-share-links.public.download': 'Descarrega',
-  'document-share-links.public.download-error': 'No s\'ha pogut descarregar el fitxer',
+  'document-share-links.public.download-error': "No s'ha pogut descarregar el fitxer",
   'document-share-links.public.password.title': 'Contrasenya requerida',
   'document-share-links.public.password.description':
     'Aquest document està protegit. Introdueix la contrasenya per accedir-hi.',
@@ -698,7 +730,7 @@ export const translations = {
     'Massa intents. Si us plau, torna-ho a provar més tard.',
   'document-share-links.public.gone.title': 'Enllaç no disponible',
   'document-share-links.public.gone.description':
-    'Aquest enllaç compartit ha caducat o s\'ha deshabilitat.',
+    "Aquest enllaç compartit ha caducat o s'ha deshabilitat.",
   'document-share-links.public.not-found.title': 'Enllaç no trobat',
   'document-share-links.public.not-found.description': 'Aquest enllaç compartit no existeix.',
 
@@ -717,36 +749,36 @@ export const translations = {
   'trash.deleted.success.title': 'Document suprimit',
   'trash.deleted.success.description': 'El document ha estat suprimit permanentment.',
 
-  'activity.document.created': 'S\'ha creat el document',
-  'activity.document.updated.single': 'S\'ha actualitzat el camp {{ field }}',
-  'activity.document.updated.multiple': 'S\'han actualitzat els camps {{ fields }}',
-  'activity.document.updated': 'S\'ha actualitzat el document',
-  'activity.document.deleted': 'S\'ha suprimit el document',
-  'activity.document.restored': 'S\'ha restaurat el document',
-  'activity.document.tagged': 'S\'ha afegit l\'etiqueta {{ tag }}',
-  'activity.document.untagged': 'S\'ha eliminat l\'etiqueta {{ tag }}',
+  'activity.document.created': "S'ha creat el document",
+  'activity.document.updated.single': "S'ha actualitzat el camp {{ field }}",
+  'activity.document.updated.multiple': "S'han actualitzat els camps {{ fields }}",
+  'activity.document.updated': "S'ha actualitzat el document",
+  'activity.document.deleted': "S'ha suprimit el document",
+  'activity.document.restored': "S'ha restaurat el document",
+  'activity.document.tagged': "S'ha afegit l'etiqueta {{ tag }}",
+  'activity.document.untagged': "S'ha eliminat l'etiqueta {{ tag }}",
 
   'activity.document.user.name': 'per {{ name }}',
 
-  'activity.load-more': 'Carrega\'n més',
+  'activity.load-more': "Carrega'n més",
   'activity.no-more-activities': 'No hi ha més activitats per a aquest document',
 
   // Tags
 
   'tags.no-tags.title': 'Encara no hi ha etiquetes',
   'tags.no-tags.description':
-    'Aquesta organització encara no té etiquetes. Les etiquetes s\'utilitzen per categoritzar documents. Pots afegir etiquetes als teus documents per fer-los més fàcils de trobar i organitzar.',
+    "Aquesta organització encara no té etiquetes. Les etiquetes s'utilitzen per categoritzar documents. Pots afegir etiquetes als teus documents per fer-los més fàcils de trobar i organitzar.",
   'tags.no-tags.create-tag': 'Crea una etiqueta',
 
   'tags.title': 'Etiquetes de documents',
   'tags.description':
-    'Les etiquetes s\'utilitzen per categoritzar documents. Pots afegir etiquetes als teus documents per fer-los més fàcils de trobar i organitzar.',
+    "Les etiquetes s'utilitzen per categoritzar documents. Pots afegir etiquetes als teus documents per fer-los més fàcils de trobar i organitzar.",
   'tags.create': 'Crea una etiqueta',
-  'tags.update': 'Actualitza l\'etiqueta',
-  'tags.delete': 'Suprimeix l\'etiqueta',
-  'tags.delete.confirm.title': 'Suprimeix l\'etiqueta',
+  'tags.update': "Actualitza l'etiqueta",
+  'tags.delete': "Suprimeix l'etiqueta",
+  'tags.delete.confirm.title': "Suprimeix l'etiqueta",
   'tags.delete.confirm.message':
-    'Estàs segur que vols suprimir aquesta etiqueta? Suprimir-la l\'eliminarà de tots els documents.',
+    "Estàs segur que vols suprimir aquesta etiqueta? Suprimir-la l'eliminarà de tots els documents.",
   'tags.delete.confirm.confirm-button': 'Suprimeix',
   'tags.delete.confirm.cancel-button': 'Cancel·la',
   'tags.delete.success': 'Etiqueta suprimida correctament',
@@ -754,14 +786,14 @@ export const translations = {
   'tags.update.success': 'Etiqueta "{{ name }}" actualitzada correctament.',
   'tags.form.name.label': 'Nom',
   'tags.form.name.placeholder': 'Ex. Contractes',
-  'tags.form.name.required': 'Si us plau, introdueix un nom d\'etiqueta',
-  'tags.form.name.max-length': 'El nom de l\'etiqueta ha de tenir menys de 64 caràcters',
+  'tags.form.name.required': "Si us plau, introdueix un nom d'etiqueta",
+  'tags.form.name.max-length': "El nom de l'etiqueta ha de tenir menys de 64 caràcters",
   'tags.form.color.label': 'Color',
   'tags.form.color.required': 'Si us plau, introdueix un color',
   'tags.form.color.invalid': 'El color hexadecimal està mal formatat.',
   'tags.form.description.label': 'Descripció',
   'tags.form.description.optional': '(opcional)',
-  'tags.form.description.placeholder': 'Ex. Tots els contractes signats per l\'empresa',
+  'tags.form.description.placeholder': "Ex. Tots els contractes signats per l'empresa",
   'tags.form.description.max-length': 'La descripció ha de tenir menys de 256 caràcters',
   'tags.form.no-description': 'Sense descripció',
   'tags.table.headers.tag': 'Etiqueta',
@@ -788,7 +820,7 @@ export const translations = {
   'document-views.create.success': 'Vista "{{ name }}" creada correctament.',
   'document-views.update.success': 'Vista "{{ name }}" actualitzada correctament.',
   'document-views.form.name.label': 'Nom',
-  'document-views.form.name.placeholder': 'Ex. Safata d\'entrada',
+  'document-views.form.name.placeholder': "Ex. Safata d'entrada",
   'document-views.form.name.required': 'Si us plau, introdueix un nom de vista',
   'document-views.form.name.max-length': 'El nom de la vista ha de tenir menys de 100 caràcters',
   'document-views.form.query.label': 'Cerca',
@@ -802,7 +834,7 @@ export const translations = {
   'document-views.form.description.placeholder': 'Ex. Documents pendents de processar',
   'document-views.form.description.max-length': 'La descripció ha de tenir menys de 256 caràcters',
   'document-views.actions.menu': 'Accions de vista',
-  'document-views.view.no-documents': 'Cap document coincideix amb la cerca d\'aquesta vista.',
+  'document-views.view.no-documents': "Cap document coincideix amb la cerca d'aquesta vista.",
   'document-views.view.not-found': 'Vista no trobada.',
   'api-errors.document_views.already_exists':
     'Ja existeix una vista amb aquest nom per a aquesta organització',
@@ -818,54 +850,56 @@ export const translations = {
   'tagging-rules.operator.not-contains': 'no conté',
   'tagging-rules.operator.starts-with': 'comença per',
   'tagging-rules.operator.ends-with': 'acaba per',
-  'tagging-rules.list.title': 'Regles d\'etiquetatge',
+  'tagging-rules.list.title': "Regles d'etiquetatge",
   'tagging-rules.list.description':
-    'Gestiona les regles d\'etiquetatge de la teva organització per etiquetar automàticament els documents segons les condicions que defineixis.',
+    "Gestiona les regles d'etiquetatge de la teva organització per etiquetar automàticament els documents segons les condicions que defineixis.",
   'tagging-rules.list.demo-warning':
-    'Nota: Com que aquest és un entorn de demostració (sense servidor), les regles d\'etiquetatge no s\'aplicaran als documents afegits recentment.',
-  'tagging-rules.list.no-tagging-rules.title': 'No hi ha regles d\'etiquetatge',
+    "Nota: Com que aquest és un entorn de demostració (sense servidor), les regles d'etiquetatge no s'aplicaran als documents afegits recentment.",
+  'tagging-rules.list.no-tagging-rules.title': "No hi ha regles d'etiquetatge",
   'tagging-rules.list.no-tagging-rules.description':
-    'Crea una regla d\'etiquetatge per etiquetar automàticament els teus documents afegits segons les condicions que defineixis.',
-  'tagging-rules.list.no-tagging-rules.create-tagging-rule': 'Crea una regla d\'etiquetatge',
+    "Crea una regla d'etiquetatge per etiquetar automàticament els teus documents afegits segons les condicions que defineixis.",
+  'tagging-rules.list.no-tagging-rules.create-tagging-rule': "Crea una regla d'etiquetatge",
   'tagging-rules.list.card.no-conditions': 'Sense condicions',
   'tagging-rules.list.card.one-condition': '1 condició',
   'tagging-rules.list.card.conditions': '{{ count }} condicions',
   'tagging-rules.list.card.delete': 'Suprimeix la regla',
   'tagging-rules.list.card.edit': 'Edita la regla',
-  'tagging-rules.create.title': 'Crea una regla d\'etiquetatge',
-  'tagging-rules.create.success': 'Regla d\'etiquetatge creada correctament',
-  'tagging-rules.create.error': 'No s\'ha pogut crear la regla d\'etiquetatge',
+  'tagging-rules.create.title': "Crea una regla d'etiquetatge",
+  'tagging-rules.create.success': "Regla d'etiquetatge creada correctament",
+  'tagging-rules.create.error': "No s'ha pogut crear la regla d'etiquetatge",
   'tagging-rules.create.submit': 'Crea la regla',
   'tagging-rules.form.name.label': 'Nom',
   'tagging-rules.form.name.placeholder': 'Exemple: Etiqueta factures',
   'tagging-rules.form.name.min-length': 'Si us plau, introdueix un nom per a la regla',
   'tagging-rules.form.name.max-length': 'El nom ha de tenir menys de 64 caràcters',
   'tagging-rules.form.description.label': 'Descripció',
-  'tagging-rules.form.description.placeholder': 'Exemple: Etiqueta els documents amb "factura" al nom',
+  'tagging-rules.form.description.placeholder':
+    'Exemple: Etiqueta els documents amb "factura" al nom',
   'tagging-rules.form.description.max-length': 'La descripció ha de tenir menys de 256 caràcters',
   'tagging-rules.form.conditions.label': 'Condicions',
   'tagging-rules.form.conditions.description':
-    'Defineix les condicions que s\'han de complir perquè s\'apliqui la regla. Si no hi ha condicions, la regla s\'aplicarà a tots els documents',
+    "Defineix les condicions que s'han de complir perquè s'apliqui la regla. Si no hi ha condicions, la regla s'aplicarà a tots els documents",
   'tagging-rules.form.conditions.add-condition': 'Afegeix condició',
   'tagging-rules.form.conditions.connector.when': 'Quan',
   'tagging-rules.form.conditions.connector.and': 'i',
   'tagging-rules.form.conditions.connector.or': 'o',
-  'tagging-rules.condition-match-mode.all': 'Totes les condicions s\'han de complir',
-  'tagging-rules.condition-match-mode.any': 'Qualsevol condició s\'ha de complir',
+  'tagging-rules.condition-match-mode.all': "Totes les condicions s'han de complir",
+  'tagging-rules.condition-match-mode.any': "Qualsevol condició s'ha de complir",
   'tagging-rules.form.conditions.no-conditions.title': 'Sense condicions',
   'tagging-rules.form.conditions.no-conditions.description':
     'No has afegit cap condició a aquesta regla. Aquesta regla aplicarà les seves etiquetes a tots els documents.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Aplica la regla sense condicions',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Cancel·la',
   'tagging-rules.form.conditions.value.placeholder': 'Exemple: factura',
-  'tagging-rules.form.conditions.value.min-length': 'Si us plau, introdueix un valor per a la condició',
+  'tagging-rules.form.conditions.value.min-length':
+    'Si us plau, introdueix un valor per a la condició',
   'tagging-rules.form.tags.label': 'Etiquetes',
   'tagging-rules.form.tags.description':
-    'Selecciona les etiquetes que s\'aplicaran als documents afegits que satisfacin les condicions',
+    "Selecciona les etiquetes que s'aplicaran als documents afegits que satisfacin les condicions",
   'tagging-rules.form.tags.min-length': 'Es requereix almenys una etiqueta per aplicar',
   'tagging-rules.form.tags.add-tag': 'Crea una etiqueta',
-  'tagging-rules.update.title': 'Actualitza la regla d\'etiquetatge',
-  'tagging-rules.update.error': 'No s\'ha pogut actualitzar la regla d\'etiquetatge',
+  'tagging-rules.update.title': "Actualitza la regla d'etiquetatge",
+  'tagging-rules.update.error': "No s'ha pogut actualitzar la regla d'etiquetatge",
   'tagging-rules.update.submit': 'Actualitza la regla',
   'tagging-rules.update.cancel': 'Cancel·la',
   'tagging-rules.apply.button': 'Aplica als documents existents',
@@ -873,53 +907,55 @@ export const translations = {
   'tagging-rules.apply.confirm.description':
     'Això comprovarà tots els documents existents a la teva organització i aplicarà les etiquetes on les condicions se satisfacin. El processament es farà en segon pla.',
   'tagging-rules.apply.confirm.button': 'Aplica la regla',
-  'tagging-rules.apply.success': 'L\'aplicació de la regla ha començat en segon pla',
-  'tagging-rules.apply.error': 'No s\'ha pogut iniciar l\'aplicació de la regla',
+  'tagging-rules.apply.success': "L'aplicació de la regla ha començat en segon pla",
+  'tagging-rules.apply.error': "No s'ha pogut iniciar l'aplicació de la regla",
   'tagging-rules.apply.processing': 'Iniciant...',
 
   // Intake emails
 
-  'intake-emails.title': 'Correus electrònics d\'entrada',
+  'intake-emails.title': "Correus electrònics d'entrada",
   'intake-emails.description':
-    'Les adreces de correus electrònics d\'entrada s\'utilitzen per ingerir automàticament correus electrònics a Papra. Només has de reenviar els correus a l\'adreça de correu electrònic d\'entrada i els seus fitxers adjunts s\'afegiran als documents de la teva organització.',
-  'intake-emails.disabled.title': 'Els correus electrònics d\'entrada estan deshabilitats',
+    "Les adreces de correus electrònics d'entrada s'utilitzen per ingerir automàticament correus electrònics a Papra. Només has de reenviar els correus a l'adreça de correu electrònic d'entrada i els seus fitxers adjunts s'afegiran als documents de la teva organització.",
+  'intake-emails.disabled.title': "Els correus electrònics d'entrada estan deshabilitats",
   'intake-emails.disabled.description':
-    'Els correus electrònics d\'entrada estan deshabilitats en aquesta instància. Si us plau, posa\'t en contacte amb l\'administrador per habilitar-los. Consulta la {{ documentation }} per a més informació.',
+    "Els correus electrònics d'entrada estan deshabilitats en aquesta instància. Si us plau, posa't en contacte amb l'administrador per habilitar-los. Consulta la {{ documentation }} per a més informació.",
   'intake-emails.disabled.documentation': 'documentació',
   'intake-emails.info':
-    'Només es processaran els correus electrònics d\'entrada habilitats procedents d\'orígens permesos. Pots habilitar o deshabilitar un correu electrònic d\'entrada en qualsevol moment.',
-  'intake-emails.empty.title': 'No hi ha correus electrònics d\'entrada',
+    "Només es processaran els correus electrònics d'entrada habilitats procedents d'orígens permesos. Pots habilitar o deshabilitar un correu electrònic d'entrada en qualsevol moment.",
+  'intake-emails.empty.title': "No hi ha correus electrònics d'entrada",
   'intake-emails.empty.description':
-    'Genera una adreça de correu electrònic d\'entrada per ingerir fàcilment fitxers adjunts de correus electrònics.',
-  'intake-emails.empty.generate': 'Genera un correu electrònic d\'entrada',
-  'intake-emails.count': '{{ count }} {{ count, =1:correu electrònic d\'entrada, correus electrònics d\'entrada }} per a aquesta organització',
-  'intake-emails.new': 'Nou correu electrònic d\'entrada',
+    "Genera una adreça de correu electrònic d'entrada per ingerir fàcilment fitxers adjunts de correus electrònics.",
+  'intake-emails.empty.generate': "Genera un correu electrònic d'entrada",
+  'intake-emails.count':
+    "{{ count }} {{ count, =1:correu electrònic d'entrada, correus electrònics d'entrada }} per a aquesta organització",
+  'intake-emails.new': "Nou correu electrònic d'entrada",
   'intake-emails.disabled-label': '(Deshabilitat)',
   'intake-emails.no-origins': 'No hi ha orígens de correu electrònic permesos',
   'intake-emails.allowed-origins': 'Permès des de {{ count }} {{ count, =1:adreça, adreces }}',
   'intake-emails.actions.enable': 'Habilita',
   'intake-emails.actions.disable': 'Deshabilita',
-  'intake-emails.actions.manage-origins': 'Gestiona les adreces d\'origen',
+  'intake-emails.actions.manage-origins': "Gestiona les adreces d'origen",
   'intake-emails.actions.delete': 'Suprimeix',
-  'intake-emails.delete.confirm.title': 'Vols suprimir el correu electrònic d\'entrada?',
+  'intake-emails.delete.confirm.title': "Vols suprimir el correu electrònic d'entrada?",
   'intake-emails.delete.confirm.message':
-    'Estàs segur que vols suprimir aquest correu electrònic d\'entrada? Aquesta acció no es pot desfer.',
-  'intake-emails.delete.confirm.confirm-button': 'Suprimeix el correu electrònic d\'entrada',
+    "Estàs segur que vols suprimir aquest correu electrònic d'entrada? Aquesta acció no es pot desfer.",
+  'intake-emails.delete.confirm.confirm-button': "Suprimeix el correu electrònic d'entrada",
   'intake-emails.delete.confirm.cancel-button': 'Cancel·la',
-  'intake-emails.delete.success': 'Correu electrònic d\'entrada suprimit',
-  'intake-emails.create.success': 'Correu electrònic d\'entrada creat',
-  'intake-emails.update.success.enabled': 'Correu electrònic d\'entrada habilitat',
-  'intake-emails.update.success.disabled': 'Correu electrònic d\'entrada deshabilitat',
+  'intake-emails.delete.success': "Correu electrònic d'entrada suprimit",
+  'intake-emails.create.success': "Correu electrònic d'entrada creat",
+  'intake-emails.update.success.enabled': "Correu electrònic d'entrada habilitat",
+  'intake-emails.update.success.disabled': "Correu electrònic d'entrada deshabilitat",
   'intake-emails.allowed-origins.title': 'Orígens permesos',
   'intake-emails.allowed-origins.description':
-    'Només es processaran els correus electrònics enviats a {{ email }} des d\'aquests orígens. Si no s\'especifica cap origen, tots els correus electrònics seran descartats.',
-  'intake-emails.allowed-origins.add.label': 'Afegeix una adreça de correu electrònic d\'origen permès',
+    "Només es processaran els correus electrònics enviats a {{ email }} des d'aquests orígens. Si no s'especifica cap origen, tots els correus electrònics seran descartats.",
+  'intake-emails.allowed-origins.add.label':
+    "Afegeix una adreça de correu electrònic d'origen permès",
   'intake-emails.allowed-origins.add.placeholder': 'Ex. ada@papra.app',
   'intake-emails.allowed-origins.add.button': 'Afegeix',
-  'intake-emails.allowed-origins.delete.label': 'Suprimeix l\'origen permès',
+  'intake-emails.allowed-origins.delete.label': "Suprimeix l'origen permès",
   'intake-emails.actions.more': 'Més accions',
   'intake-emails.allowed-origins.add.error.exists':
-    'Aquest correu electrònic ja es troba als orígens permesos per a aquest correu electrònic d\'entrada',
+    "Aquest correu electrònic ja es troba als orígens permesos per a aquest correu electrònic d'entrada",
 
   // API keys
 
@@ -941,13 +977,17 @@ export const translations = {
   'api-keys.permissions.tags.tags:update': 'Actualitza etiquetes',
   'api-keys.permissions.tags.tags:delete': 'Suprimeix etiquetes',
   'api-keys.permissions.custom-properties.title': 'Propietats personalitzades',
-  'api-keys.permissions.custom-properties.custom-properties:create': 'Crea propietats personalitzades',
-  'api-keys.permissions.custom-properties.custom-properties:read': 'Llegeix propietats personalitzades',
-  'api-keys.permissions.custom-properties.custom-properties:update': 'Actualitza propietats personalitzades',
-  'api-keys.permissions.custom-properties.custom-properties:delete': 'Suprimeix propietats personalitzades',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Crea propietats personalitzades',
+  'api-keys.permissions.custom-properties.custom-properties:read':
+    'Llegeix propietats personalitzades',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Actualitza propietats personalitzades',
+  'api-keys.permissions.custom-properties.custom-properties:delete':
+    'Suprimeix propietats personalitzades',
   'api-keys.create.title': 'Crea una clau API',
-  'api-keys.create.description': 'Crea una nova clau API per accedir a l\'API de Papra.',
-  'api-keys.create.success': 'La clau API s\'ha creat correctament.',
+  'api-keys.create.description': "Crea una nova clau API per accedir a l'API de Papra.",
+  'api-keys.create.success': "La clau API s'ha creat correctament.",
   'api-keys.create.back': 'Torna a les claus API',
   'api-keys.create.form.name.label': 'Nom',
   'api-keys.create.form.name.placeholder': 'Exemple: La meva clau API',
@@ -957,14 +997,14 @@ export const translations = {
   'api-keys.create.form.submit': 'Crea una clau API',
   'api-keys.create.created.title': 'Clau API creada',
   'api-keys.create.created.description':
-    'La clau API s\'ha creat correctament. Desa-la en un lloc segur, ja que no es tornarà a mostrar.',
+    "La clau API s'ha creat correctament. Desa-la en un lloc segur, ja que no es tornarà a mostrar.",
   'api-keys.list.title': 'Claus API',
   'api-keys.list.description': 'Gestiona les teves claus API aquí.',
   'api-keys.list.create': 'Crea una clau API',
   'api-keys.list.empty.title': 'No hi ha claus API',
-  'api-keys.list.empty.description': 'Crea una clau API per accedir a l\'API de Papra.',
+  'api-keys.list.empty.description': "Crea una clau API per accedir a l'API de Papra.",
   'api-keys.list.card.created': 'Creada',
-  'api-keys.delete.success': 'La clau API s\'ha suprimit correctament',
+  'api-keys.delete.success': "La clau API s'ha suprimit correctament",
   'api-keys.delete.confirm.title': 'Suprimeix la clau API',
   'api-keys.delete.confirm.message':
     'Estàs segur que vols suprimir aquesta clau API? Aquesta acció no es pot desfer.',
@@ -976,7 +1016,8 @@ export const translations = {
   'webhooks.list.title': 'Webhooks',
   'webhooks.list.description': 'Gestiona els webhooks de la teva organització',
   'webhooks.list.empty.title': 'No hi ha webhooks',
-  'webhooks.list.empty.description': 'Crea el teu primer webhook per començar a rebre esdeveniments',
+  'webhooks.list.empty.description':
+    'Crea el teu primer webhook per començar a rebre esdeveniments',
   'webhooks.list.create': 'Crea un webhook',
   'webhooks.list.card.last-triggered': 'Darrera activació',
   'webhooks.list.card.never': 'Mai',
@@ -991,9 +1032,9 @@ export const translations = {
   'webhooks.create.form.name.required': 'El nom és obligatori',
   'webhooks.create.form.name.max-length': 'El nom ha de tenir com a màxim 128 caràcters',
   'webhooks.create.form.url.label': 'URL del webhook',
-  'webhooks.create.form.url.placeholder': 'Introdueix l\'URL del webhook',
-  'webhooks.create.form.url.required': 'L\'URL és obligatori',
-  'webhooks.create.form.url.invalid': 'L\'URL no és vàlid',
+  'webhooks.create.form.url.placeholder': "Introdueix l'URL del webhook",
+  'webhooks.create.form.url.required': "L'URL és obligatori",
+  'webhooks.create.form.url.invalid': "L'URL no és vàlid",
   'webhooks.create.form.secret.label': 'Secret',
   'webhooks.create.form.secret.placeholder': 'Introdueix el secret del webhook',
   'webhooks.create.form.events.label': 'Esdeveniments',
@@ -1016,8 +1057,10 @@ export const translations = {
   'webhooks.events.documents.document:created.description': 'Document creat',
   'webhooks.events.documents.document:deleted.description': 'Document suprimit',
   'webhooks.events.documents.document:updated.description': 'Document actualitzat',
-  'webhooks.events.documents.document:tag:added.description': 'S\'ha afegit una etiqueta a un document',
-  'webhooks.events.documents.document:tag:removed.description': 'S\'ha eliminat una etiqueta d\'un document',
+  'webhooks.events.documents.document:tag:added.description':
+    "S'ha afegit una etiqueta a un document",
+  'webhooks.events.documents.document:tag:removed.description':
+    "S'ha eliminat una etiqueta d'un document",
 
   // Navigation
 
@@ -1025,7 +1068,7 @@ export const translations = {
   'layout.menu.documents': 'Documents',
   'layout.menu.tags': 'Etiquetes',
   'layout.menu.custom-properties': 'Propietats personalitzades',
-  'layout.menu.tagging-rules': 'Regles d\'etiquetatge',
+  'layout.menu.tagging-rules': "Regles d'etiquetatge",
   'layout.menu.share-links': 'Enllaços compartits',
   'layout.menu.deleted-documents': 'Documents suprimits',
   'layout.menu.organization-settings': 'Configuració',
@@ -1035,7 +1078,7 @@ export const translations = {
   'layout.menu.general-settings': 'Configuració general',
   'layout.menu.auto-tagging': 'Etiquetatge automàtic',
   'layout.menu.usage': 'Ús',
-  'layout.menu.intake-emails': 'Correus electrònics d\'entrada',
+  'layout.menu.intake-emails': "Correus electrònics d'entrada",
   'layout.menu.webhooks': 'Webhooks',
   'layout.menu.members': 'Membres',
   'layout.menu.document-views': 'Vistes',
@@ -1043,7 +1086,7 @@ export const translations = {
   'layout.menu.admin': 'Administració',
 
   'layout.upgrade-cta.title': 'Necessites més espai?',
-  'layout.upgrade-cta.description': 'Obté 10x més emmagatzematge + col·laboració d\'equip',
+  'layout.upgrade-cta.description': "Obté 10x més emmagatzematge + col·laboració d'equip",
   'layout.upgrade-cta.button': 'Actualitza ara',
 
   'layout.theme.light': 'Mode clar',
@@ -1051,12 +1094,12 @@ export const translations = {
   'layout.theme.system': 'Mode del sistema',
 
   'layout.theme-switcher.label': 'Selector de temes',
-  'layout.language-switcher.label': 'Selector d\'idiomes',
+  'layout.language-switcher.label': "Selector d'idiomes",
 
   'layout.search.placeholder': 'Cerca ràpida',
   'layout.menu.import-document': 'Importa un document',
 
-  'user-menu.trigger.label': 'Menú d\'usuari',
+  'user-menu.trigger.label': "Menú d'usuari",
   'user-menu.account-settings': 'Configuració del compte',
   'user-menu.api-keys': 'Claus API',
   'user-menu.invitations': 'Invitacions',
@@ -1068,7 +1111,7 @@ export const translations = {
   // Command palette
 
   'command-palette.search.placeholder': 'Cerca comandaments o documents',
-  'command-palette.no-results': 'No s\'han trobat resultats',
+  'command-palette.no-results': "No s'han trobat resultats",
   'command-palette.sections.documents': 'Documents',
   'command-palette.sections.theme': 'Tema',
   'command-palette.show-more-results': 'Mostra {{ count }} resultats més per a "{{ query }}"',
@@ -1078,43 +1121,45 @@ export const translations = {
   'api-errors.api.timeout': 'La sol·licitud ha trigat massa i ha expirat. Torna-ho a provar.',
   'api-errors.document.already_exists': 'El document ja existeix',
   'api-errors.document.size_too_large': 'La mida del fitxer és massa gran',
-  'api-errors.intake-emails.already_exists': 'Ja existeix un correu electrònic d\'entrada amb aquesta adreça.',
+  'api-errors.intake-emails.already_exists':
+    "Ja existeix un correu electrònic d'entrada amb aquesta adreça.",
   'api-errors.intake_email.limit_reached':
-    'S\'ha arribat al nombre màxim de correus electrònics d\'entrada per a aquesta organització. Si us plau, actualitza el teu pla per crear-ne més.',
+    "S'ha arribat al nombre màxim de correus electrònics d'entrada per a aquesta organització. Si us plau, actualitza el teu pla per crear-ne més.",
   'api-errors.user.max_organization_count_reached':
-    'Has arribat al nombre màxim d\'organitzacions que pots crear; si en necessites més, posa\'t en contacte amb el suport tècnic.',
-  'api-errors.default': 'S\'ha produït un error en processar la teva sol·licitud.',
+    "Has arribat al nombre màxim d'organitzacions que pots crear; si en necessites més, posa't en contacte amb el suport tècnic.",
+  'api-errors.default': "S'ha produït un error en processar la teva sol·licitud.",
   'api-errors.organization.invitation_already_exists':
     'Ja existeix una invitació per a aquest correu electrònic en aquesta organització.',
-  'api-errors.user.already_in_organization': 'Aquest usuari ja forma part d\'aquesta organització.',
+  'api-errors.user.already_in_organization': "Aquest usuari ja forma part d'aquesta organització.",
   'api-errors.user.organization_invitation_limit_reached':
-    'S\'ha assolit el nombre màxim d\'invitacions per avui. Torna-ho a provar demà.',
+    "S'ha assolit el nombre màxim d'invitacions per avui. Torna-ho a provar demà.",
   'api-errors.demo.not_available': 'Aquesta funcionalitat no està disponible a la demo',
-  'api-errors.tags.already_exists': 'Ja existeix una etiqueta amb aquest nom per a aquesta organització',
+  'api-errors.tags.already_exists':
+    'Ja existeix una etiqueta amb aquest nom per a aquesta organització',
   'api-errors.tags.organization_limit_reached':
-    'S\'ha assolit el nombre màxim d\'etiquetes per a aquesta organització.',
+    "S'ha assolit el nombre màxim d'etiquetes per a aquesta organització.",
   'api-errors.internal.error':
-    'S\'ha produït un error en processar la teva sol·licitud. Torna-ho a provar més tard.',
+    "S'ha produït un error en processar la teva sol·licitud. Torna-ho a provar més tard.",
   'api-errors.auth.invalid_origin':
-    'Origen de l\'aplicació no vàlid. Si estàs allotjant Papra tu mateix, assegura\'t que la variable d\'entorn APP_BASE_URL coincideixi amb la teva URL actual. Per a més detalls, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin',
+    "Origen de l'aplicació no vàlid. Si estàs allotjant Papra tu mateix, assegura't que la variable d'entorn APP_BASE_URL coincideixi amb la teva URL actual. Per a més detalls, consulta https://docs.papra.app/resources/troubleshooting/#invalid-application-origin",
   'api-errors.organization.max_members_count_reached':
-    'S\'ha assolit el nombre màxim de membres i invitacions pendents per a aquesta organització. Si us plau, actualitza el teu pla per afegir més membres.',
+    "S'ha assolit el nombre màxim de membres i invitacions pendents per a aquesta organització. Si us plau, actualitza el teu pla per afegir més membres.",
   'api-errors.organization.has_active_subscription':
     'No es pot suprimir una organització amb una subscripció activa. Si us plau, cancel·la primer la teva subscripció utilitzant el botó "Gestiona la subscripció" de dalt.',
   'api-errors.webhooks.ssrf_unsafe_url':
-    'L\'URL proporcionada no està permesa. Les URLs dels webhooks no han d\'apuntar a adreces IP privades o reservades.',
+    "L'URL proporcionada no està permesa. Les URLs dels webhooks no han d'apuntar a adreces IP privades o reservades.",
   'api-errors.users.still_owns_organizations':
-    'Aquest usuari encara és propietari d\'una o més organitzacions. Suprimeix aquestes organitzacions abans de suprimir l\'usuari.',
-  'api-errors.plan_entitlements.already_exists':
-    'Aquest usuari ja té un dret d\'aquest tipus.',
+    "Aquest usuari encara és propietari d'una o més organitzacions. Suprimeix aquestes organitzacions abans de suprimir l'usuari.",
+  'api-errors.plan_entitlements.already_exists': "Aquest usuari ja té un dret d'aquest tipus.",
   'api-errors.plan_entitlements.not_found': 'Dret de pla no trobat.',
   'api-errors.plan_entitlements.not_eligible': 'Aquest usuari no és elegible per a aquest dret.',
-  'api-errors.users.cannot_delete_self': 'No pots suprimir el teu propi compte des del panell d\'administració.',
+  'api-errors.users.cannot_delete_self':
+    "No pots suprimir el teu propi compte des del panell d'administració.",
   // Better auth api errors
   'api-errors.USER_NOT_FOUND': 'Usuari no trobat',
-  'api-errors.FAILED_TO_CREATE_USER': 'Error en crear l\'usuari',
+  'api-errors.FAILED_TO_CREATE_USER': "Error en crear l'usuari",
   'api-errors.FAILED_TO_CREATE_SESSION': 'Error en crear la sessió',
-  'api-errors.FAILED_TO_UPDATE_USER': 'Error en actualitzar l\'usuari',
+  'api-errors.FAILED_TO_UPDATE_USER': "Error en actualitzar l'usuari",
   'api-errors.FAILED_TO_GET_SESSION': 'Error en obtenir la sessió',
   'api-errors.INVALID_PASSWORD': 'Contrasenya no vàlida',
   'api-errors.INVALID_EMAIL': 'Correu electrònic no vàlid',
@@ -1123,9 +1168,9 @@ export const translations = {
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Compte social ja vinculat',
   'api-errors.PROVIDER_NOT_FOUND': 'Proveïdor no trobat',
   'api-errors.INVALID_TOKEN': 'Token no vàlid',
-  'api-errors.ID_TOKEN_NOT_SUPPORTED': 'Token d\'identificació no suportat',
-  'api-errors.FAILED_TO_GET_USER_INFO': 'Error en obtenir la informació de l\'usuari',
-  'api-errors.USER_EMAIL_NOT_FOUND': 'Correu electrònic de l\'usuari no trobat',
+  'api-errors.ID_TOKEN_NOT_SUPPORTED': "Token d'identificació no suportat",
+  'api-errors.FAILED_TO_GET_USER_INFO': "Error en obtenir la informació de l'usuari",
+  'api-errors.USER_EMAIL_NOT_FOUND': "Correu electrònic de l'usuari no trobat",
   'api-errors.EMAIL_NOT_VERIFIED': 'Correu electrònic no verificat',
   'api-errors.PASSWORD_TOO_SHORT': 'Contrasenya massa curta',
   'api-errors.PASSWORD_TOO_LONG': 'Contrasenya massa llarga',
@@ -1133,30 +1178,36 @@ export const translations = {
   'api-errors.EMAIL_CAN_NOT_BE_UPDATED': 'No es pot actualitzar el correu electrònic',
   'api-errors.CREDENTIAL_ACCOUNT_NOT_FOUND': 'Compte de credencials no trobat',
   'api-errors.SESSION_EXPIRED': 'Sessió caducada',
-  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Error en desvincular l\'últim compte',
+  'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': "Error en desvincular l'últim compte",
   'api-errors.ACCOUNT_NOT_FOUND': 'Compte no trobat',
-  'api-errors.USER_ALREADY_HAS_PASSWORD': 'L\'usuari ja té una contrasenya',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': "L'usuari ja té una contrasenya",
   'api-errors.INVALID_CODE': 'El codi proporcionat no és vàlid o ha caducat',
-  'api-errors.OTP_NOT_ENABLED': 'L\'autenticació de dos factors no està activada per a aquest compte',
-  'api-errors.OTP_HAS_EXPIRED': 'El codi d\'autenticació de dos factors ha caducat',
+  'api-errors.OTP_NOT_ENABLED':
+    "L'autenticació de dos factors no està activada per a aquest compte",
+  'api-errors.OTP_HAS_EXPIRED': "El codi d'autenticació de dos factors ha caducat",
   'api-errors.TOTP_NOT_ENABLED': 'TOTP no està activat per a aquest compte',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'L\'autenticació de dos factors no està activada per a aquest compte',
-  'api-errors.BACKUP_CODES_NOT_ENABLED': 'Els codis de recuperació no estan activats per a aquest compte',
-  'api-errors.INVALID_BACKUP_CODE': 'El codi de recuperació proporcionat no és vàlid o ja s\'ha utilitzat',
-  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Massa intents. Si us plau, sol·licita un codi nou.',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    "L'autenticació de dos factors no està activada per a aquest compte",
+  'api-errors.BACKUP_CODES_NOT_ENABLED':
+    'Els codis de recuperació no estan activats per a aquest compte',
+  'api-errors.INVALID_BACKUP_CODE':
+    "El codi de recuperació proporcionat no és vàlid o ja s'ha utilitzat",
+  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE':
+    'Massa intents. Si us plau, sol·licita un codi nou.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Cookie de dos factors no vàlida',
 
   // Not found
 
   'not-found.title': '404 - Pàgina no trobada',
   'not-found.description':
-    'Ho sentim, la pàgina que cerques no sembla existir. Comprova l\'URL i torna-ho a provar.',
+    "Ho sentim, la pàgina que cerques no sembla existir. Comprova l'URL i torna-ho a provar.",
 
   // Demo
 
   'demo.popup.description':
-    'Aquest és un entorn de demostració, totes les dades es guarden a l\'emmagatzematge local del teu navegador.',
-  'demo.popup.discord': 'Uneix-te al {{ discordLink }} per obtenir suport, proposar funcions o simplement xatejar.',
+    "Aquest és un entorn de demostració, totes les dades es guarden a l'emmagatzematge local del teu navegador.",
+  'demo.popup.discord':
+    'Uneix-te al {{ discordLink }} per obtenir suport, proposar funcions o simplement xatejar.',
   'demo.popup.discord-link-label': 'Servidor de Discord',
   'demo.popup.reset': 'Restablir les dades de la demo',
   'demo.popup.hide': 'Amaga',
@@ -1173,15 +1224,15 @@ export const translations = {
   // Subscriptions
 
   'subscriptions.checkout-success.title': 'Pagament correcte!',
-  'subscriptions.checkout-success.description':
-    'La teva subscripció s\'ha activat correctament.',
+  'subscriptions.checkout-success.description': "La teva subscripció s'ha activat correctament.",
   'subscriptions.checkout-success.thank-you':
     'Gràcies per actualitzar a Papra Plus. Ara tens accés a totes les funcions prèmium.',
   'subscriptions.checkout-success.go-to-organizations': 'Vés a Organitzacions',
   'subscriptions.checkout-success.redirecting': 'Redirigint en {{ count }} segon{{ plural }}...',
 
   'subscriptions.checkout-cancel.title': 'Pagament cancel·lat',
-  'subscriptions.checkout-cancel.description': 'L\'actualització de la teva subscripció s\'ha cancel·lat.',
+  'subscriptions.checkout-cancel.description':
+    "L'actualització de la teva subscripció s'ha cancel·lat.",
   'subscriptions.checkout-cancel.no-charges':
     "No s'ha realitzat cap càrrec al teu compte. Pots tornar-ho a provar quan vulguis.",
   'subscriptions.checkout-cancel.back-to-organizations': 'Torna a Organitzacions',
@@ -1189,22 +1240,24 @@ export const translations = {
   'subscriptions.checkout-cancel.contact-support': 'Contacta amb suport',
 
   'subscriptions.upgrade-dialog.title': 'Actualitza aquesta organització',
-  'subscriptions.upgrade-dialog.description': 'Desbloqueja funcions potents per a la teva organització',
-  'subscriptions.upgrade-dialog.contact-us': 'Contacta\'ns',
-  'subscriptions.upgrade-dialog.enterprise-plans': 'si necessites plans empresarials personalitzats.',
+  'subscriptions.upgrade-dialog.description':
+    'Desbloqueja funcions potents per a la teva organització',
+  'subscriptions.upgrade-dialog.contact-us': "Contacta'ns",
+  'subscriptions.upgrade-dialog.enterprise-plans':
+    'si necessites plans empresarials personalitzats.',
   'subscriptions.upgrade-dialog.per-month': '/mes',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} facturat anualment',
   'subscriptions.upgrade-dialog.upgrade-now': 'Actualitza ara',
   'subscriptions.upgrade-dialog.promo-banner.title': 'Oferta de temps limitat',
   'subscriptions.upgrade-dialog.promo-banner.description':
-    'Obtingues un {{ percent }}% de descompte en tots els plans per sempre per organització com a usuari pioner! L\'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, menys d\'un dia}}.',
+    "Obtingues un {{ percent }}% de descompte en tots els plans per sempre per organització com a usuari pioner! L'oferta caduca en {{ days, >1:{days} dies, =1:1 dia, menys d'un dia}}.",
 
   'subscriptions.plan.free.name': 'Pla gratuït',
   'subscriptions.plan.plus.name': 'Plus',
   'subscriptions.plan.pro.name': 'Pro',
 
-  'subscriptions.features.storage-size': 'Mida d\'emmagatzematge de documents',
-  'subscriptions.features.members': 'Membres de l\'organització',
+  'subscriptions.features.storage-size': "Mida d'emmagatzematge de documents",
+  'subscriptions.features.members': "Membres de l'organització",
   'subscriptions.features.members-count': '{{ count }} membres',
   'subscriptions.features.email-intakes': 'Ingesta per correu electrònic',
   'subscriptions.features.email-intakes-count-singular': '{{ count }} adreça',
@@ -1225,26 +1278,26 @@ export const translations = {
   // Admin
 
   'admin.layout.header': 'Administració de Papra',
-  'admin.layout.back-to-app': 'Torna a l\'aplicació',
+  'admin.layout.back-to-app': "Torna a l'aplicació",
   'admin.layout.menu.analytics': 'Analítica',
   'admin.layout.menu.users': 'Usuaris',
   'admin.layout.menu.organizations': 'Organitzacions',
 
   'admin.analytics.title': 'Panell de control',
-  'admin.analytics.description': 'Informació i analítica sobre l\'ús de Papra.',
-  'admin.analytics.user-count': 'Nombre d\'usuaris',
-  'admin.analytics.organization-count': 'Nombre d\'organitzacions',
+  'admin.analytics.description': "Informació i analítica sobre l'ús de Papra.",
+  'admin.analytics.user-count': "Nombre d'usuaris",
+  'admin.analytics.organization-count': "Nombre d'organitzacions",
   'admin.analytics.document-count': 'Nombre de documents',
   'admin.analytics.documents-storage': 'Emmagatzematge de documents',
   'admin.analytics.deleted-documents': 'Documents suprimits',
   'admin.analytics.deleted-storage': 'Emmagatzematge suprimit',
 
-  'admin.organizations.title': 'Gestió d\'organitzacions',
+  'admin.organizations.title': "Gestió d'organitzacions",
   'admin.organizations.description': 'Gestiona i visualitza totes les organitzacions del sistema',
   'admin.organizations.search-placeholder': 'Cerca per nom o identificador...',
   'admin.organizations.loading': 'Carregant organitzacions...',
-  'admin.organizations.no-results': 'No s\'han trobat organitzacions que coincideixin amb la cerca.',
-  'admin.organizations.empty': 'No s\'han trobat organitzacions.',
+  'admin.organizations.no-results': "No s'han trobat organitzacions que coincideixin amb la cerca.",
+  'admin.organizations.empty': "No s'han trobat organitzacions.",
   'admin.organizations.table.id': 'Identificador',
   'admin.organizations.table.name': 'Nom',
   'admin.organizations.table.members': 'Membres',
@@ -1254,29 +1307,31 @@ export const translations = {
     'Mostrant del {{ start }} al {{ end }} de {{ total }} {{ total, =1:organització, organitzacions }}',
   'admin.organizations.pagination.page-info': 'Pàgina {{ current }} de {{ total }}',
 
-  'admin.organization-detail.title': 'Detalls de l\'organització',
+  'admin.organization-detail.title': "Detalls de l'organització",
   'admin.organization-detail.back': 'Torna a Organitzacions',
-  'admin.organization-detail.loading.info': 'Carregant informació de l\'organització...',
+  'admin.organization-detail.loading.info': "Carregant informació de l'organització...",
   'admin.organization-detail.loading.stats': 'Carregant estadístiques...',
-  'admin.organization-detail.loading.intake-emails': 'Carregant correus electrònics d\'entrada...',
+  'admin.organization-detail.loading.intake-emails': "Carregant correus electrònics d'entrada...",
   'admin.organization-detail.loading.webhooks': 'Carregant webhooks...',
   'admin.organization-detail.loading.members': 'Carregant membres...',
-  'admin.organization-detail.basic-info.title': 'Informació de l\'organització',
-  'admin.organization-detail.basic-info.description': 'Detalls bàsics de l\'organització',
+  'admin.organization-detail.basic-info.title': "Informació de l'organització",
+  'admin.organization-detail.basic-info.description': "Detalls bàsics de l'organització",
   'admin.organization-detail.basic-info.id': 'Identificador',
   'admin.organization-detail.basic-info.name': 'Nom',
   'admin.organization-detail.basic-info.created': 'Creat',
   'admin.organization-detail.basic-info.updated': 'Actualitzat',
   'admin.organization-detail.members.title': 'Membres ({{ count }})',
   'admin.organization-detail.members.description': 'Usuaris que pertanyen a aquesta organització',
-  'admin.organization-detail.members.empty': 'No s\'han trobat membres',
+  'admin.organization-detail.members.empty': "No s'han trobat membres",
   'admin.organization-detail.members.table.user': 'Usuari',
   'admin.organization-detail.members.table.id': 'Identificador',
   'admin.organization-detail.members.table.role': 'Rol',
-  'admin.organization-detail.members.table.joined': 'S\'ha unit',
-  'admin.organization-detail.intake-emails.title': 'Correus electrònics d\'entrada ({{ count }})',
-  'admin.organization-detail.intake-emails.description': 'Adreces de correu electrònic per a la ingestió de documents',
-  'admin.organization-detail.intake-emails.empty': 'No hi ha correus electrònics d\'entrada configurats',
+  'admin.organization-detail.members.table.joined': "S'ha unit",
+  'admin.organization-detail.intake-emails.title': "Correus electrònics d'entrada ({{ count }})",
+  'admin.organization-detail.intake-emails.description':
+    'Adreces de correu electrònic per a la ingestió de documents',
+  'admin.organization-detail.intake-emails.empty':
+    "No hi ha correus electrònics d'entrada configurats",
   'admin.organization-detail.intake-emails.status.enabled': 'Habilitat',
   'admin.organization-detail.intake-emails.status.disabled': 'Deshabilitat',
   'admin.organization-detail.intake-emails.badge.active': 'Actiu',
@@ -1286,7 +1341,7 @@ export const translations = {
   'admin.organization-detail.webhooks.empty': 'No hi ha webhooks configurats',
   'admin.organization-detail.webhooks.badge.active': 'Actiu',
   'admin.organization-detail.webhooks.badge.inactive': 'Inactiu',
-  'admin.organization-detail.stats.title': 'Estadístiques d\'ús',
+  'admin.organization-detail.stats.title': "Estadístiques d'ús",
   'admin.organization-detail.stats.description': 'Estadístiques de documents i emmagatzematge',
   'admin.organization-detail.stats.active-documents': 'Documents actius',
   'admin.organization-detail.stats.active-storage': 'Emmagatzematge actiu',
@@ -1295,12 +1350,12 @@ export const translations = {
   'admin.organization-detail.stats.total-documents': 'Total de documents',
   'admin.organization-detail.stats.total-storage': 'Emmagatzematge total',
 
-  'admin.users.title': 'Gestió d\'usuaris',
+  'admin.users.title': "Gestió d'usuaris",
   'admin.users.description': 'Gestiona i visualitza tots els usuaris del sistema',
   'admin.users.search-placeholder': 'Cerca per nom, correu electrònic o identificador...',
   'admin.users.loading': 'Carregant usuaris...',
-  'admin.users.no-results': 'No s\'han trobat usuaris que coincideixin amb la cerca.',
-  'admin.users.empty': 'No s\'han trobat usuaris.',
+  'admin.users.no-results': "No s'han trobat usuaris que coincideixin amb la cerca.",
+  'admin.users.empty': "No s'han trobat usuaris.",
   'admin.users.table.user': 'Usuari',
   'admin.users.table.id': 'Identificador',
   'admin.users.table.status': 'Estat',
@@ -1313,23 +1368,23 @@ export const translations = {
   'admin.users.pagination.page-info': 'Pàgina {{ current }} de {{ total }}',
 
   'admin.user-detail.back': 'Torna a Usuaris',
-  'admin.user-detail.loading': 'Carregant detalls de l\'usuari...',
+  'admin.user-detail.loading': "Carregant detalls de l'usuari...",
   'admin.user-detail.unnamed': 'Usuari sense nom',
-  'admin.user-detail.basic-info.title': 'Informació de l\'usuari',
-  'admin.user-detail.basic-info.description': 'Detalls bàsics de l\'usuari i informació del compte',
-  'admin.user-detail.basic-info.user-id': 'Identificador d\'usuari',
+  'admin.user-detail.basic-info.title': "Informació de l'usuari",
+  'admin.user-detail.basic-info.description': "Detalls bàsics de l'usuari i informació del compte",
+  'admin.user-detail.basic-info.user-id': "Identificador d'usuari",
   'admin.user-detail.basic-info.email': 'Correu electrònic',
   'admin.user-detail.basic-info.name': 'Nom',
   'admin.user-detail.basic-info.name-empty': '-',
   'admin.user-detail.basic-info.email-verified': 'Correu electrònic verificat',
   'admin.user-detail.basic-info.email-verified.yes': 'Sí',
   'admin.user-detail.basic-info.email-verified.no': 'No',
-  'admin.user-detail.basic-info.max-organizations': 'Màxim d\'organitzacions',
+  'admin.user-detail.basic-info.max-organizations': "Màxim d'organitzacions",
   'admin.user-detail.basic-info.max-organizations.unlimited': 'Il·limitat',
   'admin.user-detail.basic-info.created': 'Creat',
   'admin.user-detail.basic-info.updated': 'Darrera actualització',
   'admin.user-detail.roles.title': 'Rols i permisos',
-  'admin.user-detail.roles.description': 'Rols d\'usuari i nivells d\'accés',
+  'admin.user-detail.roles.description': "Rols d'usuari i nivells d'accés",
   'admin.user-detail.roles.empty': 'No hi ha rols assignats',
   'admin.user-detail.organizations.title': 'Organitzacions ({{ count }})',
   'admin.user-detail.organizations.description': 'Organitzacions a les quals pertany aquest usuari',
@@ -1360,17 +1415,17 @@ export const translations = {
   'admin.user-detail.plan-entitlements.revoke.button': 'Revoca',
   'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Vols revocar el dret?',
   'admin.user-detail.plan-entitlements.revoke.confirm.message':
-    'L\'usuari perdrà els beneficis del pla concedits per aquest dret.',
+    "L'usuari perdrà els beneficis del pla concedits per aquest dret.",
   'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Revoca dret',
   'admin.user-detail.plan-entitlements.revoke.confirm.cancel-button': 'Cancel·la',
   'admin.user-detail.plan-entitlements.revoke.success': 'Dret revocat correctament.',
   'admin.user-detail.delete.title': 'Suprimeix usuari',
   'admin.user-detail.delete.description':
-    'Suprimeix permanentment aquest compte d\'usuari. Això s\'aplicarà en cascada als seus membres d\'organització, sessions, configuració de dos factors i altres dades d\'autenticació. Les organitzacions de les quals encara és propietari s\'han de suprimir o transferir primer.',
+    "Suprimeix permanentment aquest compte d'usuari. Això s'aplicarà en cascada als seus membres d'organització, sessions, configuració de dos factors i altres dades d'autenticació. Les organitzacions de les quals encara és propietari s'han de suprimir o transferir primer.",
   'admin.user-detail.delete.button': 'Suprimeix usuari',
   'admin.user-detail.delete.self-warning':
-    'No pots suprimir el teu propi compte des del panell d\'administració.',
-  'admin.user-detail.delete.confirm.title': 'Vols suprimir l\'usuari?',
+    "No pots suprimir el teu propi compte des del panell d'administració.",
+  'admin.user-detail.delete.confirm.title': "Vols suprimir l'usuari?",
   'admin.user-detail.delete.confirm.message':
     "Aquesta acció no es pot desfer. Escriu el correu electrònic de l'usuari a continuació per confirmar.",
   'admin.user-detail.delete.confirm.confirm-button': 'Suprimeix usuari',
@@ -1385,8 +1440,8 @@ export const translations = {
   'common.tables.first-page': 'Vés a la primera pàgina',
   'common.tables.previous-page': 'Vés a la pàgina anterior',
   'common.tables.next-page': 'Vés a la pàgina següent',
-  'common.tables.last-page': 'Vés a l\'última pàgina',
-  'common.back-to-home': 'Torna a l\'inici',
+  'common.tables.last-page': "Vés a l'última pàgina",
+  'common.back-to-home': "Torna a l'inici",
 
   // About page
 
@@ -1395,12 +1450,12 @@ export const translations = {
   'about.git-commit': 'Git Commit',
   'about.commit-date': 'Data del commit',
   'about.description':
-    'Papra és un sistema de gestió de documents de codi obert que t\'ajuda a arxivar, organitzar, etiquetar i gestionar els teus documents amb facilitat.',
+    "Papra és un sistema de gestió de documents de codi obert que t'ajuda a arxivar, organitzar, etiquetar i gestionar els teus documents amb facilitat.",
   'about.links.title': 'Enllaços',
   'about.links.documentation': 'Documentació',
-  'about.links.documentation-description': 'Guies d\'usuari i referència de l\'API',
+  'about.links.documentation-description': "Guies d'usuari i referència de l'API",
   'about.links.github': 'GitHub',
-  'about.links.github-description': 'Codi font i gestor d\'incidències',
+  'about.links.github-description': "Codi font i gestor d'incidències",
   'about.links.discord': 'Comunitat de Discord',
   'about.links.discord-description': 'Uneix-te a la nostra comunitat',
   'about.links.sponsor': 'Patrocinador',
@@ -1408,7 +1463,7 @@ export const translations = {
 
   'config.server-unreachable.title': 'Servidor no accessible',
   'config.server-unreachable.description':
-    'El servidor sembla no ser accessible; si l\'estàs allotjant tu mateix, assegura\'t que el servidor estigui en marxa i configurat correctament. Potser voldràs comprovar la consola per obtenir més informació.',
+    "El servidor sembla no ser accessible; si l'estàs allotjant tu mateix, assegura't que el servidor estigui en marxa i configurat correctament. Potser voldràs comprovar la consola per obtenir més informació.",
   'config.server-unreachable.retry': 'Reintenta',
   'config.server-unreachable.retry-error.title': 'El servidor continua sense ser accessible',
   'config.server-unreachable.retry-error.description':
