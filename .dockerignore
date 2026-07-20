@@ -1,22 +1,38 @@
+# Dependencies
 .git
 node_modules
 .pnp
 .pnp.*
+
+# Logs
 *.log
 *.local
 
+# Docker
 .dockerignore
+Dockerfile
+docker-compose.yml
+DOCKER-README.md
+
+# Configuration Files (NEVER include real .env files in image)
 .env
 .env.*
+!*.template
 **/.env
 **/.env.*
-Dockerfile
-fly.toml
 
+# Platform-specific
+fly.toml
 .wrangler
+
+# Test coverage
 **/coverage
+
+# Cache
 cache
 .zed
+
+# Database files (should be in volumes, not image)
 **/*.vars
 **/*.db
 **/*.db-shm
@@ -25,6 +41,7 @@ cache
 **/*.sqlite-shm
 **/*.sqlite-wal
 
+# Build outputs
 .output
 .data
 .nuxt
@@ -35,14 +52,30 @@ dist-app
 dist-node
 dist-cloudflare
 
+# Local data (should be in volumes)
 **/local-documents
 **/ingestion
+
+# Documentation
 *.md
+!DOCKER-README.md
+!CHANGES-backup-features.md
+!README.md
+!CONTRIBUTING.md
+!LICENSE
 **/*.traineddata
 
-
+# IDE/Editor
 .cursorrules
 **/.eslintcache
 .claude
 .opencode
 AGENTS.md
+.idea
+.vscode
+*.swp
+*.swo
+
+# Build scripts output
+scripts/build-docker.sh
+!scripts/

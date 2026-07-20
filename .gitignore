@@ -48,3 +48,4 @@ ingestion
 .claude
 .opencode
 AGENTS.md
+.env
