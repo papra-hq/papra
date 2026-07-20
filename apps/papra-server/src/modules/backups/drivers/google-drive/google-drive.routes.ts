@@ -97,7 +97,7 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
         settings: {},
       });
 
-      return context.redirect(`${redirectBase}/organizations/${statePayload.organizationId}/backups?connected=${destinationId}`);
+      return context.redirect(`${redirectBase}/`);
     },
   );
 }

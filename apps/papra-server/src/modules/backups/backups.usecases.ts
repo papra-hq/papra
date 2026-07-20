@@ -1188,7 +1188,10 @@ export async function verifyBackupRunUsecase({
     let invalidCount = 0;
 
     for (const doc of manifestDocs) {
-      const fileKey = Object.keys(unpackedFiles).find((key) => key.startsWith(`${doc.id}-`));
+      // Find the file in the archive that matches this document
+      // Files are named as "files/{doc.id}-{originalName}" in the tar archive
+      // After unpacking, the key is just "{doc.id}-{originalName}"
+      const fileKey = Array.from(unpackedFiles.keys()).find((key) => key.startsWith(`${doc.id}-`));
       if (!fileKey) {
         errors.push(`Document ${doc.id}: file not found in backup archive`);
         invalidCount++;
