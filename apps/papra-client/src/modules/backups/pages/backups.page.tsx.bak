@@ -3,7 +3,7 @@ import type { BackupDestination, BackupDriverName, BackupRun } from '../backups.
 import { safely } from '@corentinth/chisels';
 import { useParams, useSearchParams } from '@solidjs/router';
 import { useQuery, useQueryClient } from '@tanstack/solid-query';
-import { createMemo, createSignal, For, Show, onCleanup } from 'solid-js';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import { useI18nApiErrors } from '@/modules/shared/http/composables/i18n-api-errors';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { downloadFile } from '@/modules/shared/files/download';
@@ -34,7 +34,6 @@ import {
   startGoogleDriveConnect,
   testBackupDestinationConnection,
   updateBackupSchedule,
-  verifyBackupRun,
 } from '../backups.services';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -467,8 +466,6 @@ const DestinationCard: Component<{
   getErrorMessage: ReturnType<typeof useI18nApiErrors>['getErrorMessage'];
 }> = (props) => {
   const queryClient = useQueryClient();
-  const [isRunning, setIsRunning] = createSignal(false);
-  const [pollingInterval, setPollingInterval] = createSignal<NodeJS.Timeout | null>(null);
 
   const runsQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
@@ -479,18 +476,6 @@ const DestinationCard: Component<{
     queryClient.invalidateQueries({
       queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
     });
-
-  const refetchRuns = () =>
-    queryClient.refetchQueries({
-      queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
-    });
-
-  // Clean up polling interval when component unmounts
-  onCleanup(() => {
-    if (pollingInterval()) {
-      clearInterval(pollingInterval());
-    }
-  });
 
   const [days, setDays] = createSignal(new Set(props.destination.schedule.days));
   const [hour, setHour] = createSignal(props.destination.schedule.hour ?? 3);
@@ -525,49 +510,14 @@ const DestinationCard: Component<{
     props.onChanged();
   };
 
-  const hasPendingOrUploadingRuns = () => {
-    const runs = runsQuery.data?.runs ?? [];
-    return runs.some((run) => run.status === 'pending' || run.status === 'uploading');
-  };
-
   const handleRunNow = async () => {
-    // Clear any existing polling interval
-    if (pollingInterval()) {
-      clearInterval(pollingInterval());
-      setPollingInterval(null);
-    }
-
-    setIsRunning(true);
     const [, error] = await safely(runBackupNow({ organizationId: props.organizationId, destinationId: props.destination.id }));
-    setIsRunning(false);
     if (error) {
       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
       return;
     }
     createToast({ type: 'success', message: 'Backup started' });
-    
-    // Immediately refetch to show the pending run
-    await refetchRuns();
-    
-    // Start polling to update status until backup completes
-    const interval = setInterval(() => {
-      refetchRuns().then(() => {
-        // Stop polling when there are no more pending or uploading runs
-        if (!hasPendingOrUploadingRuns()) {
-          clearInterval(interval);
-          setPollingInterval(null);
-        }
-      });
-    }, 2000);
-    setPollingInterval(interval);
-    
-    // Clear polling after a reasonable time (e.g., 5 minutes) as a fallback
-    setTimeout(() => {
-      if (pollingInterval() === interval) {
-        clearInterval(interval);
-        setPollingInterval(null);
-      }
-    }, 5 * 60 * 1000);
+    invalidateRuns();
   };
 
   const handleDeleteDestination = async () => {
@@ -597,29 +547,6 @@ const DestinationCard: Component<{
       return;
     }
     invalidateRuns();
-  };
-
-  const [verifyingRunId, setVerifyingRunId] = createSignal<string | null>(null);
-
-  const handleVerifyRun = async (run: BackupRun) => {
-    setVerifyingRunId(run.id);
-    const [result, error] = await safely(
-      verifyBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
-    );
-    setVerifyingRunId(null);
-    if (error) {
-      createToast({ type: 'error', message: props.getErrorMessage({ error }) });
-      return;
-    }
-    
-    if (result.valid) {
-      createToast({ type: 'success', message: `Backup verified: ${result.validDocuments}/${result.totalDocuments} documents intact` });
-    } else {
-      createToast({ 
-        type: 'error', 
-        message: `Backup verification failed: ${result.invalidDocuments} of ${result.totalDocuments} documents have integrity issues` 
-      });
-    }
   };
 
   const handleRestoreRun = async (run: BackupRun) => {
@@ -661,9 +588,7 @@ const DestinationCard: Component<{
             confirm={props.confirm}
             onRestored={invalidateRuns}
           />
-          <Button size="sm" onClick={handleRunNow} disabled={isRunning() || hasPendingOrUploadingRuns()}>
-  {isRunning() ? 'Running...' : 'Run now'}
-</Button>
+          <Button size="sm" onClick={handleRunNow}>Run now</Button>
           <Button size="sm" variant="destructive" onClick={handleDeleteDestination}>Remove</Button>
         </div>
       </CardHeader>
@@ -753,14 +678,6 @@ const DestinationCard: Component<{
                   <TableCell class="flex gap-2 justify-end">
                     <Show when={run.status === 'succeeded'}>
                       <Button size="sm" variant="outline" onClick={() => handleRestoreRun(run)}>Restore</Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleVerifyRun(run)}
-                        disabled={verifyingRunId() === run.id}
-                      >
-                        {verifyingRunId() === run.id ? 'Verifying...' : 'Verify'}
-                      </Button>
                     </Show>
                     <Button size="sm" variant="ghost" onClick={() => handleDeleteRun(run)}>Delete</Button>
                   </TableCell>

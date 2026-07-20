@@ -21,6 +21,12 @@ export const backupsConfig = {
     default: true,
     env: 'BACKUPS_IS_SCHEDULER_ENABLED',
   },
+  retentionDays: {
+    doc: 'Number of days to keep backup runs before automatically deleting them. Set to 0 or undefined to disable automatic cleanup.',
+    schema: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
+    default: undefined,
+    env: 'BACKUPS_RETENTION_DAYS',
+  },
   googleDrive: {
     oauthClientId: {
       doc: 'Google OAuth client ID for the Google Drive backup destination. Leave unset to disable the Google Drive destination.',

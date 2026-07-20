@@ -82,11 +82,16 @@ export const backupRunsTable = sqliteTable(
     documentsCount: integer('documents_count'),
     totalSizeBytes: integer('total_size_bytes'),
 
+    // JSON array of SHA256 hashes of documents included in this backup
+    // Used for incremental backups to identify which documents are new/changed
+    documentSha256HashesJson: text('document_sha256_hashes_json'),
+
     errorMessage: text('error_message'),
     completedAt: integer('completed_at', { mode: 'timestamp_ms' }),
   },
   (table) => [
     index('backup_runs_destination_id_created_at_index').on(table.destinationId, table.createdAt),
     index('backup_runs_status_index').on(table.status),
+    index('backup_runs_destination_id_status_index').on(table.destinationId, table.status),
   ],
 );

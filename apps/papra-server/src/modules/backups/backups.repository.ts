@@ -30,6 +30,7 @@ export function createBackupsRepository({ db }: { db: Database }) {
       updateRunStatus,
       markStaleInProgressRunsAsFailed,
       getInProgressRunForDestination,
+      getLastSuccessfulRunForDestination,
     },
     { db },
   );
@@ -209,7 +210,7 @@ async function updateRunStatus({
 }: {
   runId: string;
   status: BackupRunStatus;
-  fields?: Partial<Pick<BackupRun, 'remoteFileId' | 'remoteFileName' | 'documentsCount' | 'totalSizeBytes' | 'errorMessage' | 'completedAt'>>;
+  fields?: Partial<Pick<BackupRun, 'remoteFileId' | 'remoteFileName' | 'documentsCount' | 'totalSizeBytes' | 'errorMessage' | 'completedAt' | 'documentSha256HashesJson'>>;
   db: Database;
 }): Promise<void> {
   await db
@@ -260,4 +261,25 @@ async function markStaleInProgressRunsAsFailed({
     )
     .returning({ id: backupRunsTable.id });
   return { markedCount: result.length };
+}
+
+// Gets the most recent successful backup run for a destination, used for incremental backups
+async function getLastSuccessfulRunForDestination({
+  destinationId,
+  db,
+}: {
+  destinationId: string;
+  db: Database;
+}): Promise<{ run: BackupRun | undefined }> {
+  const [run] = await db
+    .select()
+    .from(backupRunsTable)
+    .where(and(
+      eq(backupRunsTable.destinationId, destinationId),
+      eq(backupRunsTable.status, 'succeeded'),
+      isNotNull(backupRunsTable.documentSha256HashesJson),
+    ))
+    .orderBy(desc(backupRunsTable.createdAt))
+    .limit(1);
+  return { run };
 }

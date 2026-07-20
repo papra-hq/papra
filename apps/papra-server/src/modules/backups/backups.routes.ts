@@ -27,6 +27,7 @@ import {
   runBackupUsecase,
   testDestinationConnectionUsecase,
   updateDestinationScheduleUsecase,
+  verifyBackupRunUsecase,
 } from './backups.usecases';
 import { BACKUP_DRIVER_NAMES, GOOGLE_DRIVE_DRIVER_NAME } from './drivers/drivers.registry';
 import { registerGoogleDriveOAuthRoutes } from './drivers/google-drive/google-drive.routes';
@@ -57,6 +58,7 @@ export function registerBackupsRoutes(context: RouteDefinitionContext) {
   setupRestoreFromRemoteFileRoute(context);
   setupRestoreFromUploadedFileRoute(context);
   setupDownloadBackupCopyRoute(context);
+  setupVerifyRunRoute(context);
   registerGoogleDriveOAuthRoutes(context);
 }
 
@@ -476,6 +478,37 @@ function setupDownloadBackupCopyRoute({ app, config, db, documentsStorageService
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
       });
+    },
+  );
+}
+
+// Verify the integrity of a backup run by checking document hashes
+function setupVerifyRunRoute({ app, config, db, documentsStorageService }: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId/verify',
+    requireAuthentication(),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema })),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, destinationId, runId } = context.req.valid('param');
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+
+      const services = createBackupsServices({ config });
+      const repository = createBackupsRepository({ db });
+
+      const result = await verifyBackupRunUsecase({
+        config,
+        services,
+        repository,
+        documentsStorageService,
+        organizationId,
+        destinationId,
+        runId,
+      });
+
+      return context.json(result);
     },
   );
 }

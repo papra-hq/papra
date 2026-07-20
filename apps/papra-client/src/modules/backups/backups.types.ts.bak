@@ -1,4 +1,4 @@
-export type BackupDriverName = 'google_drive' | 'webdav' | 'ftp' | 'local';
+export type BackupDriverName = 'google_drive' | 'webdav' | 'ftp';
 
 export type BackupSchedule = {
   isEnabled: boolean;

@@ -227,3 +227,24 @@ export async function fetchBackupCopy({ organizationId }: { organizationId: stri
   });
   return blob;
 }
+
+export async function verifyBackupRun({
+  organizationId,
+  destinationId,
+  runId,
+}: {
+  organizationId: string;
+  destinationId: string;
+  runId: string;
+}) {
+  return apiClient<{
+    valid: boolean;
+    totalDocuments: number;
+    validDocuments: number;
+    invalidDocuments: number;
+    errors: string[];
+  }>({
+    path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/runs/${runId}/verify`,
+    method: 'POST',
+  });
+}

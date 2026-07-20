@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer';
+import { createHash } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { createGzip, createGunzip } from 'node:zlib';
 import { isNil } from '../shared/utils';
@@ -165,6 +166,11 @@ export function createBackupPackagerService() {
         }
       }
       return { manifest, files };
+    },
+
+    // Compute SHA256 hash of a buffer (used for backup verification)
+    computeHash(content: Buffer): string {
+      return createHash('sha256').update(content).digest('hex');
     },
   };
 }
