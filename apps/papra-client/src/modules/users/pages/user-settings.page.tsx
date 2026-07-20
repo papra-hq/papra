@@ -20,6 +20,7 @@ import { TwoFactorCard } from '../components/two-factor-card';
 import { useUpdateCurrentUser } from '../users.composables';
 import { nameSchema } from '../users.schemas';
 import { fetchCurrentUser } from '../users.services';
+import { authPagesPaths } from '@/modules/auth/auth.constants';
 
 const LogoutCard: Component = () => {
   const [getIsLoading, setIsLoading] = createSignal(false);
@@ -29,7 +30,7 @@ const LogoutCard: Component = () => {
   const handleLogout = async () => {
     setIsLoading(true);
     await signOut();
-    navigate('/login');
+    navigate(authPagesPaths.login);
   };
 
   return (

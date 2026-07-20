@@ -10,6 +10,7 @@ import type { Logger } from '@crowlog/logger';
 import { createLogger } from '../shared/logger/logger';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import type { PlanEntitlementSource } from './plan-entitlements.constants';
+import { PLAN_ENTITLEMENT_SOURCES } from './plan-entitlements.constants';
 import type { PlanEntitlementType } from './plan-entitlements.registry';
 import {
   createPlanEntitlementAlreadyExistsError,
@@ -30,8 +31,11 @@ export function createPlanEntitlementsRepository({
   return injectArguments(
     {
       getActiveEntitlementForOrganization,
+      getActiveUserClaimedEntitlements,
       getUserPlanEntitlements,
+      getUserPlanEntitlementByType,
       createPlanEntitlement,
+      updatePlanEntitlement,
       deleteUserPlanEntitlement,
     },
     { db, clock, logger },
@@ -109,6 +113,78 @@ async function deleteUserPlanEntitlement({
   if (deleted.length === 0) {
     throw createPlanEntitlementNotFoundError();
   }
+}
+
+async function getActiveUserClaimedEntitlements({
+  db,
+  clock = systemClock,
+}: {
+  db: Database;
+  clock?: Clock;
+}) {
+  const now = new Date(clock.now().epochMilliseconds);
+
+  const planEntitlements = await db
+    .select()
+    .from(planEntitlementsTable)
+    .where(
+      and(
+        eq(planEntitlementsTable.source, PLAN_ENTITLEMENT_SOURCES.USER_CLAIM),
+        or(isNull(planEntitlementsTable.expiresAt), gt(planEntitlementsTable.expiresAt, now)),
+      ),
+    );
+
+  return { planEntitlements };
+}
+
+async function getUserPlanEntitlementByType({
+  db,
+  userId,
+  type,
+}: {
+  db: Database;
+  userId: string;
+  type: PlanEntitlementType;
+}) {
+  const [planEntitlement] = await db
+    .select()
+    .from(planEntitlementsTable)
+    .where(and(eq(planEntitlementsTable.userId, userId), eq(planEntitlementsTable.type, type)));
+
+  return { planEntitlement };
+}
+
+async function updatePlanEntitlement({
+  db,
+  planEntitlementId,
+  expiresAt,
+  lastVerifiedAt,
+  source,
+  grantedAt,
+}: {
+  db: Database;
+  planEntitlementId: string;
+  expiresAt: Date | null;
+  lastVerifiedAt: Date;
+  source?: PlanEntitlementSource;
+  grantedAt?: Date;
+}) {
+  const [planEntitlement] = await db
+    .update(planEntitlementsTable)
+    .set({
+      expiresAt,
+      lastVerifiedAt,
+      ...(source ? { source } : {}),
+      ...(grantedAt ? { grantedAt } : {}),
+    })
+    .where(eq(planEntitlementsTable.id, planEntitlementId))
+    .returning();
+
+  if (!planEntitlement) {
+    throw createPlanEntitlementNotFoundError();
+  }
+
+  return { planEntitlement };
 }
 
 async function getActiveEntitlementForOrganization({

@@ -18,9 +18,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -146,12 +146,7 @@ export function DocumentDetailsScreen() {
       throw new Error('Document not loaded');
     }
 
-    const baseUrl = await configLocalStorage.getApiServerBaseUrl();
-    if (baseUrl == null) {
-      throw new Error('Base URL not found');
-    }
-
-    return fetchDocumentFile({ document, organizationId, baseUrl, authClient });
+    return fetchDocumentFile({ document, organizationId, authClient });
   };
 
   const handleOpen = () => {
@@ -305,9 +300,7 @@ export function DocumentDetailsScreen() {
             <Text style={styles.sectionTitle}>Tags</Text>
             <View style={styles.tagsContainer}>
               {document.tags.map((tag) => (
-                <View key={tag.id} style={[styles.tag, { backgroundColor: `${tag.color}10` }]}>
-                  <Text style={[styles.tagText, { color: tag.color }]}>{tag.name}</Text>
-                </View>
+                <Tag key={tag.id} name={tag.name} color={tag.color} />
               ))}
             </View>
           </View>
@@ -406,6 +399,7 @@ export function DocumentDetailsScreen() {
         document={document}
         onClose={() => setIsActionSheetVisible(false)}
         excludedActions={['view']}
+        onDeleted={() => router.back()}
       />
 
       {renderContent()}
@@ -517,16 +511,6 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: 8,
-    },
-    tag: {
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 6,
-    },
-    tagText: {
-      fontSize: 13,
-      fontWeight: '500',
-      lineHeight: 13,
     },
     card: {
       backgroundColor: themeColors.secondaryBackground,

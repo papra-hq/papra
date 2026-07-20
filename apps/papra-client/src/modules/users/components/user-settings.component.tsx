@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/ui/components/dropdown-menu';
 import { LanguageSwitcher } from '@/modules/ui/layouts/sidenav.layout';
+import { authPagesPaths } from '@/modules/auth/auth.constants';
 
 export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
   const { getPendingInvitationsCount } = usePendingInvitationsCount();
@@ -93,7 +94,7 @@ export const UserSettingsDropdown: Component<{ class?: string }> = (props) => {
         <DropdownMenuItem
           onClick={async () => {
             await signOut();
-            navigate('/login');
+            navigate(authPagesPaths.login);
           }}
           class="flex items-center gap-2 cursor-pointer"
         >

@@ -1,18 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { Redirect } from 'expo-router';
 import { createAuthClient } from '@/modules/auth/auth.client';
-import { configLocalStorage } from '@/modules/config/config.local-storage';
-
-if (__DEV__) {
-  // eslint-disable-next-line ts/no-require-imports
-  require('./ReactotronConfig');
-}
+import { configQueryOptions } from '@/modules/config/config.queries';
 
 export default function Index() {
-  const query = useQuery({
-    queryKey: ['api-server-url'],
-    queryFn: configLocalStorage.getApiServerBaseUrl,
-  });
+  const query = useQuery(configQueryOptions);
 
   const getRedirection = () => {
     if (query.isLoading) {
@@ -23,7 +15,7 @@ export default function Index() {
       return <Redirect href="/config/server-selection" />;
     }
 
-    const authClient = createAuthClient({ baseUrl: query.data });
+    const authClient = createAuthClient(query.data);
     if (authClient.getCookie()) {
       return <Redirect href="/(app)/(with-organizations)/(tabs)/list" />;
     }

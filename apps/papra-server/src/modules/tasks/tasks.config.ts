@@ -119,4 +119,18 @@ export const tasksConfig = {
       ],
     },
   },
+  reverifyPlanEntitlements: {
+    cron: {
+      doc: 'The cron schedule for the task to re-verify user-claimed plan entitlements',
+      schema: v.string(),
+      default: '0 3 * * *',
+      env: 'PLAN_ENTITLEMENTS_REVERIFY_CRON',
+    },
+    runOnStartup: {
+      doc: 'Whether the task to re-verify user-claimed plan entitlements should run on startup',
+      schema: booleanishSchema,
+      default: false,
+      env: ['PLAN_ENTITLEMENTS_REVERIFY_RUN_ON_STARTUP', RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV],
+    },
+  },
 } as const satisfies ConfigDefinition;

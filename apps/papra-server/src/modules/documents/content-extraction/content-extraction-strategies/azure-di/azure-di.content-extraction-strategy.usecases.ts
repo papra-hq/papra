@@ -1,5 +1,4 @@
 import { ofetch } from 'ofetch';
-import { IN_MS } from '../../../../shared/units';
 import * as v from 'valibot';
 import { buildUrl } from '@corentinth/chisels';
 import { sleep } from '@papra/std';
@@ -26,6 +25,7 @@ export async function extractTextWithAzureDi({
   apiKey,
   pollingAttempts,
   pollingDelayMs,
+  timeoutMs,
   logger = createLogger({ namespace: 'azure-di.content-extraction-strategy.usecases' }),
 }: {
   file: File;
@@ -33,6 +33,7 @@ export async function extractTextWithAzureDi({
   apiKey: string;
   pollingAttempts: number;
   pollingDelayMs: number;
+  timeoutMs: number;
   logger?: Logger;
 }) {
   const url = buildUrl({
@@ -50,7 +51,7 @@ export async function extractTextWithAzureDi({
       'Content-Type': 'application/octet-stream',
       'Ocp-Apim-Subscription-Key': apiKey,
     },
-    timeout: 10 * IN_MS.SECOND,
+    timeout: timeoutMs,
     body: file,
   });
 
@@ -67,6 +68,7 @@ export async function extractTextWithAzureDi({
     apiKey,
     pollingAttempts,
     pollingDelayMs,
+    timeoutMs,
     logger,
   });
 
@@ -78,12 +80,14 @@ export async function pollJobResult({
   apiKey,
   pollingAttempts,
   pollingDelayMs,
+  timeoutMs,
   logger,
 }: {
   operationLocation: string;
   apiKey: string;
   pollingAttempts: number;
   pollingDelayMs: number;
+  timeoutMs: number;
   logger: Logger;
 }) {
   for (let attempt = 0; attempt < pollingAttempts; attempt++) {
@@ -92,7 +96,7 @@ export async function pollJobResult({
       headers: {
         'Ocp-Apim-Subscription-Key': apiKey,
       },
-      timeout: 10 * IN_MS.SECOND,
+      timeout: timeoutMs,
     });
 
     const result = v.parse(jobResultResponseSchema, response);

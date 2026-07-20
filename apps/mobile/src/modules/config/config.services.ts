@@ -10,8 +10,18 @@ export async function fetchServerConfig({ apiClient }: { apiClient: ApiClient })
   });
 }
 
-export async function pingServer({ url }: { url: string }): Promise<true> {
-  const response = await httpClient<{ status: 'ok' | 'error' }>({ url: `/api/ping`, baseUrl: url })
+export async function pingServer({
+  url,
+  headers,
+}: {
+  url: string;
+  headers?: Record<string, string>;
+}): Promise<true> {
+  const response = await httpClient<{ status: 'ok' | 'error' }>({
+    url: `/api/ping`,
+    baseUrl: url,
+    headers,
+  })
     .then(() => true)
     .catch(() => false);
 

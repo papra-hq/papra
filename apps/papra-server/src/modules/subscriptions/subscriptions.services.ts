@@ -52,17 +52,41 @@ async function createCustomer({
   return { customerId };
 }
 
+export async function resolveCheckoutDiscount({
+  stripeClient,
+  entitlementCouponId,
+  globalCouponId,
+}: {
+  stripeClient: Stripe;
+  entitlementCouponId?: string;
+  globalCouponId?: string;
+}) {
+  // Checkout sessions accept a single coupon, mutually exclusive with promotion
+  // codes, so the first valid coupon wins: entitlement, then global, then none
+  for (const couponId of [entitlementCouponId, globalCouponId]) {
+    const { coupon } = await getCoupon({ stripeClient, couponId });
+
+    if (!isNil(coupon)) {
+      return { discountDetails: { discounts: [{ coupon: coupon.id }] } };
+    }
+  }
+
+  return { discountDetails: { allow_promotion_codes: true } };
+}
+
 export async function createCheckoutUrl({
   stripeClient,
   customerId,
   priceId,
   organizationId,
+  entitlementCouponId,
   config,
 }: {
   stripeClient: Stripe;
   customerId: string;
   priceId: string;
   organizationId: string;
+  entitlementCouponId?: string;
   config: Config;
 }) {
   const { clientBaseUrl } = getClientBaseUrl({ config });
@@ -75,13 +99,11 @@ export async function createCheckoutUrl({
 
   const { globalCouponId } = config.subscriptions;
 
-  const { coupon } = await getCoupon({ stripeClient, couponId: globalCouponId });
-
-  // If there's no coupon or if the coupon is invalid (expired), we just don't apply any discount but allow promotion codes
-  // to be used at checkout, can't do both at the same time
-  const discountDetails = isNil(coupon)
-    ? { allow_promotion_codes: true }
-    : { discounts: [{ coupon: coupon.id }] };
+  const { discountDetails } = await resolveCheckoutDiscount({
+    stripeClient,
+    entitlementCouponId,
+    globalCouponId,
+  });
 
   const session = await stripeClient.checkout.sessions.create({
     customer: customerId,
