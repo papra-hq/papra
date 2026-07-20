@@ -28,10 +28,6 @@
       "predictiveBackGestureEnabled": false,
       "package": "app.papra.android"
     },
-    "web": {
-      "output": "static",
-      "favicon": "./src/assets/images/favicon.png"
-    },
     "plugins": [
       "expo-router",
       [
