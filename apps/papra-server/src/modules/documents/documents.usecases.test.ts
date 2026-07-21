@@ -57,7 +57,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => 'doc_1',
-        documentsStorageService,
+        _documentsStorageService,
         taskServices,
         eventServices: createTestEventServices(),
       });
@@ -125,7 +125,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService,
+        _documentsStorageService,
         taskServices,
         eventServices: createTestEventServices(),
       });
@@ -260,7 +260,7 @@ describe('documents usecases', () => {
         db,
         config,
         taskServices,
-        documentsStorageService: createInMemoryDocumentStorageServices(),
+        _documentsStorageService: createInMemoryDocumentStorageServices(),
         eventServices: createTestEventServices(),
       });
 
@@ -319,7 +319,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: createDeterministicIdGenerator({ prefix: 'doc' }),
-        documentsStorageService: inMemoryDocumentsStorageService,
+        _documentsStorageService: inMemoryDocumentsStorageService,
         taskServices,
         eventServices: createTestEventServices(),
       });
@@ -460,7 +460,7 @@ describe('documents usecases', () => {
         config: overrideConfig(),
         taskServices,
         plansRepository,
-        documentsStorageService: inMemoryDocumentsStorageService,
+        _documentsStorageService: inMemoryDocumentsStorageService,
         eventServices: createTestEventServices(),
       });
 
@@ -528,7 +528,7 @@ describe('documents usecases', () => {
         config: overrideConfig(),
         taskServices,
         plansRepository,
-        documentsStorageService,
+        _documentsStorageService,
         eventServices: createTestEventServices(),
       });
 
@@ -592,7 +592,7 @@ describe('documents usecases', () => {
         config: overrideConfig(),
         taskServices,
         plansRepository,
-        documentsStorageService: inMemoryDocumentsStorageService,
+        _documentsStorageService: inMemoryDocumentsStorageService,
         eventServices: createTestEventServices(),
       });
 
@@ -634,7 +634,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: createInMemoryDocumentStorageServices(),
+        _documentsStorageService: createInMemoryDocumentStorageServices(),
         taskServices,
         eventServices,
       });
@@ -708,7 +708,7 @@ describe('documents usecases', () => {
         documentId: 'document-1',
         organizationId: 'organization-1',
         documentsRepository,
-        documentsStorageService,
+        _documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
         eventServices: createTestEventServices(),
@@ -771,7 +771,7 @@ describe('documents usecases', () => {
         documentId: 'document-1',
         organizationId: 'organization-1',
         documentsRepository,
-        documentsStorageService,
+        _documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
         eventServices,

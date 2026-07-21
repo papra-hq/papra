@@ -23,7 +23,7 @@ const imageMimeType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const pdfMimeType = ['application/pdf'];
 const txtLikeMimeType = ['application/yaml', 'application/json', 'application/xml'];
 
-async function blobToString(blob: Blob): Promise<string> {
+async async function blobToString(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
@@ -37,7 +37,7 @@ async function blobToString(blob: Blob): Promise<string> {
  * Detects if a blob can be safely displayed as text by checking for valid UTF-8 encoding
  * and common text patterns (low ratio of control characters, presence of readable text)
  */
-async function isBlobTextSafe(blob: Blob): Promise<boolean> {
+async async function isBlobTextSafe(blob: Blob): Promise<boolean> {
   try {
     const text = await blobToString(blob);
 

@@ -83,7 +83,7 @@ function setupTestConnectionRoute({ app, config, db }: RouteDefinitionContext) {
       v.object({
         driver: v.picklist(BACKUP_DRIVER_NAMES),
         credentials: v.record(v.string(), v.string()),
-        settings: v.record(v.string(), v.unknown()),
+        _settings: v.record(v.string(), v.unknown()),
       }),
     ),
     async (context) => {
@@ -111,7 +111,7 @@ function setupCreateDestinationRoute({ app, config, db }: RouteDefinitionContext
         driver: v.picklist(BACKUP_DRIVER_NAMES),
         displayName: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
         credentials: v.record(v.string(), v.string()),
-        settings: v.record(v.string(), v.unknown()),
+        _settings: v.record(v.string(), v.unknown()),
       }),
     ),
     async (context) => {
@@ -133,7 +133,7 @@ function setupCreateDestinationRoute({ app, config, db }: RouteDefinitionContext
         driver,
         displayName,
         credentials,
-        settings,
+        _settings,
       });
 
       return context.json({ destinationId }, 201);
@@ -164,7 +164,7 @@ function setupRenameDestinationRoute({ app, db }: RouteDefinitionContext) {
   app.patch(
     '/api/organizations/:organizationId/backups/destinations/:destinationId',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     validateJsonBody(v.object({ displayName: v.pipe(v.string(), v.minLength(1), v.maxLength(100)) })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -175,7 +175,7 @@ function setupRenameDestinationRoute({ app, db }: RouteDefinitionContext) {
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const repository = createBackupsRepository({ db });
-      await renameDestinationUsecase({ repository, organizationId, destinationId, displayName });
+      await renameDestinationUsecase({ repository, organizationId, _destinationId, displayName });
       return context.json({ renamed: true });
     },
   );
@@ -185,7 +185,7 @@ function setupUpdateScheduleRoute({ app, db }: RouteDefinitionContext) {
   app.put(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/schedule',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     validateJsonBody(scheduleSchema),
     async (context) => {
       const { userId } = getUser({ context });
@@ -196,7 +196,7 @@ function setupUpdateScheduleRoute({ app, db }: RouteDefinitionContext) {
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const repository = createBackupsRepository({ db });
-      const { nextScheduledAt } = await updateDestinationScheduleUsecase({ repository, organizationId, destinationId, schedule });
+      const { nextScheduledAt } = await updateDestinationScheduleUsecase({ repository, organizationId, _destinationId, schedule });
       return context.json({ nextScheduledAt });
     },
   );
@@ -206,7 +206,7 @@ function setupDeleteDestinationRoute({ app, db }: RouteDefinitionContext) {
   app.delete(
     '/api/organizations/:organizationId/backups/destinations/:destinationId',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, destinationId } = context.req.valid('param');
@@ -225,7 +225,7 @@ function setupListRunsRoute({ app, db }: RouteDefinitionContext) {
   app.get(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, destinationId } = context.req.valid('param');
@@ -245,7 +245,7 @@ function setupRunBackupRoute(deps: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, destinationId } = context.req.valid('param');
@@ -264,7 +264,7 @@ function setupRunBackupRoute(deps: RouteDefinitionContext) {
         documentsRepository,
         globalDeps: deps,
         organizationId,
-        destinationId,
+        _destinationId,
         trigger: 'manual',
       });
 
@@ -278,11 +278,11 @@ function setupDeleteRunRoute({ app, config, db }: RouteDefinitionContext) {
     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId',
     requireAuthentication(),
     validateParams(
-      v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
+      v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
     ),
     async (context) => {
       const { userId } = getUser({ context });
-      const { organizationId, destinationId, runId } = context.req.valid('param');
+      const { organizationId, _destinationId, runId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
@@ -290,7 +290,7 @@ function setupDeleteRunRoute({ app, config, db }: RouteDefinitionContext) {
       const services = createBackupsServices({ config });
       const repository = createBackupsRepository({ db });
 
-      const { deleted } = await deleteRunUsecase({ config, services, repository, organizationId, destinationId, runId });
+      const { deleted } = await deleteRunUsecase({ config, services, repository, organizationId, _destinationId, runId });
       return context.json({ deleted });
     },
   );
@@ -302,11 +302,11 @@ function setupRestoreRunRoute(deps: RouteDefinitionContext) {
     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId/restore',
     requireAuthentication(),
     validateParams(
-      v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
+      v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
     ),
     async (context) => {
       const { userId } = getUser({ context });
-      const { organizationId, destinationId, runId } = context.req.valid('param');
+      const { organizationId, _destinationId, runId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
@@ -324,7 +324,7 @@ function setupRestoreRunRoute(deps: RouteDefinitionContext) {
         documentsRepository,
         foldersRepository,
         organizationId,
-        destinationId,
+        _destinationId,
         runId,
         userId,
       });
@@ -341,7 +341,7 @@ function setupListRemoteBackupsRoute({ app, config, db }: RouteDefinitionContext
   app.get(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/remote-files',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId, destinationId } = context.req.valid('param');
@@ -363,7 +363,7 @@ function setupRestoreFromRemoteFileRoute(deps: RouteDefinitionContext) {
   app.post(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/remote-files/restore',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema })),
     validateJsonBody(v.object({ remoteFileId: v.pipe(v.string(), v.minLength(1)) })),
     async (context) => {
       const { userId } = getUser({ context });
@@ -386,7 +386,7 @@ function setupRestoreFromRemoteFileRoute(deps: RouteDefinitionContext) {
         documentsRepository,
         foldersRepository,
         organizationId,
-        destinationId,
+        _destinationId,
         remoteFileId,
         userId,
       });
@@ -466,7 +466,7 @@ function setupDownloadBackupCopyRoute({ app, config, db, documentsStorageService
         config,
         services,
         documentsRepository,
-        documentsStorageService,
+        _documentsStorageService,
         organizationId,
         db,
       });
@@ -487,10 +487,10 @@ function setupVerifyRunRoute({ app, config, db, documentsStorageService }: Route
   app.post(
     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId/verify',
     requireAuthentication(),
-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema })),
+    validateParams(v.strictObject({ organizationId: organizationIdSchema, _destinationId: backupDestinationIdSchema, runId: backupRunIdSchema })),
     async (context) => {
       const { userId } = getUser({ context });
-      const { organizationId, destinationId, runId } = context.req.valid('param');
+      const { organizationId, _destinationId, runId } = context.req.valid('param');
 
       const organizationsRepository = createOrganizationsRepository({ db });
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
@@ -502,9 +502,9 @@ function setupVerifyRunRoute({ app, config, db, documentsStorageService }: Route
         config,
         services,
         repository,
-        documentsStorageService,
+        _documentsStorageService,
         organizationId,
-        destinationId,
+        _destinationId,
         runId,
       });
 

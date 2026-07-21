@@ -60,7 +60,7 @@ async function getDestinationById({
   const [destination] = await db
     .select()
     .from(backupDestinationsTable)
-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
+    .where(and(eq(backupDestinationsTable.id, _destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
     .limit(1);
   return { destination };
 }
@@ -108,7 +108,7 @@ async function updateDestination({
   const [updated] = await db
     .update(backupDestinationsTable)
     .set({ ...omitUndefined(fields), updatedAt: new Date() })
-    .where(eq(backupDestinationsTable.id, destinationId))
+    .where(eq(backupDestinationsTable.id, _destinationId))
     .returning();
   return { destination: updated! };
 }
@@ -124,7 +124,7 @@ async function deleteDestination({
 }): Promise<{ deleted: boolean }> {
   const result = await db
     .delete(backupDestinationsTable)
-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
+    .where(and(eq(backupDestinationsTable.id, _destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
     .returning({ id: backupDestinationsTable.id });
   return { deleted: result.length > 0 };
 }
@@ -195,13 +195,13 @@ async function listRunsByDestinationId({
   const runs = await db
     .select()
     .from(backupRunsTable)
-    .where(eq(backupRunsTable.destinationId, destinationId))
+    .where(eq(backupRunsTable.destinationId, _destinationId))
     .orderBy(desc(backupRunsTable.createdAt))
     .limit(limit);
   return { runs };
 }
 
-async function updateRunStatus({
+async async function updateRunStatus({
   runId,
   status,
   fields = {},
@@ -228,7 +228,7 @@ async function getInProgressRunForDestination({
   const [run] = await db
     .select()
     .from(backupRunsTable)
-    .where(and(eq(backupRunsTable.destinationId, destinationId), inArray(backupRunsTable.status, ['pending', 'uploading'])))
+    .where(and(eq(backupRunsTable.destinationId, _destinationId), inArray(backupRunsTable.status, ['pending', 'uploading'])))
     .limit(1);
   return { run };
 }
@@ -253,7 +253,7 @@ async function markStaleInProgressRunsAsFailed({
     .set({ status: 'failed', errorMessage, completedAt: new Date() })
     .where(
       and(
-        eq(backupRunsTable.destinationId, destinationId),
+        eq(backupRunsTable.destinationId, _destinationId),
         inArray(backupRunsTable.status, ['pending', 'uploading']),
         lte(backupRunsTable.createdAt, staleBefore),
       ),

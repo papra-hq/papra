@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-app",
+    "dist-node",
+    "dist-cloudflare",
+    ".output",
+    ".data",
+    ".nuxt",
+    ".nitro",
+    ".cache",
+    "**/dist/**",
+    "**/dist-app/**",
+    "**/dist-node/**",
+    "**/dist-cloudflare/**",
+    "**/.astro/**",
+    "**/.next/**",
+    "**/.svelte-kit/**",
+    "**/coverage/**",
+    "**/playwright-report/**",
+    "**/test-results/**",
+    "apps/docs/src/scripts/posthog.script.js"
+  ]
+}

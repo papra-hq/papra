@@ -270,19 +270,19 @@ const AddDestinationDialog: Component<{
     if (isWebdav()) {
       return {
         credentials: { username: username(), password: password() },
-        settings: { baseUrl: baseUrl(), preset: preset() },
+        _settings: { baseUrl: baseUrl(), preset: preset() },
       };
     }
     if (isFtp()) {
       return {
         credentials: { username: username(), password: password() },
-        settings: { host: host(), port: Number(port()) || 21, secure: isFtpsEnabled() },
+        _settings: { host: host(), port: Number(port()) || 21, secure: isFtpsEnabled() },
       };
     }
     if (isLocal()) {
-      return { credentials: {}, settings: { path: localPath() } };
+      return { credentials: {}, _settings: { path: localPath() } };
     }
-    return { credentials: {}, settings: {} };
+    return { credentials: {}, _settings: {} };
   };
 
   const handleConnectGoogleDrive = async () => {
@@ -321,7 +321,7 @@ const AddDestinationDialog: Component<{
         driver: driver(),
         displayName: displayName() || DRIVER_LABELS[driver()],
         credentials,
-        settings,
+        _settings,
       }),
     );
     setIsSubmitting(false);
@@ -472,7 +472,7 @@ const DestinationCard: Component<{
 
   const runsQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
-    queryFn: () => listBackupRuns({ organizationId: props.organizationId, destinationId: props.destination.id }),
+    queryFn: () => listBackupRuns({ organizationId: props.organizationId, _destinationId: props.destination.id }),
   }));
 
   const invalidateRuns = () =>
@@ -508,7 +508,7 @@ const DestinationCard: Component<{
     const [, error] = await safely(
       updateBackupSchedule({
         organizationId: props.organizationId,
-        destinationId: props.destination.id,
+        _destinationId: props.destination.id,
         schedule: {
           isEnabled: overrides.isEnabled ?? isScheduleEnabled(),
           days: [...days()],
@@ -538,7 +538,7 @@ const DestinationCard: Component<{
     }
 
     setIsRunning(true);
-    const [, error] = await safely(runBackupNow({ organizationId: props.organizationId, destinationId: props.destination.id }));
+    const [, error] = await safely(runBackupNow({ organizationId: props.organizationId, _destinationId: props.destination.id }));
     setIsRunning(false);
     if (error) {
       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
@@ -577,7 +577,7 @@ const DestinationCard: Component<{
     });
     if (!isConfirmed) return;
     const [, error] = await safely(
-      deleteBackupDestination({ organizationId: props.organizationId, destinationId: props.destination.id }),
+      deleteBackupDestination({ organizationId: props.organizationId, _destinationId: props.destination.id }),
     );
     if (error) {
       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
@@ -590,7 +590,7 @@ const DestinationCard: Component<{
     const isConfirmed = await props.confirm({ title: 'Delete this backup?', message: 'This also removes the file from the remote destination.' });
     if (!isConfirmed) return;
     const [, error] = await safely(
-      deleteBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
+      deleteBackupRun({ organizationId: props.organizationId, _destinationId: props.destination.id, runId: run.id }),
     );
     if (error) {
       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
@@ -604,7 +604,7 @@ const DestinationCard: Component<{
   const handleVerifyRun = async (run: BackupRun) => {
     setVerifyingRunId(run.id);
     const [result, error] = await safely(
-      verifyBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
+      verifyBackupRun({ organizationId: props.organizationId, _destinationId: props.destination.id, runId: run.id }),
     );
     setVerifyingRunId(null);
     if (error) {
@@ -629,7 +629,7 @@ const DestinationCard: Component<{
     });
     if (!isConfirmed) return;
     const [result, error] = await safely(
-      restoreBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
+      restoreBackupRun({ organizationId: props.organizationId, _destinationId: props.destination.id, runId: run.id }),
     );
     if (error) {
       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
@@ -794,7 +794,7 @@ const RecoverFromDestinationDialog: Component<{
 
   const remoteFilesQuery = useQuery(() => ({
     queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'remote-files'],
-    queryFn: () => listRemoteBackupFiles({ organizationId: props.organizationId, destinationId: props.destination.id }),
+    queryFn: () => listRemoteBackupFiles({ organizationId: props.organizationId, _destinationId: props.destination.id }),
     enabled: isOpen(),
   }));
 
@@ -807,7 +807,7 @@ const RecoverFromDestinationDialog: Component<{
 
     setIsRestoring(remoteFileId);
     const [result, error] = await safely(
-      restoreFromRemoteFile({ organizationId: props.organizationId, destinationId: props.destination.id, remoteFileId }),
+      restoreFromRemoteFile({ organizationId: props.organizationId, _destinationId: props.destination.id, remoteFileId }),
     );
     setIsRestoring(null);
     if (error) {

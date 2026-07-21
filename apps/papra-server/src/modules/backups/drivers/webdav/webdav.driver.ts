@@ -38,7 +38,7 @@ function parsePropfindHrefs(xml: string): string[] {
 }
 
 export const webdavBackupDriverFactory = defineBackupDriver(() => {
-  async function request({
+  async async function request({
     settings,
     credentials,
     path,
@@ -101,26 +101,26 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
       return { folderRef: folderPath };
     },
 
-    async uploadFile({ credentials, settings, folderRef, fileName, content }) {
+    async uploadFile({ credentials, _settings, folderRef, fileName, content }) {
       const s = settings as unknown as WebdavSettings;
       const path = `${folderRef}/${fileName}`;
       await request({ settings: s, credentials, path, method: 'PUT', body: content });
       return { remoteFileId: path, remoteFileName: fileName };
     },
 
-    async downloadFile({ credentials, settings, remoteFileId }) {
+    async downloadFile({ credentials, _settings, remoteFileId }) {
       const s = settings as unknown as WebdavSettings;
       const response = await request({ settings: s, credentials, path: remoteFileId, method: 'GET' });
       const arrayBuffer = await response.arrayBuffer();
       return Buffer.from(arrayBuffer);
     },
 
-    async deleteFile({ credentials, settings, remoteFileId }) {
+    async deleteFile({ credentials, _settings, remoteFileId }) {
       const s = settings as unknown as WebdavSettings;
       await request({ settings: s, credentials, path: remoteFileId, method: 'DELETE' });
     },
 
-    async listFiles({ credentials, settings, folderRef }) {
+    async listFiles({ credentials, _settings, folderRef }) {
       const s = settings as unknown as WebdavSettings;
       const response = await request({
         settings: s,

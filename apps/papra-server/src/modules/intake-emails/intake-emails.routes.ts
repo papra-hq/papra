@@ -199,7 +199,7 @@ function setupIngestIntakeEmailRoute({
   db,
   config,
   taskServices,
-  documentsStorageService,
+  _documentsStorageService,
   eventServices,
 }: RouteDefinitionContext) {
   app.post(

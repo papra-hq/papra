@@ -14,7 +14,7 @@ export async function ensureStorageKeyIsAvailable({
   enableRandomSuffixFallback,
 
   generateRandomSuffix = () => generateRandomString({ length: 8 }),
-  documentsStorageService,
+  _documentsStorageService,
   logger = createLogger({ namespace: 'ensureStorageKeyIsAvailable' }),
 }: {
   initialStorageKey: string;
@@ -72,7 +72,7 @@ export async function createStorageKey({
   documentId,
   documentName,
   organizationId,
-  documentsStorageService,
+  _documentsStorageService,
   logger,
   now = new Date(),
 }: {
@@ -113,7 +113,7 @@ export async function createStorageKey({
     initialStorageKey,
     maxIncrementalSuffixAttempts,
     enableRandomSuffixFallback,
-    documentsStorageService,
+    _documentsStorageService,
     logger,
   });
 

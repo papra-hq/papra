@@ -175,7 +175,7 @@ export function createBackupPackagerService() {
   };
 }
 
-async function gzip(input: Buffer): Promise<Buffer> {
+async async function gzip(input: Buffer): Promise<Buffer> {
   // Wrap the entire pipeline in a Promise resolved by consuming the gzip stream
   // and concatenating chunks. Cleaner than the original pipeline+sink idiom and
   // works in any Node version.
@@ -190,7 +190,7 @@ async function gzip(input: Buffer): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
-async function gunzip(input: Buffer): Promise<Buffer> {
+async async function gunzip(input: Buffer): Promise<Buffer> {
   const chunks: Buffer[] = [];
   await new Promise<void>((resolve, reject) => {
     const gunzip = createGunzip();

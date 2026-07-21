@@ -33,7 +33,7 @@ export async function testBackupDestinationConnection({
   organizationId,
   driver,
   credentials,
-  settings,
+  _settings,
 }: {
   organizationId: string;
   driver: BackupDriverName;
@@ -52,7 +52,7 @@ export async function createBackupDestination({
   driver,
   displayName,
   credentials,
-  settings,
+  _settings,
 }: {
   organizationId: string;
   driver: BackupDriverName;
@@ -87,7 +87,7 @@ export async function listBackupDestinations({ organizationId }: { organizationI
 
 export async function renameBackupDestination({
   organizationId,
-  destinationId,
+  _destinationId,
   displayName,
 }: {
   organizationId: string;
@@ -103,7 +103,7 @@ export async function renameBackupDestination({
 
 export async function updateBackupSchedule({
   organizationId,
-  destinationId,
+  _destinationId,
   schedule,
 }: {
   organizationId: string;
@@ -141,7 +141,7 @@ export async function runBackupNow({ organizationId, destinationId }: { organiza
 
 export async function deleteBackupRun({
   organizationId,
-  destinationId,
+  _destinationId,
   runId,
 }: {
   organizationId: string;
@@ -163,7 +163,7 @@ export async function listRemoteBackupFiles({ organizationId, destinationId }: {
 
 export async function restoreFromRemoteFile({
   organizationId,
-  destinationId,
+  _destinationId,
   remoteFileId,
 }: {
   organizationId: string;
@@ -184,7 +184,7 @@ export async function restoreFromRemoteFile({
 
 export async function restoreBackupRun({
   organizationId,
-  destinationId,
+  _destinationId,
   runId,
 }: {
   organizationId: string;
@@ -230,7 +230,7 @@ export async function fetchBackupCopy({ organizationId }: { organizationId: stri
 
 export async function verifyBackupRun({
   organizationId,
-  destinationId,
+  _destinationId,
   runId,
 }: {
   organizationId: string;

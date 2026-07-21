@@ -13,7 +13,7 @@ export async function registerHardDeleteExpiredDocumentsTask({
   taskServices,
   db,
   config,
-  documentsStorageService,
+  _documentsStorageService,
   eventServices,
 }: {
   taskServices: TaskServices;
@@ -33,7 +33,7 @@ export async function registerHardDeleteExpiredDocumentsTask({
       const { deletedDocumentsCount } = await deleteExpiredDocuments({
         config,
         documentsRepository,
-        documentsStorageService,
+        _documentsStorageService,
         eventServices,
       });
 

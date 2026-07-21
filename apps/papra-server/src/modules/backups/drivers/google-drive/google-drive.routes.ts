@@ -94,7 +94,7 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
         driver: 'google_drive',
         displayName: statePayload.displayName,
         credentials: { refreshToken: tokens.refresh_token },
-        settings: {},
+        _settings: {},
       });
 
       return context.redirect(`${redirectBase}/`);

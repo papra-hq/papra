@@ -12,7 +12,7 @@ import { buildExtractDocumentTextUsecase } from '../content-extraction/content-e
 export async function registerExtractDocumentFileContentTask({
   taskServices,
   db,
-  documentsStorageService,
+  _documentsStorageService,
   eventServices,
   config,
 }: {
@@ -47,7 +47,7 @@ export async function registerExtractDocumentFileContentTask({
         documentId,
         organizationId,
         documentsRepository,
-        documentsStorageService,
+        _documentsStorageService,
         taggingRulesRepository,
         tagsRepository,
         eventServices,

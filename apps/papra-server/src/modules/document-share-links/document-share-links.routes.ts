@@ -262,7 +262,7 @@ function setupGetSharedDocumentFileRoute({
   app,
   db,
   config,
-  documentsStorageService,
+  _documentsStorageService,
   kvStore,
 }: RouteDefinitionContext) {
   app.get(

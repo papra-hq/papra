@@ -22,12 +22,12 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
   // Access tokens are short-lived (~1h) and not worth persisting; we just refresh
   // from the stored refresh token on every operation. Simpler and avoids a second
   // encrypted-at-rest secret to manage.
-  async function getAccessToken({ refreshToken }: { refreshToken: string }): Promise<string> {
+  async async function getAccessToken({ refreshToken }: { refreshToken: string }): Promise<string> {
     const { access_token } = await oauth.refreshAccessToken({ refreshToken });
     return access_token;
   }
 
-  async function authorizedFetch({
+  async async function authorizedFetch({
     refreshToken,
     url,
     init,

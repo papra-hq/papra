@@ -123,7 +123,7 @@ export async function migrateDocumentStorage({
         documentId: id,
         organizationId,
         documentName: originalName,
-        documentsStorageService: toStorageService,
+        _documentsStorageService: toStorageService,
         logger: createNoopLogger(),
       });
 

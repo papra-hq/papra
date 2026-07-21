@@ -13,7 +13,7 @@ export async function registerPurgeExpiredOrganizationsTask({
   taskServices,
   db,
   config,
-  documentsStorageService,
+  _documentsStorageService,
 }: {
   taskServices: TaskServices;
   db: Database;
@@ -33,7 +33,7 @@ export async function registerPurgeExpiredOrganizationsTask({
         await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
           documentsRepository,
-          documentsStorageService,
+          _documentsStorageService,
           logger,
         });
 

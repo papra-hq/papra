@@ -46,7 +46,7 @@ async function getOrganizationSettings({
 
 async function createOrUpdateOrganizationSettings({
   organizationId,
-  settings,
+  _settings,
   db,
   clock,
 }: {
@@ -55,7 +55,7 @@ async function createOrUpdateOrganizationSettings({
   db: Database;
   clock: Clock;
 }) {
-  const cleanedSettings = omitUndefined(settings);
+  const cleanedSettings = omitUndefined(_settings);
   const now = new Date(clock.now().epochMilliseconds); // Drizzle forces to use date object
 
   const existingSettings = await db

@@ -87,7 +87,7 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
 
       await organizationSettingsRepository.createOrUpdateOrganizationSettings({
         organizationId,
-        settings: {
+        _settings: {
           aiAutoTaggingCanCreateNewTags:
             organizationSettingsPartials.ai?.autoTagging?.canCreateNewTags,
           aiAutoTaggingEnabled: organizationSettingsPartials.ai?.autoTagging?.isEnabled,
