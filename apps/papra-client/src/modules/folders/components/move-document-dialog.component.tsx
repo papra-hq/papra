@@ -99,7 +99,9 @@ export const MoveDocumentDialog: Component<{
           )}
         >
           <SelectTrigger>
-            <SelectValue<FolderOption>>{(state) => state.selectedOption()?.label}</SelectValue>
+            <SelectValue<FolderOption>>
+              {(state) => state.selectedOption()?.label ?? t('folders.move.select-placeholder')}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent />
         </Select>

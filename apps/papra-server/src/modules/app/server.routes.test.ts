@@ -23,7 +23,8 @@ function setValidParams(path: string) {
     .replaceAll(':shareLinkId', 'dsl_333333333333333333333333')
     .replaceAll(':shareLinkToken', 't'.repeat(SHARE_LINK_TOKEN_LENGTH))
     .replaceAll(':documentViewId', 'dv_444444444444444444444444')
-    .replaceAll(':planEntitlementId', 'pla_ent_555555555555555555555555');
+    .replaceAll(':planEntitlementId', 'pla_ent_555555555555555555555555')
+    .replaceAll(':folderId', 'folder_666666666666666666666666');
 
   // throw if there are any remaining params
   if (newPath.match(/:\w+/g)) {
