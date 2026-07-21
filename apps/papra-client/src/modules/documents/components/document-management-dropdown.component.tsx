@@ -19,12 +19,14 @@ import { getDocumentOpenWithApps } from '../document.models';
 import { useDeleteDocument, useDownloadDocument } from '../documents.composables';
 import { DocumentOpenWithDropdownItems } from './open-with.component';
 import { useRenameDocumentDialog } from './rename-document-button.component';
+import { useMoveDocumentDialog } from './move-document-dialog.component';
 
 export const DocumentManagementDropdown: Component<{ document: Document }> = (props) => {
   const { deleteDocument } = useDeleteDocument();
   const { downloadDocument } = useDownloadDocument();
   const { openRenameDialog } = useRenameDocumentDialog();
   const { openShareDialog } = useShareDocumentDialog();
+  const { openMoveDialog } = useMoveDocumentDialog();
   const { t } = useI18n();
 
   const deleteDoc = async () =>
@@ -106,6 +108,20 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
         >
           <div class="i-tabler-pencil size-4 mr-2" />
           <span>{t('documents.management.rename')}</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          class="cursor-pointer"
+          onClick={() =>
+            openMoveDialog({
+              documentId: props.document.id,
+              organizationId: props.document.organizationId,
+              documentName: props.document.name,
+            })
+          }
+        >
+          <div class="i-tabler-arrows-left-right size-4 mr-2" />
+          <span>{t('documents.management.move')}</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem class="cursor-pointer text-red" onClick={async () => deleteDoc()}>

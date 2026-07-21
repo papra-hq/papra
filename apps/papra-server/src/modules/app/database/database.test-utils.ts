@@ -40,7 +40,32 @@ export { createInMemoryDatabase, seedDatabase };
 async function createInMemoryDatabase(
   seedOptions: Omit<Parameters<typeof seedDatabase>[0], 'db'> | undefined = {},
 ) {
-  const { db } = setupDatabase({ url: ':memory:' });
+  const dbId = crypto.randomUUID();
+  const dbName = `test-${dbId}.db`;
+  const { db, client } = setupDatabase({ url: `file:${dbName}` });
+
+  // Override client.close to clean up the file on disk
+  const originalClose = client.close.bind(client);
+  client.close = async () => {
+    await originalClose();
+    try {
+      const fs = await import('node:fs');
+      if (fs.existsSync(dbName)) {
+        fs.unlinkSync(dbName);
+      }
+      // Also clean up any journal/wal files if they exist
+      const walName = `${dbName}-wal`;
+      if (fs.existsSync(walName)) {
+        fs.unlinkSync(walName);
+      }
+      const shmName = `${dbName}-shm`;
+      if (fs.existsSync(shmName)) {
+        fs.unlinkSync(shmName);
+      }
+    } catch {
+      // Ignore cleanup failures
+    }
+  };
 
   await runMigrations({
     db,
@@ -52,6 +77,7 @@ async function createInMemoryDatabase(
 
   return {
     db,
+    client,
   };
 }
 

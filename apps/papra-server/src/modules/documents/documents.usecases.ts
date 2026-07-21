@@ -796,3 +796,36 @@ export async function updateDocument({
 
   return { document };
 }
+
+export async function moveDocument({
+  documentId,
+  sourceOrganizationId,
+  targetOrganizationId,
+  userId,
+  documentsRepository,
+  eventServices,
+  documentsStorageService,
+}: {
+  documentId: string;
+  sourceOrganizationId: string;
+  targetOrganizationId: string;
+  userId?: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+  documentsStorageService?: DocumentStorageService;
+}) {
+  const { document } = await documentsRepository.moveDocument({
+    documentId,
+    sourceOrganizationId,
+    targetOrganizationId,
+    documentsStorageService,
+  });
+
+  eventServices.emitEvent({
+    eventName: 'document.moved',
+    payload: { userId, document, sourceOrganizationId, targetOrganizationId },
+  });
+
+  return { document };
+}
+

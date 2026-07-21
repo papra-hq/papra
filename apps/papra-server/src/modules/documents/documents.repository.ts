@@ -11,8 +11,14 @@ import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/objects';
 import { isDefined, isNil, uniq } from '../shared/utils';
-import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
+import { createDocumentAlreadyExistsError, createDocumentNotFoundError, createDocumentSameOrganizationError } from './documents.errors';
 import { documentsTable } from './documents.table';
+import { documentsTagsTable } from '../tags/tags.table';
+import { documentCustomPropertyValuesTable } from '../custom-properties/custom-properties.table';
+import { documentShareLinksTable } from '../document-share-links/document-share-links.table';
+import { documentsFtsTable } from './document-search/database-fts5/database-fts5.tables';
+import { buildOriginalDocumentKey } from './documents.models';
+import type { StorageServices } from './storage/drivers/drivers.models';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
 
@@ -37,6 +43,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       updateDocument,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
+      moveDocument,
     },
     { db },
   );
@@ -570,3 +577,146 @@ export async function areAllDocumentsInOrganization({
 
   return documentIds.every((documentId) => foundDocumentIds.has(documentId));
 }
+
+async function moveDocument({
+  documentId,
+  sourceOrganizationId,
+  targetOrganizationId,
+  db,
+  documentsStorageService,
+}: {
+  documentId: string;
+  sourceOrganizationId: string;
+  targetOrganizationId: string;
+  db: Database;
+  documentsStorageService?: StorageServices;
+}) {
+  if (sourceOrganizationId === targetOrganizationId) {
+    throw createDocumentSameOrganizationError();
+  }
+
+  const documentToMove = await db
+    .select()
+    .from(documentsTable)
+    .where(eq(documentsTable.id, documentId))
+    .then(([doc]) => doc);
+
+  if (isNil(documentToMove)) {
+    throw createDocumentNotFoundError();
+  }
+
+  if (documentToMove.organizationId !== sourceOrganizationId) {
+    throw createDocumentNotFoundError();
+  }
+
+  const { originalDocumentStorageKey: newStorageKey } = buildOriginalDocumentKey({
+    documentId,
+    fileName: documentToMove.originalName,
+    organizationId: targetOrganizationId,
+  });
+
+  let encryptionFields = {};
+  let savedNewFile = false;
+
+  if (documentsStorageService) {
+    const exists = await documentsStorageService.fileExists({
+      storageKey: documentToMove.originalStorageKey,
+    });
+
+    if (!exists) {
+      throw createDocumentNotFoundError();
+    }
+
+    const { fileStream } = await documentsStorageService.getFileStream({
+      storageKey: documentToMove.originalStorageKey,
+      fileEncryptionKeyWrapped: documentToMove.fileEncryptionKeyWrapped,
+      fileEncryptionAlgorithm: documentToMove.fileEncryptionAlgorithm,
+      fileEncryptionKekVersion: documentToMove.fileEncryptionKekVersion,
+    });
+
+    encryptionFields = await documentsStorageService.saveFile({
+      fileStream,
+      fileName: documentToMove.originalName,
+      mimeType: documentToMove.mimeType,
+      storageKey: newStorageKey,
+    });
+
+    savedNewFile = true;
+  }
+
+  try {
+    const result = await db.transaction(async (tx) => {
+      const docTx = await tx
+        .select()
+        .from(documentsTable)
+        .where(eq(documentsTable.id, documentId))
+        .then(([doc]) => doc);
+
+      if (isNil(docTx) || docTx.organizationId !== sourceOrganizationId) {
+        throw createDocumentNotFoundError();
+      }
+
+      const [document] = await tx
+        .update(documentsTable)
+        .set({
+          organizationId: targetOrganizationId,
+          originalStorageKey: newStorageKey,
+          ...encryptionFields,
+        })
+        .where(eq(documentsTable.id, documentId))
+        .returning();
+
+      if (isNil(document)) {
+        throw createDocumentNotFoundError();
+      }
+
+      // Delete all tags for the document
+      await tx.delete(documentsTagsTable).where(eq(documentsTagsTable.documentId, documentId));
+
+      // Delete all custom property values for the document
+      await tx
+        .delete(documentCustomPropertyValuesTable)
+        .where(eq(documentCustomPropertyValuesTable.documentId, documentId));
+
+      // Update associated share links organization ID
+      await tx
+        .update(documentShareLinksTable)
+        .set({ organizationId: targetOrganizationId })
+        .where(eq(documentShareLinksTable.documentId, documentId));
+
+      // Update documents FTS5 search index organization ID
+      await tx
+        .update(documentsFtsTable)
+        .set({ organizationId: targetOrganizationId })
+        .where(eq(documentsFtsTable.documentId, documentId));
+
+      return { document };
+    });
+
+    if (savedNewFile && documentsStorageService) {
+      try {
+        await documentsStorageService.deleteFile({
+          storageKey: documentToMove.originalStorageKey,
+        });
+      } catch (deleteError) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to clean up old storage file', deleteError);
+      }
+    }
+
+    return result;
+  } catch (error) {
+    if (savedNewFile && documentsStorageService) {
+      try {
+        await documentsStorageService.deleteFile({
+          storageKey: newStorageKey,
+        });
+      } catch (deleteError) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to clean up storage on rollback', deleteError);
+      }
+    }
+    throw error;
+  }
+}
+
