@@ -11,7 +11,7 @@ import { joinKeyParts } from './kv-store.models';
 
 export function createKvStore({
   driver,
-  logger = createLogger({ _namespace: 'kv-store' }),
+  logger = createLogger({ namespace: 'kv-store' }),
 }: {
   driver: KvStoreDriver;
   logger?: Logger;

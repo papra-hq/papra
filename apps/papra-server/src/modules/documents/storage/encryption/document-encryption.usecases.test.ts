@@ -28,7 +28,7 @@ describe('document-encryption usecases', () => {
         db,
         config: overrideConfig(),
         taskServices: noopTaskServices,
-        _documentsStorageService: createDocumentStorageServiceFromDriver({
+        documentsStorageService: createDocumentStorageServiceFromDriver({
           storageDriver,
           encryptionConfig: {
             isEncryptionEnabled: false,
@@ -67,7 +67,7 @@ describe('document-encryption usecases', () => {
 
       const createDocumentWithEncryption = createDocumentCreationUsecase({
         db,
-        _documentsStorageService: documentStorageServiceWithEncryption,
+        documentsStorageService: documentStorageServiceWithEncryption,
         config: overrideConfig(),
         taskServices: noopTaskServices,
         eventServices: createTestEventServices(),

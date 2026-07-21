@@ -47,7 +47,7 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
         const oldRuns = await db
           .select({
             id: backupRunsTable.id,
-            _destinationId: backupRunsTable.destinationId,
+            destinationId: backupRunsTable.destinationId,
             organizationId: backupRunsTable.organizationId,
             remoteFileId: backupRunsTable.remoteFileId,
           })
@@ -74,7 +74,7 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
           const runs = await db
             .select({
               id: backupRunsTable.id,
-              _destinationId: backupRunsTable.destinationId,
+              destinationId: backupRunsTable.destinationId,
               organizationId: backupRunsTable.organizationId,
               remoteFileId: backupRunsTable.remoteFileId,
             })
@@ -113,7 +113,7 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
                 const driver = services.getDriver(destination.driver);
                 await driver.deleteFile({
                   credentials,
-                  _settings,
+                  settings,
                   remoteFileId: run.remoteFileId,
                 });
               }

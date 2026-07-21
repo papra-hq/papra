@@ -66,7 +66,7 @@ export const backupRunsTable = sqliteTable(
     ...createPrimaryKeyField({ prefix: backupRunIdPrefix }),
     ...createTimestampColumns(),
 
-    _destinationId: text('destination_id')
+    destinationId: text('destination_id')
       .notNull()
       .references(() => backupDestinationsTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     organizationId: text('organization_id')

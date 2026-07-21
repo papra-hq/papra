@@ -119,7 +119,7 @@ export function createReadStream({ filePath, fs = fsNative }: { filePath: string
   return fs.createReadStream(filePath);
 }
 
-export async async function areFilesContentIdentical({
+export async function areFilesContentIdentical({
   file1,
   file2,
   fs = fsNative,

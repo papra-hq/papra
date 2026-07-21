@@ -10,7 +10,7 @@ type RateLimitResult = {
   resetAt: Temporal.Instant;
 };
 
-export async async function getRateLimit({
+export async function getRateLimit({
   maxHits,
   window,
   key,

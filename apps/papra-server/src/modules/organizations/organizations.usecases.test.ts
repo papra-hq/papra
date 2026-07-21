@@ -1396,7 +1396,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           documentsRepository,
           organizationsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
         });
 
@@ -1512,7 +1512,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           documentsRepository,
           organizationsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
         });
 
@@ -1569,7 +1569,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           documentsRepository,
           organizationsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
         });
 
@@ -1620,7 +1620,7 @@ describe('organizations usecases', () => {
           organizationId: 'organization-1',
           documentsRepository,
           organizationsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
           batchSize: 100,
         });
@@ -1711,7 +1711,7 @@ describe('organizations usecases', () => {
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
           documentsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
           now: new Date('2025-11-05'),
         });
@@ -1798,7 +1798,7 @@ describe('organizations usecases', () => {
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
           documentsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
           now: new Date('2025-11-05'),
         });
@@ -1853,7 +1853,7 @@ describe('organizations usecases', () => {
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
           documentsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           logger,
           now: new Date('2025-11-05'),
         });

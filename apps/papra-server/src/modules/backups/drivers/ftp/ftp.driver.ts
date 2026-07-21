@@ -32,7 +32,7 @@ function parseHostAndPort({ host, port }: { host: string; port?: number }): { ho
 
 async function withClient<T>({
   credentials,
-  _settings,
+  settings,
   fn,
 }: {
   credentials: { username?: string; password?: string };
@@ -44,7 +44,7 @@ async function withClient<T>({
     throw createBackupDriverApiError();
   }
 
-  const { host, port } = parseHostAndPort(_settings);
+  const { host, port } = parseHostAndPort(settings);
 
   const client = new Client(30_000);
   try {
@@ -71,7 +71,7 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
 
     async testConnection({ credentials, settings }) {
       const s = settings as unknown as FtpSettings;
-      await withClient({ credentials, _settings: s, fn: async (client) => client.pwd() });
+      await withClient({ credentials, settings: s, fn: async (client) => client.pwd() });
       return { accountLabel: `${credentials.username}@${s.host}` };
     },
 
@@ -80,7 +80,7 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
       const folderPath = s.remotePath ?? 'papra-backups';
       await withClient({
         credentials,
-        _settings: s,
+        settings: s,
         fn: async (client) => {
           await client.ensureDir(folderPath);
         },
@@ -88,11 +88,11 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
       return { folderRef: folderPath };
     },
 
-    async uploadFile({ credentials, _settings, folderRef, fileName, content }) {
+    async uploadFile({ credentials, settings, folderRef, fileName, content }) {
       const s = settings as unknown as FtpSettings;
       await withClient({
         credentials,
-        _settings: s,
+        settings: s,
         fn: async (client) => {
           await client.ensureDir(folderRef);
           await client.uploadFrom(Readable.from(content), fileName);
@@ -101,12 +101,12 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
       return { remoteFileId: `${folderRef}/${fileName}`, remoteFileName: fileName };
     },
 
-    async downloadFile({ credentials, _settings, remoteFileId }) {
+    async downloadFile({ credentials, settings, remoteFileId }) {
       const s = settings as unknown as FtpSettings;
       const chunks: Buffer[] = [];
       await withClient({
         credentials,
-        _settings: s,
+        settings: s,
         fn: async (client) => {
           await client.downloadTo(
             new Writable({
@@ -122,16 +122,16 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
       return Buffer.concat(chunks);
     },
 
-    async deleteFile({ credentials, _settings, remoteFileId }) {
+    async deleteFile({ credentials, settings, remoteFileId }) {
       const s = settings as unknown as FtpSettings;
-      await withClient({ credentials, _settings: s, fn: async (client) => client.remove(remoteFileId) });
+      await withClient({ credentials, settings: s, fn: async (client) => client.remove(remoteFileId) });
     },
 
-    async listFiles({ credentials, _settings, folderRef }) {
+    async listFiles({ credentials, settings, folderRef }) {
       const s = settings as unknown as FtpSettings;
       const entries = await withClient({
         credentials,
-        _settings: s,
+        settings: s,
         fn: async (client) => {
           await client.cd(folderRef);
           return client.list();

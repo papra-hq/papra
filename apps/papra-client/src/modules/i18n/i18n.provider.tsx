@@ -34,7 +34,7 @@ export function useI18n() {
   return context;
 }
 
-async async function fetchDictionary(locale: Locale): Promise<TranslationsDictionary> {
+async function fetchDictionary(locale: Locale): Promise<TranslationsDictionary> {
   const { translations } = await import(`../../locales/${locale}.dictionary.ts`);
 
   return {

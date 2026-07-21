@@ -2,7 +2,7 @@ import type { ScryptOptions } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 
-async async function scryptAsync({
+async function scryptAsync({
   password,
   salt,
   keyLength,

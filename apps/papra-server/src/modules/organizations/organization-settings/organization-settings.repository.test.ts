@@ -17,7 +17,7 @@ describe('organization-settings.repository', () => {
 
       await repository.createOrUpdateOrganizationSettings({
         organizationId: 'org_1',
-        _settings: {
+        settings: {
           aiAutoTaggingEnabled: true,
         },
       });
@@ -44,7 +44,7 @@ describe('organization-settings.repository', () => {
 
       await repository.createOrUpdateOrganizationSettings({
         organizationId: 'org_1',
-        _settings: {
+        settings: {
           aiAutoTaggingEnabled: false,
           aiAutoTaggingCanCreateNewTags: true,
           aiAutoTaggingMaxTags: 5,
@@ -83,7 +83,7 @@ describe('organization-settings.repository', () => {
 
       await repository.createOrUpdateOrganizationSettings({
         organizationId: 'org_1',
-        _settings: {
+        settings: {
           aiAutoTaggingEnabled: true,
         },
       });
@@ -97,7 +97,7 @@ describe('organization-settings.repository', () => {
 
       await repository.createOrUpdateOrganizationSettings({
         organizationId: 'org_1',
-        _settings: {
+        settings: {
           aiAutoTaggingEnabled: false,
         },
       });

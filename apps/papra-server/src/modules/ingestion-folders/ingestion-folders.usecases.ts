@@ -37,7 +37,7 @@ export function createIngestionFolderWatcher({
   logger = createLogger({ namespace: 'ingestion-folder-watcher' }),
   db,
   taskServices,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: {
   config: Config;
@@ -71,7 +71,7 @@ export function createIngestionFolderWatcher({
         config,
         logger,
         taskServices,
-        _documentsStorageService,
+        documentsStorageService,
         eventServices,
       });
 

@@ -646,7 +646,7 @@ export async function purgeExpiredSoftDeletedOrganization({
   organizationId,
   documentsRepository,
   organizationsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   logger = createLogger({ namespace: 'organizations.purge' }),
   batchSize = 100,
 }: {
@@ -700,7 +700,7 @@ export async function purgeExpiredSoftDeletedOrganization({
 export async function purgeExpiredSoftDeletedOrganizations({
   organizationsRepository,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   logger = createLogger({ namespace: 'organizations.purge' }),
   now = new Date(),
 }: {
@@ -727,7 +727,7 @@ export async function purgeExpiredSoftDeletedOrganizations({
         organizationId,
         documentsRepository,
         organizationsRepository,
-        _documentsStorageService,
+        documentsStorageService,
         logger,
       });
       purgedCount++;

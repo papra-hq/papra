@@ -41,7 +41,7 @@ export async function testDestinationConnectionUsecase({
   services,
   driver,
   credentials,
-  _settings,
+  settings,
 }: {
   services: BackupsServices;
   driver: BackupDriverName;
@@ -60,7 +60,7 @@ export async function createDestinationUsecase({
   driver,
   displayName,
   credentials,
-  _settings,
+  settings,
 }: {
   config: Config;
   services: BackupsServices;
@@ -114,7 +114,7 @@ export async function listDestinationsUsecase({
       id: d.id,
       driver: d.driver,
       displayName: d.displayName,
-      _settings: JSON.parse(d.settingsJson) as Record<string, unknown>,
+      settings: JSON.parse(d.settingsJson) as Record<string, unknown>,
       accountLabel: d.accountLabel,
       isEnabled: d.isEnabled,
       schedule: {
@@ -133,7 +133,7 @@ export async function listDestinationsUsecase({
 export async function updateDestinationScheduleUsecase({
   repository,
   organizationId,
-  _destinationId,
+  destinationId,
   schedule,
 }: {
   repository: BackupsRepository;
@@ -162,10 +162,10 @@ export async function updateDestinationScheduleUsecase({
   return { nextScheduledAt };
 }
 
-export async async function renameDestinationUsecase({
+export async function renameDestinationUsecase({
   repository,
   organizationId,
-  _destinationId,
+  destinationId,
   displayName,
 }: {
   repository: BackupsRepository;
@@ -183,7 +183,7 @@ export async async function renameDestinationUsecase({
 export async function deleteDestinationUsecase({
   repository,
   organizationId,
-  _destinationId,
+  destinationId,
 }: {
   repository: BackupsRepository;
   organizationId: string;
@@ -200,7 +200,7 @@ export async function deleteDestinationUsecase({
 
 export async function listRunsUsecase({
   repository,
-  _destinationId,
+  destinationId,
 }: {
   repository: BackupsRepository;
   destinationId: string;
@@ -218,7 +218,7 @@ export async function runBackupUsecase({
   documentsRepository,
   globalDeps,
   organizationId,
-  _destinationId,
+  destinationId,
   trigger,
   logger: providedLogger = logger,
 }: {
@@ -254,7 +254,7 @@ export async function runBackupUsecase({
   const { run } = await repository.createRun({
     run: {
       id: generateId({ prefix: 'bkrun' }),
-      _destinationId,
+      destinationId,
       organizationId,
       trigger,
       status: 'pending',
@@ -266,12 +266,12 @@ export async function runBackupUsecase({
     config,
     repository,
     documentsRepository,
-    _documentsStorageService: globalDeps.documentsStorageService,
+    documentsStorageService: globalDeps.documentsStorageService,
     db: globalDeps.db,
     services,
     encryption,
     organizationId,
-    _destinationId,
+    destinationId,
     runId: run.id,
     logger: providedLogger,
   });
@@ -343,7 +343,7 @@ async function buildBackupManifest({
 async function buildEncryptedBackupEnvelope({
   organizationId,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   services,
   encryption,
   dek,
@@ -393,12 +393,12 @@ async function buildEncryptedBackupEnvelope({
 async function runBackupPipeline({
   repository,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   db,
   services,
   encryption,
   organizationId,
-  _destinationId,
+  destinationId,
   runId,
   logger,
 }: {
@@ -428,7 +428,7 @@ async function runBackupPipeline({
     const { envelope, documentsCount } = await buildEncryptedBackupEnvelope({
       organizationId,
       documentsRepository,
-      _documentsStorageService,
+      documentsStorageService,
       services,
       encryption,
       dek,
@@ -452,7 +452,7 @@ async function runBackupPipeline({
     const fileName = `papra-backup-${organizationId.slice(-6)}-${new Date().toISOString().replace(/[:.]/g, '-')}${BACKUP_FILE_EXTENSION}`;
     const uploaded = await driver.uploadFile({
       credentials,
-      _settings,
+      settings,
       folderRef,
       fileName,
       mimeType: BACKUP_FILE_MIME_TYPE,
@@ -470,7 +470,7 @@ async function runBackupPipeline({
     });
     await repository.updateDestination({ destinationId, fields: { lastRunAt: new Date() } });
 
-    logger.info({ runId, _destinationId, size: envelope.length, documentsCount }, 'Backup run completed');
+    logger.info({ runId, destinationId, size: envelope.length, documentsCount }, 'Backup run completed');
   } catch (error) {
     logger.error({ error, runId, destinationId }, 'Backup run failed');
     await repository.updateRunStatus({
@@ -488,7 +488,7 @@ export async function deleteRunUsecase({
   services,
   repository,
   organizationId,
-  _destinationId,
+  destinationId,
   runId,
 }: {
   config: Config;
@@ -513,7 +513,7 @@ export async function deleteRunUsecase({
         const credentials = unwrapCredentials({ encryption, wrapped: destination.encryptedCredentials });
         const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
         const driver = services.getDriver(destination.driver);
-        await driver.deleteFile({ credentials, _settings, remoteFileId: run.remoteFileId });
+        await driver.deleteFile({ credentials, settings, remoteFileId: run.remoteFileId });
       } catch (error) {
         logger.error({ error, runId }, 'Failed to delete remote file; removing local record anyway');
       }
@@ -592,7 +592,7 @@ async function restoreFromEnvelopeUsecase({
   const folderIdExistsCache = new Map<string, boolean>();
   const folderPathCache = new Map<string, string>(); // key: `${parentId ?? 'root'}::${name}` -> folder id
 
-  async async function resolveOrRecreateFolderId(entry: { folderId: string | null; folderPath?: string[] | null }): Promise<string | undefined> {
+  async function resolveOrRecreateFolderId(entry: { folderId: string | null; folderPath?: string[] | null }): Promise<string | undefined> {
     if (entry.folderId) {
       if (!folderIdExistsCache.has(entry.folderId)) {
         const { folder } = await foldersRepository.getFolderById({ folderId: entry.folderId, organizationId });
@@ -638,7 +638,7 @@ async function restoreFromEnvelopeUsecase({
   const { tags: existingOrgTags } = await tagsRepository.getOrganizationTags({ organizationId });
   const tagIdByName = new Map<string, string>(existingOrgTags.map((t) => [t.name, t.id]));
 
-  async async function resolveTagId(tag: { name: string; color: string; description?: string | null }): Promise<string | undefined> {
+  async function resolveTagId(tag: { name: string; color: string; description?: string | null }): Promise<string | undefined> {
     const existingId = tagIdByName.get(tag.name);
     if (existingId) {
       return existingId;
@@ -664,7 +664,7 @@ async function restoreFromEnvelopeUsecase({
     }
   }
 
-  async async function applyTagsToDocument({
+  async function applyTagsToDocument({
     documentId,
     tags = [],
   }: {
@@ -817,7 +817,7 @@ async function restoreArchiveUsecase({
   const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
   const driver = services.getDriver(destination.driver);
 
-  const envelope = await driver.downloadFile({ credentials, _settings, remoteFileId });
+  const envelope = await driver.downloadFile({ credentials, settings, remoteFileId });
 
   return restoreFromEnvelopeUsecase({
     services,
@@ -840,7 +840,7 @@ export async function downloadBackupCopyUsecase({
   config,
   services,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   organizationId,
   db,
   logger: providedLogger = logger,
@@ -860,7 +860,7 @@ export async function downloadBackupCopyUsecase({
   const { envelope, documentsCount } = await buildEncryptedBackupEnvelope({
     organizationId,
     documentsRepository,
-    _documentsStorageService,
+    documentsStorageService,
     services,
     encryption,
     dek,
@@ -919,7 +919,7 @@ export async function restoreRunUsecase({
   documentsRepository,
   foldersRepository,
   organizationId,
-  _destinationId,
+  destinationId,
   runId,
   userId,
 }: {
@@ -967,7 +967,7 @@ export async function listRemoteBackupsUsecase({
   services,
   repository,
   organizationId,
-  _destinationId,
+  destinationId,
 }: {
   config: Config;
   services: BackupsServices;
@@ -994,7 +994,7 @@ export async function listRemoteBackupsUsecase({
     await repository.updateDestination({ destinationId, fields: { remoteFolderRef: folderRef } });
   }
 
-  const { files } = await driver.listFiles({ credentials, _settings, folderRef });
+  const { files } = await driver.listFiles({ credentials, settings, folderRef });
   return { files: files.filter((f) => f.name.endsWith(BACKUP_FILE_EXTENSION)) };
 }
 
@@ -1006,7 +1006,7 @@ export async function restoreFromRemoteFileUsecase({
   documentsRepository,
   foldersRepository,
   organizationId,
-  _destinationId,
+  destinationId,
   remoteFileId,
   userId,
 }: {
@@ -1076,13 +1076,13 @@ export async function runDueScheduledBackupsUsecase({
         documentsRepository,
         globalDeps,
         organizationId: destination.organizationId,
-        _destinationId: destination.id,
+        destinationId: destination.id,
         trigger: 'scheduled',
         logger: providedLogger,
       });
       triggeredCount += 1;
     } catch (error) {
-      providedLogger.error({ error, _destinationId: destination.id }, 'Scheduled backup failed to start');
+      providedLogger.error({ error, destinationId: destination.id }, 'Scheduled backup failed to start');
     }
 
     // Recompute the next occurrence regardless of success/failure, so a failure
@@ -1106,9 +1106,9 @@ export async function verifyBackupRunUsecase({
   config,
   services,
   repository,
-  _documentsStorageService,
+  documentsStorageService,
   organizationId,
-  _destinationId,
+  destinationId,
   runId,
 }: {
   config: Config;
@@ -1147,7 +1147,7 @@ export async function verifyBackupRunUsecase({
     const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
     const driver = services.getDriver(destination.driver);
 
-    const envelope = await driver.downloadFile({ credentials, _settings, remoteFileId: run.remoteFileId });
+    const envelope = await driver.downloadFile({ credentials, settings, remoteFileId: run.remoteFileId });
 
     // Unpack and verify
     const { wrappedKey, encryptedPayload } = unpackBackupEnvelope({ envelope });

@@ -70,7 +70,7 @@ export function validateParsedConfig({
 }: {
   config: Config;
   logger: Logger;
-  validators: ((_args: { config: Config }) => void)[];
+  validators: ((args: { config: Config }) => void)[];
 }) {
   for (const validator of validators) {
     const [, error] = safelySync(() => validator({ config }));

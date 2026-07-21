@@ -81,7 +81,7 @@ function getFilesToProcess(): FileMetadata[] {
     });
 }
 
-async async function extractTextFromFile({
+async function extractTextFromFile({
   filePath,
   mimeType,
 }: {
@@ -157,7 +157,7 @@ export default demoDocumentFixture;
 `;
 }
 
-async async function processFile({
+async function processFile({
   file,
   fixtureNumber,
 }: {

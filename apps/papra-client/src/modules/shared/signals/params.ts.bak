@@ -25,7 +25,7 @@ export function createParamSynchronizedSignal<T extends string | number | boolea
     return deserialize(paramValue);
   };
 
-  const setValue = (valueOrUpdater: T | ((_prevValue: T) => T)) => {
+  const setValue = (valueOrUpdater: T | ((prevValue: T) => T)) => {
     const newValue = resolveSetterValue(valueOrUpdater, getValue());
 
     setSearchParams(

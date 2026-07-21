@@ -35,7 +35,7 @@ function assert(
   }
 }
 
-async async function toBase64(file: File): Promise<string> {
+async function toBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -48,7 +48,7 @@ async function fromBase64(base64: string) {
   return fetch(base64).then(async (res) => res.blob());
 }
 
-async async function serializeFile(file: File): Promise<DocumentFile> {
+async function serializeFile(file: File): Promise<DocumentFile> {
   return {
     name: file.name,
     size: file.size,
@@ -58,7 +58,7 @@ async async function serializeFile(file: File): Promise<DocumentFile> {
   };
 }
 
-async async function deserializeFile(storageInfo: DocumentFile): Promise<File> {
+async function deserializeFile(storageInfo: DocumentFile): Promise<File> {
   if ('path' in storageInfo) {
     const { path, name } = storageInfo;
     const response = await fetch(path);

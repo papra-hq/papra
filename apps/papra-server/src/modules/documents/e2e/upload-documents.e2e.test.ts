@@ -107,7 +107,7 @@ describe('documents e2e', () => {
       const { app } = createServer(
         createTestServerDependencies({
           db,
-          _documentsStorageService,
+          documentsStorageService,
           config: overrideConfig({
             env: 'test',
             documentsStorage: {

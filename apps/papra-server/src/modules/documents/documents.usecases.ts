@@ -66,7 +66,7 @@ export async function createDocument({
   isContentExtractionEnabled = true,
   storagePatternConfig,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
   plansRepository,
   subscriptionsRepository,
@@ -114,7 +114,7 @@ export async function createDocument({
     documentId,
     documentName: fileName,
     organizationId,
-    _documentsStorageService,
+    documentsStorageService,
     storagePatternConfig,
   });
 
@@ -171,7 +171,7 @@ export async function createDocument({
         tagsRepository,
         taggingRulesRepository,
         eventServices,
-        _documentsStorageService,
+        documentsStorageService,
         logger,
       })
     : await createNewDocument({
@@ -184,7 +184,7 @@ export async function createDocument({
         organizationId,
         folderId,
         documentsRepository,
-        _documentsStorageService,
+        documentsStorageService,
         plansRepository,
         subscriptionsRepository,
         planEntitlementsRepository,
@@ -214,7 +214,7 @@ export function createDocumentCreationUsecase({
   db,
   config,
   taskServices,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
   ...initialDeps
 }: {
@@ -253,7 +253,7 @@ export function createDocumentCreationUsecase({
     userId?: string;
     organizationId: string;
     folderId?: string | null;
-  }) => createDocument({ taskServices, _documentsStorageService, eventServices, ...args, ...deps });
+  }) => createDocument({ taskServices, documentsStorageService, eventServices, ...args, ...deps });
 }
 
 async function handleExistingDocument({
@@ -266,7 +266,7 @@ async function handleExistingDocument({
   tagsRepository,
   taggingRulesRepository,
   eventServices,
-  _documentsStorageService,
+  documentsStorageService,
   newDocumentStorageKey,
   logger,
 }: {
@@ -329,7 +329,7 @@ async function createNewDocument({
   planEntitlementsRepository,
   planEntitlementDefinitionRegistry,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   newFileStorageContext,
   documentId,
   taskServices,
@@ -455,7 +455,7 @@ export async function ensureDocumentExists({
 export async function hardDeleteDocument({
   document,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: {
   document: Pick<Document, 'id' | 'originalStorageKey' | 'organizationId'>;
@@ -476,7 +476,7 @@ export async function hardDeleteDocument({
 
 export async function deleteExpiredDocuments({
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
   config,
   now = new Date(),
@@ -503,7 +503,7 @@ export async function deleteExpiredDocuments({
           hardDeleteDocument({
             document,
             documentsRepository,
-            _documentsStorageService,
+            documentsStorageService,
             eventServices,
           }),
         );
@@ -524,7 +524,7 @@ export async function deleteTrashDocument({
   documentId,
   organizationId,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: {
   documentId: string;
@@ -546,7 +546,7 @@ export async function deleteTrashDocument({
   await hardDeleteDocument({
     document,
     documentsRepository,
-    _documentsStorageService,
+    documentsStorageService,
     eventServices,
   });
 }
@@ -554,7 +554,7 @@ export async function deleteTrashDocument({
 export async function deleteAllTrashDocuments({
   organizationId,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: {
   organizationId: string;
@@ -576,7 +576,7 @@ export async function deleteAllTrashDocuments({
         await hardDeleteDocument({
           document,
           documentsRepository,
-          _documentsStorageService,
+          documentsStorageService,
           eventServices,
         });
       }),
@@ -588,7 +588,7 @@ export async function extractAndSaveDocumentFileContent({
   documentId,
   organizationId,
   documentsRepository,
-  _documentsStorageService,
+  documentsStorageService,
   taggingRulesRepository,
   tagsRepository,
   eventServices,

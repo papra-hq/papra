@@ -50,7 +50,7 @@ async function startWorkerMode({ logger, ...deps }: { logger: Logger } & GlobalD
   logger.info('Worker started');
 }
 
-async async function buildServices({ config }: { config: Config }): Promise<GlobalDependencies> {
+async function buildServices({ config }: { config: Config }): Promise<GlobalDependencies> {
   const shutdownServices = createGracefulShutdownService();
 
   await ensureLocalDatabaseDirectoryExists({ config });
@@ -91,7 +91,7 @@ async async function buildServices({ config }: { config: Config }): Promise<Glob
     config,
     db,
     shutdownServices,
-    _documentsStorageService,
+    documentsStorageService,
     taskServices,
     trackingServices,
     eventServices,
@@ -107,7 +107,7 @@ async async function buildServices({ config }: { config: Config }): Promise<Glob
 }
 
 export async function startApp() {
-  const logger = createLogger({ namespace: 'app-server' });
+  const logger = createLogger({ _namespace: 'app-server' });
 
   const { config } = await parseConfig({ env });
 

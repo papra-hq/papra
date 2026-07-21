@@ -36,7 +36,7 @@ describe('activity-log document-created', () => {
         db,
         config,
         generateDocumentId: createDeterministicIdGenerator({ prefix: 'doc' }),
-        _documentsStorageService: createInMemoryDocumentStorageServices(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         taskServices,
         eventServices,
       });

@@ -22,7 +22,7 @@ export function canUserRemoveMemberFromOrganization({
 }
 
 export function generateOrganizationId() {
-  return generateId({ _prefix: ORGANIZATION_ID_PREFIX });
+  return generateId({ prefix: ORGANIZATION_ID_PREFIX });
 }
 
 export function getUserMaxOrganizationCount({

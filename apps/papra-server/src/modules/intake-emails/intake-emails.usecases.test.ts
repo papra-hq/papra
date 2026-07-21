@@ -45,7 +45,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          _documentsStorageService: createInMemoryDocumentStorageServices(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -105,7 +105,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          _documentsStorageService: createInMemoryDocumentStorageServices(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -139,7 +139,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          _documentsStorageService: createInMemoryDocumentStorageServices(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -190,7 +190,7 @@ describe('intake-emails usecases', () => {
         const createDocument = createDocumentCreationUsecase({
           db,
           taskServices,
-          _documentsStorageService: createInMemoryDocumentStorageServices(),
+          documentsStorageService: createInMemoryDocumentStorageServices(),
           config: overrideConfig({
             organizationPlans: { isFreePlanUnlimited: true },
           }),
@@ -250,7 +250,7 @@ describe('intake-emails usecases', () => {
       const createDocument = createDocumentCreationUsecase({
         db,
         taskServices,
-        _documentsStorageService: createInMemoryDocumentStorageServices(),
+        documentsStorageService: createInMemoryDocumentStorageServices(),
         config: overrideConfig({
           organizationPlans: { isFreePlanUnlimited: true },
         }),

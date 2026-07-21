@@ -432,7 +432,7 @@ function setupGetOrganizationDocumentsStatsRoute({ app, db }: RouteDefinitionCon
 function setupDeleteTrashDocumentRoute({
   app,
   db,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: RouteDefinitionContext) {
   app.delete(
@@ -458,7 +458,7 @@ function setupDeleteTrashDocumentRoute({
         documentId,
         organizationId,
         documentsRepository,
-        _documentsStorageService,
+        documentsStorageService,
         eventServices,
       });
 
@@ -472,7 +472,7 @@ function setupDeleteTrashDocumentRoute({
 function setupDeleteAllTrashDocumentsRoute({
   app,
   db,
-  _documentsStorageService,
+  documentsStorageService,
   eventServices,
 }: RouteDefinitionContext) {
   app.delete(
@@ -496,7 +496,7 @@ function setupDeleteAllTrashDocumentsRoute({
       await deleteAllTrashDocuments({
         organizationId,
         documentsRepository,
-        _documentsStorageService,
+        documentsStorageService,
         eventServices,
       });
 

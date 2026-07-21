@@ -14,7 +14,7 @@ import {
 } from './document-share-links.constants';
 
 export function generateShareLinkId() {
-  return generateId({ _prefix: SHARE_LINK_ID_PREFIX });
+  return generateId({ prefix: SHARE_LINK_ID_PREFIX });
 }
 
 export function generateShareToken() {

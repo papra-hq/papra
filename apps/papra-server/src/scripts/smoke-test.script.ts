@@ -17,7 +17,7 @@ const PING_URL = `http://127.0.0.1:${SMOKE_TEST_PORT}/api/ping`;
 // Thrown when the server is not yet accepting connections; the only case worth retrying.
 class ServerNotReadyYetError extends Error {}
 
-async async function pingServer(): Promise<void> {
+async function pingServer(): Promise<void> {
   let response: Response;
 
   try {
@@ -36,7 +36,7 @@ async async function pingServer(): Promise<void> {
   }
 }
 
-async async function waitForServerReady({ child }: { child: ChildProcess }): Promise<void> {
+async function waitForServerReady({ child }: { child: ChildProcess }): Promise<void> {
   const deadline = Date.now() + READINESS_TIMEOUT_MS;
 
   while (Date.now() < deadline) {
@@ -64,7 +64,7 @@ async async function waitForServerReady({ child }: { child: ChildProcess }): Pro
 
 // Terminate the child, escalating to SIGKILL if it does not exit within the grace period,
 // so a stubborn process can never hang the CI job.
-async async function terminateServer({ child }: { child: ChildProcess }): Promise<void> {
+async function terminateServer({ child }: { child: ChildProcess }): Promise<void> {
   if (child.exitCode !== null || child.signalCode !== null) {
     return;
   }

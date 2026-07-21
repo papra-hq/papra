@@ -10,7 +10,7 @@ describe('document-storage usecases', () => {
           initialStorageKey: 'path/to/file.txt',
           maxIncrementalSuffixAttempts: 3,
           enableRandomSuffixFallback: false,
-          _documentsStorageService: {
+          documentsStorageService: {
             fileExists: async () => false,
           },
         }),
@@ -23,7 +23,7 @@ describe('document-storage usecases', () => {
           initialStorageKey: 'path/to/file.txt',
           maxIncrementalSuffixAttempts: 3,
           enableRandomSuffixFallback: false,
-          _documentsStorageService: {
+          documentsStorageService: {
             fileExists: async ({ storageKey }) =>
               ['path/to/file.txt', 'path/to/file_1.txt'].includes(storageKey),
           },
@@ -38,7 +38,7 @@ describe('document-storage usecases', () => {
           maxIncrementalSuffixAttempts: 3,
           enableRandomSuffixFallback: true,
           generateRandomSuffix: () => 'random',
-          _documentsStorageService: {
+          documentsStorageService: {
             fileExists: async ({ storageKey }) => storageKey !== 'path/to/file_random.txt',
           },
         }),
@@ -52,7 +52,7 @@ describe('document-storage usecases', () => {
         initialStorageKey: 'path/to/file.txt',
         maxIncrementalSuffixAttempts: 3,
         enableRandomSuffixFallback: false,
-        _documentsStorageService: {
+        documentsStorageService: {
           fileExists: async ({ storageKey }) => {
             if (pathsSet.has(storageKey)) {
               return true;
@@ -79,7 +79,7 @@ describe('document-storage usecases', () => {
           maxIncrementalSuffixAttempts: 3,
           enableRandomSuffixFallback: true,
           generateRandomSuffix: () => 'random',
-          _documentsStorageService: {
+          documentsStorageService: {
             fileExists: async () => true,
           },
         }),
@@ -93,7 +93,7 @@ describe('document-storage usecases', () => {
             initialStorageKey: 'path/to/file.txt',
             maxIncrementalSuffixAttempts: 0,
             enableRandomSuffixFallback: false,
-            _documentsStorageService: {
+            documentsStorageService: {
               fileExists: async () => false,
             },
           }),
@@ -104,7 +104,7 @@ describe('document-storage usecases', () => {
             initialStorageKey: 'path/to/file.txt',
             maxIncrementalSuffixAttempts: 0,
             enableRandomSuffixFallback: false,
-            _documentsStorageService: {
+            documentsStorageService: {
               fileExists: async () => true,
             },
           }),

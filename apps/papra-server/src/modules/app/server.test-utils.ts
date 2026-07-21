@@ -65,7 +65,7 @@ export function createTestServerDependencies(
     config,
     db,
     shutdownServices,
-    _documentsStorageService,
+    documentsStorageService,
     taskServices,
     trackingServices,
     eventServices,

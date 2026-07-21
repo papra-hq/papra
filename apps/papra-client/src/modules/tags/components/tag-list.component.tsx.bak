@@ -96,7 +96,7 @@ const TagPicker: Component<{
     return updatedTagItems.filter((tag) => tag.isSelected).map(({ tag }) => tag);
   };
 
-  const handleToggle = (tagId: string, selected: boolean | ((_old: boolean) => boolean)) => {
+  const handleToggle = (tagId: string, selected: boolean | ((old: boolean) => boolean)) => {
     const updatedTags = setTagSelection({
       tagId,
       setSelection: typeof selected === 'function' ? selected : () => selected,
