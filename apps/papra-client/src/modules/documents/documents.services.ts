@@ -236,3 +236,16 @@ export async function fetchDocumentActivities({
     activities: activities.map(coerceDates),
   };
 }
+
+export async function reprocessDocument({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
+  await apiClient({
+    method: 'POST',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/reprocess`,
+  });
+}
