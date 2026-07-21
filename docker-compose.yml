@@ -3,12 +3,10 @@ version: '3.8'
 services:
   papra:
     # Use the locally built image or pull from registry
-    image: ghcr.io/papra-hq/papra:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/secureman/papra:arm64
+    platform: linux/arm64
       # Build for aarch64 (ARM64) - remove for amd64 or use --platform flag
-      platform: linux/arm64
+      #platform: linux/arm64
       # Uncomment below to build for your host architecture automatically
       # platform: linux/$(uname -m)
     container_name: papra
@@ -31,7 +29,7 @@ services:
       - BACKUPS_GOOGLE_OAUTH_CLIENT_SECRET=${BACKUPS_GOOGLE_OAUTH_CLIENT_SECRET}
       - BACKUPS_GOOGLE_OAUTH_REDIRECT_URI=${BACKUPS_GOOGLE_OAUTH_REDIRECT_URI:-http://localhost:1221/api/backups/google-drive/callback}
       - BACKUPS_RETENTION_DAYS=${BACKUPS_RETENTION_DAYS:-30}
-      
+      - BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION=${BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION:-3}
       # Optional: Server configuration
       - PORT=${PORT:-1221}
       - SERVER_HOSTNAME=0.0.0.0
