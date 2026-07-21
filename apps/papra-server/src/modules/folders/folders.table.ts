@@ -1,4 +1,5 @@
-import { sqliteTable, text, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
+import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { organizationsTable } from '../organizations/organizations.table';
 import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
 import { folderIdPrefix } from './folders.constants';

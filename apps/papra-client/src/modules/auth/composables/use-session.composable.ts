@@ -3,8 +3,8 @@ import { getSession } from '../auth.services';
 
 export function useSession() {
   const sessionQuery = useQuery(() => ({
-    _queryKey: ['auth', 'session'],
-    _queryFn: async () => getSession(),
+    queryKey: ['auth', 'session'],
+    queryFn: async () => getSession(),
   }));
 
   const getUser = () => sessionQuery.data?.data?.user;

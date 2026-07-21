@@ -57,7 +57,10 @@ export async function createFolder({
   await ensureParentFolderExists({ parentId, organizationId, foldersRepository });
 
   if (parentId) {
-    const { depth } = await foldersRepository.getFolderDepth({ folderId: parentId, organizationId });
+    const { depth } = await foldersRepository.getFolderDepth({
+      folderId: parentId,
+      organizationId,
+    });
 
     if (depth + 1 >= MAX_FOLDER_NESTING_DEPTH) {
       throw createFolderMaxDepthExceededError();

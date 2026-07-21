@@ -6,7 +6,11 @@ import { organizationIdSchema } from '../../../organizations/organization.schema
 import { createOrganizationsRepository } from '../../../organizations/organizations.repository';
 import { ensureUserIsInOrganization } from '../../../organizations/organizations.usecases';
 import { generateId } from '../../../shared/random/ids';
-import { validateJsonBody, validateParams, validateQuery } from '../../../shared/validation/validation';
+import {
+  validateJsonBody,
+  validateParams,
+  validateQuery,
+} from '../../../shared/validation/validation';
 import { createBackupsRepository } from '../../backups.repository';
 import { createBackupsServices } from '../../backups.services';
 import { createDestinationUsecase } from '../../backups.usecases';
@@ -24,14 +28,29 @@ const oauthStateSchema = v.object({
   displayName: v.string(),
 });
 
-export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: RouteDefinitionContext) {
-  const oauthStateStore = kvStore.defineScope({ prefix: 'backups:google-drive:oauth-state', schema: oauthStateSchema });
+export function registerGoogleDriveOAuthRoutes({
+  app,
+  config,
+  db,
+  kvStore,
+}: RouteDefinitionContext) {
+  const oauthStateStore = kvStore.defineScope({
+    prefix: 'backups:google-drive:oauth-state',
+    schema: oauthStateSchema,
+  });
 
   app.post(
     '/api/organizations/:organizationId/backups/google-drive/connect',
     requireAuthentication(),
     validateParams(v.strictObject({ organizationId: organizationIdSchema })),
-    validateJsonBody(v.object({ displayName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(100)), 'Google Drive') })),
+    validateJsonBody(
+      v.object({
+        displayName: v.optional(
+          v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
+          'Google Drive',
+        ),
+      }),
+    ),
     async (context) => {
       const { userId } = getUser({ context });
       const { organizationId } = context.req.valid('param');
@@ -41,9 +60,13 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       const state = generateId({ prefix: 'oauthstate' });
-      await oauthStateStore.set(state, { organizationId, userId, displayName }, {
-        expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + OAUTH_STATE_TTL_MS),
-      });
+      await oauthStateStore.set(
+        state,
+        { organizationId, userId, displayName },
+        {
+          expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + OAUTH_STATE_TTL_MS),
+        },
+      );
 
       const oauth = createGoogleDriveOAuthService({ config });
       const authorizationUrl = oauth.buildAuthorizationUrl({ state });
@@ -57,18 +80,28 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
   // back into the app rather than JSON.
   app.get(
     '/api/backups/google-drive/callback',
-    validateQuery(v.object({ code: v.optional(v.string()), state: v.optional(v.string()), error: v.optional(v.string()) })),
+    validateQuery(
+      v.object({
+        code: v.optional(v.string()),
+        state: v.optional(v.string()),
+        error: v.optional(v.string()),
+      }),
+    ),
     async (context) => {
       const { code, state, error } = context.req.valid('query');
       const redirectBase = (config.appBaseUrl ?? config.client.baseUrl).replace(/\/+$/, '');
 
       if (error || !code || !state) {
-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_oauth_denied`);
+        return context.redirect(
+          `${redirectBase}/organizations?backupError=google_drive_oauth_denied`,
+        );
       }
 
       const statePayload = await oauthStateStore.get(state);
       if (!statePayload) {
-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_oauth_expired`);
+        return context.redirect(
+          `${redirectBase}/organizations?backupError=google_drive_oauth_expired`,
+        );
       }
       await oauthStateStore.delete(state);
 
@@ -80,7 +113,9 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
         // skips issuing a new refresh token. Since we always pass prompt=consent
         // this shouldn't normally happen, but fail loudly if it does rather than
         // silently storing a destination with no way to refresh.
-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_no_refresh_token`);
+        return context.redirect(
+          `${redirectBase}/organizations?backupError=google_drive_no_refresh_token`,
+        );
       }
 
       const services = createBackupsServices({ config });

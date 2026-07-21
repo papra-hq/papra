@@ -4,7 +4,8 @@ services:
   papra:
     # Use the locally built image or pull from registry
     image: ghcr.io/secureman/papra:arm64
-    platform: linux/arm64
+    platform:
+      linux/arm64
       # Build for aarch64 (ARM64) - remove for amd64 or use --platform flag
       #platform: linux/arm64
       # Uncomment below to build for your host architecture automatically
@@ -12,17 +13,17 @@ services:
     container_name: papra
     restart: unless-stopped
     ports:
-      - "1221:1221"
+      - '1221:1221'
     environment:
       # Required configuration
       - NODE_ENV=production
       - AUTH_SECRET=${AUTH_SECRET}
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:1221}
-      
+
       # Optional: Database configuration (SQLite is default)
       # For production, consider using Turso or other supported databases
       # - DATABASE_URL=${DATABASE_URL}
-      
+
       # Optional: Backup configuration
       - BACKUPS_KEK=${BACKUPS_KEK}
       - BACKUPS_GOOGLE_OAUTH_CLIENT_ID=${BACKUPS_GOOGLE_OAUTH_CLIENT_ID}
@@ -33,11 +34,11 @@ services:
       # Optional: Server configuration
       - PORT=${PORT:-1221}
       - SERVER_HOSTNAME=0.0.0.0
-      
+
       # Optional: Enable/disable features
       - AUTH_FIRST_USER_AS_ADMIN=${AUTH_FIRST_USER_AS_ADMIN:-true}
       - AUTH_IS_REGISTRATION_ENABLED=${AUTH_IS_REGISTRATION_ENABLED:-true}
-      
+
       # Optional: Tracking (disabled by default in self-hosted)
       - POSTHOG_API_KEY=${POSTHOG_API_KEY}
       - POSTHOG_HOST=${POSTHOG_HOST}
@@ -47,7 +48,8 @@ services:
       - papra_documents:/app/apps/papra-server/local-documents
       - papra_ingestion:/app/apps/papra-server/ingestion
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1221/api/health"]
+      test:
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:1221/api/health']
       interval: 30s
       timeout: 3s
       retries: 3

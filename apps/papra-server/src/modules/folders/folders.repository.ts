@@ -5,10 +5,7 @@ import { documentsTable } from '../documents/documents.table';
 import { isUniqueConstraintError } from '../shared/db/constraints.models';
 import { omitUndefined } from '../shared/objects';
 import { isDefined } from '../shared/utils';
-import {
-  createFolderAlreadyExistsError,
-  createFolderNotFoundError,
-} from './folders.errors';
+import { createFolderAlreadyExistsError, createFolderNotFoundError } from './folders.errors';
 import { foldersTable } from './folders.table';
 
 export type FoldersRepository = ReturnType<typeof createFoldersRepository>;
@@ -109,7 +106,9 @@ async function getOrganizationFolders({
       documentsCount: count(documentsTable.id).as('documentsCount'),
     })
     .from(documentsTable)
-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
+    .where(
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
+    )
     .groupBy(documentsTable.folderId)
     .as('document_counts');
 
@@ -162,7 +161,9 @@ async function getChildFolders({
       documentsCount: count(documentsTable.id).as('documentsCount'),
     })
     .from(documentsTable)
-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
+    .where(
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
+    )
     .groupBy(documentsTable.folderId)
     .as('document_counts');
 

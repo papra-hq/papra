@@ -33,7 +33,11 @@ export interface BackupEncryptionService {
   decryptPayload(args: { encryptedPayload: Buffer; key: Buffer }): Buffer;
 }
 
-export function createBackupEncryptionService({ config }: { config: Config }): BackupEncryptionService {
+export function createBackupEncryptionService({
+  config,
+}: {
+  config: Config;
+}): BackupEncryptionService {
   const kek = getKek({ config });
 
   return {
@@ -96,14 +100,23 @@ export function unwrapCredentials({
 //
 // Layout: [4-byte big-endian length of the wrapped-key string][wrapped-key
 // bytes (utf8)][encrypted archive payload, everything after that].
-export function packBackupEnvelope({ wrappedKey, encryptedPayload }: { wrappedKey: string; encryptedPayload: Buffer }): Buffer {
+export function packBackupEnvelope({
+  wrappedKey,
+  encryptedPayload,
+}: {
+  wrappedKey: string;
+  encryptedPayload: Buffer;
+}): Buffer {
   const wrappedKeyBuffer = Buffer.from(wrappedKey, 'utf8');
   const lengthPrefix = Buffer.alloc(4);
   lengthPrefix.writeUInt32BE(wrappedKeyBuffer.length, 0);
   return Buffer.concat([lengthPrefix, wrappedKeyBuffer, encryptedPayload]);
 }
 
-export function unpackBackupEnvelope({ envelope }: { envelope: Buffer }): { wrappedKey: string; encryptedPayload: Buffer } {
+export function unpackBackupEnvelope({ envelope }: { envelope: Buffer }): {
+  wrappedKey: string;
+  encryptedPayload: Buffer;
+} {
   const keyLength = envelope.readUInt32BE(0);
   const wrappedKey = envelope.subarray(4, 4 + keyLength).toString('utf8');
   const encryptedPayload = envelope.subarray(4 + keyLength);

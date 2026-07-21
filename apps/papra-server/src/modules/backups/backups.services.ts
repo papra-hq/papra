@@ -4,7 +4,8 @@ import { createLogger } from '../shared/logger/logger';
 import { createBackupEncryptionService } from './backups.encryption.service';
 import { createBackupsNotConfiguredError, createBackupUnknownDriverError } from './backups.errors';
 import { createBackupPackagerService } from './backups.packager.service';
-import { backupDriverFactories, type BackupDriverName } from './drivers/drivers.registry';
+import type { BackupDriverName } from './drivers/drivers.registry';
+import { backupDriverFactories } from './drivers/drivers.registry';
 
 const logger = createLogger({ namespace: 'backups:services' });
 

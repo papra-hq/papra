@@ -55,5 +55,7 @@ export const backupsConfig = {
   },
 } as const satisfies ConfigDefinition;
 
-export const isGoogleDriveDestinationConfigured = (config: { oauthClientId?: string; oauthClientSecret?: string }) =>
-  Boolean(config.oauthClientId && config.oauthClientSecret);
+export const isGoogleDriveDestinationConfigured = (config: {
+  oauthClientId?: string;
+  oauthClientSecret?: string;
+}) => Boolean(config.oauthClientId && config.oauthClientSecret);

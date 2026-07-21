@@ -186,7 +186,11 @@ export const FolderPage: Component = () => {
       });
       createToast({ message: t('folders.delete.success'), type: 'success' });
       const parentId = folder?.parentId ?? null;
-      navigate(parentId ? `/organizations/${params.organizationId}/folders/${parentId}` : `/organizations/${params.organizationId}/folders`);
+      navigate(
+        parentId
+          ? `/organizations/${params.organizationId}/folders/${parentId}`
+          : `/organizations/${params.organizationId}/folders`,
+      );
     },
     onError: (error) => {
       createToast({ message: getErrorMessage({ error }), type: 'error' });
@@ -318,11 +322,17 @@ export const FolderPage: Component = () => {
                 <div class="i-tabler-dots-vertical size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent class="w-48">
-                <DropdownMenuItem class="cursor-pointer" onClick={() => setIsCurrentFolderRenameOpen(true)}>
+                <DropdownMenuItem
+                  class="cursor-pointer"
+                  onClick={() => setIsCurrentFolderRenameOpen(true)}
+                >
                   <div class="i-tabler-pencil size-4 mr-2" />
                   <span>{t('folders.subfolders.actions.rename')}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem class="cursor-pointer text-red" onClick={handleDeleteCurrentFolder}>
+                <DropdownMenuItem
+                  class="cursor-pointer text-red"
+                  onClick={handleDeleteCurrentFolder}
+                >
                   <div class="i-tabler-trash size-4 mr-2" />
                   <span>{t('folders.subfolders.actions.delete')}</span>
                 </DropdownMenuItem>

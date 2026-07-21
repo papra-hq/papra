@@ -107,7 +107,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
 }
 
 export async function startApp() {
-  const logger = createLogger({ _namespace: 'app-server' });
+  const logger = createLogger({ namespace: 'app-server' });
 
   const { config } = await parseConfig({ env });
 

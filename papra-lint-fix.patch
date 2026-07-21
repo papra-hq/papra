@@ -1,0 +1,3104 @@
+diff --git a/.github/workflows/build-arm64.yml b/.github/workflows/build-arm64.yml
+index bea811c8..9c5d7552 100644
+--- a/.github/workflows/build-arm64.yml
++++ b/.github/workflows/build-arm64.yml
+@@ -29,27 +29,27 @@ name: build-arm64-image
+ on:
+   push:
+     branches: [main]
+-    tags: ["v*"]
++    tags: ['v*']
+   pull_request:
+     branches: [main]
+   workflow_dispatch:
+     inputs:
+       ref:
+-        description: "Git ref to build from"
++        description: 'Git ref to build from'
+         required: false
+-        default: "main"
++        default: 'main'
+       push:
+-        description: "Push the resulting image to ghcr.io"
++        description: 'Push the resulting image to ghcr.io'
+         required: false
+-        default: "true"
++        default: 'true'
+       no_cache:
+-        description: "Disable Docker layer cache (clean rebuild)"
++        description: 'Disable Docker layer cache (clean rebuild)'
+         required: false
+-        default: "false"
++        default: 'false'
+       skip_lint:
+-        description: "Skip the lint step"
++        description: 'Skip the lint step'
+         required: false
+-        default: "false"
++        default: 'false'
+ 
+ concurrency:
+   group: build-arm64-${{ github.ref }}
+diff --git a/CHANGES-backup-features.md b/CHANGES-backup-features.md
+index cd97379c..21e78f11 100644
+--- a/CHANGES-backup-features.md
++++ b/CHANGES-backup-features.md
+@@ -35,6 +35,7 @@ This document logs all changes made to the Papra backup system, including **bug
+ **Root Cause:** The `handleRunNow` function called `invalidateRuns()` which marks the TanStack Query as stale but doesn't immediately trigger a refetch. The backup operation is asynchronous (fire-and-forget on the server), so status transitions from `pending` → `uploading` → `succeeded`/`failed` happen after the initial API response, but the UI wasn't polling to check for updates.
+ 
+ **Solution:** Implemented automatic polling mechanism:
++
+ - Immediately refetch after triggering backup to show pending state
+ - Poll every 2 seconds to check for status updates
+ - Automatically stop polling when all backups complete
+@@ -42,6 +43,7 @@ This document logs all changes made to the Papra backup system, including **bug
+ - Button disables while backup is running or polling is active
+ 
+ **Files:**
++
+ - `apps/papra-client/src/modules/backups/pages/backups.page.tsx`
+ 
+ ---
+@@ -55,6 +57,7 @@ This document logs all changes made to the Papra backup system, including **bug
+ **Solution:** Added local driver to the registry and type system.
+ 
+ **Files:**
++
+ - `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts`
+ - `apps/papra-client/src/modules/backups/backups.types.ts`
+ 
+@@ -69,6 +72,7 @@ This document logs all changes made to the Papra backup system, including **bug
+ **Solution:** Changed the redirect URL to go to the home page (`/`) instead of the backups page with query parameters. This prevents the 404 while still maintaining a clean OAuth flow.
+ 
+ **Files:**
++
+ - `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts`
+ 
+ ---
+@@ -76,9 +80,11 @@ This document logs all changes made to the Papra backup system, including **bug
+ ## 1. Incremental Backups
+ 
+ ### Overview
++
+ Only backs up new or changed documents instead of all documents every time.
+ 
+ ### Motivation
++
+ - Reduces backup size and time significantly
+ - Reduces bandwidth usage
+ - Reduces storage costs
+@@ -87,12 +93,14 @@ Only backs up new or changed documents instead of all documents every time.
+ ### Implementation
+ 
+ #### Database Schema
++
+ - Added `documentSha256HashesJson` column to `backup_runs` table
+ - Type: `TEXT` (JSON array of strings)
+ - Stores SHA256 hashes of all documents included in that backup run
+ - Nullable for backward compatibility with existing runs
+ 
+ #### Logic Flow
++
+ ```
+ 1. Get last successful backup run for this destination
+    ↓
+@@ -109,26 +117,27 @@ Only backs up new or changed documents instead of all documents every time.
+ 
+ #### Key Design Decisions
+ 
+-| Decision | Rationale |
+-|----------|-----------|
+-| Use SHA256 hashes | Already computed and stored for each document (`originalSha256Hash`) |
+-| Store hashes in DB | Transactionally consistent, survives restarts, queryable |
+-| JSON array format | Simple, human-readable, easy to serialize/deserialize |
+-| Filter at document fetch | Efficient: only fetch documents we need to back up |
+-| First backup = full | No previous hashes → include all documents |
++| Decision                 | Rationale                                                            |
++| ------------------------ | -------------------------------------------------------------------- |
++| Use SHA256 hashes        | Already computed and stored for each document (`originalSha256Hash`) |
++| Store hashes in DB       | Transactionally consistent, survives restarts, queryable             |
++| JSON array format        | Simple, human-readable, easy to serialize/deserialize                |
++| Filter at document fetch | Efficient: only fetch documents we need to back up                   |
++| First backup = full      | No previous hashes → include all documents                           |
+ 
+ #### Edge Cases Handled
+ 
+-| Scenario | Behavior |
+-|----------|----------|
+-| First backup for destination | No previous hashes → full backup |
+-| Previous backup failed | Only succeeded runs are considered |
+-| Document deleted since last backup | Not in document list → not backed up (correct) |
+-| Document unchanged | Hash matches → excluded from backup |
+-| Document updated | New hash → included in backup |
+-| Migration not run yet | Column is nullable → gracefully handles old runs |
++| Scenario                           | Behavior                                         |
++| ---------------------------------- | ------------------------------------------------ |
++| First backup for destination       | No previous hashes → full backup                 |
++| Previous backup failed             | Only succeeded runs are considered               |
++| Document deleted since last backup | Not in document list → not backed up (correct)   |
++| Document unchanged                 | Hash matches → excluded from backup              |
++| Document updated                   | New hash → included in backup                    |
++| Migration not run yet              | Column is nullable → gracefully handles old runs |
+ 
+ ### Files Changed
++
+ - `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts` (NEW)
+ - `apps/papra-server/src/migrations/migrations.registry.ts`
+ - `apps/papra-server/src/modules/backups/backups.table.ts`
+@@ -140,9 +149,11 @@ Only backs up new or changed documents instead of all documents every time.
+ ## 2. Backup Verification
+ 
+ ### Overview
++
+ Validates backup integrity by re-computing document hashes and comparing against stored hashes.
+ 
+ ### Motivation
++
+ - Detect corrupted backup files (bitrot, truncated downloads, storage errors)
+ - Verify before restore to avoid restoring corrupted data
+ - Provide confidence that backups are intact
+@@ -150,11 +161,13 @@ Validates backup integrity by re-computing document hashes and comparing against
+ ### Implementation
+ 
+ #### API Endpoint
++
+ ```
+ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verify
+ ```
+ 
+ #### Logic Flow
++
+ ```
+ 1. Fetch run and destination from database
+    ↓
+@@ -173,6 +186,7 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
+ ```
+ 
+ #### Response Format
++
+ ```typescript
+ {
+   valid: boolean;              // Overall result
+@@ -185,20 +199,22 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
+ 
+ #### Key Design Decisions
+ 
+-| Decision | Rationale |
+-|----------|-----------|
++| Decision                  | Rationale                                            |
++| ------------------------- | ---------------------------------------------------- |
+ | Per-document verification | Granular: know exactly which documents are corrupted |
+-| Use manifest hashes | Already part of backup, no additional metadata |
+-| Re-compute from archive | Self-contained: doesn't need original documents |
+-| SHA256 | Same algorithm as original hash computation |
+-| Only for succeeded runs | Failed/pending runs can't be verified reliably |
++| Use manifest hashes       | Already part of backup, no additional metadata       |
++| Re-compute from archive   | Self-contained: doesn't need original documents      |
++| SHA256                    | Same algorithm as original hash computation          |
++| Only for succeeded runs   | Failed/pending runs can't be verified reliably       |
+ 
+ #### Bug Fix in Implementation
++
+ **Initial Bug:** Used `Object.keys(unpackedFiles)` but `unpackedFiles` is a `Map<string, Buffer>`, not a plain object. `Object.keys()` on a Map returns empty array.
+ 
+ **Fix:** Changed to `Array.from(unpackedFiles.keys())` to correctly iterate Map keys.
+ 
+ ### Files Changed
++
+ - `apps/papra-server/src/modules/backups/backups.packager.service.ts`
+ - `apps/papra-server/src/modules/backups/backups.usecases.ts`
+ - `apps/papra-server/src/modules/backups/backups.routes.ts`
+@@ -210,9 +226,11 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
+ ## 3. Retention Policies
+ 
+ ### Overview
++
+ Automatically delete old backup runs after a configurable number of days.
+ 
+ ### Motivation
++
+ - Prevent unlimited storage growth
+ - Clean up old backups automatically
+ - Configurable per-installation
+@@ -220,20 +238,25 @@ Automatically delete old backup runs after a configurable number of days.
+ ### Implementation
+ 
+ #### Configuration
++
+ New environment variable:
++
+ ```
+ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
+ ```
++
+ - Set to `0` or `undefined` to disable
+ - Only affects succeeded backup runs
+ - Default: disabled (undefined)
+ 
+ #### Scheduled Task
++
+ - **Task Name:** `backups.retention-cleanup`
+ - **Schedule:** Daily at 2 AM (cron: `0 2 * * *`)
+ - **Trigger:** Server startup (if enabled)
+ 
+ #### Logic Flow
++
+ ```
+ 1. Check if enabled (config.backups.retentionDays > 0)
+    ↓
+@@ -253,16 +276,17 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
+ 
+ #### Key Design Decisions
+ 
+-| Decision | Rationale |
+-|----------|-----------|
+-| Environment variable | Per-server configuration, easy to change |
+-| Daily schedule | Regular cleanup without excessive frequency |
+-| Only succeeded runs | Failed runs might need investigation |
+-| Remote deletion first | Clean up storage before DB (best effort) |
+-| Graceful failure | If remote deletion fails, still delete DB record |
+-| Disabled by default | Backward compatible, opt-in feature |
++| Decision              | Rationale                                        |
++| --------------------- | ------------------------------------------------ |
++| Environment variable  | Per-server configuration, easy to change         |
++| Daily schedule        | Regular cleanup without excessive frequency      |
++| Only succeeded runs   | Failed runs might need investigation             |
++| Remote deletion first | Clean up storage before DB (best effort)         |
++| Graceful failure      | If remote deletion fails, still delete DB record |
++| Disabled by default   | Backward compatible, opt-in feature              |
+ 
+ ### Files Changed
++
+ - `apps/papra-server/src/modules/backups/backups.config.ts`
+ - `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` (NEW)
+ - `apps/papra-server/src/modules/tasks/tasks.definitions.ts`
+@@ -272,27 +296,29 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
+ ## Files Changed
+ 
+ ### New Files (4)
+-| File | Purpose |
+-|------|---------|
+-| `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts` | Database migration for incremental backups |
+-| `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` | Scheduled task for retention cleanup |
++
++| File                                                                           | Purpose                                    |
++| ------------------------------------------------------------------------------ | ------------------------------------------ |
++| `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts`  | Database migration for incremental backups |
++| `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` | Scheduled task for retention cleanup       |
+ 
+ ### Modified Files (14)
+-| File | Changes |
+-|------|---------|
+-| `apps/papra-server/src/migrations/migrations.registry.ts` | Registered new migration |
+-| `apps/papra-server/src/modules/backups/backups.config.ts` | Added `retentionDays` config |
+-| `apps/papra-server/src/modules/backups/backups.table.ts` | Added `documentSha256HashesJson` column |
+-| `apps/papra-server/src/modules/backups/backups.repository.ts` | Added `getLastSuccessfulRunForDestination`, updated `updateRunStatus` |
+-| `apps/papra-server/src/modules/backups/backups.usecases.ts` | Incremental backups logic, verification usecase, store hashes |
+-| `apps/papra-server/src/modules/backups/backups.routes.ts` | Added verification route |
+-| `apps/papra-server/src/modules/backups/backups.packager.service.ts` | Added `computeHash` method |
+-| `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts` | Registered local driver |
+-| `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts` | Fixed OAuth redirect to home page |
+-| `apps/papra-server/src/modules/tasks/tasks.definitions.ts` | Registered retention task |
+-| `apps/papra-client/src/modules/backups/backups.types.ts` | Added `'local'` to `BackupDriverName` |
+-| `apps/papra-client/src/modules/backups/backups.services.ts` | Added `verifyBackupRun` service |
+-| `apps/papra-client/src/modules/backups/pages/backups.page.tsx` | Polling, Verify button, UI updates |
++
++| File                                                                                | Changes                                                               |
++| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
++| `apps/papra-server/src/migrations/migrations.registry.ts`                           | Registered new migration                                              |
++| `apps/papra-server/src/modules/backups/backups.config.ts`                           | Added `retentionDays` config                                          |
++| `apps/papra-server/src/modules/backups/backups.table.ts`                            | Added `documentSha256HashesJson` column                               |
++| `apps/papra-server/src/modules/backups/backups.repository.ts`                       | Added `getLastSuccessfulRunForDestination`, updated `updateRunStatus` |
++| `apps/papra-server/src/modules/backups/backups.usecases.ts`                         | Incremental backups logic, verification usecase, store hashes         |
++| `apps/papra-server/src/modules/backups/backups.routes.ts`                           | Added verification route                                              |
++| `apps/papra-server/src/modules/backups/backups.packager.service.ts`                 | Added `computeHash` method                                            |
++| `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts`                 | Registered local driver                                               |
++| `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts` | Fixed OAuth redirect to home page                                     |
++| `apps/papra-server/src/modules/tasks/tasks.definitions.ts`                          | Registered retention task                                             |
++| `apps/papra-client/src/modules/backups/backups.types.ts`                            | Added `'local'` to `BackupDriverName`                                 |
++| `apps/papra-client/src/modules/backups/backups.services.ts`                         | Added `verifyBackupRun` service                                       |
++| `apps/papra-client/src/modules/backups/pages/backups.page.tsx`                      | Polling, Verify button, UI updates                                    |
+ 
+ **Total:** 18 files changed (2 new, 16 modified), ~470 lines added/modified
+ 
+@@ -301,6 +327,7 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
+ ## Migration & Deployment
+ 
+ ### Step 1: Run Database Migration
++
+ ```bash
+ # From project root
+ pnpm --filter papra-server migrate:up
+@@ -312,6 +339,7 @@ cd apps/papra-server && pnpm migrate:up
+ This applies migration `0029-incremental-backups.migration.ts` which adds the `documentSha256HashesJson` column to the `backup_runs` table.
+ 
+ ### Step 2: Configure (Optional)
++
+ ```bash
+ # In your .env file
+ export BACKUPS_RETENTION_DAYS=30  # Enable retention: delete backups after 30 days
+@@ -319,6 +347,7 @@ export BACKUPS_IS_SCHEDULER_ENABLED=true  # Make sure scheduler is enabled
+ ```
+ 
+ ### Step 3: Restart Server
++
+ ```bash
+ # Stop and restart your Papra server
+ pnpm --filter papra-server restart
+@@ -327,6 +356,7 @@ pnpm dev
+ ```
+ 
+ ### Step 4: Verify
++
+ 1. Go to Settings → Backups
+ 2. Click "Run Now" for a destination
+ 3. Observe: status automatically updates from pending → uploading → succeeded
+@@ -340,6 +370,7 @@ pnpm dev
+ ### Manual Testing Checklist
+ 
+ #### Incremental Backups
++
+ - [ ] First backup for a destination includes all documents
+ - [ ] Second backup (no changes) includes 0 documents
+ - [ ] Add a new document → next backup includes only that document
+@@ -348,6 +379,7 @@ pnpm dev
+ - [ ] Check server logs for `isIncremental: true/false`
+ 
+ #### Backup Verification
++
+ - [ ] Verify button only appears for succeeded runs
+ - [ ] Verification succeeds for valid backups
+ - [ ] Verification shows correct document counts
+@@ -355,12 +387,14 @@ pnpm dev
+ - [ ] Verify button disables during verification
+ 
+ #### Retention Policies
++
+ - [ ] With `BACKUPS_RETENTION_DAYS=1`, old backups deleted next day at 2 AM
+ - [ ] With `BACKUPS_RETENTION_DAYS=undefined`, no backups deleted
+ - [ ] Failed/pending backups are NOT deleted
+ - [ ] Check server logs for cleanup results
+ 
+ #### Bug Fixes
++
+ - [ ] "Run Now" button disables while running
+ - [ ] Status updates automatically without page refresh
+ - [ ] Local driver backups work without server crash
+@@ -372,11 +406,13 @@ pnpm dev
+ If issues arise, you can rollback:
+ 
+ ### Option 1: Revert Code Changes
++
+ ```bash
+ git checkout HEAD -- .
+ ```
+ 
+ ### Option 2: Rollback Migration
++
+ ```bash
+ pnpm --filter papra-server migrate:down
+ ```
+@@ -511,6 +547,7 @@ See `DOCKER-README.md` for complete documentation.
+ ## Migration & Deployment Notes
+ 
+ After implementing all backup features, remember to:
++
+ 1. Run the migration: `pnpm --filter papra-server migrate:up`
+ 2. Restart the server
+ 3. Test all features including:
+@@ -522,4 +559,4 @@ After implementing all backup features, remember to:
+ 
+ ---
+ 
+-*This document was generated by Mistral Vibe for tracking changes to the Papra backup system. Updated with Docker setup information.*
++_This document was generated by Mistral Vibe for tracking changes to the Papra backup system. Updated with Docker setup information._
+diff --git a/DOCKER-README.md b/DOCKER-README.md
+index 5f0add7c..fc224fcd 100644
+--- a/DOCKER-README.md
++++ b/DOCKER-README.md
+@@ -151,19 +151,19 @@ curl http://localhost:1221/api/health
+ 
+ ### Required
+ 
+-| Variable | Description | Example |
+-|----------|-------------|---------|
+-| `AUTH_SECRET` | Authentication secret (min 32 chars) | `openssl rand -hex 48` |
+-| `APP_BASE_URL` | Base URL for your instance | `http://localhost:1221` |
++| Variable       | Description                          | Example                 |
++| -------------- | ------------------------------------ | ----------------------- |
++| `AUTH_SECRET`  | Authentication secret (min 32 chars) | `openssl rand -hex 48`  |
++| `APP_BASE_URL` | Base URL for your instance           | `http://localhost:1221` |
+ 
+ ### Optional but Recommended
+ 
+-| Variable | Description | Default | Example |
+-|----------|-------------|---------|---------|
+-| `BACKUPS_KEK` | Backup encryption key | - | `openssl rand -hex 32` |
+-| `BACKUPS_RETENTION_DAYS` | Days to keep backups | - | `30` |
+-| `AUTH_FIRST_USER_AS_ADMIN` | First user is admin | `true` | `true` |
+-| `AUTH_IS_REGISTRATION_ENABLED` | Allow registration | `true` | `true` |
++| Variable                       | Description           | Default | Example                |
++| ------------------------------ | --------------------- | ------- | ---------------------- |
++| `BACKUPS_KEK`                  | Backup encryption key | -       | `openssl rand -hex 32` |
++| `BACKUPS_RETENTION_DAYS`       | Days to keep backups  | -       | `30`                   |
++| `AUTH_FIRST_USER_AS_ADMIN`     | First user is admin   | `true`  | `true`                 |
++| `AUTH_IS_REGISTRATION_ENABLED` | Allow registration    | `true`  | `true`                 |
+ 
+ ### Database
+ 
+@@ -186,17 +186,17 @@ Note: Redirect URI must match what's configured in Google Cloud Console.
+ 
+ The following volumes are recommended for persistent data:
+ 
+-| Volume | Purpose | Recommended Mount |
+-|--------|---------|-------------------|
+-| `/app/apps/papra-server/data` | SQLite database, backups metadata | Host directory |
+-| `/app/apps/papra-server/local-documents` | Document files | Host directory |
+-| `/app/apps/papra-server/ingestion` | Ingestion folder | Host directory |
++| Volume                                   | Purpose                           | Recommended Mount |
++| ---------------------------------------- | --------------------------------- | ----------------- |
++| `/app/apps/papra-server/data`            | SQLite database, backups metadata | Host directory    |
++| `/app/apps/papra-server/local-documents` | Document files                    | Host directory    |
++| `/app/apps/papra-server/ingestion`       | Ingestion folder                  | Host directory    |
+ 
+ ## Ports
+ 
+ | Port | Protocol | Description |
+-|------|----------|-------------|
+-| 1221 | HTTP | API server |
++| ---- | -------- | ----------- |
++| 1221 | HTTP     | API server  |
+ 
+ ## Health Checks
+ 
+diff --git a/apps/papra-client/src/modules/auth/composables/use-session.composable.ts b/apps/papra-client/src/modules/auth/composables/use-session.composable.ts
+index 34c60c79..306ef8dd 100644
+--- a/apps/papra-client/src/modules/auth/composables/use-session.composable.ts
++++ b/apps/papra-client/src/modules/auth/composables/use-session.composable.ts
+@@ -3,8 +3,8 @@ import { getSession } from '../auth.services';
+ 
+ export function useSession() {
+   const sessionQuery = useQuery(() => ({
+-    _queryKey: ['auth', 'session'],
+-    _queryFn: async () => getSession(),
++    queryKey: ['auth', 'session'],
++    queryFn: async () => getSession(),
+   }));
+ 
+   const getUser = () => sessionQuery.data?.data?.user;
+diff --git a/apps/papra-client/src/modules/backups/backups.services.ts b/apps/papra-client/src/modules/backups/backups.services.ts
+index c6c520e1..503e5b11 100644
+--- a/apps/papra-client/src/modules/backups/backups.services.ts
++++ b/apps/papra-client/src/modules/backups/backups.services.ts
+@@ -1,5 +1,11 @@
+ import type { AsDto } from '../shared/http/http-client.types';
+-import type { BackupDestination, BackupDriverInfo, BackupDriverName, BackupRun, BackupSchedule } from './backups.types';
++import type {
++  BackupDestination,
++  BackupDriverInfo,
++  BackupDriverName,
++  BackupRun,
++  BackupSchedule,
++} from './backups.types';
+ import { apiClient } from '../shared/http/api-client';
+ import { getFormData } from '../shared/http/http-client.models';
+ 
+@@ -69,7 +75,13 @@ export async function createBackupDestination({
+ 
+ // Google Drive doesn't take a credentials form — it's OAuth. This kicks off the
+ // flow; the caller should redirect window.location to the returned URL.
+-export async function startGoogleDriveConnect({ organizationId, displayName }: { organizationId: string; displayName?: string }) {
++export async function startGoogleDriveConnect({
++  organizationId,
++  displayName,
++}: {
++  organizationId: string;
++  displayName?: string;
++}) {
+   return apiClient<{ authorizationUrl: string }>({
+     path: `/api/organizations/${organizationId}/backups/google-drive/connect`,
+     method: 'POST',
+@@ -117,14 +129,26 @@ export async function updateBackupSchedule({
+   });
+ }
+ 
+-export async function deleteBackupDestination({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
++export async function deleteBackupDestination({
++  organizationId,
++  destinationId,
++}: {
++  organizationId: string;
++  destinationId: string;
++}) {
+   return apiClient<{ deleted: boolean }>({
+     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}`,
+     method: 'DELETE',
+   });
+ }
+ 
+-export async function listBackupRuns({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
++export async function listBackupRuns({
++  organizationId,
++  destinationId,
++}: {
++  organizationId: string;
++  destinationId: string;
++}) {
+   const { runs } = await apiClient<{ runs: AsDto<BackupRun>[] }>({
+     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/runs`,
+     method: 'GET',
+@@ -132,7 +156,13 @@ export async function listBackupRuns({ organizationId, destinationId }: { organi
+   return { runs: runs.map(coerceRunDates) };
+ }
+ 
+-export async function runBackupNow({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
++export async function runBackupNow({
++  organizationId,
++  destinationId,
++}: {
++  organizationId: string;
++  destinationId: string;
++}) {
+   return apiClient<{ runId: string }>({
+     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/runs`,
+     method: 'POST',
+@@ -154,8 +184,16 @@ export async function deleteBackupRun({
+   });
+ }
+ 
+-export async function listRemoteBackupFiles({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
+-  return apiClient<{ files: { remoteFileId: string; name: string; size?: number; modifiedAt?: string }[] }>({
++export async function listRemoteBackupFiles({
++  organizationId,
++  destinationId,
++}: {
++  organizationId: string;
++  destinationId: string;
++}) {
++  return apiClient<{
++    files: { remoteFileId: string; name: string; size?: number; modifiedAt?: string }[];
++  }>({
+     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/remote-files`,
+     method: 'GET',
+   });
+@@ -204,7 +242,13 @@ export async function restoreBackupRun({
+ 
+ // No destination, no credentials, no connection of any kind — you already have
+ // the backup file (copied off wherever) and just upload it directly.
+-export async function restoreFromUploadedFile({ organizationId, file }: { organizationId: string; file: File }) {
++export async function restoreFromUploadedFile({
++  organizationId,
++  file,
++}: {
++  organizationId: string;
++  file: File;
++}) {
+   return apiClient<{
+     restoredDocumentsCount: number;
+     untrashedDocumentsCount: number;
+diff --git a/apps/papra-client/src/modules/backups/pages/backups.page.tsx b/apps/papra-client/src/modules/backups/pages/backups.page.tsx
+index 5bc51711..4c5e0ec9 100644
+--- a/apps/papra-client/src/modules/backups/pages/backups.page.tsx
++++ b/apps/papra-client/src/modules/backups/pages/backups.page.tsx
+@@ -10,12 +10,32 @@ import { downloadFile } from '@/modules/shared/files/download';
+ import { Button } from '@/modules/ui/components/button';
+ import { Card, CardContent, CardHeader, CardTitle } from '@/modules/ui/components/card';
+ import { Badge } from '@/modules/ui/components/badge';
+-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/modules/ui/components/dialog';
++import {
++  Dialog,
++  DialogContent,
++  DialogFooter,
++  DialogHeader,
++  DialogTitle,
++  DialogTrigger,
++} from '@/modules/ui/components/dialog';
+ import { EmptyState } from '@/modules/ui/components/empty';
+-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/modules/ui/components/select';
++import {
++  Select,
++  SelectContent,
++  SelectItem,
++  SelectTrigger,
++  SelectValue,
++} from '@/modules/ui/components/select';
+ import { createToast } from '@/modules/ui/components/sonner';
+ import { Switch, SwitchControl, SwitchThumb } from '@/modules/ui/components/switch';
+-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/modules/ui/components/table';
++import {
++  Table,
++  TableBody,
++  TableCell,
++  TableHead,
++  TableHeader,
++  TableRow,
++} from '@/modules/ui/components/table';
+ import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
+ import {
+   createBackupDestination,
+@@ -85,7 +105,9 @@ export const BackupsSettingsPage: Component = () => {
+   }));
+ 
+   const invalidateDestinations = () =>
+-    queryClient.invalidateQueries({ queryKey: ['organizations', organizationId(), 'backups', 'destinations'] });
++    queryClient.invalidateQueries({
++      queryKey: ['organizations', organizationId(), 'backups', 'destinations'],
++    });
+ 
+   const [isAddDialogOpen, setIsAddDialogOpen] = createSignal(Boolean(searchParams.connected));
+ 
+@@ -189,12 +211,15 @@ const RecoverFromFileDialog: Component<{ organizationId: string }> = (props) =>
+ 
+     const isConfirmed = await confirm({
+       title: 'Restore this backup file?',
+-      message: 'Documents will be re-imported. Documents that already exist (by content hash) are skipped or untrashed.',
++      message:
++        'Documents will be re-imported. Documents that already exist (by content hash) are skipped or untrashed.',
+     });
+     if (!isConfirmed) return;
+ 
+     setIsRestoring(true);
+-    const [result, error] = await safely(restoreFromUploadedFile({ organizationId: props.organizationId, file: selectedFile }));
++    const [result, error] = await safely(
++      restoreFromUploadedFile({ organizationId: props.organizationId, file: selectedFile }),
++    );
+     setIsRestoring(false);
+     if (error) {
+       createToast({ type: 'error', message: getErrorMessage({ error }) });
+@@ -202,9 +227,12 @@ const RecoverFromFileDialog: Component<{ organizationId: string }> = (props) =>
+     }
+     createToast({
+       type: 'success',
+-      message: `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents`
+-        + (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '')
+-        + (result.skippedDuplicatesCount ? ` (${result.skippedDuplicatesCount} already present)` : ''),
++      message:
++        `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents` +
++        (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '') +
++        (result.skippedDuplicatesCount
++          ? ` (${result.skippedDuplicatesCount} already present)`
++          : ''),
+     });
+     setIsOpen(false);
+     setFile(null);
+@@ -212,15 +240,18 @@ const RecoverFromFileDialog: Component<{ organizationId: string }> = (props) =>
+ 
+   return (
+     <Dialog open={isOpen()} onOpenChange={setIsOpen}>
+-      <DialogTrigger as={Button} variant="outline">Recover from a file…</DialogTrigger>
++      <DialogTrigger as={Button} variant="outline">
++        Recover from a file…
++      </DialogTrigger>
+       <DialogContent>
+         <DialogHeader>
+           <DialogTitle>Recover from a backup file</DialogTitle>
+         </DialogHeader>
+ 
+         <p class="text-sm text-muted-foreground">
+-          Already have a backup file (a <code>.papra-backup</code> you copied off your phone, an SD card,
+-          wherever)? Upload it directly — no destination, no credentials, no connection needed.
++          Already have a backup file (a <code>.papra-backup</code> you copied off your phone, an SD
++          card, wherever)? Upload it directly — no destination, no credentials, no connection
++          needed.
+         </p>
+ 
+         <input
+@@ -266,7 +297,10 @@ const AddDestinationDialog: Component<{
+   const isFtp = createMemo(() => driver() === 'ftp');
+   const isLocal = createMemo(() => driver() === 'local');
+ 
+-  const buildCredentialsAndSettings = (): { credentials: Record<string, string>; settings: Record<string, unknown> } => {
++  const buildCredentialsAndSettings = (): {
++    credentials: Record<string, string>;
++    settings: Record<string, unknown>;
++  } => {
+     if (isWebdav()) {
+       return {
+         credentials: { username: username(), password: password() },
+@@ -288,7 +322,10 @@ const AddDestinationDialog: Component<{
+   const handleConnectGoogleDrive = async () => {
+     setIsSubmitting(true);
+     const [result, error] = await safely(
+-      startGoogleDriveConnect({ organizationId: props.organizationId, displayName: displayName() || 'Google Drive' }),
++      startGoogleDriveConnect({
++        organizationId: props.organizationId,
++        displayName: displayName() || 'Google Drive',
++      }),
+     );
+     setIsSubmitting(false);
+     if (error) {
+@@ -302,14 +339,22 @@ const AddDestinationDialog: Component<{
+     const { credentials, settings } = buildCredentialsAndSettings();
+     setIsTesting(true);
+     const [result, error] = await safely(
+-      testBackupDestinationConnection({ organizationId: props.organizationId, driver: driver(), credentials, settings }),
++      testBackupDestinationConnection({
++        organizationId: props.organizationId,
++        driver: driver(),
++        credentials,
++        settings,
++      }),
+     );
+     setIsTesting(false);
+     if (error) {
+       createToast({ type: 'error', message: getErrorMessage({ error }) });
+       return;
+     }
+-    createToast({ type: 'success', message: `Connected${result.accountLabel ? ` as ${result.accountLabel}` : ''}` });
++    createToast({
++      type: 'success',
++      message: `Connected${result.accountLabel ? ` as ${result.accountLabel}` : ''}`,
++    });
+   };
+ 
+   const handleCreate = async () => {
+@@ -349,10 +394,16 @@ const AddDestinationDialog: Component<{
+               options={['google_drive', 'webdav', 'ftp', 'local'] as BackupDriverName[]}
+               value={driver()}
+               onChange={(v) => v && setDriver(v)}
+-              itemComponent={(itemProps) => <SelectItem item={itemProps.item}>{DRIVER_LABELS[itemProps.item.rawValue]}</SelectItem>}
++              itemComponent={(itemProps) => (
++                <SelectItem item={itemProps.item}>
++                  {DRIVER_LABELS[itemProps.item.rawValue]}
++                </SelectItem>
++              )}
+             >
+               <SelectTrigger>
+-                <SelectValue<BackupDriverName>>{(state) => DRIVER_LABELS[state.selectedOption()]}</SelectValue>
++                <SelectValue<BackupDriverName>>
++                  {(state) => DRIVER_LABELS[state.selectedOption()]}
++                </SelectValue>
+               </SelectTrigger>
+               <SelectContent />
+             </Select>
+@@ -365,7 +416,8 @@ const AddDestinationDialog: Component<{
+ 
+           <Show when={isGoogleDrive()}>
+             <p class="text-sm text-muted-foreground">
+-              You'll be redirected to Google to grant Papra access to a dedicated folder in your Drive.
++              You'll be redirected to Google to grant Papra access to a dedicated folder in your
++              Drive.
+             </p>
+           </Show>
+ 
+@@ -377,12 +429,16 @@ const AddDestinationDialog: Component<{
+                 value={preset()}
+                 onChange={(v) => v && setPreset(v)}
+                 itemComponent={(itemProps) => (
+-                  <SelectItem item={itemProps.item}>{itemProps.item.rawValue === 'nextcloud' ? 'Nextcloud' : 'Generic WebDAV'}</SelectItem>
++                  <SelectItem item={itemProps.item}>
++                    {itemProps.item.rawValue === 'nextcloud' ? 'Nextcloud' : 'Generic WebDAV'}
++                  </SelectItem>
+                 )}
+               >
+                 <SelectTrigger>
+                   <SelectValue<'generic' | 'nextcloud'>>
+-                    {(state) => (state.selectedOption() === 'nextcloud' ? 'Nextcloud' : 'Generic WebDAV')}
++                    {(state) =>
++                      state.selectedOption() === 'nextcloud' ? 'Nextcloud' : 'Generic WebDAV'
++                    }
+                   </SelectValue>
+                 </SelectTrigger>
+                 <SelectContent />
+@@ -390,7 +446,13 @@ const AddDestinationDialog: Component<{
+             </div>
+             <TextFieldRoot value={baseUrl()} onChange={setBaseUrl}>
+               <TextFieldLabel>Server URL</TextFieldLabel>
+-              <TextField placeholder={preset() === 'nextcloud' ? 'https://cloud.example.com' : 'https://dav.example.com/remote.php/dav'} />
++              <TextField
++                placeholder={
++                  preset() === 'nextcloud'
++                    ? 'https://cloud.example.com'
++                    : 'https://dav.example.com/remote.php/dav'
++                }
++              />
+             </TextFieldRoot>
+             <TextFieldRoot value={username()} onChange={setUsername}>
+               <TextFieldLabel>Username</TextFieldLabel>
+@@ -421,13 +483,20 @@ const AddDestinationDialog: Component<{
+               <TextFieldLabel>Password</TextFieldLabel>
+               <TextField type="password" />
+             </TextFieldRoot>
+-            <Switch class="flex items-center gap-3" checked={isFtpsEnabled()} onChange={setIsFtpsEnabled}>
+-              <SwitchControl><SwitchThumb /></SwitchControl>
++            <Switch
++              class="flex items-center gap-3"
++              checked={isFtpsEnabled()}
++              onChange={setIsFtpsEnabled}
++            >
++              <SwitchControl>
++                <SwitchThumb />
++              </SwitchControl>
+               <span class="text-sm">Use FTPS (TLS)</span>
+             </Switch>
+             <p class="text-xs text-muted-foreground -mt-2">
+-              Leave off for a plain local-network FTP server (e.g. on your own LAN). Turn on only if your
+-              FTP server actually supports explicit TLS — most home/self-hosted FTP servers don't.
++              Leave off for a plain local-network FTP server (e.g. on your own LAN). Turn on only if
++              your FTP server actually supports explicit TLS — most home/self-hosted FTP servers
++              don't.
+             </p>
+           </Show>
+ 
+@@ -437,9 +506,9 @@ const AddDestinationDialog: Component<{
+               <TextField placeholder="/storage/emulated/0/papra-backups" />
+             </TextFieldRoot>
+             <p class="text-xs text-muted-foreground -mt-2">
+-              A path on the server's own filesystem — created automatically if it doesn't exist. Useful for
+-              backing up to a second mount (e.g. an SD card) or a folder something else already syncs
+-              (Syncthing, rclone, etc). No credentials needed.
++              A path on the server's own filesystem — created automatically if it doesn't exist.
++              Useful for backing up to a second mount (e.g. an SD card) or a folder something else
++              already syncs (Syncthing, rclone, etc). No credentials needed.
+             </p>
+           </Show>
+         </div>
+@@ -450,7 +519,10 @@ const AddDestinationDialog: Component<{
+               {isTesting() ? 'Testing…' : 'Test connection'}
+             </Button>
+           </Show>
+-          <Button disabled={isSubmitting()} onClick={isGoogleDrive() ? handleConnectGoogleDrive : handleCreate}>
++          <Button
++            disabled={isSubmitting()}
++            onClick={isGoogleDrive() ? handleConnectGoogleDrive : handleCreate}
++          >
+             {isGoogleDrive() ? 'Continue with Google' : 'Add destination'}
+           </Button>
+         </DialogFooter>
+@@ -468,34 +540,61 @@ const DestinationCard: Component<{
+ }> = (props) => {
+   const queryClient = useQueryClient();
+   const [isRunning, setIsRunning] = createSignal(false);
+-  const [pollingInterval, setPollingInterval] = createSignal<NodeJS.Timeout | null>(null);
++  const [pollingInterval, setPollingInterval] = createSignal<ReturnType<typeof setInterval> | null>(
++    null,
++  );
+ 
+   const runsQuery = useQuery(() => ({
+-    queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
+-    queryFn: () => listBackupRuns({ organizationId: props.organizationId, destinationId: props.destination.id }),
++    queryKey: [
++      'organizations',
++      props.organizationId,
++      'backups',
++      'destinations',
++      props.destination.id,
++      'runs',
++    ],
++    queryFn: () =>
++      listBackupRuns({ organizationId: props.organizationId, destinationId: props.destination.id }),
+   }));
+ 
+   const invalidateRuns = () =>
+     queryClient.invalidateQueries({
+-      queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
++      queryKey: [
++        'organizations',
++        props.organizationId,
++        'backups',
++        'destinations',
++        props.destination.id,
++        'runs',
++      ],
+     });
+ 
+   const refetchRuns = () =>
+     queryClient.refetchQueries({
+-      queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'runs'],
++      queryKey: [
++        'organizations',
++        props.organizationId,
++        'backups',
++        'destinations',
++        props.destination.id,
++        'runs',
++      ],
+     });
+ 
+   // Clean up polling interval when component unmounts
+   onCleanup(() => {
+-    if (pollingInterval()) {
+-      clearInterval(pollingInterval());
++    const interval = pollingInterval();
++    if (interval) {
++      clearInterval(interval);
+     }
+   });
+ 
+   const [days, setDays] = createSignal(new Set(props.destination.schedule.days));
+   const [hour, setHour] = createSignal(props.destination.schedule.hour ?? 3);
+   const [minute, setMinute] = createSignal(props.destination.schedule.minute ?? 0);
+-  const [isScheduleEnabled, setIsScheduleEnabled] = createSignal(props.destination.schedule.isEnabled);
++  const [isScheduleEnabled, setIsScheduleEnabled] = createSignal(
++    props.destination.schedule.isEnabled,
++  );
+ 
+   const toggleDay = (day: number) => {
+     const next = new Set(days());
+@@ -532,23 +631,26 @@ const DestinationCard: Component<{
+ 
+   const handleRunNow = async () => {
+     // Clear any existing polling interval
+-    if (pollingInterval()) {
+-      clearInterval(pollingInterval());
++    const existingInterval = pollingInterval();
++    if (existingInterval) {
++      clearInterval(existingInterval);
+       setPollingInterval(null);
+     }
+ 
+     setIsRunning(true);
+-    const [, error] = await safely(runBackupNow({ organizationId: props.organizationId, destinationId: props.destination.id }));
++    const [, error] = await safely(
++      runBackupNow({ organizationId: props.organizationId, destinationId: props.destination.id }),
++    );
+     setIsRunning(false);
+     if (error) {
+       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
+       return;
+     }
+     createToast({ type: 'success', message: 'Backup started' });
+-    
++
+     // Immediately refetch to show the pending run
+     await refetchRuns();
+-    
++
+     // Start polling to update status until backup completes
+     const interval = setInterval(() => {
+       refetchRuns().then(() => {
+@@ -560,14 +662,17 @@ const DestinationCard: Component<{
+       });
+     }, 2000);
+     setPollingInterval(interval);
+-    
++
+     // Clear polling after a reasonable time (e.g., 5 minutes) as a fallback
+-    setTimeout(() => {
+-      if (pollingInterval() === interval) {
+-        clearInterval(interval);
+-        setPollingInterval(null);
+-      }
+-    }, 5 * 60 * 1000);
++    setTimeout(
++      () => {
++        if (pollingInterval() === interval) {
++          clearInterval(interval);
++          setPollingInterval(null);
++        }
++      },
++      5 * 60 * 1000,
++    );
+   };
+ 
+   const handleDeleteDestination = async () => {
+@@ -577,7 +682,10 @@ const DestinationCard: Component<{
+     });
+     if (!isConfirmed) return;
+     const [, error] = await safely(
+-      deleteBackupDestination({ organizationId: props.organizationId, destinationId: props.destination.id }),
++      deleteBackupDestination({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++      }),
+     );
+     if (error) {
+       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
+@@ -587,10 +695,17 @@ const DestinationCard: Component<{
+   };
+ 
+   const handleDeleteRun = async (run: BackupRun) => {
+-    const isConfirmed = await props.confirm({ title: 'Delete this backup?', message: 'This also removes the file from the remote destination.' });
++    const isConfirmed = await props.confirm({
++      title: 'Delete this backup?',
++      message: 'This also removes the file from the remote destination.',
++    });
+     if (!isConfirmed) return;
+     const [, error] = await safely(
+-      deleteBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
++      deleteBackupRun({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++        runId: run.id,
++      }),
+     );
+     if (error) {
+       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
+@@ -604,20 +719,27 @@ const DestinationCard: Component<{
+   const handleVerifyRun = async (run: BackupRun) => {
+     setVerifyingRunId(run.id);
+     const [result, error] = await safely(
+-      verifyBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
++      verifyBackupRun({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++        runId: run.id,
++      }),
+     );
+     setVerifyingRunId(null);
+     if (error) {
+       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
+       return;
+     }
+-    
++
+     if (result.valid) {
+-      createToast({ type: 'success', message: `Backup verified: ${result.validDocuments}/${result.totalDocuments} documents intact` });
++      createToast({
++        type: 'success',
++        message: `Backup verified: ${result.validDocuments}/${result.totalDocuments} documents intact`,
++      });
+     } else {
+-      createToast({ 
+-        type: 'error', 
+-        message: `Backup verification failed: ${result.invalidDocuments} of ${result.totalDocuments} documents have integrity issues` 
++      createToast({
++        type: 'error',
++        message: `Backup verification failed: ${result.invalidDocuments} of ${result.totalDocuments} documents have integrity issues`,
+       });
+     }
+   };
+@@ -625,11 +747,16 @@ const DestinationCard: Component<{
+   const handleRestoreRun = async (run: BackupRun) => {
+     const isConfirmed = await props.confirm({
+       title: 'Restore this backup?',
+-      message: 'Documents from this backup will be re-imported. Documents that already exist (by content hash) are skipped.',
++      message:
++        'Documents from this backup will be re-imported. Documents that already exist (by content hash) are skipped.',
+     });
+     if (!isConfirmed) return;
+     const [result, error] = await safely(
+-      restoreBackupRun({ organizationId: props.organizationId, destinationId: props.destination.id, runId: run.id }),
++      restoreBackupRun({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++        runId: run.id,
++      }),
+     );
+     if (error) {
+       createToast({ type: 'error', message: props.getErrorMessage({ error }) });
+@@ -637,9 +764,12 @@ const DestinationCard: Component<{
+     }
+     createToast({
+       type: 'success',
+-      message: `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents`
+-        + (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '')
+-        + (result.skippedDuplicatesCount ? ` (${result.skippedDuplicatesCount} already present)` : ''),
++      message:
++        `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents` +
++        (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '') +
++        (result.skippedDuplicatesCount
++          ? ` (${result.skippedDuplicatesCount} already present)`
++          : ''),
+     });
+   };
+ 
+@@ -661,10 +791,16 @@ const DestinationCard: Component<{
+             confirm={props.confirm}
+             onRestored={invalidateRuns}
+           />
+-          <Button size="sm" onClick={handleRunNow} disabled={isRunning() || hasPendingOrUploadingRuns()}>
+-  {isRunning() ? 'Running...' : 'Run now'}
+-</Button>
+-          <Button size="sm" variant="destructive" onClick={handleDeleteDestination}>Remove</Button>
++          <Button
++            size="sm"
++            onClick={handleRunNow}
++            disabled={isRunning() || hasPendingOrUploadingRuns()}
++          >
++            {isRunning() ? 'Running...' : 'Run now'}
++          </Button>
++          <Button size="sm" variant="destructive" onClick={handleDeleteDestination}>
++            Remove
++          </Button>
+         </div>
+       </CardHeader>
+       <CardContent class="flex flex-col gap-4">
+@@ -677,7 +813,9 @@ const DestinationCard: Component<{
+               saveSchedule({ isEnabled: checked });
+             }}
+           >
+-            <SwitchControl><SwitchThumb /></SwitchControl>
++            <SwitchControl>
++              <SwitchThumb />
++            </SwitchControl>
+             <span class="text-sm font-medium">Automatic backups</span>
+           </Switch>
+ 
+@@ -718,12 +856,16 @@ const DestinationCard: Component<{
+               >
+                 <TextField type="number" min={0} max={59} />
+               </TextFieldRoot>
+-              <span class="text-xs text-muted-foreground">server time, no days selected = every day</span>
++              <span class="text-xs text-muted-foreground">
++                server time, no days selected = every day
++              </span>
+             </div>
+           </Show>
+ 
+           <Show when={props.destination.nextScheduledAt}>
+-            <p class="text-xs text-muted-foreground pl-2">Next run: {props.destination.nextScheduledAt?.toLocaleString()}</p>
++            <p class="text-xs text-muted-foreground pl-2">
++              Next run: {props.destination.nextScheduledAt?.toLocaleString()}
++            </p>
+           </Show>
+         </div>
+ 
+@@ -752,9 +894,11 @@ const DestinationCard: Component<{
+                   <TableCell>{formatBytes(run.totalSizeBytes)}</TableCell>
+                   <TableCell class="flex gap-2 justify-end">
+                     <Show when={run.status === 'succeeded'}>
+-                      <Button size="sm" variant="outline" onClick={() => handleRestoreRun(run)}>Restore</Button>
+-                      <Button 
+-                        size="sm" 
++                      <Button size="sm" variant="outline" onClick={() => handleRestoreRun(run)}>
++                        Restore
++                      </Button>
++                      <Button
++                        size="sm"
+                         variant="outline"
+                         onClick={() => handleVerifyRun(run)}
+                         disabled={verifyingRunId() === run.id}
+@@ -762,7 +906,9 @@ const DestinationCard: Component<{
+                         {verifyingRunId() === run.id ? 'Verifying...' : 'Verify'}
+                       </Button>
+                     </Show>
+-                    <Button size="sm" variant="ghost" onClick={() => handleDeleteRun(run)}>Delete</Button>
++                    <Button size="sm" variant="ghost" onClick={() => handleDeleteRun(run)}>
++                      Delete
++                    </Button>
+                   </TableCell>
+                 </TableRow>
+               )}
+@@ -793,21 +939,37 @@ const RecoverFromDestinationDialog: Component<{
+   const [isRestoring, setIsRestoring] = createSignal<string | null>(null);
+ 
+   const remoteFilesQuery = useQuery(() => ({
+-    queryKey: ['organizations', props.organizationId, 'backups', 'destinations', props.destination.id, 'remote-files'],
+-    queryFn: () => listRemoteBackupFiles({ organizationId: props.organizationId, destinationId: props.destination.id }),
++    queryKey: [
++      'organizations',
++      props.organizationId,
++      'backups',
++      'destinations',
++      props.destination.id,
++      'remote-files',
++    ],
++    queryFn: () =>
++      listRemoteBackupFiles({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++      }),
+     enabled: isOpen(),
+   }));
+ 
+   const handleRestore = async (remoteFileId: string) => {
+     const isConfirmed = await props.confirm({
+       title: 'Restore this backup?',
+-      message: 'Documents will be re-imported. Documents that already exist (by content hash) are skipped or untrashed.',
++      message:
++        'Documents will be re-imported. Documents that already exist (by content hash) are skipped or untrashed.',
+     });
+     if (!isConfirmed) return;
+ 
+     setIsRestoring(remoteFileId);
+     const [result, error] = await safely(
+-      restoreFromRemoteFile({ organizationId: props.organizationId, destinationId: props.destination.id, remoteFileId }),
++      restoreFromRemoteFile({
++        organizationId: props.organizationId,
++        destinationId: props.destination.id,
++        remoteFileId,
++      }),
+     );
+     setIsRestoring(null);
+     if (error) {
+@@ -816,9 +978,12 @@ const RecoverFromDestinationDialog: Component<{
+     }
+     createToast({
+       type: 'success',
+-      message: `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents`
+-        + (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '')
+-        + (result.skippedDuplicatesCount ? ` (${result.skippedDuplicatesCount} already present)` : ''),
++      message:
++        `Restored ${result.restoredDocumentsCount}/${result.totalDocumentsCount} documents` +
++        (result.untrashedDocumentsCount ? ` (${result.untrashedDocumentsCount} untrashed)` : '') +
++        (result.skippedDuplicatesCount
++          ? ` (${result.skippedDuplicatesCount} already present)`
++          : ''),
+     });
+     props.onRestored();
+     setIsOpen(false);
+@@ -826,21 +991,31 @@ const RecoverFromDestinationDialog: Component<{
+ 
+   return (
+     <Dialog open={isOpen()} onOpenChange={setIsOpen}>
+-      <DialogTrigger as={Button} size="sm" variant="outline">Recover…</DialogTrigger>
++      <DialogTrigger as={Button} size="sm" variant="outline">
++        Recover…
++      </DialogTrigger>
+       <DialogContent>
+         <DialogHeader>
+           <DialogTitle>Backups found on this destination</DialogTitle>
+         </DialogHeader>
+ 
+         <p class="text-sm text-muted-foreground">
+-          This lists files actually sitting on {props.destination.displayName} right now, regardless of what
+-          this install remembers locally — use this after a fresh install to pull an existing backup back in.
++          This lists files actually sitting on {props.destination.displayName} right now, regardless
++          of what this install remembers locally — use this after a fresh install to pull an
++          existing backup back in.
+         </p>
+ 
+-        <Show when={!remoteFilesQuery.isLoading} fallback={<p class="text-sm text-muted-foreground">Loading…</p>}>
++        <Show
++          when={!remoteFilesQuery.isLoading}
++          fallback={<p class="text-sm text-muted-foreground">Loading…</p>}
++        >
+           <Show
+             when={remoteFilesQuery.data?.files.length}
+-            fallback={<p class="text-sm text-muted-foreground">No backup files found on this destination.</p>}
++            fallback={
++              <p class="text-sm text-muted-foreground">
++                No backup files found on this destination.
++              </p>
++            }
+           >
+             <div class="flex flex-col gap-2 max-h-80 overflow-auto">
+               <For each={remoteFilesQuery.data?.files}>
+diff --git a/apps/papra-client/src/modules/documents/documents.composables.tsx b/apps/papra-client/src/modules/documents/documents.composables.tsx
+index 753c5201..21f65c24 100644
+--- a/apps/papra-client/src/modules/documents/documents.composables.tsx
++++ b/apps/papra-client/src/modules/documents/documents.composables.tsx
+@@ -25,7 +25,7 @@ export async function invalidateOrganizationDocumentsQuery({
+ function getConfirmMessage(documentName: string) {
+   return (
+     <>
+-      Are you sure you want to delete <span _class="font-bold">{documentName}</span>?
++      Are you sure you want to delete <span class="font-bold">{documentName}</span>?
+     </>
+   );
+ }
+diff --git a/apps/papra-client/src/modules/folders/pages/folder.page.tsx b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+index 52975d2b..c6cfe053 100644
+--- a/apps/papra-client/src/modules/folders/pages/folder.page.tsx
++++ b/apps/papra-client/src/modules/folders/pages/folder.page.tsx
+@@ -186,7 +186,11 @@ export const FolderPage: Component = () => {
+       });
+       createToast({ message: t('folders.delete.success'), type: 'success' });
+       const parentId = folder?.parentId ?? null;
+-      navigate(parentId ? `/organizations/${params.organizationId}/folders/${parentId}` : `/organizations/${params.organizationId}/folders`);
++      navigate(
++        parentId
++          ? `/organizations/${params.organizationId}/folders/${parentId}`
++          : `/organizations/${params.organizationId}/folders`,
++      );
+     },
+     onError: (error) => {
+       createToast({ message: getErrorMessage({ error }), type: 'error' });
+@@ -318,11 +322,17 @@ export const FolderPage: Component = () => {
+                 <div class="i-tabler-dots-vertical size-4" />
+               </DropdownMenuTrigger>
+               <DropdownMenuContent class="w-48">
+-                <DropdownMenuItem class="cursor-pointer" onClick={() => setIsCurrentFolderRenameOpen(true)}>
++                <DropdownMenuItem
++                  class="cursor-pointer"
++                  onClick={() => setIsCurrentFolderRenameOpen(true)}
++                >
+                   <div class="i-tabler-pencil size-4 mr-2" />
+                   <span>{t('folders.subfolders.actions.rename')}</span>
+                 </DropdownMenuItem>
+-                <DropdownMenuItem class="cursor-pointer text-red" onClick={handleDeleteCurrentFolder}>
++                <DropdownMenuItem
++                  class="cursor-pointer text-red"
++                  onClick={handleDeleteCurrentFolder}
++                >
+                   <div class="i-tabler-trash size-4 mr-2" />
+                   <span>{t('folders.subfolders.actions.delete')}</span>
+                 </DropdownMenuItem>
+diff --git a/apps/papra-server/src/modules/backups/backups.config.ts b/apps/papra-server/src/modules/backups/backups.config.ts
+index ffba19e7..c756ec48 100644
+--- a/apps/papra-server/src/modules/backups/backups.config.ts
++++ b/apps/papra-server/src/modules/backups/backups.config.ts
+@@ -55,5 +55,7 @@ export const backupsConfig = {
+   },
+ } as const satisfies ConfigDefinition;
+ 
+-export const isGoogleDriveDestinationConfigured = (config: { oauthClientId?: string; oauthClientSecret?: string }) =>
+-  Boolean(config.oauthClientId && config.oauthClientSecret);
++export const isGoogleDriveDestinationConfigured = (config: {
++  oauthClientId?: string;
++  oauthClientSecret?: string;
++}) => Boolean(config.oauthClientId && config.oauthClientSecret);
+diff --git a/apps/papra-server/src/modules/backups/backups.constants.ts b/apps/papra-server/src/modules/backups/backups.constants.ts
+index 067d7abc..704d0ed1 100644
+--- a/apps/papra-server/src/modules/backups/backups.constants.ts
++++ b/apps/papra-server/src/modules/backups/backups.constants.ts
+@@ -1,7 +1,9 @@
+ import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
+ 
+ export const backupDestinationIdPrefix = 'bkdst';
+-export const backupDestinationIdRegex = createPrefixedIdRegex({ prefix: backupDestinationIdPrefix });
++export const backupDestinationIdRegex = createPrefixedIdRegex({
++  prefix: backupDestinationIdPrefix,
++});
+ 
+ export const backupRunIdPrefix = 'bkrun';
+ export const backupRunIdRegex = createPrefixedIdRegex({ prefix: backupRunIdPrefix });
+diff --git a/apps/papra-server/src/modules/backups/backups.encryption.service.ts b/apps/papra-server/src/modules/backups/backups.encryption.service.ts
+index a8b15247..0d46b664 100644
+--- a/apps/papra-server/src/modules/backups/backups.encryption.service.ts
++++ b/apps/papra-server/src/modules/backups/backups.encryption.service.ts
+@@ -33,7 +33,11 @@ export interface BackupEncryptionService {
+   decryptPayload(args: { encryptedPayload: Buffer; key: Buffer }): Buffer;
+ }
+ 
+-export function createBackupEncryptionService({ config }: { config: Config }): BackupEncryptionService {
++export function createBackupEncryptionService({
++  config,
++}: {
++  config: Config;
++}): BackupEncryptionService {
+   const kek = getKek({ config });
+ 
+   return {
+@@ -96,14 +100,23 @@ export function unwrapCredentials({
+ //
+ // Layout: [4-byte big-endian length of the wrapped-key string][wrapped-key
+ // bytes (utf8)][encrypted archive payload, everything after that].
+-export function packBackupEnvelope({ wrappedKey, encryptedPayload }: { wrappedKey: string; encryptedPayload: Buffer }): Buffer {
++export function packBackupEnvelope({
++  wrappedKey,
++  encryptedPayload,
++}: {
++  wrappedKey: string;
++  encryptedPayload: Buffer;
++}): Buffer {
+   const wrappedKeyBuffer = Buffer.from(wrappedKey, 'utf8');
+   const lengthPrefix = Buffer.alloc(4);
+   lengthPrefix.writeUInt32BE(wrappedKeyBuffer.length, 0);
+   return Buffer.concat([lengthPrefix, wrappedKeyBuffer, encryptedPayload]);
+ }
+ 
+-export function unpackBackupEnvelope({ envelope }: { envelope: Buffer }): { wrappedKey: string; encryptedPayload: Buffer } {
++export function unpackBackupEnvelope({ envelope }: { envelope: Buffer }): {
++  wrappedKey: string;
++  encryptedPayload: Buffer;
++} {
+   const keyLength = envelope.readUInt32BE(0);
+   const wrappedKey = envelope.subarray(4, 4 + keyLength).toString('utf8');
+   const encryptedPayload = envelope.subarray(4 + keyLength);
+diff --git a/apps/papra-server/src/modules/backups/backups.errors.ts b/apps/papra-server/src/modules/backups/backups.errors.ts
+index c279cabd..a4a92ba7 100644
+--- a/apps/papra-server/src/modules/backups/backups.errors.ts
++++ b/apps/papra-server/src/modules/backups/backups.errors.ts
+@@ -31,7 +31,8 @@ export const createBackupAlreadyInProgressError = createErrorFactory({
+ });
+ 
+ export const createBackupDriverApiError = createErrorFactory({
+-  message: 'The backup destination rejected the request. Check the connection details and try again.',
++  message:
++    'The backup destination rejected the request. Check the connection details and try again.',
+   code: 'backups.driver_api_error',
+   statusCode: 502,
+ });
+diff --git a/apps/papra-server/src/modules/backups/backups.models.ts b/apps/papra-server/src/modules/backups/backups.models.ts
+index 607493c2..26e6a91c 100644
+--- a/apps/papra-server/src/modules/backups/backups.models.ts
++++ b/apps/papra-server/src/modules/backups/backups.models.ts
+@@ -5,7 +5,13 @@ import type { BackupSchedule } from './backups.types';
+ // doc comment); if you run the server in a different timezone than you want
+ // backups scheduled in, that's a config concern, not something the picker needs
+ // to model.
+-export function computeNextScheduledAt({ schedule, from }: { schedule: BackupSchedule; from: Date }): Date | null {
++export function computeNextScheduledAt({
++  schedule,
++  from,
++}: {
++  schedule: BackupSchedule;
++  from: Date;
++}): Date | null {
+   if (!schedule.isEnabled) {
+     return null;
+   }
+@@ -34,7 +40,10 @@ export function computeNextScheduledAt({ schedule, from }: { schedule: BackupSch
+ export function parseScheduleDays(scheduleDaysJson: string): number[] {
+   try {
+     const parsed = JSON.parse(scheduleDaysJson) as unknown;
+-    if (Array.isArray(parsed) && parsed.every((d): d is number => typeof d === 'number' && d >= 0 && d <= 6)) {
++    if (
++      Array.isArray(parsed) &&
++      parsed.every((d): d is number => typeof d === 'number' && d >= 0 && d <= 6)
++    ) {
+       return parsed;
+     }
+   } catch {
+diff --git a/apps/papra-server/src/modules/backups/backups.packager.service.ts b/apps/papra-server/src/modules/backups/backups.packager.service.ts
+index 514b61f2..3038209f 100644
+--- a/apps/papra-server/src/modules/backups/backups.packager.service.ts
++++ b/apps/papra-server/src/modules/backups/backups.packager.service.ts
+@@ -100,7 +100,11 @@ function packTar(entries: TarEntry[]): Buffer {
+ 
+ function readOctal(buffer: Buffer, offset: number, length: number): number {
+   // Trim trailing NULs and spaces.
+-  const raw = buffer.subarray(offset, offset + length).toString('utf8').replace(/\0+$/g, '').trimEnd();
++  const raw = buffer
++    .subarray(offset, offset + length)
++    .toString('utf8')
++    .replace(/\0+$/g, '')
++    .trimEnd();
+   if (raw.length === 0) {
+     return 0;
+   }
+@@ -109,7 +113,11 @@ function readOctal(buffer: Buffer, offset: number, length: number): number {
+ 
+ function readString(buffer: Buffer, offset: number, length: number): string {
+   // Tar header strings are NUL-terminated, NOT NUL-padded everywhere. Trim NULs.
+-  return buffer.subarray(offset, offset + length).toString('utf8').replace(/\0+$/g, '').trimEnd();
++  return buffer
++    .subarray(offset, offset + length)
++    .toString('utf8')
++    .replace(/\0+$/g, '')
++    .trimEnd();
+ }
+ 
+ // Unpack a tarball Buffer into its entries. Stops at the first all-zero block.
+@@ -138,7 +146,13 @@ export function createBackupPackagerService() {
+   return {
+     // Build a compressed backup from the manifest + file map. Returns the
+     // final bytes ready to be encrypted and uploaded.
+-    async pack({ manifest, files }: { manifest: object; files: { name: string; content: Buffer }[] }): Promise<Buffer> {
++    async pack({
++      manifest,
++      files,
++    }: {
++      manifest: object;
++      files: { name: string; content: Buffer }[];
++    }): Promise<Buffer> {
+       const entries: TarEntry[] = [
+         { name: 'manifest.json', content: Buffer.from(JSON.stringify(manifest, null, 2), 'utf8') },
+         ...files.map(({ name, content }) => ({ name: `files/${name}`, content })),
+@@ -149,7 +163,11 @@ export function createBackupPackagerService() {
+ 
+     // Inverse of pack: decompress + extract. Returns the manifest object and
+     // a map of file path → Buffer.
+-    async unpack({ archive }: { archive: Buffer }): Promise<{ manifest: object; files: Map<string, Buffer> }> {
++    async unpack({
++      archive,
++    }: {
++      archive: Buffer;
++    }): Promise<{ manifest: object; files: Map<string, Buffer> }> {
+       const tarball = await gunzip(archive);
+       const entries = unpackTar(tarball);
+ 
+@@ -203,4 +221,4 @@ async function gunzip(input: Buffer): Promise<Buffer> {
+ }
+ 
+ export type BackupPackagerService = ReturnType<typeof createBackupPackagerService>;
+-export { isNil };
+\ No newline at end of file
++export { isNil };
+diff --git a/apps/papra-server/src/modules/backups/backups.repository.ts b/apps/papra-server/src/modules/backups/backups.repository.ts
+index 8843cf92..500511c4 100644
+--- a/apps/papra-server/src/modules/backups/backups.repository.ts
++++ b/apps/papra-server/src/modules/backups/backups.repository.ts
+@@ -60,7 +60,12 @@ async function getDestinationById({
+   const [destination] = await db
+     .select()
+     .from(backupDestinationsTable)
+-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
++    .where(
++      and(
++        eq(backupDestinationsTable.id, destinationId),
++        eq(backupDestinationsTable.organizationId, organizationId),
++      ),
++    )
+     .limit(1);
+   return { destination };
+ }
+@@ -124,7 +129,12 @@ async function deleteDestination({
+ }): Promise<{ deleted: boolean }> {
+   const result = await db
+     .delete(backupDestinationsTable)
+-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
++    .where(
++      and(
++        eq(backupDestinationsTable.id, destinationId),
++        eq(backupDestinationsTable.organizationId, organizationId),
++      ),
++    )
+     .returning({ id: backupDestinationsTable.id });
+   return { deleted: result.length > 0 };
+ }
+@@ -209,7 +219,17 @@ async function updateRunStatus({
+ }: {
+   runId: string;
+   status: BackupRunStatus;
+-  fields?: Partial<Pick<BackupRun, 'remoteFileId' | 'remoteFileName' | 'documentsCount' | 'totalSizeBytes' | 'errorMessage' | 'completedAt'>>;
++  fields?: Partial<
++    Pick<
++      BackupRun,
++      | 'remoteFileId'
++      | 'remoteFileName'
++      | 'documentsCount'
++      | 'totalSizeBytes'
++      | 'errorMessage'
++      | 'completedAt'
++    >
++  >;
+   db: Database;
+ }): Promise<void> {
+   await db
+@@ -228,7 +248,12 @@ async function getInProgressRunForDestination({
+   const [run] = await db
+     .select()
+     .from(backupRunsTable)
+-    .where(and(eq(backupRunsTable.destinationId, destinationId), inArray(backupRunsTable.status, ['pending', 'uploading'])))
++    .where(
++      and(
++        eq(backupRunsTable.destinationId, destinationId),
++        inArray(backupRunsTable.status, ['pending', 'uploading']),
++      ),
++    )
+     .limit(1);
+   return { run };
+ }
+@@ -261,4 +286,3 @@ async function markStaleInProgressRunsAsFailed({
+     .returning({ id: backupRunsTable.id });
+   return { markedCount: result.length };
+ }
+-
+diff --git a/apps/papra-server/src/modules/backups/backups.routes.ts b/apps/papra-server/src/modules/backups/backups.routes.ts
+index bee97140..70e315e1 100644
+--- a/apps/papra-server/src/modules/backups/backups.routes.ts
++++ b/apps/papra-server/src/modules/backups/backups.routes.ts
+@@ -68,7 +68,10 @@ function setupListDriversRoute({ app, config }: RouteDefinitionContext) {
+       isConfigured: Boolean(config.backups.kek),
+       drivers: BACKUP_DRIVER_NAMES.map((name) => ({
+         name,
+-        isConfigured: name === GOOGLE_DRIVE_DRIVER_NAME ? Boolean(config.backups.googleDrive.oauthClientId) : true,
++        isConfigured:
++          name === GOOGLE_DRIVE_DRIVER_NAME
++            ? Boolean(config.backups.googleDrive.oauthClientId)
++            : true,
+       })),
+     });
+   });
+@@ -95,7 +98,12 @@ function setupTestConnectionRoute({ app, config, db }: RouteDefinitionContext) {
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+ 
+       const services = createBackupsServices({ config });
+-      const result = await testDestinationConnectionUsecase({ services, driver, credentials, settings });
++      const result = await testDestinationConnectionUsecase({
++        services,
++        driver,
++        credentials,
++        settings,
++      });
+       return context.json(result);
+     },
+   );
+@@ -164,8 +172,15 @@ function setupRenameDestinationRoute({ app, db }: RouteDefinitionContext) {
+   app.patch(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
+-    validateJsonBody(v.object({ displayName: v.pipe(v.string(), v.minLength(1), v.maxLength(100)) })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
++    validateJsonBody(
++      v.object({ displayName: v.pipe(v.string(), v.minLength(1), v.maxLength(100)) }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId } = context.req.valid('param');
+@@ -185,7 +200,12 @@ function setupUpdateScheduleRoute({ app, db }: RouteDefinitionContext) {
+   app.put(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/schedule',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     validateJsonBody(scheduleSchema),
+     async (context) => {
+       const { userId } = getUser({ context });
+@@ -196,7 +216,12 @@ function setupUpdateScheduleRoute({ app, db }: RouteDefinitionContext) {
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+ 
+       const repository = createBackupsRepository({ db });
+-      const { nextScheduledAt } = await updateDestinationScheduleUsecase({ repository, organizationId, destinationId, schedule });
++      const { nextScheduledAt } = await updateDestinationScheduleUsecase({
++        repository,
++        organizationId,
++        destinationId,
++        schedule,
++      });
+       return context.json({ nextScheduledAt });
+     },
+   );
+@@ -206,7 +231,12 @@ function setupDeleteDestinationRoute({ app, db }: RouteDefinitionContext) {
+   app.delete(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId } = context.req.valid('param');
+@@ -215,7 +245,11 @@ function setupDeleteDestinationRoute({ app, db }: RouteDefinitionContext) {
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+ 
+       const repository = createBackupsRepository({ db });
+-      const { deleted } = await deleteDestinationUsecase({ repository, organizationId, destinationId });
++      const { deleted } = await deleteDestinationUsecase({
++        repository,
++        organizationId,
++        destinationId,
++      });
+       return context.json({ deleted });
+     },
+   );
+@@ -225,7 +259,12 @@ function setupListRunsRoute({ app, db }: RouteDefinitionContext) {
+   app.get(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId } = context.req.valid('param');
+@@ -245,7 +284,12 @@ function setupRunBackupRoute(deps: RouteDefinitionContext) {
+   app.post(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId } = context.req.valid('param');
+@@ -278,7 +322,11 @@ function setupDeleteRunRoute({ app, config, db }: RouteDefinitionContext) {
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId',
+     requireAuthentication(),
+     validateParams(
+-      v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++        runId: backupRunIdSchema,
++      }),
+     ),
+     async (context) => {
+       const { userId } = getUser({ context });
+@@ -290,7 +338,14 @@ function setupDeleteRunRoute({ app, config, db }: RouteDefinitionContext) {
+       const services = createBackupsServices({ config });
+       const repository = createBackupsRepository({ db });
+ 
+-      const { deleted } = await deleteRunUsecase({ config, services, repository, organizationId, destinationId, runId });
++      const { deleted } = await deleteRunUsecase({
++        config,
++        services,
++        repository,
++        organizationId,
++        destinationId,
++        runId,
++      });
+       return context.json({ deleted });
+     },
+   );
+@@ -302,7 +357,11 @@ function setupRestoreRunRoute(deps: RouteDefinitionContext) {
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId/restore',
+     requireAuthentication(),
+     validateParams(
+-      v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema }),
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++        runId: backupRunIdSchema,
++      }),
+     ),
+     async (context) => {
+       const { userId } = getUser({ context });
+@@ -341,7 +400,12 @@ function setupListRemoteBackupsRoute({ app, config, db }: RouteDefinitionContext
+   app.get(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/remote-files',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId } = context.req.valid('param');
+@@ -352,7 +416,13 @@ function setupListRemoteBackupsRoute({ app, config, db }: RouteDefinitionContext
+       const services = createBackupsServices({ config });
+       const repository = createBackupsRepository({ db });
+ 
+-      const { files } = await listRemoteBackupsUsecase({ config, services, repository, organizationId, destinationId });
++      const { files } = await listRemoteBackupsUsecase({
++        config,
++        services,
++        repository,
++        organizationId,
++        destinationId,
++      });
+       return context.json({ files });
+     },
+   );
+@@ -363,7 +433,12 @@ function setupRestoreFromRemoteFileRoute(deps: RouteDefinitionContext) {
+   app.post(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/remote-files/restore',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++      }),
++    ),
+     validateJsonBody(v.object({ remoteFileId: v.pipe(v.string(), v.minLength(1)) })),
+     async (context) => {
+       const { userId } = getUser({ context });
+@@ -447,7 +522,12 @@ function setupRestoreFromUploadedFileRoute(deps: RouteDefinitionContext) {
+ // One-off manual export straight to the browser — no destination, nothing
+ // persisted, not tracked in run history (there's no destination for a run row
+ // to belong to).
+-function setupDownloadBackupCopyRoute({ app, config, db, documentsStorageService }: RouteDefinitionContext) {
++function setupDownloadBackupCopyRoute({
++  app,
++  config,
++  db,
++  documentsStorageService,
++}: RouteDefinitionContext) {
+   app.get(
+     '/api/organizations/:organizationId/backups/download-copy',
+     requireAuthentication(),
+@@ -487,7 +567,13 @@ function setupVerifyRunRoute({ app, config, db, documentsStorageService }: Route
+   app.post(
+     '/api/organizations/:organizationId/backups/destinations/:destinationId/runs/:runId/verify',
+     requireAuthentication(),
+-    validateParams(v.strictObject({ organizationId: organizationIdSchema, destinationId: backupDestinationIdSchema, runId: backupRunIdSchema })),
++    validateParams(
++      v.strictObject({
++        organizationId: organizationIdSchema,
++        destinationId: backupDestinationIdSchema,
++        runId: backupRunIdSchema,
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId, destinationId, runId } = context.req.valid('param');
+diff --git a/apps/papra-server/src/modules/backups/backups.services.ts b/apps/papra-server/src/modules/backups/backups.services.ts
+index 3bc6edfc..dfce96ee 100644
+--- a/apps/papra-server/src/modules/backups/backups.services.ts
++++ b/apps/papra-server/src/modules/backups/backups.services.ts
+@@ -4,7 +4,8 @@ import { createLogger } from '../shared/logger/logger';
+ import { createBackupEncryptionService } from './backups.encryption.service';
+ import { createBackupsNotConfiguredError, createBackupUnknownDriverError } from './backups.errors';
+ import { createBackupPackagerService } from './backups.packager.service';
+-import { backupDriverFactories, type BackupDriverName } from './drivers/drivers.registry';
++import type { BackupDriverName } from './drivers/drivers.registry';
++import { backupDriverFactories } from './drivers/drivers.registry';
+ 
+ const logger = createLogger({ namespace: 'backups:services' });
+ 
+diff --git a/apps/papra-server/src/modules/backups/backups.types.ts b/apps/papra-server/src/modules/backups/backups.types.ts
+index afe770fb..092d5077 100644
+--- a/apps/papra-server/src/modules/backups/backups.types.ts
++++ b/apps/papra-server/src/modules/backups/backups.types.ts
+@@ -9,7 +9,10 @@ export type BackupRun = Expand<typeof backupRunsTable.$inferSelect>;
+ export type DbInsertableBackupRun = Expand<typeof backupRunsTable.$inferInsert>;
+ 
+ // Public-facing shape: never includes encryptedCredentials or wrappedBackupKey.
+-export type PublicBackupDestination = Omit<BackupDestination, 'encryptedCredentials' | 'wrappedBackupKey'> & {
++export type PublicBackupDestination = Omit<
++  BackupDestination,
++  'encryptedCredentials' | 'wrappedBackupKey'
++> & {
+   driver: BackupDriverName;
+ };
+ 
+diff --git a/apps/papra-server/src/modules/backups/backups.usecases.ts b/apps/papra-server/src/modules/backups/backups.usecases.ts
+index b2a446f9..ee5a4cbd 100644
+--- a/apps/papra-server/src/modules/backups/backups.usecases.ts
++++ b/apps/papra-server/src/modules/backups/backups.usecases.ts
+@@ -17,8 +17,17 @@ import { generateId } from '../shared/random/ids';
+ import { addTagToDocument as addTagToDocumentUsecase } from '../tags/tags.usecases';
+ import { createTagsRepository } from '../tags/tags.repository';
+ import { computeNextScheduledAt, parseScheduleDays } from './backups.models';
+-import { BACKUP_FILE_EXTENSION, BACKUP_FILE_MIME_TYPE, STALE_IN_PROGRESS_RUN_TIMEOUT_MS } from './backups.constants';
+-import { packBackupEnvelope, unpackBackupEnvelope, unwrapCredentials, wrapCredentials } from './backups.encryption.service';
++import {
++  BACKUP_FILE_EXTENSION,
++  BACKUP_FILE_MIME_TYPE,
++  STALE_IN_PROGRESS_RUN_TIMEOUT_MS,
++} from './backups.constants';
++import {
++  packBackupEnvelope,
++  unpackBackupEnvelope,
++  unwrapCredentials,
++  wrapCredentials,
++} from './backups.encryption.service';
+ import {
+   createBackupAlreadyInProgressError,
+   createBackupDestinationNotFoundError,
+@@ -74,7 +83,12 @@ export async function createDestinationUsecase({
+   assertBackupsConfigured({ config });
+   const encryption = services.requireEncryption();
+ 
+-  const { accountLabel } = await testDestinationConnectionUsecase({ services, driver, credentials, settings });
++  const { accountLabel } = await testDestinationConnectionUsecase({
++    services,
++    driver,
++    credentials,
++    settings,
++  });
+ 
+   const dek = encryption.generateBackupKey();
+ 
+@@ -226,7 +240,10 @@ export async function runBackupUsecase({
+   services: BackupsServices;
+   repository: BackupsRepository;
+   documentsRepository: DocumentsRepository;
+-  globalDeps: Pick<import('../app/server.types').GlobalDependencies, 'db' | 'taskServices' | 'documentsStorageService' | 'eventServices'>;
++  globalDeps: Pick<
++    import('../app/server.types').GlobalDependencies,
++    'db' | 'taskServices' | 'documentsStorageService' | 'eventServices'
++  >;
+   organizationId: string;
+   destinationId: string;
+   trigger: BackupRunTrigger;
+@@ -290,13 +307,17 @@ async function buildBackupManifest({
+   db,
+ }: {
+   organizationId: string;
+-  docs: Awaited<ReturnType<DocumentsRepository['getAllOrganizationUndeletedDocumentsForBackup']>>['documents'];
++  docs: Awaited<
++    ReturnType<DocumentsRepository['getAllOrganizationUndeletedDocumentsForBackup']>
++  >['documents'];
+   db: import('../app/database/database.types').Database;
+ }) {
+   const tagsRepository = createTagsRepository({ db });
+   const foldersRepository = createFoldersRepository({ db });
+ 
+-  const { tagsByDocumentId } = await tagsRepository.getTagsByDocumentIds({ documentIds: docs.map((d) => d.id) });
++  const { tagsByDocumentId } = await tagsRepository.getTagsByDocumentIds({
++    documentIds: docs.map((d) => d.id),
++  });
+   const { folders } = await foldersRepository.getOrganizationFolders({ organizationId });
+   const foldersById = new Map(folders.map((f) => [f.id, f]));
+ 
+@@ -332,7 +353,11 @@ async function buildBackupManifest({
+       notes: d.notes,
+       folderId: d.folderId,
+       folderPath: computeFolderPath(d.folderId),
+-      tags: (tagsByDocumentId[d.id] ?? []).map((t) => ({ name: t.name, color: t.color, description: t.description })),
++      tags: (tagsByDocumentId[d.id] ?? []).map((t) => ({
++        name: t.name,
++        color: t.color,
++        description: t.description,
++      })),
+     })),
+   };
+ }
+@@ -359,10 +384,11 @@ async function buildEncryptedBackupEnvelope({
+   db: import('../app/database/database.types').Database;
+   logger: Logger;
+ }): Promise<{ envelope: Buffer; documentsCount: number }> {
+-  const { documents: docs } = await documentsRepository.getAllOrganizationUndeletedDocumentsForBackup({ organizationId });
++  const { documents: docs } =
++    await documentsRepository.getAllOrganizationUndeletedDocumentsForBackup({ organizationId });
+ 
+   const files: { name: string; content: Buffer }[] = [];
+-  
++
+   for (const doc of docs) {
+     try {
+       const { fileStream } = await documentsStorageService.getFileStream({
+@@ -375,7 +401,10 @@ async function buildEncryptedBackupEnvelope({
+       for await (const chunk of fileStream) {
+         chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+       }
+-      files.push({ name: `${doc.id}-${doc.originalName.replace(/[^\w.-]/g, '_')}`, content: Buffer.concat(chunks) });
++      files.push({
++        name: `${doc.id}-${doc.originalName.replace(/[^\w.-]/g, '_')}`,
++        content: Buffer.concat(chunks),
++      });
+     } catch (error) {
+       logger.error({ error, documentId: doc.id }, 'Failed to fetch document for backup; skipping');
+     }
+@@ -385,7 +414,10 @@ async function buildEncryptedBackupEnvelope({
+ 
+   const archive = await services.packager.pack({ manifest, files });
+   const encrypted = encryption.encryptPayload({ payload: archive, key: dek });
+-  const envelope = packBackupEnvelope({ wrappedKey: encryption.wrapWithKek({ value: dek }), encryptedPayload: encrypted });
++  const envelope = packBackupEnvelope({
++    wrappedKey: encryption.wrapWithKek({ value: dek }),
++    encryptedPayload: encrypted,
++  });
+ 
+   return { envelope, documentsCount: docs.length };
+ }
+@@ -470,13 +502,19 @@ async function runBackupPipeline({
+     });
+     await repository.updateDestination({ destinationId, fields: { lastRunAt: new Date() } });
+ 
+-    logger.info({ runId, destinationId, size: envelope.length, documentsCount }, 'Backup run completed');
++    logger.info(
++      { runId, destinationId, size: envelope.length, documentsCount },
++      'Backup run completed',
++    );
+   } catch (error) {
+     logger.error({ error, runId, destinationId }, 'Backup run failed');
+     await repository.updateRunStatus({
+       runId,
+       status: 'failed',
+-      fields: { errorMessage: (error as Error)?.message?.slice(0, 500) ?? 'Unknown error', completedAt: new Date() },
++      fields: {
++        errorMessage: (error as Error)?.message?.slice(0, 500) ?? 'Unknown error',
++        completedAt: new Date(),
++      },
+     });
+   }
+ }
+@@ -510,17 +548,27 @@ export async function deleteRunUsecase({
+     const { destination } = await repository.getDestinationById({ destinationId, organizationId });
+     if (destination) {
+       try {
+-        const credentials = unwrapCredentials({ encryption, wrapped: destination.encryptedCredentials });
++        const credentials = unwrapCredentials({
++          encryption,
++          wrapped: destination.encryptedCredentials,
++        });
+         const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
+         const driver = services.getDriver(destination.driver);
+         await driver.deleteFile({ credentials, settings, remoteFileId: run.remoteFileId });
+       } catch (error) {
+-        logger.error({ error, runId }, 'Failed to delete remote file; removing local record anyway');
++        logger.error(
++          { error, runId },
++          'Failed to delete remote file; removing local record anyway',
++        );
+       }
+     }
+   }
+ 
+-  await repository.updateRunStatus({ runId, status: 'failed', fields: { errorMessage: 'Deleted by user', completedAt: new Date() } });
++  await repository.updateRunStatus({
++    runId,
++    status: 'failed',
++    fields: { errorMessage: 'Deleted by user', completedAt: new Date() },
++  });
+   return { deleted: true };
+ }
+ 
+@@ -566,24 +614,28 @@ async function restoreFromEnvelopeUsecase({
+   const archive = encryption.decryptPayload({ encryptedPayload, key: dek });
+   const { manifest, files: unpackedFiles } = await services.packager.unpack({ archive });
+ 
+-  const manifestDocs = (manifest as {
+-    documents: {
+-      id: string;
+-      originalName: string;
+-      mimeType: string;
+-      originalSha256Hash: string;
+-      createdAt?: string | Date;
+-      documentDate?: string | Date | null;
+-      notes?: string | null;
+-      folderId: string | null;
+-      folderPath?: string[] | null;
+-      tags?: { name: string; color: string; description?: string | null }[];
+-    }[];
+-  }).documents;
++  const manifestDocs = (
++    manifest as {
++      documents: {
++        id: string;
++        originalName: string;
++        mimeType: string;
++        originalSha256Hash: string;
++        createdAt?: string | Date;
++        documentDate?: string | Date | null;
++        notes?: string | null;
++        folderId: string | null;
++        folderPath?: string[] | null;
++        tags?: { name: string; color: string; description?: string | null }[];
++      }[];
++    }
++  ).documents;
+ 
+   const createDocument = createDocumentCreationUsecase({ ...documentUsecaseDeps });
+   const tagsRepository = createTagsRepository({ db: documentUsecaseDeps.db });
+-  const documentActivityRepository = createDocumentActivityRepository({ db: documentUsecaseDeps.db });
++  const documentActivityRepository = createDocumentActivityRepository({
++    db: documentUsecaseDeps.db,
++  });
+ 
+   // ----- Folder resolution: prefer the original id if it still exists (fast,
+   // common case for a same-install restore); otherwise recreate the folder
+@@ -592,10 +644,16 @@ async function restoreFromEnvelopeUsecase({
+   const folderIdExistsCache = new Map<string, boolean>();
+   const folderPathCache = new Map<string, string>(); // key: `${parentId ?? 'root'}::${name}` -> folder id
+ 
+-  async function resolveOrRecreateFolderId(entry: { folderId: string | null; folderPath?: string[] | null }): Promise<string | undefined> {
++  async function resolveOrRecreateFolderId(entry: {
++    folderId: string | null;
++    folderPath?: string[] | null;
++  }): Promise<string | undefined> {
+     if (entry.folderId) {
+       if (!folderIdExistsCache.has(entry.folderId)) {
+-        const { folder } = await foldersRepository.getFolderById({ folderId: entry.folderId, organizationId });
++        const { folder } = await foldersRepository.getFolderById({
++          folderId: entry.folderId,
++          organizationId,
++        });
+         folderIdExistsCache.set(entry.folderId, Boolean(folder));
+       }
+       if (folderIdExistsCache.get(entry.folderId)) {
+@@ -613,16 +671,27 @@ async function restoreFromEnvelopeUsecase({
+       let folderId = folderPathCache.get(cacheKey);
+ 
+       if (!folderId) {
+-        const { folders: siblings } = await foldersRepository.getChildFolders({ organizationId, parentId: parentId ?? null });
++        const { folders: siblings } = await foldersRepository.getChildFolders({
++          organizationId,
++          parentId: parentId ?? null,
++        });
+         const existingFolder = siblings.find((f) => f.name === name);
+         if (existingFolder) {
+           folderId = existingFolder.id;
+         } else {
+           try {
+-            const { folder } = await createFolderUsecase({ organizationId, name, parentId, foldersRepository });
++            const { folder } = await createFolderUsecase({
++              organizationId,
++              name,
++              parentId,
++              foldersRepository,
++            });
+             folderId = folder!.id;
+           } catch (error) {
+-            logger.error({ error, name, parentId }, 'Failed to recreate folder during restore; falling back to its parent');
++            logger.error(
++              { error, name, parentId },
++              'Failed to recreate folder during restore; falling back to its parent',
++            );
+             break;
+           }
+         }
+@@ -638,14 +707,23 @@ async function restoreFromEnvelopeUsecase({
+   const { tags: existingOrgTags } = await tagsRepository.getOrganizationTags({ organizationId });
+   const tagIdByName = new Map<string, string>(existingOrgTags.map((t) => [t.name, t.id]));
+ 
+-  async function resolveTagId(tag: { name: string; color: string; description?: string | null }): Promise<string | undefined> {
++  async function resolveTagId(tag: {
++    name: string;
++    color: string;
++    description?: string | null;
++  }): Promise<string | undefined> {
+     const existingId = tagIdByName.get(tag.name);
+     if (existingId) {
+       return existingId;
+     }
+     try {
+       const { tag: created } = await tagsRepository.createTag({
+-        tag: { organizationId, name: tag.name, color: tag.color, description: tag.description ?? undefined },
++        tag: {
++          organizationId,
++          name: tag.name,
++          color: tag.color,
++          description: tag.description ?? undefined,
++        },
+       });
+       tagIdByName.set(tag.name, created!.id);
+       return created!.id;
+@@ -659,7 +737,10 @@ async function restoreFromEnvelopeUsecase({
+         tagIdByName.set(tag.name, match.id);
+         return match.id;
+       }
+-      logger.error({ error, tagName: tag.name }, 'Failed to resolve/create tag during restore; skipping this tag');
++      logger.error(
++        { error, tagName: tag.name },
++        'Failed to resolve/create tag during restore; skipping this tag',
++      );
+       return undefined;
+     }
+   }
+@@ -674,7 +755,9 @@ async function restoreFromEnvelopeUsecase({
+     if (tags.length === 0) {
+       return;
+     }
+-    const { tagsByDocumentId } = await tagsRepository.getTagsByDocumentIds({ documentIds: [documentId] });
++    const { tagsByDocumentId } = await tagsRepository.getTagsByDocumentIds({
++      documentIds: [documentId],
++    });
+     const alreadyAttached = new Set((tagsByDocumentId[documentId] ?? []).map((t) => t.id));
+ 
+     for (const tag of tags) {
+@@ -688,13 +771,18 @@ async function restoreFromEnvelopeUsecase({
+           documentId,
+           organizationId,
+           userId,
+-          tag: { ...tag, id: tagId, organizationId } as Parameters<typeof addTagToDocumentUsecase>[0]['tag'],
++          tag: { ...tag, id: tagId, organizationId } as Parameters<
++            typeof addTagToDocumentUsecase
++          >[0]['tag'],
+           tagsRepository,
+           webhookTriggerServices: documentUsecaseDeps.webhookTriggerServices,
+           documentActivityRepository,
+         });
+       } catch (error) {
+-        logger.error({ error, documentId, tagName: tag.name }, 'Failed to attach tag to restored document; skipping this tag');
++        logger.error(
++          { error, documentId, tagName: tag.name },
++          'Failed to attach tag to restored document; skipping this tag',
++        );
+       }
+     }
+   }
+@@ -715,7 +803,10 @@ async function restoreFromEnvelopeUsecase({
+         createdAt: entry.createdAt ? new Date(entry.createdAt) : undefined,
+       });
+     } catch (error) {
+-      logger.error({ error, documentId }, 'Failed to restore document metadata (date/notes); document content is still intact');
++      logger.error(
++        { error, documentId },
++        'Failed to restore document metadata (date/notes); document content is still intact',
++      );
+     }
+   }
+ 
+@@ -724,7 +815,9 @@ async function restoreFromEnvelopeUsecase({
+   let skippedCount = 0;
+ 
+   for (const entry of manifestDocs) {
+-    const matchingFileKey = [...unpackedFiles.keys()].find((name) => name.startsWith(`${entry.id}-`));
++    const matchingFileKey = [...unpackedFiles.keys()].find((name) =>
++      name.startsWith(`${entry.id}-`),
++    );
+     if (!matchingFileKey) {
+       continue;
+     }
+@@ -754,7 +847,10 @@ async function restoreFromEnvelopeUsecase({
+           await applyTagsToDocument({ documentId: existing.id, tags: entry.tags });
+           untrashedCount += 1;
+         } catch (error) {
+-          logger.error({ error, documentId: existing.id }, 'Failed to untrash document during restore; skipping');
++          logger.error(
++            { error, documentId: existing.id },
++            'Failed to untrash document during restore; skipping',
++          );
+         }
+         continue;
+       }
+@@ -779,7 +875,10 @@ async function restoreFromEnvelopeUsecase({
+       await applyTagsToDocument({ documentId: document.id, tags: entry.tags });
+       restoredCount += 1;
+     } catch (error) {
+-      logger.error({ error, documentId: entry.id }, 'Failed to restore document from backup; skipping');
++      logger.error(
++        { error, documentId: entry.id },
++        'Failed to restore document from backup; skipping',
++      );
+     }
+   }
+ 
+@@ -1040,7 +1139,6 @@ export async function restoreFromRemoteFileUsecase({
+   });
+ }
+ 
+-
+ // ----- Scheduler tick (called by tasks/backup-scheduler-tick.task.ts) -----
+ 
+ export async function runDueScheduledBackupsUsecase({
+@@ -1056,7 +1154,10 @@ export async function runDueScheduledBackupsUsecase({
+   services: BackupsServices;
+   repository: BackupsRepository;
+   documentsRepository: DocumentsRepository;
+-  globalDeps: Pick<import('../app/server.types').GlobalDependencies, 'db' | 'taskServices' | 'documentsStorageService' | 'eventServices'>;
++  globalDeps: Pick<
++    import('../app/server.types').GlobalDependencies,
++    'db' | 'taskServices' | 'documentsStorageService' | 'eventServices'
++  >;
+   now?: Date;
+   logger?: Logger;
+ }): Promise<{ triggeredCount: number }> {
+@@ -1082,7 +1183,10 @@ export async function runDueScheduledBackupsUsecase({
+       });
+       triggeredCount += 1;
+     } catch (error) {
+-      providedLogger.error({ error, destinationId: destination.id }, 'Scheduled backup failed to start');
++      providedLogger.error(
++        { error, destinationId: destination.id },
++        'Scheduled backup failed to start',
++      );
+     }
+ 
+     // Recompute the next occurrence regardless of success/failure, so a failure
+@@ -1094,7 +1198,10 @@ export async function runDueScheduledBackupsUsecase({
+       minute: destination.scheduleMinute,
+     };
+     const nextScheduledAt = computeNextScheduledAt({ schedule, from: now });
+-    await repository.updateDestination({ destinationId: destination.id, fields: { nextScheduledAt } });
++    await repository.updateDestination({
++      destinationId: destination.id,
++      fields: { nextScheduledAt },
++    });
+   }
+ 
+   return { triggeredCount };
+@@ -1143,25 +1250,34 @@ export async function verifyBackupRunUsecase({
+ 
+   try {
+     // Download the backup file
+-    const credentials = unwrapCredentials({ encryption, wrapped: destination.encryptedCredentials });
++    const credentials = unwrapCredentials({
++      encryption,
++      wrapped: destination.encryptedCredentials,
++    });
+     const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
+     const driver = services.getDriver(destination.driver);
+ 
+-    const envelope = await driver.downloadFile({ credentials, settings, remoteFileId: run.remoteFileId });
++    const envelope = await driver.downloadFile({
++      credentials,
++      settings,
++      remoteFileId: run.remoteFileId,
++    });
+ 
+     // Unpack and verify
+     const { wrappedKey, encryptedPayload } = unpackBackupEnvelope({ envelope });
+     const dek = encryption.unwrapWithKek({ wrapped: wrappedKey });
+-    
++
+     const archive = encryption.decryptPayload({ encryptedPayload, key: dek });
+     const { manifest, files: unpackedFiles } = await services.packager.unpack({ archive });
+ 
+-    const manifestDocs = (manifest as {
+-      documents: {
+-        id: string;
+-        originalSha256Hash: string;
+-      }[];
+-    }).documents;
++    const manifestDocs = (
++      manifest as {
++        documents: {
++          id: string;
++          originalSha256Hash: string;
++        }[];
++      }
++    ).documents;
+ 
+     // Verify each document's hash
+     let validCount = 0;
+@@ -1180,9 +1296,11 @@ export async function verifyBackupRunUsecase({
+ 
+       const content = unpackedFiles.get(fileKey)!;
+       const actualHash = services.packager.computeHash(content);
+-      
++
+       if (actualHash !== doc.originalSha256Hash) {
+-        errors.push(`Document ${doc.id}: hash mismatch (expected ${doc.originalSha256Hash}, got ${actualHash})`);
++        errors.push(
++          `Document ${doc.id}: hash mismatch (expected ${doc.originalSha256Hash}, got ${actualHash})`,
++        );
+         invalidCount++;
+       } else {
+         validCount++;
+diff --git a/apps/papra-server/src/modules/backups/drivers/drivers.models.ts b/apps/papra-server/src/modules/backups/drivers/drivers.models.ts
+index e48a6cca..2d644a4d 100644
+--- a/apps/papra-server/src/modules/backups/drivers/drivers.models.ts
++++ b/apps/papra-server/src/modules/backups/drivers/drivers.models.ts
+@@ -75,7 +75,9 @@ export type BackupDriver = {
+   }) => Promise<{ files: BackupRemoteFile[] }>;
+ };
+ 
+-export type BackupDriverFactory = (args: { config: import('../../config/config.types').Config }) => BackupDriver;
++export type BackupDriverFactory = (args: {
++  config: import('../../config/config.types').Config;
++}) => BackupDriver;
+ 
+ export function defineBackupDriver<T extends BackupDriverFactory>(factory: T) {
+   return factory;
+diff --git a/apps/papra-server/src/modules/backups/drivers/drivers.registry.ts b/apps/papra-server/src/modules/backups/drivers/drivers.registry.ts
+index 1d3396be..1de91e55 100644
+--- a/apps/papra-server/src/modules/backups/drivers/drivers.registry.ts
++++ b/apps/papra-server/src/modules/backups/drivers/drivers.registry.ts
+@@ -1,10 +1,18 @@
+ import type { BackupDriverFactory } from './drivers.models';
+ import { FTP_DRIVER_NAME, ftpBackupDriverFactory } from './ftp/ftp.driver';
+-import { GOOGLE_DRIVE_DRIVER_NAME, googleDriveBackupDriverFactory } from './google-drive/google-drive.driver';
++import {
++  GOOGLE_DRIVE_DRIVER_NAME,
++  googleDriveBackupDriverFactory,
++} from './google-drive/google-drive.driver';
+ import { WEBDAV_DRIVER_NAME, webdavBackupDriverFactory } from './webdav/webdav.driver';
+ import { LOCAL_DRIVER_NAME, localBackupDriverFactory } from './local/local.driver';
+ 
+-export const BACKUP_DRIVER_NAMES = [GOOGLE_DRIVE_DRIVER_NAME, WEBDAV_DRIVER_NAME, FTP_DRIVER_NAME, LOCAL_DRIVER_NAME] as const;
++export const BACKUP_DRIVER_NAMES = [
++  GOOGLE_DRIVE_DRIVER_NAME,
++  WEBDAV_DRIVER_NAME,
++  FTP_DRIVER_NAME,
++  LOCAL_DRIVER_NAME,
++] as const;
+ export type BackupDriverName = (typeof BACKUP_DRIVER_NAMES)[number];
+ 
+ export const backupDriverFactories: Record<BackupDriverName, BackupDriverFactory> = {
+diff --git a/apps/papra-server/src/modules/backups/drivers/ftp/ftp.driver.ts b/apps/papra-server/src/modules/backups/drivers/ftp/ftp.driver.ts
+index 87576745..16620063 100644
+--- a/apps/papra-server/src/modules/backups/drivers/ftp/ftp.driver.ts
++++ b/apps/papra-server/src/modules/backups/drivers/ftp/ftp.driver.ts
+@@ -17,8 +17,14 @@ type FtpSettings = {
+ 
+ // Defensive: strip a pasted "ftp://" prefix and split out a trailing ":port" so a
+ // messy Host field still connects instead of failing DNS resolution.
+-function parseHostAndPort({ host, port }: { host: string; port?: number }): { host: string; port: number } {
+-  let value = host.trim().replace(/^ftps?:\/\//i, '').replace(/\/+$/, '');
++function parseHostAndPort({ host, port }: { host: string; port?: number }): {
++  host: string;
++  port: number;
++} {
++  let value = host
++    .trim()
++    .replace(/^ftps?:\/\//i, '')
++    .replace(/\/+$/, '');
+   let parsedPort = port;
+ 
+   const portMatch = value.match(/^(.*):(\d+)$/);
+@@ -124,7 +130,11 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
+ 
+     async deleteFile({ credentials, settings, remoteFileId }) {
+       const s = settings as unknown as FtpSettings;
+-      await withClient({ credentials, settings: s, fn: async (client) => client.remove(remoteFileId) });
++      await withClient({
++        credentials,
++        settings: s,
++        fn: async (client) => client.remove(remoteFileId),
++      });
+     },
+ 
+     async listFiles({ credentials, settings, folderRef }) {
+diff --git a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.constants.ts b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.constants.ts
+index a7f5149d..1df04372 100644
+--- a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.constants.ts
++++ b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.constants.ts
+@@ -6,7 +6,10 @@ export const GOOGLE_DRIVE_USERINFO_ENDPOINT = 'https://www.googleapis.com/oauth2
+ 
+ // `drive.file` only lets the app see files/folders IT created — Papra never sees
+ // the rest of the user's Drive.
+-export const GOOGLE_DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/userinfo.email'];
++export const GOOGLE_DRIVE_SCOPES = [
++  'https://www.googleapis.com/auth/drive.file',
++  'https://www.googleapis.com/auth/userinfo.email',
++];
+ 
+ export const GOOGLE_DRIVE_DEFAULT_FOLDER_NAME = 'Papra Backups';
+ export const GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE = 'application/octet-stream';
+diff --git a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.driver.ts b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.driver.ts
+index b5312478..01bd61a1 100644
+--- a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.driver.ts
++++ b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.driver.ts
+@@ -65,13 +65,18 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
+ 
+     async ensureRemoteFolder({ credentials, settings }) {
+       const refreshToken = credentials.refreshToken!;
+-      const folderName = (settings.folderName as string | undefined) ?? GOOGLE_DRIVE_DEFAULT_FOLDER_NAME;
++      const folderName =
++        (settings.folderName as string | undefined) ?? GOOGLE_DRIVE_DEFAULT_FOLDER_NAME;
+ 
+       const q = encodeURIComponent(
+-        `mimeType='application/vnd.google-apps.folder' and name='${folderName.replace(/'/g, '\\\'')}' and trashed=false`,
++        `mimeType='application/vnd.google-apps.folder' and name='${folderName.replace(/'/g, "\\'")}' and trashed=false`,
+       );
+       const findUrl = `${GOOGLE_DRIVE_FILES_ENDPOINT}?q=${q}&fields=files(id,name)`;
+-      const findResponse = await authorizedFetch({ refreshToken, url: findUrl, init: { method: 'GET' } });
++      const findResponse = await authorizedFetch({
++        refreshToken,
++        url: findUrl,
++        init: { method: 'GET' },
++      });
+       const { files } = (await findResponse.json()) as { files: DriveFile[] };
+       if (files[0]) {
+         return { folderRef: files[0].id };
+@@ -83,7 +88,10 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
+         init: {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+-          body: JSON.stringify({ name: folderName, mimeType: 'application/vnd.google-apps.folder' }),
++          body: JSON.stringify({
++            name: folderName,
++            mimeType: 'application/vnd.google-apps.folder',
++          }),
+         },
+       });
+       const created = (await createResponse.json()) as DriveFile;
+@@ -112,7 +120,10 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
+       const accessToken = await getAccessToken({ refreshToken });
+       const uploadResponse = await fetch(sessionUri, {
+         method: 'PUT',
+-        headers: { 'Content-Type': mimeType || GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE, Authorization: `Bearer ${accessToken}` },
++        headers: {
++          'Content-Type': mimeType || GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE,
++          'Authorization': `Bearer ${accessToken}`,
++        },
+         body: content,
+       });
+       if (!uploadResponse.ok) {
+@@ -147,7 +158,9 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
+       const fields = 'files(id,name,size,modifiedTime)';
+       const url = `${GOOGLE_DRIVE_FILES_ENDPOINT}?q=${q}&fields=${fields}&pageSize=50&orderBy=createdTime desc`;
+       const response = await authorizedFetch({ refreshToken, url, init: { method: 'GET' } });
+-      const { files } = (await response.json()) as { files: (DriveFile & { modifiedTime?: string })[] };
++      const { files } = (await response.json()) as {
++        files: (DriveFile & { modifiedTime?: string })[];
++      };
+       return {
+         files: files.map((f) => ({
+           remoteFileId: f.id,
+diff --git a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.oauth.service.ts b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.oauth.service.ts
+index 8cef5b71..7f21db5e 100644
+--- a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.oauth.service.ts
++++ b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.oauth.service.ts
+@@ -1,5 +1,8 @@
+ import type { Config } from '../../../config/config.types';
+-import { createBackupDriverNotConfiguredError, createBackupDriverOAuthError } from '../../backups.errors';
++import {
++  createBackupDriverNotConfiguredError,
++  createBackupDriverOAuthError,
++} from '../../backups.errors';
+ import {
+   GOOGLE_DRIVE_AUTH_ENDPOINT,
+   GOOGLE_DRIVE_OAUTH_TOKEN_ENDPOINT,
+diff --git a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts
+index 79b93ec5..ec84eff3 100644
+--- a/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts
++++ b/apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts
+@@ -6,7 +6,11 @@ import { organizationIdSchema } from '../../../organizations/organization.schema
+ import { createOrganizationsRepository } from '../../../organizations/organizations.repository';
+ import { ensureUserIsInOrganization } from '../../../organizations/organizations.usecases';
+ import { generateId } from '../../../shared/random/ids';
+-import { validateJsonBody, validateParams, validateQuery } from '../../../shared/validation/validation';
++import {
++  validateJsonBody,
++  validateParams,
++  validateQuery,
++} from '../../../shared/validation/validation';
+ import { createBackupsRepository } from '../../backups.repository';
+ import { createBackupsServices } from '../../backups.services';
+ import { createDestinationUsecase } from '../../backups.usecases';
+@@ -24,14 +28,29 @@ const oauthStateSchema = v.object({
+   displayName: v.string(),
+ });
+ 
+-export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: RouteDefinitionContext) {
+-  const oauthStateStore = kvStore.defineScope({ prefix: 'backups:google-drive:oauth-state', schema: oauthStateSchema });
++export function registerGoogleDriveOAuthRoutes({
++  app,
++  config,
++  db,
++  kvStore,
++}: RouteDefinitionContext) {
++  const oauthStateStore = kvStore.defineScope({
++    prefix: 'backups:google-drive:oauth-state',
++    schema: oauthStateSchema,
++  });
+ 
+   app.post(
+     '/api/organizations/:organizationId/backups/google-drive/connect',
+     requireAuthentication(),
+     validateParams(v.strictObject({ organizationId: organizationIdSchema })),
+-    validateJsonBody(v.object({ displayName: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(100)), 'Google Drive') })),
++    validateJsonBody(
++      v.object({
++        displayName: v.optional(
++          v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
++          'Google Drive',
++        ),
++      }),
++    ),
+     async (context) => {
+       const { userId } = getUser({ context });
+       const { organizationId } = context.req.valid('param');
+@@ -41,9 +60,13 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
+       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+ 
+       const state = generateId({ prefix: 'oauthstate' });
+-      await oauthStateStore.set(state, { organizationId, userId, displayName }, {
+-        expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + OAUTH_STATE_TTL_MS),
+-      });
++      await oauthStateStore.set(
++        state,
++        { organizationId, userId, displayName },
++        {
++          expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + OAUTH_STATE_TTL_MS),
++        },
++      );
+ 
+       const oauth = createGoogleDriveOAuthService({ config });
+       const authorizationUrl = oauth.buildAuthorizationUrl({ state });
+@@ -57,18 +80,28 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
+   // back into the app rather than JSON.
+   app.get(
+     '/api/backups/google-drive/callback',
+-    validateQuery(v.object({ code: v.optional(v.string()), state: v.optional(v.string()), error: v.optional(v.string()) })),
++    validateQuery(
++      v.object({
++        code: v.optional(v.string()),
++        state: v.optional(v.string()),
++        error: v.optional(v.string()),
++      }),
++    ),
+     async (context) => {
+       const { code, state, error } = context.req.valid('query');
+       const redirectBase = (config.appBaseUrl ?? config.client.baseUrl).replace(/\/+$/, '');
+ 
+       if (error || !code || !state) {
+-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_oauth_denied`);
++        return context.redirect(
++          `${redirectBase}/organizations?backupError=google_drive_oauth_denied`,
++        );
+       }
+ 
+       const statePayload = await oauthStateStore.get(state);
+       if (!statePayload) {
+-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_oauth_expired`);
++        return context.redirect(
++          `${redirectBase}/organizations?backupError=google_drive_oauth_expired`,
++        );
+       }
+       await oauthStateStore.delete(state);
+ 
+@@ -80,7 +113,9 @@ export function registerGoogleDriveOAuthRoutes({ app, config, db, kvStore }: Rou
+         // skips issuing a new refresh token. Since we always pass prompt=consent
+         // this shouldn't normally happen, but fail loudly if it does rather than
+         // silently storing a destination with no way to refresh.
+-        return context.redirect(`${redirectBase}/organizations?backupError=google_drive_no_refresh_token`);
++        return context.redirect(
++          `${redirectBase}/organizations?backupError=google_drive_no_refresh_token`,
++        );
+       }
+ 
+       const services = createBackupsServices({ config });
+diff --git a/apps/papra-server/src/modules/backups/drivers/local/local.driver.ts b/apps/papra-server/src/modules/backups/drivers/local/local.driver.ts
+index a36fd78e..b0aaf114 100644
+--- a/apps/papra-server/src/modules/backups/drivers/local/local.driver.ts
++++ b/apps/papra-server/src/modules/backups/drivers/local/local.driver.ts
+@@ -22,7 +22,9 @@ export const localBackupDriverFactory = (): BackupDriver => ({
+         await fs.mkdir(path, { recursive: true });
+         return { accountLabel: `Local folder: ${path} (created)` };
+       } catch (mkdirError) {
+-        throw new Error(`Failed to access or create local folder: ${path}. ${(mkdirError as Error).message}`);
++        throw new Error(
++          `Failed to access or create local folder: ${path}. ${(mkdirError as Error).message}`,
++        );
+       }
+     }
+   },
+diff --git a/apps/papra-server/src/modules/backups/drivers/webdav/webdav.driver.ts b/apps/papra-server/src/modules/backups/drivers/webdav/webdav.driver.ts
+index cacdfbb0..b3bd6c55 100644
+--- a/apps/papra-server/src/modules/backups/drivers/webdav/webdav.driver.ts
++++ b/apps/papra-server/src/modules/backups/drivers/webdav/webdav.driver.ts
+@@ -2,7 +2,8 @@ import { Buffer } from 'node:buffer';
+ import { createLogger } from '../../../shared/logger/logger';
+ import { createBackupDriverApiError } from '../../backups.errors';
+ import { defineBackupDriver } from '../drivers.models';
+-import { resolveWebdavRootUrl, type WebdavPreset } from './webdav.presets';
++import type { WebdavPreset } from './webdav.presets';
++import { resolveWebdavRootUrl } from './webdav.presets';
+ 
+ const logger = createLogger({ namespace: 'backups:drivers:webdav' });
+ 
+@@ -14,7 +15,13 @@ type WebdavSettings = {
+   remotePath?: string; // sub-folder under the WebDAV root, e.g. "Papra Backups"
+ };
+ 
+-function getRootUrl({ settings, credentials }: { settings: WebdavSettings; credentials: { username?: string } }): string {
++function getRootUrl({
++  settings,
++  credentials,
++}: {
++  settings: WebdavSettings;
++  credentials: { username?: string };
++}): string {
+   return resolveWebdavRootUrl({
+     preset: settings.preset ?? 'generic',
+     baseUrl: settings.baseUrl,
+@@ -80,7 +87,13 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
+ 
+     async testConnection({ credentials, settings }) {
+       const s = settings as unknown as WebdavSettings;
+-      await request({ settings: s, credentials, path: '', method: 'PROPFIND', headers: { Depth: '0' } });
++      await request({
++        settings: s,
++        credentials,
++        path: '',
++        method: 'PROPFIND',
++        headers: { Depth: '0' },
++      });
+       return { accountLabel: `${credentials.username}@${new URL(s.baseUrl).host}` };
+     },
+ 
+@@ -93,7 +106,12 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
+       const url = joinUrl(root, folderPath);
+       const response = await fetch(url, {
+         method: 'MKCOL',
+-        headers: { Authorization: getAuthHeader({ username: credentials.username!, password: credentials.password! }) },
++        headers: {
++          Authorization: getAuthHeader({
++            username: credentials.username!,
++            password: credentials.password!,
++          }),
++        },
+       });
+       if (!response.ok && response.status !== 405) {
+         throw createBackupDriverApiError();
+@@ -110,7 +128,12 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
+ 
+     async downloadFile({ credentials, settings, remoteFileId }) {
+       const s = settings as unknown as WebdavSettings;
+-      const response = await request({ settings: s, credentials, path: remoteFileId, method: 'GET' });
++      const response = await request({
++        settings: s,
++        credentials,
++        path: remoteFileId,
++        method: 'GET',
++      });
+       const arrayBuffer = await response.arrayBuffer();
+       return Buffer.from(arrayBuffer);
+     },
+diff --git a/apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts b/apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts
+index 2a0046f0..2907a1ab 100644
+--- a/apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts
++++ b/apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts
+@@ -4,6 +4,7 @@ import { createLogger } from '../../shared/logger/logger';
+ import { createBackupsRepository } from '../backups.repository';
+ import { createBackupsServices } from '../backups.services';
+ import { backupDestinationsTable, backupRunsTable } from '../backups.table';
++import { unwrapCredentials } from '../backups.encryption.service';
+ 
+ const logger = createLogger({ namespace: 'backups:tasks:retention-cleanup' });
+ 
+@@ -24,10 +25,13 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+ 
+   const { retentionDays, maxRunsToKeepPerDestination } = config.backups;
+   const isDayRetentionEnabled = retentionDays !== undefined && retentionDays > 0;
+-  const isCountRetentionEnabled = maxRunsToKeepPerDestination !== undefined && maxRunsToKeepPerDestination > 0;
++  const isCountRetentionEnabled =
++    maxRunsToKeepPerDestination !== undefined && maxRunsToKeepPerDestination > 0;
+ 
+   if (!config.backups.kek || (!isDayRetentionEnabled && !isCountRetentionEnabled)) {
+-    logger.info('Backup retention cleanup disabled (BACKUPS_KEK unset, or neither BACKUPS_RETENTION_DAYS nor BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION configured)');
++    logger.info(
++      'Backup retention cleanup disabled (BACKUPS_KEK unset, or neither BACKUPS_RETENTION_DAYS nor BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION configured)',
++    );
+     return;
+   }
+ 
+@@ -52,10 +56,12 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+             remoteFileId: backupRunsTable.remoteFileId,
+           })
+           .from(backupRunsTable)
+-          .where(and(
+-            eq(backupRunsTable.status, 'succeeded'),
+-            lte(backupRunsTable.createdAt, cutoffDate),
+-          ));
++          .where(
++            and(
++              eq(backupRunsTable.status, 'succeeded'),
++              lte(backupRunsTable.createdAt, cutoffDate),
++            ),
++          );
+ 
+         for (const run of oldRuns) {
+           runsById.set(run.id, run);
+@@ -67,7 +73,10 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+       // older ones never breaks the ability to restore from what's left.
+       if (isCountRetentionEnabled) {
+         const destinations = await db
+-          .select({ id: backupDestinationsTable.id, organizationId: backupDestinationsTable.organizationId })
++          .select({
++            id: backupDestinationsTable.id,
++            organizationId: backupDestinationsTable.organizationId,
++          })
+           .from(backupDestinationsTable);
+ 
+         for (const destination of destinations) {
+@@ -79,10 +88,12 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+               remoteFileId: backupRunsTable.remoteFileId,
+             })
+             .from(backupRunsTable)
+-            .where(and(
+-              eq(backupRunsTable.destinationId, destination.id),
+-              eq(backupRunsTable.status, 'succeeded'),
+-            ))
++            .where(
++              and(
++                eq(backupRunsTable.destinationId, destination.id),
++                eq(backupRunsTable.status, 'succeeded'),
++              ),
++            )
+             .orderBy(desc(backupRunsTable.createdAt));
+ 
+           const excessRuns = runs.slice(maxRunsToKeepPerDestination!);
+@@ -106,7 +117,8 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+               });
+ 
+               if (destination) {
+-                const credentials = services.requireEncryption().unwrapCredentials({
++                const credentials = unwrapCredentials({
++                  encryption: services.requireEncryption(),
+                   wrapped: destination.encryptedCredentials,
+                 });
+                 const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
+@@ -118,14 +130,15 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
+                 });
+               }
+             } catch (error) {
+-              logger.warn({ error, runId: run.id }, 'Failed to delete remote backup file; continuing with local cleanup');
++              logger.warn(
++                { error, runId: run.id },
++                'Failed to delete remote backup file; continuing with local cleanup',
++              );
+             }
+           }
+ 
+           // Delete the local run record
+-          await db
+-            .delete(backupRunsTable)
+-            .where(eq(backupRunsTable.id, run.id));
++          await db.delete(backupRunsTable).where(eq(backupRunsTable.id, run.id));
+ 
+           deletedCount++;
+         } catch (error) {
+diff --git a/apps/papra-server/src/modules/backups/tasks/backup-scheduler-tick.task.ts b/apps/papra-server/src/modules/backups/tasks/backup-scheduler-tick.task.ts
+index 4b086d5e..06249102 100644
+--- a/apps/papra-server/src/modules/backups/tasks/backup-scheduler-tick.task.ts
++++ b/apps/papra-server/src/modules/backups/tasks/backup-scheduler-tick.task.ts
+@@ -14,7 +14,9 @@ export async function registerBackupSchedulerTickTask(deps: GlobalDependencies)
+   const { taskServices, config, db } = deps;
+ 
+   if (!config.backups.kek || !config.backups.isSchedulerEnabled) {
+-    logger.info('Backup scheduler disabled (BACKUPS_KEK unset or BACKUPS_IS_SCHEDULER_ENABLED=false)');
++    logger.info(
++      'Backup scheduler disabled (BACKUPS_KEK unset or BACKUPS_IS_SCHEDULER_ENABLED=false)',
++    );
+     return;
+   }
+ 
+diff --git a/apps/papra-server/src/modules/document-share-links/document-share-links.models.ts b/apps/papra-server/src/modules/document-share-links/document-share-links.models.ts
+index c074a402..0330f5c1 100644
+--- a/apps/papra-server/src/modules/document-share-links/document-share-links.models.ts
++++ b/apps/papra-server/src/modules/document-share-links/document-share-links.models.ts
+@@ -14,7 +14,7 @@ import {
+ } from './document-share-links.constants';
+ 
+ export function generateShareLinkId() {
+-  return generateId({ _prefix: SHARE_LINK_ID_PREFIX });
++  return generateId({ prefix: SHARE_LINK_ID_PREFIX });
+ }
+ 
+ export function generateShareToken() {
+diff --git a/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts b/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
+index cadedee3..37194fae 100644
+--- a/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
++++ b/apps/papra-server/src/modules/documents/document-search/events/sync-document-search.handlers.test.ts
+@@ -56,7 +56,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
+-            folderId: null,
++        folderId: null,
+         name: 'Test Document',
+         originalName: 'test-document.pdf',
+         content: 'searchable content',
+@@ -103,7 +103,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
+-            folderId: null,
++        folderId: null,
+         name: 'Updated Document',
+         originalName: 'updated-document.pdf',
+         content: 'updated content',
+@@ -262,7 +262,7 @@ describe('sync-document-search event handlers', () => {
+       const document: Document = {
+         id: 'doc-1',
+         organizationId: 'organization-1',
+-            folderId: null,
++        folderId: null,
+         name: 'Test Document',
+         originalName: 'test-document.pdf',
+         content: 'searchable content',
+diff --git a/apps/papra-server/src/modules/documents/documents.models.test.ts b/apps/papra-server/src/modules/documents/documents.models.test.ts
+index d51d013f..1352f868 100644
+--- a/apps/papra-server/src/modules/documents/documents.models.test.ts
++++ b/apps/papra-server/src/modules/documents/documents.models.test.ts
+@@ -112,7 +112,7 @@ describe('documents models', () => {
+         mimeType: 'text/plain',
+         name: 'file.txt',
+         organizationId: 'org_1',
+-            folderId: null,
++        folderId: null,
+         originalName: 'file.txt',
+         originalSha256Hash: '1234567890',
+         originalSize: 100,
+diff --git a/apps/papra-server/src/modules/documents/documents.models.ts b/apps/papra-server/src/modules/documents/documents.models.ts
+index eea3ecf4..a774b537 100644
+--- a/apps/papra-server/src/modules/documents/documents.models.ts
++++ b/apps/papra-server/src/modules/documents/documents.models.ts
+@@ -34,7 +34,7 @@ export function buildOriginalDocumentKey({
+ }
+ 
+ export function generateDocumentId() {
+-  return generateId({ _prefix: 'doc' });
++  return generateId({ prefix: 'doc' });
+ }
+ 
+ export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: number }) {
+diff --git a/apps/papra-server/src/modules/documents/documents.repository.ts b/apps/papra-server/src/modules/documents/documents.repository.ts
+index 81410a8e..219eb539 100644
+--- a/apps/papra-server/src/modules/documents/documents.repository.ts
++++ b/apps/papra-server/src/modules/documents/documents.repository.ts
+@@ -447,7 +447,9 @@ async function getAllOrganizationUndeletedDocumentsForBackup({
+   const documents = await db
+     .select()
+     .from(documentsTable)
+-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
++    .where(
++      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
++    )
+     .orderBy(documentsTable.createdAt);
+ 
+   return { documents };
+diff --git a/apps/papra-server/src/modules/folders/folders.errors.ts b/apps/papra-server/src/modules/folders/folders.errors.ts
+index d79a44aa..2a481193 100644
+--- a/apps/papra-server/src/modules/folders/folders.errors.ts
++++ b/apps/papra-server/src/modules/folders/folders.errors.ts
+@@ -31,7 +31,8 @@ export const createFolderMaxDepthExceededError = createErrorFactory({
+ });
+ 
+ export const createFolderNotEmptyError = createErrorFactory({
+-  message: 'This folder still contains subfolders or documents. Move or delete them first, or use force delete.',
++  message:
++    'This folder still contains subfolders or documents. Move or delete them first, or use force delete.',
+   code: 'folders.not_empty',
+   statusCode: 409,
+ });
+diff --git a/apps/papra-server/src/modules/folders/folders.repository.ts b/apps/papra-server/src/modules/folders/folders.repository.ts
+index 86fa22e9..3d600720 100644
+--- a/apps/papra-server/src/modules/folders/folders.repository.ts
++++ b/apps/papra-server/src/modules/folders/folders.repository.ts
+@@ -5,10 +5,7 @@ import { documentsTable } from '../documents/documents.table';
+ import { isUniqueConstraintError } from '../shared/db/constraints.models';
+ import { omitUndefined } from '../shared/objects';
+ import { isDefined } from '../shared/utils';
+-import {
+-  createFolderAlreadyExistsError,
+-  createFolderNotFoundError,
+-} from './folders.errors';
++import { createFolderAlreadyExistsError, createFolderNotFoundError } from './folders.errors';
+ import { foldersTable } from './folders.table';
+ 
+ export type FoldersRepository = ReturnType<typeof createFoldersRepository>;
+@@ -109,7 +106,9 @@ async function getOrganizationFolders({
+       documentsCount: count(documentsTable.id).as('documentsCount'),
+     })
+     .from(documentsTable)
+-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
++    .where(
++      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
++    )
+     .groupBy(documentsTable.folderId)
+     .as('document_counts');
+ 
+@@ -162,7 +161,9 @@ async function getChildFolders({
+       documentsCount: count(documentsTable.id).as('documentsCount'),
+     })
+     .from(documentsTable)
+-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
++    .where(
++      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
++    )
+     .groupBy(documentsTable.folderId)
+     .as('document_counts');
+ 
+diff --git a/apps/papra-server/src/modules/folders/folders.routes.ts b/apps/papra-server/src/modules/folders/folders.routes.ts
+index 74df7410..a9f3b11b 100644
+--- a/apps/papra-server/src/modules/folders/folders.routes.ts
++++ b/apps/papra-server/src/modules/folders/folders.routes.ts
+@@ -10,11 +10,7 @@ import { formatDocumentsForApi } from '../documents/documents.models';
+ import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
+ import { createFolderNotFoundError } from './folders.errors';
+ import { createFoldersRepository } from './folders.repository';
+-import {
+-  createFolderBodySchema,
+-  folderIdSchema,
+-  updateFolderBodySchema,
+-} from './folders.schemas';
++import { createFolderBodySchema, folderIdSchema, updateFolderBodySchema } from './folders.schemas';
+ import { createFolder, deleteFolder, moveOrRenameFolder } from './folders.usecases';
+ 
+ export function registerFoldersRoutes(context: RouteDefinitionContext) {
+diff --git a/apps/papra-server/src/modules/folders/folders.table.ts b/apps/papra-server/src/modules/folders/folders.table.ts
+index a494c7ed..3b9bca09 100644
+--- a/apps/papra-server/src/modules/folders/folders.table.ts
++++ b/apps/papra-server/src/modules/folders/folders.table.ts
+@@ -1,4 +1,5 @@
+-import { sqliteTable, text, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
++import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
++import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+ import { organizationsTable } from '../organizations/organizations.table';
+ import { createPrimaryKeyField, createTimestampColumns } from '../shared/db/columns.helpers';
+ import { folderIdPrefix } from './folders.constants';
+diff --git a/apps/papra-server/src/modules/folders/folders.usecases.ts b/apps/papra-server/src/modules/folders/folders.usecases.ts
+index 88df2e71..df62795a 100644
+--- a/apps/papra-server/src/modules/folders/folders.usecases.ts
++++ b/apps/papra-server/src/modules/folders/folders.usecases.ts
+@@ -57,7 +57,10 @@ export async function createFolder({
+   await ensureParentFolderExists({ parentId, organizationId, foldersRepository });
+ 
+   if (parentId) {
+-    const { depth } = await foldersRepository.getFolderDepth({ folderId: parentId, organizationId });
++    const { depth } = await foldersRepository.getFolderDepth({
++      folderId: parentId,
++      organizationId,
++    });
+ 
+     if (depth + 1 >= MAX_FOLDER_NESTING_DEPTH) {
+       throw createFolderMaxDepthExceededError();
+diff --git a/apps/papra-server/src/modules/kv-store/kv-store.ts b/apps/papra-server/src/modules/kv-store/kv-store.ts
+index 41794b9d..decd96b8 100644
+--- a/apps/papra-server/src/modules/kv-store/kv-store.ts
++++ b/apps/papra-server/src/modules/kv-store/kv-store.ts
+@@ -11,7 +11,7 @@ import { joinKeyParts } from './kv-store.models';
+ 
+ export function createKvStore({
+   driver,
+-  logger = createLogger({ _namespace: 'kv-store' }),
++  logger = createLogger({ namespace: 'kv-store' }),
+ }: {
+   driver: KvStoreDriver;
+   logger?: Logger;
+diff --git a/apps/papra-server/src/modules/organizations/organizations.models.ts b/apps/papra-server/src/modules/organizations/organizations.models.ts
+index 7d2a86f5..121eebaf 100644
+--- a/apps/papra-server/src/modules/organizations/organizations.models.ts
++++ b/apps/papra-server/src/modules/organizations/organizations.models.ts
+@@ -22,7 +22,7 @@ export function canUserRemoveMemberFromOrganization({
+ }
+ 
+ export function generateOrganizationId() {
+-  return generateId({ _prefix: ORGANIZATION_ID_PREFIX });
++  return generateId({ prefix: ORGANIZATION_ID_PREFIX });
+ }
+ 
+ export function getUserMaxOrganizationCount({
+diff --git a/apps/papra-server/src/start.ts b/apps/papra-server/src/start.ts
+index 92fadae0..a54ab901 100644
+--- a/apps/papra-server/src/start.ts
++++ b/apps/papra-server/src/start.ts
+@@ -107,7 +107,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
+ }
+ 
+ export async function startApp() {
+-  const logger = createLogger({ _namespace: 'app-server' });
++  const logger = createLogger({ namespace: 'app-server' });
+ 
+   const { config } = await parseConfig({ env });
+ 
+diff --git a/docker-compose.yml b/docker-compose.yml
+index ef100c21..5ea0d885 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -4,7 +4,8 @@ services:
+   papra:
+     # Use the locally built image or pull from registry
+     image: ghcr.io/secureman/papra:arm64
+-    platform: linux/arm64
++    platform:
++      linux/arm64
+       # Build for aarch64 (ARM64) - remove for amd64 or use --platform flag
+       #platform: linux/arm64
+       # Uncomment below to build for your host architecture automatically
+@@ -12,17 +13,17 @@ services:
+     container_name: papra
+     restart: unless-stopped
+     ports:
+-      - "1221:1221"
++      - '1221:1221'
+     environment:
+       # Required configuration
+       - NODE_ENV=production
+       - AUTH_SECRET=${AUTH_SECRET}
+       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:1221}
+-      
++
+       # Optional: Database configuration (SQLite is default)
+       # For production, consider using Turso or other supported databases
+       # - DATABASE_URL=${DATABASE_URL}
+-      
++
+       # Optional: Backup configuration
+       - BACKUPS_KEK=${BACKUPS_KEK}
+       - BACKUPS_GOOGLE_OAUTH_CLIENT_ID=${BACKUPS_GOOGLE_OAUTH_CLIENT_ID}
+@@ -33,11 +34,11 @@ services:
+       # Optional: Server configuration
+       - PORT=${PORT:-1221}
+       - SERVER_HOSTNAME=0.0.0.0
+-      
++
+       # Optional: Enable/disable features
+       - AUTH_FIRST_USER_AS_ADMIN=${AUTH_FIRST_USER_AS_ADMIN:-true}
+       - AUTH_IS_REGISTRATION_ENABLED=${AUTH_IS_REGISTRATION_ENABLED:-true}
+-      
++
+       # Optional: Tracking (disabled by default in self-hosted)
+       - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+       - POSTHOG_HOST=${POSTHOG_HOST}
+@@ -47,7 +48,8 @@ services:
+       - papra_documents:/app/apps/papra-server/local-documents
+       - papra_ingestion:/app/apps/papra-server/ingestion
+     healthcheck:
+-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1221/api/health"]
++      test:
++        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:1221/api/health']
+       interval: 30s
+       timeout: 3s
+       retries: 3
+diff --git a/oxfmt.config.ts b/oxfmt.config.ts
+index 43be264a..bdba88af 100644
+--- a/oxfmt.config.ts
++++ b/oxfmt.config.ts
+@@ -17,5 +17,8 @@ export default defineConfig({
+     // (the markdown/JSX boundary is ambiguous and indentation-sensitive). Plain .md is fine.
+     '**/*.mdx',
+     'apps/docs/src/scripts/posthog.script.js',
++    // Minified/bundled build artifact checked in for migration testing —
++    // not source, shouldn't be pretty-printed.
++    'test-dist-scripts/**',
+   ],
+ });

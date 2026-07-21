@@ -9,7 +9,10 @@ export type BackupRun = Expand<typeof backupRunsTable.$inferSelect>;
 export type DbInsertableBackupRun = Expand<typeof backupRunsTable.$inferInsert>;
 
 // Public-facing shape: never includes encryptedCredentials or wrappedBackupKey.
-export type PublicBackupDestination = Omit<BackupDestination, 'encryptedCredentials' | 'wrappedBackupKey'> & {
+export type PublicBackupDestination = Omit<
+  BackupDestination,
+  'encryptedCredentials' | 'wrappedBackupKey'
+> & {
   driver: BackupDriverName;
 };
 

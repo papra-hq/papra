@@ -25,7 +25,7 @@ export async function invalidateOrganizationDocumentsQuery({
 function getConfirmMessage(documentName: string) {
   return (
     <>
-      Are you sure you want to delete <span _class="font-bold">{documentName}</span>?
+      Are you sure you want to delete <span class="font-bold">{documentName}</span>?
     </>
   );
 }

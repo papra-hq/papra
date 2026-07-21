@@ -17,8 +17,14 @@ type FtpSettings = {
 
 // Defensive: strip a pasted "ftp://" prefix and split out a trailing ":port" so a
 // messy Host field still connects instead of failing DNS resolution.
-function parseHostAndPort({ host, port }: { host: string; port?: number }): { host: string; port: number } {
-  let value = host.trim().replace(/^ftps?:\/\//i, '').replace(/\/+$/, '');
+function parseHostAndPort({ host, port }: { host: string; port?: number }): {
+  host: string;
+  port: number;
+} {
+  let value = host
+    .trim()
+    .replace(/^ftps?:\/\//i, '')
+    .replace(/\/+$/, '');
   let parsedPort = port;
 
   const portMatch = value.match(/^(.*):(\d+)$/);
@@ -124,7 +130,11 @@ export const ftpBackupDriverFactory = defineBackupDriver(() => {
 
     async deleteFile({ credentials, settings, remoteFileId }) {
       const s = settings as unknown as FtpSettings;
-      await withClient({ credentials, settings: s, fn: async (client) => client.remove(remoteFileId) });
+      await withClient({
+        credentials,
+        settings: s,
+        fn: async (client) => client.remove(remoteFileId),
+      });
     },
 
     async listFiles({ credentials, settings, folderRef }) {

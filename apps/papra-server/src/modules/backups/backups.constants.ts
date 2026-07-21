@@ -1,7 +1,9 @@
 import { createPrefixedIdRegex } from '../shared/random/ids.constants.models';
 
 export const backupDestinationIdPrefix = 'bkdst';
-export const backupDestinationIdRegex = createPrefixedIdRegex({ prefix: backupDestinationIdPrefix });
+export const backupDestinationIdRegex = createPrefixedIdRegex({
+  prefix: backupDestinationIdPrefix,
+});
 
 export const backupRunIdPrefix = 'bkrun';
 export const backupRunIdRegex = createPrefixedIdRegex({ prefix: backupRunIdPrefix });

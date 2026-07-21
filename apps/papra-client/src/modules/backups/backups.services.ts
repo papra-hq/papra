@@ -1,5 +1,11 @@
 import type { AsDto } from '../shared/http/http-client.types';
-import type { BackupDestination, BackupDriverInfo, BackupDriverName, BackupRun, BackupSchedule } from './backups.types';
+import type {
+  BackupDestination,
+  BackupDriverInfo,
+  BackupDriverName,
+  BackupRun,
+  BackupSchedule,
+} from './backups.types';
 import { apiClient } from '../shared/http/api-client';
 import { getFormData } from '../shared/http/http-client.models';
 
@@ -69,7 +75,13 @@ export async function createBackupDestination({
 
 // Google Drive doesn't take a credentials form — it's OAuth. This kicks off the
 // flow; the caller should redirect window.location to the returned URL.
-export async function startGoogleDriveConnect({ organizationId, displayName }: { organizationId: string; displayName?: string }) {
+export async function startGoogleDriveConnect({
+  organizationId,
+  displayName,
+}: {
+  organizationId: string;
+  displayName?: string;
+}) {
   return apiClient<{ authorizationUrl: string }>({
     path: `/api/organizations/${organizationId}/backups/google-drive/connect`,
     method: 'POST',
@@ -117,14 +129,26 @@ export async function updateBackupSchedule({
   });
 }
 
-export async function deleteBackupDestination({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
+export async function deleteBackupDestination({
+  organizationId,
+  destinationId,
+}: {
+  organizationId: string;
+  destinationId: string;
+}) {
   return apiClient<{ deleted: boolean }>({
     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}`,
     method: 'DELETE',
   });
 }
 
-export async function listBackupRuns({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
+export async function listBackupRuns({
+  organizationId,
+  destinationId,
+}: {
+  organizationId: string;
+  destinationId: string;
+}) {
   const { runs } = await apiClient<{ runs: AsDto<BackupRun>[] }>({
     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/runs`,
     method: 'GET',
@@ -132,7 +156,13 @@ export async function listBackupRuns({ organizationId, destinationId }: { organi
   return { runs: runs.map(coerceRunDates) };
 }
 
-export async function runBackupNow({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
+export async function runBackupNow({
+  organizationId,
+  destinationId,
+}: {
+  organizationId: string;
+  destinationId: string;
+}) {
   return apiClient<{ runId: string }>({
     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/runs`,
     method: 'POST',
@@ -154,8 +184,16 @@ export async function deleteBackupRun({
   });
 }
 
-export async function listRemoteBackupFiles({ organizationId, destinationId }: { organizationId: string; destinationId: string }) {
-  return apiClient<{ files: { remoteFileId: string; name: string; size?: number; modifiedAt?: string }[] }>({
+export async function listRemoteBackupFiles({
+  organizationId,
+  destinationId,
+}: {
+  organizationId: string;
+  destinationId: string;
+}) {
+  return apiClient<{
+    files: { remoteFileId: string; name: string; size?: number; modifiedAt?: string }[];
+  }>({
     path: `${DESTINATIONS_PATH(organizationId)}/${destinationId}/remote-files`,
     method: 'GET',
   });
@@ -204,7 +242,13 @@ export async function restoreBackupRun({
 
 // No destination, no credentials, no connection of any kind — you already have
 // the backup file (copied off wherever) and just upload it directly.
-export async function restoreFromUploadedFile({ organizationId, file }: { organizationId: string; file: File }) {
+export async function restoreFromUploadedFile({
+  organizationId,
+  file,
+}: {
+  organizationId: string;
+  file: File;
+}) {
   return apiClient<{
     restoredDocumentsCount: number;
     untrashedDocumentsCount: number;

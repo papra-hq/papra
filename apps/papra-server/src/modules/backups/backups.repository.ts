@@ -60,7 +60,12 @@ async function getDestinationById({
   const [destination] = await db
     .select()
     .from(backupDestinationsTable)
-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
+    .where(
+      and(
+        eq(backupDestinationsTable.id, destinationId),
+        eq(backupDestinationsTable.organizationId, organizationId),
+      ),
+    )
     .limit(1);
   return { destination };
 }
@@ -124,7 +129,12 @@ async function deleteDestination({
 }): Promise<{ deleted: boolean }> {
   const result = await db
     .delete(backupDestinationsTable)
-    .where(and(eq(backupDestinationsTable.id, destinationId), eq(backupDestinationsTable.organizationId, organizationId)))
+    .where(
+      and(
+        eq(backupDestinationsTable.id, destinationId),
+        eq(backupDestinationsTable.organizationId, organizationId),
+      ),
+    )
     .returning({ id: backupDestinationsTable.id });
   return { deleted: result.length > 0 };
 }
@@ -209,7 +219,17 @@ async function updateRunStatus({
 }: {
   runId: string;
   status: BackupRunStatus;
-  fields?: Partial<Pick<BackupRun, 'remoteFileId' | 'remoteFileName' | 'documentsCount' | 'totalSizeBytes' | 'errorMessage' | 'completedAt'>>;
+  fields?: Partial<
+    Pick<
+      BackupRun,
+      | 'remoteFileId'
+      | 'remoteFileName'
+      | 'documentsCount'
+      | 'totalSizeBytes'
+      | 'errorMessage'
+      | 'completedAt'
+    >
+  >;
   db: Database;
 }): Promise<void> {
   await db
@@ -228,7 +248,12 @@ async function getInProgressRunForDestination({
   const [run] = await db
     .select()
     .from(backupRunsTable)
-    .where(and(eq(backupRunsTable.destinationId, destinationId), inArray(backupRunsTable.status, ['pending', 'uploading'])))
+    .where(
+      and(
+        eq(backupRunsTable.destinationId, destinationId),
+        inArray(backupRunsTable.status, ['pending', 'uploading']),
+      ),
+    )
     .limit(1);
   return { run };
 }
@@ -261,4 +286,3 @@ async function markStaleInProgressRunsAsFailed({
     .returning({ id: backupRunsTable.id });
   return { markedCount: result.length };
 }
-

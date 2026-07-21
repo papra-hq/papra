@@ -14,7 +14,9 @@ export async function registerBackupSchedulerTickTask(deps: GlobalDependencies) 
   const { taskServices, config, db } = deps;
 
   if (!config.backups.kek || !config.backups.isSchedulerEnabled) {
-    logger.info('Backup scheduler disabled (BACKUPS_KEK unset or BACKUPS_IS_SCHEDULER_ENABLED=false)');
+    logger.info(
+      'Backup scheduler disabled (BACKUPS_KEK unset or BACKUPS_IS_SCHEDULER_ENABLED=false)',
+    );
     return;
   }
 

@@ -65,13 +65,18 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
 
     async ensureRemoteFolder({ credentials, settings }) {
       const refreshToken = credentials.refreshToken!;
-      const folderName = (settings.folderName as string | undefined) ?? GOOGLE_DRIVE_DEFAULT_FOLDER_NAME;
+      const folderName =
+        (settings.folderName as string | undefined) ?? GOOGLE_DRIVE_DEFAULT_FOLDER_NAME;
 
       const q = encodeURIComponent(
-        `mimeType='application/vnd.google-apps.folder' and name='${folderName.replace(/'/g, '\\\'')}' and trashed=false`,
+        `mimeType='application/vnd.google-apps.folder' and name='${folderName.replace(/'/g, "\\'")}' and trashed=false`,
       );
       const findUrl = `${GOOGLE_DRIVE_FILES_ENDPOINT}?q=${q}&fields=files(id,name)`;
-      const findResponse = await authorizedFetch({ refreshToken, url: findUrl, init: { method: 'GET' } });
+      const findResponse = await authorizedFetch({
+        refreshToken,
+        url: findUrl,
+        init: { method: 'GET' },
+      });
       const { files } = (await findResponse.json()) as { files: DriveFile[] };
       if (files[0]) {
         return { folderRef: files[0].id };
@@ -83,7 +88,10 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
         init: {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: folderName, mimeType: 'application/vnd.google-apps.folder' }),
+          body: JSON.stringify({
+            name: folderName,
+            mimeType: 'application/vnd.google-apps.folder',
+          }),
         },
       });
       const created = (await createResponse.json()) as DriveFile;
@@ -112,7 +120,10 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
       const accessToken = await getAccessToken({ refreshToken });
       const uploadResponse = await fetch(sessionUri, {
         method: 'PUT',
-        headers: { 'Content-Type': mimeType || GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE, Authorization: `Bearer ${accessToken}` },
+        headers: {
+          'Content-Type': mimeType || GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE,
+          'Authorization': `Bearer ${accessToken}`,
+        },
         body: content,
       });
       if (!uploadResponse.ok) {
@@ -147,7 +158,9 @@ export const googleDriveBackupDriverFactory = defineBackupDriver(({ config }) =>
       const fields = 'files(id,name,size,modifiedTime)';
       const url = `${GOOGLE_DRIVE_FILES_ENDPOINT}?q=${q}&fields=${fields}&pageSize=50&orderBy=createdTime desc`;
       const response = await authorizedFetch({ refreshToken, url, init: { method: 'GET' } });
-      const { files } = (await response.json()) as { files: (DriveFile & { modifiedTime?: string })[] };
+      const { files } = (await response.json()) as {
+        files: (DriveFile & { modifiedTime?: string })[];
+      };
       return {
         files: files.map((f) => ({
           remoteFileId: f.id,

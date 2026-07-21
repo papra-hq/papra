@@ -31,7 +31,8 @@ export const createBackupAlreadyInProgressError = createErrorFactory({
 });
 
 export const createBackupDriverApiError = createErrorFactory({
-  message: 'The backup destination rejected the request. Check the connection details and try again.',
+  message:
+    'The backup destination rejected the request. Check the connection details and try again.',
   code: 'backups.driver_api_error',
   statusCode: 502,
 });

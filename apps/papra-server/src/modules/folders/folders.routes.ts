@@ -10,11 +10,7 @@ import { formatDocumentsForApi } from '../documents/documents.models';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createFolderNotFoundError } from './folders.errors';
 import { createFoldersRepository } from './folders.repository';
-import {
-  createFolderBodySchema,
-  folderIdSchema,
-  updateFolderBodySchema,
-} from './folders.schemas';
+import { createFolderBodySchema, folderIdSchema, updateFolderBodySchema } from './folders.schemas';
 import { createFolder, deleteFolder, moveOrRenameFolder } from './folders.usecases';
 
 export function registerFoldersRoutes(context: RouteDefinitionContext) {

@@ -100,7 +100,11 @@ function packTar(entries: TarEntry[]): Buffer {
 
 function readOctal(buffer: Buffer, offset: number, length: number): number {
   // Trim trailing NULs and spaces.
-  const raw = buffer.subarray(offset, offset + length).toString('utf8').replace(/\0+$/g, '').trimEnd();
+  const raw = buffer
+    .subarray(offset, offset + length)
+    .toString('utf8')
+    .replace(/\0+$/g, '')
+    .trimEnd();
   if (raw.length === 0) {
     return 0;
   }
@@ -109,7 +113,11 @@ function readOctal(buffer: Buffer, offset: number, length: number): number {
 
 function readString(buffer: Buffer, offset: number, length: number): string {
   // Tar header strings are NUL-terminated, NOT NUL-padded everywhere. Trim NULs.
-  return buffer.subarray(offset, offset + length).toString('utf8').replace(/\0+$/g, '').trimEnd();
+  return buffer
+    .subarray(offset, offset + length)
+    .toString('utf8')
+    .replace(/\0+$/g, '')
+    .trimEnd();
 }
 
 // Unpack a tarball Buffer into its entries. Stops at the first all-zero block.
@@ -138,7 +146,13 @@ export function createBackupPackagerService() {
   return {
     // Build a compressed backup from the manifest + file map. Returns the
     // final bytes ready to be encrypted and uploaded.
-    async pack({ manifest, files }: { manifest: object; files: { name: string; content: Buffer }[] }): Promise<Buffer> {
+    async pack({
+      manifest,
+      files,
+    }: {
+      manifest: object;
+      files: { name: string; content: Buffer }[];
+    }): Promise<Buffer> {
       const entries: TarEntry[] = [
         { name: 'manifest.json', content: Buffer.from(JSON.stringify(manifest, null, 2), 'utf8') },
         ...files.map(({ name, content }) => ({ name: `files/${name}`, content })),
@@ -149,7 +163,11 @@ export function createBackupPackagerService() {
 
     // Inverse of pack: decompress + extract. Returns the manifest object and
     // a map of file path → Buffer.
-    async unpack({ archive }: { archive: Buffer }): Promise<{ manifest: object; files: Map<string, Buffer> }> {
+    async unpack({
+      archive,
+    }: {
+      archive: Buffer;
+    }): Promise<{ manifest: object; files: Map<string, Buffer> }> {
       const tarball = await gunzip(archive);
       const entries = unpackTar(tarball);
 

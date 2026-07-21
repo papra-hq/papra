@@ -4,6 +4,7 @@ import { createLogger } from '../../shared/logger/logger';
 import { createBackupsRepository } from '../backups.repository';
 import { createBackupsServices } from '../backups.services';
 import { backupDestinationsTable, backupRunsTable } from '../backups.table';
+import { unwrapCredentials } from '../backups.encryption.service';
 
 const logger = createLogger({ namespace: 'backups:tasks:retention-cleanup' });
 
@@ -24,10 +25,13 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
 
   const { retentionDays, maxRunsToKeepPerDestination } = config.backups;
   const isDayRetentionEnabled = retentionDays !== undefined && retentionDays > 0;
-  const isCountRetentionEnabled = maxRunsToKeepPerDestination !== undefined && maxRunsToKeepPerDestination > 0;
+  const isCountRetentionEnabled =
+    maxRunsToKeepPerDestination !== undefined && maxRunsToKeepPerDestination > 0;
 
   if (!config.backups.kek || (!isDayRetentionEnabled && !isCountRetentionEnabled)) {
-    logger.info('Backup retention cleanup disabled (BACKUPS_KEK unset, or neither BACKUPS_RETENTION_DAYS nor BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION configured)');
+    logger.info(
+      'Backup retention cleanup disabled (BACKUPS_KEK unset, or neither BACKUPS_RETENTION_DAYS nor BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION configured)',
+    );
     return;
   }
 
@@ -52,10 +56,12 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
             remoteFileId: backupRunsTable.remoteFileId,
           })
           .from(backupRunsTable)
-          .where(and(
-            eq(backupRunsTable.status, 'succeeded'),
-            lte(backupRunsTable.createdAt, cutoffDate),
-          ));
+          .where(
+            and(
+              eq(backupRunsTable.status, 'succeeded'),
+              lte(backupRunsTable.createdAt, cutoffDate),
+            ),
+          );
 
         for (const run of oldRuns) {
           runsById.set(run.id, run);
@@ -67,7 +73,10 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
       // older ones never breaks the ability to restore from what's left.
       if (isCountRetentionEnabled) {
         const destinations = await db
-          .select({ id: backupDestinationsTable.id, organizationId: backupDestinationsTable.organizationId })
+          .select({
+            id: backupDestinationsTable.id,
+            organizationId: backupDestinationsTable.organizationId,
+          })
           .from(backupDestinationsTable);
 
         for (const destination of destinations) {
@@ -79,10 +88,12 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
               remoteFileId: backupRunsTable.remoteFileId,
             })
             .from(backupRunsTable)
-            .where(and(
-              eq(backupRunsTable.destinationId, destination.id),
-              eq(backupRunsTable.status, 'succeeded'),
-            ))
+            .where(
+              and(
+                eq(backupRunsTable.destinationId, destination.id),
+                eq(backupRunsTable.status, 'succeeded'),
+              ),
+            )
             .orderBy(desc(backupRunsTable.createdAt));
 
           const excessRuns = runs.slice(maxRunsToKeepPerDestination!);
@@ -106,7 +117,8 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
               });
 
               if (destination) {
-                const credentials = services.requireEncryption().unwrapCredentials({
+                const credentials = unwrapCredentials({
+                  encryption: services.requireEncryption(),
                   wrapped: destination.encryptedCredentials,
                 });
                 const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
@@ -118,14 +130,15 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
                 });
               }
             } catch (error) {
-              logger.warn({ error, runId: run.id }, 'Failed to delete remote backup file; continuing with local cleanup');
+              logger.warn(
+                { error, runId: run.id },
+                'Failed to delete remote backup file; continuing with local cleanup',
+              );
             }
           }
 
           // Delete the local run record
-          await db
-            .delete(backupRunsTable)
-            .where(eq(backupRunsTable.id, run.id));
+          await db.delete(backupRunsTable).where(eq(backupRunsTable.id, run.id));
 
           deletedCount++;
         } catch (error) {

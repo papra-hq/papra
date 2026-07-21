@@ -34,7 +34,7 @@ export function buildOriginalDocumentKey({
 }
 
 export function generateDocumentId() {
-  return generateId({ _prefix: 'doc' });
+  return generateId({ prefix: 'doc' });
 }
 
 export function isDocumentSizeLimitEnabled({ maxUploadSize }: { maxUploadSize: number }) {

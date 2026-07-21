@@ -112,7 +112,7 @@ describe('documents models', () => {
         mimeType: 'text/plain',
         name: 'file.txt',
         organizationId: 'org_1',
-            folderId: null,
+        folderId: null,
         originalName: 'file.txt',
         originalSha256Hash: '1234567890',
         originalSize: 100,

@@ -151,19 +151,19 @@ curl http://localhost:1221/api/health
 
 ### Required
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `AUTH_SECRET` | Authentication secret (min 32 chars) | `openssl rand -hex 48` |
-| `APP_BASE_URL` | Base URL for your instance | `http://localhost:1221` |
+| Variable       | Description                          | Example                 |
+| -------------- | ------------------------------------ | ----------------------- |
+| `AUTH_SECRET`  | Authentication secret (min 32 chars) | `openssl rand -hex 48`  |
+| `APP_BASE_URL` | Base URL for your instance           | `http://localhost:1221` |
 
 ### Optional but Recommended
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `BACKUPS_KEK` | Backup encryption key | - | `openssl rand -hex 32` |
-| `BACKUPS_RETENTION_DAYS` | Days to keep backups | - | `30` |
-| `AUTH_FIRST_USER_AS_ADMIN` | First user is admin | `true` | `true` |
-| `AUTH_IS_REGISTRATION_ENABLED` | Allow registration | `true` | `true` |
+| Variable                       | Description           | Default | Example                |
+| ------------------------------ | --------------------- | ------- | ---------------------- |
+| `BACKUPS_KEK`                  | Backup encryption key | -       | `openssl rand -hex 32` |
+| `BACKUPS_RETENTION_DAYS`       | Days to keep backups  | -       | `30`                   |
+| `AUTH_FIRST_USER_AS_ADMIN`     | First user is admin   | `true`  | `true`                 |
+| `AUTH_IS_REGISTRATION_ENABLED` | Allow registration    | `true`  | `true`                 |
 
 ### Database
 
@@ -186,17 +186,17 @@ Note: Redirect URI must match what's configured in Google Cloud Console.
 
 The following volumes are recommended for persistent data:
 
-| Volume | Purpose | Recommended Mount |
-|--------|---------|-------------------|
-| `/app/apps/papra-server/data` | SQLite database, backups metadata | Host directory |
-| `/app/apps/papra-server/local-documents` | Document files | Host directory |
-| `/app/apps/papra-server/ingestion` | Ingestion folder | Host directory |
+| Volume                                   | Purpose                           | Recommended Mount |
+| ---------------------------------------- | --------------------------------- | ----------------- |
+| `/app/apps/papra-server/data`            | SQLite database, backups metadata | Host directory    |
+| `/app/apps/papra-server/local-documents` | Document files                    | Host directory    |
+| `/app/apps/papra-server/ingestion`       | Ingestion folder                  | Host directory    |
 
 ## Ports
 
 | Port | Protocol | Description |
-|------|----------|-------------|
-| 1221 | HTTP | API server |
+| ---- | -------- | ----------- |
+| 1221 | HTTP     | API server  |
 
 ## Health Checks
 

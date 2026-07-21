@@ -75,7 +75,9 @@ export type BackupDriver = {
   }) => Promise<{ files: BackupRemoteFile[] }>;
 };
 
-export type BackupDriverFactory = (args: { config: import('../../config/config.types').Config }) => BackupDriver;
+export type BackupDriverFactory = (args: {
+  config: import('../../config/config.types').Config;
+}) => BackupDriver;
 
 export function defineBackupDriver<T extends BackupDriverFactory>(factory: T) {
   return factory;

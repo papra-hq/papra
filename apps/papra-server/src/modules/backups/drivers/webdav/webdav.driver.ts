@@ -2,7 +2,8 @@ import { Buffer } from 'node:buffer';
 import { createLogger } from '../../../shared/logger/logger';
 import { createBackupDriverApiError } from '../../backups.errors';
 import { defineBackupDriver } from '../drivers.models';
-import { resolveWebdavRootUrl, type WebdavPreset } from './webdav.presets';
+import type { WebdavPreset } from './webdav.presets';
+import { resolveWebdavRootUrl } from './webdav.presets';
 
 const logger = createLogger({ namespace: 'backups:drivers:webdav' });
 
@@ -14,7 +15,13 @@ type WebdavSettings = {
   remotePath?: string; // sub-folder under the WebDAV root, e.g. "Papra Backups"
 };
 
-function getRootUrl({ settings, credentials }: { settings: WebdavSettings; credentials: { username?: string } }): string {
+function getRootUrl({
+  settings,
+  credentials,
+}: {
+  settings: WebdavSettings;
+  credentials: { username?: string };
+}): string {
   return resolveWebdavRootUrl({
     preset: settings.preset ?? 'generic',
     baseUrl: settings.baseUrl,
@@ -80,7 +87,13 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
 
     async testConnection({ credentials, settings }) {
       const s = settings as unknown as WebdavSettings;
-      await request({ settings: s, credentials, path: '', method: 'PROPFIND', headers: { Depth: '0' } });
+      await request({
+        settings: s,
+        credentials,
+        path: '',
+        method: 'PROPFIND',
+        headers: { Depth: '0' },
+      });
       return { accountLabel: `${credentials.username}@${new URL(s.baseUrl).host}` };
     },
 
@@ -93,7 +106,12 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
       const url = joinUrl(root, folderPath);
       const response = await fetch(url, {
         method: 'MKCOL',
-        headers: { Authorization: getAuthHeader({ username: credentials.username!, password: credentials.password! }) },
+        headers: {
+          Authorization: getAuthHeader({
+            username: credentials.username!,
+            password: credentials.password!,
+          }),
+        },
       });
       if (!response.ok && response.status !== 405) {
         throw createBackupDriverApiError();
@@ -110,7 +128,12 @@ export const webdavBackupDriverFactory = defineBackupDriver(() => {
 
     async downloadFile({ credentials, settings, remoteFileId }) {
       const s = settings as unknown as WebdavSettings;
-      const response = await request({ settings: s, credentials, path: remoteFileId, method: 'GET' });
+      const response = await request({
+        settings: s,
+        credentials,
+        path: remoteFileId,
+        method: 'GET',
+      });
       const arrayBuffer = await response.arrayBuffer();
       return Buffer.from(arrayBuffer);
     },

@@ -6,7 +6,10 @@ export const GOOGLE_DRIVE_USERINFO_ENDPOINT = 'https://www.googleapis.com/oauth2
 
 // `drive.file` only lets the app see files/folders IT created — Papra never sees
 // the rest of the user's Drive.
-export const GOOGLE_DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/userinfo.email'];
+export const GOOGLE_DRIVE_SCOPES = [
+  'https://www.googleapis.com/auth/drive.file',
+  'https://www.googleapis.com/auth/userinfo.email',
+];
 
 export const GOOGLE_DRIVE_DEFAULT_FOLDER_NAME = 'Papra Backups';
 export const GOOGLE_DRIVE_BACKUP_FILE_MIME_TYPE = 'application/octet-stream';

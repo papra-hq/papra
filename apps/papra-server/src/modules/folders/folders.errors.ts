@@ -31,7 +31,8 @@ export const createFolderMaxDepthExceededError = createErrorFactory({
 });
 
 export const createFolderNotEmptyError = createErrorFactory({
-  message: 'This folder still contains subfolders or documents. Move or delete them first, or use force delete.',
+  message:
+    'This folder still contains subfolders or documents. Move or delete them first, or use force delete.',
   code: 'folders.not_empty',
   statusCode: 409,
 });

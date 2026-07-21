@@ -5,7 +5,13 @@ import type { BackupSchedule } from './backups.types';
 // doc comment); if you run the server in a different timezone than you want
 // backups scheduled in, that's a config concern, not something the picker needs
 // to model.
-export function computeNextScheduledAt({ schedule, from }: { schedule: BackupSchedule; from: Date }): Date | null {
+export function computeNextScheduledAt({
+  schedule,
+  from,
+}: {
+  schedule: BackupSchedule;
+  from: Date;
+}): Date | null {
   if (!schedule.isEnabled) {
     return null;
   }
@@ -34,7 +40,10 @@ export function computeNextScheduledAt({ schedule, from }: { schedule: BackupSch
 export function parseScheduleDays(scheduleDaysJson: string): number[] {
   try {
     const parsed = JSON.parse(scheduleDaysJson) as unknown;
-    if (Array.isArray(parsed) && parsed.every((d): d is number => typeof d === 'number' && d >= 0 && d <= 6)) {
+    if (
+      Array.isArray(parsed) &&
+      parsed.every((d): d is number => typeof d === 'number' && d >= 0 && d <= 6)
+    ) {
       return parsed;
     }
   } catch {

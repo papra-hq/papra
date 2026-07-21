@@ -447,7 +447,9 @@ async function getAllOrganizationUndeletedDocumentsForBackup({
   const documents = await db
     .select()
     .from(documentsTable)
-    .where(and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)))
+    .where(
+      and(eq(documentsTable.organizationId, organizationId), eq(documentsTable.isDeleted, false)),
+    )
     .orderBy(documentsTable.createdAt);
 
   return { documents };

@@ -29,27 +29,27 @@ name: build-arm64-image
 on:
   push:
     branches: [main]
-    tags: ["v*"]
+    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
     inputs:
       ref:
-        description: "Git ref to build from"
+        description: 'Git ref to build from'
         required: false
-        default: "main"
+        default: 'main'
       push:
-        description: "Push the resulting image to ghcr.io"
+        description: 'Push the resulting image to ghcr.io'
         required: false
-        default: "true"
+        default: 'true'
       no_cache:
-        description: "Disable Docker layer cache (clean rebuild)"
+        description: 'Disable Docker layer cache (clean rebuild)'
         required: false
-        default: "false"
+        default: 'false'
       skip_lint:
-        description: "Skip the lint step"
+        description: 'Skip the lint step'
         required: false
-        default: "false"
+        default: 'false'
 
 concurrency:
   group: build-arm64-${{ github.ref }}

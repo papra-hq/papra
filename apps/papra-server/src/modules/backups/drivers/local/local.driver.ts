@@ -22,7 +22,9 @@ export const localBackupDriverFactory = (): BackupDriver => ({
         await fs.mkdir(path, { recursive: true });
         return { accountLabel: `Local folder: ${path} (created)` };
       } catch (mkdirError) {
-        throw new Error(`Failed to access or create local folder: ${path}. ${(mkdirError as Error).message}`);
+        throw new Error(
+          `Failed to access or create local folder: ${path}. ${(mkdirError as Error).message}`,
+        );
       }
     }
   },

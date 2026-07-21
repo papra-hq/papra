@@ -17,5 +17,8 @@ export default defineConfig({
     // (the markdown/JSX boundary is ambiguous and indentation-sensitive). Plain .md is fine.
     '**/*.mdx',
     'apps/docs/src/scripts/posthog.script.js',
+    // Minified/bundled build artifact checked in for migration testing —
+    // not source, shouldn't be pretty-printed.
+    'test-dist-scripts/**',
   ],
 });

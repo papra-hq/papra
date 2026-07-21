@@ -35,6 +35,7 @@ This document logs all changes made to the Papra backup system, including **bug 
 **Root Cause:** The `handleRunNow` function called `invalidateRuns()` which marks the TanStack Query as stale but doesn't immediately trigger a refetch. The backup operation is asynchronous (fire-and-forget on the server), so status transitions from `pending` → `uploading` → `succeeded`/`failed` happen after the initial API response, but the UI wasn't polling to check for updates.
 
 **Solution:** Implemented automatic polling mechanism:
+
 - Immediately refetch after triggering backup to show pending state
 - Poll every 2 seconds to check for status updates
 - Automatically stop polling when all backups complete
@@ -42,6 +43,7 @@ This document logs all changes made to the Papra backup system, including **bug 
 - Button disables while backup is running or polling is active
 
 **Files:**
+
 - `apps/papra-client/src/modules/backups/pages/backups.page.tsx`
 
 ---
@@ -55,6 +57,7 @@ This document logs all changes made to the Papra backup system, including **bug 
 **Solution:** Added local driver to the registry and type system.
 
 **Files:**
+
 - `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts`
 - `apps/papra-client/src/modules/backups/backups.types.ts`
 
@@ -69,6 +72,7 @@ This document logs all changes made to the Papra backup system, including **bug 
 **Solution:** Changed the redirect URL to go to the home page (`/`) instead of the backups page with query parameters. This prevents the 404 while still maintaining a clean OAuth flow.
 
 **Files:**
+
 - `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts`
 
 ---
@@ -76,9 +80,11 @@ This document logs all changes made to the Papra backup system, including **bug 
 ## 1. Incremental Backups
 
 ### Overview
+
 Only backs up new or changed documents instead of all documents every time.
 
 ### Motivation
+
 - Reduces backup size and time significantly
 - Reduces bandwidth usage
 - Reduces storage costs
@@ -87,12 +93,14 @@ Only backs up new or changed documents instead of all documents every time.
 ### Implementation
 
 #### Database Schema
+
 - Added `documentSha256HashesJson` column to `backup_runs` table
 - Type: `TEXT` (JSON array of strings)
 - Stores SHA256 hashes of all documents included in that backup run
 - Nullable for backward compatibility with existing runs
 
 #### Logic Flow
+
 ```
 1. Get last successful backup run for this destination
    ↓
@@ -109,26 +117,27 @@ Only backs up new or changed documents instead of all documents every time.
 
 #### Key Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| Use SHA256 hashes | Already computed and stored for each document (`originalSha256Hash`) |
-| Store hashes in DB | Transactionally consistent, survives restarts, queryable |
-| JSON array format | Simple, human-readable, easy to serialize/deserialize |
-| Filter at document fetch | Efficient: only fetch documents we need to back up |
-| First backup = full | No previous hashes → include all documents |
+| Decision                 | Rationale                                                            |
+| ------------------------ | -------------------------------------------------------------------- |
+| Use SHA256 hashes        | Already computed and stored for each document (`originalSha256Hash`) |
+| Store hashes in DB       | Transactionally consistent, survives restarts, queryable             |
+| JSON array format        | Simple, human-readable, easy to serialize/deserialize                |
+| Filter at document fetch | Efficient: only fetch documents we need to back up                   |
+| First backup = full      | No previous hashes → include all documents                           |
 
 #### Edge Cases Handled
 
-| Scenario | Behavior |
-|----------|----------|
-| First backup for destination | No previous hashes → full backup |
-| Previous backup failed | Only succeeded runs are considered |
-| Document deleted since last backup | Not in document list → not backed up (correct) |
-| Document unchanged | Hash matches → excluded from backup |
-| Document updated | New hash → included in backup |
-| Migration not run yet | Column is nullable → gracefully handles old runs |
+| Scenario                           | Behavior                                         |
+| ---------------------------------- | ------------------------------------------------ |
+| First backup for destination       | No previous hashes → full backup                 |
+| Previous backup failed             | Only succeeded runs are considered               |
+| Document deleted since last backup | Not in document list → not backed up (correct)   |
+| Document unchanged                 | Hash matches → excluded from backup              |
+| Document updated                   | New hash → included in backup                    |
+| Migration not run yet              | Column is nullable → gracefully handles old runs |
 
 ### Files Changed
+
 - `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts` (NEW)
 - `apps/papra-server/src/migrations/migrations.registry.ts`
 - `apps/papra-server/src/modules/backups/backups.table.ts`
@@ -140,9 +149,11 @@ Only backs up new or changed documents instead of all documents every time.
 ## 2. Backup Verification
 
 ### Overview
+
 Validates backup integrity by re-computing document hashes and comparing against stored hashes.
 
 ### Motivation
+
 - Detect corrupted backup files (bitrot, truncated downloads, storage errors)
 - Verify before restore to avoid restoring corrupted data
 - Provide confidence that backups are intact
@@ -150,11 +161,13 @@ Validates backup integrity by re-computing document hashes and comparing against
 ### Implementation
 
 #### API Endpoint
+
 ```
 POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verify
 ```
 
 #### Logic Flow
+
 ```
 1. Fetch run and destination from database
    ↓
@@ -173,6 +186,7 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
 ```
 
 #### Response Format
+
 ```typescript
 {
   valid: boolean;              // Overall result
@@ -185,20 +199,22 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
 
 #### Key Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
+| Decision                  | Rationale                                            |
+| ------------------------- | ---------------------------------------------------- |
 | Per-document verification | Granular: know exactly which documents are corrupted |
-| Use manifest hashes | Already part of backup, no additional metadata |
-| Re-compute from archive | Self-contained: doesn't need original documents |
-| SHA256 | Same algorithm as original hash computation |
-| Only for succeeded runs | Failed/pending runs can't be verified reliably |
+| Use manifest hashes       | Already part of backup, no additional metadata       |
+| Re-compute from archive   | Self-contained: doesn't need original documents      |
+| SHA256                    | Same algorithm as original hash computation          |
+| Only for succeeded runs   | Failed/pending runs can't be verified reliably       |
 
 #### Bug Fix in Implementation
+
 **Initial Bug:** Used `Object.keys(unpackedFiles)` but `unpackedFiles` is a `Map<string, Buffer>`, not a plain object. `Object.keys()` on a Map returns empty array.
 
 **Fix:** Changed to `Array.from(unpackedFiles.keys())` to correctly iterate Map keys.
 
 ### Files Changed
+
 - `apps/papra-server/src/modules/backups/backups.packager.service.ts`
 - `apps/papra-server/src/modules/backups/backups.usecases.ts`
 - `apps/papra-server/src/modules/backups/backups.routes.ts`
@@ -210,9 +226,11 @@ POST /api/organizations/{orgId}/backups/destinations/{destId}/runs/{runId}/verif
 ## 3. Retention Policies
 
 ### Overview
+
 Automatically delete old backup runs after a configurable number of days.
 
 ### Motivation
+
 - Prevent unlimited storage growth
 - Clean up old backups automatically
 - Configurable per-installation
@@ -220,20 +238,25 @@ Automatically delete old backup runs after a configurable number of days.
 ### Implementation
 
 #### Configuration
+
 New environment variable:
+
 ```
 BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
 ```
+
 - Set to `0` or `undefined` to disable
 - Only affects succeeded backup runs
 - Default: disabled (undefined)
 
 #### Scheduled Task
+
 - **Task Name:** `backups.retention-cleanup`
 - **Schedule:** Daily at 2 AM (cron: `0 2 * * *`)
 - **Trigger:** Server startup (if enabled)
 
 #### Logic Flow
+
 ```
 1. Check if enabled (config.backups.retentionDays > 0)
    ↓
@@ -253,16 +276,17 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
 
 #### Key Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| Environment variable | Per-server configuration, easy to change |
-| Daily schedule | Regular cleanup without excessive frequency |
-| Only succeeded runs | Failed runs might need investigation |
-| Remote deletion first | Clean up storage before DB (best effort) |
-| Graceful failure | If remote deletion fails, still delete DB record |
-| Disabled by default | Backward compatible, opt-in feature |
+| Decision              | Rationale                                        |
+| --------------------- | ------------------------------------------------ |
+| Environment variable  | Per-server configuration, easy to change         |
+| Daily schedule        | Regular cleanup without excessive frequency      |
+| Only succeeded runs   | Failed runs might need investigation             |
+| Remote deletion first | Clean up storage before DB (best effort)         |
+| Graceful failure      | If remote deletion fails, still delete DB record |
+| Disabled by default   | Backward compatible, opt-in feature              |
 
 ### Files Changed
+
 - `apps/papra-server/src/modules/backups/backups.config.ts`
 - `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` (NEW)
 - `apps/papra-server/src/modules/tasks/tasks.definitions.ts`
@@ -272,27 +296,29 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
 ## Files Changed
 
 ### New Files (4)
-| File | Purpose |
-|------|---------|
-| `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts` | Database migration for incremental backups |
-| `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` | Scheduled task for retention cleanup |
+
+| File                                                                           | Purpose                                    |
+| ------------------------------------------------------------------------------ | ------------------------------------------ |
+| `apps/papra-server/src/migrations/list/0029-incremental-backups.migration.ts`  | Database migration for incremental backups |
+| `apps/papra-server/src/modules/backups/tasks/backup-retention-cleanup.task.ts` | Scheduled task for retention cleanup       |
 
 ### Modified Files (14)
-| File | Changes |
-|------|---------|
-| `apps/papra-server/src/migrations/migrations.registry.ts` | Registered new migration |
-| `apps/papra-server/src/modules/backups/backups.config.ts` | Added `retentionDays` config |
-| `apps/papra-server/src/modules/backups/backups.table.ts` | Added `documentSha256HashesJson` column |
-| `apps/papra-server/src/modules/backups/backups.repository.ts` | Added `getLastSuccessfulRunForDestination`, updated `updateRunStatus` |
-| `apps/papra-server/src/modules/backups/backups.usecases.ts` | Incremental backups logic, verification usecase, store hashes |
-| `apps/papra-server/src/modules/backups/backups.routes.ts` | Added verification route |
-| `apps/papra-server/src/modules/backups/backups.packager.service.ts` | Added `computeHash` method |
-| `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts` | Registered local driver |
-| `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts` | Fixed OAuth redirect to home page |
-| `apps/papra-server/src/modules/tasks/tasks.definitions.ts` | Registered retention task |
-| `apps/papra-client/src/modules/backups/backups.types.ts` | Added `'local'` to `BackupDriverName` |
-| `apps/papra-client/src/modules/backups/backups.services.ts` | Added `verifyBackupRun` service |
-| `apps/papra-client/src/modules/backups/pages/backups.page.tsx` | Polling, Verify button, UI updates |
+
+| File                                                                                | Changes                                                               |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `apps/papra-server/src/migrations/migrations.registry.ts`                           | Registered new migration                                              |
+| `apps/papra-server/src/modules/backups/backups.config.ts`                           | Added `retentionDays` config                                          |
+| `apps/papra-server/src/modules/backups/backups.table.ts`                            | Added `documentSha256HashesJson` column                               |
+| `apps/papra-server/src/modules/backups/backups.repository.ts`                       | Added `getLastSuccessfulRunForDestination`, updated `updateRunStatus` |
+| `apps/papra-server/src/modules/backups/backups.usecases.ts`                         | Incremental backups logic, verification usecase, store hashes         |
+| `apps/papra-server/src/modules/backups/backups.routes.ts`                           | Added verification route                                              |
+| `apps/papra-server/src/modules/backups/backups.packager.service.ts`                 | Added `computeHash` method                                            |
+| `apps/papra-server/src/modules/backups/drivers/drivers.registry.ts`                 | Registered local driver                                               |
+| `apps/papra-server/src/modules/backups/drivers/google-drive/google-drive.routes.ts` | Fixed OAuth redirect to home page                                     |
+| `apps/papra-server/src/modules/tasks/tasks.definitions.ts`                          | Registered retention task                                             |
+| `apps/papra-client/src/modules/backups/backups.types.ts`                            | Added `'local'` to `BackupDriverName`                                 |
+| `apps/papra-client/src/modules/backups/backups.services.ts`                         | Added `verifyBackupRun` service                                       |
+| `apps/papra-client/src/modules/backups/pages/backups.page.tsx`                      | Polling, Verify button, UI updates                                    |
 
 **Total:** 18 files changed (2 new, 16 modified), ~470 lines added/modified
 
@@ -301,6 +327,7 @@ BACKUPS_RETENTION_DAYS=30  # Keep backups for 30 days
 ## Migration & Deployment
 
 ### Step 1: Run Database Migration
+
 ```bash
 # From project root
 pnpm --filter papra-server migrate:up
@@ -312,6 +339,7 @@ cd apps/papra-server && pnpm migrate:up
 This applies migration `0029-incremental-backups.migration.ts` which adds the `documentSha256HashesJson` column to the `backup_runs` table.
 
 ### Step 2: Configure (Optional)
+
 ```bash
 # In your .env file
 export BACKUPS_RETENTION_DAYS=30  # Enable retention: delete backups after 30 days
@@ -319,6 +347,7 @@ export BACKUPS_IS_SCHEDULER_ENABLED=true  # Make sure scheduler is enabled
 ```
 
 ### Step 3: Restart Server
+
 ```bash
 # Stop and restart your Papra server
 pnpm --filter papra-server restart
@@ -327,6 +356,7 @@ pnpm dev
 ```
 
 ### Step 4: Verify
+
 1. Go to Settings → Backups
 2. Click "Run Now" for a destination
 3. Observe: status automatically updates from pending → uploading → succeeded
@@ -340,6 +370,7 @@ pnpm dev
 ### Manual Testing Checklist
 
 #### Incremental Backups
+
 - [ ] First backup for a destination includes all documents
 - [ ] Second backup (no changes) includes 0 documents
 - [ ] Add a new document → next backup includes only that document
@@ -348,6 +379,7 @@ pnpm dev
 - [ ] Check server logs for `isIncremental: true/false`
 
 #### Backup Verification
+
 - [ ] Verify button only appears for succeeded runs
 - [ ] Verification succeeds for valid backups
 - [ ] Verification shows correct document counts
@@ -355,12 +387,14 @@ pnpm dev
 - [ ] Verify button disables during verification
 
 #### Retention Policies
+
 - [ ] With `BACKUPS_RETENTION_DAYS=1`, old backups deleted next day at 2 AM
 - [ ] With `BACKUPS_RETENTION_DAYS=undefined`, no backups deleted
 - [ ] Failed/pending backups are NOT deleted
 - [ ] Check server logs for cleanup results
 
 #### Bug Fixes
+
 - [ ] "Run Now" button disables while running
 - [ ] Status updates automatically without page refresh
 - [ ] Local driver backups work without server crash
@@ -372,11 +406,13 @@ pnpm dev
 If issues arise, you can rollback:
 
 ### Option 1: Revert Code Changes
+
 ```bash
 git checkout HEAD -- .
 ```
 
 ### Option 2: Rollback Migration
+
 ```bash
 pnpm --filter papra-server migrate:down
 ```
@@ -511,6 +547,7 @@ See `DOCKER-README.md` for complete documentation.
 ## Migration & Deployment Notes
 
 After implementing all backup features, remember to:
+
 1. Run the migration: `pnpm --filter papra-server migrate:up`
 2. Restart the server
 3. Test all features including:
@@ -522,4 +559,4 @@ After implementing all backup features, remember to:
 
 ---
 
-*This document was generated by Mistral Vibe for tracking changes to the Papra backup system. Updated with Docker setup information.*
+_This document was generated by Mistral Vibe for tracking changes to the Papra backup system. Updated with Docker setup information._
