@@ -6,7 +6,7 @@
 # =============================================================================
 # Build stage - Build the application
 # =============================================================================
-FROM --platform=$BUILDPLATFORM node:26-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
 
 # Set build arguments
 ARG BUILDPLATFORM
@@ -42,7 +42,7 @@ RUN cd apps/papra-server && \
 # =============================================================================
 # Runtime stage - Minimal production image
 # =============================================================================
-FROM --platform=$BUILDPLATFORM node:26-alpine AS runtime
+FROM --platform=$BUILDPLATFORM node:22-alpine AS runtime
 
 # Set target platform (automatically uses build platform if not specified)
 ARG TARGETPLATFORM
