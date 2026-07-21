@@ -12,8 +12,7 @@
 # =============================================================================
 # Build stage - Build the application
 # =============================================================================
-FROM --platform=$BUILDPLATFORM node:26-slim AS builder
-
+FROM --platform=$TARGETPLATFORM node:26-slim AS builder
 # Set build arguments
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -37,7 +36,7 @@ COPY packages/ ./packages/
 # Install dependencies
 # Using --ignore-scripts to avoid postinstall issues
 # Note: Using without --frozen-lockfile for now due to network/timeouts
-RUN pnpm install --ignore-scripts
+RUN pnpm install --frozen-lockfile
 
 # Copy all source files
 COPY . .
@@ -50,8 +49,7 @@ RUN cd apps/papra-server && \
 # =============================================================================
 # Runtime stage - Minimal production image
 # =============================================================================
-FROM --platform=$BUILDPLATFORM node:26-slim AS runtime
-
+FROM --platform=$TARGETPLATFORM node:26-slim AS runtime
 # Set target platform (automatically uses build platform if not specified)
 ARG TARGETPLATFORM
 
@@ -75,15 +73,18 @@ RUN mkdir -p /app/apps/papra-server/data && \
 # Copy built files and dependencies from builder
 COPY --from=builder --chown=nodejs:nodejs /app/apps/papra-server/dist ./apps/papra-server/dist
 COPY --from=builder --chown=nodejs:nodejs /app/apps/papra-server/node_modules ./apps/papra-server/node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/apps/papra-server/src ./apps/papra-server/src
 COPY --from=builder --chown=nodejs:nodejs /app/packages ./packages
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package.json ./
 COPY --from=builder --chown=nodejs:nodejs /app/pnpm-workspace.yaml ./
 
 # Switch to non-root user
-USER nodejs
+# Rebuild any native modules (.node addons) against the
+# runtime image's libc to avoid SIGILL on first use
+# (e.g. @libsql/client).
+RUN pnpm rebuild
 
+
 # Environment variables
 ENV NODE_ENV=production
 ENV PORT=1221

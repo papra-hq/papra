@@ -1,0 +1,181 @@
+# =============================================================================
+# build-arm64.yml
+# =============================================================================
+# Builds the secureman/papra arm64 image and pushes it to ghcr.io so it
+# can be pulled on a Termux phone with:
+#
+#     udocker pull ghcr.io/secureman/papra-server:arm64
+#
+# Designed to be cross-built on a free GitHub-hosted amd64 runner using
+# buildx + QEMU. The arm64 platform is explicitly selected.
+#
+# Triggers:
+#   - push to main            -> builds and pushes :arm64 and :arm64-<sha>
+#   - tag v*                 -> builds and pushes :arm64 and :arm64-<tag>
+#   - manual dispatch         -> same as push to main
+#   - workflow_dispatch inputs:
+#       ref        : git ref to build from (default: main)
+#       push       : whether to push the result (default: true)
+#       no_cache   : if "true", do a clean rebuild (no Docker layer cache)
+#
+# Required secrets / permissions:
+#   - Settings -> Actions -> General -> Workflow permissions:
+#       "Read and write permissions"   (needed for GHCR push)
+#   - Packages: this workflow publishes to ghcr.io/<owner>/papra-server
+#     which requires the workflow to be on the same owner/repo, or for
+#     the runner to have packages:write. With the default GITHUB_TOKEN
+#     this works out of the box for the same-repo case.
+# =============================================================================
+
+name: build-arm64-image
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to build from"
+        required: false
+        default: "main"
+      push:
+        description: "Push the resulting image to ghcr.io"
+        required: false
+        default: "true"
+      no_cache:
+        description: "Disable Docker layer cache (clean rebuild)"
+        required: false
+        default: "false"
+
+# Avoid concurrent builds of the same image clobbering each other.
+concurrency:
+  group: build-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: papra-server
+  IMAGE_OWNER: ${{ github.repository_owner }}
+  PLATFORMS: linux/arm64
+
+jobs:
+  build:
+    name: build & push (${{ env.PLATFORMS }})
+    runs-on: ubuntu-24.04-arm64   # native aarch64 runner = no QEMU, faster, no SIGILL risk
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up QEMU (safety net, even on arm64 runner)
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: image=moby/buildkit:latest
+
+      - name: Log in to ghcr.io
+        if: github.event.inputs.push != 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=arm64,enable={{is_default_branch}}
+            type=sha,format=long,prefix=arm64-
+            type=match,pattern=v(.*),value=arm64-v\1
+          flavor: |
+            latest=false
+          bake-target: image
+
+      - name: Sanity-check Dockerfile
+        run: |
+          set -euo pipefail
+          echo "---- Dockerfile head ----"
+          head -40 Dockerfile
+          echo "---- build-arg dry run ----"
+          docker buildx build \
+            --platform ${{ env.PLATFORMS }} \
+            --print=outline .
+
+      - name: Build (and push) image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ env.PLATFORMS }}
+          push: ${{ github.event.inputs.push != 'false' }}
+          load: ${{ github.event.inputs.push == 'false' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha,scope=arm64
+          cache-to: type=gha,mode=max,scope=arm64
+          no-cache: ${{ github.event.inputs.no_cache == 'true' }}
+          provenance: false
+          sbom: false
+          build-args: |
+            NODE_VERSION=26.1.0
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: Smoke test the built image
+        if: github.event.inputs.push == 'false' || github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          echo "---- smoke: node --version ----"
+          docker run --rm --platform ${{ env.PLATFORMS }} \
+            ${{ steps.meta.outputs.tags }} node --version
+          echo "---- smoke: server health endpoint ----"
+          CID=$(docker run -d --platform ${{ env.PLATFORMS }} \
+            -p 127.0.0.1:1221:1221 \
+            -e NODE_ENV=production \
+            ${{ steps.meta.outputs.tags }})
+          trap "docker rm -f $CID >/dev/null 2>&1 || true" EXIT
+          # wait up to 30s for /api/health
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:1221/api/health >/dev/null 2>&1; then
+              echo "health OK after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "health check failed"
+          docker logs $CID || true
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### build-arm64-image"
+            echo ""
+            echo "- ref: \`${{ github.ref }}\`"
+            echo "- pushed: \`${{ github.event.inputs.push != 'false' }}\`"
+            echo "- platforms: \`${{ env.PLATFORMS }}\`"
+            echo "- tags:"
+            for t in ${{ steps.meta.outputs.tags }}; do
+              echo "  - \`$t\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
