@@ -27,6 +27,12 @@ export const backupsConfig = {
     default: undefined,
     env: 'BACKUPS_RETENTION_DAYS',
   },
+  maxRunsToKeepPerDestination: {
+    doc: 'Maximum number of succeeded backup runs to keep per destination, oldest deleted first (remote file + local record). Set to 0 or undefined to disable. Can be combined with retentionDays -- a run is deleted if it is caught by either rule.',
+    schema: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0))),
+    default: undefined,
+    env: 'BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION',
+  },
   googleDrive: {
     oauthClientId: {
       doc: 'Google OAuth client ID for the Google Drive backup destination. Leave unset to disable the Google Drive destination.',

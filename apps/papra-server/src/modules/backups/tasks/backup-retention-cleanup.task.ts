@@ -1,9 +1,9 @@
 import type { GlobalDependencies } from '../../app/server.types';
-import { and, eq, lte, sub } from 'drizzle-orm';
+import { and, desc, eq, lte } from 'drizzle-orm';
 import { createLogger } from '../../shared/logger/logger';
 import { createBackupsRepository } from '../backups.repository';
 import { createBackupsServices } from '../backups.services';
-import { backupRunsTable } from '../backups.table';
+import { backupDestinationsTable, backupRunsTable } from '../backups.table';
 
 const logger = createLogger({ namespace: 'backups:tasks:retention-cleanup' });
 
@@ -12,11 +12,22 @@ const TASK_NAME = 'backups.retention-cleanup';
 // Run daily at 2 AM
 const RETENTION_CLEANUP_CRON = '0 2 * * *';
 
+type RunToDelete = {
+  id: string;
+  destinationId: string;
+  organizationId: string;
+  remoteFileId: string | null;
+};
+
 export async function registerBackupRetentionCleanupTask(deps: GlobalDependencies) {
   const { taskServices, config, db } = deps;
 
-  if (!config.backups.kek || config.backups.retentionDays === undefined || config.backups.retentionDays <= 0) {
-    logger.info('Backup retention cleanup disabled (BACKUPS_KEK unset or BACKUPS_RETENTION_DAYS not configured)');
+  const { retentionDays, maxRunsToKeepPerDestination } = config.backups;
+  const isDayRetentionEnabled = retentionDays !== undefined && retentionDays > 0;
+  const isCountRetentionEnabled = maxRunsToKeepPerDestination !== undefined && maxRunsToKeepPerDestination > 0;
+
+  if (!config.backups.kek || (!isDayRetentionEnabled && !isCountRetentionEnabled)) {
+    logger.info('Backup retention cleanup disabled (BACKUPS_KEK unset, or neither BACKUPS_RETENTION_DAYS nor BACKUPS_MAX_RUNS_TO_KEEP_PER_DESTINATION configured)');
     return;
   }
 
@@ -25,47 +36,85 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
     handler: async () => {
       const services = createBackupsServices({ config });
       const repository = createBackupsRepository({ db });
-      const retentionDays = config.backups.retentionDays!;
-      const retentionMs = retentionDays * 24 * 60 * 60 * 1000;
-      const cutoffDate = new Date(Date.now() - retentionMs);
 
-      // Find all succeeded runs older than the retention period
-      const runsToDelete = await db
-        .select({
-          id: backupRunsTable.id,
-          destinationId: backupRunsTable.destinationId,
-          organizationId: backupRunsTable.organizationId,
-          remoteFileId: backupRunsTable.remoteFileId,
-        })
-        .from(backupRunsTable)
-        .where(and(
-          eq(backupRunsTable.status, 'succeeded'),
-          lte(backupRunsTable.createdAt, cutoffDate),
-        ));
+      const runsById = new Map<string, RunToDelete>();
+
+      // Day-based: anything older than N days, regardless of how many runs exist.
+      if (isDayRetentionEnabled) {
+        const retentionMs = retentionDays! * 24 * 60 * 60 * 1000;
+        const cutoffDate = new Date(Date.now() - retentionMs);
+
+        const oldRuns = await db
+          .select({
+            id: backupRunsTable.id,
+            destinationId: backupRunsTable.destinationId,
+            organizationId: backupRunsTable.organizationId,
+            remoteFileId: backupRunsTable.remoteFileId,
+          })
+          .from(backupRunsTable)
+          .where(and(
+            eq(backupRunsTable.status, 'succeeded'),
+            lte(backupRunsTable.createdAt, cutoffDate),
+          ));
+
+        for (const run of oldRuns) {
+          runsById.set(run.id, run);
+        }
+      }
+
+      // Count-based: keep only the N most recent succeeded runs per destination.
+      // Every succeeded run is now a full, self-contained backup, so trimming
+      // older ones never breaks the ability to restore from what's left.
+      if (isCountRetentionEnabled) {
+        const destinations = await db
+          .select({ id: backupDestinationsTable.id, organizationId: backupDestinationsTable.organizationId })
+          .from(backupDestinationsTable);
+
+        for (const destination of destinations) {
+          const runs = await db
+            .select({
+              id: backupRunsTable.id,
+              destinationId: backupRunsTable.destinationId,
+              organizationId: backupRunsTable.organizationId,
+              remoteFileId: backupRunsTable.remoteFileId,
+            })
+            .from(backupRunsTable)
+            .where(and(
+              eq(backupRunsTable.destinationId, destination.id),
+              eq(backupRunsTable.status, 'succeeded'),
+            ))
+            .orderBy(desc(backupRunsTable.createdAt));
+
+          const excessRuns = runs.slice(maxRunsToKeepPerDestination!);
+          for (const run of excessRuns) {
+            runsById.set(run.id, run);
+          }
+        }
+      }
 
       let deletedCount = 0;
       let failedCount = 0;
 
-      for (const run of runsToDelete) {
+      for (const run of runsById.values()) {
         try {
           // Delete the remote file first (best effort)
           if (run.remoteFileId) {
             try {
-              const { destination } = await repository.getDestinationById({ 
-                destinationId: run.destinationId, 
-                organizationId: run.organizationId 
+              const { destination } = await repository.getDestinationById({
+                destinationId: run.destinationId,
+                organizationId: run.organizationId,
               });
-              
+
               if (destination) {
-                const credentials = services.requireEncryption().unwrapCredentials({ 
-                  wrapped: destination.encryptedCredentials 
+                const credentials = services.requireEncryption().unwrapCredentials({
+                  wrapped: destination.encryptedCredentials,
                 });
                 const settings = JSON.parse(destination.settingsJson) as Record<string, unknown>;
                 const driver = services.getDriver(destination.driver);
-                await driver.deleteFile({ 
-                  credentials, 
-                  settings, 
-                  remoteFileId: run.remoteFileId 
+                await driver.deleteFile({
+                  credentials,
+                  settings,
+                  remoteFileId: run.remoteFileId,
                 });
               }
             } catch (error) {
@@ -77,7 +126,7 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
           await db
             .delete(backupRunsTable)
             .where(eq(backupRunsTable.id, run.id));
-          
+
           deletedCount++;
         } catch (error) {
           logger.error({ error, runId: run.id }, 'Failed to clean up backup run');
@@ -86,7 +135,7 @@ export async function registerBackupRetentionCleanupTask(deps: GlobalDependencie
       }
 
       if (deletedCount > 0 || failedCount > 0) {
-        logger.info({ deletedCount, failedCount, cutoffDate: cutoffDate.toISOString() }, 'Backup retention cleanup completed');
+        logger.info({ deletedCount, failedCount }, 'Backup retention cleanup completed');
       }
     },
   });

@@ -349,7 +349,6 @@ async function buildEncryptedBackupEnvelope({
   dek,
   db,
   logger,
-  previousHashes,
 }: {
   organizationId: string;
   documentsRepository: DocumentsRepository;
@@ -359,18 +358,9 @@ async function buildEncryptedBackupEnvelope({
   dek: Buffer;
   db: import('../app/database/database.types').Database;
   logger: Logger;
-  // For incremental backups: set of SHA256 hashes from the previous successful backup
-  // If provided, only documents with hashes NOT in this set will be included
-  previousHashes?: Set<string>;
-}): Promise<{ envelope: Buffer; documentsCount: number; documentHashes: string[] }> {
-  const { documents: allDocs } = await documentsRepository.getAllOrganizationUndeletedDocumentsForBackup({ organizationId });
+}): Promise<{ envelope: Buffer; documentsCount: number }> {
+  const { documents: docs } = await documentsRepository.getAllOrganizationUndeletedDocumentsForBackup({ organizationId });
 
-  // For incremental backups: filter out documents that were already backed up
-  const docs = previousHashes
-    ? allDocs.filter((doc) => !previousHashes.has(doc.originalSha256Hash))
-    : allDocs;
-
-  const documentHashes: string[] = [];
   const files: { name: string; content: Buffer }[] = [];
   
   for (const doc of docs) {
@@ -386,7 +376,6 @@ async function buildEncryptedBackupEnvelope({
         chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
       }
       files.push({ name: `${doc.id}-${doc.originalName.replace(/[^\w.-]/g, '_')}`, content: Buffer.concat(chunks) });
-      documentHashes.push(doc.originalSha256Hash);
     } catch (error) {
       logger.error({ error, documentId: doc.id }, 'Failed to fetch document for backup; skipping');
     }
@@ -398,7 +387,7 @@ async function buildEncryptedBackupEnvelope({
   const encrypted = encryption.encryptPayload({ payload: archive, key: dek });
   const envelope = packBackupEnvelope({ wrappedKey: encryption.wrapWithKek({ value: dek }), encryptedPayload: encrypted });
 
-  return { envelope, documentsCount: docs.length, documentHashes };
+  return { envelope, documentsCount: docs.length };
 }
 
 async function runBackupPipeline({
@@ -436,13 +425,7 @@ async function runBackupPipeline({
   const driver = services.getDriver(destination.driver);
 
   try {
-    // Get the last successful backup for incremental backup support
-    const { run: lastSuccessfulRun } = await repository.getLastSuccessfulRunForDestination({ destinationId, db });
-    const previousHashes = lastSuccessfulRun?.documentSha256HashesJson
-      ? new Set(JSON.parse(lastSuccessfulRun.documentSha256HashesJson) as string[])
-      : undefined;
-
-    const { envelope, documentsCount, documentHashes } = await buildEncryptedBackupEnvelope({
+    const { envelope, documentsCount } = await buildEncryptedBackupEnvelope({
       organizationId,
       documentsRepository,
       documentsStorageService,
@@ -451,7 +434,6 @@ async function runBackupPipeline({
       dek,
       db,
       logger,
-      previousHashes,
     });
 
     await repository.updateRunStatus({
@@ -480,17 +462,15 @@ async function runBackupPipeline({
     await repository.updateRunStatus({
       runId,
       status: 'succeeded',
-      fields: { 
-        remoteFileId: uploaded.remoteFileId, 
-        remoteFileName: uploaded.remoteFileName, 
+      fields: {
+        remoteFileId: uploaded.remoteFileId,
+        remoteFileName: uploaded.remoteFileName,
         completedAt: new Date(),
-        documentSha256HashesJson: JSON.stringify(documentHashes),
       },
     });
     await repository.updateDestination({ destinationId, fields: { lastRunAt: new Date() } });
 
-    const isIncremental = previousHashes !== undefined;
-    logger.info({ runId, destinationId, size: envelope.length, documentsCount, isIncremental }, 'Backup run completed');
+    logger.info({ runId, destinationId, size: envelope.length, documentsCount }, 'Backup run completed');
   } catch (error) {
     logger.error({ error, runId, destinationId }, 'Backup run failed');
     await repository.updateRunStatus({
