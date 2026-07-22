@@ -6,8 +6,8 @@ const apiKey = process.env.TEST_OPENAI_API_KEY;
 const modelId = process.env.TEST_OPENAI_MODEL_ID;
 
 describe('auto-tagging ai integration', () => {
-  describe.skipIf(!apiKey || !modelId)('openai', () => {
-    runAutoTaggingTestSuite({
+  describe.skipIf(!apiKey || !modelId)('openai', async () => {
+    await runAutoTaggingTestSuite({
       modelId: modelId!,
       config: overrideConfig({ ai: { adapters: { openai: { apiKey } } } }),
     });

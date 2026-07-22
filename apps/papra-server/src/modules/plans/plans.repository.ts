@@ -26,7 +26,7 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
   const { isFreePlanUnlimited } = config.organizationPlans;
   const { maxUploadSize } = config.documentsStorage;
 
-  const freePlanLimits = {
+  const freePlanLimits: OrganizationPlanRecord['limits'] = {
     maxDocumentStorageBytes: isFreePlanUnlimited
       ? Number.POSITIVE_INFINITY
       : 500 * IN_BYTES.MEGABYTE,
@@ -35,6 +35,7 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
     maxFileSize: isDocumentSizeLimitEnabled({ maxUploadSize })
       ? maxUploadSize
       : Number.POSITIVE_INFINITY,
+    aiCreditsPerMonth: isFreePlanUnlimited ? Number.POSITIVE_INFINITY : 1_000,
   };
 
   const organizationPlans: Record<string, OrganizationPlanRecord> = {
@@ -47,10 +48,10 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
       id: PLAN_IDS.FREE_EXTENDED,
       name: 'Free Extended',
       limits: {
+        ...freePlanLimits,
         maxDocumentStorageBytes: freePlanLimits.maxDocumentStorageBytes * 2,
         maxIntakeEmailsCount: freePlanLimits.maxIntakeEmailsCount * 2,
         maxOrganizationsMembersCount: freePlanLimits.maxOrganizationsMembersCount * 2,
-        maxFileSize: freePlanLimits.maxFileSize, // Same file size limit as Free plan
       },
     },
     [PLAN_IDS.PLUS]: {
@@ -63,6 +64,7 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
         maxIntakeEmailsCount: 10,
         maxOrganizationsMembersCount: 10,
         maxFileSize: 100 * IN_BYTES.MEGABYTE, // 100 MiB
+        aiCreditsPerMonth: 5_000,
       },
     },
     [PLAN_IDS.PRO]: {
@@ -75,6 +77,7 @@ export function getOrganizationPlansRecords({ config }: { config: Config }) {
         maxIntakeEmailsCount: 100,
         maxOrganizationsMembersCount: 50,
         maxFileSize: 500 * IN_BYTES.MEGABYTE, // 500 MiB
+        aiCreditsPerMonth: 50_000,
       },
     },
   };

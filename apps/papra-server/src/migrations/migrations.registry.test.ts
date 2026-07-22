@@ -114,6 +114,8 @@ describe('migrations registry', () => {
         CREATE INDEX "key_hash_index" ON "api_keys" ("key_hash");
         CREATE INDEX migrations_name_index ON migrations (name);
         CREATE INDEX migrations_run_at_index ON migrations (run_at);
+        CREATE INDEX "organization_ai_credits_usage_organization_id_created_at_index" ON "organization_ai_credits_usage" ("organization_id", "created_at");
+        CREATE INDEX "organization_ai_credits_usage_organization_id_index" ON "organization_ai_credits_usage" ("organization_id");
         CREATE UNIQUE INDEX "organization_invitations_organization_email_unique" ON "organization_invitations" ("organization_id","email");
         CREATE INDEX "organization_members_user_id_index" ON "organization_members" ("user_id");
         CREATE UNIQUE INDEX "organization_members_user_organization_unique" ON "organization_members" ("organization_id","user_id");
@@ -155,6 +157,7 @@ describe('migrations registry', () => {
         CREATE TABLE "intake_emails" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "email_address" text NOT NULL, "organization_id" text NOT NULL, "allowed_origins" text DEFAULT '[]' NOT NULL, "is_enabled" integer DEFAULT true NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "kv_store" ( "key" text PRIMARY KEY NOT NULL, "value" text NOT NULL, "expires_at" integer );
         CREATE TABLE migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, run_at INTEGER NOT NULL);
+        CREATE TABLE "organization_ai_credits_usage" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "credits_consumed" integer NOT NULL, "usage" text NOT NULL, "source" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "organization_invitations" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "email" text NOT NULL, "role" text NOT NULL, "status" text NOT NULL DEFAULT 'pending', "expires_at" integer NOT NULL, "inviter_id" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("inviter_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "organization_members" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "user_id" text NOT NULL, "role" text NOT NULL, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("user_id") REFERENCES "users"("id") ON UPDATE cascade ON DELETE cascade );
         CREATE TABLE "organization_settings" ( "id" text PRIMARY KEY NOT NULL, "created_at" integer NOT NULL, "updated_at" integer NOT NULL, "organization_id" text NOT NULL, "ai_auto_tagging_enabled" integer, "ai_auto_tagging_can_create_new_tags" integer, "ai_auto_tagging_max_tags" integer, "ai_auto_tagging_model_id" text, FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE("organization_id") );

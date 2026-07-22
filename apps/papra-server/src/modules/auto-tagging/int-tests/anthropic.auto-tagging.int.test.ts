@@ -6,8 +6,8 @@ const apiKey = process.env.TEST_ANTHROPIC_API_KEY;
 const modelId = process.env.TEST_ANTHROPIC_MODEL_ID;
 
 describe('auto-tagging ai integration', () => {
-  describe.skipIf(!apiKey || !modelId)('anthropic', () => {
-    runAutoTaggingTestSuite({
+  describe.skipIf(!apiKey || !modelId)('anthropic', async () => {
+    await runAutoTaggingTestSuite({
       modelId: modelId!,
       config: overrideConfig({ ai: { adapters: { anthropic: { apiKey } } } }),
     });

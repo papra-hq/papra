@@ -8,5 +8,6 @@ export type OrganizationPlanRecord = {
     maxFileSize: number;
     maxIntakeEmailsCount: number;
     maxOrganizationsMembersCount: number;
+    aiCreditsPerMonth: number;
   };
 };
