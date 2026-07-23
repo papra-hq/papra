@@ -9,7 +9,7 @@ import { Button } from '@/modules/ui/components/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/modules/ui/components/dialog';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldLabel, TextFieldRoot } from '@/modules/ui/components/textfield';
-import { getDocumentNameExtension, getDocumentNameWithoutExtension } from '../document.models';
+import { getDocumentNameWithoutExtension } from '../document.models';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { updateDocument } from '../documents.services';
 
@@ -50,10 +50,7 @@ export const RenameDocumentDialog: Component<{
       name: getDocumentNameWithoutExtension({ name: props.documentName }),
     },
     onSubmit: async ({ name }) => {
-      const extension = getDocumentNameExtension({ name: props.documentName });
-      const newName = extension ? `${name}.${extension}` : name;
-
-      await renameDocumentMutation.mutateAsync({ name: newName });
+      await renameDocumentMutation.mutateAsync({ name });
     },
   });
 

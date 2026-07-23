@@ -33,6 +33,7 @@ import { createByteCounter } from '../shared/streams/byte-counter';
 import { createSha256HashTransformer } from '../shared/streams/stream-hash';
 import { collectStreamToFile } from '../shared/streams/stream.convertion';
 import { isNil } from '../shared/utils';
+import { getFileNameWithoutExtension } from '../shared/files/file-names';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTaggingRulesRepository } from '../tagging-rules/tagging-rules.repository';
 import { applyTaggingRules } from '../tagging-rules/tagging-rules.usecases';
@@ -293,7 +294,8 @@ async function handleExistingDocument({
     documentsRepository.restoreDocument({
       documentId: existingDocument.id,
       organizationId,
-      name: fileName,
+      name: getFileNameWithoutExtension({ fileName }),
+      originalName: fileName,
       userId,
     }),
   ]);
@@ -372,7 +374,7 @@ async function createNewDocument({
   const [result, error] = await safely(
     documentsRepository.saveOrganizationDocument({
       id: documentId,
-      name: fileName,
+      name: getFileNameWithoutExtension({ fileName }),
       organizationId,
       originalName: fileName,
       createdBy: userId,
