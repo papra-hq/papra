@@ -1,5 +1,26 @@
 # @papra/app
 
+## 26.6.2
+
+### Patch Changes
+
+- [#1324](https://github.com/papra-hq/papra/pull/1324) [`8a3653c`](https://github.com/papra-hq/papra/commit/8a3653c6542ae44468b7889fbfda6fab4b1a3654) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Collapse the mobile menu sheet when navigating to a new page.
+
+- [#1326](https://github.com/papra-hq/papra/pull/1326) [`0247a7a`](https://github.com/papra-hq/papra/commit/0247a7a6dd55da5f27572ac31d3515962a568308) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added some database indexes for better performances.
+
+- [#1365](https://github.com/papra-hq/papra/pull/1365) [`881796e`](https://github.com/papra-hq/papra/commit/881796edd4e3bcb7c1f3cae8977630d2bb09a905) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Increased and made configurable the timeout of content extraction external service.
+  Docling, Mistral OCR, and Azure DI can now take up to 5 minutes to process a document, instead of the previous 30 seconds, configurable via `DOCLING_REQUEST_TIMEOUT_MS`, `MISTRAL_OCR_REQUEST_TIMEOUT_MS` and `AZURE_DI_REQUEST_TIMEOUT_MS` respectively.
+
+- [#1362](https://github.com/papra-hq/papra/pull/1362) [`8adb16d`](https://github.com/papra-hq/papra/commit/8adb16de44f0905b2021b5a421bbcbb8731e1107) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix mistral ocr replacing tables with external references, no more `[tbl-0.md](tbl-0.md)` in extracted content, the tables are now properly extracted and included in the content.
+
+- [#1357](https://github.com/papra-hq/papra/pull/1357) [`bad01b7`](https://github.com/papra-hq/papra/commit/bad01b7fa2164a754c2db10245a74608edbd1ffd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a skeleton loader in the sidenav organization picker when fetching organizations
+
+- [#1375](https://github.com/papra-hq/papra/pull/1375) [`88f1d86`](https://github.com/papra-hq/papra/commit/88f1d86a970bf2ab924419d3192ff0cca95fce08) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Catalan language
+
+- [#1348](https://github.com/papra-hq/papra/pull/1348) [`12e1d4b`](https://github.com/papra-hq/papra/commit/12e1d4b6db352e1725318d8b6f82a604f3282ef0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: document share links belonging to a soft-deleted organization were still publicly accessible. Public access (document metadata, file download, and password verification) now stops with a 410 Gone as soon as the organization is deleted, and resumes automatically if the organization is restored during the grace period.
+
+  Thank you to [Thammachart Sittharod](https://github.com/penthammachat-creator) for the responsible disclosure of this issue.
+
 ## 26.6.1
 
 ### Patch Changes
