@@ -2,6 +2,7 @@ import type { RouteDefinitionContext } from '../app/server.types';
 import * as v from 'valibot';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
+import { createAiCreditsRepository } from '../ai-credits/ai-credits.repository';
 import { createDocumentsRepository } from '../documents/documents.repository';
 import { createIntakeEmailsRepository } from '../intake-emails/intake-emails.repository';
 import { organizationIdSchema } from '../organizations/organization.schemas';
@@ -302,6 +303,7 @@ function setupGetOrganizationSubscriptionUsageRoute({
       const plansRepository = createPlansRepository({ config });
       const intakeEmailsRepository = createIntakeEmailsRepository({ db });
       const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
+      const aiCreditsRepository = createAiCreditsRepository({ db });
 
       await ensureUserIsInOrganization({
         userId,
@@ -314,6 +316,7 @@ function setupGetOrganizationSubscriptionUsageRoute({
         { totalDocumentsSize, deletedDocumentsSize },
         { intakeEmailCount },
         { membersCount },
+        { creditsConsumed },
       ] = await Promise.all([
         getOrganizationPlan({
           organizationId,
@@ -325,6 +328,7 @@ function setupGetOrganizationSubscriptionUsageRoute({
         documentsRepository.getOrganizationStats({ organizationId }),
         intakeEmailsRepository.getOrganizationIntakeEmailsCount({ organizationId }),
         organizationsRepository.getOrganizationMembersCount({ organizationId }),
+        aiCreditsRepository.getCurrentPeriodOrganizationAiCreditsCount({ organizationId }),
       ]);
 
       const nullifiedLimits = {
@@ -336,6 +340,7 @@ function setupGetOrganizationSubscriptionUsageRoute({
           organizationPlan.limits.maxOrganizationsMembersCount,
         ),
         maxFileSize: nullifyPositiveInfinity(organizationPlan.limits.maxFileSize),
+        aiCreditsPerMonth: nullifyPositiveInfinity(organizationPlan.limits.aiCreditsPerMonth),
       };
 
       return context.json({
@@ -352,6 +357,10 @@ function setupGetOrganizationSubscriptionUsageRoute({
           membersCount: {
             used: membersCount,
             limit: nullifiedLimits.maxOrganizationsMembersCount,
+          },
+          aiCredits: {
+            used: creditsConsumed,
+            limit: nullifiedLimits.aiCreditsPerMonth,
           },
         },
         limits: nullifiedLimits,

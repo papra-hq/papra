@@ -1161,6 +1161,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             maxIntakeEmailsCount: 1,
             maxOrganizationsMembersCount: 3,
             maxFileSize: 1024 * 1024 * 50, // 50 MiB
+            aiCreditsPerMonth: 1000,
           },
         },
       };
@@ -1200,12 +1201,17 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             used: 1,
             limit: 3,
           },
+          aiCredits: {
+            used: 0,
+            limit: 1000,
+          },
         },
         limits: {
           maxDocumentStorageBytes: 1024 * 1024 * 500, // 500 MiB
           maxIntakeEmailsCount: 1,
           maxOrganizationsMembersCount: 3,
           maxFileSize: 1024 * 1024 * 50, // 50 MiB
+          aiCreditsPerMonth: 1000,
         },
       };
     },

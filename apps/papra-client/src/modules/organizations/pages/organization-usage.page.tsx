@@ -3,6 +3,7 @@ import { formatBytes } from '@corentinth/chisels';
 import { useParams } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import { Show, Suspense } from 'solid-js';
+import { useConfig } from '@/modules/config/config.provider';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { fetchOrganizationUsage } from '@/modules/subscriptions/subscriptions.services';
 import { Card, CardContent } from '@/modules/ui/components/card';
@@ -43,6 +44,7 @@ const UsageCardLine: Component<{
 export const OrganizationUsagePage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
+  const { config } = useConfig();
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'usage'],
@@ -86,6 +88,18 @@ export const OrganizationUsagePage: Component = () => {
                     used={getData().usage.membersCount.used}
                     limit={getData().usage.membersCount.limit}
                   />
+
+                  <Show when={config.isSubscriptionsEnabled}>
+                    <Separator />
+
+                    <UsageCardLine
+                      title={t('organization.usage.ai-credits.title')}
+                      description={t('organization.usage.ai-credits.description')}
+                      used={getData().usage.aiCredits.used}
+                      limit={getData().usage.aiCredits.limit}
+                      formatValue={(credits) => credits.toLocaleString()}
+                    />
+                  </Show>
                 </CardContent>
               </Card>
             </>

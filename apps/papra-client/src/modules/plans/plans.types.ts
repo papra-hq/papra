@@ -3,4 +3,5 @@ export type PlanLimits = {
   maxIntakeEmailsCount: number | null;
   maxOrganizationsMembersCount: number | null;
   maxFileSize: number | null;
+  aiCreditsPerMonth: number | null;
 };

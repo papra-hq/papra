@@ -58,6 +58,7 @@ export async function fetchOrganizationUsage({ organizationId }: { organizationI
       documentsStorage: { used: number; deleted: number; limit: number | null };
       intakeEmailsCount: { used: number; limit: number | null };
       membersCount: { used: number; limit: number | null };
+      aiCredits: { used: number; limit: number | null };
     };
     limits: PlanLimits;
   }>({
