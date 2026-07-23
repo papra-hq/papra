@@ -285,6 +285,8 @@ export const translations = {
   'organization.usage.intake-emails.description': 'Number of intake email addresses',
   'organization.usage.members.title': 'Members',
   'organization.usage.members.description': 'Number of members in the organization',
+  'organization.usage.ai-credits.title': 'AI credits',
+  'organization.usage.ai-credits.description': 'AI credits consumed this month',
   'organization.usage.unlimited': 'Unlimited',
 
   'organizations.members.title': 'Members',
