@@ -57,7 +57,7 @@
     "valibot": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "~19.1.10",
+    "@types/react": "19.1.17",
     "eas-cli": "16.27.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
