@@ -27,7 +27,7 @@ export async function promptForAutoTagging({
   modelId,
 }: {
   aiServices: AiServices;
-  document: { content: string; name: string };
+  document: { content: string; name: string; organizationId: string };
   existingTags: { id: string; name: string; description?: string | null }[];
   canCreateNewTags: boolean;
   maxTags: number;
@@ -35,6 +35,8 @@ export async function promptForAutoTagging({
 }) {
   const autoTaggingResponse = await aiServices.generateStructuredData({
     modelId,
+    organizationId: document.organizationId,
+    source: 'auto-tagging',
     schema: buildAutoTaggingSchema({ existingTags, canCreateNewTags }),
     systemPrompt: buildAutoTaggingSystemPrompt({ existingTags, canCreateNewTags, maxTags }),
     userPrompt: buildAutoTaggingUserPrompt({ document }),

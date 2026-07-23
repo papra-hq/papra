@@ -6,8 +6,8 @@ const apiKey = process.env.TEST_DEEPSEEK_API_KEY;
 const modelId = process.env.TEST_DEEPSEEK_MODEL_ID;
 
 describe('auto-tagging ai integration', () => {
-  describe.skipIf(!apiKey || !modelId)('deepseek', () => {
-    runAutoTaggingTestSuite({
+  describe.skipIf(!apiKey || !modelId)('deepseek', async () => {
+    await runAutoTaggingTestSuite({
       modelId: modelId!,
       config: overrideConfig({ ai: { adapters: { deepseek: { apiKey } } } }),
     });

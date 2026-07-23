@@ -6,8 +6,8 @@ const baseUrl = process.env.TEST_OLLAMA_BASE_URL;
 const modelId = process.env.TEST_OLLAMA_MODEL_ID;
 
 describe('auto-tagging ai integration', () => {
-  describe.skipIf(!baseUrl || !modelId)('ollama', () => {
-    runAutoTaggingTestSuite({
+  describe.skipIf(!baseUrl || !modelId)('ollama', async () => {
+    await runAutoTaggingTestSuite({
       modelId: modelId!,
       config: overrideConfig({ ai: { adapters: { ollama: { baseUrl } } } }),
     });

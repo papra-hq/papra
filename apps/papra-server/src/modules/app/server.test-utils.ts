@@ -19,6 +19,10 @@ import { createEventServices } from './events/events.services';
 import { createGracefulShutdownService } from './graceful-shutdown/graceful-shutdown.services';
 import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
 import { createAiServices } from '../ai/ai.services';
+import { createAiCreditsRepository } from '../ai-credits/ai-credits.repository';
+import { createPlansRepository } from '../plans/plans.repository';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 
 export function createTestServerDependencies(
   overrides: Partial<GlobalDependencies> = {},
@@ -50,7 +54,16 @@ export function createTestServerDependencies(
   const planEntitlementDefinitionRegistry =
     overrides.planEntitlementDefinitionRegistry ??
     createPlanEntitlementDefinitionRegistry({ config });
-  const aiServices = overrides.aiServices ?? createAiServices({ config });
+  const aiServices =
+    overrides.aiServices ??
+    createAiServices({
+      config,
+      aiCreditsRepository: createAiCreditsRepository({ db }),
+      planEntitlementDefinitionRegistry,
+      plansRepository: createPlansRepository({ config }),
+      planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+      subscriptionsRepository: createSubscriptionsRepository({ db }),
+    });
 
   registerEventHandlers({
     eventServices,

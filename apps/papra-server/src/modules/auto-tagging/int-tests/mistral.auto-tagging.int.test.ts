@@ -6,8 +6,8 @@ const apiKey = process.env.TEST_MISTRAL_API_KEY;
 const modelId = process.env.TEST_MISTRAL_MODEL_ID;
 
 describe('auto-tagging ai integration', () => {
-  describe.skipIf(!apiKey || !modelId)('mistral', () => {
-    runAutoTaggingTestSuite({
+  describe.skipIf(!apiKey || !modelId)('mistral', async () => {
+    await runAutoTaggingTestSuite({
       modelId: modelId!,
       config: overrideConfig({ ai: { adapters: { mistral: { apiKey } } } }),
     });

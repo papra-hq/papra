@@ -37,6 +37,7 @@ describe('plans repository', () => {
         maxIntakeEmailsCount: Number.POSITIVE_INFINITY,
         maxOrganizationsMembersCount: Number.POSITIVE_INFINITY,
         maxFileSize: Number.POSITIVE_INFINITY,
+        aiCreditsPerMonth: Number.POSITIVE_INFINITY,
       });
     });
   });
