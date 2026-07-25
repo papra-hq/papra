@@ -25,6 +25,7 @@
     "@tanstack/react-query": "^5.90.7",
     "better-auth": "catalog:",
     "expo": "~54.0.35",
+    "expo-build-properties": "~1.0.10",
     "expo-constants": "~18.0.13",
     "expo-document-picker": "^14.0.8",
     "expo-file-system": "^19.0.23",
