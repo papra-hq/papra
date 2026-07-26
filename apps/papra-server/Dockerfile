@@ -56,5 +56,9 @@ COPY pnpm-workspace.yaml ./
 
 EXPOSE 1221
 
+# Hits /api/health (node is already in the image — no curl/jq needed)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||1221)+'/api/health').then(async r=>{const j=await r.json();process.exit(j.status==='ok'?0:1)}).catch(()=>process.exit(1))"
+
 # The command is overridden by Fly at runtime, see ./fly.toml
 CMD [ "pnpm", "--silent", "start:with-migrations" ]
