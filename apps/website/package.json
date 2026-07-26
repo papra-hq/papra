@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Website for Papra, the document management platform",
+  "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
