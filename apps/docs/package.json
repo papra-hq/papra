@@ -12,11 +12,12 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "astro sync && tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/solid-js": "^7.0.0",
     "@astrojs/starlight": "^0.41.1",
+    "@papra/app-server": "workspace:*",
     "@valibot/to-json-schema": "^1.6.0",
     "astro": "catalog:",
     "sharp": "catalog:",
