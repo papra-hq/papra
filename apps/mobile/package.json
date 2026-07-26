@@ -2,6 +2,7 @@
   "name": "@papra/mobile",
   "version": "1.0.1",
   "private": true,
+  "license": "AGPL-3.0-or-later",
   "type": "module",
   "main": "expo-router/entry",
   "scripts": {
