@@ -336,7 +336,7 @@ importers:
         version: 8.21.3(solid-js@1.9.13)
       better-auth:
         specifier: 'catalog:'
-        version: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0)))
+        version: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -456,11 +456,11 @@ importers:
         specifier: ^0.14.0
         version: 0.14.0
       '@owlrelay/api-sdk':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       '@owlrelay/webhook':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       '@papra/lecture':
         specifier: workspace:*
         version: link:../../packages/lecture
@@ -493,7 +493,7 @@ importers:
         version: 1.6.0(valibot@1.3.1(typescript@6.0.3))
       better-auth:
         specifier: 'catalog:'
-        version: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0)))
+        version: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9)
       busboy:
         specifier: ^1.6.0
         version: 1.6.0
@@ -3514,13 +3514,13 @@ packages:
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
 
-  '@owlrelay/api-sdk@0.0.3':
-    resolution: {integrity: sha512-ia9lLOr0Ta8kIxf2/ADvERT9hR/NNZWCnls2KxF3Yo2u60w1D3YkaNOFbV7o6Gy7Q5t7PesBnAtq6dWxGfCF3w==}
+  '@owlrelay/api-sdk@0.0.4':
+    resolution: {integrity: sha512-g5piDR+x5aa+txsKKwc17NwwSVeGZNU+ZcmNcuoilypFe1nIlqVg0X+tMoajCYY1SYeQNCQt3wxHrAuiw8PQFw==}
     engines: {node: '>=26.0.0'}
 
-  '@owlrelay/webhook@0.0.3':
-    resolution: {integrity: sha512-LoaRGBRg7c/VSwumRDa62Lo46nf99jCWcxFqIqSAimVgNk5F6dHlR2RAlOXo3Tub/c9FViyudb0+15c9SP7vsA==}
-    engines: {node: '>=20.0.0'}
+  '@owlrelay/webhook@0.0.4':
+    resolution: {integrity: sha512-FwCakEsbAb9jNKgMrYDXkyj1ZTrVLnrTixIYivFQPs/O68/zDJEq32IkGLGXNkXzacTglfXgEpAg0I2W004yuA==}
+    engines: {node: '>=26.0.0'}
 
   '@oxc-project/types@0.137.0':
     resolution: {integrity: sha512-WT+Gb24i8hmvo85AIv2oEYouEXkRlKAlT9WaCa3TfLgNCN+GhrJOGZuIlMouAh38Qe4QOx26eUOVsq70qXrywA==}
@@ -13838,11 +13838,11 @@ snapshots:
 
   '@oslojs/encoding@1.1.0': {}
 
-  '@owlrelay/api-sdk@0.0.3':
+  '@owlrelay/api-sdk@0.0.4':
     dependencies:
       ofetch: 1.5.1
 
-  '@owlrelay/webhook@0.0.3':
+  '@owlrelay/webhook@0.0.4':
     dependencies:
       ofetch: 1.5.1
 
@@ -16291,36 +16291,6 @@ snapshots:
       drizzle-orm: 0.45.2(@libsql/client@0.14.0)(kysely@0.28.17)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
-      solid-js: 1.9.13
-      vitest: 4.1.9(@types/node@26.0.1)(@vitest/coverage-v8@4.0.3)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0))
-    transitivePeerDependencies:
-      - '@cloudflare/workers-types'
-      - '@opentelemetry/api'
-
-  better-auth@1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0))):
-    dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
-      '@better-auth/drizzle-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))
-      '@better-auth/kysely-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(kysely@0.28.17)
-      '@better-auth/memory-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
-      '@better-auth/mongo-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
-      '@better-auth/prisma-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
-      '@better-auth/telemetry': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)
-      '@better-auth/utils': 0.4.0
-      '@better-fetch/fetch': 1.1.21
-      '@noble/ciphers': 2.2.0
-      '@noble/hashes': 2.0.1
-      better-call: 1.3.5(zod@4.4.3)
-      defu: 6.1.4
-      jose: 6.2.3
-      kysely: 0.28.17
-      nanostores: 1.3.0
-      zod: 4.4.3
-    optionalDependencies:
-      drizzle-kit: 0.31.10
-      drizzle-orm: 0.45.2(@libsql/client@0.14.0)(kysely@0.28.17)
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
       solid-js: 1.9.13
       vitest: 4.1.9(@types/node@26.0.1)(@vitest/coverage-v8@4.0.3)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0))
     transitivePeerDependencies:
