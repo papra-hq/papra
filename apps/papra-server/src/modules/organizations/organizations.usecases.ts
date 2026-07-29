@@ -302,7 +302,7 @@ export async function inviteMemberToOrganization({
     organizationId,
   });
 
-  if (invitation) {
+  if (invitation && invitation.status === ORGANIZATION_INVITATION_STATUS.PENDING) {
     logger.error(
       { inviterId, organizationId, email, invitationId: invitation.id },
       'Invitation already exists',
