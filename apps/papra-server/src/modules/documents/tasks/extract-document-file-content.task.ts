@@ -54,14 +54,23 @@ export async function registerExtractDocumentFileContentTask({
         extractDocumentText,
       });
 
-      if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {
+      if (!config.ai.isEnabled) {
         return;
       }
 
-      await taskServices.scheduleJob({
-        taskName: 'auto-tag-document',
-        data: { documentId, organizationId },
-      });
+      if (config.autoNaming.isEnabled) {
+        await taskServices.scheduleJob({
+          taskName: 'auto-name-document',
+          data: { documentId, organizationId },
+        });
+      }
+
+      if (config.autoTagging.isEnabled) {
+        await taskServices.scheduleJob({
+          taskName: 'auto-tag-document',
+          data: { documentId, organizationId },
+        });
+      }
     },
   });
 }

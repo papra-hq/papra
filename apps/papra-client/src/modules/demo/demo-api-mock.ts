@@ -1540,6 +1540,10 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
               canCreateNewTags: false,
               maxTags: 10,
             },
+            autoNaming: {
+              isEnabled: false,
+              modelId: 'openai://gpt-4o-mini',
+            },
           },
         },
       };

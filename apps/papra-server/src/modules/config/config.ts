@@ -39,6 +39,7 @@ import {
 import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 import { aiConfig } from '../ai/ai.config';
+import { autoNamingConfig } from '../auto-naming/auto-naming.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
 
@@ -178,6 +179,7 @@ export const configDefinition = {
   kvStore: kvStoreConfig,
   planEntitlements: planEntitlementsConfig,
   ai: aiConfig,
+  autoNaming: autoNamingConfig,
   autoTagging: autoTaggingConfig,
 } as const satisfies AppConfigDefinition;
 

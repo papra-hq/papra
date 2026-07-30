@@ -176,6 +176,9 @@ export async function fetchOrganizationSettings({ organizationId }: { organizati
           canCreateNewTags: boolean;
           maxTags: number;
         };
+        autoNaming: {
+          isEnabled: boolean;
+        };
       };
     };
   }>({
@@ -199,6 +202,9 @@ export async function updateOrganizationSettings({
         isEnabled?: boolean;
         canCreateNewTags?: boolean;
         maxTags?: number;
+      };
+      autoNaming?: {
+        isEnabled?: boolean;
       };
     };
   };

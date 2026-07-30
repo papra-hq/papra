@@ -276,6 +276,9 @@ export const translations = {
   'organization.settings.auto-tagging.max-tags.label': 'Maximum tags per document',
   'organization.settings.auto-tagging.max-tags.description':
     'The most tags the AI can apply to a single document (between {{ min }} and {{ max }}).',
+  'organization.settings.auto-naming.enabled.label': 'Enable auto naming',
+  'organization.settings.auto-naming.enabled.description':
+    'When enabled, documents added to this organization are automatically renamed by the AI.',
 
   'organization.usage.page.title': 'Usage',
   'organization.usage.page.description': "View your organization's current usage and limits.",

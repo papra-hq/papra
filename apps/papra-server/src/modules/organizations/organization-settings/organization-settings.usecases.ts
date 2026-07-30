@@ -59,6 +59,14 @@ export async function resolveOrganizationSettings({
             config.autoTagging.modelId ??
             config.ai.defaultModelId,
         },
+        autoNaming: {
+          isEnabled: organizationRawSettings?.aiAutoNamingEnabled ?? false,
+
+          modelId:
+            organizationRawSettings?.aiAutoNamingModelId ??
+            config.autoNaming.modelId ??
+            config.ai.defaultModelId,
+        },
       },
     },
   };
