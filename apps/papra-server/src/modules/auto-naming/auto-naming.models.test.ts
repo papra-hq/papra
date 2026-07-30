@@ -117,5 +117,15 @@ describe('auto-naming.models', () => {
         }),
       ).to.eql({ shouldRename: true, title: 'Invoice - Acme Corp' });
     });
+
+    test('whitespace around a quoted title is trimmed before stripping quotes', () => {
+      expect(
+        getTitleAction({
+          autoNamingResponse: { title: '  "Invoice - Acme Corp" ' },
+          currentName: 'scan.pdf',
+          maxTitleLength: 120,
+        }),
+      ).to.eql({ shouldRename: true, title: 'Invoice - Acme Corp' });
+    });
   });
 });

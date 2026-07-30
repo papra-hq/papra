@@ -245,7 +245,7 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
                     <Card>
                       <CardContent class="pt-6 flex items-center gap-3 text-muted-foreground">
                         <div class="i-tabler-tag-off size-5 flex-shrink-0" />
-                        <p class="text-sm">{t('organization.settings.auto-tagging.unavailable')}</p>
+                        <p class="text-sm">{t('organization.settings.ai-automations.unavailable')}</p>
                       </CardContent>
                     </Card>
                   }

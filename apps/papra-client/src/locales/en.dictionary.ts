@@ -265,6 +265,8 @@ export const translations = {
   'organization.settings.ai-automations.page.title': 'AI Automation Settings',
   'organization.settings.ai-automations.page.description':
     'Manage AI-powered document automation settings for your organization.',
+  'organization.settings.ai-automations.unavailable':
+    'AI automations are currently not available for your organization. Please contact support for more information.',
   'organization.settings.auto-tagging.page.title': 'Auto Tagging Settings',
   'organization.settings.auto-tagging.page.description':
     'Auto tagging settings for your organization. This feature allows you to automatically tag content based on AI predictions.',

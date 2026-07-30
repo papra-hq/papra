@@ -54,6 +54,7 @@ export function getTitleAction({
   const title = rawTitle
     // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F]+/g, ' ')
+    .trim()
     .replace(/^["']+/g, '')
     .replace(/["'.]+$/g, '')
     .trim()
