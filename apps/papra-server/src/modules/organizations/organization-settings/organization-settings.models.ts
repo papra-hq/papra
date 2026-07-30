@@ -13,7 +13,7 @@ export function formatOrganizationSettingsForApiResponse({
         'canCreateNewTags',
         'maxTags',
       ]),
-      autoNaming: pick(organizationSettings.ai.autoNaming, ['isEnabled', 'modelId']),
+      autoNaming: pick(organizationSettings.ai.autoNaming, ['isEnabled']),
     },
   };
 }

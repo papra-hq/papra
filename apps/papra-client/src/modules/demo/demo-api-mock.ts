@@ -1542,7 +1542,6 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             },
             autoNaming: {
               isEnabled: false,
-              modelId: 'openai://gpt-4o-mini',
             },
           },
         },
