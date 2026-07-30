@@ -171,6 +171,42 @@ describe('auto-naming usecases', () => {
       ]);
     });
 
+    test('when the document is renamed by the user during the AI call, the user rename is not overwritten', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+      });
+
+      const generateStructuredData = vi.fn().mockImplementation(async () => {
+        // Simulate a concurrent user rename while the AI call is in flight
+        await deps.documentsRepository.updateDocument({
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          name: 'User chosen name',
+        });
+
+        return { title: 'Invoice - Acme Corp - March 2026' };
+      });
+
+      await autoNameDocument({
+        ...deps,
+        aiServices: { generateStructuredData } as unknown as AiServices,
+        logger,
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(document?.name).to.eql('User chosen name');
+      expect(deps.eventServices.getEmittedEvents()).to.eql([]);
+    });
+
     test('when the generated title matches the current name, the document is not updated', async () => {
       const { logger } = createTestLogger();
       const deps = await createTestDeps({

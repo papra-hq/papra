@@ -100,6 +100,20 @@ export async function autoNameDocument({
     return;
   }
 
+  // The AI call can take a while, skip the rename if the document was renamed or deleted meanwhile
+  const { document: currentDocument } = await documentsRepository.getDocumentById({
+    documentId,
+    organizationId,
+  });
+
+  if (!currentDocument || currentDocument.isDeleted || currentDocument.name !== document.name) {
+    logger.info(
+      { documentId, organizationId },
+      'Document was renamed or deleted during auto-naming. Skipping rename.',
+    );
+    return;
+  }
+
   await updateDocument({
     documentId,
     organizationId,
