@@ -80,6 +80,11 @@ export async function autoNameDocument({
     throw createDocumentNotFoundError();
   }
 
+  if (document.isDeleted) {
+    logger.info({ documentId, organizationId }, 'Document is deleted. Skipping auto-naming.');
+    return;
+  }
+
   const startedAt = Date.now();
   const { shouldRename, title } = await promptForAutoNaming({
     aiServices,

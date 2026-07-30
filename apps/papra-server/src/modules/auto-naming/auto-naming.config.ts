@@ -19,8 +19,8 @@ export const autoNamingConfig = {
     default: undefined,
   },
   maxTitleLength: {
-    doc: 'The maximum number of characters that can be used in an AI-generated document title.',
-    schema: coercedStrictlyPositiveIntegerSchema,
+    doc: 'The maximum number of characters that can be used in an AI-generated document title (capped at 255, the document name limit).',
+    schema: v.pipe(coercedStrictlyPositiveIntegerSchema, v.maxValue(255)),
     env: 'AUTO_NAMING_MAX_TITLE_LENGTH',
     default: 120,
   },

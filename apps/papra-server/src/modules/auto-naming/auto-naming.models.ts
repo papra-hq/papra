@@ -44,8 +44,12 @@ export function getTitleAction({
   currentName: string;
   maxTitleLength: number;
 }) {
-  const title = autoNamingResponse.title
-    .replace(/[\n\r]+/g, ' ')
+  // The LLM response is not runtime-validated, so defend against non-string titles
+  const rawTitle = typeof autoNamingResponse.title === 'string' ? autoNamingResponse.title : '';
+
+  const title = rawTitle
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\u0000-\u001F]+/g, ' ')
     .replace(/["'.]+$/g, '')
     .trim()
     .slice(0, maxTitleLength);
