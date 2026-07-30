@@ -92,6 +92,35 @@ describe('auto-naming usecases', () => {
       expect(document?.name).to.eql('scan.pdf');
     });
 
+    test('when the document is deleted, it is not renamed and the AI is not called', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [{ ...baseDocument, isDeleted: true }],
+      });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: { title: 'Invoice - Acme Corp - March 2026' },
+      });
+
+      await autoNameDocument({
+        ...deps,
+        aiServices,
+        logger,
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
+      });
+
+      const { document } = await deps.documentsRepository.getDocumentById({
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+      });
+
+      expect(generateStructuredData).not.toHaveBeenCalled();
+      expect(document?.name).to.eql('scan.pdf');
+      expect(deps.eventServices.getEmittedEvents()).to.eql([]);
+    });
+
     test('when the AI generates a title, the document is renamed and a document.updated event is emitted', async () => {
       const { logger } = createTestLogger();
       const deps = await createTestDeps({

@@ -70,5 +70,25 @@ describe('auto-naming.models', () => {
         }),
       ).to.eql({ shouldRename: false, title: 'Invoice - Acme Corp' });
     });
+
+    test('does not rename when the AI returns a non-string title', () => {
+      expect(
+        getTitleAction({
+          autoNamingResponse: { title: 123 as unknown as string },
+          currentName: 'scan.pdf',
+          maxTitleLength: 120,
+        }),
+      ).to.eql({ shouldRename: false, title: '' });
+    });
+
+    test('control characters are stripped from the generated title', () => {
+      expect(
+        getTitleAction({
+          autoNamingResponse: { title: 'Invoice\u0000-\tAcme\u001F Corp' },
+          currentName: 'scan.pdf',
+          maxTitleLength: 120,
+        }),
+      ).to.eql({ shouldRename: true, title: 'Invoice - Acme  Corp' });
+    });
   });
 });
