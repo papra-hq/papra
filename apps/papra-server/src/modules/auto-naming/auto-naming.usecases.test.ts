@@ -47,7 +47,7 @@ async function createTestDeps(seedOptions: Parameters<typeof createInMemoryDatab
     db,
     documentsRepository: createDocumentsRepository({ db }),
     eventServices: createTestEventServices(),
-    config: overrideConfig({ autoNaming: { maxTitleLength: 120 } }),
+    config: overrideConfig({ autoNaming: { maxContentLength: 20_000, maxTitleLength: 120 } }),
   };
 }
 

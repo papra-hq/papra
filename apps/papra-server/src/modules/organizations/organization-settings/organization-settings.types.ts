@@ -11,6 +11,7 @@ export type OrganizationSettings = {
     autoNaming: {
       isEnabled: boolean;
       modelId?: string;
+      modelIdForApiResponse?: string | null;
     };
   };
 };

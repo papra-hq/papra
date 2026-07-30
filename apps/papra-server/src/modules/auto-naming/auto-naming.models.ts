@@ -17,12 +17,16 @@ export function buildAutoNamingSystemPrompt({ maxTitleLength }: { maxTitleLength
 
 export function buildAutoNamingUserPrompt({
   document,
+  maxContentLength,
 }: {
   document: { content: string; name: string };
+  maxContentLength: number;
 }) {
-  return [`Current document name: ${document.name}`, 'Document content:', document.content].join(
-    '\n',
-  );
+  return [
+    `Current document name: ${document.name}`,
+    'Document content:',
+    document.content.slice(0, maxContentLength),
+  ].join('\n');
 }
 
 export type AutoNamingResponse = {
@@ -50,6 +54,7 @@ export function getTitleAction({
   const title = rawTitle
     // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F]+/g, ' ')
+    .replace(/^["']+/g, '')
     .replace(/["'.]+$/g, '')
     .trim()
     .slice(0, maxTitleLength);

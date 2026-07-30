@@ -31,11 +31,28 @@ describe('auto-naming.models', () => {
             name: 'scan.pdf',
             content: 'Invoice from Acme Corp for March 2026',
           },
+          maxContentLength: 20_000,
         }),
       ).toMatchInlineSnapshot(`
         "Current document name: scan.pdf
         Document content:
         Invoice from Acme Corp for March 2026"
+      `);
+    });
+
+    test('truncates document content to the configured maximum length', () => {
+      expect(
+        buildAutoNamingUserPrompt({
+          document: {
+            name: 'scan.pdf',
+            content: 'Invoice from Acme Corp for March 2026',
+          },
+          maxContentLength: 12,
+        }),
+      ).toMatchInlineSnapshot(`
+        "Current document name: scan.pdf
+        Document content:
+        Invoice from"
       `);
     });
   });
@@ -89,6 +106,16 @@ describe('auto-naming.models', () => {
           maxTitleLength: 120,
         }),
       ).to.eql({ shouldRename: true, title: 'Invoice - Acme  Corp' });
+    });
+
+    test('leading and trailing quotes are stripped from the generated title', () => {
+      expect(
+        getTitleAction({
+          autoNamingResponse: { title: '"Invoice - Acme Corp"' },
+          currentName: 'scan.pdf',
+          maxTitleLength: 120,
+        }),
+      ).to.eql({ shouldRename: true, title: 'Invoice - Acme Corp' });
     });
   });
 });

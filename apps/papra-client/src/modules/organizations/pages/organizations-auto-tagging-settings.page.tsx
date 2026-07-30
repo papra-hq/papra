@@ -231,11 +231,11 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
           {(getOrganizationSettings) => (
             <>
               <h1 class="text-xl font-semibold mb-2">
-                {t('organization.settings.auto-tagging.page.title')}
+                {t('organization.settings.ai-automations.page.title')}
               </h1>
 
               <p class="text-muted-foreground">
-                {t('organization.settings.auto-tagging.page.description')}
+                {t('organization.settings.ai-automations.page.description')}
               </p>
 
               <div class="mt-6 flex flex-col gap-6">

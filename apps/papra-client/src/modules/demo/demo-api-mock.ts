@@ -1542,6 +1542,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
             },
             autoNaming: {
               isEnabled: false,
+              modelId: null,
             },
           },
         },

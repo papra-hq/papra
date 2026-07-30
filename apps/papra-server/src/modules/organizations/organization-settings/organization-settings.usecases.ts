@@ -62,6 +62,8 @@ export async function resolveOrganizationSettings({
         autoNaming: {
           isEnabled: organizationRawSettings?.aiAutoNamingEnabled ?? false,
 
+          modelIdForApiResponse: organizationRawSettings?.aiAutoNamingModelId ?? null,
+
           modelId:
             organizationRawSettings?.aiAutoNamingModelId ??
             config.autoNaming.modelId ??

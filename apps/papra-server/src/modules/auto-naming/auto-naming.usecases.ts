@@ -5,7 +5,6 @@ import type { Logger } from '@crowlog/logger';
 import type { Config } from '../config/config.types';
 import type { EventServices } from '../app/events/events.services';
 import { createDocumentNotFoundError } from '../documents/documents.errors';
-import { updateDocument } from '../documents/documents.usecases';
 import { createLogger } from '../shared/logger/logger';
 import { ensureModelId } from '../ai/ai.models';
 import {
@@ -19,11 +18,13 @@ export async function promptForAutoNaming({
   aiServices,
   document,
   modelId,
+  maxContentLength,
   maxTitleLength,
 }: {
   aiServices: AiServices;
   document: { content: string; name: string; organizationId: string };
   modelId: string;
+  maxContentLength: number;
   maxTitleLength: number;
 }) {
   const autoNamingResponse = await aiServices.generateStructuredData({
@@ -32,7 +33,7 @@ export async function promptForAutoNaming({
     source: 'auto-naming',
     schema: buildAutoNamingSchema(),
     systemPrompt: buildAutoNamingSystemPrompt({ maxTitleLength }),
-    userPrompt: buildAutoNamingUserPrompt({ document }),
+    userPrompt: buildAutoNamingUserPrompt({ document, maxContentLength }),
   });
 
   return getTitleAction({
@@ -90,6 +91,7 @@ export async function autoNameDocument({
     aiServices,
     document,
     modelId: ensureModelId(organizationSettings.ai.autoNaming.modelId),
+    maxContentLength: config.autoNaming.maxContentLength,
     maxTitleLength: config.autoNaming.maxTitleLength,
   });
   const durationMs = Date.now() - startedAt;
@@ -101,12 +103,14 @@ export async function autoNameDocument({
   }
 
   // The AI call can take a while, skip the rename if the document was renamed or deleted meanwhile
-  const { document: currentDocument } = await documentsRepository.getDocumentById({
+  const { document: renamedDocument } = await documentsRepository.updateDocumentNameIfUnchanged({
     documentId,
     organizationId,
+    expectedName: document.name,
+    name: title,
   });
 
-  if (!currentDocument || currentDocument.isDeleted || currentDocument.name !== document.name) {
+  if (!renamedDocument) {
     logger.info(
       { documentId, organizationId },
       'Document was renamed or deleted during auto-naming. Skipping rename.',
@@ -114,11 +118,12 @@ export async function autoNameDocument({
     return;
   }
 
-  await updateDocument({
-    documentId,
-    organizationId,
-    documentsRepository,
-    eventServices,
-    changes: { name: title },
+  eventServices.emitEvent({
+    eventName: 'document.updated',
+    payload: {
+      userId: undefined,
+      changes: { name: title },
+      document: renamedDocument,
+    },
   });
 }

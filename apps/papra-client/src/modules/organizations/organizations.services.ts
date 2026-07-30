@@ -178,6 +178,7 @@ export async function fetchOrganizationSettings({ organizationId }: { organizati
         };
         autoNaming: {
           isEnabled: boolean;
+          modelId?: string | null;
         };
       };
     };
@@ -205,6 +206,7 @@ export async function updateOrganizationSettings({
       };
       autoNaming?: {
         isEnabled?: boolean;
+        modelId?: string;
       };
     };
   };
