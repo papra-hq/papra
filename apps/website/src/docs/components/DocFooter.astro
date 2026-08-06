@@ -1,0 +1,52 @@
+---
+import {  getEntry } from 'astro:content';
+
+
+export type Props = {
+  previous?: {
+    docId: string;
+  },
+    next?: {
+        docId: string;
+    }
+}
+
+const { previous, next } = Astro.props;
+
+const previousDoc = previous?.docId ? await getEntry('docs', previous.docId) : null;
+const nextDoc = next?.docId ? await getEntry('docs', next.docId) : null;
+
+---
+
+
+
+<div>
+
+    <hr class="my-8 border-t border-muted-foreground/10" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-32">
+        {previousDoc ? (
+            <a href={`/docs/${previousDoc.id}`} class="flex flex-col gap-1 group transition rounded-lg px-6 py-3 border hover:border-primary ">
+                <div class="flex items-center gap-2 text-muted-foreground">
+                    <div class="i-tabler-arrow-left size-4"></div>
+                    Previous
+                </div>
+                <div class="text-lg transition group-hover:text-primary">{previousDoc.data.title}</div>
+            </a>
+        ): (
+            <div ></div>
+        )}
+
+        {nextDoc && (
+            <a href={`/docs/${nextDoc.id}`} class="flex flex-col gap-1 group transition text-right rounded-lg px-6 py-3 border hover:border-primary ">
+                <div class="flex items-center gap-2 text-muted-foreground justify-end">
+                    Next
+                    <div class="i-tabler-arrow-right size-4"></div>
+                </div>
+                <div class="text-lg transition group-hover:text-primary">{nextDoc.data.title}</div>
+            </a>
+        )}
+
+    </div>
+
+</div>

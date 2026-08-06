@@ -1,0 +1,172 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { cn } from '../utils/cn';
+import Layout from './Layout.astro';
+import { docCategories } from '../docs/docs.navigations';
+import type { DocsItem, DocsCategory } from '../docs/docs.types';
+import { getSocials } from '../socials';
+import { getItemUrl } from '../docs/docs.models';
+import DocSidenav from '../docs/components/DocSidenav.astro';
+
+type Props = {
+  headings?: MarkdownHeading[];
+};
+
+function getFirstItem(category: DocsCategory): DocsItem | null {
+  for (const section of category.sections) {
+    if (section.items.length > 0) {
+      return section.items[0];
+    }
+  }
+  return null;
+}
+
+const currentCategory = docCategories[0];
+const currentSection = currentCategory.sections[0];
+
+const { headings = [] } = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+
+
+const socials = [
+  ...getSocials().filter(social => ['github', 'bluesky', 'discord'].includes(social.id)),
+]
+
+---
+
+<Layout class="bg-#121212 relative">
+  <div class="absolute top-0 left-50% transform -translate-x-50% w-400px h-250px sm:w-700px sm:h-300px rounded-full bg-gradient-to-b from-primary/50 to-transparent blur-3xl opacity-30 z-0 pointer-events-none"></div>
+
+  <header class="border-b sticky top-0 left-0 right-0 z-100 bg-#121212">
+    <div class="h-64px border-b">
+        <div class="max-w-1400px mx-auto px-6 h-full flex items-center justify-between">
+            <a href="/docs" class="text-lg font-semibold group flex items-center gap-2 transition">
+                <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
+                Papra
+            </a>
+
+
+            <div class="flex items-center gap-4">
+                {
+                    socials.map((social) => (
+                        <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition" aria-label={social.name}>
+                            <div class={`${social.icon} size-5`}></div>
+                        </a>
+                    ))
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-1400px mx-auto px-6 overflow-x-auto">
+      <div class="flex items-center gap-8 overflow-x-auto">
+        {
+          docCategories.map((category) => {
+            const firstItem = getFirstItem(category);
+            if (!firstItem) return null;
+            return (
+              <a href={getItemUrl(firstItem)} class={cn("text-14px text-muted-foreground font-medium border-b border-transparent hover:border-muted-foreground transition py-2 block whitespace-nowrap h-48px flex items-center", category === currentCategory ? 'border-primary text-foreground' : '')}>
+                {category.title}
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-1400px mx-auto flex">
+    <DocSidenav sections={currentCategory.sections} />
+
+    <div class="flex-1 min-w-0">
+      <main class="max-w-728px mx-auto px-6 py-6">
+        <div class="text-sm font-bold mb-2 text-primary">
+          {currentSection.title}
+        </div>
+        <slot />
+      </main>
+    </div>
+
+    {/* Mirrors the left nav width so the main content stays centered in the container */}
+    <aside class="max-w-300px w-full hidden xl:block flex-shrink-0 sticky top-113px h-[calc(100vh-113px)] overflow-y-auto px-6 py-6">
+      {
+        tocHeadings.length > 0 && (
+          <>
+            <div class="text-13px font-medium mb-2">On this page</div>
+            <ul class="border-l">
+              {tocHeadings.map((heading) => (
+                <li>
+                  <a
+                    href={`#${heading.slug}`}
+                    data-toc-link
+                    data-toc-slug={heading.slug}
+                    class={cn(
+                      'block text-sm text-muted-foreground hover:text-foreground border-l border-transparent -ml-1px py-1 transition',
+                      heading.depth === 3 ? 'pl-7' : 'pl-4',
+                    )}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </aside>
+  </div>
+</Layout>
+
+<script>
+  const HEADER_OFFSET = 150;
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  const headings = links
+    .map((link) => ({ link, heading: document.getElementById(link.dataset.tocSlug ?? '') }))
+    .filter((entry): entry is { link: HTMLAnchorElement; heading: HTMLElement } => entry.heading !== null);
+
+  function setActive() {
+    if (headings.length === 0) {
+      return;
+    }
+
+    const isAtBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
+    const lastPassed = headings.findLast(({ heading }) => heading.getBoundingClientRect().top <= HEADER_OFFSET);
+    const active = isAtBottom ? headings[headings.length - 1] : (lastPassed ?? headings[0]);
+
+    for (const { link } of headings) {
+      const isActive = link === active.link;
+      link.classList.toggle('border-primary', isActive);
+      link.classList.toggle('text-foreground', isActive);
+      link.classList.toggle('border-transparent', !isActive);
+      link.classList.toggle('text-muted-foreground', !isActive);
+    }
+  }
+
+  if (headings.length > 0) {
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) {
+        return;
+      }
+
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        setActive();
+      });
+    };
+
+    setActive();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+  }
+</script>
+
+<style is:global>
+
+
+
+</style>

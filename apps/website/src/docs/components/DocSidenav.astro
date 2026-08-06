@@ -1,0 +1,47 @@
+---
+import { cn } from '../../utils/cn';
+import { getItemUrl } from '../docs.models';
+import type { DocsSection } from '../docs.types';
+import {getEntry} from 'astro:content';
+
+export type Props = {
+  sections?: DocsSection[];
+}
+
+const { sections = [] } = Astro.props;
+
+const currentPath = new URL(Astro.request.url).pathname;
+
+const augmentedSections = await Promise.all(sections.map(async (section) => {
+  const itemsWithTitles = await Promise.all(section.items.map(async (item) => {
+    const entry = await getEntry('docs', item.docId);
+    return {
+      ...item,
+      title: entry?.data.title,
+    };
+  }));
+  return {
+    ...section,
+    items: itemsWithTitles,
+  };
+}));
+---
+
+<nav class="border-r max-w-300px w-full hidden md:block overflow-y-auto pl-2 pr-4 pt-2 flex-shrink-0 sticky top-113px h-[calc(100vh-113px)] overflow-y-auto">
+  {
+    augmentedSections.map((section, index) => (
+      <div class={cn('py-4', index !== 0 ? 'border-t' : '')}>
+        <div class="text-13px font-medium mb-2 pl-4">{section.title}</div>
+        <ul>
+          {section.items.map((item) => (
+            <li>
+                <a href={getItemUrl(item)} class={cn("text-sm text-muted-foreground hover:(bg-muted text-foreground) transition py-1 block px-4 rounded-lg py-1.2 my-1px", getItemUrl(item) === currentPath ? "bg-muted text-foreground" : "")}>
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</nav>

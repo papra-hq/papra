@@ -26,6 +26,7 @@
     "astro-expressive-code": "^0.44.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "nanoid": "^5.1.16",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

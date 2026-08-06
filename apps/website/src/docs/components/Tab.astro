@@ -1,0 +1,11 @@
+---
+type Props = {
+  label: string;
+};
+
+const { label } = Astro.props;
+---
+
+<div data-tab-panel data-tab-label={label} role="tabpanel">
+  <slot />
+</div>

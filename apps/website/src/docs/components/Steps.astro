@@ -1,0 +1,64 @@
+<div class="steps">
+    <slot />
+</div>
+
+<style>
+.steps>:global(ol) {
+    --step-size: 30px;
+
+    counter-reset: steps-counter;
+    list-style: none;
+    padding-left: 2rem;
+}
+
+.steps>:global(ol > li) {
+    position: relative;
+    display: flow-root;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.steps>:global(ol > li > :first-child) {
+    margin: 0;
+}
+
+.steps>:global(ol > li:last-child > :last-child) {
+    margin-bottom: 0;
+}
+
+.steps>:global(ol > li::before) {
+    content: counter(steps-counter);
+    position: absolute;
+    left: -2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: -1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--step-size);
+    height: var(--step-size);
+    counter-increment: steps-counter;
+    border-radius: 50%;
+    line-height: var(--step-size);
+    text-align: center;
+    background-color: #262626;
+}
+
+.steps>:global(ol > li::after) {
+    --gutter-margin: .375rem;
+
+    content: '';
+    position: absolute;
+    left: -1.125rem;
+    top: calc(var(--step-size) + var(--gutter-margin));
+    width: 1px;
+    height: calc(100% - var(--step-size) - var(--gutter-margin)*2);
+    background-color: #262626;
+}
+
+.steps>:global(ol > li:last-child::after) {
+    background: linear-gradient(to bottom, #262626 90%, transparent);
+}
+
+</style>

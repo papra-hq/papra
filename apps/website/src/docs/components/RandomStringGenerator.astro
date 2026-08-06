@@ -1,0 +1,82 @@
+---
+
+type Props = {
+  length?: number;
+  type?: 'alphanumeric' | 'hexadecimal';
+};
+
+const { length = 8, type = 'alphanumeric' } = Astro.props;
+
+const alphabets = {
+    alphanumeric: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    hexadecimal: '0123456789abcdef',
+}
+
+const alphabet = alphabets[type];
+
+---
+
+<div class="key-generator" data-length={length} data-alphabet={alphabet}>
+    <div class="flex items-center">
+        <input type="text" readonly class="key-input text-14px font-mono text-muted-foreground bg-transparent border border-muted-foreground/10 rounded-l px-2 w-full py-1" />
+        <button class="btn-refresh flex items-center p-1.5 border-y" title="Generate new key">
+            <span aria-label="Refresh" class="i-tabler-refresh inline-block size-5 text-muted-foreground hover:text-foreground transition" />
+        </button>
+        <button class="btn-copy flex items-center p-1.5 border rounded-r" title="Copy to clipboard">
+            <span aria-label="Copy" class="icon-copy i-tabler-copy inline-block size-5 text-muted-foreground hover:text-foreground transition" />
+            <span aria-label="Copied" class="icon-copied i-tabler-copy-check hidden inline-block size-5 text-muted-foreground hover:text-foreground transition" />
+        </button>
+    </div>
+    <div class="text-xs text-muted-foreground mt-2">
+        Securly generated in your browser - no network or server involved
+    </div>
+</div>
+
+<script>
+import { customAlphabet } from 'nanoid';
+
+function copyToClipboard({ keyInputElement, copyButtonElement, iconCopyElement, iconCopiedElement }: { keyInputElement: HTMLInputElement; copyButtonElement: HTMLButtonElement; iconCopyElement: HTMLSpanElement; iconCopiedElement: HTMLSpanElement }) {
+  keyInputElement.select();
+  keyInputElement.setSelectionRange(0, keyInputElement.value.length); // For mobile devices
+
+  navigator.clipboard.writeText(keyInputElement.value).then(() => {
+    iconCopyElement.classList.add('hidden');
+    iconCopiedElement.classList.remove('hidden');
+    copyButtonElement.disabled = true;
+
+    setTimeout(() => {
+      iconCopyElement.classList.remove('hidden');
+      iconCopiedElement.classList.add('hidden');
+      copyButtonElement.disabled = false;
+    }, 1_000);
+  }).catch(() => {
+    // Fallback for older browsers
+    document.execCommand('copy');
+  });
+}
+
+const keyGenerators = document.querySelectorAll('.key-generator');
+
+keyGenerators.forEach((keyGenerator) => {
+  const refreshButtonElement = keyGenerator.querySelector('.btn-refresh')!;
+  const copyButtonElement = keyGenerator.querySelector<HTMLButtonElement>('.btn-copy')!;
+  const keyInputElement = keyGenerator.querySelector<HTMLInputElement>('.key-input')!;
+  const iconCopyElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copy')!;
+  const iconCopiedElement = keyGenerator.querySelector<HTMLSpanElement>('.icon-copied')!;
+  const length = Number(keyGenerator.getAttribute('data-length') ?? '32');
+  const alphabet = keyGenerator.getAttribute('data-alphabet') ?? '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+  const generateRandomString = customAlphabet(alphabet, length);
+
+  const refreshKey = () => {
+    const key = generateRandomString();
+    keyInputElement.value = key;
+  };
+
+  refreshKey();
+
+  refreshButtonElement.addEventListener('click', refreshKey);
+  copyButtonElement.addEventListener('click', () => copyToClipboard({ copyButtonElement, keyInputElement, iconCopyElement, iconCopiedElement }));
+});
+
+</script>

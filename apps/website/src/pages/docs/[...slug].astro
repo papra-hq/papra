@@ -1,0 +1,48 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import type { CollectionEntry } from "astro:content";
+import { render , getCollection} from "astro:content";
+import { flattenedDocs } from "../../docs/docs.navigations";
+import DocFooter from "../../docs/components/DocFooter.astro";
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+
+  return docs.map(doc => ({
+    params: { slug: doc.id },
+    props: { doc },
+  }));
+}
+
+export type Props = {
+  doc: CollectionEntry<'blog'>;
+};
+
+const { doc } = Astro.props;
+
+const { data } = doc;
+const { Content, headings } = await render(doc);
+
+const currentDocIndex = flattenedDocs.findIndex(d => d.docId === doc.id);
+const previousDoc = flattenedDocs[currentDocIndex - 1] ?? null;
+const nextDoc = flattenedDocs[currentDocIndex + 1] ?? null;
+---
+
+<DocsLayout headings={headings}>
+    <div class="doc prose dark:prose-invert max-w-none">
+        <h1>
+            {data.title}
+        </h1>
+
+        <Content />
+    </div>
+
+
+    <DocFooter previous={previousDoc} next={nextDoc} />
+</DocsLayout>
+
+<style is:global>
+.doc :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 150px;
+}
+</style>
