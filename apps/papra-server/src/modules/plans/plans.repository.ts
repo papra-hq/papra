@@ -5,6 +5,7 @@ import { isDocumentSizeLimitEnabled } from '../documents/documents.models';
 import { IN_BYTES } from '../shared/units';
 import { PLAN_IDS } from './plans.constants';
 import { createPlanNotFoundError } from './plans.errors';
+import { resolveOrganizationPlanFromPriceIds } from './plans.models';
 
 export type PlansRepository = ReturnType<typeof createPlansRepository>;
 
@@ -14,7 +15,7 @@ export function createPlansRepository({ config }: { config: Config }) {
   return injectArguments(
     {
       getOrganizationPlanById,
-      getOrganizationPlanByPriceId,
+      getOrganizationPlanByPriceIds,
     },
     {
       organizationPlans,
@@ -101,20 +102,12 @@ async function getOrganizationPlanById({
   return { organizationPlan };
 }
 
-async function getOrganizationPlanByPriceId({
-  priceId,
+async function getOrganizationPlanByPriceIds({
+  priceIds,
   organizationPlans,
 }: {
-  priceId: string;
+  priceIds: string[];
   organizationPlans: Record<string, OrganizationPlanRecord>;
 }) {
-  const organizationPlan = Object.values(organizationPlans).find(
-    (plan) => plan.monthlyPriceId === priceId || plan.annualPriceId === priceId,
-  );
-
-  if (!organizationPlan) {
-    throw createPlanNotFoundError();
-  }
-
-  return { organizationPlan };
+  return resolveOrganizationPlanFromPriceIds({ priceIds, organizationPlans });
 }
