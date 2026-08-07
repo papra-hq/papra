@@ -878,6 +878,11 @@ export const translations = {
   'tagging-rules.apply.success': 'Rule application started in the background',
   'tagging-rules.apply.error': 'Failed to start rule application',
   'tagging-rules.apply.processing': 'Starting...',
+  'tagging-rules.delete.confirm.title': 'Delete tagging rule?',
+  'tagging-rules.delete.confirm.message':
+    'Are you sure you want to delete this tagging rule? This action cannot be undone.',
+  'tagging-rules.delete.confirm.confirm-button': 'Delete rule',
+  'tagging-rules.delete.confirm.cancel-button': 'Cancel',
 
   // Intake emails
 
