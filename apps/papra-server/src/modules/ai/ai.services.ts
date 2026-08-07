@@ -18,6 +18,10 @@ import type { SubscriptionsRepository } from '../subscriptions/subscriptions.rep
 
 export type AiServices = ReturnType<typeof createAiServices>;
 
+// When no schema is provided, the model output is not constrained and the raw text is returned.
+type GenerateStructuredDataResult<Schema extends GenericSchema | undefined> =
+  Schema extends GenericSchema ? InferOutput<Schema> : string;
+
 export function createAiServices({
   config,
   aiCreditsRepository,
@@ -39,14 +43,14 @@ export function createAiServices({
   // `Schema` type parameter to its constraint, making the result `unknown`. A thin generic
   // wrapper preserves inference so callers get back InferOutput<Schema>.
   return {
-    generateStructuredData: async <Schema extends GenericSchema>(args: {
+    generateStructuredData: async <Schema extends GenericSchema | undefined = undefined>(args: {
       modelId: string;
-      schema: Schema;
+      schema?: Schema;
       userPrompt: string;
       systemPrompt?: string;
       source: AiCreditsUsageSource;
       organizationId: string;
-    }): Promise<InferOutput<Schema>> =>
+    }): Promise<GenerateStructuredDataResult<Schema>> =>
       generateStructuredData({
         ...args,
         config,
@@ -60,7 +64,7 @@ export function createAiServices({
   };
 }
 
-async function generateStructuredData<Schema extends GenericSchema>({
+async function generateStructuredData<Schema extends GenericSchema | undefined>({
   modelId,
   schema,
   userPrompt,
@@ -76,7 +80,7 @@ async function generateStructuredData<Schema extends GenericSchema>({
   subscriptionsRepository,
 }: {
   modelId: string;
-  schema: Schema;
+  schema?: Schema;
   userPrompt: string;
   systemPrompt?: string;
   source: AiCreditsUsageSource;
@@ -88,7 +92,7 @@ async function generateStructuredData<Schema extends GenericSchema>({
   planEntitlementDefinitionRegistry: PlanEntitlementDefinitionRegistry;
   planEntitlementsRepository: PlanEntitlementsRepository;
   subscriptionsRepository: SubscriptionsRepository;
-}): Promise<InferOutput<Schema>> {
+}): Promise<GenerateStructuredDataResult<Schema>> {
   const adapter = resolveTextAdapter({
     modelId,
     config,
@@ -105,12 +109,11 @@ async function generateStructuredData<Schema extends GenericSchema>({
     }),
   });
 
-  const jsonSchema = toStandardJsonSchema(schema);
-
   const data = await tanstackChat({
     adapter,
     messages: userPrompt ? [{ role: 'user', content: userPrompt }] : undefined,
-    outputSchema: jsonSchema,
+    outputSchema: schema ? toStandardJsonSchema(schema) : undefined,
+    stream: false,
     systemPrompts: systemPrompt ? [systemPrompt] : undefined,
     middleware: [
       createLogMiddleware({ logger, context: { modelId } }),
@@ -124,7 +127,7 @@ async function generateStructuredData<Schema extends GenericSchema>({
     ],
   });
 
-  return data;
+  return data as GenerateStructuredDataResult<Schema>;
 }
 
 function createLogMiddleware({
