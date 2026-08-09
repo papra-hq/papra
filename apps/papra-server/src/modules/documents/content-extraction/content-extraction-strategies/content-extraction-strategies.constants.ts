@@ -4,6 +4,7 @@ export const CONTENT_EXTRACTION_STRATEGIES = {
   docling: 'docling',
   azureDi: 'azure-di',
   customHttp: 'custom-http',
+  vlm: 'vlm',
 } as const;
 
 export const CONTENT_EXTRACTION_STRATEGY_NAMES = Object.values(CONTENT_EXTRACTION_STRATEGIES);

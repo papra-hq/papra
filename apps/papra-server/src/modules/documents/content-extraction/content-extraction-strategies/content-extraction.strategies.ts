@@ -5,6 +5,7 @@ import { buildCustomHttpContentExtractionStrategy } from './custom-http/custom-h
 import { buildDoclingContentExtractionStrategy } from './docling/docling.content-extraction-strategy';
 import { buildLectureContentExtractionStrategy } from './lecture/lecture.content-extraction-strategy';
 import { buildMistralOcrContentExtractionStrategy } from './mistral-ocr/mistral-ocr.content-extraction-strategy';
+import { buildVlmContentExtractionStrategy } from './vlm/vlm.content-extraction-strategy';
 
 export const strategiesRegistry = {
   'internal': buildLectureContentExtractionStrategy,
@@ -12,6 +13,7 @@ export const strategiesRegistry = {
   'docling': buildDoclingContentExtractionStrategy,
   'azure-di': buildAzureDiContentExtractionStrategy,
   'custom-http': buildCustomHttpContentExtractionStrategy,
+  'vlm': buildVlmContentExtractionStrategy,
 } satisfies Record<ContentExtractionStrategyName, ContentExtractionStrategyFactory>;
 
 export function getContentExtractionStrategy({ strategyName }: { strategyName: string }) {

@@ -2,7 +2,7 @@ import type { Logger } from '@crowlog/logger';
 import type { Config } from '../config/config.types';
 import { resolveTextAdapter } from './adapters/ai-adapters.usecases';
 import { EventType, chat as tanstackChat } from '@tanstack/ai';
-import type { ChatMiddleware } from '@tanstack/ai';
+import type { ChatMiddleware, ContentPart } from '@tanstack/ai';
 import { toStandardJsonSchema } from '@valibot/to-json-schema';
 import type { GenericSchema, InferOutput } from 'valibot';
 import { createLogger } from '../shared/logger/logger';
@@ -46,7 +46,7 @@ export function createAiServices({
     generateStructuredData: async <Schema extends GenericSchema | undefined = undefined>(args: {
       modelId: string;
       schema?: Schema;
-      userPrompt: string;
+      userPrompt: string | ContentPart[];
       systemPrompt?: string;
       source: AiCreditsUsageSource;
       organizationId: string;
@@ -81,7 +81,7 @@ async function generateStructuredData<Schema extends GenericSchema | undefined>(
 }: {
   modelId: string;
   schema?: Schema;
-  userPrompt: string;
+  userPrompt: string | ContentPart[];
   systemPrompt?: string;
   source: AiCreditsUsageSource;
   organizationId: string;

@@ -8,6 +8,7 @@ import {
 import { doclingConfig } from './content-extraction-strategies/docling/docling.content-extraction-strategy.config';
 import { azureDiConfig } from './content-extraction-strategies/azure-di/azure-di.content-extraction-strategy.config';
 import { customHttpConfig } from './content-extraction-strategies/custom-http/custom-http.content-extraction-strategy.config';
+import { vlmConfig } from './content-extraction-strategies/vlm/vlm.content-extraction-strategy.config';
 
 export const documentContentExtractionConfig = {
   extractionStrategies: {
@@ -33,5 +34,6 @@ export const documentContentExtractionConfig = {
     docling: doclingConfig,
     azureDi: azureDiConfig,
     customHttp: customHttpConfig,
+    vlm: vlmConfig,
   },
 } as const satisfies AppConfigDefinition;
