@@ -198,10 +198,10 @@ export const translations = {
   'organizations.list.back': 'Späť na organizácie',
   'organizations.list.deleted.title': 'Odstránené organizácie',
   'organizations.list.deleted.description':
-    'Odstránené organizácie sa uchovávajú {{ days }} dní pred trvalým odstránením. Počas tohto obdobia ich môžete obnoviť.',
+    'Odstránené organizácie sa uchovávajú {{ days, =1:1 deň, [2-4]:{days} dni, {days} dní }} pred trvalým odstránením. Počas tohto obdobia ich môžete obnoviť.',
   'organizations.list.deleted.empty': 'Žiadne odstránené organizácie',
   'organizations.list.deleted.empty-description':
-    'Keď odstránite organizáciu, zobrazí sa tu na {{ days }} dní pred trvalým odstránením.',
+    'Keď odstránite organizáciu, zobrazí sa tu na {{ days, =1:1 deň, [2-4]:{days} dni, {days} dní }} pred trvalým odstránením.',
   'organizations.list.deleted.restore': 'Obnoviť',
   'organizations.list.deleted.restore-success': 'Organizácia bola úspešne obnovená',
   'organizations.list.deleted.restore-confirm.title': 'Obnoviť organizáciu',
@@ -257,7 +257,7 @@ export const translations = {
     'Odstránením tejto organizácie sa natrvalo odstránia všetky údaje, ktoré sú s ňou spojené.',
   'organization.settings.delete.confirm.title': 'Odstrániť organizáciu',
   'organization.settings.delete.confirm.message':
-    'Naozaj chcete odstrániť túto organizáciu? Organizácia bude označená na odstránenie a po {{ days }} dňoch trvalo odstránená. Počas tohto obdobia ju môžete obnoviť zo zoznamu svojich organizácií. Všetky dokumenty a údaje budú po uplynutí tejto lehoty trvalo odstránené.',
+    'Naozaj chcete odstrániť túto organizáciu? Organizácia bude označená na odstránenie a po {{ days, =1:1 dni, {days} dňoch }} trvalo odstránená. Počas tohto obdobia ju môžete obnoviť zo zoznamu svojich organizácií. Všetky dokumenty a údaje budú po uplynutí tejto lehoty trvalo odstránené.',
   'organization.settings.delete.confirm.confirm-button': 'Odstrániť organizáciu',
   'organization.settings.delete.confirm.cancel-button': 'Zrušiť',
   'organization.settings.delete.success': 'Organizácia bola odstránená',
@@ -422,7 +422,7 @@ export const translations = {
   'documents.tabs.content': 'Obsah',
   'documents.tabs.activity': 'Aktivita',
   'documents.deleted.message':
-    'Tento dokument bol odstránený a o {{ days }} dní bude trvalo vymazaný.',
+    'Tento dokument bol odstránený a o {{ days, =1:1 deň, [2-4]:{days} dni, {days} dní }} bude trvalo vymazaný.',
   'documents.actions.download.title': 'Stiahnuť',
   'documents.actions.download.error': 'Nepodarilo sa stiahnuť dokument',
   'documents.actions.restore': 'Obnoviť',
@@ -551,9 +551,9 @@ export const translations = {
   'documents.deleted.title': 'Odstránené dokumenty',
   'documents.deleted.empty.title': 'Žiadne odstránené dokumenty',
   'documents.deleted.empty.description':
-    'Nemáte žiadne odstránené dokumenty. Odstránené dokumenty sa presunú do koša na {{ days }} dní.',
+    'Nemáte žiadne odstránené dokumenty. Odstránené dokumenty sa presunú do koša na {{ days, =1:1 deň, [2-4]:{days} dni, {days} dní }}.',
   'documents.deleted.retention-notice':
-    'Všetky odstránené dokumenty sa uchovávajú v koši {{ days }} dní. Po uplynutí tejto lehoty budú dokumenty trvalo vymazané a nebude ich možné obnoviť.',
+    'Všetky odstránené dokumenty sa uchovávajú v koši {{ days, =1:1 deň, [2-4]:{days} dni, {days} dní }}. Po uplynutí tejto lehoty budú dokumenty trvalo vymazané a nebude ich možné obnoviť.',
   'documents.deleted.deleted-at': 'Odstránené',
   'documents.deleted.restoring': 'Obnovuje sa...',
   'documents.deleted.deleting': 'Odstraňuje sa...',
