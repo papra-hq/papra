@@ -72,6 +72,25 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
     },
   }));
 
+  const handleDeleteRule = async () => {
+    const isConfirmed = await confirm({
+      title: t('tagging-rules.delete.confirm.title'),
+      message: t('tagging-rules.delete.confirm.message'),
+      cancelButton: {
+        text: t('tagging-rules.delete.confirm.cancel-button'),
+        variant: 'secondary',
+      },
+      confirmButton: {
+        text: t('tagging-rules.delete.confirm.confirm-button'),
+        variant: 'destructive',
+      },
+    });
+
+    if (isConfirmed) {
+      deleteTaggingRuleMutation.mutate();
+    }
+  };
+
   const handleApplyRule = async () => {
     const isConfirmed = await confirm({
       title: t('tagging-rules.apply.confirm.title'),
@@ -135,7 +154,7 @@ const TaggingRuleCard: Component<{ taggingRule: TaggingRule }> = (props) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => deleteTaggingRuleMutation.mutate()}
+          onClick={handleDeleteRule}
           disabled={deleteTaggingRuleMutation.isPending}
           aria-label={t('tagging-rules.list.card.delete')}
           class="size-8"

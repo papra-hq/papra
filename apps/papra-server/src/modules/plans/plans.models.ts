@@ -1,6 +1,7 @@
-import { isNil } from '../shared/utils';
+import { isNil, uniqBy } from '../shared/utils';
 import { PLAN_PRIORITY } from './plans.constants';
 import type { PlanId } from './plans.constants';
+import type { OrganizationPlanRecord } from './plans.types';
 import { createOrganizationPlanPriceIdNotSetError } from './plans.errors';
 
 export function getPriceIdForBillingInterval({
@@ -19,6 +20,45 @@ export function getPriceIdForBillingInterval({
   }
 
   return { priceId };
+}
+
+export function resolveOrganizationPlanFromPriceIds({
+  priceIds,
+  organizationPlans,
+}: {
+  priceIds: string[];
+  organizationPlans: Record<string, OrganizationPlanRecord>;
+}) {
+  const plans = Object.values(organizationPlans);
+  const matchedPlans: OrganizationPlanRecord[] = [];
+  const unknownPriceIds: string[] = [];
+
+  for (const priceId of priceIds) {
+    const matchedPlan = plans.find(
+      (plan) => plan.monthlyPriceId === priceId || plan.annualPriceId === priceId,
+    );
+
+    if (isNil(matchedPlan)) {
+      unknownPriceIds.push(priceId);
+      continue;
+    }
+
+    matchedPlans.push(matchedPlan);
+  }
+
+  const [organizationPlan, ...discardedPlans] = uniqBy(matchedPlans, (plan) => plan.id).sort(
+    (planA, planB) => getPlanPriority({ planId: planB.id }) - getPlanPriority({ planId: planA.id }),
+  );
+
+  return {
+    organizationPlan,
+    unknownPriceIds,
+    discardedPlanIds: discardedPlans.map((plan) => plan.id),
+  };
+}
+
+function getPlanPriority({ planId }: { planId: string }) {
+  return PLAN_PRIORITY[planId as PlanId] ?? 0;
 }
 
 export function getApplyablePlanId({

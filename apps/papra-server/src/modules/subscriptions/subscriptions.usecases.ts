@@ -7,6 +7,7 @@ import { createOrganizationNotFoundError } from '../organizations/organizations.
 import { createLogger } from '../shared/logger/logger';
 import { isNil } from '../shared/utils';
 import { coerceStripeTimestampToDate } from './subscriptions.models';
+import { createPlanNotFoundError } from '../plans/plans.errors';
 
 export async function handleStripeWebhookEvent({
   event,
@@ -63,12 +64,6 @@ export async function handleStripeWebhookEvent({
     }
 
     // Extract data from current Stripe state
-    const subscriptionItem = stripeSubscription.items.data[0];
-
-    if (!subscriptionItem) {
-      throw new Error(`Subscription ${subscriptionId} has no items`);
-    }
-
     const customerId =
       typeof stripeSubscription.customer === 'string'
         ? stripeSubscription.customer
@@ -79,9 +74,33 @@ export async function handleStripeWebhookEvent({
     const status = stripeSubscription.status;
 
     // Look up the plan - this might fail if price ID is misconfigured
-    const { organizationPlan } = await plansRepository.getOrganizationPlanByPriceId({
-      priceId: subscriptionItem.price.id,
-    });
+    const priceIds = stripeSubscription.items.data.map(({ price }) => price.id);
+
+    const { organizationPlan, unknownPriceIds, discardedPlanIds } =
+      await plansRepository.getOrganizationPlanByPriceIds({ priceIds });
+
+    if (unknownPriceIds.length > 0) {
+      logger.warn(
+        { subscriptionId, unknownPriceIds },
+        'Subscription contains price IDs matching no plan, they have been ignored',
+      );
+    }
+
+    if (discardedPlanIds.length > 0) {
+      logger.warn(
+        { subscriptionId, discardedPlanIds },
+        'Subscription contains the price IDs of several plans, only the most generous one has been applied',
+      );
+    }
+
+    if (isNil(organizationPlan)) {
+      logger.warn(
+        { subscriptionId, priceIds },
+        'Subscription contains no price ID matching a plan, it has been ignored',
+      );
+
+      throw createPlanNotFoundError();
+    }
 
     // Upsert subscription with current state from Stripe
     await subscriptionsRepository.upsertSubscription({
