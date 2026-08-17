@@ -27,6 +27,20 @@ We follow a **GitHub Flow** model where all PRs should target the `main` branch,
 - Be prepared to address feedback and iterate on your PR.
 - Resolving merge conflicts is part of the PR author's responsibility.
 - Draft PRs are welcome to get feedback early on your work but only when requested, they'll not be reviewed.
+- You must sign the [Contributor License Agreement](https://cla.papra.app/cla.md) before your PR can be merged (see below).
+
+### Contributor License Agreement (CLA)
+
+Before we can merge your contribution, you need to sign the [Papra CLA](https://cla.papra.app/cla.md).
+
+**Why?** It lets Papra be dual-licensed: the project stays open source, and commercial licenses can be sold in parallel to fund its development. Without it, we can't offer that second license.
+
+**How it works:**
+
+- Signing happens on [cla.papra.app/sign](https://cla.papra.app/sign), it takes a few seconds.
+- A GitHub bot gates pull requests, a PR is mergeable only when the automated CLA check finds a valid CLA acceptance covering your contributions.
+- Under French law, you can't grant rights on work that doesn't exist yet, so a signature only covers the contributions you are making or you have already made. One signature can cover several contributions at once, but you'll be asked to sign again for future ones.
+- You keep the copyright on your contributions, you're just granting us a license to use them.
 
 ### Branching
 
@@ -233,4 +247,4 @@ Look out for issues tagged as [**good first issue**](https://github.com/papra-hq
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [AGPL3](./LICENSE), the same as the project itself.
+Papra is licensed under the [AGPL-3.0](./LICENSE) by default, but some standalone packages are MIT licensed. Your contribution is licensed under the license of the package you're contributing to, check the `license` field in that package's `package.json` if you're unsure.
