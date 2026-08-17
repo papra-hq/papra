@@ -769,6 +769,7 @@ export const translations = {
   'tags.table.headers.tag': 'Tag',
   'tags.table.headers.description': 'Description',
   'tags.table.headers.documents': 'Documents',
+  'tags.table.mobile.documents-count': '{{ count }} Document{{ plural }}',
   'tags.table.headers.created': 'Created',
   'tags.table.headers.actions': 'Actions',
   'tags.picker.search-placeholder': 'Search tags...',
