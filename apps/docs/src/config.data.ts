@@ -1,6 +1,6 @@
 import type { ConfigDefinition, ConfigDefinitionElement } from 'figue';
 
-import { configDefinition } from '../../papra-server/src/modules/config/config';
+import { configDefinition } from '@papra/app-server/config';
 import { renderMarkdown } from './markdown';
 
 function walk(

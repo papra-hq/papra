@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import type { ConfigDefinition } from 'figue';
 import { toJsonSchema } from '@valibot/to-json-schema';
 import * as v from 'valibot';
-import { configDefinition } from '../../../papra-server/src/modules/config/config';
+import { configDefinition } from '@papra/app-server/config';
 
 function buildConfigSchema({
   configDefinition,
