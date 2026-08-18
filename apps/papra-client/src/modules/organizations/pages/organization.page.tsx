@@ -18,6 +18,7 @@ import {
 } from '@/modules/documents/documents.services';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
+import { buildLocalStorageKey } from '@/modules/shared/signals/persistence/persistence.models';
 import { Button } from '@/modules/ui/components/button';
 
 export const OrganizationPage: Component = () => {
@@ -26,6 +27,7 @@ export const OrganizationPage: Component = () => {
   const [getPagination, setPagination] = createParamSynchronizedPagination({
     defaultPageSize: 100,
     defaultPageIndex: 0,
+    localStorageKey: buildLocalStorageKey('organizations', 'pageSize'),
   });
 
   const documentsQuery = useQuery(() => ({
