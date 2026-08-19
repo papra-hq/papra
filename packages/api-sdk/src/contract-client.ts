@@ -1,3 +1,4 @@
+import { apiContract } from '@papra/app-server/api/contracts';
 import { apiErrorResponseSchema } from '@papra/app-server/api/contracts/errors';
 import type {
   EndpointContract,
@@ -9,6 +10,51 @@ import { PapraContractError } from './contract-client.errors';
 import { buildEndpointUrl } from './endpoint-url';
 
 export type ContractClientAuthentication = { type: 'api-key'; token: string } | { type: 'session' };
+
+export type CreateApiClientOptions = {
+  baseUrl: string;
+  authentication?: ContractClientAuthentication;
+  fetch?: typeof globalThis.fetch;
+};
+
+type ApiContract = typeof apiContract;
+
+type ApiClientMethod<Contract extends EndpointContract> =
+  {} extends InferClientRequest<Contract>
+    ? (request?: InferClientRequest<Contract>) => Promise<InferClientResponse<Contract>>
+    : (request: InferClientRequest<Contract>) => Promise<InferClientResponse<Contract>>;
+
+export type ApiClient = {
+  [Name in keyof ApiContract]: ApiClientMethod<ApiContract[Name]>;
+};
+
+export function createApiClient(options: CreateApiClientOptions): ApiClient {
+  return Object.fromEntries(
+    Object.entries(apiContract).map(([name, contract]) => [
+      name,
+      createApiClientMethod({ contract, options }),
+    ]),
+  ) as unknown as ApiClient;
+}
+
+function createApiClientMethod<Contract extends EndpointContract>({
+  contract,
+  options,
+}: {
+  contract: Contract;
+  options: CreateApiClientOptions;
+}): ApiClientMethod<Contract> {
+  const method = async (
+    request: InferClientRequest<Contract> = {} as InferClientRequest<Contract>,
+  ) =>
+    callEndpoint({
+      ...options,
+      contract,
+      request,
+    });
+
+  return method as ApiClientMethod<Contract>;
+}
 
 export async function callEndpoint<Contract extends EndpointContract>({
   baseUrl,

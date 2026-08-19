@@ -3,7 +3,7 @@ import * as v from 'valibot';
 import { apiContract } from '@papra/app-server/api/contracts';
 import { defineEndpointContract } from '@papra/app-server/api/contracts/models';
 import { isoDateTimeSchema } from '@papra/app-server/api/schemas/date';
-import { callEndpoint } from './contract-client';
+import { callEndpoint, createApiClient } from './contract-client';
 
 const createDocumentContract = defineEndpointContract({
   method: 'POST',
@@ -266,6 +266,54 @@ describe('contract-client', () => {
           fetch: fetchImplementation,
         }),
       ).rejects.toBe(networkError);
+    });
+  });
+
+  describe('createApiClient', () => {
+    test('exposes flat, contract-typed endpoint methods', async () => {
+      const receivedBodies: (BodyInit | null | undefined)[] = [];
+      const user = {
+        id: 'usr_123',
+        email: 'john@example.com',
+        name: 'John',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-01-02T00:00:00.000Z',
+        twoFactorEnabled: false,
+      };
+      const fetchImplementation: typeof globalThis.fetch = async (_input, init) => {
+        receivedBodies.push(init?.body);
+
+        return new Response(
+          JSON.stringify({
+            user:
+              init?.method === 'GET'
+                ? { ...user, permissions: ['documents:read'] }
+                : { ...user, name: 'Jane' },
+          }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+      };
+      const client = createApiClient({
+        baseUrl: 'https://papra.test',
+        authentication: { type: 'session' },
+        fetch: fetchImplementation,
+      });
+
+      const getResponse = await client.getCurrentUser();
+      const updateResponse = await client.updateCurrentUser({ body: { name: 'Jane' } });
+
+      expect(Object.keys(client)).to.eql(['getCurrentUser', 'updateCurrentUser']);
+      expect(receivedBodies).to.eql([undefined, JSON.stringify({ name: 'Jane' })]);
+      expect(getResponse.status).to.eql(200);
+      expect(updateResponse).toMatchObject({
+        status: 200,
+        body: { user: { name: 'Jane' } },
+      });
+      expectTypeOf(client.getCurrentUser).toBeCallableWith();
+      expectTypeOf(client.updateCurrentUser).toBeCallableWith({ body: { name: 'Jane' } });
     });
   });
 });

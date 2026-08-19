@@ -1,7 +1,7 @@
 import type { PapraDocument, PapraTag } from './api-client.types';
-import type { ApiClient } from './http-client';
+import type { HttpClient } from './http-client';
 import { injectArguments } from '@corentinth/chisels';
-import { createApiClient } from './http-client';
+import { createHttpClient } from './http-client';
 
 export const PAPRA_API_URL = 'https://api.papra.app';
 
@@ -14,7 +14,7 @@ export function createClient({
   apiKey: string;
   apiBaseUrl?: string;
 }) {
-  const { apiClient } = createApiClient({ apiKey, apiBaseUrl });
+  const { apiClient } = createHttpClient({ apiKey, apiBaseUrl });
 
   const methods = injectArguments(
     {
@@ -42,7 +42,7 @@ async function uploadDocument({
 }: {
   file: File;
   organizationId: string;
-  apiClient: ApiClient;
+  apiClient: HttpClient;
 }) {
   const formData = new FormData();
   formData.append('file', file);
@@ -63,7 +63,7 @@ async function trashDocumentsBatch({
 }: {
   organizationId: string;
   filter: { documentIds: string[] } | { query: string };
-  apiClient: ApiClient;
+  apiClient: HttpClient;
 }) {
   return await apiClient<{ trashedDocumentIds: string[]; trashedCount: number }>(
     `/api/organizations/${organizationId}/documents/batch/trash`,
@@ -74,7 +74,7 @@ async function trashDocumentsBatch({
   );
 }
 
-async function listOrganizations({ apiClient }: { apiClient: ApiClient }) {
+async function listOrganizations({ apiClient }: { apiClient: HttpClient }) {
   return await apiClient<{ organizations: { id: string; name: string }[] }>('/api/organizations', {
     method: 'GET',
   });
@@ -85,7 +85,7 @@ async function listTags({
   apiClient,
 }: {
   organizationId: string;
-  apiClient: ApiClient;
+  apiClient: HttpClient;
 }) {
   return await apiClient<{ tags: PapraTag[] }>(`/api/organizations/${organizationId}/tags`, {
     method: 'GET',
@@ -103,7 +103,7 @@ async function createTag({
   name: string;
   color: string;
   description?: string;
-  apiClient: ApiClient;
+  apiClient: HttpClient;
 }) {
   return await apiClient<{ tag: PapraTag }>(`/api/organizations/${organizationId}/tags`, {
     method: 'POST',
@@ -120,7 +120,7 @@ async function addTagToDocument({
   organizationId: string;
   documentId: string;
   tagId: string;
-  apiClient: ApiClient;
+  apiClient: HttpClient;
 }) {
   return await apiClient<void>(
     `/api/organizations/${organizationId}/documents/${documentId}/tags`,
@@ -131,7 +131,7 @@ async function addTagToDocument({
   );
 }
 
-async function getCurrentApiKey({ apiClient }: { apiClient: ApiClient }) {
+async function getCurrentApiKey({ apiClient }: { apiClient: HttpClient }) {
   return await apiClient<{
     apiKey: {
       id: string;

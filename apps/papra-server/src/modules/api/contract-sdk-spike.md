@@ -26,7 +26,7 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 - [x] 5. Implement a minimal generic client
 - [x] 6. Define error semantics
 - [ ] 7. Test a representative vertical slice
-- [ ] 8. Add SDK ergonomics
+- [x] 8. Add SDK ergonomics
 - [ ] 9. Evaluate the spike
 - [ ] 10. Consider deferred production concerns
 
@@ -292,14 +292,25 @@ The tests should cover server registration, runtime validation, URL construction
 
 ## 8. Add SDK ergonomics
 
-Once the generic client is stable, expose a flat API such as:
+Status: **complete**
+
+The contract-based SDK client is exposed through `createApiClient` with flat, contract-typed endpoint methods:
 
 ```ts
-client.getCurrentUser();
-client.updateCurrentUser({ body: { name } });
+const client = createApiClient({
+  baseUrl,
+  authentication: { type: 'session' },
+});
+
+await client.getCurrentUser();
+await client.updateCurrentUser({ body: { name } });
 ```
 
-Keep the colocated `apiContract` registry flat so it maps directly to the public client. Method names must therefore be globally unique and descriptive. Individual endpoint contracts remain colocated with their routes.
+The flat `apiContract` registry maps directly to the public client. Its method names must therefore be globally unique and descriptive. Individual endpoint contracts remain colocated with their routes.
+
+Bodyless endpoint requests are optional, while endpoints with required params, query values, or bodies require a typed request argument. Authentication, base URL, and custom `fetch` configuration are shared by every method.
+
+The existing hand-written `createClient` API remains exported so its consumers, including the CLI, can be migrated separately.
 
 Reserve scopes for cases where they bind shared context and remove repeated arguments, for example:
 

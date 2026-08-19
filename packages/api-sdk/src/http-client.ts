@@ -2,10 +2,10 @@ import type { $Fetch } from 'ofetch';
 import { ofetch } from 'ofetch';
 import { version } from '../package.json';
 
-export type ApiClient = $Fetch;
+export type HttpClient = $Fetch;
 
-export function createApiClient({ apiKey, apiBaseUrl }: { apiKey: string; apiBaseUrl: string }): {
-  apiClient: ApiClient;
+export function createHttpClient({ apiKey, apiBaseUrl }: { apiKey: string; apiBaseUrl: string }): {
+  apiClient: HttpClient;
 } {
   const apiClient = ofetch.create({
     headers: {
