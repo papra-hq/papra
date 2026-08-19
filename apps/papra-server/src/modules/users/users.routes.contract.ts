@@ -1,12 +1,13 @@
 import * as v from 'valibot';
 import { defineEndpointContract } from '../api/contracts.models';
+import { isoDateTimeSchema } from '../api/schemas/date.schemas';
 
 const userSchema = v.object({
   id: v.string(),
   email: v.string(),
   name: v.nullable(v.string()),
-  createdAt: v.date(),
-  updatedAt: v.date(),
+  createdAt: isoDateTimeSchema,
+  updatedAt: isoDateTimeSchema,
   twoFactorEnabled: v.boolean(),
 });
 

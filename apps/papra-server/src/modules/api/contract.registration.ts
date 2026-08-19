@@ -12,6 +12,8 @@ import type { ApiKeyPermissions } from '../api-keys/api-keys.types';
 import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 
+const jsonContentTypePattern = /^application\/([a-z-.]+\+)?json(;\s*[a-zA-Z0-9-]+=([^;]+))*$/;
+
 export type EndpointHandler<Contract extends EndpointContract, ExtraArgs = unknown> = (
   args: InferEndpointRequest<Contract> & { context: Context } & ExtraArgs,
 ) => Promise<InferEndpointResponse<Contract>>;
@@ -34,6 +36,37 @@ function parseInput<Schema extends v.GenericSchema>({
   }
 
   return [undefined, result.issues];
+}
+
+async function parseJsonBody({
+  context,
+  bodyExpected,
+}: {
+  context: Context;
+  bodyExpected: boolean;
+}): Promise<[unknown, undefined] | [undefined, { message: string; code: string }]> {
+  if (!bodyExpected) {
+    return [{}, undefined];
+  }
+
+  const contentType = context.req.header('Content-Type');
+
+  if (contentType && jsonContentTypePattern.test(contentType)) {
+    try {
+      const body = await context.req.json();
+      return [body, undefined];
+    } catch {
+      return [
+        undefined,
+        {
+          message: 'Invalid request body',
+          code: 'server.invalid_request.malformed_json',
+        },
+      ];
+    }
+  }
+
+  return [{}, undefined];
 }
 
 function buildErrorResponseBody({
@@ -107,9 +140,18 @@ export function registerEndpoint<Contract extends EndpointContract>({
       );
     }
 
+    const [requestBodyValue, bodyParseError] = await parseJsonBody({
+      context,
+      bodyExpected: Boolean(contract.body),
+    });
+
+    if (bodyParseError) {
+      return context.json(buildErrorResponseBody(bodyParseError), 400);
+    }
+
     const [requestBody, bodyIssues] = parseInput({
       schema: contract.body,
-      value: await context.req.json(),
+      value: requestBodyValue,
     });
 
     if (bodyIssues) {
