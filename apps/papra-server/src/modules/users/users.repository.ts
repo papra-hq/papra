@@ -88,6 +88,10 @@ async function updateUser({ userId, name, db }: { userId: string; name: string; 
     .where(eq(usersTable.id, userId))
     .returning();
 
+  if (!user) {
+    throw createUsersNotFoundError();
+  }
+
   return { user };
 }
 
