@@ -40,9 +40,11 @@
   },
   "dependencies": {
     "@corentinth/chisels": "catalog:",
-    "ofetch": "catalog:"
+    "ofetch": "catalog:",
+    "valibot": "catalog:"
   },
   "devDependencies": {
+    "@papra/app-server": "workspace:*",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

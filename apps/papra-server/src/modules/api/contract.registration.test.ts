@@ -277,6 +277,29 @@ describe('contract.registration', () => {
       });
     });
 
+    test('repeated query parameters are passed to array schemas', async () => {
+      const app = new Hono() as ServerInstance;
+      const contract = defineEndpointContract({
+        method: 'GET',
+        path: '/api/tags',
+        query: v.object({ tags: v.array(v.string()) }),
+        responses: {
+          200: v.object({ tags: v.array(v.string()) }),
+        },
+      });
+
+      registerEndpoint({
+        app,
+        contract,
+        handler: async ({ query }) => ({ status: 200, body: query }),
+      });
+
+      const response = await app.request('/api/tags?tags=finance&tags=to-review');
+
+      expect(response.status).to.eql(200);
+      expect(await response.json()).to.eql({ tags: ['finance', 'to-review'] });
+    });
+
     test('an invalid query returns a 400 error without calling the handler', async () => {
       const app = new Hono() as ServerInstance;
       let handlerCalled = false;

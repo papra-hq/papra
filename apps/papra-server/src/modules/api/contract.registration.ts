@@ -65,6 +65,15 @@ async function parseJsonBody({
   return [{}, undefined];
 }
 
+function getQueryParams({ context }: { context: Context }) {
+  return Object.fromEntries(
+    Object.entries(context.req.queries()).map(([key, values]) => [
+      key,
+      values.length === 1 ? values[0] : values,
+    ]),
+  );
+}
+
 function buildErrorResponseBody({
   message,
   code,
@@ -122,7 +131,7 @@ export function registerEndpoint<Contract extends EndpointContract>({
 
     const [query, queryIssues] = parseInput({
       schema: contract.query,
-      value: context.req.query(),
+      value: getQueryParams({ context }),
     });
 
     if (queryIssues) {

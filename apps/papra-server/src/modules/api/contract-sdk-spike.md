@@ -6,6 +6,8 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 
 - Keep endpoint contracts colocated with their routes.
 - Do not introduce a dedicated contract package.
+- Implement client transport concerns in the existing `@papra/api-sdk` package.
+- Bundle colocated contracts into the published SDK artifact.
 - Keep contracts independent from Hono and other server-only modules.
 - Use Hono's registration API through a small server adapter.
 - Support JSON requests and responses only during the spike.
@@ -18,8 +20,8 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 - [x] 1. Harden server registration
 - [x] 2. Define schema and serialization semantics
 - [x] 3. Clarify inferred server and client types
-- [ ] 4. Add framework-independent URL construction
-- [ ] 5. Implement a minimal generic client
+- [x] 4. Add framework-independent URL construction
+- [x] 5. Implement a minimal generic client
 - [ ] 6. Define error semantics
 - [ ] 7. Test a representative vertical slice
 - [ ] 8. Add SDK ergonomics
@@ -169,32 +171,53 @@ Compile-time coverage verifies:
 
 ## 4. Add framework-independent URL construction
 
-Implement URL construction from an endpoint contract and request arguments.
+Status: **complete**
 
-It should:
+The framework-independent `buildEndpointUrl` utility is implemented in `@papra/api-sdk`, which owns client transport concerns. It:
 
-- Replace and encode path parameters
-- Serialize query parameters
-- Detect missing path parameters
-- Avoid unresolved `:param` segments
-- Remain independent from Hono
+- Preserves an optional path in the configured base URL.
+- Replaces and URL-encodes path parameters.
+- Rejects missing or unsupported path parameter values.
+- Serializes scalar, `Date`, and repeated array query values.
+- Omits `undefined` query values.
+- Rejects nested query values that cannot be represented safely.
+- Has no dependency on Hono or server runtime modules.
+
+Its arguments use `InferClientRequest`, so required params and query sections are derived from the endpoint contract.
 
 ## 5. Implement a minimal generic client
 
-Start with a generic function rather than the final SDK API:
+Status: **complete**
+
+The initial client is exposed from `@papra/api-sdk`:
 
 ```ts
-callEndpoint({
-  contract,
+const response = await callEndpoint({
   baseUrl,
-  fetch,
-  request: { params, query, body },
+  contract: apiContract.users.getCurrentUser,
+  request: {},
+  authentication: { type: 'session' },
 });
 ```
 
-It should construct the request, call `fetch`, select the response schema by status, validate the response, and return a status-discriminated result.
+Implemented behavior:
 
-Avoid proxies, generated namespaces, and publishing at this stage.
+- Builds the URL from the endpoint contract.
+- Uses the contract's HTTP method.
+- Serializes declared request bodies as JSON.
+- Supports API key authentication with a bearer token.
+- Supports browser session cookies with `credentials: 'include'`.
+- Accepts an injected `fetch` implementation for tests, Node, and custom cookie handling.
+- Selects the response schema by HTTP status.
+- Parses and validates JSON responses with Valibot.
+- Returns an `InferClientResponse` status-discriminated result.
+- Exposes the colocated `apiContract` registry through the built SDK package.
+
+The SDK consumes colocated contracts through explicit `@papra/app-server` package exports. Its build bundles those implementations and declarations so the published artifact has no runtime or declaration imports from the private server package. Valibot remains an explicit runtime dependency.
+
+Current error behavior is intentionally minimal: undeclared statuses throw `Error`, while JSON and schema parsing errors propagate. Step 6 will define the public error model.
+
+The existing hand-written SDK client remains available while the contract client is developed. Generated namespaces and endpoint-specific methods remain deferred to Step 8.
 
 ## 6. Define error semantics
 
