@@ -93,7 +93,7 @@ describe('contract-client', () => {
 
       const response = await callEndpoint({
         baseUrl: 'https://papra.test',
-        contract: apiContract.users.getCurrentUser,
+        contract: apiContract.getCurrentUser,
         request: {},
         authentication: { type: 'session' },
         fetch: fetchImplementation,
@@ -124,7 +124,7 @@ describe('contract-client', () => {
 
       const response = await callEndpoint({
         baseUrl: 'https://papra.test',
-        contract: apiContract.users.getCurrentUser,
+        contract: apiContract.getCurrentUser,
         request: {},
         fetch: fetchImplementation,
       });
@@ -155,7 +155,7 @@ describe('contract-client', () => {
 
       const response = await callEndpoint({
         baseUrl: 'https://papra.test',
-        contract: apiContract.users.getCurrentUser,
+        contract: apiContract.getCurrentUser,
         request: {},
         fetch: fetchImplementation,
       });
@@ -178,7 +178,7 @@ describe('contract-client', () => {
       await expect(
         callEndpoint({
           baseUrl: 'https://papra.test',
-          contract: apiContract.users.getCurrentUser,
+          contract: apiContract.getCurrentUser,
           request: {},
           fetch: fetchImplementation,
         }),
@@ -199,7 +199,7 @@ describe('contract-client', () => {
       await expect(
         callEndpoint({
           baseUrl: 'https://papra.test',
-          contract: apiContract.users.getCurrentUser,
+          contract: apiContract.getCurrentUser,
           request: {},
           fetch: fetchImplementation,
         }),
@@ -220,7 +220,7 @@ describe('contract-client', () => {
       await expect(
         callEndpoint({
           baseUrl: 'https://papra.test',
-          contract: apiContract.users.getCurrentUser,
+          contract: apiContract.getCurrentUser,
           request: {},
           fetch: fetchImplementation,
         }),
@@ -241,7 +241,7 @@ describe('contract-client', () => {
       await expect(
         callEndpoint({
           baseUrl: 'https://papra.test',
-          contract: apiContract.users.getCurrentUser,
+          contract: apiContract.getCurrentUser,
           request: {},
           fetch: fetchImplementation,
         }),
@@ -261,7 +261,7 @@ describe('contract-client', () => {
       await expect(
         callEndpoint({
           baseUrl: 'https://papra.test',
-          contract: apiContract.users.getCurrentUser,
+          contract: apiContract.getCurrentUser,
           request: {},
           fetch: fetchImplementation,
         }),

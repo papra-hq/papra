@@ -13,6 +13,8 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 - Support JSON requests and responses only during the spike.
 - Contract schemas may accept convenient handler values, but their output describes the JSON wire representation.
 - Initially support path params, query params, optional JSON bodies, and status-discriminated responses.
+- Expose endpoint-specific SDK methods and the contract registry as flat APIs.
+- Reserve client scopes for cases where they bind shared context, such as an organization ID.
 
 ## Progress
 
@@ -194,7 +196,7 @@ The initial client is exposed from `@papra/api-sdk`:
 ```ts
 const response = await callEndpoint({
   baseUrl,
-  contract: apiContract.users.getCurrentUser,
+  contract: apiContract.getCurrentUser,
   request: {},
   authentication: { type: 'session' },
 });
@@ -290,14 +292,20 @@ The tests should cover server registration, runtime validation, URL construction
 
 ## 8. Add SDK ergonomics
 
-Once the generic client is stable, explore an API such as:
+Once the generic client is stable, expose a flat API such as:
 
 ```ts
-client.users.getCurrentUser();
-client.users.updateCurrentUser({ body: { name } });
+client.getCurrentUser();
+client.updateCurrentUser({ body: { name } });
 ```
 
-Use the colocated `apiContract` registry as the source of endpoint names and types.
+Keep the colocated `apiContract` registry flat so it maps directly to the public client. Method names must therefore be globally unique and descriptive. Individual endpoint contracts remain colocated with their routes.
+
+Reserve scopes for cases where they bind shared context and remove repeated arguments, for example:
+
+```ts
+client.forOrganization(organizationId).listDocuments();
+```
 
 ## 9. Evaluate the spike
 
