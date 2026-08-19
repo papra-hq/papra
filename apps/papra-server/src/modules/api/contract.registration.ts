@@ -1,10 +1,6 @@
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { Context, ServerInstance } from '../app/server.types';
-import type {
-  EndpointContract,
-  InferEndpointRequest,
-  InferEndpointResponse,
-} from './contracts.types';
+import type { EndpointContract, InferServerRequest, InferServerResponse } from './contracts.types';
 import * as v from 'valibot';
 import { createError } from '../shared/errors/errors';
 import type { MiddlewareHandler } from 'hono';
@@ -15,8 +11,8 @@ import { getUser } from '../app/auth/auth.models';
 const jsonContentTypePattern = /^application\/([a-z-.]+\+)?json(;\s*[a-zA-Z0-9-]+=([^;]+))*$/;
 
 export type EndpointHandler<Contract extends EndpointContract, ExtraArgs = unknown> = (
-  args: InferEndpointRequest<Contract> & { context: Context } & ExtraArgs,
-) => Promise<InferEndpointResponse<Contract>>;
+  args: InferServerRequest<Contract> & { context: Context } & ExtraArgs,
+) => Promise<InferServerResponse<Contract>>;
 
 function parseInput<Schema extends v.GenericSchema>({
   schema,
@@ -165,7 +161,14 @@ export function registerEndpoint<Contract extends EndpointContract>({
       );
     }
 
-    const { body, status } = await handler({ params, query, body: requestBody, context });
+    const request = {
+      context,
+      ...(contract.params ? { params } : {}),
+      ...(contract.query ? { query } : {}),
+      ...(contract.body ? { body: requestBody } : {}),
+    } as InferServerRequest<Contract> & { context: Context };
+
+    const { body, status } = await handler(request);
 
     const responseSchema = contract.responses[status];
 
@@ -203,7 +206,10 @@ export function registerAuthenticatedEndpoint<const Contract extends EndpointCon
       const { context } = args;
       const { userId } = getUser({ context });
 
-      return await handler({ ...args, userId });
+      return await handler({
+        ...args,
+        userId,
+      } as InferServerRequest<Contract> & { context: Context; userId: string });
     },
   });
 }

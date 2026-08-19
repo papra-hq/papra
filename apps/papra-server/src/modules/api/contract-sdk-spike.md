@@ -17,7 +17,7 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 - [x] 0. Define the spike scope
 - [x] 1. Harden server registration
 - [x] 2. Define schema and serialization semantics
-- [ ] 3. Clarify inferred server and client types
+- [x] 3. Clarify inferred server and client types
 - [ ] 4. Add framework-independent URL construction
 - [ ] 5. Implement a minimal generic client
 - [ ] 6. Define error semantics
@@ -132,7 +132,9 @@ Implemented behavior:
 
 ## 3. Clarify inferred server and client types
 
-Introduce clearly named inference utilities, even when some initially resolve to the same type:
+Status: **complete**
+
+The contract exposes explicit types for each side of the request and response boundary:
 
 ```ts
 InferServerRequest<Contract>;
@@ -141,12 +143,29 @@ InferServerResponse<Contract>;
 InferClientResponse<Contract>;
 ```
 
-Add compile-time coverage for:
+Request schemas parse values in the direction of the server handler:
 
-- Required and absent request bodies
-- Invalid status/body combinations
+- `InferClientRequest` uses schema inputs for values supplied by an SDK caller.
+- `InferServerRequest` uses schema outputs for values received by a handler after validation and transformation.
+
+Response schemas parse values in the direction of the SDK caller:
+
+- `InferServerResponse` uses schema inputs for convenient values returned by a handler.
+- `InferClientResponse` uses normalized schema outputs returned to the caller.
+
+Status-specific `InferServerResponseBody` and `InferClientResponseBody` helpers are also available.
+
+Request sections that are not declared by a contract use optional `never` properties. This rejects bodies, params, or query values that the endpoint does not accept while allowing those sections to be omitted.
+
+Compile-time coverage verifies:
+
+- Required request bodies
+- Rejection of bodies on bodyless endpoints
+- Request schema input and output transformations
 - Multiple response statuses
-- Schema input and output transformations
+- Status/body correlation
+- Rejection of undeclared statuses
+- Response normalization from `Date | string` to an ISO timestamp string
 
 ## 4. Add framework-independent URL construction
 

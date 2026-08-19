@@ -19,24 +19,55 @@ export type EndpointContract<
   responses: Responses;
 };
 
-export type InferEndpointRequest<Contract extends EndpointContract> =
+// Values received by the endpoint handler after request schemas have been parsed.
+export type InferServerRequest<Contract extends EndpointContract> =
   (Contract['params'] extends GenericSchema
     ? { params: InferOutput<Contract['params']> }
-    : unknown) &
+    : { params?: never }) &
     (Contract['query'] extends GenericSchema
       ? { query: InferOutput<Contract['query']> }
-      : unknown) &
-    (Contract['body'] extends GenericSchema ? { body: InferOutput<Contract['body']> } : unknown);
+      : { query?: never }) &
+    (Contract['body'] extends GenericSchema
+      ? { body: InferOutput<Contract['body']> }
+      : { body?: never });
 
-export type InferEndpointResponse<Contract extends EndpointContract> = {
-  [Status in keyof Contract['responses'] & HttpStatusCode]: {
-    status: Status;
-    body: InferInput<NonNullable<Contract['responses'][Status]>>;
-  };
-}[keyof Contract['responses'] & HttpStatusCode];
+// Values accepted from an SDK caller before they are sent over the wire.
+export type InferClientRequest<Contract extends EndpointContract> =
+  (Contract['params'] extends GenericSchema
+    ? { params: InferInput<Contract['params']> }
+    : { params?: never }) &
+    (Contract['query'] extends GenericSchema
+      ? { query: InferInput<Contract['query']> }
+      : { query?: never }) &
+    (Contract['body'] extends GenericSchema
+      ? { body: InferInput<Contract['body']> }
+      : { body?: never });
 
-// Client-facing: the over-the-wire body for a given status code.
-export type InferEndpointResponseBody<
+type EndpointResponseStatus<Contract extends EndpointContract> = keyof Contract['responses'] &
+  HttpStatusCode;
+
+export type InferServerResponseBody<
   Contract extends EndpointContract,
-  Status extends keyof Contract['responses'] & HttpStatusCode,
+  Status extends EndpointResponseStatus<Contract>,
+> = InferInput<NonNullable<Contract['responses'][Status]>>;
+
+export type InferClientResponseBody<
+  Contract extends EndpointContract,
+  Status extends EndpointResponseStatus<Contract>,
 > = InferOutput<NonNullable<Contract['responses'][Status]>>;
+
+// Values accepted from the endpoint handler before response schemas normalize them.
+export type InferServerResponse<Contract extends EndpointContract> = {
+  [Status in EndpointResponseStatus<Contract>]: {
+    status: Status;
+    body: InferServerResponseBody<Contract, Status>;
+  };
+}[EndpointResponseStatus<Contract>];
+
+// Values returned to an SDK caller after response schemas have parsed the wire payload.
+export type InferClientResponse<Contract extends EndpointContract> = {
+  [Status in EndpointResponseStatus<Contract>]: {
+    status: Status;
+    body: InferClientResponseBody<Contract, Status>;
+  };
+}[EndpointResponseStatus<Contract>];
