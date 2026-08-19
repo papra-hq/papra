@@ -13,6 +13,7 @@
     "./apiKeys/constants": "./src/modules/api-keys/api-keys.constants.ts",
     "./plans/constants": "./src/modules/plans/plans.constants.ts",
     "./api/contracts": "./src/modules/api/contracts.ts",
+    "./api/contracts/errors": "./src/modules/api/contracts.errors.ts",
     "./api/contracts/models": "./src/modules/api/contracts.models.ts",
     "./api/contracts/types": "./src/modules/api/contracts.types.ts",
     "./api/schemas/date": "./src/modules/api/schemas/date.schemas.ts"

@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, expectTypeOf, test } from 'vitest';
 import { createError, createErrorFactory, formatPublicErrorPayload, isCustomError } from './errors';
 
 describe('errors', () => {
@@ -38,38 +38,35 @@ describe('errors', () => {
   });
 
   describe('createErrorFactory', () => {
-    test('creates a factory function to create custom errors with an extendable base configuration', () => {
+    test('creates a factory with an immutable typed definition', () => {
       const createFooError = createErrorFactory({ message: 'foo', code: 'bar', statusCode: 500 });
+      const cause = new Error('cause');
 
       expect(createFooError()).to.includes({
         message: 'foo',
         code: 'bar',
         statusCode: 500,
       });
-
-      expect(createFooError({ message: 'baz' })).to.includes({
+      expect(createFooError({ message: 'baz', cause })).to.includes({
         message: 'baz',
         code: 'bar',
         statusCode: 500,
+        cause,
       });
-
-      expect(createFooError({ code: 'qux' })).to.includes({
-        message: 'foo',
-        code: 'qux',
-        statusCode: 500,
-      });
-
-      expect(createFooError({ statusCode: 400 })).to.includes({
+      expect(createFooError.definition).to.eql({
         message: 'foo',
         code: 'bar',
-        statusCode: 400,
+        statusCode: 500,
       });
+      expect(Object.isFrozen(createFooError.definition)).to.eql(true);
+      expectTypeOf(createFooError.definition.code).toEqualTypeOf<'bar'>();
+      expectTypeOf(createFooError.definition.statusCode).toEqualTypeOf<500>();
 
-      expect(createFooError({ message: 'baz', code: 'qux', statusCode: 400 })).to.includes({
-        message: 'baz',
-        code: 'qux',
-        statusCode: 400,
-      });
+      // @ts-expect-error Error codes are immutable contract discriminants.
+      createFooError({ code: 'qux' });
+
+      // @ts-expect-error Error statuses are immutable contract discriminants.
+      createFooError({ statusCode: 400 });
     });
   });
 

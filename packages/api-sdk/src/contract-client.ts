@@ -1,9 +1,11 @@
+import { apiErrorResponseSchema } from '@papra/app-server/api/contracts/errors';
 import type {
   EndpointContract,
   InferClientRequest,
   InferClientResponse,
 } from '@papra/app-server/api/contracts/types';
 import * as v from 'valibot';
+import { PapraContractError } from './contract-client.errors';
 import { buildEndpointUrl } from './endpoint-url';
 
 export type ContractClientAuthentication = { type: 'api-key'; token: string } | { type: 'session' };
@@ -41,21 +43,83 @@ export async function callEndpoint<Contract extends EndpointContract>({
     body,
     credentials: authentication?.type === 'session' ? 'include' : undefined,
   });
+  const endpoint = { method: contract.method, path: contract.path };
   const responseSchema = contract.responses[response.status as keyof Contract['responses']] as
     | v.GenericSchema
     | undefined;
+  const errorDefinitions = contract.errors.filter(
+    (errorDefinition) => errorDefinition.statusCode === response.status,
+  );
 
-  if (!responseSchema) {
-    throw new Error(
-      `No response schema declared for status ${response.status} on ${contract.method} ${contract.path}`,
-    );
+  if (!responseSchema && errorDefinitions.length === 0) {
+    throw new PapraContractError({
+      message: `No response or error declared for status ${response.status} on ${contract.method} ${contract.path}`,
+      reason: 'undeclared_status',
+      endpoint,
+      response,
+    });
   }
 
-  const responseBody: unknown = await response.json();
-  const parsedBody = v.parse(responseSchema, responseBody);
+  let responseBody: unknown;
+
+  try {
+    responseBody = await response.json();
+  } catch (error) {
+    throw new PapraContractError({
+      message: `Invalid JSON response for status ${response.status} on ${contract.method} ${contract.path}`,
+      reason: 'invalid_response_json',
+      endpoint,
+      response,
+      cause: error,
+    });
+  }
+
+  if (responseSchema) {
+    const result = v.safeParse(responseSchema, responseBody);
+
+    if (!result.success) {
+      throw new PapraContractError({
+        message: `Response body does not match the schema for status ${response.status} on ${contract.method} ${contract.path}`,
+        reason: 'invalid_response_body',
+        endpoint,
+        response,
+        cause: result.issues,
+      });
+    }
+
+    return {
+      status: response.status,
+      body: result.output,
+    } as InferClientResponse<Contract>;
+  }
+
+  const errorResult = v.safeParse(apiErrorResponseSchema, responseBody);
+
+  if (!errorResult.success) {
+    throw new PapraContractError({
+      message: `Error response body does not match the API error schema for status ${response.status} on ${contract.method} ${contract.path}`,
+      reason: 'invalid_response_body',
+      endpoint,
+      response,
+      cause: errorResult.issues,
+    });
+  }
+
+  const errorDefinition = errorDefinitions.find(
+    ({ code }) => code === errorResult.output.error.code,
+  );
+
+  if (!errorDefinition) {
+    throw new PapraContractError({
+      message: `Error code "${errorResult.output.error.code}" is not declared for status ${response.status} on ${contract.method} ${contract.path}`,
+      reason: 'undeclared_error',
+      endpoint,
+      response,
+    });
+  }
 
   return {
     status: response.status,
-    body: parsedBody,
+    body: errorResult.output,
   } as InferClientResponse<Contract>;
 }

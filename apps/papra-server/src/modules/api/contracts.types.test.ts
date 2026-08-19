@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, test } from 'vitest';
+import { describe, expect, expectTypeOf, test } from 'vitest';
 import * as v from 'valibot';
 import { defineEndpointContract } from './contracts.models';
 import type {
@@ -8,6 +8,7 @@ import type {
   InferServerResponse,
 } from './contracts.types';
 import { isoDateTimeSchema } from './schemas/date.schemas';
+import { createUsersNotFoundError } from '../users/users.errors';
 
 const numberFromStringSchema = v.pipe(v.string(), v.transform(Number), v.number());
 
@@ -27,6 +28,7 @@ const transformedContract = defineEndpointContract({
       jobId: v.string(),
     }),
   },
+  errors: [createUsersNotFoundError],
 });
 
 const bodylessContract = defineEndpointContract({
@@ -38,6 +40,19 @@ const bodylessContract = defineEndpointContract({
 });
 
 describe('contracts.types', () => {
+  test('contracts include common and factory-derived error definitions', () => {
+    expect(transformedContract.errors).toContainEqual({
+      message: 'Unauthorized',
+      code: 'auth.unauthorized',
+      statusCode: 401,
+    });
+    expect(transformedContract.errors).toContainEqual({
+      message: 'User not found',
+      code: 'users.not_found',
+      statusCode: 404,
+    });
+  });
+
   test('client request types represent schema inputs', () => {
     type ClientRequest = InferClientRequest<typeof transformedContract>;
 
@@ -98,6 +113,17 @@ describe('contracts.types', () => {
 
     // @ts-expect-error The status is not declared by the contract.
     acceptResponse({ status: 201, body: { createdAt: new Date(), result: 'created' } });
+  });
+
+  test('client responses include common and endpoint-specific errors', () => {
+    type ClientResponse = InferClientResponse<typeof transformedContract>;
+    type UnauthorizedResponse = Extract<ClientResponse, { status: 401 }>;
+    type NotFoundResponse = Extract<ClientResponse, { status: 404 }>;
+
+    expectTypeOf<
+      UnauthorizedResponse['body']['error']['code']
+    >().toEqualTypeOf<'auth.unauthorized'>();
+    expectTypeOf<NotFoundResponse['body']['error']['code']>().toEqualTypeOf<'users.not_found'>();
   });
 
   test('client responses contain parsed schema outputs for each status', () => {

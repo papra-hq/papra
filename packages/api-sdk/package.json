@@ -48,5 +48,8 @@
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "inlinedDependencies": {
+    "hono": "4.12.27"
   }
 }

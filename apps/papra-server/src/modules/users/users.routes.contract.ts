@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 import { defineEndpointContract } from '../api/contracts.models';
 import { isoDateTimeSchema } from '../api/schemas/date.schemas';
+import { createUsersNotFoundError } from './users.errors';
 
 const userSchema = v.object({
   id: v.string(),
@@ -22,6 +23,7 @@ export const getCurrentUserEndpointContract = defineEndpointContract({
       }),
     }),
   },
+  errors: [createUsersNotFoundError],
 });
 
 export const updateCurrentUserEndpointContract = defineEndpointContract({
@@ -35,4 +37,5 @@ export const updateCurrentUserEndpointContract = defineEndpointContract({
       user: userSchema,
     }),
   },
+  errors: [createUsersNotFoundError],
 });

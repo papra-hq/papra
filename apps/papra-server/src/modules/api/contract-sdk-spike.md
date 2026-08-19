@@ -22,7 +22,7 @@ This document tracks the incremental exploration of a contract-based, type-safe 
 - [x] 3. Clarify inferred server and client types
 - [x] 4. Add framework-independent URL construction
 - [x] 5. Implement a minimal generic client
-- [ ] 6. Define error semantics
+- [x] 6. Define error semantics
 - [ ] 7. Test a representative vertical slice
 - [ ] 8. Add SDK ergonomics
 - [ ] 9. Evaluate the spike
@@ -215,25 +215,68 @@ Implemented behavior:
 
 The SDK consumes colocated contracts through explicit `@papra/app-server` package exports. Its build bundles those implementations and declarations so the published artifact has no runtime or declaration imports from the private server package. Valibot remains an explicit runtime dependency.
 
-Current error behavior is intentionally minimal: undeclared statuses throw `Error`, while JSON and schema parsing errors propagate. Step 6 will define the public error model.
-
 The existing hand-written SDK client remains available while the contract client is developed. Generated namespaces and endpoint-specific methods remain deferred to Step 8.
 
 ## 6. Define error semantics
 
-Decide how the client handles non-success responses:
+Status: **complete**
 
-- Return declared errors as status-discriminated results, or
-- Throw a typed `ApiError` for non-success responses.
+Known API errors are part of the client response union rather than thrown exceptions. Every endpoint receives default definitions for common errors:
 
-The initial proposal is to throw for global errors such as authentication, request validation, unknown routes, and internal failures, while allowing explicitly actionable error statuses in endpoint contracts.
+- Params, query, body, and malformed JSON validation errors
+- Unauthorized and forbidden authentication errors
+- The public internal error response
 
-Cover at least:
+Endpoint-specific errors reuse existing error factories:
 
-- Validation errors
-- Authentication errors
-- Undeclared response statuses
-- Malformed or contract-invalid responses
+```ts
+export const getCurrentUserEndpointContract = defineEndpointContract({
+  method: 'GET',
+  path: '/api/users/me',
+  responses: {
+    200: getCurrentUserResponseSchema,
+  },
+  errors: [createUsersNotFoundError],
+});
+```
+
+`createErrorFactory` retains an immutable, literal-typed `definition` containing its code, status, and default message. Error codes and statuses can no longer be overridden when creating an error because they are contract discriminants; messages and causes remain customizable.
+
+Errors with the same HTTP status are distinguished by `body.error.code`. The inferred client result contains both normal responses and error responses:
+
+```ts
+type Result =
+  | { status: 200; body: GetCurrentUserResponse }
+  | {
+      status: 401;
+      body: { error: { code: 'auth.unauthorized'; message: string } };
+    }
+  | {
+      status: 404;
+      body: { error: { code: 'users.not_found'; message: string } };
+    };
+```
+
+`InferServerResponse` continues to contain only values returned by handlers. Thrown errors are added only to `InferClientResponse`.
+
+The SDK validates error payloads against the shared API error schema, then verifies that the combination of status and error code is declared by the contract. Contract or protocol violations throw `PapraContractError` with one of these reasons:
+
+- `undeclared_status`
+- `undeclared_error`
+- `invalid_response_json`
+- `invalid_response_body`
+
+Fetch and network errors are preserved unchanged.
+
+Coverage includes:
+
+- Common and endpoint-specific typed errors
+- Factory-derived error definitions
+- Immutable error codes and statuses
+- Undeclared statuses and error codes
+- Malformed JSON
+- Schema-invalid normal responses
+- Preserved network errors
 
 ## 7. Test a representative vertical slice
 

@@ -59,6 +59,11 @@ describe('contract-client', () => {
         status: 201,
         body: { id: 'doc_123', createdAt: '2025-01-01T00:00:00.000Z' },
       });
+
+      if (response.status !== 201) {
+        throw new Error('Expected a 201 response');
+      }
+
       expectTypeOf(response.body.createdAt).toEqualTypeOf<string>();
     });
 
@@ -97,13 +102,76 @@ describe('contract-client', () => {
       expect(receivedInit?.credentials).to.eql('include');
       expect(new Headers(receivedInit?.headers).has('Authorization')).to.eql(false);
       expect(response.status).to.eql(200);
+
+      if (response.status !== 200) {
+        throw new Error('Expected a 200 response');
+      }
+
       expect(response.body.user.createdAt).to.eql('2025-01-01T00:00:00.000Z');
+    });
+
+    test('returns endpoint-specific errors as typed responses', async () => {
+      const fetchImplementation: typeof globalThis.fetch = async () =>
+        new Response(
+          JSON.stringify({
+            error: { message: 'User not found', code: 'users.not_found' },
+          }),
+          {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+      const response = await callEndpoint({
+        baseUrl: 'https://papra.test',
+        contract: apiContract.users.getCurrentUser,
+        request: {},
+        fetch: fetchImplementation,
+      });
+
+      expect(response).to.eql({
+        status: 404,
+        body: { error: { message: 'User not found', code: 'users.not_found' } },
+      });
+
+      if (response.status !== 404) {
+        throw new Error('Expected a 404 response');
+      }
+
+      expectTypeOf(response.body.error.code).toEqualTypeOf<'users.not_found'>();
+    });
+
+    test('returns common errors as typed responses', async () => {
+      const fetchImplementation: typeof globalThis.fetch = async () =>
+        new Response(
+          JSON.stringify({
+            error: { message: 'Unauthorized', code: 'auth.unauthorized' },
+          }),
+          {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+      const response = await callEndpoint({
+        baseUrl: 'https://papra.test',
+        contract: apiContract.users.getCurrentUser,
+        request: {},
+        fetch: fetchImplementation,
+      });
+
+      if (response.status !== 401) {
+        throw new Error('Expected a 401 response');
+      }
+
+      expect(response.body.error.code).to.eql('auth.unauthorized');
+      expectTypeOf(response.body.error.code).toEqualTypeOf<'auth.unauthorized'>();
     });
 
     test('rejects statuses that are not declared by the contract', async () => {
       const fetchImplementation: typeof globalThis.fetch = async () =>
-        new Response(JSON.stringify({ error: { message: 'Not found' } }), {
-          status: 404,
+        new Response(JSON.stringify({ ok: true }), {
+          status: 418,
           headers: { 'Content-Type': 'application/json' },
         });
 
@@ -114,7 +182,90 @@ describe('contract-client', () => {
           request: {},
           fetch: fetchImplementation,
         }),
-      ).rejects.toThrowError('No response schema declared for status 404 on GET /api/users/me');
+      ).rejects.toMatchObject({
+        name: 'PapraContractError',
+        reason: 'undeclared_status',
+        status: 418,
+      });
+    });
+
+    test('rejects error codes that are not declared for the status', async () => {
+      const fetchImplementation: typeof globalThis.fetch = async () =>
+        new Response(JSON.stringify({ error: { message: 'Unknown', code: 'unknown.error' } }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+      await expect(
+        callEndpoint({
+          baseUrl: 'https://papra.test',
+          contract: apiContract.users.getCurrentUser,
+          request: {},
+          fetch: fetchImplementation,
+        }),
+      ).rejects.toMatchObject({
+        name: 'PapraContractError',
+        reason: 'undeclared_error',
+        status: 400,
+      });
+    });
+
+    test('wraps malformed JSON for a declared response', async () => {
+      const fetchImplementation: typeof globalThis.fetch = async () =>
+        new Response('{', {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+      await expect(
+        callEndpoint({
+          baseUrl: 'https://papra.test',
+          contract: apiContract.users.getCurrentUser,
+          request: {},
+          fetch: fetchImplementation,
+        }),
+      ).rejects.toMatchObject({
+        name: 'PapraContractError',
+        reason: 'invalid_response_json',
+        status: 200,
+      });
+    });
+
+    test('wraps schema-invalid declared responses', async () => {
+      const fetchImplementation: typeof globalThis.fetch = async () =>
+        new Response(JSON.stringify({ user: { id: 'usr_123' } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+      await expect(
+        callEndpoint({
+          baseUrl: 'https://papra.test',
+          contract: apiContract.users.getCurrentUser,
+          request: {},
+          fetch: fetchImplementation,
+        }),
+      ).rejects.toMatchObject({
+        name: 'PapraContractError',
+        reason: 'invalid_response_body',
+        status: 200,
+      });
+    });
+
+    test('preserves fetch errors', async () => {
+      const networkError = new Error('Network unavailable');
+      const fetchImplementation: typeof globalThis.fetch = async () => {
+        throw networkError;
+      };
+
+      await expect(
+        callEndpoint({
+          baseUrl: 'https://papra.test',
+          contract: apiContract.users.getCurrentUser,
+          request: {},
+          fetch: fetchImplementation,
+        }),
+      ).rejects.toBe(networkError);
     });
   });
 });

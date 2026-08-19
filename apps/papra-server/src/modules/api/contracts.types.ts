@@ -1,4 +1,5 @@
 import type { GenericSchema, InferInput, InferOutput } from 'valibot';
+import type { ApiErrorDetail, PublicApiErrorDefinition } from './contracts.errors';
 import type { HttpMethod, HttpStatusCode } from './http/http.types';
 
 export type EndpointContract<
@@ -10,6 +11,7 @@ export type EndpointContract<
   Responses extends Partial<Record<HttpStatusCode, GenericSchema>> = Partial<
     Record<HttpStatusCode, GenericSchema>
   >,
+  Errors extends readonly PublicApiErrorDefinition[] = readonly PublicApiErrorDefinition[],
 > = {
   method: Method;
   path: Path;
@@ -17,6 +19,7 @@ export type EndpointContract<
   query?: QuerySchema;
   body?: BodySchema;
   responses: Responses;
+  errors: Errors;
 };
 
 // Values received by the endpoint handler after request schemas have been parsed.
@@ -64,10 +67,26 @@ export type InferServerResponse<Contract extends EndpointContract> = {
   };
 }[EndpointResponseStatus<Contract>];
 
-// Values returned to an SDK caller after response schemas have parsed the wire payload.
-export type InferClientResponse<Contract extends EndpointContract> = {
-  [Status in EndpointResponseStatus<Contract>]: {
-    status: Status;
-    body: InferClientResponseBody<Contract, Status>;
-  };
-}[EndpointResponseStatus<Contract>];
+export type InferClientErrorResponse<Definition extends PublicApiErrorDefinition> =
+  Definition extends PublicApiErrorDefinition
+    ? {
+        status: Definition['statusCode'];
+        body: {
+          error: {
+            message: string;
+            code: Definition['code'];
+            details?: ApiErrorDetail[];
+          };
+        };
+      }
+    : never;
+
+// Values returned to an SDK caller after response and error schemas have parsed the wire payload.
+export type InferClientResponse<Contract extends EndpointContract> =
+  | {
+      [Status in EndpointResponseStatus<Contract>]: {
+        status: Status;
+        body: InferClientResponseBody<Contract, Status>;
+      };
+    }[EndpointResponseStatus<Contract>]
+  | InferClientErrorResponse<Contract['errors'][number]>;

@@ -8,7 +8,7 @@ export {
   isErrorWithCode,
 };
 
-type ErrorOptions = {
+export type ErrorOptions = {
   message: string;
   code: string;
   cause?: unknown;
@@ -16,9 +16,22 @@ type ErrorOptions = {
   isInternal?: boolean;
 };
 
+export type ErrorDefinition<
+  Code extends string = string,
+  StatusCode extends ContentfulStatusCode = ContentfulStatusCode,
+> = Omit<ErrorOptions, 'cause' | 'code' | 'statusCode'> & {
+  code: Code;
+  statusCode: StatusCode;
+};
+
+export type ErrorFactory<Definition extends ErrorDefinition = ErrorDefinition> = {
+  (options?: { message?: string; cause?: unknown }): CustomError;
+  readonly definition: Readonly<Definition>;
+};
+
 class CustomError extends Error {
   code: string;
-  cause?: unknown;
+  override cause?: unknown;
   statusCode: ContentfulStatusCode;
   isInternal: boolean = false;
 
@@ -40,10 +53,25 @@ function createError(options: ErrorOptions) {
   return new CustomError(options);
 }
 
-function createErrorFactory(baseOption: ErrorOptions) {
-  return (options: Partial<ErrorOptions> = {}) => {
-    return createError({ ...baseOption, ...options });
+function createErrorFactory<const Definition extends ErrorDefinition>(
+  definition: Definition,
+): ErrorFactory<Definition> {
+  const factory = ({ message, cause }: { message?: string; cause?: unknown } = {}) => {
+    return createError({
+      ...definition,
+      message: message ?? definition.message,
+      cause,
+    });
   };
+
+  Object.defineProperty(factory, 'definition', {
+    value: Object.freeze({ ...definition }),
+    enumerable: true,
+    writable: false,
+    configurable: false,
+  });
+
+  return factory as ErrorFactory<Definition>;
 }
 
 function isCustomError(error: unknown): error is CustomError {
