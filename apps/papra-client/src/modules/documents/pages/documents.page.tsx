@@ -45,7 +45,7 @@ export const DocumentsPage: Component = () => {
   });
   const debouncedSearchQuery = useDebounce(getSearchQuery, 300);
   const [getPagination, setPagination] = createParamSynchronizedPagination();
-  const [getRowSelection, setRowSelection] = createSignal<RowSelectionState>({});
+  const [getRowSelection, setInternalRowSelection] = createSignal<RowSelectionState>({});
   const [getSelectAllMatchingQuery, setSelectAllMatchingQuery] = createSignal(false);
   const [getTagDialogOpen, setTagDialogOpen] = createSignal(false);
 
@@ -101,6 +101,11 @@ export const DocumentsPage: Component = () => {
       }),
     placeholderData: keepPreviousData,
   }));
+
+  const setRowSelection: Setter<RowSelectionState> = (valueOrUpdater) => {
+    setSelectAllMatchingQuery(false);
+    return setInternalRowSelection(valueOrUpdater);
+  };
 
   const getSelectedIds = createMemo(() => {
     const selection = getRowSelection();
