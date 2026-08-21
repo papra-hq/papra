@@ -23,7 +23,6 @@ export function createWebhookHttpClient({
 
     const response = await ofetch.raw<unknown>(url, {
       ...options,
-      // @ts-expect-error ofetch resolves undici types from the root install (pulled in by some transitive dep) which may differ from the server's direct undici dep. Runtime is compatible.
       dispatcher,
       ignoreResponseError: true,
       redirect: 'manual', // don't follow redirects, just return the 3xx response
