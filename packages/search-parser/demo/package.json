@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@iconify-json/tabler": "catalog:",
+    "@unocss/reset": "catalog:",
     "unocss": "catalog:"
   }
 }
