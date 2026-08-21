@@ -17,3 +17,9 @@ export const createInvalidWebhookPayloadError = createErrorFactory({
   code: 'subscriptions.invalid_webhook_payload',
   statusCode: 400,
 });
+
+export const createInvalidWebhookSignatureError = createErrorFactory({
+  message: 'Invalid webhook signature',
+  code: 'subscriptions.invalid_webhook_signature',
+  statusCode: 400,
+});
