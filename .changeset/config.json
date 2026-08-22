@@ -1,8 +1,5 @@
 {
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "papra-hq/papra", "template": "\n\n- {summary} - {pull} {commit} by {authors}" }
-  ],
+  "changelog": ["@changesets/changelog-github", { "repo": "papra-hq/papra" }],
   "commit": false,
   "fixed": [],
   "access": "public",
