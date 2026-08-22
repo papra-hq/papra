@@ -1,6 +1,8 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "papra-hq/papra" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "papra-hq/papra", "template": "\n\n- {summary} - {pull} {commit} by {authors}" }
+  ],
   "commit": false,
   "fixed": [],
   "access": "public",
