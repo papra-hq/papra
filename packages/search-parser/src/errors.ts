@@ -5,4 +5,5 @@ export const ERROR_CODES = {
   UNMATCHED_CLOSING_PARENTHESIS: 'unmatched-closing-parenthesis',
   UNCLOSED_QUOTED_STRING: 'unclosed-quoted-string',
   MISSING_OPERAND_FOR_NOT: 'missing-operand-for-not',
+  INVALID_OPERATOR: 'invalid-operator',
 };
