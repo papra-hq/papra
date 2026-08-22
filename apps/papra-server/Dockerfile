@@ -38,7 +38,7 @@ COPY apps/papra-server ./apps/papra-server
 
 RUN pnpm --filter "@papra/app-server..." run build
 
-RUN pnpm --filter @papra/app-server --prod --legacy deploy /app/production
+RUN pnpm --filter @papra/app-server --prod deploy /app/production
 
 # -----------------
 
