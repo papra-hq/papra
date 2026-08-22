@@ -3,6 +3,7 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+  injectWorkspacePackages: true
 
 catalogs:
   default:
@@ -385,10 +386,10 @@ importers:
         version: 1.2.35
       '@papra/app-server':
         specifier: workspace:*
-        version: link:../papra-server
+        version: file:apps/papra-server(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(expo-constants@18.0.13)(expo-linking@8.0.12)(expo-network@8.0.8(expo@54.0.35)(react@19.2.7))(expo-web-browser@15.0.11(expo@54.0.35)(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.2.7)))(kysely@0.28.17)(magicast@0.3.5)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(typescript@6.0.3)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0)))(zod@4.4.3)
       '@papra/lecture':
         specifier: workspace:*
-        version: link:../../packages/lecture
+        version: file:packages/lecture
       '@papra/std':
         specifier: workspace:*
         version: link:../../packages/std
@@ -463,7 +464,7 @@ importers:
         version: 0.0.4
       '@papra/lecture':
         specifier: workspace:*
-        version: link:../../packages/lecture
+        version: file:packages/lecture
       '@papra/search-parser':
         specifier: workspace:*
         version: link:../../packages/search-parser
@@ -3879,6 +3880,21 @@ packages:
     resolution: {integrity: sha512-Fa2Iyw7kaDRzGMfNYNUXNW2zbL5FQVDgSOcbDHdzBrDEdpqOqg8TcZ68F22ol6NJ9IGzvUdmeyZypLW5dyhqsg==}
     cpu: [x64]
     os: [win32]
+
+  '@papra/app-server@file:apps/papra-server':
+    resolution: {directory: apps/papra-server, type: directory}
+
+  '@papra/lecture@file:packages/lecture':
+    resolution: {directory: packages/lecture, type: directory}
+
+  '@papra/search-parser@file:packages/search-parser':
+    resolution: {directory: packages/search-parser, type: directory}
+
+  '@papra/std@file:packages/std':
+    resolution: {directory: packages/std, type: directory}
+
+  '@papra/webhooks@file:packages/webhooks':
+    resolution: {directory: packages/webhooks, type: directory}
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -14096,6 +14112,137 @@ snapshots:
 
   '@pagefind/windows-x64@1.5.2':
     optional: true
+
+  '@papra/app-server@file:apps/papra-server(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(expo-constants@18.0.13)(expo-linking@8.0.12)(expo-network@8.0.8(expo@54.0.35)(react@19.2.7))(expo-web-browser@15.0.11(expo@54.0.35)(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.2.7)))(kysely@0.28.17)(magicast@0.3.5)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(typescript@6.0.3)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0)))(zod@4.4.3)':
+    dependencies:
+      '@azure/storage-blob': 12.27.0
+      '@better-auth/expo': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(better-auth@1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9))(expo-constants@18.0.13)(expo-linking@8.0.12)(expo-network@8.0.8(expo@54.0.35)(react@19.2.7))(expo-web-browser@15.0.11(expo@54.0.35)(react-native@0.81.5(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.2.7)))
+      '@cadence-mq/core': 0.2.3
+      '@cadence-mq/driver-libsql': 0.2.4(@cadence-mq/core@0.2.3)(@libsql/client@0.14.0)
+      '@cadence-mq/driver-memory': 0.2.2(@cadence-mq/core@0.2.3)
+      '@clack/prompts': 1.0.0-alpha.6
+      '@corentinth/chisels': 2.1.0
+      '@corentinth/friendly-ids': 0.0.1
+      '@crowlog/async-context-plugin': 2.1.1
+      '@crowlog/logger': 2.2.2
+      '@hono/node-server': 2.0.10(hono@4.12.27)
+      '@libsql/client': 0.14.0
+      '@owlrelay/api-sdk': 0.0.4
+      '@owlrelay/webhook': 0.0.4
+      '@papra/lecture': file:packages/lecture
+      '@papra/search-parser': file:packages/search-parser
+      '@papra/std': file:packages/std
+      '@papra/webhooks': file:packages/webhooks
+      '@paralleldrive/cuid2': 3.3.0
+      '@sindresorhus/slugify': 3.0.0
+      '@tanstack/ai': 0.39.1
+      '@tanstack/ai-anthropic': 0.16.0(@tanstack/ai@0.39.1)(zod@4.4.3)
+      '@tanstack/ai-openai': 0.15.10(@tanstack/ai@0.39.1)(ws@8.21.0)(zod@4.4.3)
+      '@valibot/to-json-schema': 1.6.0(valibot@1.4.2(typescript@6.0.3))
+      better-auth: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@libsql/client@0.14.0)(kysely@0.28.17))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)(vitest@4.1.9)
+      busboy: 1.6.0
+      c12: 3.0.4(magicast@0.3.5)
+      chokidar: 4.0.3
+      drizzle-kit: 0.31.10
+      drizzle-orm: 0.45.2(@libsql/client@0.14.0)(kysely@0.28.17)
+      figue: 3.3.0
+      file-type: 21.3.4
+      filenamify: 7.0.1
+      hono: 4.12.27
+      mime-types: 3.0.2
+      nanoid: 5.1.16
+      node-cron: 3.0.3
+      nodemailer: 9.0.1
+      ofetch: 1.4.1
+      p-limit: 7.3.0
+      p-queue: 8.1.1
+      picomatch: 4.0.4
+      posthog-node: 5.20.0
+      resend: 4.6.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      s3mini: 0.9.5
+      stripe: 17.7.0
+      tsx: 4.21.0
+      undici: 8.5.0
+      valibot: 1.4.2(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@aws-sdk/client-rds-data'
+      - '@better-auth/core'
+      - '@cloudflare/workers-types'
+      - '@electric-sql/pglite'
+      - '@libsql/client-wasm'
+      - '@lynx-js/react'
+      - '@neondatabase/serverless'
+      - '@op-engineering/op-sqlite'
+      - '@opentelemetry/api'
+      - '@planetscale/database'
+      - '@prisma/client'
+      - '@sveltejs/kit'
+      - '@tanstack/react-start'
+      - '@tanstack/solid-start'
+      - '@tidbcloud/serverless'
+      - '@types/better-sqlite3'
+      - '@types/pg'
+      - '@types/sql.js'
+      - '@upstash/redis'
+      - '@vercel/postgres'
+      - '@xata.io/client'
+      - better-sqlite3
+      - bufferutil
+      - bun-types
+      - encoding
+      - expo-constants
+      - expo-linking
+      - expo-network
+      - expo-sqlite
+      - expo-web-browser
+      - gel
+      - knex
+      - kysely
+      - magicast
+      - mongodb
+      - mysql2
+      - next
+      - pg
+      - postgres
+      - prisma
+      - react
+      - react-dom
+      - solid-js
+      - sql.js
+      - sqlite3
+      - supports-color
+      - svelte
+      - typescript
+      - utf-8-validate
+      - vitest
+      - vue
+      - ws
+      - zod
+
+  '@papra/lecture@file:packages/lecture':
+    dependencies:
+      '@corentinth/chisels': 2.1.0
+      '@napi-rs/canvas': 0.1.100
+      fast-xml-parser: 5.10.1
+      jszip: 3.10.1
+      rtf-parser: 1.3.3
+      sharp: 0.34.5
+      tesseract.js: 7.0.0
+      tinyexec: 1.2.4
+      unpdf: 1.4.0(@napi-rs/canvas@0.1.100)
+    transitivePeerDependencies:
+      - encoding
+
+  '@papra/search-parser@file:packages/search-parser': {}
+
+  '@papra/std@file:packages/std': {}
+
+  '@papra/webhooks@file:packages/webhooks':
+    dependencies:
+      '@corentinth/chisels': 2.1.0
+      '@paralleldrive/cuid2': 3.3.0
+      ofetch: 1.4.1
+      tsee: 1.3.4
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
