@@ -748,7 +748,7 @@ export const translations = {
   'tags.delete': 'Delete tag',
   'tags.delete.confirm.title': 'Delete tag',
   'tags.delete.confirm.message':
-    'Are you sure you want to delete this tag? Deleting a tag will remove it from all documents.',
+    'Are you sure you want to delete the tag "{{ name }}"? Deleting a tag will remove it from all documents.',
   'tags.delete.confirm.confirm-button': 'Delete',
   'tags.delete.confirm.cancel-button': 'Cancel',
   'tags.delete.success': 'Tag deleted successfully',

@@ -331,7 +331,7 @@ export const TagsPage: Component = () => {
   const del = async ({ tag }: { tag: TagType }) => {
     const confirmed = await confirm({
       title: t('tags.delete.confirm.title'),
-      message: t('tags.delete.confirm.message'),
+      message: t('tags.delete.confirm.message', { name: tag.name }),
       cancelButton: {
         text: t('tags.delete.confirm.cancel-button'),
         variant: 'secondary',
