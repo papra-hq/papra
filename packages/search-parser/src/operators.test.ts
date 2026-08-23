@@ -138,14 +138,25 @@ describe('operators', () => {
         ]);
       });
 
-      test('falls back to `=` when every declared operator has been rejected', () => {
+      test('falls back to the built-in `=` when every declared operator has been rejected, as no declared operator is left', () => {
         const { matcher, issues } = createOperatorMatcher({
           operators: ['a b'],
           defaultOperator: 'a b',
         });
 
         expect(matcher.defaultOperator).toBe('=');
-        expect(issues).toHaveLength(2);
+        expect(issues).toEqual([
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Operator "a b" cannot contain whitespaces, parentheses or quotes, it has been ignored',
+          },
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'No operator has been declared, the built-in "=" has been used for filters without an explicit operator',
+          },
+        ]);
       });
 
       test('silently ignores duplicated operators', () => {

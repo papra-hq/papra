@@ -47,6 +47,21 @@ function resolveDefaultOperator<TOperator extends string>({
     return { resolvedDefaultOperator: defaultOperator, issues: [] };
   }
 
+  // Every declared operator has been rejected, so no declared operator is left to fall back
+  // to. Filters still need one, so the built-in `=` is used as a last resort, and the issue
+  // says so rather than claiming a declared operator was picked.
+  if (validOperators.length === 0) {
+    return {
+      resolvedDefaultOperator: DEFAULT_OPERATOR as TOperator,
+      issues: [
+        {
+          code: ERROR_CODES.INVALID_OPERATOR,
+          message: `No operator has been declared, the built-in "${DEFAULT_OPERATOR}" has been used for filters without an explicit operator`,
+        },
+      ],
+    };
+  }
+
   // `=` is the operator a filter without an explicit one means by default, prefer it when
   // it has been declared, and fall back to the first declared operator otherwise.
   const fallbackOperator =

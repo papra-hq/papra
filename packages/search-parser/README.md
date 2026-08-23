@@ -105,7 +105,7 @@ A few things worth knowing:
 - The longest matching operator always wins, so `~=` takes precedence over `~` no matter the order you declare them in.
 - Operators only apply right after the colon: `name:~invoice`, not `name~invoice`.
 - Operators cannot contain whitespace, parentheses or quotes, as those characters delimit tokens. Invalid operators are ignored and reported as `invalid-operator` issues rather than throwing.
-- When a filter has no explicit operator (`tag:invoice`), `defaultOperator` is used. It defaults to `=` and must be one of the declared operators, so that the inferred operator type never lies about what the parser can return. Dropping `=` from the operator set therefore makes `defaultOperator` required. This is also enforced at runtime, for untyped consumers: a default operator that was not declared, or that was itself rejected, is reported as an `invalid-operator` issue and replaced by a declared one, so only declared operators ever reach the AST.
+- When a filter has no explicit operator (`tag:invoice`), `defaultOperator` is used. It defaults to `=` and must be one of the declared operators, so that the inferred operator type never lies about what the parser can return. Dropping `=` from the operator set therefore makes `defaultOperator` required. This is also enforced at runtime, for untyped consumers: a default operator that was not declared, or that was itself rejected, is reported as an `invalid-operator` issue and replaced by a declared one, so only declared operators ever reach the AST. The single exception is an operator set in which every entry was rejected, as no declared operator is then left to fall back to: the built-in `=` is used, and reported.
 
 ```typescript
 // `tag:invoice` is treated as `tag:~invoice`
