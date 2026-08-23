@@ -85,6 +85,69 @@ describe('operators', () => {
         ]);
       });
 
+      test('discards a default operator that is not one of the declared operators, falling back to `=`', () => {
+        const { matcher, issues } = createOperatorMatcher({
+          operators: ['=', '~'],
+          defaultOperator: '>',
+        });
+
+        expect(matcher.defaultOperator).toBe('=');
+        expect(issues).toEqual([
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Default operator ">" is not one of the declared operators, "=" has been used instead',
+          },
+        ]);
+      });
+
+      test('discards a default operator that has itself been rejected', () => {
+        const { matcher, issues } = createOperatorMatcher({
+          operators: ['=', 'a b'],
+          defaultOperator: 'a b',
+        });
+
+        expect(matcher.defaultOperator).toBe('=');
+        expect(issues).toEqual([
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Operator "a b" cannot contain whitespaces, parentheses or quotes, it has been ignored',
+          },
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Default operator "a b" is not one of the declared operators, "=" has been used instead',
+          },
+        ]);
+      });
+
+      test('falls back to the first declared operator when `=` is not declared', () => {
+        const { matcher, issues } = createOperatorMatcher({
+          operators: ['~', '^'],
+          defaultOperator: '>',
+        });
+
+        expect(matcher.defaultOperator).toBe('~');
+        expect(issues).toEqual([
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Default operator ">" is not one of the declared operators, "~" has been used instead',
+          },
+        ]);
+      });
+
+      test('falls back to `=` when every declared operator has been rejected', () => {
+        const { matcher, issues } = createOperatorMatcher({
+          operators: ['a b'],
+          defaultOperator: 'a b',
+        });
+
+        expect(matcher.defaultOperator).toBe('=');
+        expect(issues).toHaveLength(2);
+      });
+
       test('silently ignores duplicated operators', () => {
         const { matcher, issues } = createOperatorMatcher({
           operators: ['=', '=', '~'],

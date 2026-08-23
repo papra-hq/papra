@@ -1,5 +1,6 @@
 import type { FilterExpression, Operator } from './parser.types';
 import { describe, expect, test } from 'vitest';
+import { ERROR_CODES } from './errors';
 import { DEFAULT_OPERATORS } from './operators';
 import { parseSearchQuery } from './parser';
 
@@ -26,15 +27,23 @@ describe('parser types', () => {
     }
   });
 
-  test('the default operator has to be one of the declared operators', () => {
-    const { expression } = parseSearchQuery({
+  test('the default operator has to be one of the declared operators, and is discarded at runtime otherwise', () => {
+    const { expression, issues } = parseSearchQuery({
       query: 'tag:invoice',
       operators: ['=', '~'],
       // @ts-expect-error `>` is not part of the declared operators
       defaultOperator: '>',
     });
 
-    expect(expression).toEqual({ type: 'filter', field: 'tag', operator: '>', value: 'invoice' });
+    // Untyped consumers can still reach this, so the undeclared default is discarded
+    expect(expression).toEqual({ type: 'filter', field: 'tag', operator: '=', value: 'invoice' });
+    expect(issues).toEqual([
+      {
+        code: ERROR_CODES.INVALID_OPERATOR,
+        message:
+          'Default operator ">" is not one of the declared operators, "=" has been used instead',
+      },
+    ]);
   });
 
   test('the built-in operators can be spread to extend them, rather than restated', () => {
