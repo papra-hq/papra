@@ -68,9 +68,11 @@ my invoice
 ### Filters
 
 ```
-tag:invoice                # Equality (same as tag:=invoice)
+tag:invoice                # No explicit operator, uses the default one (same as tag:=invoice)
 createdAt:>2024-01-01      # Comparison operators: >, <, >=, <=, =
 ```
+
+A filter without an explicit operator means equality, unless you change `defaultOperator`. Both the operator set and that default are configurable, see [Custom Operators](#custom-operators).
 
 ### Logical Operators
 
