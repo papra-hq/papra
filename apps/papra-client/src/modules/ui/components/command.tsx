@@ -39,7 +39,11 @@ export function CommandList(props: CommandListProps) {
 
   return (
     <CommandPrimitive.List
-      class={cn('max-h-[300px] overflow-y-auto overflow-x-hidden p-1', local.class)}
+      class={cn(
+        // Cap list height to the dynamic viewport so results stay scrollable above the soft keyboard
+        'max-h-[min(300px,calc(100dvh-10rem))] min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-1',
+        local.class,
+      )}
       {...rest}
     />
   );
@@ -101,12 +105,19 @@ export function CommandShortcut(props: ComponentProps<'span'>) {
   );
 }
 
-export function CommandDialog(props: CommandDialogProps) {
-  const [local, rest] = splitProps(props, ['children']);
+export function CommandDialog(props: CommandDialogProps & { class?: string }) {
+  const [local, rest] = splitProps(props, ['children', 'class']);
 
   return (
     <Dialog {...rest}>
-      <DialogContent class="overflow-hidden p-0">
+      <DialogContent
+        class={cn(
+          // Mobile: pin near the top so the soft keyboard does not cover the input/results.
+          // Desktop: keep the centered command-palette placement.
+          'overflow-hidden p-0 top-3 translate-y-0 max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] sm:top-[50%] sm:translate-y-[-50%] sm:max-h-[min(85vh,600px)] sm:w-full',
+          local.class,
+        )}
+      >
         <Command class="[&_[cmdk-group-heading]]:(px-2 font-medium text-muted-foreground) [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:(px-2 py-3) [&_[cmdk-item]_svg]:size-5">
           {local.children}
         </Command>
