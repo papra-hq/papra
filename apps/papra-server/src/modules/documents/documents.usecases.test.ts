@@ -77,7 +77,7 @@ describe('documents usecases', () => {
         id: 'doc_1',
         organizationId: 'organization-1',
         createdBy: 'user-1',
-        name: 'file.txt',
+        name: 'file',
         originalName: 'file.txt',
         originalSize: 13,
         originalStorageKey: 'organization-1/originals/doc_1.txt',
@@ -145,7 +145,7 @@ describe('documents usecases', () => {
         id: 'doc_1',
         organizationId: 'organization-1',
         createdBy: 'user-1',
-        name: 'file.txt',
+        name: 'file',
         originalName: 'file.txt',
         originalSha256Hash: '315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3',
       });
@@ -275,7 +275,7 @@ describe('documents usecases', () => {
       expect(documentRestored).to.deep.include({
         id: 'document-1',
         organizationId: 'organization-1',
-        name: 'file-2.txt',
+        name: 'file-2',
         originalName: 'file-2.txt',
         isDeleted: false,
         deletedBy: null,
@@ -554,7 +554,7 @@ describe('documents usecases', () => {
       expect(documentRecords.length).to.eql(1);
       expect(documentRecords[0]).to.deep.include({
         organizationId: 'organization-1',
-        name: 'file-2.txt',
+        name: 'file-2',
       });
 
       expect(result1).to.deep.include({
@@ -657,7 +657,7 @@ describe('documents usecases', () => {
         id: 'doc_1',
         organizationId: 'organization-1',
         createdBy: 'user-1',
-        name: 'file.txt',
+        name: 'file',
         originalName: 'file.txt',
         originalSize: 9,
         mimeType: 'text/plain',

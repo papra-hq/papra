@@ -245,12 +245,14 @@ async function restoreDocument({
   documentId,
   organizationId,
   name,
+  originalName,
   userId,
   db,
 }: {
   documentId: string;
   organizationId: string;
   name?: string;
+  originalName?: string;
   userId?: string;
   db: Database;
 }) {
@@ -260,7 +262,8 @@ async function restoreDocument({
       isDeleted: false,
       deletedBy: null,
       deletedAt: null,
-      ...(isDefined(name) ? { name, originalName: name } : {}),
+      ...(isDefined(name) ? { name } : {}),
+      ...(isDefined(originalName) ? { originalName } : {}),
       ...(isDefined(userId) ? { createdBy: userId } : {}),
     })
     .where(
