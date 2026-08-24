@@ -13,6 +13,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
+    "dev:demo": "VITE_IS_DEMO_MODE=true vite",
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
