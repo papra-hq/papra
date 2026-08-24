@@ -769,6 +769,68 @@ describe('organizations usecases', () => {
       ]);
     });
 
+    test('can invite a member if an invitation already exists but its status is not pending', async () => {
+      const { logger } = createTestLogger();
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            id: 'invitation-1',
+            organizationId: 'organization-1',
+            email: 'invited@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'accepted',
+            expiresAt: new Date('2025-12-31'),
+          },
+        ],
+      });
+
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const subscriptionsRepository = createSubscriptionsRepository({ db });
+      const config = overrideConfig({
+        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
+      });
+      const plansRepository = {
+        getOrganizationPlanById: async () => ({
+          organizationPlan: {
+            limits: {
+              maxOrganizationsMembersCount: 100,
+            },
+          },
+        }),
+      } as unknown as PlansRepository;
+
+      const emailsServices = {
+        sendEmail: async () => {},
+      } as unknown as EmailsServices;
+
+      const result = await inviteMemberToOrganization({
+        email: 'invited@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        organizationsRepository,
+        subscriptionsRepository,
+        plansRepository,
+        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
+        inviterId: 'user-1',
+        expirationDelayDays: 7,
+        maxInvitationsPerDay: 10,
+        logger,
+        emailsServices,
+        config,
+      });
+
+      assert(result.organizationInvitation);
+      expect(result.organizationInvitation.email).toBe('invited@example.com');
+      expect(result.organizationInvitation.status).toBe('pending');
+    });
+
     test('cannot invite new members when the organization has reached its maximum member count (including pending invitations) defined by the plan to enforce subscription limits', async () => {
       const { logger, getLogs } = createTestLogger();
       const { db } = await createInMemoryDatabase({
