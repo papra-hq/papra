@@ -744,7 +744,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Label verwijderen',
   'tags.delete.confirm.title': 'Label verwijderen',
   'tags.delete.confirm.message':
-    'Weet u zeker dat u dit label wilt verwijderen? Het verwijderen van een label verwijdert het van alle documenten.',
+    'Weet u zeker dat u het label "{{ name }}" wilt verwijderen? Het verwijderen van een label verwijdert het van alle documenten.',
   'tags.delete.confirm.confirm-button': 'Verwijderen',
   'tags.delete.confirm.cancel-button': 'Annuleren',
   'tags.delete.success': 'Label succesvol verwijderd',
