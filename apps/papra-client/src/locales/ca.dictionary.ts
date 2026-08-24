@@ -778,7 +778,7 @@ export const translations = {
   'tags.delete': "Suprimeix l'etiqueta",
   'tags.delete.confirm.title': "Suprimeix l'etiqueta",
   'tags.delete.confirm.message':
-    "Estàs segur que vols suprimir aquesta etiqueta? Suprimir-la l'eliminarà de tots els documents.",
+    'Estàs segur que vols suprimir l\'etiqueta "{{ name }}"? Suprimir-la l\'eliminarà de tots els documents.',
   'tags.delete.confirm.confirm-button': 'Suprimeix',
   'tags.delete.confirm.cancel-button': 'Cancel·la',
   'tags.delete.success': 'Etiqueta suprimida correctament',

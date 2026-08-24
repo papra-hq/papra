@@ -753,7 +753,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Eliminar etiqueta',
   'tags.delete.confirm.title': 'Eliminar etiqueta',
   'tags.delete.confirm.message':
-    'Tem a certeza de que quer eliminar esta etiqueta? Eliminar uma etiqueta irá removê-la de todos os documentos.',
+    'Tem a certeza de que quer eliminar a etiqueta "{{ name }}"? Eliminar uma etiqueta irá removê-la de todos os documentos.',
   'tags.delete.confirm.confirm-button': 'Eliminar',
   'tags.delete.confirm.cancel-button': 'Cancelar',
   'tags.delete.success': 'Etiqueta eliminada com sucesso',
