@@ -9,8 +9,8 @@ import { count, eq } from 'drizzle-orm';
 import { createIterator } from '../modules/app/database/database.usecases';
 import { parseConfig } from '../modules/config/config';
 import { documentsTable } from '../modules/documents/documents.table';
-import { createStorageKey } from '../modules/documents/storage/document-storage.usecases';
-import { createDocumentStorageService } from '../modules/documents/storage/documents.storage.services';
+import { createDocumentStorageKey } from '../modules/documents/document-storage.usecases';
+import { createStorageService } from '../modules/storage/storage.services';
 import { ensureBooleanArg } from './commons/args.utils';
 import { runScriptWithDb } from './commons/run-script';
 
@@ -35,11 +35,19 @@ export async function migrateDocumentStorage({
   const { config: fromConfig } = await parseConfig({ env: { ...process.env, ...fromEnv } });
   const { config: toConfig } = await parseConfig({ env: { ...process.env, ...toEnv } });
 
-  const fromStorageService = createDocumentStorageService({
-    documentStorageConfig: fromConfig.documentsStorage,
+  const fromStorageService = createStorageService({
+    storageConfig: fromConfig.documentsStorage,
+    encryptionOptions: {
+      isEncryptionEnabled: fromConfig.documentsStorage.encryption.isEncryptionEnabled,
+      keyEncryptionKeys: fromConfig.documentsStorage.encryption.documentKeyEncryptionKeys,
+    },
   });
-  const toStorageService = createDocumentStorageService({
-    documentStorageConfig: toConfig.documentsStorage,
+  const toStorageService = createStorageService({
+    storageConfig: toConfig.documentsStorage,
+    encryptionOptions: {
+      isEncryptionEnabled: toConfig.documentsStorage.encryption.isEncryptionEnabled,
+      keyEncryptionKeys: toConfig.documentsStorage.encryption.documentKeyEncryptionKeys,
+    },
   });
 
   prompts?.intro('Document Storage Migration');
@@ -118,7 +126,7 @@ export async function migrateDocumentStorage({
         fileEncryptionAlgorithm,
       });
 
-      const { storageKey: newStorageKey } = await createStorageKey({
+      const { storageKey: newStorageKey } = await createDocumentStorageKey({
         storagePatternConfig: toConfig.documentsStorage.pattern,
         documentId: id,
         organizationId,

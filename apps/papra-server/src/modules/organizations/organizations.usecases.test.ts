@@ -1,4 +1,4 @@
-import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
+import type { StorageService } from '../storage/storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
@@ -1390,7 +1390,7 @@ describe('organizations usecases', () => {
           deleteFile: async ({ storageKey }: { storageKey: string }) => {
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         await purgeExpiredSoftDeletedOrganization({
           organizationId: 'organization-1',
@@ -1506,7 +1506,7 @@ describe('organizations usecases', () => {
             }
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         await purgeExpiredSoftDeletedOrganization({
           organizationId: 'organization-1',
@@ -1563,7 +1563,7 @@ describe('organizations usecases', () => {
           deleteFile: async ({ storageKey }: { storageKey: string }) => {
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         await purgeExpiredSoftDeletedOrganization({
           organizationId: 'organization-1',
@@ -1614,7 +1614,7 @@ describe('organizations usecases', () => {
           deleteFile: async ({ storageKey }: { storageKey: string }) => {
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         await purgeExpiredSoftDeletedOrganization({
           organizationId: 'organization-1',
@@ -1706,7 +1706,7 @@ describe('organizations usecases', () => {
           deleteFile: async ({ storageKey }: { storageKey: string }) => {
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
@@ -1793,7 +1793,7 @@ describe('organizations usecases', () => {
             }
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
@@ -1848,7 +1848,7 @@ describe('organizations usecases', () => {
           deleteFile: async ({ storageKey }: { storageKey: string }) => {
             deletedFiles.push(storageKey);
           },
-        } as DocumentStorageService;
+        } as StorageService;
 
         const { purgedOrganizationCount } = await purgeExpiredSoftDeletedOrganizations({
           organizationsRepository,
