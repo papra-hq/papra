@@ -2,7 +2,7 @@ import type { Context as BaseContext, Hono } from 'hono';
 import type { ApiKey } from '../api-keys/api-keys.types';
 import type { Config } from '../config/config.types';
 import type { DocumentSearchServices } from '../documents/document-search/document-search.types';
-import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
+import type { StorageService } from '../storage/storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { KvStore } from '../kv-store/kv-store.types';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
@@ -38,7 +38,7 @@ export type GlobalDependencies = {
   subscriptionsServices: SubscriptionsServices;
   trackingServices: TrackingServices;
   taskServices: TaskServices;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   documentSearchServices: DocumentSearchServices;
   eventServices: EventServices;
   shutdownServices: ShutdownServices;

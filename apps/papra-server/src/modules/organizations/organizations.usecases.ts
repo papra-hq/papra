@@ -1,6 +1,6 @@
 import type { Config } from '../config/config.types';
 import type { DocumentsRepository } from '../documents/documents.repository';
-import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
+import type { StorageService } from '../storage/storage.services';
 import type { EmailsServices } from '../emails/emails.services';
 import type { PlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import type { PlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
@@ -653,7 +653,7 @@ export async function purgeExpiredSoftDeletedOrganization({
   organizationId: string;
   documentsRepository: DocumentsRepository;
   organizationsRepository: OrganizationsRepository;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   logger?: Logger;
   batchSize?: number;
 }) {
@@ -706,7 +706,7 @@ export async function purgeExpiredSoftDeletedOrganizations({
 }: {
   organizationsRepository: OrganizationsRepository;
   documentsRepository: DocumentsRepository;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   logger?: Logger;
   now?: Date;
 }) {

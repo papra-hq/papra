@@ -1,7 +1,7 @@
 import type { Database } from '../../app/database/database.types';
 import type { EventServices } from '../../app/events/events.services';
 import type { TaskServices } from '../../tasks/tasks.services';
-import type { DocumentStorageService } from '../storage/documents.storage.services';
+import type { StorageService } from '../../storage/storage.services';
 import { createTaggingRulesRepository } from '../../tagging-rules/tagging-rules.repository';
 import { createTagsRepository } from '../../tags/tags.repository';
 import { createDocumentsRepository } from '../documents.repository';
@@ -18,7 +18,7 @@ export async function registerExtractDocumentFileContentTask({
 }: {
   taskServices: TaskServices;
   db: Database;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   eventServices: EventServices;
   config: Config;
 }) {

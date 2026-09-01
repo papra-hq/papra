@@ -3,7 +3,7 @@ import type { Database } from '../app/database/database.types';
 import type { EventServices } from '../app/events/events.services';
 import type { Config } from '../config/config.types';
 import type { CreateDocumentUsecase } from '../documents/documents.usecases';
-import type { DocumentStorageService } from '../documents/storage/documents.storage.services';
+import type { StorageService } from '../storage/storage.services';
 import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { FsServices } from '../shared/fs/fs.services';
 import type { Logger } from '../shared/logger/logger';
@@ -44,7 +44,7 @@ export function createIngestionFolderWatcher({
   logger?: Logger;
   db: Database;
   taskServices: TaskServices;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   eventServices: EventServices;
 }) {
   const {

@@ -13,7 +13,7 @@ import { getProcessMode } from './modules/app/process.models';
 import { createServer } from './modules/app/server';
 import { parseConfig } from './modules/config/config';
 import { createDocumentSearchServices } from './modules/documents/document-search/document-search.registry';
-import { createDocumentStorageService } from './modules/documents/storage/documents.storage.services';
+import { createStorageService } from './modules/storage/storage.services';
 import { createEmailsServices } from './modules/emails/emails.services';
 import { createIngestionFolderWatcher } from './modules/ingestion-folders/ingestion-folders.usecases';
 import { buildKvStore } from './modules/kv-store/kv-store';
@@ -60,8 +60,12 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
   await ensureLocalDatabaseDirectoryExists({ config });
   const { db } = setupDatabase({ ...config.database, shutdownServices });
 
-  const documentsStorageService = createDocumentStorageService({
-    documentStorageConfig: config.documentsStorage,
+  const documentsStorageService = createStorageService({
+    storageConfig: config.documentsStorage,
+    encryptionOptions: {
+      isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+      keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+    },
   });
   const taskServices = createTaskServices({ config });
   const trackingServices = createTrackingServices({ config, shutdownServices });

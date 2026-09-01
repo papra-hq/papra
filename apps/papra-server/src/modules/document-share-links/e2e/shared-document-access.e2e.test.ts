@@ -3,7 +3,7 @@ import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
 import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
-import { createInMemoryDocumentStorageServices } from '../../documents/storage/documents.storage.services.test-utils';
+import { createInMemoryStorageService } from '../../storage/storage.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { createReadableStream } from '../../shared/streams/readable-stream';
 
@@ -45,7 +45,7 @@ async function createTestApp() {
     ],
   });
 
-  const documentsStorageService = createInMemoryDocumentStorageServices();
+  const documentsStorageService = createInMemoryStorageService();
 
   await documentsStorageService.saveFile({
     fileName: document.name,

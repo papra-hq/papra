@@ -2,7 +2,7 @@ import type { GlobalDependencies } from './server.types';
 
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentSearchServices } from '../documents/document-search/document-search.registry';
-import { createDocumentStorageService } from '../documents/storage/documents.storage.services';
+import { createStorageService } from '../storage/storage.services';
 import { createEmailsServices } from '../emails/emails.services';
 import { createInMemoryKvStoreDriver } from '../kv-store/drivers/in-memory/in-memory.kv-store-driver';
 import { createKvStore } from '../kv-store/kv-store';
@@ -33,7 +33,13 @@ export function createTestServerDependencies(
 
   const documentsStorageService =
     overrides.documentsStorageService ??
-    createDocumentStorageService({ documentStorageConfig: config.documentsStorage });
+    createStorageService({
+      storageConfig: config.documentsStorage,
+      encryptionOptions: {
+        isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+        keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+      },
+    });
   const taskServices = overrides.taskServices ?? createInMemoryTaskServices();
   const trackingServices = overrides.trackingServices ?? createDummyTrackingServices();
   const eventServices = overrides.eventServices ?? createEventServices();

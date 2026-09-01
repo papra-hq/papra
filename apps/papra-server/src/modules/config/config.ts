@@ -11,7 +11,10 @@ import { customPropertiesConfig } from '../custom-properties/custom-properties.c
 import { documentShareLinksConfig } from '../document-share-links/document-share-links.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
-import { documentStorageConfig } from '../documents/storage/document-storage.config';
+import { documentEncryptionConfig } from '../documents/document-encryption.config';
+import { documentMaxUploadSizeConfig } from '../documents/document-storage.config';
+import { storagePatternConfig as documentStoragePatternConfig } from '../documents/storage-patterns/storage-pattern.config';
+import { createStorageConfig } from '../storage/storage.config';
 import { emailsConfig } from '../emails/emails.config';
 import { ingestionFolderConfig } from '../ingestion-folders/ingestion-folders.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
@@ -41,6 +44,16 @@ import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.c
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
+
+const documentsStorageConfig = {
+  ...createStorageConfig({
+    envPrefix: 'DOCUMENT_STORAGE',
+    defaultFilesystemRoot: './local-documents',
+  }),
+  maxUploadSize: documentMaxUploadSizeConfig,
+  encryption: documentEncryptionConfig,
+  pattern: documentStoragePatternConfig,
+};
 
 export const configDefinition = {
   env: {
@@ -159,7 +172,7 @@ export const configDefinition = {
 
   database: databaseConfig,
   documents: documentsConfig,
-  documentsStorage: documentStorageConfig,
+  documentsStorage: documentsStorageConfig,
   documentContentExtraction: documentContentExtractionConfig,
   documentSearch: documentSearchConfig,
   auth: authConfig,
