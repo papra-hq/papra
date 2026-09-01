@@ -6,7 +6,9 @@ slug: resources/api-endpoints
 
 ## Authentication
 
-The public API uses a bearer token for authentication. You can get a token by logging to your Papra account and creating an API token.
+The public API uses a bearer token for authentication. You can get a token by logging in to your Papra account and creating an API token.
+
+API keys can be used with the endpoints below where a required permission is listed. A request must be made by a member of the target organization.
 
 <details>
 
@@ -141,7 +143,6 @@ Create a new document in the organization.
 - Required API key permissions: `documents:create`
 - Body (form-data)
   - `file`: The file to upload.
-  - `ocrLanguages`: (optional) The languages to use for OCR.
 - Response (JSON)
   - `document`: The created document.
 
@@ -193,7 +194,8 @@ Get a document by its ID.
 Delete a document by its ID.
 
 - Required API key permissions: `documents:delete`
-- Response: empty (204 status code)
+- Response (JSON)
+  - `success`: `true` when the document was moved to the trash.
 
 ### Get a document file
 
@@ -215,19 +217,65 @@ Get the statistics (number of documents and total size) of the documents in the 
   - `organizationStats`: The organization documents statistics.
     - `documentsCount`: The total number of documents.
     - `documentsSize`: The total size of the documents.
+    - `deletedDocumentsCount`: The number of documents in the trash.
+    - `deletedDocumentsSize`: The total size of documents in the trash.
+    - `totalDocumentsCount`: The total number of documents, including the trash.
+    - `totalDocumentsSize`: The total size of all documents, including the trash.
 
 ### Update a document
 
 **PATCH** `/api/organizations/:organizationId/documents/:documentId`
 
-Change the name or content (for search purposes) of a document.
+Change the name, content, document date or notes of a document.
 
 - Required API key permissions: `documents:update`
 - Body (JSON)
   - `name`: (optional) The document name.
   - `content`: (optional) The document content.
+  - `documentDate`: (optional) The document date as an ISO 8601 date string, or `null` to clear it.
+  - `notes`: (optional) Notes for the document (maximum 2048 characters).
 - Response (JSON)
   - `document`: The updated document.
+
+### Move documents to the trash in bulk
+
+**POST** `/api/organizations/:organizationId/documents/batch/trash`
+
+Move multiple documents to the trash. The request can target documents by ID or by a search query.
+
+- Required API key permissions: `documents:delete`
+- Body (JSON)
+  - `filter`: One of the following:
+    - `documentIds`: A non-empty list of document IDs (maximum 1000 documents).
+    - `query`: A search query used to select documents.
+- Response: empty (204 status code)
+
+Example:
+
+```json
+{
+  "filter": {
+    "documentIds": ["doc_..."]
+  }
+}
+```
+
+### Add or remove tags from documents in bulk
+
+**POST** `/api/organizations/:organizationId/documents/batch/tags`
+
+Add and/or remove tags from multiple documents. Documents can be targeted by ID or by a search query.
+
+- Required API key permissions: `documents:update` and `tags:read`
+- Body (JSON)
+  - `filter`: One of the following:
+    - `documentIds`: A non-empty list of document IDs (maximum 1000 documents).
+    - `query`: A search query used to select documents.
+  - `addTagIds`: (optional) Tag IDs to add.
+  - `removeTagIds`: (optional) Tag IDs to remove.
+- Response: empty (204 status code)
+
+At least one of `addTagIds` or `removeTagIds` must contain a tag ID. A tag ID cannot appear in both lists.
 
 ### Get document activity
 
@@ -249,7 +297,7 @@ Get the activity log of a document.
 Create a new tag in the organization.
 
 - Required API key permissions: `tags:create`
-- Body (form-data)
+- Body (JSON)
   - `name`: The tag name.
   - `color`: The tag color in hex format (e.g. `#000000`).
   - `description`: (optional) The tag description.
@@ -273,7 +321,7 @@ List all tags in the organization.
 Change the name, color or description of a tag.
 
 - Required API key permissions: `tags:update`
-- Body
+- Body (JSON)
   - `name`: (optional) The tag name.
   - `color`: (optional) The tag color in hex format (e.g. `#000000`).
   - `description`: (optional) The tag description.
@@ -296,7 +344,7 @@ Delete a tag by its ID.
 Associate a tag to a document.
 
 - Required API key permissions: `tags:read` and `documents:update`
-- Body
+- Body (JSON)
   - `tagId`: The tag ID.
 - Response: empty (204 status code)
 
@@ -363,7 +411,7 @@ Change the name, description or select options of a custom property definition.
 The property type cannot be changed after creation.
 
 - Required API key permissions: `custom-properties:update`
-- Body
+- Body (JSON)
   - `name`: (optional) The custom property name.
   - `description`: (optional) The custom property description.
   - `options`: (optional, only valid for type `select` and `multi_select`): list of options
@@ -398,7 +446,7 @@ List all currently set custom properties of a document with their respective val
 Sets the value of a custom property on a document.
 
 - Required API key permissions: `custom-properties:read` and `documents:update`
-- Body
+- Body (JSON)
   - `value`: The new value - for `select`, `user_relation` and `document_relation` properties this is the select option / user / document ID, for `multi_select` properties this is a list of select option IDs
 - Response: empty (204 status code)
 
