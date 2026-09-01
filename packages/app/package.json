@@ -2,7 +2,7 @@
   "name": "@papra/app",
   "version": "26.6.2",
   "private": true,
-  "description": "Papra application package - document management system (CalVer versioned).",
+  "description": "Papra application package - document management system with year-based versioning.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
