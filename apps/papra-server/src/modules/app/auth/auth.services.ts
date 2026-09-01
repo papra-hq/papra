@@ -45,6 +45,7 @@ export function getAuth({
     },
     emailAndPassword: {
       enabled: config.auth.providers.email.isEnabled,
+      disableSignUp: !config.auth.isRegistrationEnabled,
       revokeSessionsOnPasswordReset: true,
       requireEmailVerification: config.auth.isEmailVerificationRequired,
       sendResetPassword: config.auth.isPasswordResetEnabled
