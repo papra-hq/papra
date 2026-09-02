@@ -1,12 +1,29 @@
 import type { DeepPartial } from '@corentinth/chisels';
 import type { Logger } from '@crowlog/logger';
+import type { IntakeEmailsServices } from '../intake-emails/drivers/intake-emails.drivers.models';
 import type { Config } from './config.types';
 import process from 'node:process';
 import { safelySync } from '@corentinth/chisels';
 import { pick } from '../shared/objects';
 
-export function getPublicConfig({ config }: { config: Config }) {
-  const publicConfig: DeepPartial<Config> = {
+type PublicConfig = Omit<DeepPartial<Config>, 'intakeEmails'> & {
+  intakeEmails: {
+    isEnabled: boolean;
+    address: {
+      canCustomizeUsername: boolean;
+      domains: string[];
+    };
+  };
+};
+
+export function getPublicConfig({
+  config,
+  intakeEmailsServices,
+}: {
+  config: Config;
+  intakeEmailsServices: Pick<IntakeEmailsServices, 'getDomains'>;
+}) {
+  const publicConfig: PublicConfig = {
     version: config.version,
     gitCommitSha: config.gitCommitSha,
     gitCommitDate: config.gitCommitDate,
@@ -26,7 +43,13 @@ export function getPublicConfig({ config }: { config: Config }) {
       },
     },
     documents: { deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays },
-    intakeEmails: { isEnabled: config.intakeEmails.isEnabled },
+    intakeEmails: {
+      isEnabled: config.intakeEmails.isEnabled,
+      address: {
+        canCustomizeUsername: config.intakeEmails.username.canCustomize,
+        domains: intakeEmailsServices.getDomains(),
+      },
+    },
     organizations: {
       deletedOrganizationsPurgeDaysDelay: config.organizations.deletedOrganizationsPurgeDaysDelay,
     },

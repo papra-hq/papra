@@ -1,10 +1,17 @@
 import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
+import { booleanishSchema } from '../../config/config.schemas';
 import { intakeEmailUsernameDrivers } from './intake-email-username.drivers';
 import { patternIntakeEmailDriverConfig } from './pattern/pattern.intake-email-username-driver.config';
 import { RANDOM_INTAKE_EMAIL_ADDRESSES_DRIVER_NAME } from './random/random.intake-email-username-driver';
 
 export const intakeEmailUsernameConfig = {
+  canCustomize: {
+    doc: 'Whether users can customize intake email usernames',
+    schema: booleanishSchema,
+    default: false,
+    env: 'INTAKE_EMAILS_USERNAME_CUSTOMIZATION_IS_ENABLED',
+  },
   driver: {
     doc: `The driver to use when generating email addresses for intake emails, value can be one of: ${Object.keys(
       intakeEmailUsernameDrivers,

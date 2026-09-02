@@ -10,6 +10,7 @@ export const catchAllIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
 
   return {
     name: CATCH_ALL_INTAKE_EMAIL_DRIVER_NAME,
+    getDomains: () => [domain],
     createEmailAddress: async ({ username }) => {
       const emailAddress = buildEmailAddress({ username, domain });
 

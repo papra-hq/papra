@@ -72,6 +72,10 @@ export const buildTimeConfig = {
   },
   intakeEmails: {
     isEnabled: asBoolean(import.meta.env.VITE_INTAKE_EMAILS_IS_ENABLED, false),
+    address: {
+      canCustomizeUsername: false as boolean,
+      domains: [] as string[],
+    },
   },
   isSubscriptionsEnabled: asBoolean(import.meta.env.VITE_IS_SUBSCRIPTIONS_ENABLED, false),
   autoTagging: {
