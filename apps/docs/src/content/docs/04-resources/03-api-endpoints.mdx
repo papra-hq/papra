@@ -8,7 +8,7 @@ slug: resources/api-endpoints
 
 The public API uses a bearer token for authentication. You can get a token by logging in to your Papra account and creating an API token.
 
-API keys can be used with the endpoints below where a required permission is listed. A request must be made by a member of the target organization.
+API keys can be used with the endpoints below where a required permission is listed. For endpoints targeting a specific organization with an `organizationId`, the request must be made by a member of that organization. Organization-listing endpoints, such as `GET /api/organizations`, can be used with the appropriate permission without requiring membership in a single target organization.
 
 <details>
 
