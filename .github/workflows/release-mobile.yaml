@@ -1,0 +1,185 @@
+name: Build and publish Android application
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Mobile version to release (e.g. 1.0.2)'
+        required: true
+        type: string
+
+concurrency:
+  group: mobile-release-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  android-build:
+    name: Build Android APK and AAB
+    if: github.repository == 'papra-hq/papra'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ format('@papra/mobile@{0}', inputs.version) }}
+          persist-credentials: false
+
+      - name: Validate release ref
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$RELEASE_VERSION" || "$RELEASE_VERSION" == *[!0-9A-Za-z.+-]* ]]; then
+            echo "Invalid release version: $RELEASE_VERSION" >&2
+            exit 1
+          fi
+
+          PACKAGE_VERSION=$(node -p "require('./apps/mobile/package.json').version")
+          if [[ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]]; then
+            echo "The checked-out package version ($PACKAGE_VERSION) does not match the requested version ($RELEASE_VERSION)." >&2
+            exit 1
+          fi
+
+          TAG="@papra/mobile@$RELEASE_VERSION"
+          TAG_COMMIT=$(git rev-parse "${TAG}^{commit}")
+          HEAD_COMMIT=$(git rev-parse HEAD)
+          if [[ "$TAG_COMMIT" != "$HEAD_COMMIT" ]]; then
+            echo "The checked-out commit does not match $TAG." >&2
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 26
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Expo authentication
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [[ -z "$EXPO_TOKEN" ]]; then
+            echo "The EXPO_TOKEN repository secret is not configured." >&2
+            exit 1
+          fi
+
+      # Build the Play Store archive first so EAS increments the remote Android
+      # versionCode once. The APK profile then reuses that versionCode.
+      - name: Build Play Store AAB
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          pnpm exec eas build \
+            --platform android \
+            --profile production \
+            --non-interactive \
+            --freeze-credentials \
+            --wait \
+            --json > "$RUNNER_TEMP/production-build.json"
+
+      - name: Download Play Store AAB
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          ARTIFACT_URL=$(jq -er '(if type == "array" then .[0] else . end).artifacts.buildUrl | select(type == "string" and startswith("https://"))' "$RUNNER_TEMP/production-build.json")
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors \
+            "$ARTIFACT_URL" \
+            --output "dist/papra-$RELEASE_VERSION-android.aab"
+
+      - name: Build installable APK
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          pnpm exec eas build \
+            --platform android \
+            --profile release-apk \
+            --non-interactive \
+            --freeze-credentials \
+            --wait \
+            --json > "$RUNNER_TEMP/apk-build.json"
+
+      - name: Download and verify Android artifacts
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          ARTIFACT_URL=$(jq -er '(if type == "array" then .[0] else . end).artifacts.buildUrl | select(type == "string" and startswith("https://"))' "$RUNNER_TEMP/apk-build.json")
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors \
+            "$ARTIFACT_URL" \
+            --output "dist/papra-$RELEASE_VERSION-android.apk"
+
+          AAB="dist/papra-$RELEASE_VERSION-android.aab"
+          APK="dist/papra-$RELEASE_VERSION-android.apk"
+          test -s "$AAB"
+          test -s "$APK"
+          unzip -tq "$AAB"
+          unzip -tq "$APK"
+          unzip -Z1 "$AAB" 'base/manifest/AndroidManifest.xml' | grep -Fx 'base/manifest/AndroidManifest.xml'
+          unzip -Z1 "$APK" 'AndroidManifest.xml' | grep -Fx 'AndroidManifest.xml'
+
+          (
+            cd dist
+            sha256sum \
+              "papra-$RELEASE_VERSION-android.apk" \
+              "papra-$RELEASE_VERSION-android.aab" > SHA256SUMS
+          )
+
+      - name: Stage Android artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: android-release-${{ inputs.version }}
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  github-release:
+    name: Publish Android artifacts
+    needs: android-build
+    if: github.repository == 'papra-hq/papra'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download Android artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: android-release-${{ inputs.version }}
+          path: dist
+
+      - name: Verify Android artifacts
+        working-directory: dist
+        run: sha256sum --check SHA256SUMS
+
+      - name: Upload artifacts to the existing GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="@papra/mobile@$RELEASE_VERSION"
+
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            echo "GitHub release $TAG does not exist; refusing to create it." >&2
+            exit 1
+          fi
+
+          gh release upload "$TAG" \
+            "dist/papra-$RELEASE_VERSION-android.apk" \
+            "dist/papra-$RELEASE_VERSION-android.aab" \
+            dist/SHA256SUMS \
+            --clobber
