@@ -17,12 +17,12 @@ export async function pingServer({
   url: string;
   headers?: Record<string, string>;
 }): Promise<true> {
-  const response = await httpClient<{ status: 'ok' | 'error' }>({
+  const response = await httpClient<{ status: 'ok' }>({
     url: `/api/ping`,
     baseUrl: url,
     headers,
   })
-    .then(() => true)
+    .then(({ status }) => status === 'ok')
     .catch(() => false);
 
   if (!response) {
