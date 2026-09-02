@@ -20,4 +20,8 @@ export const organizationSettingsTable = sqliteTable('organization_settings', {
   }),
   aiAutoTaggingMaxTags: integer('ai_auto_tagging_max_tags'),
   aiAutoTaggingModelId: text('ai_auto_tagging_model_id'),
+
+  // AI auto-naming settings
+  aiAutoNamingEnabled: integer('ai_auto_naming_enabled', { mode: 'boolean' }),
+  aiAutoNamingModelId: text('ai_auto_naming_model_id'),
 });
