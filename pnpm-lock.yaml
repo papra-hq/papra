@@ -452,7 +452,7 @@ importers:
         version: 2.2.2
       '@hono/node-server':
         specifier: ^2.0.2
-        version: 2.0.10(hono@4.12.27)
+        version: 2.0.10(hono@4.12.34)
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -521,7 +521,7 @@ importers:
         version: 7.0.1
       hono:
         specifier: ^4.12.18
-        version: 4.12.27
+        version: 4.12.34
       mime-types:
         specifier: ^3.0.1
         version: 3.0.2
@@ -7107,6 +7107,10 @@ packages:
 
   hono@4.12.27:
     resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
+    engines: {node: '>=16.9.0'}
+
+  hono@4.12.34:
+    resolution: {integrity: sha512-GqXJqY/xJkJmuloTrnV1ZEXG3fqte+VjkUqoRNZXcrUidiUOP4fMSIHHY4tsqZBK++kVyWmt/AAfSUuy57/eSA==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.1:
@@ -14126,6 +14130,10 @@ snapshots:
     dependencies:
       hono: 4.12.27
 
+  '@hono/node-server@2.0.10(hono@4.12.34)':
+    dependencies:
+      hono: 4.12.34
+
   '@iconify-json/tabler@1.2.35':
     dependencies:
       '@iconify/types': 2.0.0
@@ -19597,6 +19605,8 @@ snapshots:
       react-is: 16.13.1
 
   hono@4.12.27: {}
+
+  hono@4.12.34: {}
 
   hookable@6.1.1: {}
 
