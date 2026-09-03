@@ -119,7 +119,7 @@ importers:
         version: 0.5.2(@astrojs/starlight@0.41.1(astro@7.1.0(@azure/storage-blob@12.27.0(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(idb-keyval@6.2.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.3))(supports-color@10.2.2)(typescript@6.0.3))
       tailwind-merge:
         specifier: ^2.6.0
-        version: 2.6.0
+        version: 2.6.1
       unocss-preset-animations:
         specifier: 'catalog:'
         version: 1.3.0(@unocss/preset-wind3@66.6.0)(unocss@66.6.0(postcss@8.5.15)(supports-color@8.1.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.3)))
@@ -367,7 +367,7 @@ importers:
         version: 0.2.8(solid-js@1.9.13)
       tailwind-merge:
         specifier: ^2.6.0
-        version: 2.6.0
+        version: 2.6.1
       unocss-preset-animations:
         specifier: 'catalog:'
         version: 1.3.0(@unocss/preset-wind3@66.6.0)(unocss@66.6.0(postcss@8.5.15)(supports-color@10.2.2)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.9.0)))
@@ -663,7 +663,7 @@ importers:
         version: 2.1.1
       tailwind-merge:
         specifier: ^2.6.0
-        version: 2.6.0
+        version: 2.6.1
     devDependencies:
       '@astrojs/mdx':
         specifier: 7.0.0
@@ -9543,8 +9543,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@2.6.1:
+    resolution: {integrity: sha512-Oo6tHdpZsGpkKG88HJ8RR1rg/RdnEkQEfMoEk2x1XRI3F1AxeU+ijRXpiVUF4UbLfcxxRGw6TbUINKYdWVsQTQ==}
 
   tar-fs@2.1.2:
     resolution: {integrity: sha512-EsaAXwxmx8UB7FRKqeozqEPop69DXcmYwTQwXvyAPF352HJsPdkVhvTaDPYqfNgruveJIJy3TA2l+2zj8LJIJA==}
@@ -23030,7 +23030,7 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.6.0
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@2.6.1: {}
 
   tar-fs@2.1.2:
     dependencies:
