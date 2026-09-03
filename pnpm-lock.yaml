@@ -718,7 +718,7 @@ importers:
     dependencies:
       '@clack/prompts':
         specifier: ^1.0.0-alpha.6
-        version: 1.0.0-alpha.6
+        version: 1.7.0
       '@corentinth/chisels':
         specifier: 'catalog:'
         version: 2.1.0
