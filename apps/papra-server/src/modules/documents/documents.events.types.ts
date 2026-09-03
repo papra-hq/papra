@@ -13,6 +13,12 @@ export type DocumentEvents = {
       notes?: string;
     };
   };
+  'document.moved': {
+    userId?: string;
+    document: Document;
+    sourceOrganizationId: string;
+    targetOrganizationId: string;
+  };
   'document.deleted': { documentId: string; organizationId: string }; // Hard deleted from trash
   // Tags added to and/or removed from one or more documents in a single operation.
   // Pairs only include changes that actually happened (idempotent no-ops are excluded).
