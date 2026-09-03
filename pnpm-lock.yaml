@@ -518,7 +518,7 @@ importers:
         version: 21.3.4(supports-color@10.2.2)
       filenamify:
         specifier: ^7.0.1
-        version: 7.0.1
+        version: 7.0.3
       hono:
         specifier: ^4.12.18
         version: 4.12.27
@@ -6797,8 +6797,16 @@ packages:
     resolution: {integrity: sha512-9ZT504KxEQDamsOogZImAWGEN24R1uFAxU3ZS4AZqn2ooidmN68Olh7n4/RcA4lLatZztjA0ZSuxeLHVoCc8JA==}
     engines: {node: '>=20'}
 
+  filename-reserved-regex@4.0.1:
+    resolution: {integrity: sha512-qUet2faQFKvtvVUsEf7wCrTURwxBOIZpspsLHGifw9QCWk55ITE2FrG8XhfQqG/uxMA1xEGFVQbL+Yfm0O94+Q==}
+    engines: {node: '>=20'}
+
   filenamify@7.0.1:
     resolution: {integrity: sha512-9b4rfnaX2MkJCgp27wypV6DAMvj4WMOSgJ+TdcpJIO84Dql+Cv6iJjdG4XDTLubOWkfNiBv3joO59sau/TXw+Q==}
+    engines: {node: '>=20'}
+
+  filenamify@7.0.3:
+    resolution: {integrity: sha512-Pf0dwHrWs1GcIK15ps304fmxp2AOcfNR6vOIMvCPEy6ZztKYxzRQHlOuPVWo2HRjbCLHaRTY+kD8n3RbQ0A/fw==}
     engines: {node: '>=20'}
 
   fill-range@7.1.1:
@@ -19120,9 +19128,15 @@ snapshots:
 
   filename-reserved-regex@4.0.0: {}
 
+  filename-reserved-regex@4.0.1: {}
+
   filenamify@7.0.1:
     dependencies:
       filename-reserved-regex: 4.0.0
+
+  filenamify@7.0.3:
+    dependencies:
+      filename-reserved-regex: 4.0.1
 
   fill-range@7.1.1:
     dependencies:
