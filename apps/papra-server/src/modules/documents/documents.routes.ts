@@ -56,6 +56,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupDeleteDocumentRoute(context);
   setupGetDocumentFileRoute(context);
   setupUpdateDocumentRoute(context);
+  setupReprocessDocumentRoute(context);
 }
 
 function setupCreateDocumentRoute({ app, ...deps }: RouteDefinitionContext) {
@@ -482,6 +483,45 @@ function setupDeleteAllTrashDocumentsRoute({
       });
 
       return context.body(null, 204);
+    },
+  );
+}
+
+function setupReprocessDocumentRoute({
+  app,
+  db,
+  config,
+  taskServices,
+}: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/documents/:documentId/reprocess',
+    requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await ensureDocumentExists({ documentId, organizationId, documentsRepository });
+
+      await taskServices.scheduleJob({
+        taskName: 'extract-document-file-content',
+        data: {
+          documentId,
+          organizationId,
+          ocrLanguages: config.documents.ocrLanguages,
+        },
+      });
+
+      return context.json({ success: true });
     },
   );
 }

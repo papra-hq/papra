@@ -420,6 +420,9 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.actions.cancel': 'Annuler',
   'documents.actions.save': 'Enregistrer',
   'documents.actions.saving': 'Enregistrement...',
+  'documents.actions.recalculate-ocr': 'Recalculer OCR',
+  'documents.actions.recalculate-ocr-success': 'Recalcul OCR lancé',
+  'documents.actions.recalculate-ocr-error': 'Échec du recalcul OCR',
   'documents.content.alert':
     "Le contenu du document est automatiquement extrait du document lors de l'import. Il est uniquement utilisé pour la recherche et l'indexation.",
   'documents.content.empty-placeholder':
