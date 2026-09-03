@@ -10,7 +10,7 @@ catalog:
   '@vitest/coverage-v8': ^4.0.3
   better-auth: 1.6.11
   p-limit: ^7.3.0
-  sharp: ^0.34.5
+  sharp: ^0.35.0
   tsdown: ^0.22.3
   tsx: ^4.20.6
   typescript: ^6.0.3
