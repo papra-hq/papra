@@ -229,6 +229,16 @@ Change the name or content (for search purposes) of a document.
 - Response (JSON)
   - `document`: The updated document.
 
+### Trigger document content extraction
+
+**POST** `/api/organizations/:organizationId/documents/:documentId/extract-content`
+
+Enqueue a background task to extract text from the document file and save it as the document content. This endpoint returns immediately with a task ID, and the processing happens asynchronously in the background.
+
+- Required API key permissions: `documents:update`
+- Response (JSON, HTTP 202)
+  - `taskId`: The ID of the background task.
+
 ### Get document activity
 
 **GET** `/api/organizations/:organizationId/documents/:documentId/activity`
