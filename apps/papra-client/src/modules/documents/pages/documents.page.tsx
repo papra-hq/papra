@@ -1,11 +1,13 @@
 import type { RowSelectionState, SortingState } from '@tanstack/solid-table';
 import type { Component, Setter } from 'solid-js';
+import type { DocumentColumnOption } from '../components/documents-list.component';
 import type { BatchTargetFilter } from '../documents-batch.services';
 import type { DocumentSearchSortField, DocumentSearchSortOrder } from '../documents.constants';
 import { useParams } from '@solidjs/router';
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/solid-query';
 import { createEffect, createMemo, createSignal, on, Show, Suspense } from 'solid-js';
 import { CreateDocumentViewModal } from '@/modules/document-views/components/document-view-modals';
+import { getCustomPropertyDefinitionsQueryOptions } from '@/modules/custom-properties/custom-properties.queries';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { useConfirmModal } from '@/modules/shared/confirm';
 import { createParamSynchronizedPagination } from '@/modules/shared/pagination/query-synchronized-pagination';
@@ -17,10 +19,12 @@ import { useDebounce } from '@/modules/shared/utils/timing';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { TextField, TextFieldRoot } from '@/modules/ui/components/textfield';
+import { DocumentColumnsPicker } from '../components/document-columns-picker.component';
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import {
   createdAtColumn,
+  createDocumentCustomPropertyColumnOptions,
   documentDateColumn,
   DocumentsPaginatedList,
   standardActionsColumn,
@@ -33,6 +37,8 @@ import {
   DOCUMENT_SEARCH_SORT_FIELDS,
   DOCUMENT_SEARCH_SORT_ORDERS,
 } from '../documents.constants';
+import { getSelectedDocumentColumns } from '../document-columns.models';
+import { createDocumentColumnPreferences } from '../document-columns.preferences';
 import { fetchOrganizationDocuments } from '../documents.services';
 
 export const DocumentsPage: Component = () => {
@@ -48,6 +54,8 @@ export const DocumentsPage: Component = () => {
   const [getRowSelection, setInternalRowSelection] = createSignal<RowSelectionState>({});
   const [getSelectAllMatchingQuery, setSelectAllMatchingQuery] = createSignal(false);
   const [getTagDialogOpen, setTagDialogOpen] = createSignal(false);
+  const [getSelectedDocumentColumnIds, setSelectedDocumentColumnIds] =
+    createDocumentColumnPreferences({ getOrganizationId: () => params.organizationId });
 
   const [getSortField, setSortField] = createParamSynchronizedSignal<DocumentSearchSortField>({
     paramKey: 'sortField',
@@ -101,6 +109,41 @@ export const DocumentsPage: Component = () => {
       }),
     placeholderData: keepPreviousData,
   }));
+
+  const customPropertyDefinitionsQuery = useQuery(() =>
+    getCustomPropertyDefinitionsQueryOptions({ organizationId: params.organizationId }),
+  );
+  // Reading uncached query data would suspend the entire document list.
+  const getCustomPropertyDefinitions = () =>
+    customPropertyDefinitionsQuery.dataUpdatedAt > 0
+      ? (customPropertyDefinitionsQuery.data?.propertyDefinitions ?? [])
+      : [];
+  const getDocumentColumnOptions = createMemo<DocumentColumnOption[]>(() => [
+    {
+      id: 'tags',
+      label: t('documents.list.table.headers.tags'),
+      column: tagsColumn,
+    },
+    {
+      id: 'documentDate',
+      label: t('documents.list.table.headers.document-date'),
+      column: documentDateColumn,
+    },
+    {
+      id: 'createdAt',
+      label: t('documents.list.table.headers.created'),
+      column: createdAtColumn,
+    },
+    ...createDocumentCustomPropertyColumnOptions({
+      propertyDefinitions: getCustomPropertyDefinitions(),
+    }),
+  ]);
+  const getVisibleDocumentColumns = createMemo(() =>
+    getSelectedDocumentColumns({
+      columns: getDocumentColumnOptions(),
+      selectedColumnIds: getSelectedDocumentColumnIds(),
+    }).map(({ column }) => column),
+  );
 
   const setRowSelection: Setter<RowSelectionState> = (valueOrUpdater) => {
     setSelectAllMatchingQuery(false);
@@ -277,7 +320,7 @@ export const DocumentsPage: Component = () => {
           <>
             <h2 class="text-xl font-bold mb-4">{t('documents.list.title')}</h2>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
               <div class="flex items-center max-w-md flex-1">
                 <TextFieldRoot class="flex-1">
                   <TextField
@@ -309,6 +352,16 @@ export const DocumentsPage: Component = () => {
                   </Button>
                 </Show>
               </div>
+
+              <DocumentColumnsPicker
+                columns={getDocumentColumnOptions()}
+                selectedColumnIds={getSelectedDocumentColumnIds()}
+                onSelectedColumnIdsChange={setSelectedDocumentColumnIds}
+                isLoading={customPropertyDefinitionsQuery.isPending}
+                hasError={customPropertyDefinitionsQuery.isError}
+                isRetrying={customPropertyDefinitionsQuery.isFetching}
+                onRetry={() => void customPropertyDefinitionsQuery.refetch()}
+              />
 
               <Show when={getSearchQuery().length > 0}>
                 <CreateDocumentViewModal
@@ -444,12 +497,7 @@ export const DocumentsPage: Component = () => {
               setRowSelection={setRowSelection}
               getSorting={getSorting}
               setSorting={setSorting}
-              extraColumns={[
-                tagsColumn,
-                documentDateColumn,
-                createdAtColumn,
-                standardActionsColumn,
-              ]}
+              extraColumns={[...getVisibleDocumentColumns(), standardActionsColumn]}
             />
 
             <DocumentsBatchTagDialog
