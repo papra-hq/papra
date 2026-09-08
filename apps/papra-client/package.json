@@ -27,6 +27,7 @@
     "@corentinth/chisels": "catalog:",
     "@corvu/calendar": "^0.1.2",
     "@corvu/otp-field": "^0.1.4",
+    "@fontsource/inter": "^5.3.0",
     "@kobalte/core": "^0.13.10",
     "@kobalte/utils": "^0.9.1",
     "@modular-forms/solid": "^0.25.1",
