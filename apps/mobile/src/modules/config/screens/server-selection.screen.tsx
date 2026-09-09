@@ -16,14 +16,15 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { queryClient } from '@/modules/api/providers/query.provider';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { MANAGED_SERVER_URL } from '../config.constants';
 import { configLocalStorage } from '../config.local-storage';
 import { validateCustomHeaders, validateServerUrl } from '../config.models';
-import { pingServer } from '../config.services';
 import { configQueryOptions } from '../config.queries';
+import { pingServer } from '../config.services';
 
 function getDefaultCustomServerUrl() {
   if (!__DEV__) {
@@ -40,6 +41,7 @@ export function ServerSelectionScreen() {
   const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
   const styles = createStyles({ themeColors });
+  const t = useAppTranslations();
 
   const [selectedOption, setSelectedOption] = useState<'managed' | 'self-hosted'>('managed');
   const [customUrl, setCustomUrl] = useState(getDefaultCustomServerUrl());
@@ -75,9 +77,8 @@ export function ServerSelectionScreen() {
 
     if (urlValidationError) {
       showAlert({
-        title: 'Invalid URL',
-        message:
-          'Please enter a valid server URL. Make sure to include the protocol (http:// or https://).',
+        title: t.serverSelection.errors.invalidUrl.title,
+        message: t.serverSelection.errors.invalidUrl.message,
       });
       setIsValidating(false);
       return;
@@ -89,7 +90,7 @@ export function ServerSelectionScreen() {
 
     if (headersValidationError) {
       showAlert({
-        title: 'Invalid Custom Header',
+        title: t.serverSelection.errors.invalidCustomHeader.title,
         message: headersValidationError.message,
       });
       setIsValidating(false);
@@ -100,8 +101,8 @@ export function ServerSelectionScreen() {
       await pingServer({ url, headers: customHeaders });
     } catch {
       showAlert({
-        title: 'Connection Failed',
-        message: 'Could not reach the server.',
+        title: t.serverSelection.errors.connectionFailed.title,
+        message: t.serverSelection.errors.connectionFailed.message,
       });
       setIsValidating(false);
       return;
@@ -120,11 +121,9 @@ export function ServerSelectionScreen() {
       router.replace('/auth/login');
     } catch (error) {
       showAlert({
-        title: 'Something Went Wrong',
+        title: t.serverSelection.errors.saveFailed.title,
         message:
-          error instanceof Error
-            ? error.message
-            : 'Could not save the server configuration. Please try again.',
+          error instanceof Error ? error.message : t.serverSelection.errors.saveFailed.message,
       });
     } finally {
       setIsValidating(false);
@@ -139,11 +138,11 @@ export function ServerSelectionScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.brandRow}>
           <Icon name="file-text" size={28} color={themeColors.primary} />
-          <Text style={styles.brandName}>Papra</Text>
+          <Text style={styles.brandName}>{t.papra}</Text>
         </View>
 
-        <Text style={styles.title}>Organize, secure &{'\n'}archive your documents.</Text>
-        <Text style={styles.subtitle}>First, choose where your documents live.</Text>
+        <Text style={styles.title}>{t.serverSelection.title}</Text>
+        <Text style={styles.subtitle}>{t.serverSelection.subtitle}</Text>
 
         <View style={styles.options}>
           <TouchableOpacity
@@ -155,8 +154,10 @@ export function ServerSelectionScreen() {
           >
             <Icon name="cloud" size={22} color={themeColors.foreground} style={styles.optionIcon} />
             <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Managed Cloud</Text>
-              <Text style={styles.optionDescription}>Use the official Papra cloud service</Text>
+              <Text style={styles.optionTitle}>{t.serverSelection.managedCloud.title}</Text>
+              <Text style={styles.optionDescription}>
+                {t.serverSelection.managedCloud.description}
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -174,8 +175,10 @@ export function ServerSelectionScreen() {
               style={styles.optionIcon}
             />
             <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Self-Hosted</Text>
-              <Text style={styles.optionDescription}>Connect to your own Papra server</Text>
+              <Text style={styles.optionTitle}>{t.serverSelection.selfHosted.title}</Text>
+              <Text style={styles.optionDescription}>
+                {t.serverSelection.selfHosted.description}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -183,10 +186,10 @@ export function ServerSelectionScreen() {
         <View style={styles.customUrlZone}>
           {isSelfHosted && (
             <>
-              <Text style={styles.inputLabel}>Server URL</Text>
+              <Text style={styles.inputLabel}>{t.serverSelection.serverUrl.label}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="https://your-server.com"
+                placeholder={t.serverSelection.serverUrl.placeholder}
                 placeholderTextColor={themeColors.mutedForeground}
                 value={customUrl}
                 onChangeText={setCustomUrl}
@@ -209,8 +212,7 @@ export function ServerSelectionScreen() {
                   color={themeColors.mutedForeground}
                 />
                 <Text style={styles.customHeadersToggleLabel}>
-                  Custom headers
-                  {customHeaderRows.length > 0 ? ` (${customHeaderRows.length})` : ''}
+                  {t.serverSelection.customHeaders.label({ count: customHeaderRows.length })}
                 </Text>
               </TouchableOpacity>
 
@@ -220,7 +222,7 @@ export function ServerSelectionScreen() {
                     <View key={row.id} style={styles.customHeaderRow}>
                       <TextInput
                         style={[styles.input, styles.customHeaderInput]}
-                        placeholder="Name"
+                        placeholder={t.serverSelection.customHeaders.namePlaceholder}
                         placeholderTextColor={themeColors.mutedForeground}
                         value={row.name}
                         onChangeText={(name) => updateCustomHeaderRow({ id: row.id, name })}
@@ -234,7 +236,7 @@ export function ServerSelectionScreen() {
                           styles.customHeaderInput,
                           styles.customHeaderValueInput,
                         ]}
-                        placeholder="Value"
+                        placeholder={t.serverSelection.customHeaders.valuePlaceholder}
                         placeholderTextColor={themeColors.mutedForeground}
                         value={row.value}
                         onChangeText={(value) => updateCustomHeaderRow({ id: row.id, value })}
@@ -247,7 +249,9 @@ export function ServerSelectionScreen() {
                         onPress={() => deleteCustomHeaderRow({ id: row.id })}
                         disabled={isValidating}
                         accessibilityRole="button"
-                        accessibilityLabel={`Delete header ${row.name || 'row'}`}
+                        accessibilityLabel={t.serverSelection.customHeaders.deleteLabel({
+                          name: row.name,
+                        })}
                       >
                         <Icon name="trash-2" size={18} color={themeColors.mutedForeground} />
                       </TouchableOpacity>
@@ -261,7 +265,9 @@ export function ServerSelectionScreen() {
                     accessibilityRole="button"
                   >
                     <Icon name="plus" size={16} color={themeColors.foreground} />
-                    <Text style={styles.addHeaderButtonLabel}>Add header</Text>
+                    <Text style={styles.addHeaderButtonLabel}>
+                      {t.serverSelection.customHeaders.add}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -280,7 +286,7 @@ export function ServerSelectionScreen() {
             <ActivityIndicator color={themeColors.primaryForeground} />
           ) : (
             <>
-              <Text style={styles.buttonText}>Continue</Text>
+              <Text style={styles.buttonText}>{t.serverSelection.continue}</Text>
               <Icon name="arrow-right" size={18} color={themeColors.primaryForeground} />
             </>
           )}
