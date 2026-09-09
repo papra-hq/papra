@@ -214,6 +214,9 @@ importers:
       expo-linking:
         specifier: ~8.0.12
         version: 8.0.12(expo@54.0.35)(react-native@0.81.5(@babel/core@7.28.4(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)(supports-color@8.1.1)
+      expo-localization:
+        specifier: ~17.0.9
+        version: 17.0.9(expo@54.0.35)(react@19.1.0)
       expo-network:
         specifier: ^8.0.8
         version: 8.0.8(expo@54.0.35)(react@19.1.0)
@@ -6698,6 +6701,12 @@ packages:
       react: '*'
       react-native: '*'
 
+  expo-localization@17.0.9:
+    resolution: {integrity: sha512-k5eYHr7iLMob3M8cHH6bgDrDRmqnZG8xKGLhpx8ST+LsFXmSgYpJ/t0VwWm0gz64C/K669XhObdG3D6QwCGqhw==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+
   expo-modules-autolinking@3.0.26:
     resolution: {integrity: sha512-WOaud6UKg16ciCOj8raKcMOoKFMHLXKI29U29yhgu1lf+Y7VxJyCktUcYo6AM+ccZ7zLD1uWZdMtgnpf+95OXA==}
     hasBin: true
@@ -9228,6 +9237,9 @@ packages:
 
   rtf-parser@1.3.3:
     resolution: {integrity: sha512-sz2eb4tcCFtwVfs5Ei/l3JnSQGqpDv+drFuNz/zwn2tA24cL2WTuk2VMo2bA4IcRgkn38juAOri2hB9nv85u2Q==}
+
+  rtl-detect@1.1.2:
+    resolution: {integrity: sha512-PGMBq03+TTG/p/cRB7HCLKJ1MgDIi07+QU1faSjiYRfmY5UsAttV9Hs08jDAHVwcOwmVLcSJkpwyfXszVjWfIQ==}
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -18967,6 +18979,12 @@ snapshots:
       - expo
       - supports-color
 
+  expo-localization@17.0.9(expo@54.0.35)(react@19.1.0):
+    dependencies:
+      expo: 54.0.35(@babel/core@7.28.4(supports-color@8.1.1))(@expo/metro-runtime@6.1.2)(expo-router@6.0.24)(graphql@16.8.1)(react-native@0.81.5(@babel/core@7.28.4(supports-color@8.1.1))(@types/react@19.1.17)(react@19.1.0)(supports-color@8.1.1))(react@19.1.0)(supports-color@8.1.1)(typescript@6.0.3)
+      react: 19.1.0
+      rtl-detect: 1.1.2
+
   expo-modules-autolinking@3.0.26:
     dependencies:
       '@expo/spawn-async': 1.8.0
@@ -22663,6 +22681,8 @@ snapshots:
     dependencies:
       iconv-lite: 0.4.24
       readable-stream: 2.3.8
+
+  rtl-detect@1.1.2: {}
 
   run-parallel@1.2.0:
     dependencies:

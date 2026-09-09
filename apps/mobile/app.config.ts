@@ -84,6 +84,7 @@ const config: ExpoConfig = {
         androidMultiIntentFilters: ['*/*'],
       },
     ],
+    'expo-localization',
   ],
   experiments: {
     typedRoutes: true,
