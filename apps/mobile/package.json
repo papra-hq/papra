@@ -7,9 +7,9 @@
   "main": "expo-router/entry",
   "scripts": {
     "dev": "pnpm start",
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "start": "APP_VARIANT=development expo start",
+    "android": "APP_VARIANT=development expo run:android",
+    "ios": "APP_VARIANT=development expo run:ios",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest watch"

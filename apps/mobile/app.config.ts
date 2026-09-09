@@ -1,18 +1,34 @@
 import type { ExpoConfig } from 'expo/config';
 import { version } from './package.json';
 
+const isDevelopment = process.env.APP_VARIANT === 'development';
+
+const profile = isDevelopment
+  ? {
+      name: 'Papra - dev',
+      scheme: 'papra-dev',
+      ios: { bundleIdentifier: 'app.papra.ios.dev' },
+      android: { package: 'app.papra.android.dev' },
+    }
+  : {
+      name: 'Papra',
+      scheme: 'papra',
+      ios: { bundleIdentifier: 'app.papra.ios' },
+      android: { package: 'app.papra.android' },
+    };
+
 const config: ExpoConfig = {
-  name: 'Papra',
+  name: profile.name,
   slug: 'papra',
   version,
   orientation: 'portrait',
   icon: './src/assets/images/icon.png',
-  scheme: 'papra',
+  scheme: profile.scheme,
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'app.papra.ios',
+    bundleIdentifier: profile.ios.bundleIdentifier,
     icon: {
       dark: './src/assets/images/icon-dark.png',
       light: './src/assets/images/icon-light.png',
@@ -28,7 +44,7 @@ const config: ExpoConfig = {
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
-    package: 'app.papra.android',
+    package: profile.android.package,
   },
   plugins: [
     'expo-router',

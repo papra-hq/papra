@@ -117,7 +117,7 @@ export const configDefinition = {
     trustedAppSchemes: {
       doc: 'A comma separated list of app schemes that are trusted for authentication. For example: "papra://,exp://". Note, setting this value will override the default schemes, so make sure to include them if needed.',
       schema: appSchemeSchema,
-      default: ['papra://', 'exp://'],
+      default: ['papra://', 'exp://', 'papra-dev://'],
       env: 'TRUSTED_APP_SCHEMES',
     },
     port: {
