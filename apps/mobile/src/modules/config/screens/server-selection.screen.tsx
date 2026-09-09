@@ -85,18 +85,22 @@ export function ServerSelectionScreen() {
       return;
     }
 
-    const [customHeaders, headersValidationError] = safelySync(() =>
-      validateCustomHeaders({ headers: isSelfHosted ? customHeaderRows : [] }),
-    );
+    const headerParsingResult = validateCustomHeaders({
+      headers: isSelfHosted ? customHeaderRows : [],
+    });
 
-    if (headersValidationError) {
+    if (!headerParsingResult.success) {
+      const { code, headerName } = headerParsingResult.issue;
+
       showAlert({
         title: t.serverSelection.errors.invalidCustomHeader.title,
-        message: headersValidationError.message,
+        message: t.serverSelection.customHeaders.parsingErrors[code]({ headerName }),
       });
       setIsValidating(false);
       return;
     }
+
+    const { headers: customHeaders } = headerParsingResult;
 
     try {
       await pingServer({ url, headers: customHeaders });
