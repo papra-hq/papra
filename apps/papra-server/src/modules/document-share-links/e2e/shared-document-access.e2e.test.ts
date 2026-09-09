@@ -194,7 +194,7 @@ describe('shared document access e2e', () => {
       { method: 'DELETE' },
       { loggedInUserId: 'usr_111111111111111111111111' },
     );
-    expect(trashResponse.status).toBe(200);
+    expect(trashResponse.status).toBe(204);
 
     // Public access to both the metadata and the file must stop with a 410 Gone.
     const trashedDocumentResponse = await app.request(

@@ -222,9 +222,7 @@ function setupDeleteDocumentRoute({ app, db, eventServices }: RouteDefinitionCon
         eventServices,
       });
 
-      return context.json({
-        success: true,
-      });
+      return context.body(null, 204);
     },
   );
 }
