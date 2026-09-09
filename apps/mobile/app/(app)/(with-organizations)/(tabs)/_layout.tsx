@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { HapticTab } from '@/modules/ui/components/haptic-tab';
 import { Icon } from '@/modules/ui/components/icon';
 import { ImportTabButton } from '@/modules/ui/components/import-tab-button';
@@ -10,6 +11,7 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 export default function TabLayout() {
   const colors = useThemeColor();
   const insets = useSafeAreaInsets();
+  const t = useAppTranslations();
 
   return (
     <Tabs
@@ -57,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t.settings.title,
           tabBarIcon: ({ color }) => (
             <Icon name="settings" size={30} color={color} style={{ height: 30 }} />
           ),

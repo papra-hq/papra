@@ -19,7 +19,7 @@ import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useServerConfig } from '../../config/hooks/use-server-config';
-import { BackToServerSelectionButton } from '../components/back-to-server-selection';
+import { AuthNavigation } from '../components/auth-navigation';
 
 const signupSchema = v.object({
   name: v.pipe(v.string(), v.minLength(1, 'Name is required')),
@@ -84,19 +84,29 @@ export function SignupScreen() {
 
   if (isConfigLoading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={themeColors.primary} />
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <AuthNavigation />
+          <View style={styles.centerContent}>
+            <ActivityIndicator size="large" color={themeColors.primary} />
+          </View>
+        </ScrollView>
       </View>
     );
   }
 
   if (!isRegistrationEnabled) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.errorText}>Registration is currently disabled</Text>
-        <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
-          <Text style={styles.linkText}>Go back to login</Text>
-        </TouchableOpacity>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <AuthNavigation />
+          <View style={styles.centerContent}>
+            <Text style={styles.errorText}>Registration is currently disabled</Text>
+            <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
+              <Text style={styles.linkText}>Go back to login</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     );
   }
@@ -107,7 +117,7 @@ export function SignupScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <BackToServerSelectionButton />
+        <AuthNavigation disabled={isSubmitting} />
 
         <View style={styles.header}>
           <Text style={styles.title}>Create Account</Text>
@@ -199,6 +209,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       backgroundColor: themeColors.background,
     },
     centerContent: {
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       padding: 24,

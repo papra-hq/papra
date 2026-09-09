@@ -1,6 +1,40 @@
 export const en = {
   papra: 'Papra',
+  common: {
+    close: 'Close',
+    cancel: 'Cancel',
+    ok: 'OK',
+  },
+  appSettings: {
+    title: 'App settings',
+    language: {
+      title: 'Language',
+      description: 'Choose the language used by the app on this device.',
+      useDeviceLanguage: 'Use device language',
+    },
+    errors: {
+      saveFailed: {
+        title: 'Could not save language',
+        message: 'Your language has not been changed. Please try again.',
+      },
+    },
+  },
+  settings: {
+    title: 'Settings',
+    account: 'Account',
+    app: 'App',
+    name: 'Name',
+    email: 'Email',
+    emailVerified: 'Email verified',
+    yes: 'Yes',
+    no: 'No',
+    signOut: {
+      title: 'Sign out',
+      confirmation: 'Are you sure you want to sign out?',
+    },
+  },
   serverSelection: {
+    selectServer: 'Select server',
     title: 'Organize, secure &\narchive your documents.',
     subtitle: 'First, choose where your documents live.',
     continue: 'Continue',
