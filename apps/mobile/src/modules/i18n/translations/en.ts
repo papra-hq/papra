@@ -1,3 +1,5 @@
+import type { CustomHeaderIssueCode } from '@/modules/config/config.models';
+
 export const en = {
   papra: 'Papra',
   common: {
@@ -57,6 +59,14 @@ export const en = {
       valuePlaceholder: 'Value',
       deleteLabel: ({ name }: { name: string }) => `Delete header ${name}`,
       add: 'Add header',
+      parsingErrors: {
+        'empty-name': () => `Header names cannot be empty.`,
+        'invalid-name': ({ headerName }) => `The header name "${headerName}" is invalid.`,
+        'forbidden-name': ({ headerName }) =>
+          `The header name "${headerName}" is managed by the app or by the protocol and cannot be set manually.`,
+        'invalid-value': ({ headerName }) =>
+          `The value for the header "${headerName}" is invalid. It cannot contain line breaks.`,
+      } satisfies Record<CustomHeaderIssueCode, (arg: { headerName: string }) => string>,
     },
     errors: {
       invalidUrl: {
