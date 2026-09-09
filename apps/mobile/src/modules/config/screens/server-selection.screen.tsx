@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { queryClient } from '@/modules/api/providers/query.provider';
+import { AppSettingsButton } from '@/modules/app-settings/components/app-settings-button';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
@@ -139,6 +140,7 @@ export function ServerSelectionScreen() {
         <View style={styles.brandRow}>
           <Icon name="file-text" size={28} color={themeColors.primary} />
           <Text style={styles.brandName}>{t.papra}</Text>
+          <AppSettingsButton disabled={isValidating} />
         </View>
 
         <Text style={styles.title}>{t.serverSelection.title}</Text>
@@ -313,6 +315,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       marginBottom: 48,
     },
     brandName: {
+      flex: 1,
       fontSize: 24,
       fontWeight: 'bold',
       color: themeColors.foreground,

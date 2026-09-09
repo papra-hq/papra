@@ -28,6 +28,21 @@ describe('locales.models', () => {
       ).to.eql('en');
     });
 
+    test('it checks the device languages in preference order, skipping unsupported languages', () => {
+      expect(
+        resolveUserLocale([
+          { languageCode: 'de', languageTag: 'de-DE' },
+          { languageCode: 'fr', languageTag: 'fr-CA' },
+          { languageCode: 'en', languageTag: 'en-US' },
+        ]),
+      ).toBe('fr');
+    });
+
+    test('it falls back to English when the device has no supported languages', () => {
+      expect(resolveUserLocale([{ languageCode: 'de', languageTag: 'de-DE' }])).toBe('en');
+      expect(resolveUserLocale([])).toBe('en');
+    });
+
     test('when a user locale matches a supported locale key by language code, it returns that key', () => {
       expect(
         resolveUserLocale([{ languageCode: 'en', languageTag: 'en-US' }], {

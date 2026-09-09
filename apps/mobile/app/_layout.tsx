@@ -37,6 +37,10 @@ function LocalizedLayout() {
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="config/server-selection" options={{ headerShown: false }} />
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="app-settings"
+              options={{ presentation: 'modal', headerShown: false }}
+            />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </Stack>
           <ShareIntentHandler />

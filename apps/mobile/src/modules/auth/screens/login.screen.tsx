@@ -20,7 +20,7 @@ import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useServerConfig } from '../../config/hooks/use-server-config';
 import { getEnabledOAuthProviders } from '../auth.models';
-import { BackToServerSelectionButton } from '../components/back-to-server-selection';
+import { AuthNavigation } from '../components/auth-navigation';
 import { TwoFactorVerificationForm } from '../components/two-factor-verification';
 
 const loginSchema = v.object({
@@ -105,8 +105,13 @@ export function LoginScreen() {
 
   if (isConfigLoading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={themeColors.primary} />
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <AuthNavigation />
+          <View style={styles.centerContent}>
+            <ActivityIndicator size="large" color={themeColors.primary} />
+          </View>
+        </ScrollView>
       </View>
     );
   }
@@ -141,7 +146,7 @@ export function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <BackToServerSelectionButton />
+        <AuthNavigation disabled={isSubmitting} />
 
         <View style={styles.header}>
           <Text style={styles.title}>Welcome Back</Text>
@@ -245,6 +250,7 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       backgroundColor: themeColors.background,
     },
     centerContent: {
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },
