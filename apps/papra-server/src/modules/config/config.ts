@@ -43,6 +43,7 @@ import { getCommitInfo } from './config.usecases';
 import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.config';
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
+import { receiptExtractionConfig } from '../receipt-extraction/receipt-extraction.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
 
 const documentsStorageConfig = {
@@ -192,6 +193,7 @@ export const configDefinition = {
   planEntitlements: planEntitlementsConfig,
   ai: aiConfig,
   autoTagging: autoTaggingConfig,
+  receiptExtraction: receiptExtractionConfig,
 } as const satisfies AppConfigDefinition;
 
 const logger = createLogger({ namespace: 'config' });

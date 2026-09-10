@@ -6,6 +6,7 @@ import { registerPurgeExpiredKvEntriesTask } from '../kv-store/tasks/purge-expir
 import { registerExpireInvitationsTask } from '../organizations/tasks/expire-invitations.task';
 import { registerPurgeExpiredOrganizationsTask } from '../organizations/tasks/purge-expired-organizations.task';
 import { registerReverifyPlanEntitlementsTask } from '../plan-entitlements/tasks/reverify-plan-entitlements.task';
+import { registerExtractReceiptDataTask } from '../receipt-extraction/tasks/extract-receipt-data.task';
 import { registerApplyTaggingRuleToDocumentsTask } from '../tagging-rules/tasks/apply-tagging-rule-to-documents.task';
 
 export async function registerTaskDefinitions(deps: GlobalDependencies) {
@@ -16,5 +17,6 @@ export async function registerTaskDefinitions(deps: GlobalDependencies) {
   await registerApplyTaggingRuleToDocumentsTask(deps);
   await registerPurgeExpiredKvEntriesTask(deps);
   await registerAutoTagDocumentTask(deps);
+  await registerExtractReceiptDataTask(deps);
   await registerReverifyPlanEntitlementsTask(deps);
 }

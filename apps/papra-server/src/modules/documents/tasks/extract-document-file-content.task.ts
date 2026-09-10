@@ -7,6 +7,8 @@ import { createTagsRepository } from '../../tags/tags.repository';
 import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
 import type { Config } from '../../config/config.types';
+import { RECEIPT_EXTRACTION_TASK_NAME } from '../../receipt-extraction/receipt-extraction.constants';
+import { isReceiptExtractionEnabled } from '../../receipt-extraction/receipt-extraction.models';
 import { buildExtractDocumentTextUsecase } from '../content-extraction/content-extraction.usecases';
 
 export async function registerExtractDocumentFileContentTask({
@@ -53,6 +55,13 @@ export async function registerExtractDocumentFileContentTask({
         eventServices,
         extractDocumentText,
       });
+
+      if (isReceiptExtractionEnabled({ config })) {
+        await taskServices.scheduleJob({
+          taskName: RECEIPT_EXTRACTION_TASK_NAME,
+          data: { documentId, organizationId },
+        });
+      }
 
       if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {
         return;

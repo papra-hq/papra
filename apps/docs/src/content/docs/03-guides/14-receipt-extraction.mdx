@@ -1,0 +1,46 @@
+---
+title: Receipt extraction
+description: Detect receipts and invoices and extract vendor, date, total and tax into custom properties using AI.
+slug: guides/receipt-extraction
+---
+
+Once a document's content has been extracted, Papra can ask an LLM whether the document is a receipt, invoice or bill. When it is, the following custom properties are filled on the document:
+
+| Property | Type | Example |
+| --- | --- | --- |
+| Vendor | text | Loblaws |
+| Receipt date | date | 2026-09-01 |
+| Total | number | 54.24 |
+| Tax | number | 3.10 |
+| Currency | text | CAD |
+| Payment method | text | Visa |
+| Expense category | select | Groceries |
+
+The properties are created in the organization the first time a receipt is detected. If a property with the same name already exists with the same type it is reused; if it exists with another type it is left alone and that field is skipped. A `Receipt` tag is also applied so receipts are easy to filter.
+
+Values already set on a document (for example corrected manually) are never overwritten unless `RECEIPT_EXTRACTION_OVERWRITE_EXISTING_VALUES` is enabled.
+
+## Setup
+
+Configure an LLM provider first (see [LLM configuration](/guides/llm-configuration)), then:
+
+```bash
+AI_IS_ENABLED=true
+RECEIPT_EXTRACTION_ENABLED=true
+# Optional, falls back to AI_DEFAULT_MODEL. A small, cheap model is enough.
+RECEIPT_EXTRACTION_MODEL=anthropic://claude-haiku-4-5
+```
+
+Extraction quality depends on the OCR text. Thermal receipts photographed with a phone are hard for the default Tesseract strategy; the `mistral-ocr` or `azure-di` content extraction strategies give much better results (see [Content extraction](/guides/content-extraction)).
+
+## Configuration
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `RECEIPT_EXTRACTION_ENABLED` | `false` | Run receipt extraction after content extraction. |
+| `RECEIPT_EXTRACTION_MODEL` | `AI_DEFAULT_MODEL` | Model id, `<adapterId>://<modelName>`. |
+| `RECEIPT_EXTRACTION_CATEGORIES` | Groceries, Dining, Fuel, Transport, Travel, Utilities, Office, Software, Hardware, Health, Home, Entertainment, Other | Comma separated categories. Missing ones are added to the select property, existing options are kept. |
+| `RECEIPT_EXTRACTION_TAG_NAME` | `Receipt` | Tag applied to detected receipts. Empty string disables it. |
+| `RECEIPT_EXTRACTION_OVERWRITE_EXISTING_VALUES` | `false` | Overwrite values already set on the document. |
+
+AI usage is recorded in AI credits under the `receipt-extraction` source.
