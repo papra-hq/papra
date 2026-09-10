@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as v from 'valibot';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -23,12 +24,13 @@ import { getEnabledOAuthProviders } from '../auth.models';
 import { AuthNavigation } from '../components/auth-navigation';
 import { TwoFactorVerificationForm } from '../components/two-factor-verification';
 
-const loginSchema = v.object({
-  email: v.pipe(v.string(), v.email('Please enter a valid email')),
-  password: v.pipe(v.string(), v.minLength(8, 'Password must be at least 8 characters')),
-});
-
 export function LoginScreen() {
+  const t = useAppTranslations();
+  const loginSchema = v.object({
+    email: v.pipe(v.string(), v.email(t.auth.validation.email)),
+    password: v.pipe(v.string(), v.minLength(8, t.auth.validation.password)),
+  });
+
   const router = useRouter();
   const themeColors = useThemeColor();
   const authClient = useAuthClient();
@@ -73,8 +75,8 @@ export function LoginScreen() {
         router.replace('/(app)/(with-organizations)/(tabs)/list');
       } catch (error) {
         showAlert({
-          title: 'Login Failed',
-          message: error instanceof Error ? error.message : 'An error occurred',
+          title: t.auth.login.failed,
+          message: error instanceof Error ? error.message : t.common.anErrorOccurred,
         });
       } finally {
         setIsSubmitting(false);
@@ -90,8 +92,8 @@ export function LoginScreen() {
       }
     } catch (error) {
       showAlert({
-        title: 'Sign In Failed',
-        message: error instanceof Error ? error.message : 'An error occurred',
+        title: t.auth.login.socialFailed,
+        message: error instanceof Error ? error.message : t.common.anErrorOccurred,
       });
     }
   };
@@ -127,8 +129,8 @@ export function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.title}>Two-Factor Authentication</Text>
-            <Text style={styles.subtitle}>Verify your identity to continue</Text>
+            <Text style={styles.title}>{t.auth.twoFactor.title}</Text>
+            <Text style={styles.subtitle}>{t.auth.twoFactor.subtitle}</Text>
           </View>
 
           <TwoFactorVerificationForm
@@ -149,8 +151,8 @@ export function LoginScreen() {
         <AuthNavigation disabled={isSubmitting} />
 
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
+          <Text style={styles.title}>{t.auth.login.title}</Text>
+          <Text style={styles.subtitle}>{t.auth.login.subtitle}</Text>
         </View>
 
         {isEmailEnabled && (
@@ -158,10 +160,10 @@ export function LoginScreen() {
             <form.Field name="email">
               {(field) => (
                 <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>Email</Text>
+                  <Text style={styles.label}>{t.common.email}</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="you@example.com"
+                    placeholder={t.auth.emailPlaceholder}
                     placeholderTextColor={themeColors.mutedForeground}
                     value={field.state.value}
                     onChangeText={field.handleChange}
@@ -178,10 +180,10 @@ export function LoginScreen() {
             <form.Field name="password">
               {(field) => (
                 <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>Password</Text>
+                  <Text style={styles.label}>{t.auth.password}</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter your password"
+                    placeholder={t.auth.login.passwordPlaceholder}
                     placeholderTextColor={themeColors.mutedForeground}
                     value={field.state.value}
                     onChangeText={field.handleChange}
@@ -201,7 +203,7 @@ export function LoginScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color={themeColors.primaryForeground} />
               ) : (
-                <Text style={styles.buttonText}>Sign In</Text>
+                <Text style={styles.buttonText}>{t.auth.login.submit}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -212,7 +214,7 @@ export function LoginScreen() {
             {isEmailEnabled && (
               <View style={styles.divider}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
+                <Text style={styles.dividerText}>{t.auth.login.or}</Text>
                 <View style={styles.dividerLine} />
               </View>
             )}
@@ -225,7 +227,7 @@ export function LoginScreen() {
                   onPress={async () => handleSocialSignIn(provider.providerId)}
                 >
                   <Text style={styles.socialButtonText}>
-                    {`Continue with ${provider.providerName}`}
+                    {t.auth.login.continueWith({ name: provider.providerName })}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -235,7 +237,7 @@ export function LoginScreen() {
 
         {authConfig?.isRegistrationEnabled === true && (
           <TouchableOpacity style={styles.linkButton} onPress={() => router.push('/auth/signup')}>
-            <Text style={styles.linkText}>Don&apos;t have an account? Sign up</Text>
+            <Text style={styles.linkText}>{t.auth.login.signupLink}</Text>
           </TouchableOpacity>
         )}
       </ScrollView>

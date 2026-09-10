@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
@@ -113,6 +114,7 @@ function InfoRow({
 }
 
 export function DocumentDetailsScreen() {
+  const t = useAppTranslations();
   const router = useRouter();
   const params = useLocalSearchParams<{ documentId: string; organizationId: string }>();
   const themeColors = useThemeColor();
@@ -133,8 +135,8 @@ export function DocumentDetailsScreen() {
 
   if (organizationId == null || documentId == null) {
     showAlert({
-      title: 'Error',
-      message: 'Organization ID and Document ID are required',
+      title: t.common.error,
+      message: t.documents.missingIds,
     });
     return null;
   }
@@ -184,13 +186,16 @@ export function DocumentDetailsScreen() {
           encoding: FileSystem.EncodingType.Base64,
         });
 
-        showAlert({ title: 'Downloaded', message: `${document.name} has been saved` });
+        showAlert({
+          title: t.documents.downloaded,
+          message: t.documents.saved({ name: document.name }),
+        });
       } else {
         // On iOS saving a file goes through the share sheet ("Save to Files")
         await Sharing.shareAsync(fileUri);
       }
     } catch {
-      showAlert({ title: 'Error', message: 'Failed to download document file' });
+      showAlert({ title: t.common.error, message: t.documents.downloadFailed });
     } finally {
       setPendingAction(undefined);
     }
@@ -204,8 +209,8 @@ export function DocumentDetailsScreen() {
     const canShare = await Sharing.isAvailableAsync();
     if (!canShare) {
       showAlert({
-        title: 'Sharing Failed',
-        message: 'Sharing is not available on this device. Please share the document manually.',
+        title: t.documents.sharingFailed,
+        message: t.documents.sharingUnavailable,
       });
       return;
     }
@@ -215,7 +220,7 @@ export function DocumentDetailsScreen() {
       const fileUri = await getLocalFileUri();
       await Sharing.shareAsync(fileUri);
     } catch {
-      showAlert({ title: 'Error', message: 'Failed to download document file' });
+      showAlert({ title: t.common.error, message: t.documents.downloadFailed });
     } finally {
       setPendingAction(undefined);
     }
@@ -226,7 +231,7 @@ export function DocumentDetailsScreen() {
       return (
         <View style={styles.centeredContainer}>
           <ActivityIndicator size="large" color={themeColors.primary} />
-          <Text style={styles.centeredText}>Loading document...</Text>
+          <Text style={styles.centeredText}>{t.documents.loading}</Text>
         </View>
       );
     }
@@ -235,9 +240,9 @@ export function DocumentDetailsScreen() {
       return (
         <View style={styles.centeredContainer}>
           <Icon name="alert-circle" size={64} color={themeColors.mutedForeground} />
-          <Text style={styles.centeredTitle}>Failed to load document</Text>
+          <Text style={styles.centeredTitle}>{t.documents.loadFailed}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => void documentQuery.refetch()}>
-            <Text style={styles.retryButtonText}>Retry</Text>
+            <Text style={styles.retryButtonText}>{t.common.retry}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -269,7 +274,7 @@ export function DocumentDetailsScreen() {
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.openButton} onPress={handleOpen} activeOpacity={0.7}>
             <Icon name="eye" size={18} color={themeColors.primaryForeground} />
-            <Text style={styles.openButtonText}>Open</Text>
+            <Text style={styles.openButtonText}>{t.common.open}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
@@ -297,7 +302,7 @@ export function DocumentDetailsScreen() {
 
         {document.tags.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Tags</Text>
+            <Text style={styles.sectionTitle}>{t.documents.tags}</Text>
             <View style={styles.tagsContainer}>
               {document.tags.map((tag) => (
                 <Tag key={tag.id} name={tag.name} color={tag.color} />
@@ -308,7 +313,7 @@ export function DocumentDetailsScreen() {
 
         {hasNotes && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Notes</Text>
+            <Text style={styles.sectionTitle}>{t.documents.notes}</Text>
             <View style={styles.card}>
               <Text style={styles.notesText} selectable>
                 {document.notes}
@@ -321,35 +326,35 @@ export function DocumentDetailsScreen() {
           <View style={styles.card}>
             <InfoRow
               icon="file-text"
-              label="Name"
+              label={t.common.name}
               value={document.name}
               styles={styles}
               themeColors={themeColors}
             />
             <InfoRow
               icon="hard-drive"
-              label="Size"
+              label={t.documents.size}
               value={formatBytes({ bytes: document.originalSize })}
               styles={styles}
               themeColors={themeColors}
             />
             <InfoRow
               icon="file"
-              label="Type"
+              label={t.documents.type}
               value={getDisplayMimeType(document.mimeType)}
               styles={styles}
               themeColors={themeColors}
             />
             <InfoRow
               icon="calendar"
-              label="Date"
+              label={t.documents.date}
               value={formatDate(document.createdAt)}
               styles={styles}
               themeColors={themeColors}
             />
             <InfoRow
               icon="hash"
-              label="ID"
+              label={t.documents.id}
               value={document.id}
               isLast
               styles={styles}
@@ -360,7 +365,7 @@ export function DocumentDetailsScreen() {
 
         {customProperties.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Properties</Text>
+            <Text style={styles.sectionTitle}>{t.documents.properties}</Text>
             <View style={styles.card}>
               {customProperties.map((property, index) => (
                 <InfoRow
@@ -387,7 +392,7 @@ export function DocumentDetailsScreen() {
           <Icon name="arrow-left" size={22} color={themeColors.foreground} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          {document?.name ?? 'Document'}
+          {document?.name ?? t.documents.fallbackName}
         </Text>
         <TouchableOpacity style={styles.headerButton} onPress={() => setIsActionSheetVisible(true)}>
           <Icon name="more-vertical" size={22} color={themeColors.foreground} />

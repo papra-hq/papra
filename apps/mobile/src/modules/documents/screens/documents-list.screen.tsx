@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
@@ -22,6 +23,7 @@ import { fetchOrganizationDocuments } from '../documents.services';
 import { syncUnsyncedDocuments } from '../documents.sync.services';
 
 export function DocumentsListScreen() {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
@@ -70,22 +72,22 @@ export function DocumentsListScreen() {
             style={styles.userButton}
             onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/settings')}
             accessibilityRole="button"
-            accessibilityLabel="User settings"
+            accessibilityLabel={t.documents.userSettings}
           >
             <Icon name="user" size={20} color={themeColors.foreground} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.title}>Documents</Text>
+        <Text style={styles.title}>{t.documents.title}</Text>
 
         <TouchableOpacity
           style={styles.searchButton}
           onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/search')}
           accessibilityRole="button"
-          accessibilityLabel="Search documents"
+          accessibilityLabel={t.documents.search.placeholder}
         >
           <Icon name="search" size={18} color={themeColors.mutedForeground} />
-          <Text style={styles.searchButtonText}>Search documents</Text>
+          <Text style={styles.searchButtonText}>{t.documents.search.placeholder}</Text>
         </TouchableOpacity>
       </View>
 
@@ -97,8 +99,8 @@ export function DocumentsListScreen() {
         <DocumentsList
           documents={documentsQuery.data?.documents ?? []}
           emptyState={{
-            title: 'No documents yet',
-            subtitle: 'Upload your first document to get started',
+            title: t.documents.emptyTitle,
+            subtitle: t.documents.emptySubtitle,
           }}
           refreshControl={
             <RefreshControl refreshing={documentsQuery.isRefetching} onRefresh={onRefresh} />

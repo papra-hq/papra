@@ -2,58 +2,9 @@ import type { ScanOutputFormat } from '../documents-scan.types';
 import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-
-export const formatOptions: {
-  key: ScanOutputFormat;
-  icon: IconName;
-  singleScan: {
-    label: string;
-    description: string;
-  };
-  multiScan: {
-    label: string;
-    description: string;
-  };
-}[] = [
-  {
-    key: 'pdf-merged',
-    icon: 'file-text',
-    singleScan: {
-      label: 'PDF',
-      description: 'Save scan as a PDF',
-    },
-    multiScan: {
-      label: 'PDF',
-      description: 'All scans merged into a single multi-page PDF',
-    },
-  },
-  {
-    key: 'pdf-per-page',
-    icon: 'copy',
-    singleScan: {
-      label: 'PDF',
-      description: 'Save scan as a PDF',
-    },
-    multiScan: {
-      label: 'PDFs',
-      description: 'Save each scan as individual PDF',
-    },
-  },
-  {
-    key: 'images',
-    icon: 'image',
-    singleScan: {
-      label: 'Image',
-      description: 'Save scan as an image',
-    },
-    multiScan: {
-      label: 'Images',
-      description: 'Save each scan as individual images',
-    },
-  },
-];
 
 type FormatSelectorProps = {
   isSinglePage: boolean;
@@ -66,6 +17,57 @@ export function FormatSelector({
   selectedFormat,
   onFormatChange,
 }: FormatSelectorProps) {
+  const t = useAppTranslations();
+  const formatOptions: {
+    key: ScanOutputFormat;
+    icon: IconName;
+    singleScan: {
+      label: string;
+      description: string;
+    };
+    multiScan: {
+      label: string;
+      description: string;
+    };
+  }[] = [
+    {
+      key: 'pdf-merged',
+      icon: 'file-text',
+      singleScan: {
+        label: t.documents.scan.formats.pdf,
+        description: t.documents.scan.formats.pdfDescription,
+      },
+      multiScan: {
+        label: t.documents.scan.formats.pdf,
+        description: t.documents.scan.formats.mergedDescription,
+      },
+    },
+    {
+      key: 'pdf-per-page',
+      icon: 'copy',
+      singleScan: {
+        label: t.documents.scan.formats.pdf,
+        description: t.documents.scan.formats.pdfDescription,
+      },
+      multiScan: {
+        label: t.documents.scan.formats.pdfs,
+        description: t.documents.scan.formats.pdfsDescription,
+      },
+    },
+    {
+      key: 'images',
+      icon: 'image',
+      singleScan: {
+        label: t.documents.scan.formats.image,
+        description: t.documents.scan.formats.imageDescription,
+      },
+      multiScan: {
+        label: t.documents.scan.formats.images,
+        description: t.documents.scan.formats.imagesDescription,
+      },
+    },
+  ];
+
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
 
@@ -82,7 +84,7 @@ export function FormatSelector({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Output Format</Text>
+      <Text style={styles.label}>{t.documents.scan.outputFormat}</Text>
 
       <View style={styles.segmentedControl}>
         {options.map((option) => (
