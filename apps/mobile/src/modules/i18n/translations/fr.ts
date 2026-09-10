@@ -1,22 +1,222 @@
-import type { AppMessages, PartialMessages } from '../i18n.types';
+import type { AppMessages } from '../i18n.types';
 
 export const fr = {
+  papra: 'Papra',
   common: {
     close: 'Fermer',
     cancel: 'Annuler',
     ok: 'OK',
+    anErrorOccurred: 'Une erreur est survenue',
+    email: 'Adresse e-mail',
+    name: 'Nom',
+    error: 'Erreur',
+    delete: 'Supprimer',
+    share: 'Partager',
+    invalidName: 'Nom invalide',
+    save: 'Enregistrer',
+    retry: 'Réessayer',
+    open: 'Ouvrir',
+    goBack: 'Retour',
+    done: 'Terminé',
+    confirm: 'Confirmer',
+    unknownError: 'erreur inconnue',
+  },
+  navigation: {
+    notFoundTitle: 'Oups !',
+    notFoundMessage: "Cet écran n'existe pas.",
+    goHome: "Retour à l'accueil",
+    modalMessage: 'Ceci est une fenêtre modale',
+    modalTitle: 'Fenêtre modale',
+  },
+  documents: {
+    title: 'Documents',
+    search: {
+      title: 'Recherche',
+      placeholder: 'Rechercher des documents',
+      clear: 'Effacer la recherche',
+      hint: 'Recherchez vos documents',
+      hintDescription: 'Retrouvez des documents par leur nom ou leur contenu',
+      empty: 'Aucun document trouvé',
+      noResults: ({ query }: { query: string }) => `Aucun résultat pour "${query}"`,
+    },
+    import: {
+      title: 'Importer',
+      noOrganization: 'Aucune organisation sélectionnée',
+      uploadSuccessful: 'Importation réussie',
+      selectBeforeImport: "Veuillez sélectionner une organisation avant d'importer des documents.",
+      pickFailed: 'Impossible de sélectionner le document',
+      drawerTitle: 'Importer un document',
+      fromFiles: 'Importer depuis les fichiers',
+      fromFilesDescription: 'Choisissez un document sur votre appareil',
+      scan: 'Numériser un document',
+      scanDescription: "Utilisez l'appareil photo pour numériser un document",
+      uploadFailed: "Échec de l'importation",
+      uploaded: ({ name }: { name: string }) => `Document importé : ${name}`,
+    },
+    sharingFailed: 'Échec du partage',
+    sharingUnavailable:
+      "Le partage n'est pas disponible sur cet appareil. Veuillez partager le document manuellement.",
+    downloadFailed: 'Impossible de télécharger le fichier du document',
+    renameFailed: 'Impossible de renommer le document',
+    deleteTitle: 'Supprimer le document',
+    deleteFailed: 'Impossible de supprimer le document',
+    view: 'Afficher le document',
+    rename: 'Renommer',
+    nameRequired: 'Veuillez saisir un nom pour le document',
+    nameTitle: 'Nom du document',
+    namePlaceholder: 'Saisissez le nom du document',
+    missingIds: "L'identifiant de l'organisation et celui du document sont requis",
+    loading: 'Chargement du document…',
+    loadFailed: 'Impossible de charger le document',
+    fallbackName: 'Document',
+    downloaded: 'Téléchargé',
+    tags: 'Étiquettes',
+    notes: 'Notes',
+    size: 'Taille',
+    type: 'Type',
+    date: 'Date',
+    id: 'Identifiant',
+    properties: 'Propriétés',
+    preview: {
+      pdfFailed: 'Impossible de charger le PDF',
+      unavailable: 'Aperçu indisponible',
+      unsupported: "L'application ne permet pas d'afficher un aperçu de ce type de fichier",
+    },
+    userSettings: 'Paramètres du compte',
+    emptyTitle: 'Aucun document pour le moment',
+    emptySubtitle: 'Importez votre premier document pour commencer',
+    share: {
+      selectOrganization: 'Veuillez sélectionner une organisation où enregistrer le document.',
+      destinationFallback: 'votre organisation',
+      savedTitle: 'Enregistré dans Papra',
+      saved: ({ name, destination }: { name: string; destination: string }) =>
+        `${name} a été enregistré dans ${destination}.`,
+      savedMultiple: ({ count, destination }: { count: number; destination: string }) =>
+        count === 1
+          ? `${count} document a été enregistré dans ${destination}.`
+          : `${count} documents ont été enregistrés dans ${destination}.`,
+      save: 'Enregistrer dans Papra',
+      saveMultiple: ({ count }: { count: number }) =>
+        count === 1 ? `Enregistrer ${count} document` : `Enregistrer ${count} documents`,
+      empty: 'Aucun fichier partagé à enregistrer.',
+      uploading: 'Importation en cours…',
+      uploadError: ({ name, error }: { name: string; error: string }) =>
+        `Impossible d'importer ${name} : ${error}`,
+      uploadProgress: ({ current, total }: { current: number; total: number }) =>
+        `Importation de ${current} sur ${total}…`,
+    },
+    nameLabel: 'Nom du document',
+    scan: {
+      errorTitle: 'Erreur de numérisation',
+      failed: 'Impossible de numériser le document',
+      selectBeforeUpload: "Veuillez sélectionner une organisation avant l'importation.",
+      nameRequiredTitle: 'Nom requis',
+      nameRequired: 'Veuillez saisir un nom pour le document.',
+      uploadFailed: "Impossible d'importer les documents. Veuillez réessayer.",
+      uploaded: ({ count }: { count: number }) =>
+        count === 1
+          ? `${count} document a été importé avec succès.`
+          : `${count} documents ont été importés avec succès.`,
+      pageCount: ({ count }: { count: number }) =>
+        count === 1 ? `${count} page` : `${count} pages`,
+      opening: "Ouverture de l'outil de numérisation…",
+      empty: 'Aucune image à vérifier',
+      title: 'Vérifier la numérisation',
+      uploadTo: 'Importer dans',
+      processing: 'Traitement et importation en cours…',
+      outputFormat: 'Format de sortie',
+      formats: {
+        pdf: 'PDF',
+        pdfDescription: 'Enregistrer la numérisation au format PDF',
+        mergedDescription: 'Toutes les numérisations réunies dans un seul PDF de plusieurs pages',
+        pdfs: 'PDF',
+        pdfsDescription: 'Enregistrer chaque numérisation dans un fichier PDF distinct',
+        image: 'Image',
+        imageDescription: "Enregistrer la numérisation sous forme d'image",
+        images: 'Images',
+        imagesDescription: 'Enregistrer chaque numérisation dans une image distincte',
+      },
+    },
+    deleteConfirmation: ({ name }: { name: string }) =>
+      `Voulez-vous vraiment supprimer "${name}" ? Ce document sera déplacé dans la corbeille.`,
+    saved: ({ name }: { name: string }) => `${name} a été enregistré`,
+  },
+  auth: {
+    password: 'Mot de passe',
+    emailPlaceholder: 'vous@exemple.com',
+    validation: {
+      email: 'Veuillez saisir une adresse e-mail valide',
+      password: 'Le mot de passe doit contenir au moins 8 caractères',
+      name: 'Le nom est requis',
+    },
+    login: {
+      failed: 'Échec de la connexion',
+      socialFailed: 'Échec de la connexion',
+      title: 'Heureux de vous revoir',
+      subtitle: 'Connectez-vous à votre compte',
+      passwordPlaceholder: 'Saisissez votre mot de passe',
+      submit: 'Se connecter',
+      or: 'OU',
+      signupLink: "Vous n'avez pas de compte ? Inscrivez-vous",
+      continueWith: ({ name }: { name: string }) => `Continuer avec ${name}`,
+    },
+    twoFactor: {
+      title: 'Authentification à deux facteurs',
+      subtitle: 'Vérifiez votre identité pour continuer',
+      failed: 'Échec de la vérification',
+      backupCode: 'Code de secours',
+      verificationCode: 'Code de vérification',
+      backupDescription: "Saisissez l'un de vos codes de secours",
+      verificationDescription:
+        "Saisissez le code à 6 chiffres de votre application d'authentification",
+      backupPlaceholder: 'Saisissez un code de secours',
+      verificationPlaceholder: '000000',
+      trustDevice: 'Faire confiance à cet appareil',
+      verify: 'Vérifier',
+      useAuthenticator: "Utiliser un code de l'application d'authentification",
+      useBackupCode: 'Utiliser un code de secours',
+      backToLogin: 'Retour à la connexion',
+    },
+    signup: {
+      checkEmail: 'Consultez votre messagerie',
+      verificationSent:
+        'Nous vous avons envoyé un lien de vérification par e-mail. Ouvrez ce lien pour vérifier votre compte.',
+      failed: "Échec de l'inscription",
+      disabled: 'Les inscriptions sont actuellement désactivées',
+      backToLogin: 'Retour à la connexion',
+      title: 'Créer un compte',
+      subtitle: 'Inscrivez-vous pour commencer',
+      namePlaceholder: 'Votre nom',
+      passwordPlaceholder: 'Au moins 8 caractères',
+      submit: "S'inscrire",
+      loginLink: 'Vous avez déjà un compte ? Connectez-vous',
+    },
+  },
+  organizations: {
+    label: 'Organisation',
+    selectPlaceholder: 'Sélectionnez une organisation',
+    selectTitle: 'Sélectionner une organisation',
+    createNew: '+ Créer une organisation',
+    createFailed: "Impossible de créer l'organisation",
+    nameRequired: "Veuillez saisir un nom d'organisation valide",
+    createTitle: 'Créer une organisation',
+    createDescription:
+      'Vos documents seront regroupés par organisation. Vous pouvez créer plusieurs organisations pour séparer, par exemple, vos documents personnels de vos documents professionnels.',
+    nameLabel: "Nom de l'organisation",
+    namePlaceholder: 'Mon organisation',
+    create: 'Créer une organisation',
   },
   appSettings: {
-    title: 'Paramètres de l’application',
+    title: "Paramètres de l'application",
     language: {
       title: 'Langue',
-      description: 'Choisissez la langue utilisée par l’application sur cet appareil.',
-      useDeviceLanguage: 'Utiliser la langue de l’appareil',
+      description: "Choisissez la langue utilisée par l'application sur cet appareil.",
+      useDeviceLanguage: "Utiliser la langue de l'appareil",
     },
     errors: {
       saveFailed: {
-        title: 'Impossible d’enregistrer la langue',
-        message: 'Votre langue n’a pas été modifiée. Veuillez réessayer.',
+        title: "Impossible d'enregistrer la langue",
+        message: "Votre langue n'a pas été modifiée. Veuillez réessayer.",
       },
     },
   },
@@ -36,7 +236,54 @@ export const fr = {
   },
   serverSelection: {
     selectServer: 'Choisir un serveur',
-    title: 'Organisez, sécurisez &\narchivez vos documents.',
-    subtitle: 'Tout d’abord, choisissez où vos documents se trouvent.',
+    title: 'Organisez, sécurisez et\narchivez vos documents.',
+    subtitle: 'Pour commencer, choisissez où sont stockés vos documents.',
+    continue: 'Continuer',
+    managedCloud: {
+      title: 'Papra Cloud',
+      description: 'Utilisez le service cloud officiel de Papra',
+    },
+    selfHosted: {
+      title: 'Auto-hébergement',
+      description: 'Connectez-vous à votre propre serveur Papra',
+    },
+    serverUrl: {
+      label: 'URL du serveur',
+      placeholder: 'https://votre-serveur.fr',
+    },
+    customHeaders: {
+      label: ({ count }: { count: number }) =>
+        count > 0 ? `En-têtes personnalisés (${count})` : 'En-têtes personnalisés',
+      namePlaceholder: 'Nom',
+      valuePlaceholder: 'Valeur',
+      deleteLabel: ({ name }: { name: string }) => `Supprimer l'en-tête ${name}`,
+      add: 'Ajouter un en-tête',
+      parsingErrors: {
+        'empty-name': () => "Le nom d'un en-tête ne peut pas être vide.",
+        'invalid-name': ({ headerName }) => `Le nom d'en-tête "${headerName}" est invalide.`,
+        'forbidden-name': ({ headerName }) =>
+          `L'en-tête "${headerName}" est géré par l'application ou par le protocole et ne peut pas être défini manuellement.`,
+        'invalid-value': ({ headerName }) =>
+          `La valeur de l'en-tête "${headerName}" est invalide. Elle ne peut pas contenir de sauts de ligne.`,
+      },
+    },
+    errors: {
+      invalidUrl: {
+        title: 'URL invalide',
+        message:
+          'Veuillez saisir une URL de serveur valide en incluant le protocole (http:// ou https://).',
+      },
+      invalidCustomHeader: {
+        title: 'En-tête personnalisé invalide',
+      },
+      connectionFailed: {
+        title: 'Échec de la connexion',
+        message: 'Impossible de joindre le serveur.',
+      },
+      saveFailed: {
+        title: 'Une erreur est survenue',
+        message: "Impossible d'enregistrer la configuration du serveur. Veuillez réessayer.",
+      },
+    },
   },
-} satisfies PartialMessages<AppMessages>;
+} satisfies AppMessages;
