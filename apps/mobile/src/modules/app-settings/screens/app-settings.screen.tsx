@@ -30,7 +30,9 @@ export function AppSettingsScreen() {
 
   const languageOptions: { value: LocalePreference; label: string }[] = [
     { value: null, label: t.appSettings.language.useDeviceLanguage },
-    ...LOCALE_KEYS.map((value) => ({ value, label: locales[value].name })),
+    ...LOCALE_KEYS.map((value) => ({ value, label: locales[value].name })).sort((a, b) =>
+      a.label.localeCompare(b.label),
+    ),
   ];
 
   const handleLanguageChange = async (preference: LocalePreference) => {
