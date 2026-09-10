@@ -7,6 +7,7 @@ import type { EventServices } from './events.services';
 import { registerSyncDocumentSearchEventHandlers } from '../../documents/document-search/events/sync-document-search.handlers';
 import { registerInsertActivityLogOnDocumentCreatedHandler } from '../../documents/events/activity-log.document-created';
 import { registerInsertActivityLogOnDocumentRestoredHandler } from '../../documents/events/activity-log.document-restored';
+import { registerInsertActivityLogOnDocumentMovedHandler } from '../../documents/events/activity-log.document-moved';
 import { registerInsertActivityLogOnDocumentTagsChangedHandler } from '../../documents/events/activity-log.document-tags-changed';
 import { registerInsertActivityLogOnDocumentUpdatedHandler } from '../../documents/events/activity-log.document-updated';
 import { registerInsertActivityLogOnDocumentsTrashedHandler } from '../../documents/events/activity-log.documents-trashed';
@@ -34,6 +35,7 @@ export function registerEventHandlers(deps: {
   registerTriggerWebhooksOnDocumentsTrashedHandler(deps);
   registerInsertActivityLogOnDocumentsTrashedHandler(deps);
   registerInsertActivityLogOnDocumentRestoredHandler(deps);
+  registerInsertActivityLogOnDocumentMovedHandler(deps);
   registerTriggerWebhooksOnDocumentUpdatedHandler(deps);
   registerInsertActivityLogOnDocumentUpdatedHandler(deps);
   registerTriggerWebhooksOnDocumentTagsChangedHandler(deps);

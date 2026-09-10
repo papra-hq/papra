@@ -212,6 +212,27 @@ export async function updateDocument({
   };
 }
 
+export async function moveDocument({
+  documentId,
+  organizationId,
+  targetOrganizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+  targetOrganizationId: string;
+}) {
+  const { document } = await apiClient<{ document: AsDto<Document> }>({
+    method: 'POST',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/move`,
+    body: { targetOrganizationId },
+  });
+
+  return {
+    document: coerceDates(document),
+  };
+}
+
+
 export async function fetchDocumentActivities({
   documentId,
   organizationId,
