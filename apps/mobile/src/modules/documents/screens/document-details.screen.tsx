@@ -8,6 +8,7 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -214,7 +215,18 @@ export function DocumentDetailsScreen() {
     const hasNotes = document.notes != null && document.notes.trim() !== '';
 
     return (
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        alwaysBounceVertical
+        refreshControl={
+          <RefreshControl
+            refreshing={documentQuery.isRefetching}
+            onRefresh={() => void documentQuery.refetch()}
+            tintColor={themeColors.primary}
+            colors={[themeColors.primary]}
+          />
+        }
+      >
         <View style={styles.hero}>
           <View style={styles.heroIconContainer}>
             <Icon name="file-text" size={28} color={themeColors.primary} />
