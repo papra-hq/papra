@@ -1,4 +1,3 @@
-import type { DocumentCustomProperty } from '@/modules/documents/documents.types';
 import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
@@ -20,6 +19,7 @@ import * as Sharing from 'expo-sharing';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
+import { formatCustomPropertyValue, formatDate } from '@/modules/documents/documents.models';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
@@ -32,52 +32,10 @@ const customPropertyTypeIcons: Record<string, IconName> = {
   'boolean': 'check-square',
   'date': 'calendar',
   'select': 'list',
-  'multi-select': 'list',
+  'multi_select': 'list',
   'document-relation': 'file',
   'user-relation': 'user',
 };
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
-}
-
-function formatCustomPropertyValue({ type, value }: DocumentCustomProperty): string {
-  if (value == null || value === '' || (Array.isArray(value) && value.length === 0)) {
-    return '—';
-  }
-
-  if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No';
-  }
-
-  if (Array.isArray(value)) {
-    return value
-      .filter((item) => typeof item === 'string' || typeof item === 'number')
-      .map(String)
-      .join(', ');
-  }
-
-  if (typeof value === 'number') {
-    return String(value);
-  }
-
-  if (typeof value === 'string') {
-    if (type === 'date') {
-      const date = new Date(value);
-      if (!Number.isNaN(date.getTime())) {
-        return formatDate(date);
-      }
-    }
-
-    return value;
-  }
-
-  return JSON.stringify(value);
-}
 
 // Extract MIME type subtype, fallback to full MIME type if subtype is missing
 function getDisplayMimeType(mimeType: string): string {
