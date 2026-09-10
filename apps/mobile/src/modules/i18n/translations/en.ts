@@ -30,6 +30,8 @@ export const en = {
   },
   documents: {
     title: 'Documents',
+    loadingMore: 'Loading more documents...',
+    loadMoreFailed: 'Failed to load more documents.',
     search: {
       title: 'Search',
       placeholder: 'Search documents',

@@ -1,5 +1,4 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -19,7 +18,7 @@ import { OrganizationPickerDrawer } from '@/modules/organizations/components/org
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import { fetchOrganizationDocuments } from '../documents.services';
+import { useDocuments } from '../hooks/use-documents.hook';
 import { syncUnsyncedDocuments } from '../documents.sync.services';
 
 export function DocumentsListScreen() {
@@ -28,23 +27,7 @@ export function DocumentsListScreen() {
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const pagination = { pageIndex: 0, pageSize: 20 };
-
-  const documentsQuery = useQuery({
-    queryKey: ['organizations', currentOrganizationId, 'documents', pagination],
-    queryFn: async () => {
-      if (currentOrganizationId == null) {
-        return { documents: [], documentsCount: 0 };
-      }
-
-      return fetchOrganizationDocuments({
-        organizationId: currentOrganizationId,
-        ...pagination,
-        apiClient,
-      });
-    },
-    enabled: currentOrganizationId !== null && currentOrganizationId !== '',
-  });
+  const documentsQuery = useDocuments();
 
   const styles = createStyles({ themeColors });
 
@@ -97,7 +80,11 @@ export function DocumentsListScreen() {
         </View>
       ) : (
         <DocumentsList
-          documents={documentsQuery.data?.documents ?? []}
+          key={currentOrganizationId}
+          documents={documentsQuery.documents}
+          onLoadMore={documentsQuery.loadMore}
+          isFetchingNextPage={documentsQuery.isFetchingNextPage}
+          isFetchNextPageError={documentsQuery.isFetchNextPageError}
           emptyState={{
             title: t.documents.emptyTitle,
             subtitle: t.documents.emptySubtitle,
