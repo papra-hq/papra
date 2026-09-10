@@ -1,0 +1,47 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocFooter from '../../../docs/components/DocFooter.astro';
+import { getDocPagination, getDocStaticPaths } from '../../../docs/docs.models';
+import { useI18n } from '../../../i18n/i18n';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+export async function getStaticPaths() {
+  return getDocStaticPaths(await getCollection('docs'));
+}
+
+type Props = ReturnType<typeof getDocStaticPaths>[number]['props'];
+
+const { entry, docId, requestedLocale, contentLocale, isFallback, alternateLocales } = Astro.props;
+const { t } = useI18n({ locale: requestedLocale });
+const { Content, headings } = await render(entry);
+const { previous, next } = getDocPagination(docId);
+---
+
+<DocsLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  docId={docId}
+  locale={requestedLocale}
+  contentLocale={contentLocale}
+  alternateLocales={alternateLocales}
+  headings={headings}
+>
+  {isFallback && (
+    <p class="mb-6 rounded-lg border p-4 text-muted-foreground">
+      {t('docs.translation-fallback')}
+    </p>
+  )}
+
+  <div class="doc prose dark:prose-invert max-w-none" lang={contentLocale} data-pagefind-body>
+    <h1 data-pagefind-meta="title">{entry.data.title}</h1>
+    <Content />
+  </div>
+
+  <DocFooter previous={previous} next={next} locale={requestedLocale} />
+</DocsLayout>
+
+<style is:global>
+  .doc :is(h1, h2, h3, h4, h5, h6) {
+    scroll-margin-top: 150px;
+  }
+</style>

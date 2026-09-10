@@ -354,6 +354,29 @@ export const translations = {
   'launch-banner.text':
     'Last Chance: {{percentage}}% off for life - Offer expires December 31st, 2025!',
 
+  // Documentation (other locales use these English labels until translated)
+  'docs.categories.self-hosting': 'Self-hosting',
+  'docs.categories.api-reference': 'API Reference',
+  'docs.sections.getting-started': 'Getting Started',
+  'docs.sections.installation': 'Installation',
+  'docs.sections.platforms': 'Platforms',
+  'docs.sections.authentication': 'Authentication',
+  'docs.skip-to-content': 'Skip to content',
+  'docs.categories-label': 'Documentation categories',
+  'docs.sidebar-label': 'Documentation sidebar',
+  'docs.on-this-page': 'On this page',
+  'docs.pagination-label': 'Previous and next pages',
+  'docs.previous': 'Previous',
+  'docs.next': 'Next',
+  'docs.translation-fallback':
+    'This page is not available in your language yet. Showing the English version.',
+  'docs.search.title': 'Search documentation',
+  'docs.search.button': 'Search docs',
+  'docs.search.close': 'Close search',
+  'docs.search.loading': 'Loading search…',
+  'docs.search.placeholder': 'Search all documentation',
+  'docs.search.error': 'Search could not be loaded. Please refresh the page and try again.',
+
   // Pagination
   'pagination.go-to-page': 'Go to page {{page}} of {{total}}',
   'pagination.page': 'Page {{current}} of {{total}}',
