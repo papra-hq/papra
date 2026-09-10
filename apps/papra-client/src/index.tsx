@@ -1,5 +1,6 @@
 /* @refresh reload */
 
+import type { ParentComponent } from 'solid-js';
 import { Router } from '@solidjs/router';
 import { QueryClientProvider } from '@tanstack/solid-query';
 
@@ -28,6 +29,15 @@ import '@fontsource/inter/900.css';
 import 'virtual:uno.css';
 import './app.css';
 
+// Keep the dynamic import behind Vite's compile-time flag: no devtools modules in production.
+const DevtoolsProvider: ParentComponent = import.meta.env.DEV
+  ? lazy(async () =>
+      import('./modules/devtools/devtools.provider').then((mod) => ({
+        default: mod.DevtoolsProvider,
+      })),
+    )
+  : (props) => props.children;
+
 const DemoIndicator = isDemoMode
   ? lazy(async () =>
       import('./modules/demo/demo.provider').then((mod) => ({ default: mod.DemoIndicator })),
@@ -51,9 +61,11 @@ render(() => {
                       <AboutDialogProvider>
                         <RenameDocumentDialogProvider>
                           <ShareDocumentDialogProvider>
-                            <div class="min-h-screen font-sans text-sm font-400">
-                              {props.children}
-                            </div>
+                            <DevtoolsProvider>
+                              <div class="min-h-screen font-sans text-sm font-400">
+                                {props.children}
+                              </div>
+                            </DevtoolsProvider>
                           </ShareDocumentDialogProvider>
                         </RenameDocumentDialogProvider>
                         {DemoIndicator && <DemoIndicator />}

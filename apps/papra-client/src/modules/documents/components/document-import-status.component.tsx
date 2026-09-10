@@ -4,7 +4,7 @@ import { safely } from '@corentinth/chisels';
 import { A } from '@solidjs/router';
 import { useQuery } from '@tanstack/solid-query';
 import pLimit from 'p-limit';
-import { createContext, createSignal, For, Match, Show, Switch, useContext } from 'solid-js';
+import { createContext, createSignal, For, lazy, Match, Show, Switch, useContext } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { promptUploadFiles } from '@/modules/shared/files/upload';
@@ -16,6 +16,16 @@ import { Button } from '@/modules/ui/components/button';
 import { invalidateOrganizationDocumentsQuery } from '../documents.composables';
 import { MAX_CONCURRENT_DOCUMENT_UPLOADS } from '../documents.constants';
 import { uploadDocument } from '../documents.services';
+
+const DocumentGenerationDevtool = import.meta.env.DEV
+  ? lazy(async () =>
+      import('@/modules/devtools/tools/document-generation/document-generation.devtool').then(
+        (mod) => ({
+          default: mod.DocumentGenerationDevtool,
+        }),
+      ),
+    )
+  : null;
 
 const DocumentUploadContext = createContext<{
   uploadDocuments: (args: { files: File[] }) => Promise<void>;
@@ -162,6 +172,9 @@ export const DocumentUploadProvider: ParentComponent<{ organizationId: string }>
 
   return (
     <DocumentUploadContext.Provider value={{ uploadDocuments }}>
+      {DocumentGenerationDevtool && (
+        <DocumentGenerationDevtool organizationId={props.organizationId} />
+      )}
       {props.children}
 
       <Portal>
