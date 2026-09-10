@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { createDateFormatter } from '../i18n/formatters.models';
 import { formatCustomPropertyValue } from './documents.models';
 
 describe('formatCustomPropertyValue', () => {
@@ -36,13 +37,35 @@ describe('formatCustomPropertyValue', () => {
     { type: 'date', value: 'invalid', expected: 'invalid' },
   ])('formats $type value $value as $expected', ({ type, value, expected }) => {
     expect(
-      formatCustomPropertyValue({
-        key: 'property',
-        name: 'Property',
-        type,
-        displayOrder: 0,
-        value,
-      }),
+      formatCustomPropertyValue(
+        {
+          key: 'property',
+          name: 'Property',
+          type,
+          displayOrder: 0,
+          value,
+        },
+        { formatDate: createDateFormatter({ locale: 'en-US' }) },
+      ),
+    ).toBe(expected);
+  });
+
+  test.each([
+    { locale: 'en-GB', expected: '15 Jan 2025' },
+    { locale: 'fr-CA', expected: '15 janv. 2025' },
+    { locale: 'it-IT', expected: '15 gen 2025' },
+  ])('formats custom-property dates using $locale', ({ locale, expected }) => {
+    expect(
+      formatCustomPropertyValue(
+        {
+          key: 'date',
+          name: 'Date',
+          type: 'date',
+          displayOrder: 0,
+          value: '2025-01-15T12:00:00',
+        },
+        { formatDate: createDateFormatter({ locale }) },
+      ),
     ).toBe(expected);
   });
 });

@@ -1,6 +1,11 @@
 import type { LocaleKey } from './locales';
 import { DEFAULT_LOCALE_KEY, LOCALE_KEYS } from './locales';
 
+// Formatting follows the preferred device language, even when it has no translations.
+export function getDeviceLanguageTag(userLocales: { languageTag: string }[]): string {
+  return userLocales[0]?.languageTag ?? DEFAULT_LOCALE_KEY;
+}
+
 export function resolveUserLocale<Key extends string = LocaleKey>(
   userLocales: { languageCode?: string | null; languageTag: string }[],
   {

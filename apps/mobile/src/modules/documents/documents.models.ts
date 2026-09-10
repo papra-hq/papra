@@ -1,13 +1,5 @@
 import type { DocumentCustomProperty } from './documents.types';
 
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
-}
-
 function formatSelectOption(value: unknown): string {
   if (
     typeof value === 'object' &&
@@ -21,7 +13,10 @@ function formatSelectOption(value: unknown): string {
   return '';
 }
 
-export function formatCustomPropertyValue({ type, value }: DocumentCustomProperty): string {
+export function formatCustomPropertyValue(
+  { type, value }: DocumentCustomProperty,
+  { formatDate }: { formatDate: (date: Date) => string },
+): string {
   if (value == null || value === '' || (Array.isArray(value) && value.length === 0)) {
     return '—';
   }

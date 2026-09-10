@@ -1,7 +1,30 @@
 import { describe, expect, test } from 'vitest';
-import { resolveUserLocale } from './locales.models';
+import { getDeviceLanguageTag, resolveUserLocale } from './locales.models';
 
 describe('locales.models', () => {
+  describe('getDeviceLanguageTag', () => {
+    test.each(['en-GB', 'fr-CA', 'it-IT', 'zh-Hant-TW', 'en-US-u-ca-gregory'])(
+      'it preserves the full device language tag %s',
+      (languageTag) => {
+        expect(getDeviceLanguageTag([{ languageTag }])).to.eql(languageTag);
+      },
+    );
+
+    test('it uses the first device language even when translations use a later one', () => {
+      const userLocales = [
+        { languageCode: 'it', languageTag: 'it-IT' },
+        { languageCode: 'fr', languageTag: 'fr-CA' },
+      ];
+
+      expect(getDeviceLanguageTag(userLocales)).to.eql('it-IT');
+      expect(resolveUserLocale(userLocales)).to.eql('fr');
+    });
+
+    test('it falls back to English when no device locales are available', () => {
+      expect(getDeviceLanguageTag([])).to.eql('en');
+    });
+  });
+
   describe('resolveUserLocale', () => {
     const localeConfig = {
       supportedLocaleKeys: ['en', 'fr'],
