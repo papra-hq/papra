@@ -3,27 +3,23 @@ import type { Document } from '@/modules/documents/documents.types';
 import type { IconName } from '@/modules/ui/components/icon';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { formatBytes } from '@corentinth/chisels';
-import { useQueryClient } from '@tanstack/react-query';
+import { useIsMutating, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useState } from 'react';
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useFormatters } from '@/modules/i18n/hooks/use-formatters';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
+import { DocumentTagsDrawerContent } from '@/modules/documents/components/document-tags-drawer';
 import { RenameDocumentDialog } from '@/modules/documents/components/rename-document-dialog';
 import {
   deleteDocument,
   fetchDocumentFile,
   renameDocument,
 } from '@/modules/documents/documents.services';
+import { documentTagMutationKey } from '@/modules/tags/tags.queries';
+import { BottomDrawer } from '@/modules/ui/components/bottom-drawer';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -36,7 +32,7 @@ type DocumentActionSheetProps = {
   onDeleted?: () => void;
 };
 
-export type ActionsKey = 'view' | 'rename' | 'share' | 'delete';
+export type ActionsKey = 'view' | 'rename' | 'manage-tags' | 'share' | 'delete';
 
 export function DocumentActionSheet({
   visible,
@@ -54,6 +50,18 @@ export function DocumentActionSheet({
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
   const [isRenameDialogVisible, setIsRenameDialogVisible] = useState(false);
+  const [isManagingTags, setIsManagingTags] = useState(false);
+  const pendingTagUpdates = useIsMutating({
+    mutationKey: documentTagMutationKey({
+      organizationId: document?.organizationId ?? '',
+      documentId: document?.id ?? '',
+    }),
+  });
+
+  const handleClose = () => {
+    setIsManagingTags(false);
+    onClose();
+  };
 
   if (document === undefined) {
     return null;
@@ -198,6 +206,12 @@ export function DocumentActionSheet({
       onPress: handleRename,
     },
     {
+      key: 'manage-tags',
+      label: t.documents.manageTags,
+      icon: 'tag',
+      onPress: () => setIsManagingTags(true),
+    },
+    {
       key: 'share',
       label: t.common.share,
       icon: 'share',
@@ -222,97 +236,77 @@ export function DocumentActionSheet({
         onCancel={handleRenameCancel}
       />
 
-      <Modal
+      <BottomDrawer
         visible={visible && !isRenameDialogVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={onClose}
+        onClose={handleClose}
+        dismissible={pendingTagUpdates === 0}
       >
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.sheet}>
-                <View style={styles.handleBar} />
-
-                <View style={styles.header}>
-                  <View style={styles.fileIconContainer}>
-                    <Icon name="file-text" size={24} color={themeColors.primary} />
-                  </View>
-                  <View style={styles.headerContent}>
-                    <Text style={styles.documentName} numberOfLines={2}>
-                      {document.name}
-                    </Text>
-                    <Text style={styles.documentMeta}>
-                      {displayMimeType}
-                      {' · '}
-                      {formatBytes({ bytes: document.originalSize })}
-                      {' · '}
-                      {formatDate(document.createdAt)}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.actions}>
-                  {filteredActions.map((action) => (
-                    <TouchableOpacity
-                      key={action.key}
-                      style={styles.actionRow}
-                      onPress={action.onPress}
-                      activeOpacity={0.6}
-                    >
-                      <View style={styles.actionIconContainer}>
-                        <Icon
-                          name={action.icon}
-                          size={20}
-                          color={
-                            action.destructive === true
-                              ? themeColors.destructive
-                              : themeColors.foreground
-                          }
-                        />
-                      </View>
-                      <Text
-                        style={[
-                          styles.actionText,
-                          action.destructive === true && { color: themeColors.destructive },
-                        ]}
-                      >
-                        {action.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+        {isManagingTags ? (
+          <DocumentTagsDrawerContent
+            key={`${document.organizationId}:${document.id}`}
+            organizationId={document.organizationId}
+            documentId={document.id}
+            onClose={handleClose}
+          />
+        ) : (
+          <>
+            <View style={styles.header}>
+              <View style={styles.fileIconContainer}>
+                <Icon name="file-text" size={24} color={themeColors.primary} />
               </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+              <View style={styles.headerContent}>
+                <Text style={styles.documentName} numberOfLines={2}>
+                  {document.name}
+                </Text>
+                <Text style={styles.documentMeta}>
+                  {displayMimeType}
+                  {' · '}
+                  {formatBytes({ bytes: document.originalSize })}
+                  {' · '}
+                  {formatDate(document.createdAt)}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.actions}>
+              {filteredActions.map((action) => (
+                <TouchableOpacity
+                  key={action.key}
+                  style={styles.actionRow}
+                  onPress={action.onPress}
+                  activeOpacity={0.6}
+                >
+                  <View style={styles.actionIconContainer}>
+                    <Icon
+                      name={action.icon}
+                      size={20}
+                      color={
+                        action.destructive === true
+                          ? themeColors.destructive
+                          : themeColors.foreground
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.actionText,
+                      action.destructive === true && { color: themeColors.destructive },
+                    ]}
+                  >
+                    {action.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
+        )}
+      </BottomDrawer>
     </>
   );
 }
 
 function createStyles({ themeColors }: { themeColors: ThemeColors }) {
   return StyleSheet.create({
-    overlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
-    },
-    sheet: {
-      backgroundColor: themeColors.secondaryBackground,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      paddingBottom: 34,
-    },
-    handleBar: {
-      width: 36,
-      height: 4,
-      backgroundColor: themeColors.border,
-      borderRadius: 2,
-      alignSelf: 'center',
-      marginTop: 8,
-      marginBottom: 16,
-    },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
