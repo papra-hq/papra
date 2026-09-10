@@ -1,5 +1,4 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useQuery } from '@tanstack/react-query';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -13,20 +12,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
-import { useApiClient } from '@/modules/api/providers/api.provider';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import { fetchOrganizationDocuments } from '../documents.services';
+import { useDocuments } from '../hooks/use-documents.hook';
 
 const SEARCH_DEBOUNCE_MS = 300;
-const pagination = { pageIndex: 0, pageSize: 20 };
 
 export function DocumentsSearchScreen() {
   const t = useAppTranslations();
   const themeColors = useThemeColor();
-  const apiClient = useApiClient();
   const { currentOrganizationId } = useOrganizations();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,30 +47,7 @@ export function DocumentsSearchScreen() {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  const searchResultsQuery = useQuery({
-    queryKey: [
-      'organizations',
-      currentOrganizationId,
-      'documents',
-      'search',
-      debouncedSearchQuery,
-      pagination,
-    ],
-    queryFn: async () => {
-      if (currentOrganizationId == null) {
-        return { documents: [], documentsCount: 0 };
-      }
-
-      return fetchOrganizationDocuments({
-        organizationId: currentOrganizationId,
-        searchQuery: debouncedSearchQuery,
-        ...pagination,
-        apiClient,
-      });
-    },
-    enabled:
-      currentOrganizationId !== null && currentOrganizationId !== '' && debouncedSearchQuery !== '',
-  });
+  const searchResultsQuery = useDocuments({ searchQuery: debouncedSearchQuery });
 
   const handleCancel = () => {
     Keyboard.dismiss();
@@ -133,7 +106,11 @@ export function DocumentsSearchScreen() {
         </View>
       ) : (
         <DocumentsList
-          documents={searchResultsQuery.data?.documents ?? []}
+          key={JSON.stringify([currentOrganizationId, debouncedSearchQuery])}
+          documents={searchResultsQuery.documents}
+          onLoadMore={searchResultsQuery.loadMore}
+          isFetchingNextPage={searchResultsQuery.isFetchingNextPage}
+          isFetchNextPageError={searchResultsQuery.isFetchNextPageError}
           emptyState={{
             title: t.documents.search.empty,
             subtitle: t.documents.search.noResults({ query: debouncedSearchQuery }),

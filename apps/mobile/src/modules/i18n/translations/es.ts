@@ -30,6 +30,8 @@ export const es = {
   },
   documents: {
     title: 'Documentos',
+    loadingMore: 'Cargando más documentos…',
+    loadMoreFailed: 'No se han podido cargar más documentos.',
     search: {
       title: 'Buscar',
       placeholder: 'Buscar documentos',
