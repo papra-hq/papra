@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { queryClient } from '@/modules/api/providers/query.provider';
 import { joinFileName, splitFileName } from '@/modules/lib/path/path.models';
@@ -32,6 +33,7 @@ type UploadStatus =
   | { state: 'success'; count: number };
 
 export function DocumentShareScreen() {
+  const t = useAppTranslations();
   const router = useRouter();
   const themeColors = useThemeColor();
   const insets = useSafeAreaInsets();
@@ -95,8 +97,8 @@ export function DocumentShareScreen() {
   const handleSave = async () => {
     if (selectedOrganizationId == null) {
       showAlert({
-        title: 'No Organization Selected',
-        message: 'Please select an organization to save the document to.',
+        title: t.documents.import.noOrganization,
+        message: t.documents.share.selectOrganization,
       });
       return;
     }
@@ -122,8 +124,11 @@ export function DocumentShareScreen() {
         setFiles(files.slice(index));
         setStatus({ state: 'idle' });
         showAlert({
-          title: 'Upload Failed',
-          message: `Failed to upload ${file.fileName}: ${error instanceof Error ? error.message : 'unknown error'}`,
+          title: t.documents.import.uploadFailed,
+          message: t.documents.share.uploadError({
+            name: file.fileName,
+            error: error instanceof Error ? error.message : t.common.unknownError,
+          }),
         });
         return;
       }
@@ -143,11 +148,11 @@ export function DocumentShareScreen() {
 
   if (status.state === 'success') {
     const firstFile = files[0];
-    const destinationName = selectedOrganization?.name ?? 'your organization';
+    const destinationName = selectedOrganization?.name ?? t.documents.share.destinationFallback;
     const successMessage =
       status.count === 1 && firstFile
-        ? `${getUploadName(firstFile)} has been saved to ${destinationName}.`
-        : `${status.count} documents have been saved to ${destinationName}.`;
+        ? t.documents.share.saved({ name: getUploadName(firstFile), destination: destinationName })
+        : t.documents.share.savedMultiple({ count: status.count, destination: destinationName });
 
     return (
       <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -155,13 +160,13 @@ export function DocumentShareScreen() {
           <View style={styles.successIconContainer}>
             <Icon name="check" size={40} color={themeColors.primary} />
           </View>
-          <Text style={styles.successTitle}>Saved to Papra</Text>
+          <Text style={styles.successTitle}>{t.documents.share.savedTitle}</Text>
           <Text style={styles.successMessage}>{successMessage}</Text>
           <TouchableOpacity
             style={[styles.primaryButton, styles.successButton]}
             onPress={leaveScreen}
           >
-            <Text style={styles.primaryButtonText}>Done</Text>
+            <Text style={styles.primaryButtonText}>{t.common.done}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -174,7 +179,7 @@ export function DocumentShareScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.headerTitle}>Save to Papra</Text>
+        <Text style={styles.headerTitle}>{t.documents.share.save}</Text>
         <TouchableOpacity
           onPress={leaveScreen}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -187,7 +192,7 @@ export function DocumentShareScreen() {
       <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
         {files.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No shared file to save.</Text>
+            <Text style={styles.emptyText}>{t.documents.share.empty}</Text>
           </View>
         ) : (
           <>
@@ -209,13 +214,13 @@ export function DocumentShareScreen() {
 
             {isSingleFile && (
               <View style={styles.fieldContainer}>
-                <Text style={styles.fieldLabel}>Name</Text>
+                <Text style={styles.fieldLabel}>{t.common.name}</Text>
                 <View style={styles.nameInputContainer}>
                   <TextInput
                     style={styles.nameInput}
                     value={baseName}
                     onChangeText={setBaseName}
-                    placeholder="Document name"
+                    placeholder={t.documents.nameLabel}
                     placeholderTextColor={themeColors.mutedForeground}
                     editable={status.state !== 'uploading'}
                   />
@@ -227,14 +232,14 @@ export function DocumentShareScreen() {
             )}
 
             <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Organization</Text>
+              <Text style={styles.fieldLabel}>{t.organizations.label}</Text>
               <TouchableOpacity
                 style={styles.orgSelector}
                 onPress={() => setIsOrgPickerVisible(true)}
                 disabled={status.state === 'uploading'}
               >
                 <Text style={styles.orgSelectorText} numberOfLines={1}>
-                  {selectedOrganization?.name ?? 'Select an organization'}
+                  {selectedOrganization?.name ?? t.organizations.selectPlaceholder}
                 </Text>
                 <Icon name="chevron-down" size={20} color={themeColors.mutedForeground} />
               </TouchableOpacity>
@@ -256,13 +261,18 @@ export function DocumentShareScreen() {
               <ActivityIndicator size="small" color={themeColors.primaryForeground} />
               <Text style={styles.primaryButtonText}>
                 {status.total === 1
-                  ? 'Uploading…'
-                  : `Uploading ${status.current} of ${status.total}…`}
+                  ? t.documents.share.uploading
+                  : t.documents.share.uploadProgress({
+                      current: status.current,
+                      total: status.total,
+                    })}
               </Text>
             </View>
           ) : (
             <Text style={styles.primaryButtonText}>
-              {files.length > 1 ? `Save ${files.length} documents` : 'Save to Papra'}
+              {files.length > 1
+                ? t.documents.share.saveMultiple({ count: files.length })
+                : t.documents.share.save}
             </Text>
           )}
         </TouchableOpacity>

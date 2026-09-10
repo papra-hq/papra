@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { RenameDocumentDialog } from '@/modules/documents/components/rename-document-dialog';
 import {
@@ -43,6 +44,7 @@ export function DocumentActionSheet({
   excludedActions = [],
   onDeleted,
 }: DocumentActionSheetProps) {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
@@ -81,8 +83,8 @@ export function DocumentActionSheet({
     const canShare = await Sharing.isAvailableAsync();
     if (!canShare) {
       showAlert({
-        title: 'Sharing Failed',
-        message: 'Sharing is not available on this device. Please share the document manually.',
+        title: t.documents.sharingFailed,
+        message: t.documents.sharingUnavailable,
       });
       return;
     }
@@ -97,8 +99,8 @@ export function DocumentActionSheet({
       await Sharing.shareAsync(fileUri);
     } catch {
       showAlert({
-        title: 'Error',
-        message: 'Failed to download document file',
+        title: t.common.error,
+        message: t.documents.downloadFailed,
       });
     }
   };
@@ -135,8 +137,8 @@ export function DocumentActionSheet({
       });
     } catch {
       showAlert({
-        title: 'Error',
-        message: 'Failed to rename document',
+        title: t.common.error,
+        message: t.documents.renameFailed,
       });
     }
   };
@@ -145,12 +147,12 @@ export function DocumentActionSheet({
     onClose();
 
     showAlert({
-      title: 'Delete Document',
-      message: `Are you sure you want to delete "${document.name}"? It will be moved to the trash.`,
+      title: t.documents.deleteTitle,
+      message: t.documents.deleteConfirmation({ name: document.name }),
       buttons: [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t.common.cancel, style: 'cancel' },
         {
-          text: 'Delete',
+          text: t.common.delete,
           style: 'destructive',
           onPress: async () => {
             try {
@@ -167,8 +169,8 @@ export function DocumentActionSheet({
               onDeleted?.();
             } catch {
               showAlert({
-                title: 'Error',
-                message: 'Failed to delete document',
+                title: t.common.error,
+                message: t.documents.deleteFailed,
               });
             }
           },
@@ -192,25 +194,25 @@ export function DocumentActionSheet({
   }[] = [
     {
       key: 'view',
-      label: 'View document',
+      label: t.documents.view,
       icon: 'eye',
       onPress: handleView,
     },
     {
       key: 'rename',
-      label: 'Rename',
+      label: t.documents.rename,
       icon: 'edit-2',
       onPress: handleRename,
     },
     {
       key: 'share',
-      label: 'Share',
+      label: t.common.share,
       icon: 'share',
       onPress: handleDownloadAndShare,
     },
     {
       key: 'delete',
-      label: 'Delete',
+      label: t.common.delete,
       icon: 'trash-2',
       onPress: handleDelete,
       destructive: true,

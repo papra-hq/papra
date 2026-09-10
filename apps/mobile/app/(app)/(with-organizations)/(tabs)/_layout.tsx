@@ -31,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="list"
         options={{
-          title: 'Documents',
+          title: t.documents.title,
           tabBarIcon: ({ color }) => (
             <Icon name="home" size={30} color={color} style={{ height: 30 }} />
           ),
@@ -41,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: t.documents.search.title,
           tabBarIcon: ({ color }) => (
             <Icon name="search" size={30} color={color} style={{ height: 30 }} />
           ),
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="import"
         options={{
-          title: 'Import',
+          title: t.documents.import.title,
           tabBarButton: () => <ImportTabButton />,
           tabBarLabel: () => null,
         }}

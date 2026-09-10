@@ -15,19 +15,21 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as v from 'valibot';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useAuthClient } from '@/modules/api/providers/api.provider';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useServerConfig } from '../../config/hooks/use-server-config';
 import { AuthNavigation } from '../components/auth-navigation';
 
-const signupSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1, 'Name is required')),
-  email: v.pipe(v.string(), v.email('Please enter a valid email')),
-  password: v.pipe(v.string(), v.minLength(8, 'Password must be at least 8 characters')),
-});
-
 export function SignupScreen() {
+  const t = useAppTranslations();
+  const signupSchema = v.object({
+    name: v.pipe(v.string(), v.minLength(1, t.auth.validation.name)),
+    email: v.pipe(v.string(), v.email(t.auth.validation.email)),
+    password: v.pipe(v.string(), v.minLength(8, t.auth.validation.password)),
+  });
+
   const router = useRouter();
   const themeColors = useThemeColor();
   const authClient = useAuthClient();
@@ -58,18 +60,17 @@ export function SignupScreen() {
 
         if (isEmailVerificationRequired) {
           showAlert({
-            title: 'Check your email',
-            message:
-              'We sent you a verification link. Please check your email to verify your account.',
-            buttons: [{ text: 'OK', onPress: () => router.replace('/auth/login') }],
+            title: t.auth.signup.checkEmail,
+            message: t.auth.signup.verificationSent,
+            buttons: [{ text: t.common.ok, onPress: () => router.replace('/auth/login') }],
           });
         } else {
           router.replace('/(app)/(with-organizations)/(tabs)/list');
         }
       } catch (error) {
         showAlert({
-          title: 'Signup Failed',
-          message: error instanceof Error ? error.message : 'An error occurred',
+          title: t.auth.signup.failed,
+          message: error instanceof Error ? error.message : t.common.anErrorOccurred,
         });
       } finally {
         setIsSubmitting(false);
@@ -101,9 +102,9 @@ export function SignupScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <AuthNavigation />
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>Registration is currently disabled</Text>
+            <Text style={styles.errorText}>{t.auth.signup.disabled}</Text>
             <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
-              <Text style={styles.linkText}>Go back to login</Text>
+              <Text style={styles.linkText}>{t.auth.signup.backToLogin}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -120,18 +121,18 @@ export function SignupScreen() {
         <AuthNavigation disabled={isSubmitting} />
 
         <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Sign up to get started</Text>
+          <Text style={styles.title}>{t.auth.signup.title}</Text>
+          <Text style={styles.subtitle}>{t.auth.signup.subtitle}</Text>
         </View>
 
         <View style={styles.formContainer}>
           <form.Field name="name">
             {(field) => (
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Name</Text>
+                <Text style={styles.label}>{t.common.name}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Your name"
+                  placeholder={t.auth.signup.namePlaceholder}
                   placeholderTextColor={themeColors.mutedForeground}
                   value={field.state.value}
                   onChangeText={field.handleChange}
@@ -146,10 +147,10 @@ export function SignupScreen() {
           <form.Field name="email">
             {(field) => (
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Email</Text>
+                <Text style={styles.label}>{t.common.email}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="you@example.com"
+                  placeholder={t.auth.emailPlaceholder}
                   placeholderTextColor={themeColors.mutedForeground}
                   value={field.state.value}
                   onChangeText={field.handleChange}
@@ -166,10 +167,10 @@ export function SignupScreen() {
           <form.Field name="password">
             {(field) => (
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Password</Text>
+                <Text style={styles.label}>{t.auth.password}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="At least 8 characters"
+                  placeholder={t.auth.signup.passwordPlaceholder}
                   placeholderTextColor={themeColors.mutedForeground}
                   value={field.state.value}
                   onChangeText={field.handleChange}
@@ -189,13 +190,13 @@ export function SignupScreen() {
             {isSubmitting ? (
               <ActivityIndicator color={themeColors.primaryForeground} />
             ) : (
-              <Text style={styles.buttonText}>Sign Up</Text>
+              <Text style={styles.buttonText}>{t.auth.signup.submit}</Text>
             )}
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.linkButton} onPress={() => router.back()}>
-          <Text style={styles.linkText}>Already have an account? Sign in</Text>
+          <Text style={styles.linkText}>{t.auth.signup.loginLink}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { ShareIntentProvider } from 'expo-share-intent';
 import { StatusBar } from 'expo-status-bar';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { AppProviders } from '@/modules/app/providers/app-providers';
 import { ShareIntentHandler } from '@/modules/documents/components/share-intent-handler';
 
@@ -23,6 +24,7 @@ export default function RootLayout() {
 }
 
 function LocalizedLayout() {
+  const t = useAppTranslations();
   const colorScheme = useColorScheme();
 
   useEffect(() => {
@@ -41,7 +43,10 @@ function LocalizedLayout() {
               name="app-settings"
               options={{ presentation: 'modal', headerShown: false }}
             />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: 'modal', title: t.navigation.modalTitle }}
+            />
           </Stack>
           <ShareIntentHandler />
           <StatusBar style="auto" />

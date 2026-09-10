@@ -1,6 +1,7 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { useRouter } from 'expo-router';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { queryClient } from '@/modules/api/providers/query.provider';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
@@ -16,6 +17,7 @@ type ImportDrawerProps = {
 };
 
 export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
+  const t = useAppTranslations();
   const router = useRouter();
   const themeColors = useThemeColor();
   const { showAlert } = useAlert();
@@ -30,8 +32,8 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
     try {
       if (currentOrganizationId == null) {
         showAlert({
-          title: 'No Organization Selected',
-          message: 'Please select an organization before importing documents.',
+          title: t.documents.import.noOrganization,
+          message: t.documents.import.selectBeforeImport,
         });
         return;
       }
@@ -52,13 +54,13 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
       });
 
       showAlert({
-        title: 'Upload Successful',
-        message: `Successfully uploaded: ${localDocument.name}`,
+        title: t.documents.import.uploadSuccessful,
+        message: t.documents.import.uploaded({ name: localDocument.name }),
       });
     } catch (error) {
       showAlert({
-        title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to pick document',
+        title: t.common.error,
+        message: error instanceof Error ? error.message : t.documents.import.pickFailed,
       });
     }
   };
@@ -73,7 +75,7 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
       <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={styles.drawer}>
           <View style={styles.header}>
-            <Text style={styles.title}>Import Document</Text>
+            <Text style={styles.title}>{t.documents.import.drawerTitle}</Text>
           </View>
 
           <View style={styles.optionsContainer}>
@@ -82,8 +84,10 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
                 <Icon name="file-plus" size={24} style={styles.optionIcon} />
               </View>
               <View style={styles.optionTextContainer}>
-                <Text style={styles.optionTitle}>Import from Files</Text>
-                <Text style={styles.optionDescription}>Choose a document from your device</Text>
+                <Text style={styles.optionTitle}>{t.documents.import.fromFiles}</Text>
+                <Text style={styles.optionDescription}>
+                  {t.documents.import.fromFilesDescription}
+                </Text>
               </View>
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
             </TouchableOpacity>
@@ -93,15 +97,15 @@ export function ImportDrawer({ visible, onClose }: ImportDrawerProps) {
                 <Icon name="camera" size={24} style={styles.optionIcon} />
               </View>
               <View style={styles.optionTextContainer}>
-                <Text style={styles.optionTitle}>Scan Document</Text>
-                <Text style={styles.optionDescription}>Use camera to scan a document</Text>
+                <Text style={styles.optionTitle}>{t.documents.import.scan}</Text>
+                <Text style={styles.optionDescription}>{t.documents.import.scanDescription}</Text>
               </View>
               <Icon name="chevron-right" size={18} style={styles.chevronIcon} />
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.cancelButtonText}>{t.common.cancel}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

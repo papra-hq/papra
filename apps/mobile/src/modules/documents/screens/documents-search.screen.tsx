@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
@@ -23,6 +24,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 const pagination = { pageIndex: 0, pageSize: 20 };
 
 export function DocumentsSearchScreen() {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId } = useOrganizations();
@@ -95,7 +97,7 @@ export function DocumentsSearchScreen() {
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search documents"
+            placeholder={t.documents.search.placeholder}
             placeholderTextColor={themeColors.mutedForeground}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -108,22 +110,22 @@ export function DocumentsSearchScreen() {
               onPress={() => setSearchQuery('')}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
-              accessibilityLabel="Clear search text"
+              accessibilityLabel={t.documents.search.clear}
             >
               <Icon name="x" size={18} color={themeColors.mutedForeground} />
             </TouchableOpacity>
           )}
         </View>
         <TouchableOpacity onPress={handleCancel} hitSlop={{ top: 10, bottom: 10 }}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
+          <Text style={styles.cancelButtonText}>{t.common.cancel}</Text>
         </TouchableOpacity>
       </View>
 
       {debouncedSearchQuery === '' ? (
         <View style={styles.centerContent}>
           <Icon name="search" size={40} color={themeColors.mutedForeground} />
-          <Text style={styles.hintText}>Search your documents</Text>
-          <Text style={styles.hintSubtext}>Find documents by name or content</Text>
+          <Text style={styles.hintText}>{t.documents.search.hint}</Text>
+          <Text style={styles.hintSubtext}>{t.documents.search.hintDescription}</Text>
         </View>
       ) : searchResultsQuery.isLoading ? (
         <View style={styles.centerContent}>
@@ -133,8 +135,8 @@ export function DocumentsSearchScreen() {
         <DocumentsList
           documents={searchResultsQuery.data?.documents ?? []}
           emptyState={{
-            title: 'No documents found',
-            subtitle: `No results for "${debouncedSearchQuery}"`,
+            title: t.documents.search.empty,
+            subtitle: t.documents.search.noResults({ query: debouncedSearchQuery }),
           }}
           keyboardShouldPersistTaps="handled"
         />
