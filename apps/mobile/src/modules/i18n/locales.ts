@@ -1,6 +1,7 @@
 import type { PartialMessages } from './i18n.types';
 import { de } from './translations/de';
 import { en } from './translations/en';
+import { es } from './translations/es';
 import { fr } from './translations/fr';
 
 export const locales = {
@@ -15,6 +16,10 @@ export const locales = {
   de: {
     name: 'Deutsch',
     messages: de,
+  },
+  es: {
+    name: 'Español',
+    messages: es,
   },
 };
 
