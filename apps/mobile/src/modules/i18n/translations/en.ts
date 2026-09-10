@@ -205,6 +205,12 @@ export const en = {
   },
   appSettings: {
     title: 'App settings',
+    about: {
+      title: 'About',
+      version: 'Version',
+      commit: 'Commit',
+      unknown: 'Unknown',
+    },
     language: {
       title: 'Language',
       description: 'Choose the language used by the app on this device.',

@@ -212,6 +212,12 @@ export const de = {
   },
   appSettings: {
     title: 'App-Einstellungen',
+    about: {
+      title: 'Über die App',
+      version: 'Version',
+      commit: 'Commit',
+      unknown: 'Unbekannt',
+    },
     language: {
       title: 'Sprache',
       description: 'Wählen Sie die Sprache, die die App auf diesem Gerät verwendet.',
