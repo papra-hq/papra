@@ -1,8 +1,24 @@
 import type { ApiClient } from '../api/api.client';
-import { infiniteQueryOptions } from '@tanstack/react-query';
-import { fetchOrganizationDocuments } from './documents.services';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
+import { fetchDocument, fetchOrganizationDocuments } from './documents.services';
 
 const pageSize = 20;
+
+export function documentQueryOptions({
+  organizationId,
+  documentId,
+  apiClient,
+}: {
+  organizationId: string;
+  documentId: string;
+  apiClient: ApiClient;
+}) {
+  return queryOptions({
+    queryKey: ['organizations', organizationId, 'documents', documentId],
+    queryFn: async () => fetchDocument({ organizationId, documentId, apiClient }),
+    enabled: organizationId != null && documentId != null,
+  });
+}
 
 export function organizationDocumentsInfiniteQueryOptions({
   organizationId,

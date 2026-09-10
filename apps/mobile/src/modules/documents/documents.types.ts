@@ -1,3 +1,5 @@
+import type { Tag } from '../tags/tags.types';
+
 export type DocumentCustomProperty = {
   key: string;
   name: string;
@@ -17,9 +19,5 @@ export type Document = {
   localUri: string | undefined;
   notes?: string | null;
   customProperties?: DocumentCustomProperty[];
-  tags: {
-    id: string;
-    name: string;
-    color: string;
-  }[];
+  tags: Tag[];
 };

@@ -21,8 +21,10 @@ import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useFormatters } from '@/modules/i18n/hooks/use-formatters';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
+import { DocumentTagsDrawer } from '@/modules/documents/components/document-tags-drawer';
 import { formatCustomPropertyValue } from '@/modules/documents/documents.models';
-import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
+import { documentQueryOptions } from '@/modules/documents/documents.queries';
+import { fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
@@ -84,15 +86,12 @@ export function DocumentDetailsScreen() {
   const apiClient = useApiClient();
   const authClient = useAuthClient();
   const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
+  const [isTagsDrawerVisible, setIsTagsDrawerVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<'download' | 'share' | undefined>(undefined);
 
   const { documentId, organizationId } = params;
 
-  const documentQuery = useQuery({
-    queryKey: ['organizations', organizationId, 'documents', documentId],
-    queryFn: async () => fetchDocument({ organizationId, documentId, apiClient }),
-    enabled: organizationId != null && documentId != null,
-  });
+  const documentQuery = useQuery(documentQueryOptions({ organizationId, documentId, apiClient }));
 
   if (organizationId == null || documentId == null) {
     showAlert({
@@ -272,16 +271,29 @@ export function DocumentDetailsScreen() {
           </TouchableOpacity>
         </View>
 
-        {document.tags.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t.documents.tags}</Text>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, styles.tagsTitle]}>{t.documents.tags}</Text>
+            <TouchableOpacity
+              style={styles.manageTagsButton}
+              onPress={() => setIsTagsDrawerVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t.documents.manageTags}
+            >
+              <Icon name="tag" size={16} color={themeColors.primary} />
+              <Text style={styles.manageTagsText}>{t.documents.manageTags}</Text>
+            </TouchableOpacity>
+          </View>
+          {document.tags.length > 0 ? (
             <View style={styles.tagsContainer}>
               {document.tags.map((tag) => (
                 <Tag key={tag.id} name={tag.name} color={tag.color} />
               ))}
             </View>
-          </View>
-        )}
+          ) : (
+            <Text style={styles.heroMeta}>{t.documents.tagPicker.noTags}</Text>
+          )}
+        </View>
 
         {hasNotes && (
           <View style={styles.section}>
@@ -377,6 +389,13 @@ export function DocumentDetailsScreen() {
         onClose={() => setIsActionSheetVisible(false)}
         excludedActions={['view']}
         onDeleted={() => router.back()}
+      />
+
+      <DocumentTagsDrawer
+        visible={isTagsDrawerVisible}
+        organizationId={organizationId}
+        documentId={documentId}
+        onClose={() => setIsTagsDrawerVisible(false)}
       />
 
       {renderContent()}
@@ -483,6 +502,29 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       textTransform: 'uppercase',
       letterSpacing: 0.5,
       marginBottom: 8,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+      marginBottom: 8,
+    },
+    tagsTitle: {
+      marginBottom: 0,
+    },
+    manageTagsButton: {
+      flexShrink: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingVertical: 12,
+    },
+    manageTagsText: {
+      flexShrink: 1,
+      color: themeColors.primary,
+      fontSize: 14,
+      fontWeight: '600',
     },
     tagsContainer: {
       flexDirection: 'row',
