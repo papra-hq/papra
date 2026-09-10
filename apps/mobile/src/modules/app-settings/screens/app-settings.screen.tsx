@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { APP_COMMIT_SHA, APP_VERSION } from '@/modules/app/app.constants';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useLocale } from '@/modules/i18n/hooks/use-locale';
 import { LOCALE_KEYS, locales } from '@/modules/i18n/locales';
@@ -119,6 +120,26 @@ export function AppSettingsScreen() {
             );
           })}
         </View>
+
+        <View style={styles.about}>
+          <Text style={styles.sectionTitle} accessibilityRole="header">
+            {t.appSettings.about.title}
+          </Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>{t.appSettings.about.version}</Text>
+            <Text style={styles.infoValue} selectable>
+              {APP_VERSION ?? t.appSettings.about.unknown}
+            </Text>
+          </View>
+          {APP_COMMIT_SHA && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>{t.appSettings.about.commit}</Text>
+              <Text style={styles.infoValue} selectable>
+                {APP_COMMIT_SHA.slice(0, 7)}
+              </Text>
+            </View>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -171,6 +192,27 @@ function createStyles({ themeColors }: { themeColors: ThemeColors }) {
       fontSize: 14,
       color: themeColors.mutedForeground,
       marginBottom: 20,
+    },
+    about: {
+      marginTop: 32,
+      gap: 12,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 16,
+    },
+    infoLabel: {
+      flexShrink: 1,
+      fontSize: 14,
+      color: themeColors.mutedForeground,
+    },
+    infoValue: {
+      flexShrink: 1,
+      textAlign: 'right',
+      fontSize: 14,
+      color: themeColors.foreground,
     },
     languageOptions: {
       gap: 8,

@@ -210,6 +210,12 @@ export const fr = {
   },
   appSettings: {
     title: "Paramètres de l'application",
+    about: {
+      title: 'À propos',
+      version: 'Version',
+      commit: 'Commit',
+      unknown: 'Inconnue',
+    },
     language: {
       title: 'Langue',
       description: "Choisissez la langue utilisée par l'application sur cet appareil.",

@@ -1,5 +1,24 @@
 import type { ExpoConfig } from 'expo/config';
+import { execFileSync } from 'node:child_process';
 import { version } from './package.json';
+
+function getGitCommitSha() {
+  const commitSha = process.env.EAS_BUILD_GIT_COMMIT_HASH || process.env.GIT_COMMIT;
+
+  if (commitSha) {
+    return commitSha.trim();
+  }
+
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: __dirname,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return undefined;
+  }
+}
 
 const isDevelopment = process.env.APP_VARIANT === 'development';
 
@@ -91,6 +110,7 @@ const config: ExpoConfig = {
     reactCompiler: true,
   },
   extra: {
+    gitCommitSha: getGitCommitSha(),
     router: {},
     eas: {
       projectId: '8d127afd-9d57-415b-a108-3e7b85439cfd',
