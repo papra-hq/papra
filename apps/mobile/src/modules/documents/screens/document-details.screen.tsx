@@ -17,9 +17,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
+import { useFormatters } from '@/modules/i18n/hooks/use-formatters';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
-import { formatCustomPropertyValue, formatDate } from '@/modules/documents/documents.models';
+import { formatCustomPropertyValue } from '@/modules/documents/documents.models';
 import { fetchDocument, fetchDocumentFile } from '@/modules/documents/documents.services';
 import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
@@ -73,6 +74,7 @@ function InfoRow({
 
 export function DocumentDetailsScreen() {
   const t = useAppTranslations();
+  const { formatDate } = useFormatters();
   const router = useRouter();
   const params = useLocalSearchParams<{ documentId: string; organizationId: string }>();
   const themeColors = useThemeColor();
@@ -330,7 +332,7 @@ export function DocumentDetailsScreen() {
                   key={property.key}
                   icon={customPropertyTypeIcons[property.type] ?? 'tag'}
                   label={property.name}
-                  value={formatCustomPropertyValue(property)}
+                  value={formatCustomPropertyValue(property, { formatDate })}
                   isLast={index === customProperties.length - 1}
                   styles={styles}
                   themeColors={themeColors}

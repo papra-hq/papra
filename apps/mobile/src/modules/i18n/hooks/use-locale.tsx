@@ -2,12 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LocaleKey } from '../locales';
 import { useLocales } from 'expo-localization';
-import { resolveUserLocale } from '../locales.models';
+import { getDeviceLanguageTag, resolveUserLocale } from '../locales.models';
 import type { LocalePreference } from '../i18n.local-storage';
 import { i18nLocalStorage } from '../i18n.local-storage';
 
 type LocaleProviderContext = {
   locale: LocaleKey;
+  deviceLanguageTag: string;
   localePreference: LocalePreference;
   setLocalePreference: (preference: LocalePreference) => Promise<void>;
 };
@@ -41,6 +42,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   };
 
   const locale = localePreference ?? resolveUserLocale<LocaleKey>(userLocales);
+  const deviceLanguageTag = getDeviceLanguageTag(userLocales);
 
   if (!isLocaleLoaded) {
     return null;
@@ -50,6 +52,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     <LocaleContext.Provider
       value={{
         locale,
+        deviceLanguageTag,
         localePreference,
         setLocalePreference,
       }}

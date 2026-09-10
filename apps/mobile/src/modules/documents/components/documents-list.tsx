@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DocumentActionSheet } from '@/modules/documents/components/document-action-sheet';
+import { useFormatters } from '@/modules/i18n/hooks/use-formatters';
 import { Tag } from '@/modules/tags/components/tag';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
@@ -29,20 +30,13 @@ export function DocumentsList({
   refreshControl,
   keyboardShouldPersistTaps,
 }: DocumentsListProps) {
+  const { formatDate } = useFormatters();
   const themeColors = useThemeColor();
   const [onDocumentActionSheet, setOnDocumentActionSheet] = useState<
     CoerceDates<Document> | undefined
   >(undefined);
 
   const styles = createStyles({ themeColors });
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
-  };
 
   return (
     <>

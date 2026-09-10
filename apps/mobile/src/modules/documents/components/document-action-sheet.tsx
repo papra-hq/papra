@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
+import { useFormatters } from '@/modules/i18n/hooks/use-formatters';
 import { useApiClient, useAuthClient } from '@/modules/api/providers/api.provider';
 import { RenameDocumentDialog } from '@/modules/documents/components/rename-document-dialog';
 import {
@@ -45,6 +46,7 @@ export function DocumentActionSheet({
   onDeleted,
 }: DocumentActionSheetProps) {
   const t = useAppTranslations();
+  const { formatDate } = useFormatters();
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
   const { showAlert } = useAlert();
@@ -56,15 +58,6 @@ export function DocumentActionSheet({
   if (document === undefined) {
     return null;
   }
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
 
   const handleView = async () => {
     onClose();
@@ -254,7 +247,7 @@ export function DocumentActionSheet({
                       {' · '}
                       {formatBytes({ bytes: document.originalSize })}
                       {' · '}
-                      {formatDate(document.createdAt.toISOString())}
+                      {formatDate(document.createdAt)}
                     </Text>
                   </View>
                 </View>
