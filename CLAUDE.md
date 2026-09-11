@@ -3,10 +3,11 @@
 Fork of papra-hq/papra, extended into a receipt and document capture app (mobile scan, AI extraction).
 
 ## Session workflow
-1. Clone `YasamNik/papra_docs`, check out the active feature branch (see WORKLOG.md).
+Driven by the `papra-session` skill (start, check and end scripts). Without the skill:
+1. Clone `YasamNik/papra_docs`, check out the active branch named at the top of WORKLOG.md.
 2. `pnpm install --ignore-scripts`, then `pnpm --filter "./packages/*" run build`.
 3. Work, commit small, push after each milestone. Never push to `main`; merge via PR.
-4. Before ending: append a WORKLOG.md entry and push.
+4. Before ending: add a WORKLOG.md entry (Done, Decisions, Comments, Open / Next) and push.
 
 ## Environment
 - Node 26 required (`Temporal` global). On older Node, run tests with a Temporal polyfill:
@@ -20,6 +21,9 @@ Fork of papra-hq/papra, extended into a receipt and document capture app (mobile
 - Pure logic in `*.models.ts` with unit tests; orchestration in `*.usecases.ts`; background jobs in `tasks/`.
 - Env config per module in `*.config.ts`, wired into `modules/config/config.ts`.
 - No em dashes in docs or code comments.
+
+## Fork additions
+- `modules/receipt-extraction`: AI receipt detection into custom properties plus `Receipt` tag (`RECEIPT_EXTRACTION_*`).
 
 ## License
 AGPL-3.0. Modified versions served over a network must publish source.
