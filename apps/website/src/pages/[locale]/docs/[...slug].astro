@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DocFooter from '../../../docs/components/DocFooter.astro';
-import { getDocPagination, getDocStaticPaths } from '../../../docs/docs.models';
+import { getDocEditUrl, getDocPagination, getDocStaticPaths } from '../../../docs/docs.models';
 import { useI18n } from '../../../i18n/i18n';
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 
@@ -37,7 +37,7 @@ const { previous, next } = getDocPagination(docId);
     <Content />
   </div>
 
-  <DocFooter previous={previous} next={next} locale={requestedLocale} />
+  <DocFooter editUrl={getDocEditUrl(entry)} previous={previous} next={next} locale={requestedLocale} />
 </DocsLayout>
 
 <style is:global>

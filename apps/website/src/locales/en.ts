@@ -368,6 +368,7 @@ export const translations = {
   'docs.pagination-label': 'Previous and next pages',
   'docs.previous': 'Previous',
   'docs.next': 'Next',
+  'docs.edit-this-page': 'Edit this page',
   'docs.translation-fallback':
     'This page is not available in your language yet. Showing the English version.',
   'docs.search.title': 'Search documentation',

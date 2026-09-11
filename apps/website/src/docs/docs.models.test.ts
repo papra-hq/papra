@@ -2,6 +2,7 @@ import type { CollectionEntry } from 'astro:content';
 import { describe, expect, test } from 'vitest';
 import {
   getDocContext,
+  getDocEditUrl,
   getDocPagination,
   getDocStaticPaths,
   getDocUrl,
@@ -9,7 +10,12 @@ import {
 } from './docs.models';
 
 function doc(id: string, title = id): CollectionEntry<'docs'> {
-  return { id, collection: 'docs', data: { title, description: title } };
+  return {
+    id,
+    collection: 'docs',
+    filePath: `src/docs/content/${id}.mdx`,
+    data: { title, description: title },
+  };
 }
 
 const docs = [
@@ -31,6 +37,35 @@ describe('getDocUrl', () => {
     expect(getDocUrl({ docId: 'self-hosting/installation/docker', locale: 'fr' })).toBe(
       '/fr/docs/self-hosting/installation/docker',
     );
+  });
+});
+
+describe('getDocEditUrl', () => {
+  test.each([
+    ['en', 'self-hosting/installation/docker', 'en/self-hosting/installation/docker'],
+    ['fr', 'self-hosting/getting-started', 'fr/self-hosting/getting-started'],
+    ['fr', 'self-hosting/installation/docker', 'en/self-hosting/installation/docker'],
+  ] as const)('links to the resolved source for %s/%s', (locale, docId, sourceId) => {
+    const { entry } = resolveDoc({ docs, docId, locale });
+
+    expect(getDocEditUrl(entry)).toBe(
+      `https://github.com/papra-hq/papra/edit/main/apps/website/src/docs/content/${sourceId}.mdx`,
+    );
+  });
+
+  test('preserves the source filename and extension and encodes URL-sensitive characters', () => {
+    const entry = {
+      ...doc('en/unlisted'),
+      filePath: 'src/docs/content/en/Unlisted page #1.md',
+    };
+
+    expect(getDocEditUrl(entry)).toBe(
+      'https://github.com/papra-hq/papra/edit/main/apps/website/src/docs/content/en/Unlisted%20page%20%231.md',
+    );
+  });
+
+  test('omits the link for entries without a source file', () => {
+    expect(getDocEditUrl({ ...doc('en/unlisted'), filePath: undefined })).toBeUndefined();
   });
 });
 
