@@ -354,6 +354,9 @@ export const translations: Partial<TranslationsDictionary> = {
   'launch-banner.text':
     'Dernière chance : {{percentage}}% de réduction à vie - Expire le 31 décembre 2025 !',
 
+  // Documentation
+  'docs.edit-this-page': 'Modifier cette page',
+
   // Pagination
   'pagination.go-to-page': 'Aller à la page {{page}} sur {{total}}',
   'pagination.page': 'Page {{current}} sur {{total}}',

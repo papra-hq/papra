@@ -1,55 +1,81 @@
 ---
-import { getCollection } from 'astro:content';
-import type { Locale } from '../../i18n/i18n.constants';
-import type { DocsItem } from '../docs.types';
-import { useI18n } from '../../i18n/i18n';
-import { getDocUrl, resolveDoc } from '../docs.models';
+import { getCollection } from "astro:content";
+import type { Locale } from "../../i18n/i18n.constants";
+import type { DocsItem } from "../docs.types";
+import { useI18n } from "../../i18n/i18n";
+import { getDocUrl, resolveDoc } from "../docs.models";
 
 export type Props = {
-  previous?: DocsItem;
-  next?: DocsItem;
-  locale: Locale;
+    editUrl?: string;
+    previous?: DocsItem;
+    next?: DocsItem;
+    locale: Locale;
 };
 
-const { previous, next, locale } = Astro.props;
+const { editUrl, previous, next, locale } = Astro.props;
 const { t } = useI18n({ locale });
-const docs = await getCollection('docs');
-const previousDoc = previous ? resolveDoc({ docs, docId: previous.docId, locale }) : undefined;
-const nextDoc = next ? resolveDoc({ docs, docId: next.docId, locale }) : undefined;
-
+const docs = await getCollection("docs");
+const previousDoc = previous
+    ? resolveDoc({ docs, docId: previous.docId, locale })
+    : undefined;
+const nextDoc = next
+    ? resolveDoc({ docs, docId: next.docId, locale })
+    : undefined;
 ---
 
-
-
-{(previousDoc || nextDoc) && (
-<div>
+<div class="pb-32">
+    {editUrl && (
+        <div class="mb-8">
+            <a
+                href={editUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition"
+            >
+                <span class="i-tabler-pencil size-4" aria-hidden="true"></span>
+                {t("docs.edit-this-page")}
+            </a>
+        </div>
+    )}
 
     <hr class="my-8 border-t border-muted-foreground/10" />
 
-    <nav aria-label={t('docs.pagination-label')} class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-32">
-        {previousDoc ? (
-            <a href={getDocUrl({ docId: previousDoc.docId, locale })} class="flex flex-col gap-1 group transition rounded-lg px-6 py-3 border hover:border-primary ">
-                <div class="flex items-center gap-2 text-muted-foreground">
-                    <div class="i-tabler-arrow-left size-4"></div>
-                    {t('docs.previous')}
-                </div>
-                <div class="text-lg transition group-hover:text-primary">{previousDoc.entry.data.title}</div>
-            </a>
-        ): (
-            <div ></div>
-        )}
+    {(previousDoc || nextDoc) && (
+        <nav
+            aria-label={t("docs.pagination-label")}
+            class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+            {previousDoc ? (
+                <a
+                    href={getDocUrl({ docId: previousDoc.docId, locale })}
+                    class="flex flex-col gap-1 group transition rounded-lg px-6 py-3 border hover:border-primary"
+                >
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                        <div class="i-tabler-arrow-left size-4"></div>
+                        {t("docs.previous")}
+                    </div>
+                    <div class="text-lg transition group-hover:text-primary">
+                        {previousDoc.entry.data.title}
+                    </div>
+                </a>
+            ) : (
+                <div></div>
+            )}
 
-        {nextDoc && (
-            <a href={getDocUrl({ docId: nextDoc.docId, locale })} class="flex flex-col gap-1 group transition text-right rounded-lg px-6 py-3 border hover:border-primary ">
-                <div class="flex items-center gap-2 text-muted-foreground justify-end">
-                    {t('docs.next')}
-                    <div class="i-tabler-arrow-right size-4"></div>
-                </div>
-                <div class="text-lg transition group-hover:text-primary">{nextDoc.entry.data.title}</div>
-            </a>
-        )}
-
-    </nav>
-
+            {nextDoc && (
+                <a
+                    href={getDocUrl({ docId: nextDoc.docId, locale })}
+                    class="flex flex-col gap-1 group transition text-right rounded-lg px-6 py-3 border hover:border-primary"
+                >
+                    <div class="flex items-center gap-2 text-muted-foreground justify-end">
+                        {t("docs.next")}
+                        <div class="i-tabler-arrow-right size-4"></div>
+                    </div>
+                    <div class="text-lg transition group-hover:text-primary">
+                        {nextDoc.entry.data.title}
+                    </div>
+                </a>
+            )}
+        </nav>
+    )}
 </div>
-)}

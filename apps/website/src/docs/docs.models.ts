@@ -3,6 +3,7 @@ import type { Locale } from '../i18n/i18n.constants';
 import type { DocsItem } from './docs.types';
 import { buildLocalizedPath } from '../i18n/i18n';
 import { DEFAULT_LOCALE } from '../i18n/i18n.constants';
+import { GITHUB_REPO_URL } from '../socials';
 import { DOCS_LOCALES } from './docs.constants';
 import { docCategories } from './docs.navigations';
 
@@ -50,6 +51,16 @@ export function getDocUrl({
   locale = DEFAULT_LOCALE,
 }: { docId?: string; locale?: Locale } = {}): string {
   return buildLocalizedPath({ locale, path: docId ? `/docs/${docId}` : '/docs' });
+}
+
+export function getDocEditUrl(entry: CollectionEntry<'docs'>): string | undefined {
+  if (!entry.filePath) {
+    return undefined;
+  }
+
+  // Use the resolved source file, not the route or normalized collection ID.
+  const filePath = entry.filePath.split('/').map(encodeURIComponent).join('/');
+  return `${GITHUB_REPO_URL}/edit/main/apps/website/${filePath}`;
 }
 
 // Collection IDs include the locale; navigation and public helpers use logical IDs.
