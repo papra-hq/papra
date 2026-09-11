@@ -1,221 +1,321 @@
 ---
-import type { MarkdownHeading } from 'astro';
-import { cn } from '../utils/cn';
-import Layout from './Layout.astro';
-import { docCategories } from '../docs/docs.navigations';
-import type { DocsItem, DocsCategory } from '../docs/docs.types';
-import { getSocials } from '../socials';
-import { getDocContext, getDocUrl } from '../docs/docs.models';
-import { DOCS_LOCALES } from '../docs/docs.constants';
-import type { Locale } from '../i18n/i18n.constants';
-import { useI18n } from '../i18n/i18n';
-import DocSidenav from '../docs/components/DocSidenav.astro';
-import DocSearch from '../docs/components/DocSearch.astro';
-import DocMobileNav from '../docs/components/DocMobileNav.astro';
+import type { MarkdownHeading } from "astro";
+import { cn } from "../utils/cn";
+import Layout from "./Layout.astro";
+import { docCategories } from "../docs/docs.navigations";
+import type { DocsItem, DocsCategory } from "../docs/docs.types";
+import { getSocials } from "../socials";
+import { getDocContext, getDocUrl } from "../docs/docs.models";
+import { DOCS_LOCALES } from "../docs/docs.constants";
+import type { Locale } from "../i18n/i18n.constants";
+import { useI18n } from "../i18n/i18n";
+import DocSidenav from "../docs/components/DocSidenav.astro";
+import DocSearch from "../docs/components/DocSearch.astro";
+import DocMobileNav from "../docs/components/DocMobileNav.astro";
+import DocMarkdownActions from "../docs/components/DocMarkdownActions.astro";
 
 type Props = {
-  title?: string;
-  rawTitle?: string;
-  description?: string;
-  docId?: string;
-  locale: Locale;
-  contentLocale?: Locale;
-  alternateLocales?: readonly Locale[];
-  headings?: MarkdownHeading[];
+    title?: string;
+    rawTitle?: string;
+    description?: string;
+    docId?: string;
+    locale: Locale;
+    contentLocale?: Locale;
+    alternateLocales?: readonly Locale[];
+    headings?: MarkdownHeading[];
 };
 
 function getFirstItem(category: DocsCategory): DocsItem | null {
-  for (const section of category.sections) {
-    if (section.items.length > 0) {
-      return section.items[0];
+    for (const section of category.sections) {
+        if (section.items.length > 0) {
+            return section.items[0];
+        }
     }
-  }
-  return null;
+    return null;
 }
 
-const { title, rawTitle, description, docId, locale, contentLocale = locale, alternateLocales = DOCS_LOCALES, headings = [] } = Astro.props;
+const {
+    title,
+    rawTitle,
+    description,
+    docId,
+    locale,
+    contentLocale = locale,
+    alternateLocales = DOCS_LOCALES,
+    headings = [],
+} = Astro.props;
 const { t } = useI18n({ locale });
 const isFallback = contentLocale !== locale;
 const context = getDocContext(docId);
-const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
-
+const tocHeadings = headings.filter(
+    (heading) => heading.depth >= 2 && heading.depth <= 3,
+);
 
 const socials = [
-  ...getSocials().filter(social => ['github', 'bluesky', 'discord'].includes(social.id)),
-]
+    ...getSocials().filter((social) =>
+        ["github", "bluesky", "discord"].includes(social.id),
+    ),
+];
 
-
-const titleSuffix = 'Papra Docs';
+const titleSuffix = "Papra Docs";
 const fullTitle = title ? `${title} - ${titleSuffix}` : titleSuffix;
-
 ---
 
 <Layout
-  rawTitle={rawTitle ?? fullTitle}
-  description={description}
-  locale={contentLocale}
-  canonicalUrl={new URL(getDocUrl({ docId, locale: contentLocale }), Astro.site)}
-  alternateLocales={alternateLocales}
-  excludeFromSearch={isFallback}
-  class="bg-#121212 relative"
+    rawTitle={rawTitle ?? fullTitle}
+    description={description}
+    locale={contentLocale}
+    canonicalUrl={
+        new URL(getDocUrl({ docId, locale: contentLocale }), Astro.site)
+    }
+    alternateLocales={alternateLocales}
+    excludeFromSearch={isFallback}
+    class="bg-#121212 relative"
 >
-  <a href="#docs-content" class="docs-skip-link rounded bg-primary text-primary-foreground px-4 py-2 font-medium">{t('docs.skip-to-content')}</a>
+    <a
+        href="#docs-content"
+        class="docs-skip-link rounded bg-primary text-primary-foreground px-4 py-2 font-medium"
+    >
+        {t("docs.skip-to-content")}
+    </a>
 
-  <div class="absolute top-0 left-50% transform -translate-x-50% w-400px h-250px sm:w-700px sm:h-300px rounded-full bg-gradient-to-b from-primary/50 to-transparent blur-3xl opacity-30 z-0 pointer-events-none"></div>
+    <div class="absolute top-0 left-50% transform -translate-x-50% w-400px h-250px sm:w-700px sm:h-300px rounded-full bg-gradient-to-b from-primary/50 to-transparent blur-3xl opacity-30 z-0 pointer-events-none"></div>
 
-  <header class="border-b sticky top-0 left-0 right-0 z-100 bg-#121212">
-    <div class="h-64px border-b">
-        <div class="max-w-1400px mx-auto px-6 h-full flex items-center justify-between">
-            <a href={getDocUrl({ locale })} class="text-lg font-semibold group flex items-center gap-2 transition">
-                <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
-                Papra
-                <span class="text-muted-foreground text-base font-light uppercase">Docs</span>
-            </a>
+    <header class="border-b sticky top-0 left-0 right-0 z-100 bg-#121212">
+        <div class="h-64px border-b">
+            <div class="max-w-1400px mx-auto px-6 h-full flex items-center justify-between">
+                <a
+                    href={getDocUrl({ locale })}
+                    class="text-lg font-semibold group flex items-center gap-2 transition"
+                >
+                    <div class="i-tabler-file-text size-6 group-hover:rotate-25deg text-primary transition transform rotate-12deg"></div>
+                    Papra
+                    <span class="text-muted-foreground text-base font-light uppercase">
+                        Docs
+                    </span>
+                </a>
 
-
-            <div class="flex items-center gap-3 sm:gap-4">
-                <DocSearch locale={locale} />
-                {
-                    socials.map((social) => (
-                        <a href={social.url} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition" aria-label={social.name}>
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <DocSearch locale={locale} />
+                    {socials.map((social) => (
+                        <a
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-muted-foreground hover:text-primary transition"
+                            aria-label={social.name}
+                        >
                             <div class={`${social.icon} size-5`}></div>
                         </a>
-                    ))
-                }
-
+                    ))}
+                </div>
             </div>
         </div>
-    </div>
 
-    <DocMobileNav currentDocId={docId} locale={locale} />
+        <DocMobileNav currentDocId={docId} locale={locale} />
 
-    <nav aria-label={t('docs.categories-label')} class="hidden md:block max-w-1400px mx-auto px-6 overflow-x-auto">
-      <div class="flex items-center gap-8 overflow-x-auto">
-        {
-          docCategories.map((category) => {
-            const firstItem = getFirstItem(category);
-            if (!firstItem) return null;
-            return (
-              <a href={getDocUrl({ ...firstItem, locale })} aria-current={category === context?.category ? 'true' : undefined} class={cn("text-14px text-muted-foreground font-medium border-b border-transparent hover:border-muted-foreground transition py-2 block whitespace-nowrap h-48px flex items-center", category === context?.category ? 'border-primary text-foreground' : '')}>
-                {t(category.titleKey)}
-              </a>
-            );
-          })
-        }
-      </div>
-    </nav>
-  </header>
+        <nav
+            aria-label={t("docs.categories-label")}
+            class="hidden md:block max-w-1400px mx-auto px-6 overflow-x-auto"
+        >
+            <div class="flex items-center gap-8 overflow-x-auto">
+                {docCategories.map((category) => {
+                    const firstItem = getFirstItem(category);
+                    if (!firstItem) return null;
+                    return (
+                        <a
+                            href={getDocUrl({ ...firstItem, locale })}
+                            aria-current={
+                                category === context?.category
+                                    ? "true"
+                                    : undefined
+                            }
+                            class={cn(
+                                "text-14px text-muted-foreground font-medium border-b border-transparent hover:border-muted-foreground transition py-2 block whitespace-nowrap h-48px flex items-center",
+                                category === context?.category
+                                    ? "border-primary text-foreground"
+                                    : "",
+                            )}
+                        >
+                            {t(category.titleKey)}
+                        </a>
+                    );
+                })}
+            </div>
+        </nav>
+    </header>
 
-  <div class="max-w-1400px mx-auto flex">
-    {context && <DocSidenav sections={context.category.sections} currentDocId={context.item.docId} locale={locale} />}
-
-    <div class="flex-1 min-w-0">
-      <main id="docs-content" tabindex="-1" class="max-w-728px mx-auto px-6 py-6 scroll-mt-150px">
+    <div class="max-w-1400px mx-auto flex">
         {context && (
-          <div class="text-sm font-bold mb-2 text-primary">
-            {t(context.section.titleKey)}
-          </div>
+            <DocSidenav
+                sections={context.category.sections}
+                currentDocId={context.item.docId}
+                locale={locale}
+            />
         )}
-        <slot />
-      </main>
-    </div>
 
-    {/* Reserve the TOC column only when it has content or balances the sidenav. */}
-    {(context || tocHeadings.length > 0) && (
-      <aside class="max-w-300px w-full hidden xl:block flex-shrink-0 sticky top-113px h-[calc(100vh-113px)] overflow-y-auto px-6 py-6">
-        {
-          tocHeadings.length > 0 && (
-            <nav aria-labelledby="docs-toc-heading">
-              <div id="docs-toc-heading" class="text-13px font-medium mb-2">{t('docs.on-this-page')}</div>
-              <ul class="border-l">
-                {tocHeadings.map((heading) => (
-                  <li>
-                    <a
-                      href={`#${heading.slug}`}
-                      data-toc-link
-                      data-toc-slug={heading.slug}
-                      class={cn(
-                        'block text-sm text-muted-foreground hover:text-foreground border-l border-transparent -ml-1px py-1 transition',
-                        heading.depth === 3 ? 'pl-7' : 'pl-4',
-                      )}
-                    >
-                      {heading.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )
-        }
-      </aside>
-    )}
-  </div>
+        <div class="flex-1 min-w-0">
+            <main
+                id="docs-content"
+                tabindex="-1"
+                class="max-w-728px mx-auto px-6 py-6 scroll-mt-150px"
+            >
+                {docId && (
+                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-6">
+                        {context && (
+                            <nav
+                                aria-label={t("docs.breadcrumb-label")}
+                                class="min-w-0 text-sm text-muted-foreground"
+                            >
+                                <ol class="flex flex-wrap items-center gap-1.5">
+                                    <li>
+                                        <a
+                                            href={getDocUrl({
+                                                docId: getFirstItem(
+                                                    context.category,
+                                                )?.docId,
+                                                locale,
+                                            })}
+                                            class="hover:text-foreground transition"
+                                        >
+                                            {t(context.category.titleKey)}
+                                        </a>
+                                    </li>
+                                    <li
+                                        aria-hidden="true"
+                                        class="i-tabler-chevron-right size-3"
+                                    ></li>
+                                    <li class="text-primary font-medium">
+                                        {t(context.section.titleKey)}
+                                    </li>
+                                </ol>
+                            </nav>
+                        )}
+                        <DocMarkdownActions docId={docId} locale={locale} />
+                    </div>
+                )}
+                <slot />
+            </main>
+        </div>
+
+        {/* Reserve the TOC column only when it has content or balances the sidenav. */}
+        {(context || tocHeadings.length > 0) && (
+            <aside class="max-w-300px w-full hidden xl:block flex-shrink-0 sticky top-113px h-[calc(100vh-113px)] overflow-y-auto px-6 py-6">
+                {tocHeadings.length > 0 && (
+                    <nav aria-labelledby="docs-toc-heading">
+                        <div
+                            id="docs-toc-heading"
+                            class="text-13px font-medium mb-2"
+                        >
+                            {t("docs.on-this-page")}
+                        </div>
+                        <ul class="border-l">
+                            {tocHeadings.map((heading) => (
+                                <li>
+                                    <a
+                                        href={`#${heading.slug}`}
+                                        data-toc-link
+                                        data-toc-slug={heading.slug}
+                                        class={cn(
+                                            "block text-sm text-muted-foreground hover:text-foreground border-l border-transparent -ml-1px py-1 transition",
+                                            heading.depth === 3
+                                                ? "pl-7"
+                                                : "pl-4",
+                                        )}
+                                    >
+                                        {heading.text}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                )}
+            </aside>
+        )}
+    </div>
 </Layout>
 
 <script>
-  const HEADER_OFFSET = 150;
+    const HEADER_OFFSET = 150;
 
-  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
-  const headings = links
-    .map((link) => ({ link, heading: document.getElementById(link.dataset.tocSlug ?? '') }))
-    .filter((entry): entry is { link: HTMLAnchorElement; heading: HTMLElement } => entry.heading !== null);
+    const links = [
+        ...document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
+    ];
+    const headings = links
+        .map((link) => ({
+            link,
+            heading: document.getElementById(link.dataset.tocSlug ?? ""),
+        }))
+        .filter(
+            (
+                entry,
+            ): entry is { link: HTMLAnchorElement; heading: HTMLElement } =>
+                entry.heading !== null,
+        );
 
-  function setActive() {
-    if (headings.length === 0) {
-      return;
+    function setActive() {
+        if (headings.length === 0) {
+            return;
+        }
+
+        const isAtBottom =
+            window.innerHeight + window.scrollY >=
+            document.body.scrollHeight - 2;
+        const lastPassed = headings.findLast(
+            ({ heading }) =>
+                heading.getBoundingClientRect().top <= HEADER_OFFSET,
+        );
+        const active = isAtBottom
+            ? headings[headings.length - 1]
+            : (lastPassed ?? headings[0]);
+
+        for (const { link } of headings) {
+            const isActive = link === active.link;
+            if (isActive) {
+                link.setAttribute("aria-current", "location");
+            } else {
+                link.removeAttribute("aria-current");
+            }
+            link.classList.toggle("border-primary", isActive);
+            link.classList.toggle("text-foreground", isActive);
+            link.classList.toggle("border-transparent", !isActive);
+            link.classList.toggle("text-muted-foreground", !isActive);
+        }
     }
 
-    const isAtBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
-    const lastPassed = headings.findLast(({ heading }) => heading.getBoundingClientRect().top <= HEADER_OFFSET);
-    const active = isAtBottom ? headings[headings.length - 1] : (lastPassed ?? headings[0]);
+    if (headings.length > 0) {
+        let ticking = false;
 
-    for (const { link } of headings) {
-      const isActive = link === active.link;
-      if (isActive) {
-        link.setAttribute('aria-current', 'location');
-      } else {
-        link.removeAttribute('aria-current');
-      }
-      link.classList.toggle('border-primary', isActive);
-      link.classList.toggle('text-foreground', isActive);
-      link.classList.toggle('border-transparent', !isActive);
-      link.classList.toggle('text-muted-foreground', !isActive);
-    }
-  }
+        const onScroll = () => {
+            if (ticking) {
+                return;
+            }
 
-  if (headings.length > 0) {
-    let ticking = false;
+            ticking = true;
+            requestAnimationFrame(() => {
+                ticking = false;
+                setActive();
+            });
+        };
 
-    const onScroll = () => {
-      if (ticking) {
-        return;
-      }
-
-      ticking = true;
-      requestAnimationFrame(() => {
-        ticking = false;
         setActive();
-      });
-    };
-
-    setActive();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-  }
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll, { passive: true });
+    }
 </script>
 
 <style>
-  .docs-skip-link {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 101;
-    transform: translateY(calc(-100% - 2rem));
-  }
+    .docs-skip-link {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 101;
+        transform: translateY(calc(-100% - 2rem));
+    }
 
-  .docs-skip-link:focus {
-    transform: translateY(0);
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
+    .docs-skip-link:focus {
+        transform: translateY(0);
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+    }
 </style>
