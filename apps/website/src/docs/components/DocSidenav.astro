@@ -1,10 +1,8 @@
 ---
-import { cn } from '../../utils/cn';
-import { getDocUrl, resolveDoc } from '../docs.models';
 import type { DocsSection } from '../docs.types';
 import type { Locale } from '../../i18n/i18n.constants';
 import { useI18n } from '../../i18n/i18n';
-import { getCollection } from 'astro:content';
+import DocNavSections from './DocNavSections.astro';
 
 export type Props = {
   sections: DocsSection[];
@@ -14,31 +12,8 @@ export type Props = {
 
 const { sections, currentDocId, locale } = Astro.props;
 const { t } = useI18n({ locale });
-const docs = await getCollection('docs');
-const augmentedSections = sections.map((section) => ({
-  ...section,
-  items: section.items.map((item) => ({
-    ...item,
-    title: resolveDoc({ docs, docId: item.docId, locale }).entry.data.title,
-  })),
-}));
 ---
 
-<nav aria-label={t('docs.sidebar-label')} class="border-r max-w-300px w-full hidden md:block overflow-y-auto pl-2 pr-4 pt-2 flex-shrink-0 sticky top-113px h-[calc(100vh-113px)] overflow-y-auto">
-  {
-    augmentedSections.map((section, index) => (
-      <div class={cn('py-4', index !== 0 ? 'border-t' : '')}>
-        <div class="text-13px font-medium mb-2 pl-4">{t(section.titleKey)}</div>
-        <ul>
-          {section.items.map((item) => (
-            <li>
-                <a href={getDocUrl({ docId: item.docId, locale })} aria-current={item.docId === currentDocId ? 'page' : undefined} class={cn("text-sm text-muted-foreground hover:(bg-muted text-foreground) transition py-1 block px-4 rounded-lg py-1.2 my-1px", item.docId === currentDocId ? "bg-muted text-foreground" : "")}>
-                {item.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))
-  }
+<nav aria-label={t('docs.sidebar-label')} class="border-r max-w-300px w-full hidden md:block overflow-y-auto pl-2 pr-4 pt-2 flex-shrink-0 sticky top-113px h-[calc(100vh-113px)]">
+  <DocNavSections sections={sections} currentDocId={currentDocId} locale={locale} />
 </nav>

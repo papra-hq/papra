@@ -1,0 +1,121 @@
+---
+import type { Locale } from '../../i18n/i18n.constants';
+import { useI18n } from '../../i18n/i18n';
+import { docCategories } from '../docs.navigations';
+import DocNavSections from './DocNavSections.astro';
+
+type Props = {
+  currentDocId?: string;
+  locale: Locale;
+};
+
+const { currentDocId, locale } = Astro.props;
+const { t } = useI18n({ locale });
+const categories = docCategories.filter((category) =>
+  category.sections.some((section) => section.items.length > 0),
+);
+---
+
+<docs-mobile-nav class="block md:hidden">
+  <details class="relative">
+    <summary
+      aria-controls="docs-mobile-navigation"
+      class="h-48px px-6 flex items-center justify-between gap-3 cursor-pointer font-medium hover:text-primary transition"
+    >
+      <span class="flex items-center gap-2">
+        <span class="i-tabler-menu-2 size-5" aria-hidden="true"></span>
+        {t('docs.menu-label')}
+      </span>
+      <span class="docs-menu-chevron i-tabler-chevron-down size-5" aria-hidden="true"></span>
+    </summary>
+
+    <nav
+      id="docs-mobile-navigation"
+      aria-label={t('docs.menu-label')}
+      class="absolute top-full inset-x-0 border-y bg-#121212 shadow-lg overflow-y-auto overscroll-contain pl-2 pr-4 pb-4"
+    >
+      {categories.map((category) => (
+        <section class="pt-4">
+          <h2 class="px-4 text-sm font-semibold text-primary">{t(category.titleKey)}</h2>
+          <DocNavSections sections={category.sections} currentDocId={currentDocId} locale={locale} />
+        </section>
+      ))}
+    </nav>
+  </details>
+</docs-mobile-nav>
+
+<script>
+  class DocsMobileNav extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const details = this.querySelector('details')!;
+      const summary = this.querySelector('summary')!;
+      const nav = this.querySelector('nav')!;
+      const desktop = window.matchMedia('(min-width: 768px)');
+
+      this.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && details.open) {
+          event.preventDefault();
+          details.open = false;
+          summary.focus();
+        }
+      }, { signal });
+
+      // Don't leave the panel covering page content when keyboard focus moves on.
+      this.addEventListener('focusout', (event) => {
+        if (!(event.relatedTarget instanceof Node) || !this.contains(event.relatedTarget)) {
+          details.open = false;
+        }
+      }, { signal });
+
+      nav.addEventListener('click', (event) => {
+        if (event.target instanceof Element && event.target.closest('a[href]')) {
+          details.open = false;
+        }
+      }, { signal });
+
+      const closeOnDesktop = () => {
+        if (desktop.matches) {
+          details.open = false;
+        }
+      };
+      desktop.addEventListener('change', closeOnDesktop, { signal });
+      closeOnDesktop();
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+    }
+  }
+
+  customElements.define('docs-mobile-nav', DocsMobileNav);
+</script>
+
+<style>
+  summary {
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: -4px;
+  }
+
+  details[open] .docs-menu-chevron {
+    transform: rotate(180deg);
+  }
+
+  nav {
+    /* The closed disclosure preserves the desktop header's 113px height. */
+    max-height: calc(100vh - 113px);
+    max-height: calc(100dvh - 113px);
+  }
+</style>
