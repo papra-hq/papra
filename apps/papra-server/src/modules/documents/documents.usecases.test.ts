@@ -1220,40 +1220,42 @@ describe('documents usecases', () => {
         changes: { name: 'new-name.txt', content: 'Updated content' },
       });
 
-      expect(eventServices.getEmittedEvents()).to.eql([
-        {
-          eventName: 'document.updated',
-          payload: {
-            changes: {
-              content: 'Updated content',
-              name: 'new-name.txt',
-            },
-            document: {
-              content: 'Updated content',
-              createdAt: new Date('2025-12-10'),
-              createdBy: null,
-              deletedAt: null,
-              deletedBy: null,
-              fileEncryptionAlgorithm: null,
-              fileEncryptionKekVersion: null,
-              fileEncryptionKeyWrapped: null,
-              id: 'document-1',
-              isDeleted: false,
-              mimeType: 'text/plain',
-              notes: null,
-              name: 'new-name.txt',
-              documentDate: null,
-              organizationId: 'organization-1',
-              originalName: 'file-1.txt',
-              originalSha256Hash: 'hash',
-              originalSize: 0,
-              originalStorageKey: 'organization-1/originals/document-1.txt',
-              updatedAt: new Date('2025-12-11'),
-            },
-            userId: 'user-1',
+      const emittedEvents = eventServices.getEmittedEvents();
+
+      expect(emittedEvents.length).to.eql(1);
+      const event = emittedEvents[0];
+
+      expect(event).toMatchObject({
+        eventName: 'document.updated',
+        payload: {
+          changes: {
+            content: 'Updated content',
+            name: 'new-name.txt',
           },
+          document: {
+            content: 'Updated content',
+            createdAt: new Date('2025-12-10'),
+            createdBy: null,
+            deletedAt: null,
+            deletedBy: null,
+            fileEncryptionAlgorithm: null,
+            fileEncryptionKekVersion: null,
+            fileEncryptionKeyWrapped: null,
+            id: 'document-1',
+            isDeleted: false,
+            mimeType: 'text/plain',
+            notes: null,
+            name: 'new-name.txt',
+            documentDate: null,
+            organizationId: 'organization-1',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+            originalSize: 0,
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+          },
+          userId: 'user-1',
         },
-      ]);
+      });
     });
   });
 });

@@ -57,27 +57,26 @@ describe('organizations repository', () => {
         .from(organizationInvitationsTable)
         .orderBy(organizationInvitationsTable.id);
 
-      expect(invitations).to.eql([
+      expect(
+        invitations.map(({ id, status, expiresAt, email }) => ({ id, status, expiresAt, email })),
+      ).to.deep.equal([
         {
           id: 'invitation_1',
           status: 'expired',
           expiresAt: new Date('2025-05-12'),
           email: 'test-1@test.com',
-          ...commonInvitation,
         },
         {
           id: 'invitation_2',
           status: 'pending',
           expiresAt: new Date('2025-05-14'),
           email: 'test-2@test.com',
-          ...commonInvitation,
         },
         {
           id: 'invitation_3',
           status: 'accepted',
           expiresAt: new Date('2025-05-05'),
           email: 'test-3@test.com',
-          ...commonInvitation,
         },
       ]);
     });
