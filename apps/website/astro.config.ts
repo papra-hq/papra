@@ -21,8 +21,6 @@ export default defineConfig({
       redirects: {
         '/discord': { status: 302, destination: config.discordInvite },
         '/support': { status: 302, destination: config.sponsorLink },
-        '/docs': { status: 301, destination: `/${DEFAULT_LOCALE}/docs` },
-        '/docs/*': { status: 301, destination: `/${DEFAULT_LOCALE}/docs/:splat` },
       },
     }),
     astroExpressiveCode({
