@@ -1,0 +1,101 @@
+---
+// Astro can't read the props of slotted children, so the labels are extracted from the rendered
+// markup: each <Tab> exposes its own via a data attribute, in document order.
+const html = await Astro.slots.render('default');
+const labels = [...html.matchAll(/data-tab-label="([^"]*)"/g)].map(([, label]) => label);
+---
+
+<div class="tabs my-4" data-tabs>
+  <div class="flex items-center gap-2 border-b overflow-x-auto" role="tablist">
+    {
+      labels.map((label, index) => (
+        <button
+          type="button"
+          role="tab"
+          data-tab-trigger
+          data-active={index === 0 ? '' : undefined}
+          aria-selected={index === 0 ? 'true' : 'false'}
+          tabindex={index === 0 ? 0 : -1}
+          class="text-14px text-muted-foreground font-medium border-b border-transparent hover:text-foreground transition py-2 px-2 whitespace-nowrap"
+        >
+          <Fragment set:html={label} />
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="tab-panels pt-4" set:html={html} />
+</div>
+
+<style>
+.tabs [data-tab-trigger][data-active] {
+  @apply text-foreground border-primary;
+}
+
+/* Panels come from the slot, so they carry no scope attribute: match them with :global(). */
+.tab-panels > :global([data-tab-panel]) {
+  display: none;
+}
+
+/* Without JS (or before it runs) the first panel is the visible one. */
+.tab-panels > :global([data-tab-panel]:first-child) {
+  display: block;
+}
+
+.tabs[data-tabs-ready] .tab-panels > :global([data-tab-panel]) {
+  display: none;
+}
+
+.tabs[data-tabs-ready] .tab-panels > :global([data-tab-panel][data-active]) {
+  display: block;
+}
+
+.tab-panels > :global([data-tab-panel] > :first-child) {
+  margin-top: 0;
+}
+</style>
+
+<script>
+  for (const tabs of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const triggers = [...tabs.querySelectorAll<HTMLButtonElement>('[data-tab-trigger]')];
+    const panels = [...tabs.querySelectorAll<HTMLElement>('[data-tab-panel]')];
+
+    if (triggers.length === 0) {
+      continue;
+    }
+
+    function activate(index: number, { focus = false } = {}) {
+      triggers.forEach((trigger, triggerIndex) => {
+        const isActive = triggerIndex === index;
+
+        trigger.toggleAttribute('data-active', isActive);
+        trigger.setAttribute('aria-selected', String(isActive));
+        trigger.tabIndex = isActive ? 0 : -1;
+      });
+
+      panels.forEach((panel, panelIndex) => panel.toggleAttribute('data-active', panelIndex === index));
+
+      if (focus) {
+        triggers[index].focus();
+      }
+    }
+
+    triggers.forEach((trigger, index) => {
+      trigger.addEventListener('click', () => activate(index));
+
+      trigger.addEventListener('keydown', (event) => {
+        const offset = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+
+        if (offset === 0) {
+          return;
+        }
+
+        event.preventDefault();
+        activate((index + offset + triggers.length) % triggers.length, { focus: true });
+      });
+    });
+
+    tabs.setAttribute('data-tabs-ready', '');
+    activate(0);
+  }
+</script>

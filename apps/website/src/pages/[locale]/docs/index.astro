@@ -1,0 +1,89 @@
+---
+import type { Locale } from '../../../i18n/i18n.constants';
+import { DEFAULT_LOCALE } from '../../../i18n/i18n.constants';
+import { DOCS_LOCALES } from '../../../docs/docs.constants';
+import { getDocUrl } from '../../../docs/docs.models';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+export function getStaticPaths() {
+    return DOCS_LOCALES.map(locale => ({ params: { locale }, props: { locale } }));
+}
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+
+const getStartedSections = [
+    {
+        title: "Features",
+        icon: "i-tabler-rocket",
+        description: "Discover the features of Papra and how they can help you manage your projects.",
+        link: getDocUrl({ locale, docId: 'features' }),
+    },
+    {
+        title: "Selfhosting",
+        icon: "i-tabler-server",
+        description: "Get started with selfhosting Papra and learn how to set it up on your own server.",
+        link: getDocUrl({ locale, docId: 'self-hosting/getting-started' }),
+    },
+    {
+      title: "API Reference",
+      icon: "i-tabler-cloud-network",
+      description: "Explore the Papra API and learn how to integrate it into your applications.",
+      link: getDocUrl({ locale, docId: 'api-reference/authentication' }),
+    },
+    {
+        title: "Contributing",
+        icon: "i-tabler-users",
+        description: "Learn how to contribute to the Papra project and become a part of the community.",
+        link: getDocUrl({ locale, docId: 'contributing' }),
+    },
+];
+
+---
+
+<DocsLayout
+    locale={locale}
+    contentLocale={DEFAULT_LOCALE}
+    alternateLocales={[DEFAULT_LOCALE]}
+    rawTitle="Papra documentation"
+    description="Learn how to use Papra, host it on your own server, and integrate with its API."
+>
+    <div class="doc prose dark:prose-invert max-w-none" lang={DEFAULT_LOCALE} data-pagefind-body>
+    <h1 data-pagefind-meta="title">Papra documentation</h1>
+    <p>
+          Welcome to the Papra documentation! Here you will find all the information you need to get started with Papra, including features details, and selfhosting instructions.
+    </p>
+
+    <h2>
+        What is Papra?
+    </h2>
+
+    <p>
+        Papra is a document archiving plateform that allows you to easily store and retrieve your documents. It is designed to be simple and easy to use, while also providing powerful features for managing your documents.
+    </p>
+
+    <h2>
+        Get started
+    </h2>
+
+    <p>
+        To get started with Papra, you can explore the following sections:
+    </p>
+</div>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 mb-48">
+        {getStartedSections.map(section => (
+            <a href={section.link} class="group transition rounded-lg px-6 py-4 border hover:border-primary ">
+                <div class={section.icon + " size-7 text-primary"}></div>
+                <div class="transition group-hover:text-primary text-lg font-semibold mt-3">
+                    {section.title}
+                </div>
+                <p class="text-base text-muted-foreground">{section.description}</p>
+            </a>
+        ))}
+    </div>
+
+
+
+</DocsLayout>
