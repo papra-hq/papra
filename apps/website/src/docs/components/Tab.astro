@@ -1,11 +1,14 @@
 ---
+import { nanoid } from 'nanoid';
+
 type Props = {
   label: string;
 };
 
 const { label } = Astro.props;
+const panelId = `tab-panel-${nanoid()}`;
 ---
 
-<div data-tab-panel data-tab-label={label} role="tabpanel">
+<div data-tab-panel data-tab-label={label} id={panelId} role="tabpanel" aria-labelledby={`${panelId}-tab`} tabindex="0">
   <slot />
 </div>

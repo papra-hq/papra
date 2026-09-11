@@ -1,17 +1,19 @@
 ---
-// Astro can't read the props of slotted children, so the labels are extracted from the rendered
-// markup: each <Tab> exposes its own via a data attribute, in document order.
+// Astro can't read the props of slotted children, so extract labels and panel IDs from the
+// rendered markup. Keep these attributes adjacent in <Tab> so the pairs stay in document order.
 const html = await Astro.slots.render('default');
-const labels = [...html.matchAll(/data-tab-label="([^"]*)"/g)].map(([, label]) => label);
+const tabs = [...html.matchAll(/data-tab-label="([^"]*)" id="([^"]*)"/g)].map(([, label, panelId]) => ({ label, panelId }));
 ---
 
 <div class="tabs my-4" data-tabs>
   <div class="flex items-center gap-2 border-b overflow-x-auto" role="tablist">
     {
-      labels.map((label, index) => (
+      tabs.map(({ label, panelId }, index) => (
         <button
           type="button"
           role="tab"
+          id={`${panelId}-tab`}
+          aria-controls={panelId}
           data-tab-trigger
           data-active={index === 0 ? '' : undefined}
           aria-selected={index === 0 ? 'true' : 'false'}
