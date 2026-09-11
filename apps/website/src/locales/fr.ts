@@ -355,6 +355,7 @@ export const translations: Partial<TranslationsDictionary> = {
     'Dernière chance : {{percentage}}% de réduction à vie - Expire le 31 décembre 2025 !',
 
   // Documentation
+  'docs.menu-label': 'Menu de la documentation',
   'docs.edit-this-page': 'Modifier cette page',
 
   // Pagination

@@ -364,6 +364,7 @@ export const translations = {
   'docs.skip-to-content': 'Skip to content',
   'docs.categories-label': 'Documentation categories',
   'docs.sidebar-label': 'Documentation sidebar',
+  'docs.menu-label': 'Documentation menu',
   'docs.on-this-page': 'On this page',
   'docs.pagination-label': 'Previous and next pages',
   'docs.previous': 'Previous',

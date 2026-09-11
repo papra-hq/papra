@@ -11,6 +11,7 @@ import type { Locale } from '../i18n/i18n.constants';
 import { useI18n } from '../i18n/i18n';
 import DocSidenav from '../docs/components/DocSidenav.astro';
 import DocSearch from '../docs/components/DocSearch.astro';
+import DocMobileNav from '../docs/components/DocMobileNav.astro';
 
 type Props = {
   title?: string;
@@ -86,7 +87,9 @@ const fullTitle = title ? `${title} - ${titleSuffix}` : titleSuffix;
         </div>
     </div>
 
-    <nav aria-label={t('docs.categories-label')} class="max-w-1400px mx-auto px-6 overflow-x-auto">
+    <DocMobileNav currentDocId={docId} locale={locale} />
+
+    <nav aria-label={t('docs.categories-label')} class="hidden md:block max-w-1400px mx-auto px-6 overflow-x-auto">
       <div class="flex items-center gap-8 overflow-x-auto">
         {
           docCategories.map((category) => {
