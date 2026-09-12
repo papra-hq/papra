@@ -1,25 +1,57 @@
-import type { Expression, Issue, ParsedQuery } from './parser.types';
+import type { Expression, Issue, Operator, ParsedQuery } from './parser.types';
 import type { Token } from './tokenizer';
 import { ERROR_CODES } from './errors';
 import { simplifyExpression } from './optimization';
+import { createOperatorMatcher, DEFAULT_OPERATOR, DEFAULT_OPERATORS } from './operators';
 import { tokenize } from './tokenizer';
 
-export function parseSearchQuery({
-  query,
-  maxDepth = 10,
-  maxTokens = 200,
-  optimize = true,
-}: {
+export type ParseSearchQueryOptions = {
   query: string;
   maxDepth?: number;
   maxTokens?: number;
   optimize?: boolean;
-}): ParsedQuery {
-  const { tokens, issues: tokenizerIssues } = tokenize({ query, maxTokens });
+};
+
+/**
+ * `defaultOperator` is what a filter without an explicit operator, like `tag:invoice`, means.
+ * It defaults to `=`, so it only becomes required when `=` is dropped from the operator set,
+ * as there would otherwise be no sound value to fall back to.
+ */
+export type ParseSearchQueryOperatorOptions<TOperator extends string> = '=' extends TOperator
+  ? { operators?: readonly TOperator[]; defaultOperator?: NoInfer<TOperator> }
+  : { operators: readonly TOperator[]; defaultOperator: NoInfer<TOperator> };
+
+export function parseSearchQuery<const TOperator extends string = Operator>(
+  options: ParseSearchQueryOptions & ParseSearchQueryOperatorOptions<TOperator>,
+): ParsedQuery<TOperator> {
+  // The conditional operator options are deferred while TOperator is unresolved, so they are
+  // read through the shape both of its branches share.
+  const {
+    query,
+    maxDepth = 10,
+    maxTokens = 200,
+    optimize = true,
+    operators = DEFAULT_OPERATORS as readonly TOperator[],
+    defaultOperator = DEFAULT_OPERATOR as TOperator,
+  } = options as ParseSearchQueryOptions & {
+    operators?: readonly TOperator[];
+    defaultOperator?: TOperator;
+  };
+
+  const { matcher, issues: operatorIssues } = createOperatorMatcher({
+    operators,
+    defaultOperator,
+  });
+
+  const { tokens, issues: tokenizerIssues } = tokenize({
+    query,
+    maxTokens,
+    operatorMatcher: matcher,
+  });
 
   const { expression, issues: parserIssues } = parseExpression({ tokens, maxDepth });
 
-  const issues = [...tokenizerIssues, ...parserIssues];
+  const issues = [...operatorIssues, ...tokenizerIssues, ...parserIssues];
 
   if (!optimize) {
     return {
@@ -36,14 +68,20 @@ export function parseSearchQuery({
   };
 }
 
-function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: number }): ParsedQuery {
+function parseExpression<TOperator extends string>({
+  tokens,
+  maxDepth,
+}: {
+  tokens: Token<TOperator>[];
+  maxDepth: number;
+}): ParsedQuery<TOperator> {
   const parserIssues: Issue[] = [];
 
   let currentTokenIndex = 0;
   let currentDepth = 0;
 
-  const peek = (): Token => tokens[currentTokenIndex] ?? { type: 'EOF' };
-  const advance = (): Token => tokens[currentTokenIndex++] ?? { type: 'EOF' };
+  const peek = (): Token<TOperator> => tokens[currentTokenIndex] ?? { type: 'EOF' };
+  const advance = (): Token<TOperator> => tokens[currentTokenIndex++] ?? { type: 'EOF' };
 
   const checkDepth = (): boolean => {
     if (currentDepth >= maxDepth) {
@@ -57,7 +95,7 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
   };
 
   // Parse primary expression (filter, parentheses, text)
-  function parsePrimaryExpression(): Expression | undefined {
+  function parsePrimaryExpression(): Expression<TOperator> | undefined {
     const token = peek();
 
     if (token.type === 'LPAREN') {
@@ -104,7 +142,7 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return undefined;
   }
 
-  function parseUnaryExpression(): Expression | undefined {
+  function parseUnaryExpression(): Expression<TOperator> | undefined {
     if (peek().type === 'NOT') {
       advance(); // Consume NOT
 
@@ -130,8 +168,8 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return parsePrimaryExpression();
   }
 
-  function parseAndExpression(): Expression | undefined {
-    const operands: Expression[] = [];
+  function parseAndExpression(): Expression<TOperator> | undefined {
+    const operands: Expression<TOperator>[] = [];
 
     while (true) {
       const next = peek();
@@ -164,13 +202,13 @@ function parseExpression({ tokens, maxDepth }: { tokens: Token[]; maxDepth: numb
     return { type: 'and', operands };
   }
 
-  function parseOrExpression(): Expression | undefined {
+  function parseOrExpression(): Expression<TOperator> | undefined {
     const left = parseAndExpression();
     if (!left) {
       return undefined;
     }
 
-    const operands: Expression[] = [left];
+    const operands: Expression<TOperator>[] = [left];
 
     while (peek().type === 'OR') {
       advance(); // Consume OR
