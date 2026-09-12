@@ -1,5 +1,5 @@
 # Base stage with pnpm
-FROM node:26-slim@sha256:a1d9d671994fc2d26e297ac56b4b1522a8bc7fa71c43b14cd1b1fe6c5116f7dc AS base
+FROM node:26-slim@sha256:14bf3eac4bf209d906d3c41256597d3ab1f926b2e93a79e9bdfe1efd32454239 AS base
 RUN npm install -g pnpm@11.22.0
 
 # Build stage
