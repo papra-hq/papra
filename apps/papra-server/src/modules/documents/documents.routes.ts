@@ -51,6 +51,7 @@ export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupGetDeletedDocumentsRoute(context);
   setupGetOrganizationDocumentsStatsRoute(context);
   setupGetDocumentRoute(context);
+  setupTriggerDocumentContentExtractionRoute(context);
   setupDeleteTrashDocumentRoute(context);
   setupDeleteAllTrashDocumentsRoute(context);
   setupDeleteDocumentRoute(context);
@@ -189,6 +190,41 @@ function setupGetDocumentRoute({ app, db }: RouteDefinitionContext) {
       });
 
       return context.json({ document: enrichedDocument });
+    },
+  );
+}
+
+function setupTriggerDocumentContentExtractionRoute({
+  app,
+  db,
+  config,
+  taskServices,
+}: RouteDefinitionContext) {
+  app.post(
+    '/api/organizations/:organizationId/documents/:documentId/extract-content',
+    requireAuthentication({ apiKeyPermissions: ['documents:update'] }),
+    validateParams(
+      v.strictObject({
+        organizationId: organizationIdSchema,
+        documentId: documentIdSchema,
+      }),
+    ),
+    async (context) => {
+      const { userId } = getUser({ context });
+      const { organizationId, documentId } = context.req.valid('param');
+
+      const documentsRepository = createDocumentsRepository({ db });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
+      await getDocumentOrThrow({ documentId, organizationId, documentsRepository });
+
+      const { jobId: taskId } = await taskServices.scheduleJob({
+        taskName: 'extract-document-file-content',
+        data: { documentId, organizationId, ocrLanguages: config.documents.ocrLanguages },
+      });
+
+      return context.json({ taskId }, 202);
     },
   );
 }
