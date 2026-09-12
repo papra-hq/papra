@@ -57,3 +57,12 @@ jobs:
           gh workflow run release-docker.yaml -f version="$VERSION"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Android build
+        if: steps.changesets.outputs.published == 'true' && contains(fromJson(steps.changesets.outputs['published-packages']).*.name, '@papra/mobile')
+        run: |
+          VERSION=$(echo '${{ steps.changesets.outputs['published-packages'] }}' | jq -r '.[] | select(.name=="@papra/mobile") | .version')
+          echo "VERSION: $VERSION"
+          gh workflow run release-mobile.yaml --ref main -f version="$VERSION"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
