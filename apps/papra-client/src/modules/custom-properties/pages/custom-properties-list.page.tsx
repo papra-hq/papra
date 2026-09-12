@@ -25,10 +25,8 @@ import {
   TableRow,
 } from '@/modules/ui/components/table';
 import { PROPERTY_TYPE_LABEL_I18N_KEYS } from '../custom-properties.constants';
-import {
-  deleteCustomPropertyDefinition,
-  fetchCustomPropertyDefinitions,
-} from '../custom-properties.services';
+import { getCustomPropertyDefinitionsQueryOptions } from '../custom-properties.queries';
+import { deleteCustomPropertyDefinition } from '../custom-properties.services';
 
 const TYPE_ICON: Record<CustomPropertyType, string> = {
   text: 'i-tabler-text-size',
@@ -57,9 +55,9 @@ export const DeleteCustomPropertyButton: Component<{
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['organizations', props.organizationId, 'custom-properties'],
-      });
+      await queryClient.invalidateQueries(
+        getCustomPropertyDefinitionsQueryOptions({ organizationId: props.organizationId }),
+      );
 
       createToast({
         message: t('custom-properties.list.delete.success'),
@@ -109,10 +107,9 @@ export const CustomPropertiesPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
 
-  const query = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'custom-properties'],
-    queryFn: async () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
-  }));
+  const query = useQuery(() =>
+    getCustomPropertyDefinitionsQueryOptions({ organizationId: params.organizationId }),
+  );
 
   const table = createSolidTable({
     get data() {

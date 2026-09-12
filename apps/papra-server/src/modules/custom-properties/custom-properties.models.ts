@@ -40,6 +40,7 @@ export function aggregateDocumentCustomPropertyValues({
 }
 
 export type DocumentCustomPropertyForApi = {
+  propertyDefinitionId: string;
   key: string;
   name: string;
   type: string;
@@ -52,16 +53,25 @@ export function buildCustomPropertiesArray({
   propertyDefinitions,
 }: {
   rawValues: DocumentCustomPropertyValueWithRelatedInfo[];
-  propertyDefinitions: { key: string; name: string; type: string; displayOrder: number }[];
+  propertyDefinitions: {
+    id: string;
+    key: string;
+    name: string;
+    type: string;
+    displayOrder: number;
+  }[];
 }): DocumentCustomPropertyForApi[] {
   const aggregated = aggregateDocumentCustomPropertyValues({ rawValues });
-  const valuesByKey = Object.fromEntries(aggregated.map(({ key, value }) => [key, value]));
+  const valuesByDefinitionId = Object.fromEntries(
+    aggregated.map(({ propertyDefinitionId, value }) => [propertyDefinitionId, value]),
+  );
 
   return propertyDefinitions.map((def) => ({
+    propertyDefinitionId: def.id,
     key: def.key,
     name: def.name,
     type: def.type,
     displayOrder: def.displayOrder,
-    value: valuesByKey[def.key] ?? null,
+    value: valuesByDefinitionId[def.id] ?? null,
   }));
 }
