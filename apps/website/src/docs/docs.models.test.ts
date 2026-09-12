@@ -1,5 +1,7 @@
 import type { CollectionEntry } from 'astro:content';
+import { existsSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
+import { docCategories } from './docs.navigations';
 import {
   getDocContext,
   getDocEditUrl,
@@ -28,6 +30,12 @@ describe('getDocUrl', () => {
   test('prefixes the docs landing page with the default locale', () => {
     expect(getDocUrl()).toBe('/en/docs');
     expect(getDocUrl({ locale: 'fr' })).toBe('/fr/docs');
+  });
+
+  test('maps the index document to the landing URL', () => {
+    expect(getDocUrl({ docId: 'index' })).toBe('/en/docs');
+    expect(getDocUrl({ docId: 'index', locale: 'fr' })).toBe('/fr/docs');
+    expect(`${getDocUrl({ docId: 'index' })}.md`).toBe('/en/docs.md');
   });
 
   test('keeps nested logical IDs independent of the locale', () => {
@@ -118,6 +126,35 @@ describe('resolveDoc', () => {
 });
 
 describe('getDocStaticPaths', () => {
+  test('serves index at the docs root with normal translation and fallback handling', () => {
+    const source = doc('en/index', 'Introduction');
+    const paths = getDocStaticPaths([source], ['en', 'fr']);
+
+    expect(paths.map(({ params }) => params)).toEqual([
+      { locale: 'en', slug: undefined },
+      { locale: 'fr', slug: undefined },
+    ]);
+    expect(paths[1]?.props).toMatchObject({
+      entry: source,
+      docId: 'index',
+      requestedLocale: 'fr',
+      contentLocale: 'en',
+      isFallback: true,
+      alternateLocales: ['en'],
+    });
+    expect(getDocEditUrl(paths[1]!.props.entry)).toContain('/content/en/index.mdx');
+
+    const translation = doc('fr/index', 'Présentation');
+    const translatedPaths = getDocStaticPaths([source, translation], ['en', 'fr']);
+    expect(translatedPaths[1]?.props).toMatchObject({
+      entry: translation,
+      contentLocale: 'fr',
+      isFallback: false,
+      alternateLocales: ['en', 'fr'],
+    });
+    expect(translatedPaths.some(({ params }) => params.slug === 'index')).toBe(false);
+  });
+
   test('publishes only enabled docs locales, even when other translations exist', () => {
     const paths = getDocStaticPaths(docs);
     expect(paths.map(({ params }) => params)).toEqual([
@@ -182,6 +219,47 @@ describe('getDocStaticPaths', () => {
 });
 
 describe('docs navigation', () => {
+  test('organizes categories by reader intent', () => {
+    expect(docCategories.map((category) => category.titleKey)).toEqual([
+      'docs.categories.overview',
+      'docs.categories.user-guide',
+      'docs.categories.self-hosting',
+      'docs.categories.developers',
+      'docs.categories.concepts',
+    ]);
+  });
+
+  test('gives every navigation entry one home and an existing English source', () => {
+    const docIds = docCategories.flatMap((category) => {
+      expect(category.sections.length).toBeGreaterThan(0);
+      return category.sections.flatMap((section) => {
+        expect(section.items.length).toBeGreaterThan(0);
+        return section.items.map((item) => item.docId);
+      });
+    });
+
+    expect(new Set(docIds).size).toBe(docIds.length);
+    for (const docId of docIds) {
+      expect(existsSync(new URL(`./content/en/${docId}.mdx`, import.meta.url))).toBe(true);
+    }
+  });
+
+  test('treats the landing document as a regular Overview entry', () => {
+    expect(getDocContext('index')?.category.titleKey).toBe('docs.categories.overview');
+    expect(getDocContext('index')?.section.titleKey).toBe('docs.sections.getting-started');
+    expect(getDocPagination('index')).toEqual({ previous: undefined, next: undefined });
+  });
+
+  test('lists the existing API URL under Developers', () => {
+    expect(getDocContext('api-reference/authentication')?.category.titleKey).toBe(
+      'docs.categories.developers',
+    );
+    expect(getDocPagination('api-reference/authentication')).toEqual({
+      previous: { docId: 'developers/introduction' },
+      next: undefined,
+    });
+  });
+
   test('uses locale-independent IDs to find context', () => {
     expect(getDocContext('self-hosting/installation/docker')?.category.titleKey).toBe(
       'docs.categories.self-hosting',

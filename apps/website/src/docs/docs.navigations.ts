@@ -1,6 +1,25 @@
 import type { DocsCategory } from './docs.types';
 
+// Organize by reader intent; see README.md for category boundaries.
 export const docCategories: DocsCategory[] = [
+  {
+    titleKey: 'docs.categories.overview',
+    sections: [
+      {
+        titleKey: 'docs.sections.getting-started',
+        items: [{ docId: 'index' }],
+      },
+    ],
+  },
+  {
+    titleKey: 'docs.categories.user-guide',
+    sections: [
+      {
+        titleKey: 'docs.sections.getting-started',
+        items: [{ docId: 'user-guide/introduction' }],
+      },
+    ],
+  },
   {
     titleKey: 'docs.categories.self-hosting',
     sections: [
@@ -34,15 +53,28 @@ export const docCategories: DocsCategory[] = [
     ],
   },
   {
-    titleKey: 'docs.categories.api-reference',
+    titleKey: 'docs.categories.developers',
     sections: [
       {
-        titleKey: 'docs.sections.authentication',
+        titleKey: 'docs.sections.getting-started',
+        items: [{ docId: 'developers/introduction' }],
+      },
+      {
+        titleKey: 'docs.sections.api-reference',
         items: [
           {
             docId: 'api-reference/authentication',
           },
         ],
+      },
+    ],
+  },
+  {
+    titleKey: 'docs.categories.concepts',
+    sections: [
+      {
+        titleKey: 'docs.sections.overview',
+        items: [{ docId: 'concepts/introduction' }],
       },
     ],
   },

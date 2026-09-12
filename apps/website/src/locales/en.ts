@@ -355,12 +355,16 @@ export const translations = {
     'Last Chance: {{percentage}}% off for life - Offer expires December 31st, 2025!',
 
   // Documentation (other locales use these English labels until translated)
+  'docs.categories.overview': 'Overview',
+  'docs.categories.user-guide': 'User guide',
   'docs.categories.self-hosting': 'Self-hosting',
-  'docs.categories.api-reference': 'API Reference',
+  'docs.categories.developers': 'Developers',
+  'docs.categories.concepts': 'Concepts',
   'docs.sections.getting-started': 'Getting Started',
   'docs.sections.installation': 'Installation',
   'docs.sections.platforms': 'Platforms',
-  'docs.sections.authentication': 'Authentication',
+  'docs.sections.api-reference': 'API reference',
+  'docs.sections.overview': 'Overview',
   'docs.skip-to-content': 'Skip to content',
   'docs.categories-label': 'Documentation categories',
   'docs.sidebar-label': 'Documentation sidebar',

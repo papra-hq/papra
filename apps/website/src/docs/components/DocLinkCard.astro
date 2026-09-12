@@ -1,0 +1,22 @@
+---
+import type { Locale } from '../../i18n/i18n.constants';
+import { getDocUrl } from '../docs.models';
+
+type Props = {
+  title: string;
+  docId: string;
+  icon?: string;
+};
+
+const { title, docId, icon } = Astro.props;
+const locale = Astro.params.locale as Locale | undefined;
+---
+
+<a
+  href={getDocUrl({ docId, locale })}
+  class="not-prose group block transition rounded-lg px-6 py-4 border hover:border-primary"
+>
+  {icon && <div class={`${icon} size-7 text-primary`} aria-hidden="true"></div>}
+  <div class="transition group-hover:text-primary text-lg font-semibold mt-3">{title}</div>
+  <div class="text-base text-muted-foreground"><slot /></div>
+</a>
