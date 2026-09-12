@@ -102,6 +102,9 @@ describe('config models', () => {
           autoTagging: {
             isEnabled: false,
           },
+          autoNaming: {
+            isEnabled: false,
+          },
         },
       });
     });

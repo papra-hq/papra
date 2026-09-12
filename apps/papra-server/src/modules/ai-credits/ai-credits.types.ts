@@ -15,4 +15,4 @@ export type AiCreditsUsageDetails =
       creditsRate: ContentExtractionCreditRate;
     };
 
-export type AiCreditsUsageSource = 'auto-tagging' | 'content-extraction';
+export type AiCreditsUsageSource = 'auto-naming' | 'auto-tagging' | 'content-extraction';
