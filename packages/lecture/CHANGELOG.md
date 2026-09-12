@@ -1,5 +1,13 @@
 # @papra/lecture
 
+## 0.5.2
+
+### Patch Changes
+
+- [#1469](https://github.com/papra-hq/papra/pull/1469) [`347029d`](https://github.com/papra-hq/papra/commit/347029dbd1ae997dcf537a9d04ab003b06021090) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed OCR extraction for images whose rotation is stored in EXIF metadata.
+
+- [#1470](https://github.com/papra-hq/papra/pull/1470) [`a58b4f0`](https://github.com/papra-hq/papra/commit/a58b4f0e349662218ce3a0a24321d352f3ff199d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Silenced the content extraction warning about DPI.
+
 ## 0.5.1
 
 ### Patch Changes
