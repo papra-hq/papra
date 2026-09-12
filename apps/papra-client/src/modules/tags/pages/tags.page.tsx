@@ -322,6 +322,8 @@ export const TagsPage: Component = () => {
   const { confirm } = useConfirmModal();
   const { t } = useI18n();
   const { getErrorMessage } = useI18nApiErrors({ t });
+  const isHiddenOnMobileColumn = (columnId: string) =>
+    columnId === 'description' || columnId === 'documentsCount' || columnId === 'createdAt';
 
   const query = useQuery(() => ({
     queryKey: ['organizations', params.organizationId, 'tags'],
@@ -382,7 +384,17 @@ export const TagsPage: Component = () => {
         header: () => t('tags.table.headers.tag'),
         accessorKey: 'name',
         sortingFn: 'alphanumeric',
-        cell: (data) => <TagLink {...data.row.original} />,
+        cell: (data) => (
+          <div class="min-w-0">
+            <TagLink {...data.row.original} />
+            <div class="text-xs text-muted-foreground mt-1 sm:hidden truncate">
+              {`${t('tags.table.mobile.documents-count', {
+                count: data.row.original.documentsCount,
+                plural: data.row.original.documentsCount === 1 ? '' : 's',
+              })} - ${data.row.original.description || t('tags.form.no-description')}`}
+            </div>
+          </div>
+        ),
       },
       {
         header: () => t('tags.table.headers.description'),
@@ -503,7 +515,9 @@ export const TagsPage: Component = () => {
                       <TableRow>
                         <For each={headerGroup.headers}>
                           {(header) => (
-                            <TableHead>
+                            <TableHead
+                              class={isHiddenOnMobileColumn(header.column.id) ? 'hidden sm:table-cell' : ''}
+                            >
                               <Show
                                 when={header.column.getCanSort()}
                                 fallback={flexRender(
@@ -540,7 +554,9 @@ export const TagsPage: Component = () => {
                       <TableRow>
                         <For each={row.getVisibleCells()}>
                           {(cell) => (
-                            <TableCell>
+                            <TableCell
+                              class={isHiddenOnMobileColumn(cell.column.id) ? 'hidden sm:table-cell' : ''}
+                            >
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
                           )}
