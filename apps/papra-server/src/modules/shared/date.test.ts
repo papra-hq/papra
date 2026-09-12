@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { addDays, formatDate, isValidDate, startOfDay, subDays } from './date';
+import { addDays, formatDate, getDateValue, isValidDate, startOfDay, subDays } from './date';
 
 describe('date', () => {
   describe('isValidDate', () => {
@@ -107,6 +107,69 @@ describe('date', () => {
       expect(formatDate(date, '{timestamp}')).toBe('1715769045123');
       expect(formatDate(date, '{unix}')).toBe('1715769045');
       expect(formatDate(date, '{iso}')).toBe('2024-05-15T10:30:45.123Z');
+    });
+  });
+
+  describe('getDateValue', () => {
+    test('parses static date strings', () => {
+      expect(getDateValue('2024-01-15', new Date())).to.eql(new Date('2024-01-15'));
+    });
+
+    test('parses "now"', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now', now)).to.eql(now);
+    });
+
+    test('parses "now.year"', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now.year', now)).to.eql(new Date(2026, 0, 1, 0, 0, 0, 0));
+    });
+
+    test('parses "now.month"', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now.month', now)).to.eql(new Date(2026, 5, 1, 0, 0, 0, 0));
+    });
+
+    test('parses "now.day"', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now.day', now)).to.eql(new Date(2026, 5, 29, 0, 0, 0, 0));
+    });
+
+    test('parses arithmetic modifications', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now - 1y', now)).to.eql(new Date('2025-06-29T22:32:09Z'));
+      expect(getDateValue('now.year - 1y', now)).to.eql(new Date(2025, 0, 1, 0, 0, 0, 0));
+      expect(getDateValue('now.month - 1m', now)).to.eql(new Date(2026, 4, 1, 0, 0, 0, 0));
+      expect(getDateValue('now - 30d', now)).to.eql(new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000));
+    });
+
+    test('parses method modifications', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('now.minusYear(1)', now)).to.eql(new Date('2025-06-29T22:32:09Z'));
+      expect(getDateValue('now.minusYears(1)', now)).to.eql(new Date('2025-06-29T22:32:09Z'));
+      expect(getDateValue('now.plusMonths(2)', now)).to.eql(new Date('2026-08-29T22:32:09Z'));
+    });
+
+    test('parses parenthesized expressions', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(getDateValue('(now - 1y)', now)).to.eql(new Date('2025-06-29T22:32:09Z'));
+    });
+
+    test('rejects malformed prefixes and trailing text', () => {
+      const now = new Date('2026-06-29T22:32:09Z');
+      expect(Number.isNaN(getDateValue('nowhere', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.yearly', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.yearInvalid', now).getTime())).toBe(true);
+      expect(Number.isNaN(getDateValue('now.year - 1y invalid', now).getTime())).toBe(true);
+    });
+
+    test('clamps days to the last valid day of the target month in month arithmetic', () => {
+      // May 31 + 1 month -> June 30
+      const endOfMay = new Date('2026-05-31T12:00:00Z');
+      expect(getDateValue('now + 1m', endOfMay)).to.eql(new Date('2026-06-30T12:00:00Z'));
+
+      // May 31 - 3 months -> Feb 28
+      expect(getDateValue('now - 3m', endOfMay)).to.eql(new Date('2026-02-28T12:00:00Z'));
     });
   });
 });

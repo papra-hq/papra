@@ -52,3 +52,5 @@ export function formatDate(date: Date, expression: string): string {
     }
   });
 }
+
+export { getDateValue } from '@papra/std';

@@ -238,6 +238,20 @@ describe('query-builder', async () => {
         });
       }
     });
+
+    test('supports dynamic dates like "now", "now.year", "now - 1y", etc.', () => {
+      const { sqlQuery, issues } = handleCreatedFilter({
+        expression: { type: 'filter', field: 'created', value: 'now.year - 1y', operator: '=' },
+        now: new Date('2026-06-29T22:32:09Z'),
+      });
+
+      expect(issues).to.eql([]);
+
+      expect(stringifySqlQuery(sqlQuery)).to.eql({
+        query: `"documents"."created_at" = ?`,
+        params: [new Date(2025, 0, 1, 0, 0, 0, 0).getTime()],
+      });
+    });
   });
 
   describe('handleDocumentDateFilter', () => {
