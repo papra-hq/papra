@@ -5,6 +5,12 @@ export const defaultIgnoredPatterns = [
   '**/desktop.ini',
   '**/Thumbs.db',
 
+  // Microsoft Office temporary/lock files
+  '**/~$*',
+
+  // LibreOffice lock files
+  '**/.~lock.*#',
+
   // Directories
   '**/.git/**',
   '**/.idea/**',

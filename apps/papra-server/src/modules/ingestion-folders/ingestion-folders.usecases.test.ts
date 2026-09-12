@@ -637,6 +637,76 @@ describe('ingestion-folders usecases', () => {
           },
         ]);
       });
+
+      test('if a transient retryable error (e.g., EIO) occurs, the file ingestion is retried and succeeds if the error resolves', async () => {
+        const taskServices = createInMemoryTaskServices();
+        const { logger } = createTestLogger();
+
+        const { db } = await createInMemoryDatabase({
+          organizations: [{ id: 'org_111111111111111111111111', name: 'Org 1' }],
+        });
+        const organizationsRepository = createOrganizationsRepository({ db });
+
+        const config = overrideConfig({
+          ingestionFolder: {
+            folderRootPath: '/apps/papra/ingestion',
+            postProcessing: {
+              strategy: 'delete',
+            },
+          },
+          documentsStorage: {
+            driver: 'in-memory',
+          },
+        });
+
+        const documentsStorageService = createInMemoryDocumentStorageServices();
+        const generateDocumentId = () => 'doc_1';
+
+        const { fs, getFsState } = createInMemoryFsServices({
+          '/apps/papra/ingestion/org_111111111111111111111111/hello.md': 'lorem ipsum',
+        });
+
+        let attempts = 0;
+        const createDocumentMock = createDocumentCreationUsecase({
+          db,
+          config,
+          logger,
+          documentsStorageService,
+          generateDocumentId,
+          taskServices,
+          eventServices: createTestEventServices(),
+        });
+
+        await processFile({
+          filePath: '/apps/papra/ingestion/org_111111111111111111111111/hello.md',
+          ingestionFolderPath: '/apps/papra/ingestion',
+          config,
+          organizationsRepository,
+          logger,
+          fs,
+          createDocument: async (args) => {
+            attempts++;
+            if (attempts < 3) {
+              const err = new Error('EIO: i/o error, read');
+              (err as any).code = 'EIO';
+              throw err;
+            }
+            return createDocumentMock(args);
+          },
+        });
+
+        // Ensure it succeeded eventually
+        expect(attempts).to.equal(3);
+
+        const documents = await db.select().from(documentsTable);
+        expect(documents).to.have.length(1);
+        expect(documents[0]?.id).to.equal('doc_1');
+
+        // Since post processing strategy is delete, the file should be deleted on success
+        expect(getFsState()).to.deep.equal({
+          '/apps/papra/ingestion/org_111111111111111111111111': null,
+        });
+      });
     });
   });
 
