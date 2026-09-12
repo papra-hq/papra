@@ -1,5 +1,25 @@
 # @papra/app
 
+## 26.7.0
+
+### Minor Changes
+
+- [#1474](https://github.com/papra-hq/papra/pull/1474) [`aa26524`](https://github.com/papra-hq/papra/commit/aa26524ef3806bd9769eb48b180528b9edd1f767) Thanks [@CorentinTh](https://github.com/CorentinTh)! - API breaking change: The route to trash a document `DELETE /api/organizations/:organizationId/documents/:documentId` now returns a 204 No Content status code instead of `{ success: true }` JSON body.
+
+### Patch Changes
+
+- [#1468](https://github.com/papra-hq/papra/pull/1468) [`4fef955`](https://github.com/papra-hq/papra/commit/4fef955ce7c13063448f4afd7c1e9a00cc93406b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fonts are now bundled with the app, so that it can be used offline, and no longer depends on Bunny Fonts. A step towards making Papra fully air-gapped.
+
+- [#1461](https://github.com/papra-hq/papra/pull/1461) [`5d3063b`](https://github.com/papra-hq/papra/commit/5d3063b397020e5b301d0c788d2bcae42fc51561) Thanks [@bartdenhoed](https://github.com/bartdenhoed)! - Fixed missing refresh of the updatedAt db attribute.
+
+- [#1469](https://github.com/papra-hq/papra/pull/1469) [`347029d`](https://github.com/papra-hq/papra/commit/347029dbd1ae997dcf537a9d04ab003b06021090) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed OCR extraction for images whose rotation is stored in EXIF metadata.
+
+- [#1503](https://github.com/papra-hq/papra/pull/1503) [`2993c6e`](https://github.com/papra-hq/papra/commit/2993c6ea6a3b266fb5b022a9a520bfdeb984b422) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: Prevent custom OAuth providers from creating new accounts when registration is disabled, while allowing existing users to sign in.
+
+- [#1470](https://github.com/papra-hq/papra/pull/1470) [`a58b4f0`](https://github.com/papra-hq/papra/commit/a58b4f0e349662218ce3a0a24321d352f3ff199d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Silenced the content extraction warning about DPI.
+
+- [#1502](https://github.com/papra-hq/papra/pull/1502) [`c16661e`](https://github.com/papra-hq/papra/commit/c16661e93606de8759e5312020571a126f5f58e6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed the default value for the intake email webhook validation secret to prevent ingestion of documents from untrusted sources when no secret is provided. Users must now explicitly set a secret using `INTAKE_EMAILS_WEBHOOK_SECRET`.
+
 ## 26.6.2
 
 ### Patch Changes
