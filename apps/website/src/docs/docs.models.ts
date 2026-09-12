@@ -8,7 +8,7 @@ import { DOCS_LOCALES } from './docs.constants';
 import { docCategories } from './docs.navigations';
 
 // Navigation membership determines context, not the document's path hierarchy.
-// The docs landing page and unlisted documents have no active context.
+// The landing document uses the logical ID "index", just like other entries.
 export function getDocContext(docId?: string) {
   if (!docId) {
     return undefined;
@@ -50,7 +50,10 @@ export function getDocUrl({
   docId,
   locale = DEFAULT_LOCALE,
 }: { docId?: string; locale?: Locale } = {}): string {
-  return buildLocalizedPath({ locale, path: docId ? `/docs/${docId}` : '/docs' });
+  return buildLocalizedPath({
+    locale,
+    path: docId && docId !== 'index' ? `/docs/${docId}` : '/docs',
+  });
 }
 
 export function getDocEditUrl(entry: CollectionEntry<'docs'>): string | undefined {
@@ -98,7 +101,8 @@ export function getDocStaticPaths(
 
   return locales.flatMap((locale) =>
     docIds.map((docId) => ({
-      params: { locale, slug: docId },
+      // The index document is served at /docs, never /docs/index.
+      params: { locale, slug: docId === 'index' ? undefined : docId },
       props: {
         ...resolveDoc({ docs, docId, locale }),
         alternateLocales: locales.filter((candidate) =>
