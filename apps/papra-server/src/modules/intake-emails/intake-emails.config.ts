@@ -16,8 +16,8 @@ export const intakeEmailsConfig = {
   },
   webhookSecret: {
     doc: 'The secret to use when verifying webhooks, should be a random string between 16 and 128 characters',
-    schema: v.pipe(v.string(), v.minLength(16), v.maxLength(128)),
-    default: 'please-change-me',
+    schema: v.optional(v.pipe(v.string(), v.minLength(16), v.maxLength(128))),
+    default: undefined,
     env: 'INTAKE_EMAILS_WEBHOOK_SECRET',
   },
   driver: {

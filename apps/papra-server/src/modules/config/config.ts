@@ -44,6 +44,7 @@ import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.c
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
+import { ensureIntakeEmailWebhookSecretisSetWhenIntakeEmailsAreEnabled } from '../intake-emails/intake-emails.config.models';
 
 const documentsStorageConfig = {
   ...createStorageConfig({
@@ -227,7 +228,10 @@ export async function parseConfig({
   validateParsedConfig({
     config,
     logger,
-    validators: [ensureAuthSecretIsNotDefaultInProduction],
+    validators: [
+      ensureAuthSecretIsNotDefaultInProduction,
+      ensureIntakeEmailWebhookSecretisSetWhenIntakeEmailsAreEnabled,
+    ],
   });
 
   return { config };
