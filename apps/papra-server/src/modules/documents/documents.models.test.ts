@@ -148,7 +148,7 @@ describe('documents models', () => {
       expect(ensureSafeFileName('.file.txt.')).to.eql('.file.txt');
     });
 
-    test('reserved file names on Windows are suffixed with an underscore', () => {
+    test('reserved file names on Windows get an underscore before any extension', () => {
       const reservedFileNames = [
         'con',
         'prn',
@@ -167,11 +167,20 @@ describe('documents models', () => {
         expect(ensureSafeFileName(upper)).to.eql(`${upper}_`);
         expect(ensureSafeFileName(title)).to.eql(`${title}_`);
 
-        // Ok with extensions
-        expect(ensureSafeFileName(`${lower}.txt`)).to.eql(`${lower}.txt`);
-        expect(ensureSafeFileName(`${upper}.txt`)).to.eql(`${upper}.txt`);
-        expect(ensureSafeFileName(`${title}.txt`)).to.eql(`${title}.txt`);
+        // Windows reserves these names even when followed by one or more extensions.
+        for (const extension of ['.txt', '.tar.gz']) {
+          expect(ensureSafeFileName(`${lower}${extension}`)).to.eql(`${lower}_${extension}`);
+          expect(ensureSafeFileName(`${upper}${extension}`)).to.eql(`${upper}_${extension}`);
+          expect(ensureSafeFileName(`${title}${extension}`)).to.eql(`${title}_${extension}`);
+        }
       }
+    });
+
+    test('file names that only start with a Windows reserved name are preserved', () => {
+      expect(ensureSafeFileName('console.txt')).to.eql('console.txt');
+      expect(ensureSafeFileName('auxiliary.txt')).to.eql('auxiliary.txt');
+      expect(ensureSafeFileName('com10.txt')).to.eql('com10.txt');
+      expect(ensureSafeFileName('lpt10.txt')).to.eql('lpt10.txt');
     });
 
     test('path separators are replaced with underscores to prevent directory traversal', () => {
