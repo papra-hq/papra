@@ -205,10 +205,14 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         email,
         password,
         rememberMe,
-        callbackURL: buildUrl({
-          baseUrl: config.baseUrl,
-          path: getPathWithRedirect(authPagesPaths.emailVerification),
-        }),
+        ...(config.auth.isEmailVerificationRequired
+          ? {
+              callbackURL: buildUrl({
+                baseUrl: config.baseUrl,
+                path: getPathWithRedirect(authPagesPaths.emailVerification),
+              }),
+            }
+          : {}),
       });
 
       if (loginResult && 'twoFactorRedirect' in loginResult && loginResult.twoFactorRedirect) {
