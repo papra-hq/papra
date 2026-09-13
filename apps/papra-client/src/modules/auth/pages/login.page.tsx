@@ -1,6 +1,5 @@
 import type { Component } from 'solid-js';
 import type { SsoProviderConfig } from '../auth.types';
-import { buildUrl } from '@corentinth/chisels';
 import { A, useNavigate } from '@solidjs/router';
 import { useMutation } from '@tanstack/solid-query';
 import { createSignal, For, Show } from 'solid-js';
@@ -197,7 +196,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
   const { config } = useConfig();
   const { t } = useI18n();
   const { createI18nApiError } = useI18nApiErrors({ t });
-  const { getPathWithRedirect } = useAuthRedirect();
+  const { getPathWithRedirect, getPostAuthRedirect } = useAuthRedirect();
 
   const { form, Form, Field } = createForm({
     onSubmit: async ({ email, password, rememberMe }) => {
@@ -205,10 +204,6 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         email,
         password,
         rememberMe,
-        callbackURL: buildUrl({
-          baseUrl: config.baseUrl,
-          path: getPathWithRedirect(authPagesPaths.emailVerification),
-        }),
       });
 
       if (loginResult && 'twoFactorRedirect' in loginResult && loginResult.twoFactorRedirect) {
@@ -224,7 +219,7 @@ export const EmailLoginForm: Component<{ onTwoFactorRequired: () => void }> = (p
         throw createI18nApiError({ error });
       }
 
-      // If all good guard will redirect to dashboard
+      navigate(getPostAuthRedirect());
     },
     schema: v.object({
       email: v.pipe(
