@@ -80,40 +80,74 @@ const selectionColumn: ColumnDef<Document> = {
   enableHiding: false,
 };
 
-export const documentDateColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.document-date')}</span>;
-  },
-  accessorKey: 'documentDate',
-  enableSorting: true,
-  cell: (data) => {
-    const { t } = useI18n();
-    const value = data.getValue<Date | null | undefined>();
-    return (
-      <span class="text-muted-foreground hidden sm:block">
-        <Show
-          when={value}
-          fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
-        >
-          {(date) => <RelativeTime date={date()} />}
-        </Show>
-      </span>
-    );
-  },
-};
+export function createDocumentMetadataColumns({
+  hideOnSmallScreens = true,
+}: {
+  hideOnSmallScreens?: boolean;
+} = {}) {
+  const visibilityClass = hideOnSmallScreens ? 'hidden sm:block' : 'block';
 
-export const createdAtColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.created')}</span>;
-  },
-  accessorKey: 'createdAt',
-  enableSorting: true,
-  cell: (data) => (
-    <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />
-  ),
-};
+  return {
+    documentDateColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return (
+          <span class={visibilityClass}>{t('documents.list.table.headers.document-date')}</span>
+        );
+      },
+      accessorKey: 'documentDate',
+      enableSorting: true,
+      cell: (data) => {
+        const { t } = useI18n();
+        const value = data.getValue<Date | null | undefined>();
+        return (
+          <span class={cn('text-muted-foreground', visibilityClass)}>
+            <Show
+              when={value}
+              fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
+            >
+              {(date) => <RelativeTime date={date()} />}
+            </Show>
+          </span>
+        );
+      },
+    },
+    createdAtColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return <span class={visibilityClass}>{t('documents.list.table.headers.created')}</span>;
+      },
+      accessorKey: 'createdAt',
+      enableSorting: true,
+      cell: (data) => (
+        <RelativeTime
+          class={cn('text-muted-foreground', visibilityClass)}
+          date={data.getValue<Date>()}
+        />
+      ),
+    },
+    tagsColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return <span class={visibilityClass}>{t('documents.list.table.headers.tags')}</span>;
+      },
+      accessorKey: 'tags',
+      enableSorting: false,
+      cell: (data) => (
+        <DocumentTagsList
+          tags={data.getValue<Tag[]>()}
+          tagClass="text-xs text-muted-foreground"
+          triggerClass="size-6"
+          documentId={data.row.original.id}
+          organizationId={data.row.original.organizationId}
+          asLink
+        />
+      ),
+    },
+  } satisfies Record<'documentDateColumn' | 'createdAtColumn' | 'tagsColumn', ColumnDef<Document>>;
+}
+
+export const { documentDateColumn, createdAtColumn, tagsColumn } = createDocumentMetadataColumns();
 
 export const deletedAtColumn: ColumnDef<Document> = {
   header: () => {
@@ -137,25 +171,6 @@ export const standardActionsColumn: ColumnDef<Document> = {
     <div class="flex items-center justify-end">
       <DocumentManagementDropdown document={data.row.original} />
     </div>
-  ),
-};
-
-export const tagsColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.tags')}</span>;
-  },
-  accessorKey: 'tags',
-  enableSorting: false,
-  cell: (data) => (
-    <DocumentTagsList
-      tags={data.getValue<Tag[]>()}
-      tagClass="text-xs text-muted-foreground"
-      triggerClass="size-6"
-      documentId={data.row.original.id}
-      organizationId={data.row.original.organizationId}
-      asLink
-    />
   ),
 };
 

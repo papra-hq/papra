@@ -23,12 +23,10 @@ import { DocumentColumnsPicker } from '../components/document-columns-picker.com
 import { DocumentUploadArea } from '../components/document-upload-area.component';
 import { DocumentsBatchTagDialog } from '../components/documents-batch-tag-dialog.component';
 import {
-  createdAtColumn,
   createDocumentCustomPropertyColumnOptions,
-  documentDateColumn,
+  createDocumentMetadataColumns,
   DocumentsPaginatedList,
   standardActionsColumn,
-  tagsColumn,
 } from '../components/documents-list.component';
 import { batchTrashDocuments, batchUpdateDocumentTags } from '../documents-batch.services';
 import {
@@ -45,6 +43,9 @@ export const DocumentsPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
   const { confirm } = useConfirmModal();
+  const { tagsColumn, documentDateColumn, createdAtColumn } = createDocumentMetadataColumns({
+    hideOnSmallScreens: false,
+  });
   const [getSearchQuery, setSearchQuery] = createParamSynchronizedSignal<string>({
     paramKey: 'query',
     defaultValue: '',
