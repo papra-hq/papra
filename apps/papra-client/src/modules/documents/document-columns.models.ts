@@ -89,18 +89,20 @@ export function getSelectedDocumentColumns<T extends { id: string }>({
   });
 }
 
-export function getDocumentColumnsForPicker<T extends { id: string }>({
-  columns,
+export function getDocumentColumnIdsForPicker({
+  availableColumnIds,
   selectedColumnIds,
 }: {
-  columns: T[];
+  availableColumnIds: string[];
   selectedColumnIds: string[];
 }) {
-  const selectedColumns = getSelectedDocumentColumns({ columns, selectedColumnIds });
-  const selectedIds = new Set(selectedColumns.map(({ id }) => id));
-  const unselectedColumns = columns.filter(({ id }) => !selectedIds.has(id));
+  const availableIds = new Set(availableColumnIds);
+  const selectedIds = new Set(selectedColumnIds);
 
-  return [...selectedColumns, ...unselectedColumns];
+  return [
+    ...selectedColumnIds.filter((id) => availableIds.has(id)),
+    ...availableColumnIds.filter((id) => !selectedIds.has(id)),
+  ];
 }
 
 export function getCustomPropertyDocumentColumnId({

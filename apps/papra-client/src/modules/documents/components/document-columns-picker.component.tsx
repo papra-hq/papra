@@ -10,8 +10,7 @@ import {
   PopoverTrigger,
 } from '@/modules/ui/components/popover';
 import {
-  getDocumentColumnsForPicker,
-  getSelectedDocumentColumns,
+  getDocumentColumnIdsForPicker,
   moveDocumentColumn,
   toggleDocumentColumn,
 } from '../document-columns.models';
@@ -27,18 +26,14 @@ export const DocumentColumnsPicker: Component<{
 }> = (props) => {
   const { t } = useI18n();
   const columnsById = createMemo(() => new Map(props.columns.map((column) => [column.id, column])));
-  const selectedColumns = createMemo(() =>
-    getSelectedDocumentColumns({
-      columns: props.columns,
-      selectedColumnIds: props.selectedColumnIds,
-    }),
+  const selectedColumnIds = createMemo(() =>
+    props.selectedColumnIds.filter((id) => columnsById().has(id)),
   );
-  const selectedColumnIds = createMemo(() => selectedColumns().map(({ id }) => id));
   const orderedColumnIds = createMemo(() =>
-    getDocumentColumnsForPicker({
-      columns: props.columns,
+    getDocumentColumnIdsForPicker({
+      availableColumnIds: [...columnsById().keys()],
       selectedColumnIds: selectedColumnIds(),
-    }).map(({ id }) => id),
+    }),
   );
   const moveColumn = (
     columnId: string,

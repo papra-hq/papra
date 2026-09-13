@@ -3,7 +3,7 @@ import {
   deserializeDocumentColumnIds,
   formatDocumentCustomPropertyValue,
   getCustomPropertyDocumentColumnId,
-  getDocumentColumnsForPicker,
+  getDocumentColumnIdsForPicker,
   getDocumentColumnsStorageKey,
   getSelectedDocumentColumns,
   moveDocumentColumn,
@@ -45,13 +45,45 @@ describe('document columns models', () => {
       ).to.eql([columns[2], columns[0]]);
     });
 
-    test('shows selected columns first and preserves registry order for the remaining columns', () => {
+    test('orders picker IDs with selected columns first and the rest in registry order', () => {
       expect(
-        getDocumentColumnsForPicker({
-          columns,
+        getDocumentColumnIdsForPicker({
+          availableColumnIds: columns.map(({ id }) => id),
           selectedColumnIds: ['createdAt', 'tags'],
         }),
-      ).to.eql([columns[2], columns[0], columns[1], columns[3], columns[4]]);
+      ).to.eql([
+        'createdAt',
+        'tags',
+        'documentDate',
+        'customProperty:property-b',
+        'customProperty:property-a',
+      ]);
+    });
+
+    test('omits unavailable picker IDs without changing saved selections', () => {
+      const selectedColumnIds = ['createdAt', 'removed-column', 'tags'];
+
+      expect(
+        getDocumentColumnIdsForPicker({
+          availableColumnIds: ['tags', 'createdAt'],
+          selectedColumnIds,
+        }),
+      ).to.eql(['createdAt', 'tags']);
+      expect(selectedColumnIds).to.eql(['createdAt', 'removed-column', 'tags']);
+    });
+
+    test('handles empty selections and unavailable columns in the picker', () => {
+      const availableColumnIds = columns.map(({ id }) => id);
+
+      expect(getDocumentColumnIdsForPicker({ availableColumnIds, selectedColumnIds: [] })).to.eql(
+        availableColumnIds,
+      );
+      expect(
+        getDocumentColumnIdsForPicker({
+          availableColumnIds: [],
+          selectedColumnIds: ['tags'],
+        }),
+      ).to.eql([]);
     });
 
     test('adds and removes columns without disturbing the remaining order', () => {
