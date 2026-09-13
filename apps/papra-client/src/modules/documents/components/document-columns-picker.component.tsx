@@ -26,6 +26,7 @@ export const DocumentColumnsPicker: Component<{
   onRetry: () => void;
 }> = (props) => {
   const { t } = useI18n();
+  const columnsById = createMemo(() => new Map(props.columns.map((column) => [column.id, column])));
   const selectedColumns = createMemo(() =>
     getSelectedDocumentColumns({
       columns: props.columns,
@@ -33,11 +34,11 @@ export const DocumentColumnsPicker: Component<{
     }),
   );
   const selectedColumnIds = createMemo(() => selectedColumns().map(({ id }) => id));
-  const orderedColumns = createMemo(() =>
+  const orderedColumnIds = createMemo(() =>
     getDocumentColumnsForPicker({
       columns: props.columns,
       selectedColumnIds: selectedColumnIds(),
-    }),
+    }).map(({ id }) => id),
   );
   const moveColumn = (
     columnId: string,
@@ -102,64 +103,68 @@ export const DocumentColumnsPicker: Component<{
         </Show>
 
         <div class="max-h-80 overflow-y-auto p-2">
-          <For each={orderedColumns()}>
-            {(column) => {
-              const selectedIndex = () => selectedColumnIds().indexOf(column.id);
+          <For each={orderedColumnIds()}>
+            {(columnId) => {
+              const selectedIndex = () => selectedColumnIds().indexOf(columnId);
               const isSelected = () => selectedIndex() !== -1;
 
               return (
-                <div class="flex items-center gap-1 rounded-md px-2 py-1.5 hover:bg-accent/50">
-                  <Checkbox
-                    class="flex min-w-0 flex-1 items-center gap-2"
-                    checked={isSelected()}
-                    onChange={(checked) => {
-                      const focusedElement = document.activeElement;
-                      props.onSelectedColumnIdsChange(
-                        toggleDocumentColumn({
-                          selectedColumnIds: props.selectedColumnIds,
-                          columnId: column.id,
-                          isSelected: checked,
-                        }),
-                      );
-                      // Moving the row can detach its focused checkbox from the DOM.
-                      if (focusedElement instanceof HTMLElement) {
-                        focusedElement.focus();
-                      }
-                    }}
-                  >
-                    <CheckboxControl />
-                    <CheckboxLabel class="truncate text-sm" title={column.label}>
-                      {column.label}
-                    </CheckboxLabel>
-                  </Checkbox>
+                <Show when={columnsById().get(columnId)}>
+                  {(column) => (
+                    <div class="flex items-center gap-1 rounded-md px-2 py-1.5 hover:bg-accent/50">
+                      <Checkbox
+                        class="flex min-w-0 flex-1 items-center gap-2"
+                        checked={isSelected()}
+                        onChange={(checked) => {
+                          const focusedElement = document.activeElement;
+                          props.onSelectedColumnIdsChange(
+                            toggleDocumentColumn({
+                              selectedColumnIds: props.selectedColumnIds,
+                              columnId,
+                              isSelected: checked,
+                            }),
+                          );
+                          // Moving the row can detach its focused checkbox from the DOM.
+                          if (focusedElement instanceof HTMLElement) {
+                            focusedElement.focus();
+                          }
+                        }}
+                      >
+                        <CheckboxControl />
+                        <CheckboxLabel class="truncate text-sm" title={column().label}>
+                          {column().label}
+                        </CheckboxLabel>
+                      </Checkbox>
 
-                  <Show when={isSelected()}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-7 aria-disabled:opacity-50"
-                      aria-disabled={selectedIndex() === 0}
-                      aria-label={t('documents.list.columns.move-earlier', {
-                        name: column.label,
-                      })}
-                      onClick={(event) => moveColumn(column.id, 'earlier', event.currentTarget)}
-                    >
-                      <div class="i-tabler-chevron-up size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-7 aria-disabled:opacity-50"
-                      aria-disabled={selectedIndex() === selectedColumnIds().length - 1}
-                      aria-label={t('documents.list.columns.move-later', {
-                        name: column.label,
-                      })}
-                      onClick={(event) => moveColumn(column.id, 'later', event.currentTarget)}
-                    >
-                      <div class="i-tabler-chevron-down size-4" />
-                    </Button>
-                  </Show>
-                </div>
+                      <Show when={isSelected()}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="size-7 aria-disabled:opacity-50"
+                          aria-disabled={selectedIndex() === 0}
+                          aria-label={t('documents.list.columns.move-earlier', {
+                            name: column().label,
+                          })}
+                          onClick={(event) => moveColumn(columnId, 'earlier', event.currentTarget)}
+                        >
+                          <div class="i-tabler-chevron-up size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="size-7 aria-disabled:opacity-50"
+                          aria-disabled={selectedIndex() === selectedColumnIds().length - 1}
+                          aria-label={t('documents.list.columns.move-later', {
+                            name: column().label,
+                          })}
+                          onClick={(event) => moveColumn(columnId, 'later', event.currentTarget)}
+                        >
+                          <div class="i-tabler-chevron-down size-4" />
+                        </Button>
+                      </Show>
+                    </div>
+                  )}
+                </Show>
               );
             }}
           </For>
