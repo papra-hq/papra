@@ -13,6 +13,14 @@ export const aiConfig = {
     env: 'AI_IS_ENABLED',
     default: false,
   },
+  credits: {
+    isEnabled: {
+      doc: 'Whether to enforce AI credit limits and track credit usage. Enable for metered instances; leave disabled for self-hosting.',
+      schema: booleanishSchema,
+      env: 'AI_CREDITS_IS_ENABLED',
+      default: false,
+    },
+  },
   adapters: {
     anthropic: anthropicAdaptersConfig,
     ...openAiAdaptersConfig,
