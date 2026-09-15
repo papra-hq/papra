@@ -33,9 +33,18 @@ export function getAuth({
   const { trustedOrigins } = getTrustedOrigins({ config });
   const { serverBaseUrl } = getServerBaseUrl({ config });
 
+  // Resolve the auth origin per request for multiple approved URLs.
+  const allowedHosts = [serverBaseUrl, ...trustedOrigins]
+    .filter((origin) => origin.startsWith('http://') || origin.startsWith('https://'))
+    .map((origin) => new URL(origin).host)
+    .filter((host, index, hosts) => hosts.indexOf(host) === index);
+
   const auth = betterAuth({
     secret,
-    baseURL: serverBaseUrl,
+    baseURL: {
+      allowedHosts,
+      fallback: serverBaseUrl,
+    },
     trustedOrigins,
     logger: {
       disabled: false,
@@ -106,6 +115,8 @@ export function getAuth({
     advanced: {
       // Drizzle tables handle the id generation
       database: { generateId: false },
+      // This deployment supports both HTTP and HTTPS origins.
+      useSecureCookies: false,
       ipAddress: {
         ipAddressHeaders: config.auth.ipAddressHeaders,
       },
