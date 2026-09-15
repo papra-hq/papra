@@ -35,7 +35,7 @@
     "@astrojs/mdx": "7.0.0",
     "@iconify-json/tabler": "catalog:",
     "@unocss/reset": "catalog:",
-    "pagefind": "^1.5.2",
+    "pagefind": "1.5.2",
     "sharp": "catalog:",
     "typescript": "catalog:typescript-legacy",
     "unocss": "catalog:",
