@@ -19,8 +19,7 @@ export const translations = {
   'auth.reset-password.form.new-password.label': 'Nové heslo',
   'auth.reset-password.form.new-password.placeholder': 'Príklad: **********',
   'auth.reset-password.form.new-password.required': 'Zadajte svoje nové heslo',
-  'auth.reset-password.form.new-password.min-length':
-    'Heslo musí mať aspoň {{ minLength }} znakov',
+  'auth.reset-password.form.new-password.min-length': 'Heslo musí mať aspoň {{ minLength }} znakov',
   'auth.reset-password.form.new-password.max-length':
     'Heslo musí mať menej ako {{ maxLength }} znakov',
   'auth.reset-password.form.submit': 'Obnoviť heslo',
@@ -119,8 +118,7 @@ export const translations = {
   'user.settings.email.label': 'E-mailová adresa',
 
   'user.settings.name.title': 'Celé meno',
-  'user.settings.name.description':
-    'Vaše celé meno sa zobrazuje ostatným členom organizácie.',
+  'user.settings.name.description': 'Vaše celé meno sa zobrazuje ostatným členom organizácie.',
   'user.settings.name.label': 'Celé meno',
   'user.settings.name.placeholder': 'Napr. Ján Novák',
   'user.settings.name.update': 'Aktualizovať meno',
@@ -132,8 +130,7 @@ export const translations = {
   'user.settings.logout.button': 'Odhlásiť sa',
 
   'user.settings.two-factor.title': 'Dvojfaktorové overenie',
-  'user.settings.two-factor.description':
-    'Pridajte svojmu účtu ďalšiu úroveň zabezpečenia.',
+  'user.settings.two-factor.description': 'Pridajte svojmu účtu ďalšiu úroveň zabezpečenia.',
   'user.settings.two-factor.status.enabled': 'Zapnuté',
   'user.settings.two-factor.status.disabled': 'Vypnuté',
   'user.settings.two-factor.enable-button': 'Zapnúť 2FA',
@@ -261,8 +258,7 @@ export const translations = {
   'organization.settings.delete.confirm.confirm-button': 'Odstrániť organizáciu',
   'organization.settings.delete.confirm.cancel-button': 'Zrušiť',
   'organization.settings.delete.success': 'Organizácia bola odstránená',
-  'organization.settings.delete.only-owner':
-    'Túto organizáciu môže odstrániť iba jej vlastník.',
+  'organization.settings.delete.only-owner': 'Túto organizáciu môže odstrániť iba jej vlastník.',
   'organization.settings.delete.has-active-subscription':
     'Organizáciu s aktívnym predplatným nie je možné odstrániť. Najprv zrušte svoje predplatné vyššie.',
 
@@ -341,8 +337,7 @@ export const translations = {
   'organizations.invitations.status.cancelled': 'Zrušená',
   'organizations.invitations.resend': 'Znova odoslať pozvánku',
   'organizations.invitations.cancel.title': 'Zrušiť pozvánku',
-  'organizations.invitations.cancel.description':
-    'Naozaj chcete zrušiť túto pozvánku?',
+  'organizations.invitations.cancel.description': 'Naozaj chcete zrušiť túto pozvánku?',
   'organizations.invitations.cancel.confirm': 'Zrušiť pozvánku',
   'organizations.invitations.cancel.cancel': 'Zrušiť',
   'organizations.invitations.resend.title': 'Znova odoslať pozvánku',
@@ -397,8 +392,7 @@ export const translations = {
     'Vybrať {{ count, =1:{count} dokument, [2-4]:všetky {count} dokumenty, všetkých {count} dokumentov }}',
   'documents.list.batch.all-matching-selected':
     'Vybraté všetky dokumenty ({{ count }}) zodpovedajúce tomuto vyhľadávaniu',
-  'documents.list.batch.all-selected':
-    'Vybraté všetky dokumenty ({{ count }})',
+  'documents.list.batch.all-selected': 'Vybraté všetky dokumenty ({{ count }})',
   'documents.list.batch.trash.confirm.title': 'Presunúť do koša',
   'documents.list.batch.trash.confirm.description':
     'Presunúť {{ count }} {{ count, =1:dokument, [2-4]:dokumenty, dokumentov }} do koša? Neskôr ich môžete z koša obnoviť.',
@@ -645,8 +639,7 @@ export const translations = {
   'document-share-links.list.description': 'Spravujte odkazy na zdieľanie pre „{{ name }}“.',
   'document-share-links.list.create-new': 'Vytvoriť nový odkaz',
   'document-share-links.create.title': 'Vytvoriť odkaz na zdieľanie',
-  'document-share-links.create.description':
-    'Vytvorte nový odkaz na zdieľanie tohto dokumentu.',
+  'document-share-links.create.description': 'Vytvorte nový odkaz na zdieľanie tohto dokumentu.',
   'document-share-links.create.password.toggle': 'Vyžadovať heslo',
   'document-share-links.create.password.hint':
     'Nepovinné, príjemcovia ho budú musieť zadať pred získaním prístupu.',
@@ -918,8 +911,7 @@ export const translations = {
   'intake-emails.new': 'Nový prijímací e-mail',
   'intake-emails.disabled-label': '(Vypnutý)',
   'intake-emails.no-origins': 'Žiadne povolené adresy odosielateľov',
-  'intake-emails.allowed-origins':
-    'Povolené z {{ count, =1:{count} adresy, {count} adries }}',
+  'intake-emails.allowed-origins': 'Povolené z {{ count, =1:{count} adresy, {count} adries }}',
   'intake-emails.actions.enable': 'Zapnúť',
   'intake-emails.actions.disable': 'Vypnúť',
   'intake-emails.actions.manage-origins': 'Spravovať adresy odosielateľov',
@@ -999,8 +991,7 @@ export const translations = {
   'webhooks.list.title': 'Webhooky',
   'webhooks.list.description': 'Spravujte webhooky svojej organizácie',
   'webhooks.list.empty.title': 'Žiadne webhooky',
-  'webhooks.list.empty.description':
-    'Vytvorte svoj prvý webhook a začnite prijímať udalosti',
+  'webhooks.list.empty.description': 'Vytvorte svoj prvý webhook a začnite prijímať udalosti',
   'webhooks.list.create': 'Vytvoriť webhook',
   'webhooks.list.card.last-triggered': 'Naposledy spustený',
   'webhooks.list.card.never': 'Nikdy',
@@ -1040,10 +1031,8 @@ export const translations = {
   'webhooks.events.documents.document:created.description': 'Dokument vytvorený',
   'webhooks.events.documents.document:deleted.description': 'Dokument odstránený',
   'webhooks.events.documents.document:updated.description': 'Dokument aktualizovaný',
-  'webhooks.events.documents.document:tag:added.description':
-    'K dokumentu bol pridaný štítok',
-  'webhooks.events.documents.document:tag:removed.description':
-    'Z dokumentu bol odstránený štítok',
+  'webhooks.events.documents.document:tag:added.description': 'K dokumentu bol pridaný štítok',
+  'webhooks.events.documents.document:tag:removed.description': 'Z dokumentu bol odstránený štítok',
 
   // Navigation
 
@@ -1102,12 +1091,10 @@ export const translations = {
 
   // API errors
 
-  'api-errors.api.timeout':
-    'Požiadavka trvala príliš dlho a vypršala. Skúste to znova.',
+  'api-errors.api.timeout': 'Požiadavka trvala príliš dlho a vypršala. Skúste to znova.',
   'api-errors.document.already_exists': 'Dokument už existuje',
   'api-errors.document.size_too_large': 'Súbor je príliš veľký',
-  'api-errors.intake-emails.already_exists':
-    'Prijímací e-mail s touto adresou už existuje.',
+  'api-errors.intake-emails.already_exists': 'Prijímací e-mail s touto adresou už existuje.',
   'api-errors.intake_email.limit_reached':
     'Bol dosiahnutý maximálny počet prijímacích e-mailov pre túto organizáciu. Na vytvorenie ďalších prejdite na vyšší plán.',
   'api-errors.user.max_organization_count_reached':
@@ -1119,8 +1106,7 @@ export const translations = {
   'api-errors.user.organization_invitation_limit_reached':
     'Bol dosiahnutý maximálny počet pozvánok na dnešný deň. Skúste to znova zajtra.',
   'api-errors.demo.not_available': 'Táto funkcia nie je v deme dostupná',
-  'api-errors.tags.already_exists':
-    'Štítok s týmto názvom už v tejto organizácii existuje',
+  'api-errors.tags.already_exists': 'Štítok s týmto názvom už v tejto organizácii existuje',
   'api-errors.tags.organization_limit_reached':
     'Bol dosiahnutý maximálny počet štítkov pre túto organizáciu.',
   'api-errors.internal.error':
@@ -1135,11 +1121,9 @@ export const translations = {
     'Zadaná URL nie je povolená. URL webhookov nesmú smerovať na súkromné alebo rezervované IP adresy.',
   'api-errors.users.still_owns_organizations':
     'Tento používateľ stále vlastní jednu alebo viac organizácií. Pred odstránením používateľa tieto organizácie odstráňte.',
-  'api-errors.plan_entitlements.already_exists':
-    'Tento používateľ už má nárok tohto typu.',
+  'api-errors.plan_entitlements.already_exists': 'Tento používateľ už má nárok tohto typu.',
   'api-errors.plan_entitlements.not_found': 'Nárok na plán sa nenašiel.',
-  'api-errors.plan_entitlements.not_eligible':
-    'Tento používateľ nemá na tento nárok právo.',
+  'api-errors.plan_entitlements.not_eligible': 'Tento používateľ nemá na tento nárok právo.',
   'api-errors.users.cannot_delete_self':
     'Z administrátorského panela nemôžete odstrániť svoj vlastný účet.',
   // Better auth api errors
@@ -1150,8 +1134,7 @@ export const translations = {
   'api-errors.FAILED_TO_GET_SESSION': 'Nepodarilo sa získať reláciu',
   'api-errors.INVALID_PASSWORD': 'Neplatné heslo',
   'api-errors.INVALID_EMAIL': 'Neplatný e-mail',
-  'api-errors.INVALID_EMAIL_OR_PASSWORD':
-    'E-mail alebo heslo je nesprávne, alebo účet neexistuje.',
+  'api-errors.INVALID_EMAIL_OR_PASSWORD': 'E-mail alebo heslo je nesprávne, alebo účet neexistuje.',
   'api-errors.SOCIAL_ACCOUNT_ALREADY_LINKED': 'Sociálny účet je už prepojený',
   'api-errors.PROVIDER_NOT_FOUND': 'Poskytovateľ sa nenašiel',
   'api-errors.INVALID_TOKEN': 'Neplatný token',
@@ -1172,13 +1155,10 @@ export const translations = {
   'api-errors.OTP_NOT_ENABLED': 'Dvojfaktorové overenie nie je pre tento účet zapnuté',
   'api-errors.OTP_HAS_EXPIRED': 'Kód dvojfaktorového overenia vypršal',
   'api-errors.TOTP_NOT_ENABLED': 'TOTP nie je pre tento účet zapnuté',
-  'api-errors.TWO_FACTOR_NOT_ENABLED':
-    'Dvojfaktorové overenie nie je pre tento účet zapnuté',
+  'api-errors.TWO_FACTOR_NOT_ENABLED': 'Dvojfaktorové overenie nie je pre tento účet zapnuté',
   'api-errors.BACKUP_CODES_NOT_ENABLED': 'Záložné kódy nie sú pre tento účet zapnuté',
-  'api-errors.INVALID_BACKUP_CODE':
-    'Zadaný záložný kód je neplatný alebo už bol použitý',
-  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE':
-    'Príliš veľa pokusov. Požiadajte o nový kód.',
+  'api-errors.INVALID_BACKUP_CODE': 'Zadaný záložný kód je neplatný alebo už bol použitý',
+  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Príliš veľa pokusov. Požiadajte o nový kód.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Neplatný súbor cookie dvojfaktorového overenia',
 
   // Not found
@@ -1209,8 +1189,7 @@ export const translations = {
   // Subscriptions
 
   'subscriptions.checkout-success.title': 'Platba prebehla úspešne!',
-  'subscriptions.checkout-success.description':
-    'Vaše predplatné bolo úspešne aktivované.',
+  'subscriptions.checkout-success.description': 'Vaše predplatné bolo úspešne aktivované.',
   'subscriptions.checkout-success.thank-you':
     'Ďakujeme, že ste prešli na Papra Plus. Teraz máte prístup ku všetkým prémiovým funkciám.',
   'subscriptions.checkout-success.go-to-organizations': 'Prejsť na organizácie',
@@ -1226,11 +1205,9 @@ export const translations = {
   'subscriptions.checkout-cancel.contact-support': 'Kontaktovať podporu',
 
   'subscriptions.upgrade-dialog.title': 'Vylepšite túto organizáciu',
-  'subscriptions.upgrade-dialog.description':
-    'Odomknite výkonné funkcie pre svoju organizáciu',
+  'subscriptions.upgrade-dialog.description': 'Odomknite výkonné funkcie pre svoju organizáciu',
   'subscriptions.upgrade-dialog.contact-us': 'Kontaktujte nás',
-  'subscriptions.upgrade-dialog.enterprise-plans':
-    'ak potrebujete vlastné firemné plány.',
+  'subscriptions.upgrade-dialog.enterprise-plans': 'ak potrebujete vlastné firemné plány.',
   'subscriptions.upgrade-dialog.per-month': '/mesiac',
   'subscriptions.upgrade-dialog.billed-annually': '${{ price }} účtovaných ročne',
   'subscriptions.upgrade-dialog.upgrade-now': 'Prejsť na vyšší plán',
@@ -1305,8 +1282,7 @@ export const translations = {
   'admin.analytics.deleted-storage': 'Odstránené úložisko',
 
   'admin.organizations.title': 'Správa organizácií',
-  'admin.organizations.description':
-    'Spravujte a prezerajte všetky organizácie v systéme',
+  'admin.organizations.description': 'Spravujte a prezerajte všetky organizácie v systéme',
   'admin.organizations.search-placeholder': 'Hľadať podľa názvu alebo ID...',
   'admin.organizations.loading': 'Načítavajú sa organizácie...',
   'admin.organizations.no-results':
@@ -1369,8 +1345,7 @@ export const translations = {
   'admin.users.description': 'Spravujte a prezerajte všetkých používateľov v systéme',
   'admin.users.search-placeholder': 'Hľadať podľa mena, e-mailu alebo ID...',
   'admin.users.loading': 'Načítavajú sa používatelia...',
-  'admin.users.no-results':
-    'Nenašli sa žiadni používatelia zodpovedajúci vášmu vyhľadávaniu.',
+  'admin.users.no-results': 'Nenašli sa žiadni používatelia zodpovedajúci vášmu vyhľadávaniu.',
   'admin.users.empty': 'Nenašli sa žiadni používatelia.',
   'admin.users.table.user': 'Používateľ',
   'admin.users.table.id': 'ID',
@@ -1387,8 +1362,7 @@ export const translations = {
   'admin.user-detail.loading': 'Načítavajú sa podrobnosti používateľa...',
   'admin.user-detail.unnamed': 'Používateľ bez mena',
   'admin.user-detail.basic-info.title': 'Informácie o používateľovi',
-  'admin.user-detail.basic-info.description':
-    'Základné údaje o používateľovi a jeho účte',
+  'admin.user-detail.basic-info.description': 'Základné údaje o používateľovi a jeho účte',
   'admin.user-detail.basic-info.user-id': 'ID používateľa',
   'admin.user-detail.basic-info.email': 'E-mail',
   'admin.user-detail.basic-info.name': 'Meno',
@@ -1404,8 +1378,7 @@ export const translations = {
   'admin.user-detail.roles.description': 'Roly a úrovne prístupu používateľa',
   'admin.user-detail.roles.empty': 'Žiadne priradené roly',
   'admin.user-detail.organizations.title': 'Organizácie ({{ count }})',
-  'admin.user-detail.organizations.description':
-    'Organizácie, do ktorých tento používateľ patrí',
+  'admin.user-detail.organizations.description': 'Organizácie, do ktorých tento používateľ patrí',
   'admin.user-detail.organizations.empty': 'Nie je členom žiadnej organizácie',
   'admin.user-detail.organizations.table.id': 'ID',
   'admin.user-detail.organizations.table.name': 'Názov',
