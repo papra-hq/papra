@@ -262,6 +262,11 @@ export const translations = {
   'organization.settings.delete.has-active-subscription':
     'Cannot delete organization with an active subscription, please cancel your subscription above first.',
 
+  'organization.settings.ai-automations.page.title': 'AI Automation Settings',
+  'organization.settings.ai-automations.page.description':
+    'Manage AI-powered document automation settings for your organization.',
+  'organization.settings.ai-automations.unavailable':
+    'AI automations are currently not available for your organization. Please contact support for more information.',
   'organization.settings.auto-tagging.page.title': 'Auto Tagging Settings',
   'organization.settings.auto-tagging.page.description':
     'Auto tagging settings for your organization. This feature allows you to automatically tag content based on AI predictions.',
@@ -276,6 +281,9 @@ export const translations = {
   'organization.settings.auto-tagging.max-tags.label': 'Maximum tags per document',
   'organization.settings.auto-tagging.max-tags.description':
     'The most tags the AI can apply to a single document (between {{ min }} and {{ max }}).',
+  'organization.settings.auto-naming.enabled.label': 'Enable auto naming',
+  'organization.settings.auto-naming.enabled.description':
+    'When enabled, newly added documents with non-descriptive names are automatically given a clear title by the AI.',
 
   'organization.usage.page.title': 'Usage',
   'organization.usage.page.description': "View your organization's current usage and limits.",

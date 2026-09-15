@@ -12,6 +12,7 @@ import {
 import { createOrganizationSettingsRepository } from './organization-settings.repository';
 import { resolveOrganizationSettings } from './organization-settings.usecases';
 import { formatOrganizationSettingsForApiResponse } from './organization-settings.models';
+import { aiModelIdSchema } from '../../ai/ai.schemas';
 
 export function registerOrganizationSettingsRoutes(context: RouteDefinitionContext) {
   setupGetOrganizationSettingsRoute(context);
@@ -71,6 +72,12 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
                 ),
               }),
             ),
+            autoNaming: v.optional(
+              v.strictObject({
+                isEnabled: v.optional(v.boolean()),
+                modelId: v.optional(aiModelIdSchema),
+              }),
+            ),
           }),
         ),
       }),
@@ -92,6 +99,8 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
             organizationSettingsPartials.ai?.autoTagging?.canCreateNewTags,
           aiAutoTaggingEnabled: organizationSettingsPartials.ai?.autoTagging?.isEnabled,
           aiAutoTaggingMaxTags: organizationSettingsPartials.ai?.autoTagging?.maxTags,
+          aiAutoNamingEnabled: organizationSettingsPartials.ai?.autoNaming?.isEnabled,
+          aiAutoNamingModelId: organizationSettingsPartials.ai?.autoNaming?.modelId,
         },
       });
 

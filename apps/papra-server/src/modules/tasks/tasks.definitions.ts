@@ -1,3 +1,4 @@
+import { registerAutoNameDocumentTask } from '../auto-naming/tasks/auto-name-document.task';
 import { registerAutoTagDocumentTask } from '../auto-tagging/tasks/auto-tag-document.task';
 import type { GlobalDependencies } from '../app/server.types';
 import { registerExtractDocumentFileContentTask } from '../documents/tasks/extract-document-file-content.task';
@@ -15,6 +16,7 @@ export async function registerTaskDefinitions(deps: GlobalDependencies) {
   await registerExtractDocumentFileContentTask(deps);
   await registerApplyTaggingRuleToDocumentsTask(deps);
   await registerPurgeExpiredKvEntriesTask(deps);
+  await registerAutoNameDocumentTask(deps);
   await registerAutoTagDocumentTask(deps);
   await registerReverifyPlanEntitlementsTask(deps);
 }

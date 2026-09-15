@@ -8,6 +8,9 @@ import { createDocumentsRepository } from '../documents.repository';
 import { extractAndSaveDocumentFileContent } from '../documents.usecases';
 import type { Config } from '../../config/config.types';
 import { buildExtractDocumentTextUsecase } from '../content-extraction/content-extraction.usecases';
+import { createLogger } from '../../shared/logger/logger';
+
+const logger = createLogger({ namespace: 'extract-document-file-content.task' });
 
 export async function registerExtractDocumentFileContentTask({
   taskServices,
@@ -54,14 +57,34 @@ export async function registerExtractDocumentFileContentTask({
         extractDocumentText,
       });
 
-      if (!config.ai.isEnabled || !config.autoTagging.isEnabled) {
+      if (!config.ai.isEnabled) {
         return;
       }
 
-      await taskServices.scheduleJob({
-        taskName: 'auto-tag-document',
-        data: { documentId, organizationId },
-      });
+      if (config.autoNaming.isEnabled) {
+        try {
+          await taskServices.scheduleJob({
+            taskName: 'auto-name-document',
+            data: { documentId, organizationId },
+          });
+        } catch (error) {
+          logger.error({ error, documentId, organizationId }, 'Failed to schedule auto-naming job');
+        }
+      }
+
+      if (config.autoTagging.isEnabled) {
+        try {
+          await taskServices.scheduleJob({
+            taskName: 'auto-tag-document',
+            data: { documentId, organizationId },
+          });
+        } catch (error) {
+          logger.error(
+            { error, documentId, organizationId },
+            'Failed to schedule auto-tagging job',
+          );
+        }
+      }
     },
   });
 }

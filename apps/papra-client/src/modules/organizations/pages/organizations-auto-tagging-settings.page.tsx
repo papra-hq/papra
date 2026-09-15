@@ -37,6 +37,10 @@ type AutoTaggingSettings = {
   maxTags: number;
 };
 
+type AutoNamingSettings = {
+  isEnabled: boolean;
+};
+
 const AutoTaggingSettingsCard: Component<{
   organizationId: string;
   settings: AutoTaggingSettings;
@@ -157,6 +161,57 @@ const AutoTaggingSettingsCard: Component<{
   );
 };
 
+const AutoNamingSettingsCard: Component<{
+  organizationId: string;
+  settings: AutoNamingSettings;
+}> = (props) => {
+  const queryClient = useQueryClient();
+  const { getErrorMessage } = useI18nApiErrors();
+  const { t } = useI18n();
+
+  const updateSettings = async (autoNaming: Partial<AutoNamingSettings>) => {
+    const [, error] = await safely(
+      updateOrganizationSettings({
+        organizationId: props.organizationId,
+        organizationSettingsPartials: { ai: { autoNaming } },
+      }),
+    );
+
+    if (error) {
+      createToast({ type: 'error', message: getErrorMessage({ error }) });
+      return;
+    }
+
+    await queryClient.invalidateQueries(
+      getOrganizationSettingsQueryOptions({ organizationId: props.organizationId }),
+    );
+  };
+
+  return (
+    <Card>
+      <CardContent class="pt-6 flex flex-col gap-6">
+        <Switch
+          class="flex items-center justify-between gap-4"
+          checked={props.settings.isEnabled}
+          onChange={async (isEnabled) => updateSettings({ isEnabled })}
+        >
+          <div class="flex flex-col gap-0.5">
+            <SwitchLabel class={textfieldLabel({ label: true })}>
+              {t('organization.settings.auto-naming.enabled.label')}
+            </SwitchLabel>
+            <SwitchDescription class={textfieldLabel({ label: false, description: true })}>
+              {t('organization.settings.auto-naming.enabled.description')}
+            </SwitchDescription>
+          </div>
+          <SwitchControl>
+            <SwitchThumb />
+          </SwitchControl>
+        </Switch>
+      </CardContent>
+    </Card>
+  );
+};
+
 export const OrganizationsAutoTaggingSettingsPage: Component = () => {
   const params = useParams();
   const { t } = useI18n();
@@ -166,7 +221,8 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
     getOrganizationSettingsQueryOptions({ organizationId: params.organizationId }),
   );
 
-  const getIsAutoTaggingAvailableForOrganization = () => config.autoTagging.isEnabled;
+  const getIsAiAutomationAvailableForOrganization = () =>
+    config.autoTagging.isEnabled || config.autoNaming.isEnabled;
 
   return (
     <div class="p-6 pb-32 mx-auto max-w-screen-md w-full">
@@ -175,29 +231,38 @@ export const OrganizationsAutoTaggingSettingsPage: Component = () => {
           {(getOrganizationSettings) => (
             <>
               <h1 class="text-xl font-semibold mb-2">
-                {t('organization.settings.auto-tagging.page.title')}
+                {t('organization.settings.ai-automations.page.title')}
               </h1>
 
               <p class="text-muted-foreground">
-                {t('organization.settings.auto-tagging.page.description')}
+                {t('organization.settings.ai-automations.page.description')}
               </p>
 
               <div class="mt-6 flex flex-col gap-6">
                 <Show
-                  when={getIsAutoTaggingAvailableForOrganization()}
+                  when={getIsAiAutomationAvailableForOrganization()}
                   fallback={
                     <Card>
                       <CardContent class="pt-6 flex items-center gap-3 text-muted-foreground">
                         <div class="i-tabler-tag-off size-5 flex-shrink-0" />
-                        <p class="text-sm">{t('organization.settings.auto-tagging.unavailable')}</p>
+                        <p class="text-sm">{t('organization.settings.ai-automations.unavailable')}</p>
                       </CardContent>
                     </Card>
                   }
                 >
-                  <AutoTaggingSettingsCard
-                    organizationId={params.organizationId}
-                    settings={getOrganizationSettings().ai.autoTagging}
-                  />
+                  <Show when={config.autoTagging.isEnabled}>
+                    <AutoTaggingSettingsCard
+                      organizationId={params.organizationId}
+                      settings={getOrganizationSettings().ai.autoTagging}
+                    />
+                  </Show>
+
+                  <Show when={config.autoNaming.isEnabled}>
+                    <AutoNamingSettingsCard
+                      organizationId={params.organizationId}
+                      settings={getOrganizationSettings().ai.autoNaming}
+                    />
+                  </Show>
                 </Show>
               </div>
             </>
