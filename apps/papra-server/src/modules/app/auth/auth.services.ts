@@ -33,9 +33,21 @@ export function getAuth({
   const { trustedOrigins } = getTrustedOrigins({ config });
   const { serverBaseUrl } = getServerBaseUrl({ config });
 
+  // Resolve the auth origin per request so host-only cookies work when the app
+  // is accessed through more than one approved URL (for example, LAN HTTP and
+  // Tailscale HTTPS). A static HTTPS base URL makes Better Auth mark cookies as
+  // secure, which browsers then reject when the same app is reached over HTTP.
+  const allowedHosts = [serverBaseUrl, ...trustedOrigins]
+    .filter((origin) => origin.startsWith('http://') || origin.startsWith('https://'))
+    .map((origin) => new URL(origin).host)
+    .filter((host, index, hosts) => hosts.indexOf(host) === index);
+
   const auth = betterAuth({
     secret,
-    baseURL: serverBaseUrl,
+    baseURL: {
+      allowedHosts,
+      fallback: serverBaseUrl,
+    },
     trustedOrigins,
     logger: {
       disabled: false,
