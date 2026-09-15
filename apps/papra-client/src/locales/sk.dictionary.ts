@@ -544,7 +544,8 @@ export const translations = {
     '{{ count, =1:{count} dokument sa nepodarilo importovať, [2-4]:{count} dokumenty sa nepodarilo importovať, {count} dokumentov sa nepodarilo importovať }}',
   'import-documents.title.success':
     '{{ count, =1:{count} dokument importovaný, [2-4]:{count} dokumenty importované, {count} dokumentov importovaných }}',
-  'import-documents.title.pending': '{{ count }} / {{ total }} dokumentov importovaných',
+  'import-documents.title.pending':
+    '{{ count }} / {{ total }} {{ count, =1:dokument importovaný, [2-4]:dokumenty importované, dokumentov importovaných }}',
   'import-documents.title.none': 'Importovať dokumenty',
   'import-documents.no-import-in-progress': 'Neprebieha žiadny import dokumentov',
 
