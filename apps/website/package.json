@@ -37,7 +37,7 @@
     "@unocss/reset": "catalog:",
     "pagefind": "^1.5.2",
     "sharp": "catalog:",
-    "typescript": "catalog:",
+    "typescript": "catalog:typescript-legacy",
     "unocss": "catalog:",
     "unocss-preset-animations": "catalog:",
     "vitest": "catalog:",

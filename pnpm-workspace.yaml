@@ -11,9 +11,9 @@ catalog:
   better-auth: 1.6.11
   p-limit: ^7.3.0
   sharp: ^0.35.0
-  tsdown: ^0.22.3
+  tsdown: ^0.23.0
   tsx: ^4.20.6
-  typescript: ^6.0.3
+  typescript: ^7.0.2
   vitest: 4.1.11
   unocss: 66.6.0
   '@unocss/reset': 66.6.0
@@ -24,6 +24,11 @@ catalog:
   valibot: ^1.3.1
   figue: ^3.3.0
   '@paralleldrive/cuid2': ^3.3.0
+
+catalogs:
+  # Astro's checker still uses the legacy TypeScript compiler API removed in TS 7.
+  typescript-legacy:
+    typescript: ^6.0.3
 
 verifyDepsBeforeRun: false # pnpm deploy in prod mode strips dev deps, so we don't want to verify them before run
 injectWorkspacePackages: true
