@@ -424,6 +424,18 @@ export const translations = {
   'documents.actions.cancel': 'Cancel',
   'documents.actions.save': 'Save',
   'documents.actions.saving': 'Saving...',
+  'documents.reprocess.action': 'Reprocess document',
+  'documents.reprocess.confirm.title': 'Reprocess document?',
+  'documents.reprocess.confirm.description':
+    'The content of the document will be re-extracted and the tagging rules will be re-applied. Manual changes to the content will be lost. The operation is done in the background and may take a few minutes to complete.',
+  'documents.reprocess.confirm.submit': 'Reprocess',
+  'documents.reprocess.queued': 'Document reprocessing queued',
+  'documents.reprocess.queued.description':
+    'Processing runs in the background, it may take a few minutes to complete, refresh to see the updated content.',
+  'documents.reprocess.error': 'Failed to queue document reprocessing. Please try again.',
+  'documents.reprocess.rate-limited':
+    'Your organization has reached the reprocessing limit. Please try again later.',
+  'documents.reprocess.disabled': 'Document reprocessing is disabled on this server.',
   'documents.content.alert':
     'The content of the document is automatically extracted from the document on upload. It is only used for search and indexing purposes.',
   'documents.content.empty-placeholder':
