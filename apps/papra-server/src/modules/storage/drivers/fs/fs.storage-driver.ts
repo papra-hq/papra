@@ -52,6 +52,30 @@ export const fsStorageDriverFactory = ({ root }: FilesystemStorageDriverOptions)
         });
       });
     },
+    copyFile: async ({ sourceStorageKey, destinationStorageKey }) => {
+      const { storagePath: sourcePath } = getStoragePath({ storageKey: sourceStorageKey });
+      const { storagePath: destinationPath } = getStoragePath({
+        storageKey: destinationStorageKey,
+      });
+
+      await ensureDirectoryExists({ path: dirname(destinationPath) });
+
+      const [, error] = await safely(
+        fs.promises.copyFile(sourcePath, destinationPath, fs.constants.COPYFILE_EXCL),
+      );
+
+      if (error && isFileNotFoundError({ error })) {
+        throw createFileNotFoundError();
+      }
+
+      if (error && isFileAlreadyExistsError({ error })) {
+        throw createFileAlreadyExistsInStorageError();
+      }
+
+      if (error) {
+        throw error;
+      }
+    },
     getFileStream: async ({ storageKey }) => {
       const { storagePath } = getStoragePath({ storageKey });
 

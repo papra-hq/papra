@@ -1,5 +1,5 @@
-import type { Buffer } from 'node:buffer';
 import type { StorageDriver } from '../drivers.models';
+import { Buffer } from 'node:buffer';
 import {
   collectReadableStreamToBuffer,
   createReadableStream,
@@ -27,6 +27,20 @@ export const inMemoryStorageDriverFactory = () => {
       const content = await collectReadableStreamToBuffer({ stream: fileStream });
 
       storage.set(storageKey, { content, mimeType, fileName });
+    },
+
+    copyFile: async ({ sourceStorageKey, destinationStorageKey }) => {
+      const source = storage.get(sourceStorageKey);
+
+      if (!source) {
+        throw createFileNotFoundError();
+      }
+
+      if (fileExists({ storageKey: destinationStorageKey })) {
+        throw createFileAlreadyExistsInStorageError();
+      }
+
+      storage.set(destinationStorageKey, { ...source, content: Buffer.from(source.content) });
     },
 
     getFileStream: async ({ storageKey }) => {
