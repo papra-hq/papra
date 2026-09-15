@@ -33,7 +33,7 @@ export function getAuth({
   const { trustedOrigins } = getTrustedOrigins({ config });
   const { serverBaseUrl } = getServerBaseUrl({ config });
 
-  // Resolve the auth origin per request for LAN HTTP and Tailscale HTTPS.
+  // Resolve the auth origin per request for multiple approved URLs.
   const allowedHosts = [serverBaseUrl, ...trustedOrigins]
     .filter((origin) => origin.startsWith('http://') || origin.startsWith('https://'))
     .map((origin) => new URL(origin).host)
@@ -115,7 +115,7 @@ export function getAuth({
     advanced: {
       // Drizzle tables handle the id generation
       database: { generateId: false },
-      // This deployment supports both LAN HTTP and Tailscale HTTPS.
+      // This deployment supports both HTTP and HTTPS origins.
       useSecureCookies: false,
       ipAddress: {
         ipAddressHeaders: config.auth.ipAddressHeaders,
