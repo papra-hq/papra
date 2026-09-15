@@ -846,10 +846,12 @@ export const DocumentCustomPropertiesPanel: Component<{
   const definitions = createMemo(() =>
     props.propertyDefinitions.toSorted((a, b) => a.displayOrder - b.displayOrder),
   );
-  const getPropertyValueByKey = createMemo(() =>
-    Object.fromEntries(props.document.customProperties?.map((p) => [p.key, p.value]) ?? []),
+  const getPropertyValueByDefinitionId = createMemo(() =>
+    Object.fromEntries(
+      props.document.customProperties?.map((p) => [p.propertyDefinitionId, p.value]) ?? [],
+    ),
   );
-  const getPropertyValue = (key: string) => getPropertyValueByKey()[key] ?? null;
+  const getPropertyValue = (id: string) => getPropertyValueByDefinitionId()[id] ?? null;
 
   return (
     <Show when={definitions().length > 0}>
@@ -872,7 +874,7 @@ export const DocumentCustomPropertiesPanel: Component<{
               <div class="py-1 pl-2 text-sm">
                 <PropertyValueEditor
                   definition={definition}
-                  rawValue={getPropertyValue(definition.key)}
+                  rawValue={getPropertyValue(definition.id)}
                   documentId={props.document.id}
                   organizationId={props.organizationId}
                 />

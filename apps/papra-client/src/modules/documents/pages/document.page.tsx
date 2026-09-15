@@ -16,7 +16,7 @@ import {
 } from 'solid-js';
 import { useConfig } from '@/modules/config/config.provider';
 import { DocumentCustomPropertiesPanel } from '@/modules/custom-properties/components/document-custom-properties-panel.component';
-import { fetchCustomPropertyDefinitions } from '@/modules/custom-properties/custom-properties.services';
+import { getCustomPropertyDefinitionsQueryOptions } from '@/modules/custom-properties/custom-properties.queries';
 import { useShareDocumentDialog } from '@/modules/document-share-links/components/share-document-dialog.component';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
@@ -311,10 +311,9 @@ export const DocumentPage: Component = () => {
       fetchDocument({ documentId: params.documentId, organizationId: params.organizationId }),
   }));
 
-  const customPropertyDefinitionsQuery = useQuery(() => ({
-    queryKey: ['organizations', params.organizationId, 'custom-properties'],
-    queryFn: async () => fetchCustomPropertyDefinitions({ organizationId: params.organizationId }),
-  }));
+  const customPropertyDefinitionsQuery = useQuery(() =>
+    getCustomPropertyDefinitionsQueryOptions({ organizationId: params.organizationId }),
+  );
 
   const activityPageSize = 20;
   const activityQuery = useInfiniteQuery(() => ({
