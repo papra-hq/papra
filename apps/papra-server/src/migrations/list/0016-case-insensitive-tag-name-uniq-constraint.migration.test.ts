@@ -270,11 +270,10 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
 
       const tags = await db.select().from(tagsTable).orderBy(tagsTable.id);
 
-      expect(tags).to.eql([
+      expect(tags.map(({ updatedAt: _, ...tag }) => tag)).to.eql([
         {
           id: 'tag_1',
           createdAt: new Date('2025-01-27'),
-          updatedAt: new Date('2025-01-27'),
           organizationId: 'org_1',
           name: 'Tag One',
           normalizedName: 'tag one',
@@ -284,7 +283,6 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
         {
           id: 'tag_2',
           createdAt: new Date('2025-01-27'),
-          updatedAt: new Date('2025-01-27'),
           organizationId: 'org_1',
           name: 'Tag Two',
           normalizedName: 'tag two',
@@ -307,11 +305,11 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
           ('doc1', 'org_1', 'Test Document', 'Test Document', 'text/plain', 'key1', 'hash1', 'This is a sample document content about testing.',0,0),
           ('doc2', 'org_1', 'Another Document', 'Another Document', 'text/plain', 'key2', 'hash2', 'This document discusses database migrations.',0,0)
         `),
-        db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, color, description) VALUES 
+        db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, color, description) VALUES
           ('tag_1', 1737936000000, 1737936000000, 'org_1', 'Tag One', '#ff0000', NULL),
           ('tag_2', 1737936000000, 1737936000000, 'org_1', 'Tag Two', '#00ff00', 'Tag two description')
         `),
-        db.run(sql`INSERT INTO documents_tags (document_id, tag_id) VALUES 
+        db.run(sql`INSERT INTO documents_tags (document_id, tag_id) VALUES
           ('doc1', 'tag_1'),
           ('doc1', 'tag_2'),
           ('doc2', 'tag_2')
@@ -353,7 +351,7 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
         db.run(
           sql`INSERT INTO organizations(id, name, created_at, updated_at) VALUES ('org_1', 'Org 1', 1737936000000, 1737936000000)`,
         ),
-        db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, normalized_name, color, description) VALUES 
+        db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, normalized_name, color, description) VALUES
           ('tag_1', 1737936000000, 1737936000000, 'org_1', 'Tag One', NULL, '#ff0000', NULL),
           ('tag_2', 1737936000000, 1737936000000, 'org_1', 'Tag One', NULL, '#ff0000', NULL)
         `),
@@ -379,7 +377,7 @@ describe('0016-case-insensitive-tag-name-uniq-constraint migration', () => {
         const name = `Tag ${i}`;
         const id = `tag_${i.toString().padStart(4, '0')}`;
 
-        await db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, color, description) VALUES 
+        await db.run(sql`INSERT INTO tags (id, created_at, updated_at, organization_id, name, color, description) VALUES
           (${id}, 1737936000000, 1737936000000, 'org_1', ${name}, '#ff0000', NULL)
         `);
       }

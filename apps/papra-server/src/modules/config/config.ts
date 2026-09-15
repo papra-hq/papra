@@ -11,7 +11,10 @@ import { customPropertiesConfig } from '../custom-properties/custom-properties.c
 import { documentShareLinksConfig } from '../document-share-links/document-share-links.config';
 import { documentSearchConfig } from '../documents/document-search/document-search.config';
 import { documentsConfig } from '../documents/documents.config';
-import { documentStorageConfig } from '../documents/storage/document-storage.config';
+import { documentEncryptionConfig } from '../documents/document-encryption.config';
+import { documentMaxUploadSizeConfig } from '../documents/document-storage.config';
+import { storagePatternConfig as documentStoragePatternConfig } from '../documents/storage-patterns/storage-pattern.config';
+import { createStorageConfig } from '../storage/storage.config';
 import { emailsConfig } from '../emails/emails.config';
 import { ingestionFolderConfig } from '../ingestion-folders/ingestion-folders.config';
 import { intakeEmailsConfig } from '../intake-emails/intake-emails.config';
@@ -41,6 +44,17 @@ import { planEntitlementsConfig } from '../plan-entitlements/plan-entitlements.c
 import { aiConfig } from '../ai/ai.config';
 import { autoTaggingConfig } from '../auto-tagging/auto-tagging.config';
 import { documentContentExtractionConfig } from '../documents/content-extraction/content-extraction.config';
+import { ensureIntakeEmailWebhookSecretisSetWhenIntakeEmailsAreEnabled } from '../intake-emails/intake-emails.config.models';
+
+const documentsStorageConfig = {
+  ...createStorageConfig({
+    envPrefix: 'DOCUMENT_STORAGE',
+    defaultFilesystemRoot: './local-documents',
+  }),
+  maxUploadSize: documentMaxUploadSizeConfig,
+  encryption: documentEncryptionConfig,
+  pattern: documentStoragePatternConfig,
+};
 
 export const configDefinition = {
   env: {
@@ -104,7 +118,7 @@ export const configDefinition = {
     trustedAppSchemes: {
       doc: 'A comma separated list of app schemes that are trusted for authentication. For example: "papra://,exp://". Note, setting this value will override the default schemes, so make sure to include them if needed.',
       schema: appSchemeSchema,
-      default: ['papra://', 'exp://'],
+      default: ['papra://', 'exp://', 'papra-dev://'],
       env: 'TRUSTED_APP_SCHEMES',
     },
     port: {
@@ -159,7 +173,7 @@ export const configDefinition = {
 
   database: databaseConfig,
   documents: documentsConfig,
-  documentsStorage: documentStorageConfig,
+  documentsStorage: documentsStorageConfig,
   documentContentExtraction: documentContentExtractionConfig,
   documentSearch: documentSearchConfig,
   auth: authConfig,
@@ -214,7 +228,10 @@ export async function parseConfig({
   validateParsedConfig({
     config,
     logger,
-    validators: [ensureAuthSecretIsNotDefaultInProduction],
+    validators: [
+      ensureAuthSecretIsNotDefaultInProduction,
+      ensureIntakeEmailWebhookSecretisSetWhenIntakeEmailsAreEnabled,
+    ],
   });
 
   return { config };

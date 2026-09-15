@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
+import { STRIPE_WEBHOOK_SECRET_REGEX } from './subscriptions.constants';
 
 export const subscriptionsConfig = {
   stripeApiSecretKey: {
@@ -10,8 +11,8 @@ export const subscriptionsConfig = {
   },
   stripeWebhookSecret: {
     doc: 'The secret for the Stripe webhook (useless for self-hosting)',
-    schema: v.string(),
-    default: 'change-me',
+    schema: v.optional(v.pipe(v.string(), v.regex(STRIPE_WEBHOOK_SECRET_REGEX))),
+    default: undefined,
     env: 'STRIPE_WEBHOOK_SECRET',
   },
   globalCouponId: {

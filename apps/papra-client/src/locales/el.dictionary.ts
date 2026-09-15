@@ -746,7 +746,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Διαγραφή ετικέτας',
   'tags.delete.confirm.title': 'Διαγραφή ετικέτας',
   'tags.delete.confirm.message':
-    'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την ετικέτα; Θα αφαιρεθεί από όλα τα έγγραφα.',
+    'Είστε βέβαιοι ότι θέλετε να διαγράψετε την ετικέτα "{{ name }}"; Θα αφαιρεθεί από όλα τα έγγραφα.',
   'tags.delete.confirm.confirm-button': 'Διαγραφή',
   'tags.delete.confirm.cancel-button': 'Ακύρωση',
   'tags.delete.success': 'Η ετικέτα διαγράφηκε',

@@ -1,0 +1,161 @@
+---
+import '@pagefind/default-ui/css/ui.css';
+import type { Locale } from '../../i18n/i18n.constants';
+import { useI18n } from '../../i18n/i18n';
+
+type Props = { locale: Locale };
+const { t } = useI18n({ locale: Astro.props.locale });
+---
+
+<docs-search data-placeholder={t('docs.search.placeholder')} data-error={t('docs.search.error')}>
+  <button
+    type="button"
+    data-search-open
+    aria-label={t('docs.search.title')}
+    aria-haspopup="dialog"
+    aria-controls="docs-search-dialog"
+    class="flex items-center gap-2 rounded-md border px-2 sm:px-3 py-2 text-muted-foreground hover:text-foreground hover:border-primary transition"
+  >
+    <span class="i-tabler-search size-5" aria-hidden="true"></span>
+    <span class="hidden sm:inline">{t('docs.search.button')}</span>
+    <kbd class="hidden md:inline text-xs" aria-hidden="true">Ctrl K</kbd>
+  </button>
+
+  <dialog id="docs-search-dialog" aria-labelledby="docs-search-title" class="rounded-lg border bg-background text-foreground p-4 sm:p-6">
+    <div class="flex items-center justify-between gap-4 mb-4">
+      <h2 id="docs-search-title" class="font-semibold text-lg">{t('docs.search.title')}</h2>
+      <button type="button" data-search-close aria-label={t('docs.search.close')} autofocus class="rounded p-2 text-muted-foreground hover:text-foreground">
+        <span class="i-tabler-x size-5 block" aria-hidden="true"></span>
+      </button>
+    </div>
+    {import.meta.env.DEV ? (
+      <p class="text-muted-foreground">Search is available after building the site. Run <code>pnpm build</code>, then <code>pnpm preview</code> to try it.</p>
+    ) : (
+      <>
+        <p data-search-status role="status" class="text-muted-foreground">{t('docs.search.loading')}</p>
+        <div data-search-ui></div>
+      </>
+    )}
+  </dialog>
+</docs-search>
+
+<script>
+  class DocsSearch extends HTMLElement {
+    connectedCallback() {
+      const dialog = this.querySelector('dialog')!;
+      const openButton = this.querySelector<HTMLButtonElement>('[data-search-open]')!;
+      const closeButton = this.querySelector<HTMLButtonElement>('[data-search-close]')!;
+      const container = this.querySelector<HTMLElement>('[data-search-ui]');
+      const status = this.querySelector<HTMLElement>('[data-search-status]');
+      let initialization: Promise<void> | undefined;
+
+      const focusInput = () => {
+        if (dialog.open) {
+          container?.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.focus();
+        }
+      };
+
+      const initialize = async () => {
+        if (!container || !status) return;
+
+        try {
+          const bundlePath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/`;
+          // Check the generated bundle before mounting the UI so a missing
+          // deployment asset produces a helpful message rather than a spinner.
+          const [{ PagefindUI }] = await Promise.all([
+            import('@pagefind/default-ui'),
+            import(/* @vite-ignore */ `${bundlePath}pagefind.js`),
+          ]);
+          new PagefindUI({
+            element: container,
+            bundlePath,
+            showSubResults: true,
+            showImages: false,
+            resetStyles: false,
+            translations: { placeholder: this.dataset.placeholder! },
+          });
+          container.querySelector('input')?.setAttribute('aria-label', this.dataset.placeholder!);
+          status.hidden = true;
+          focusInput();
+        } catch (error) {
+          status.textContent = this.dataset.error!;
+          // oxlint-disable-next-line no-console
+          console.error('Failed to load documentation search', error);
+        }
+      };
+
+      const open = () => {
+        if (dialog.open) return;
+        dialog.showModal();
+        initialization ??= initialize();
+        focusInput();
+      };
+
+      openButton.addEventListener('click', open);
+      closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => openButton.focus());
+      dialog.addEventListener('click', (event) => {
+        if (event.target !== dialog) return;
+        const { left, right, top, bottom } = dialog.getBoundingClientRect();
+        if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom) {
+          dialog.close();
+        }
+      });
+
+      const shortcut = (event: KeyboardEvent) => {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          open();
+        }
+      };
+      document.addEventListener('keydown', shortcut, { signal: this.controller.signal });
+      const hint = this.querySelector('kbd')!;
+      hint.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘ K' : 'Ctrl K';
+    }
+
+    private controller = new AbortController();
+
+    disconnectedCallback() {
+      this.controller.abort();
+    }
+  }
+
+  customElements.define('docs-search', DocsSearch);
+</script>
+
+<style>
+  dialog {
+    width: min(44rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 4rem);
+    margin: 2rem auto;
+    overflow-y: auto;
+    --pagefind-ui-primary: hsl(var(--primary));
+    --pagefind-ui-text: hsl(var(--foreground));
+    --pagefind-ui-background: hsl(var(--background));
+    --pagefind-ui-border: hsl(var(--border));
+    --pagefind-ui-tag: hsl(var(--muted));
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0.5rem;
+    --pagefind-ui-font: inherit;
+    --pagefind-ui-scale: 0.85;
+  }
+
+  :global(html:has(docs-search dialog[open])) {
+    overflow: hidden;
+  }
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 70%);
+    backdrop-filter: blur(4px);
+  }
+
+  docs-search :global(:focus-visible) {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  docs-search :global(mark) {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+</style>

@@ -745,7 +745,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Șterge eticheta',
   'tags.delete.confirm.title': 'Șterge eticheta',
   'tags.delete.confirm.message':
-    'Ești sigur că vrei să ștergi aceasta eticheta? Stergerea unei etichete o va elimina din toate documentele.',
+    'Ești sigur că vrei să ștergi eticheta „{{ name }}”? Stergerea unei etichete o va elimina din toate documentele.',
   'tags.delete.confirm.confirm-button': 'Șterge',
   'tags.delete.confirm.cancel-button': 'Anulează',
   'tags.delete.success': 'Eticheta a fost ștearsă cu succes',

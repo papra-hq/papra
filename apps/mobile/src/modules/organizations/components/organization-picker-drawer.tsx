@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 import { useOrganizations } from '../organizations.provider';
@@ -28,6 +29,7 @@ export function OrganizationPickerDrawer({
   selectedOrganizationId,
   onSelectOrganization,
 }: OrganizationPickerDrawerProps) {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const router = useRouter();
   const { organizations, currentOrganizationId, setCurrentOrganizationId, isLoading } =
@@ -57,7 +59,7 @@ export function OrganizationPickerDrawer({
       <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
         <View style={styles.drawer}>
           <View style={styles.header}>
-            <Text style={styles.title}>Select Organization</Text>
+            <Text style={styles.title}>{t.organizations.selectTitle}</Text>
           </View>
 
           {isLoading ? (
@@ -96,7 +98,7 @@ export function OrganizationPickerDrawer({
           )}
 
           <TouchableOpacity style={styles.createButton} onPress={handleCreateOrganization}>
-            <Text style={styles.createButtonText}>+ Create New Organization</Text>
+            <Text style={styles.createButtonText}>{t.organizations.createNew}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

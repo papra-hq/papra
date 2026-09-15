@@ -1,0 +1,214 @@
+---
+import type { Locale } from "../../i18n/i18n.constants";
+import { useI18n } from "../../i18n/i18n";
+import { getDocUrl } from "../docs.models";
+
+type Props = { docId: string; locale: Locale };
+const { docId, locale } = Astro.props;
+const { t } = useI18n({ locale });
+const markdownUrl = `${getDocUrl({ docId, locale })}.md`;
+---
+
+<docs-markdown-actions
+    class="relative ml-auto shrink-0 text-sm"
+    data-url={markdownUrl}
+    data-copied={t("docs.markdown.copied")}
+    data-error={t("docs.markdown.error")}
+>
+    <div class="inline-flex items-stretch rounded-md border text-muted-foreground">
+        <button
+            type="button"
+            data-copy
+            class="rounded-l-md px-3 py-1.5 hover:bg-muted hover:text-foreground transition"
+        >
+            <span data-copy-label>{t("docs.markdown.copy-short")}</span>
+        </button>
+        <details class="relative flex">
+            <summary
+                aria-label={t("docs.markdown.options")}
+                aria-controls="docs-markdown-options"
+                class="flex h-full items-center border-l rounded-r-md px-2 cursor-pointer hover:bg-muted hover:text-foreground transition"
+            >
+                <span
+                    class="i-tabler-chevron-down size-4"
+                    aria-hidden="true"
+                ></span>
+            </summary>
+            <div
+                id="docs-markdown-options"
+                class="absolute right-0 top-full mt-2 z-20 w-52 rounded-md border bg-background p-1 shadow-lg"
+            >
+                <button
+                    type="button"
+                    data-copy
+                    class="flex w-full items-center gap-2 rounded px-3 py-2 text-left hover:bg-muted hover:text-foreground transition"
+                >
+                    <span
+                        class="i-tabler-copy size-4"
+                        aria-hidden="true"
+                    ></span>
+                    {t("docs.markdown.copy")}
+                </button>
+                <a
+                    href={markdownUrl}
+                    class="flex items-center gap-2 rounded px-3 py-2 hover:bg-muted hover:text-foreground transition"
+                >
+                    <span
+                        class="i-tabler-file-text size-4"
+                        aria-hidden="true"
+                    ></span>
+                    {t("docs.markdown.view")}
+                </a>
+            </div>
+        </details>
+    </div>
+    <span role="status" class="sr-only"></span>
+</docs-markdown-actions>
+
+<script>
+    class DocsMarkdownActions extends HTMLElement {
+        private controller?: AbortController;
+        private resetTimer?: ReturnType<typeof setTimeout>;
+
+        connectedCallback() {
+            this.controller?.abort();
+            this.controller = new AbortController();
+            const { signal } = this.controller;
+            const details = this.querySelector("details")!;
+            const summary = this.querySelector("summary")!;
+            const buttons = [
+                ...this.querySelectorAll<HTMLButtonElement>("[data-copy]"),
+            ];
+            const label = this.querySelector("[data-copy-label]")!;
+            const defaultLabel = label.textContent;
+            const status = this.querySelector('[role="status"]')!;
+
+            const close = () => {
+                if (details.open && details.contains(document.activeElement)) {
+                    summary.focus();
+                }
+                details.open = false;
+            };
+
+            const copy = async () => {
+                close();
+                clearTimeout(this.resetTimer);
+                buttons.forEach((button) => {
+                    button.disabled = true;
+                });
+                status.textContent = "";
+
+                try {
+                    if (!navigator.clipboard) {
+                        throw new Error("Clipboard is unavailable");
+                    }
+
+                    const content = fetch(this.dataset.url!, { signal }).then(
+                        async (response) => {
+                            if (!response.ok) {
+                                throw new Error(
+                                    `Failed to fetch Markdown: ${response.status}`,
+                                );
+                            }
+                            return response.text();
+                        },
+                    );
+
+                    // Start the clipboard write during the click's user activation, even
+                    // while fetching, for browsers such as Safari that require it.
+                    if (
+                        typeof ClipboardItem !== "undefined" &&
+                        navigator.clipboard.write
+                    ) {
+                        const blob = content.then(
+                            (text) => new Blob([text], { type: "text/plain" }),
+                        );
+                        await Promise.all([
+                            blob,
+                            navigator.clipboard.write([
+                                new ClipboardItem({ "text/plain": blob }),
+                            ]),
+                        ]);
+                    } else {
+                        const text = await content;
+                        await navigator.clipboard.writeText(text);
+                    }
+                    label.textContent = this.dataset.copied!;
+                } catch {
+                    label.textContent = this.dataset.error!;
+                } finally {
+                    buttons.forEach((button) => {
+                        button.disabled = false;
+                    });
+                    status.textContent = label.textContent;
+                    if (!signal.aborted) {
+                        this.resetTimer = setTimeout(() => {
+                            label.textContent = defaultLabel;
+                            status.textContent = "";
+                        }, 3000);
+                    }
+                }
+            };
+
+            buttons.forEach((button) =>
+                button.addEventListener("click", copy, { signal }),
+            );
+            this.addEventListener(
+                "keydown",
+                (event) => {
+                    if (event.key === "Escape" && details.open) {
+                        event.preventDefault();
+                        close();
+                    }
+                },
+                { signal },
+            );
+            this.addEventListener(
+                "focusout",
+                (event) => {
+                    if (
+                        !(event.relatedTarget instanceof Node) ||
+                        !this.contains(event.relatedTarget)
+                    ) {
+                        details.open = false;
+                    }
+                },
+                { signal },
+            );
+            document.addEventListener(
+                "click",
+                (event) => {
+                    if (
+                        event.target instanceof Node &&
+                        !this.contains(event.target)
+                    ) {
+                        details.open = false;
+                    }
+                },
+                { signal },
+            );
+        }
+
+        disconnectedCallback() {
+            this.controller?.abort();
+            clearTimeout(this.resetTimer);
+        }
+    }
+
+    customElements.define("docs-markdown-actions", DocsMarkdownActions);
+</script>
+
+<style>
+    summary {
+        list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+
+    :is(button, summary, a):focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+    }
+</style>

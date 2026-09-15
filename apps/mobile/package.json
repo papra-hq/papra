@@ -7,9 +7,9 @@
   "main": "expo-router/entry",
   "scripts": {
     "dev": "pnpm start",
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "start": "APP_VARIANT=development expo start",
+    "android": "APP_VARIANT=development expo run:android",
+    "ios": "APP_VARIANT=development expo run:ios",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest watch"
@@ -34,6 +34,7 @@
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
     "expo-linking": "~8.0.12",
+    "expo-localization": "~17.0.9",
     "expo-network": "^8.0.8",
     "expo-print": "^15.0.7",
     "expo-router": "~6.0.24",

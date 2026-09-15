@@ -735,7 +735,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Radera tagg',
   'tags.delete.confirm.title': 'Radera tagg',
   'tags.delete.confirm.message':
-    'Är du säker på att du vill ta bort den här taggen? Om du tar bort en tagg tas den bort från alla dokument.',
+    'Är du säker på att du vill ta bort taggen "{{ name }}"? Om du tar bort en tagg tas den bort från alla dokument.',
   'tags.delete.confirm.confirm-button': 'Radera',
   'tags.delete.confirm.cancel-button': 'Avbryt',
   'tags.delete.success': 'Tagg raderad',

@@ -1,5 +1,44 @@
 # @papra/app
 
+## 26.6.2
+
+### Patch Changes
+
+- [#1324](https://github.com/papra-hq/papra/pull/1324) [`8a3653c`](https://github.com/papra-hq/papra/commit/8a3653c6542ae44468b7889fbfda6fab4b1a3654) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Collapse the mobile menu sheet when navigating to a new page.
+
+- [#1453](https://github.com/papra-hq/papra/pull/1453) [`a64cbba`](https://github.com/papra-hq/papra/commit/a64cbba4c8280786cb7405f9c13738eeb1da4e51) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed an issue where setting `AUTH_IS_REGISTRATION_ENABLED=false` hid the sign-up interface but did not block email and password registrations made directly through the authentication API.
+
+- [#1442](https://github.com/papra-hq/papra/pull/1442) [`03f4ad4`](https://github.com/papra-hq/papra/commit/03f4ad495e839bbf44629f51f85ad07f69a5aed2) Thanks [@sp71](https://github.com/sp71)! - Include the tag name in the tag deletion confirmation message.
+
+- [#1407](https://github.com/papra-hq/papra/pull/1407) [`30760f5`](https://github.com/papra-hq/papra/commit/30760f53f116c7c8b70734f176af0a2007b180f6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a deletion confirmation modal when deleting a tagging rule, to prevent accidental deletion of tagging rules.
+
+- [#1326](https://github.com/papra-hq/papra/pull/1326) [`0247a7a`](https://github.com/papra-hq/papra/commit/0247a7a6dd55da5f27572ac31d3515962a568308) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added some database indexes for better performances.
+
+- [#1416](https://github.com/papra-hq/papra/pull/1416) [`5d43402`](https://github.com/papra-hq/papra/commit/5d43402ed2896ee6f3947bcd3314e134455d2813) Thanks [@ybizeul](https://github.com/ybizeul)! - Fix PDF content preview rendering issue after navigation
+
+- [#1420](https://github.com/papra-hq/papra/pull/1420) [`510c162`](https://github.com/papra-hq/papra/commit/510c162b241ca2cbad5e07492fb638aba73bafa2) Thanks [@qmarlats](https://github.com/qmarlats)! - Fixed the batch document selection remaining in "select all matching documents" mode after unselecting documents.
+
+- [#1365](https://github.com/papra-hq/papra/pull/1365) [`881796e`](https://github.com/papra-hq/papra/commit/881796edd4e3bcb7c1f3cae8977630d2bb09a905) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Increased and made configurable the timeout of content extraction external service.
+  Docling, Mistral OCR, and Azure DI can now take up to 5 minutes to process a document, instead of the previous 30 seconds, configurable via `DOCLING_REQUEST_TIMEOUT_MS`, `MISTRAL_OCR_REQUEST_TIMEOUT_MS` and `AZURE_DI_REQUEST_TIMEOUT_MS` respectively.
+
+- [#1432](https://github.com/papra-hq/papra/pull/1432) [`a0ce312`](https://github.com/papra-hq/papra/commit/a0ce3126ba0cbe4d9412b2f80c845e0ad7be7f05) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Prevent stripe webhook forgery for apps with unconfigured webhooks secrets.
+
+  Thank you to [Andrew Gonzalez](https://www.linkedin.com/in/andrew-gonzalez-6b8b68257/) ([@bruhdev1290](https://github.com/bruhdev1290)) for the responsible disclosure of this issue.
+
+- [#1362](https://github.com/papra-hq/papra/pull/1362) [`8adb16d`](https://github.com/papra-hq/papra/commit/8adb16de44f0905b2021b5a421bbcbb8731e1107) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fix mistral ocr replacing tables with external references, no more `[tbl-0.md](tbl-0.md)` in extracted content, the tables are now properly extracted and included in the content.
+
+- [#1357](https://github.com/papra-hq/papra/pull/1357) [`bad01b7`](https://github.com/papra-hq/papra/commit/bad01b7fa2164a754c2db10245a74608edbd1ffd) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a skeleton loader in the sidenav organization picker when fetching organizations
+
+- [#1375](https://github.com/papra-hq/papra/pull/1375) [`88f1d86`](https://github.com/papra-hq/papra/commit/88f1d86a970bf2ab924419d3192ff0cca95fce08) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added Catalan language
+
+- [#1348](https://github.com/papra-hq/papra/pull/1348) [`12e1d4b`](https://github.com/papra-hq/papra/commit/12e1d4b6db352e1725318d8b6f82a604f3282ef0) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: document share links belonging to a soft-deleted organization were still publicly accessible. Public access (document metadata, file download, and password verification) now stops with a 410 Gone as soon as the organization is deleted, and resumes automatically if the organization is restored during the grace period.
+
+  Thank you to [Thammachart Sittharod](https://github.com/penthammachat-creator) for the responsible disclosure of this issue.
+
+- [#1406](https://github.com/papra-hq/papra/pull/1406) [`d178643`](https://github.com/papra-hq/papra/commit/d178643ea399a5043561fa89c44d720634e29ac5) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: revoke all user sessions on password reset.
+
+  Thank you to [MMartinez](https://github.com/murillomr) for the responsible disclosure of this issue.
+
 ## 26.6.1
 
 ### Patch Changes

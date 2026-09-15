@@ -2,6 +2,7 @@ import type { Config } from '../../config/config.types';
 
 export type IntakeEmailsServices = {
   name: string;
+  getDomains: () => string[];
   createEmailAddress: (args: { username: string }) => Promise<{ emailAddress: string }>;
   deleteEmailAddress: (args: { emailAddress: string }) => Promise<void>;
 };

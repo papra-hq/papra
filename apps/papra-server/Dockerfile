@@ -5,7 +5,7 @@ FROM node:${NODE_VERSION}-slim AS base
 
 LABEL fly_launch_runtime="Node.js"
 
-ARG PNPM_VERSION=11.1.1
+ARG PNPM_VERSION=11.22.0
 RUN npm install -g pnpm@${PNPM_VERSION}
 
 WORKDIR /app
@@ -38,7 +38,7 @@ COPY apps/papra-server ./apps/papra-server
 
 RUN pnpm --filter "@papra/app-server..." run build
 
-RUN pnpm --filter @papra/app-server --prod --legacy deploy /app/production
+RUN pnpm --filter @papra/app-server --prod deploy /app/production
 
 # -----------------
 

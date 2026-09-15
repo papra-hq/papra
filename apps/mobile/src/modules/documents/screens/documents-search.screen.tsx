@@ -1,5 +1,4 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useQuery } from '@tanstack/react-query';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -12,19 +11,18 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useApiClient } from '@/modules/api/providers/api.provider';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import { fetchOrganizationDocuments } from '../documents.services';
+import { useDocuments } from '../hooks/use-documents.hook';
 
 const SEARCH_DEBOUNCE_MS = 300;
-const pagination = { pageIndex: 0, pageSize: 20 };
 
 export function DocumentsSearchScreen() {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
-  const apiClient = useApiClient();
   const { currentOrganizationId } = useOrganizations();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,30 +47,7 @@ export function DocumentsSearchScreen() {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  const searchResultsQuery = useQuery({
-    queryKey: [
-      'organizations',
-      currentOrganizationId,
-      'documents',
-      'search',
-      debouncedSearchQuery,
-      pagination,
-    ],
-    queryFn: async () => {
-      if (currentOrganizationId == null) {
-        return { documents: [], documentsCount: 0 };
-      }
-
-      return fetchOrganizationDocuments({
-        organizationId: currentOrganizationId,
-        searchQuery: debouncedSearchQuery,
-        ...pagination,
-        apiClient,
-      });
-    },
-    enabled:
-      currentOrganizationId !== null && currentOrganizationId !== '' && debouncedSearchQuery !== '',
-  });
+  const searchResultsQuery = useDocuments({ searchQuery: debouncedSearchQuery });
 
   const handleCancel = () => {
     Keyboard.dismiss();
@@ -95,7 +70,7 @@ export function DocumentsSearchScreen() {
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
-            placeholder="Search documents"
+            placeholder={t.documents.search.placeholder}
             placeholderTextColor={themeColors.mutedForeground}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -108,22 +83,22 @@ export function DocumentsSearchScreen() {
               onPress={() => setSearchQuery('')}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
-              accessibilityLabel="Clear search text"
+              accessibilityLabel={t.documents.search.clear}
             >
               <Icon name="x" size={18} color={themeColors.mutedForeground} />
             </TouchableOpacity>
           )}
         </View>
         <TouchableOpacity onPress={handleCancel} hitSlop={{ top: 10, bottom: 10 }}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
+          <Text style={styles.cancelButtonText}>{t.common.cancel}</Text>
         </TouchableOpacity>
       </View>
 
       {debouncedSearchQuery === '' ? (
         <View style={styles.centerContent}>
           <Icon name="search" size={40} color={themeColors.mutedForeground} />
-          <Text style={styles.hintText}>Search your documents</Text>
-          <Text style={styles.hintSubtext}>Find documents by name or content</Text>
+          <Text style={styles.hintText}>{t.documents.search.hint}</Text>
+          <Text style={styles.hintSubtext}>{t.documents.search.hintDescription}</Text>
         </View>
       ) : searchResultsQuery.isLoading ? (
         <View style={styles.centerContent}>
@@ -131,10 +106,14 @@ export function DocumentsSearchScreen() {
         </View>
       ) : (
         <DocumentsList
-          documents={searchResultsQuery.data?.documents ?? []}
+          key={JSON.stringify([currentOrganizationId, debouncedSearchQuery])}
+          documents={searchResultsQuery.documents}
+          onLoadMore={searchResultsQuery.loadMore}
+          isFetchingNextPage={searchResultsQuery.isFetchingNextPage}
+          isFetchNextPageError={searchResultsQuery.isFetchNextPageError}
           emptyState={{
-            title: 'No documents found',
-            subtitle: `No results for "${debouncedSearchQuery}"`,
+            title: t.documents.search.empty,
+            subtitle: t.documents.search.noResults({ query: debouncedSearchQuery }),
           }}
           keyboardShouldPersistTaps="handled"
         />

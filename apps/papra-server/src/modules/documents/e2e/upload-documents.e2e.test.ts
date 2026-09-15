@@ -7,7 +7,7 @@ import { overrideConfig } from '../../config/config.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { PLAN_IDS } from '../../plans/plans.constants';
 import { documentsTable } from '../documents.table';
-import { createInMemoryDocumentStorageServices } from '../storage/documents.storage.services.test-utils';
+import { createInMemoryStorageService } from '../../storage/storage.test-utils';
 
 describe('documents e2e', () => {
   describe('document upload', () => {
@@ -102,7 +102,7 @@ describe('documents e2e', () => {
         ],
       });
 
-      const documentsStorageService = createInMemoryDocumentStorageServices();
+      const documentsStorageService = createInMemoryStorageService();
 
       const { app } = createServer(
         createTestServerDependencies({

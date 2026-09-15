@@ -747,7 +747,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.delete': 'Supprimer un tag',
   'tags.delete.confirm.title': 'Supprimer un tag',
   'tags.delete.confirm.message':
-    "Êtes-vous sûr de vouloir supprimer ce tag ? Supprimer un tag supprimera toutes les règles de catégorisation qui l'utilisent.",
+    'Êtes-vous sûr de vouloir supprimer le tag "{{ name }}" ? Supprimer un tag supprimera toutes les règles de catégorisation qui l\'utilisent.',
   'tags.delete.confirm.confirm-button': 'Supprimer',
   'tags.delete.confirm.cancel-button': 'Annuler',
   'tags.delete.success': 'Tag supprimé avec succès',

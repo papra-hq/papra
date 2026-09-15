@@ -2,7 +2,7 @@ import type { Database } from '../../app/database/database.types';
 import type { EventServices } from '../../app/events/events.services';
 import type { Config } from '../../config/config.types';
 import type { TaskServices } from '../../tasks/tasks.services';
-import type { DocumentStorageService } from '../storage/documents.storage.services';
+import type { StorageService } from '../../storage/storage.services';
 import { createLogger } from '../../shared/logger/logger';
 import { createDocumentsRepository } from '../documents.repository';
 import { deleteExpiredDocuments } from '../documents.usecases';
@@ -19,7 +19,7 @@ export async function registerHardDeleteExpiredDocumentsTask({
   taskServices: TaskServices;
   db: Database;
   config: Config;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
   eventServices: EventServices;
 }) {
   const taskName = 'hard-delete-expired-documents';

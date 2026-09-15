@@ -1,3 +1,7 @@
 /*
     X-Frame-Options: DENY
     X-Content-Type-Options: nosniff
+
+# Static endpoint response headers aren't preserved in the generated files.
+/*.md
+    Content-Type: text/markdown; charset=utf-8

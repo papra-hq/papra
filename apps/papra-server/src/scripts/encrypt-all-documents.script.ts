@@ -1,16 +1,20 @@
 import process from 'node:process';
 import { isNull } from 'drizzle-orm';
 import { documentsTable } from '../modules/documents/documents.table';
-import { createDocumentStorageService } from '../modules/documents/storage/documents.storage.services';
-import { encryptAllUnencryptedDocuments } from '../modules/documents/storage/encryption/document-encryption.usecases';
+import { createStorageService } from '../modules/storage/storage.services';
+import { encryptAllUnencryptedDocuments } from '../modules/documents/document-encryption.usecases';
 import { isNil } from '../modules/shared/utils';
 import { runScriptWithDb } from './commons/run-script';
 
 await runScriptWithDb(
   { scriptName: 'encrypt-all-documents' },
   async ({ db, config, logger, isDryRun }) => {
-    const documentStorageService = createDocumentStorageService({
-      documentStorageConfig: config.documentsStorage,
+    const documentStorageService = createStorageService({
+      storageConfig: config.documentsStorage,
+      encryptionOptions: {
+        isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+        keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+      },
     });
 
     if (!config.documentsStorage.encryption.isEncryptionEnabled) {

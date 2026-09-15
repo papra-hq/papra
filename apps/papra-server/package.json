@@ -82,6 +82,7 @@
     "nanoid": "^5.1.5",
     "node-cron": "^3.0.3",
     "nodemailer": "^9.0.0",
+    "ofetch": "catalog:",
     "p-limit": "catalog:",
     "p-queue": "^8.1.0",
     "picomatch": "^4.0.4",
@@ -111,6 +112,7 @@
     "memfs": "4.17.2",
     "testcontainers": "11.5.1",
     "typescript": "catalog:",
+    "vite": "8.1.0",
     "vitest": "catalog:"
   }
 }

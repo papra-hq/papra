@@ -31,7 +31,10 @@ export const DemoIndicator: Component = () => {
     <Portal>
       <Switch>
         <Match when={getPopupState() === 'minified'}>
-          <div class="fixed bottom-4 right-4 z-50 rounded-xl max-w-280px">
+          <div
+            class="fixed bottom-4 right-4 rounded-xl max-w-280px"
+            style={{ 'z-index': import.meta.env.DEV ? 30 : 50 }}
+          >
             <Button onClick={switchToStateUnlessCtrl('expanded')} size="icon">
               <div class="i-tabler-info-circle size-5.5" />
             </Button>
@@ -39,7 +42,10 @@ export const DemoIndicator: Component = () => {
         </Match>
 
         <Match when={getPopupState() === 'expanded'}>
-          <div class="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground p-5 py-4 rounded-xl shadow-md max-w-300px">
+          <div
+            class="fixed bottom-4 right-4 bg-primary text-primary-foreground p-5 py-4 rounded-xl shadow-md max-w-300px"
+            style={{ 'z-index': import.meta.env.DEV ? 30 : 50 }}
+          >
             <p class="text-sm">{t('demo.popup.description')}</p>
             <p class="text-sm mt-2">
               {te('demo.popup.discord', {

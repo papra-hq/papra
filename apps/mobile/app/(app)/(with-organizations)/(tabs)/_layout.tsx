@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { HapticTab } from '@/modules/ui/components/haptic-tab';
 import { Icon } from '@/modules/ui/components/icon';
 import { ImportTabButton } from '@/modules/ui/components/import-tab-button';
@@ -10,6 +11,7 @@ import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 export default function TabLayout() {
   const colors = useThemeColor();
   const insets = useSafeAreaInsets();
+  const t = useAppTranslations();
 
   return (
     <Tabs
@@ -29,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="list"
         options={{
-          title: 'Documents',
+          title: t.documents.title,
           tabBarIcon: ({ color }) => (
             <Icon name="home" size={30} color={color} style={{ height: 30 }} />
           ),
@@ -39,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: t.documents.search.title,
           tabBarIcon: ({ color }) => (
             <Icon name="search" size={30} color={color} style={{ height: 30 }} />
           ),
@@ -49,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="import"
         options={{
-          title: 'Import',
+          title: t.documents.import.title,
           tabBarButton: () => <ImportTabButton />,
           tabBarLabel: () => null,
         }}
@@ -57,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t.settings.title,
           tabBarIcon: ({ color }) => (
             <Icon name="settings" size={30} color={color} style={{ height: 30 }} />
           ),

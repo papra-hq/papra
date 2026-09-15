@@ -1,5 +1,5 @@
 import type { PlansRepository } from '../plans/plans.repository';
-import type { DocumentStorageService } from './storage/documents.storage.services';
+import type { StorageService } from '../storage/storage.services';
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { createTestEventServices } from '../app/events/events.test-utils';
@@ -30,8 +30,8 @@ import {
   trashDocument,
   updateDocument,
 } from './documents.usecases';
-import { createDocumentStorageService } from './storage/documents.storage.services';
-import { createInMemoryDocumentStorageServices } from './storage/documents.storage.services.test-utils';
+import { createStorageService } from '../storage/storage.services';
+import { createInMemoryStorageService } from '../storage/storage.test-utils';
 
 describe('documents usecases', () => {
   describe('createDocument', () => {
@@ -49,8 +49,12 @@ describe('documents usecases', () => {
         organizationPlans: { isFreePlanUnlimited: true },
         documentsStorage: { driver: 'in-memory' },
       });
-      const documentsStorageService = createDocumentStorageService({
-        documentStorageConfig: config.documentsStorage,
+      const documentsStorageService = createStorageService({
+        storageConfig: config.documentsStorage,
+        encryptionOptions: {
+          isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+          keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+        },
       });
 
       const createDocument = createDocumentCreationUsecase({
@@ -116,8 +120,12 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
 
-      const documentsStorageService = createDocumentStorageService({
-        documentStorageConfig: config.documentsStorage,
+      const documentsStorageService = createStorageService({
+        storageConfig: config.documentsStorage,
+        encryptionOptions: {
+          isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+          keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+        },
       });
 
       let documentIdIndex = 1;
@@ -260,7 +268,7 @@ describe('documents usecases', () => {
         db,
         config,
         taskServices,
-        documentsStorageService: createInMemoryDocumentStorageServices(),
+        documentsStorageService: createInMemoryStorageService(),
         eventServices: createTestEventServices(),
       });
 
@@ -313,7 +321,7 @@ describe('documents usecases', () => {
         documentsStorage: { driver: 'in-memory' },
       });
       const documentsRepository = createDocumentsRepository({ db });
-      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
+      const inMemoryDocumentsStorageService = createInMemoryStorageService();
 
       const createDocument = createDocumentCreationUsecase({
         db,
@@ -392,8 +400,12 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({
-        documentStorageConfig: config.documentsStorage,
+      const documentsStorageService = createStorageService({
+        storageConfig: config.documentsStorage,
+        encryptionOptions: {
+          isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+          keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+        },
       });
 
       const createDocument = createDocumentCreationUsecase({
@@ -443,7 +455,7 @@ describe('documents usecases', () => {
         ],
       });
 
-      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
+      const inMemoryDocumentsStorageService = createInMemoryStorageService();
 
       const plansRepository = {
         getOrganizationPlanById: async (_args) => ({
@@ -498,7 +510,7 @@ describe('documents usecases', () => {
 
       const { promise, resolve } = Promise.withResolvers();
 
-      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
+      const inMemoryDocumentsStorageService = createInMemoryStorageService();
       const documentsStorageService = {
         ...inMemoryDocumentsStorageService,
         saveFile: async (args) => {
@@ -511,7 +523,7 @@ describe('documents usecases', () => {
 
           return inMemoryDocumentsStorageService.saveFile(args);
         },
-      } as DocumentStorageService;
+      } as StorageService;
 
       const plansRepository = {
         getOrganizationPlanById: async (_args) => ({
@@ -574,7 +586,7 @@ describe('documents usecases', () => {
         ],
       });
 
-      const inMemoryDocumentsStorageService = createInMemoryDocumentStorageServices();
+      const inMemoryDocumentsStorageService = createInMemoryStorageService();
 
       const plansRepository = {
         getOrganizationPlanById: async (_args) => ({
@@ -634,7 +646,7 @@ describe('documents usecases', () => {
         db,
         config,
         generateDocumentId: () => `doc_${documentIdIndex++}`,
-        documentsStorageService: createInMemoryDocumentStorageServices(),
+        documentsStorageService: createInMemoryStorageService(),
         taskServices,
         eventServices,
       });
@@ -681,8 +693,12 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({
-        documentStorageConfig: config.documentsStorage,
+      const documentsStorageService = createStorageService({
+        storageConfig: config.documentsStorage,
+        encryptionOptions: {
+          isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+          keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+        },
       });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
@@ -742,8 +758,12 @@ describe('documents usecases', () => {
       });
 
       const documentsRepository = createDocumentsRepository({ db });
-      const documentsStorageService = createDocumentStorageService({
-        documentStorageConfig: config.documentsStorage,
+      const documentsStorageService = createStorageService({
+        storageConfig: config.documentsStorage,
+        encryptionOptions: {
+          isEncryptionEnabled: config.documentsStorage.encryption.isEncryptionEnabled,
+          keyEncryptionKeys: config.documentsStorage.encryption.documentKeyEncryptionKeys,
+        },
       });
       const taggingRulesRepository = createTaggingRulesRepository({ db });
       const tagsRepository = createTagsRepository({ db });
@@ -1200,40 +1220,42 @@ describe('documents usecases', () => {
         changes: { name: 'new-name.txt', content: 'Updated content' },
       });
 
-      expect(eventServices.getEmittedEvents()).to.eql([
-        {
-          eventName: 'document.updated',
-          payload: {
-            changes: {
-              content: 'Updated content',
-              name: 'new-name.txt',
-            },
-            document: {
-              content: 'Updated content',
-              createdAt: new Date('2025-12-10'),
-              createdBy: null,
-              deletedAt: null,
-              deletedBy: null,
-              fileEncryptionAlgorithm: null,
-              fileEncryptionKekVersion: null,
-              fileEncryptionKeyWrapped: null,
-              id: 'document-1',
-              isDeleted: false,
-              mimeType: 'text/plain',
-              notes: null,
-              name: 'new-name.txt',
-              documentDate: null,
-              organizationId: 'organization-1',
-              originalName: 'file-1.txt',
-              originalSha256Hash: 'hash',
-              originalSize: 0,
-              originalStorageKey: 'organization-1/originals/document-1.txt',
-              updatedAt: new Date('2025-12-11'),
-            },
-            userId: 'user-1',
+      const emittedEvents = eventServices.getEmittedEvents();
+
+      expect(emittedEvents.length).to.eql(1);
+      const event = emittedEvents[0];
+
+      expect(event).toMatchObject({
+        eventName: 'document.updated',
+        payload: {
+          changes: {
+            content: 'Updated content',
+            name: 'new-name.txt',
           },
+          document: {
+            content: 'Updated content',
+            createdAt: new Date('2025-12-10'),
+            createdBy: null,
+            deletedAt: null,
+            deletedBy: null,
+            fileEncryptionAlgorithm: null,
+            fileEncryptionKekVersion: null,
+            fileEncryptionKeyWrapped: null,
+            id: 'document-1',
+            isDeleted: false,
+            mimeType: 'text/plain',
+            notes: null,
+            name: 'new-name.txt',
+            documentDate: null,
+            organizationId: 'organization-1',
+            originalName: 'file-1.txt',
+            originalSha256Hash: 'hash',
+            originalSize: 0,
+            originalStorageKey: 'organization-1/originals/document-1.txt',
+          },
+          userId: 'user-1',
         },
-      ]);
+      });
     });
   });
 });

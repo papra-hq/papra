@@ -65,7 +65,7 @@ function getPdfjsAssetsDirectoryPath(): string {
   const require = createRequire(import.meta.url);
   const pdfjsDistDir = path.dirname(
     require.resolve('pdfjs-dist/package.json', {
-      paths: [require.resolve('@pdfslick/core/package.json')],
+      paths: [require.resolve('@pdfslick/solid/package.json')],
     }),
   );
   return pdfjsDistDir;

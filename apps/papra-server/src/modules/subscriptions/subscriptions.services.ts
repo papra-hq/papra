@@ -6,6 +6,7 @@ import Stripe from 'stripe';
 import { getClientBaseUrl } from '../config/config.models';
 import { createLogger } from '../shared/logger/logger';
 import { isNil, isNonEmptyString } from '../shared/utils';
+import { createInvalidWebhookSignatureError } from './subscriptions.errors';
 
 export type SubscriptionsServices = ReturnType<typeof createSubscriptionsServices>;
 
@@ -136,19 +137,33 @@ async function parseWebhookEvent({
   payload,
   signature,
   config,
+  logger = createLogger({ namespace: 'subscriptions:services' }),
 }: {
   stripeClient: Stripe;
   payload: string | Buffer;
   signature: string;
   config: Config;
+  logger?: Logger;
 }) {
-  const event = await stripeClient.webhooks.constructEventAsync(
-    payload,
-    signature,
-    config.subscriptions.stripeWebhookSecret,
-  );
+  const { stripeWebhookSecret } = config.subscriptions;
 
-  return { event };
+  if (isNil(stripeWebhookSecret)) {
+    logger.warn('Stripe webhook secret is not configured, cannot verify webhook signature');
+    throw createInvalidWebhookSignatureError();
+  }
+
+  try {
+    const event = await stripeClient.webhooks.constructEventAsync(
+      payload,
+      signature,
+      stripeWebhookSecret,
+    );
+
+    return { event };
+  } catch (error) {
+    logger.warn({ error }, 'Failed to verify Stripe webhook signature');
+    throw createInvalidWebhookSignatureError();
+  }
 }
 
 async function getCustomerPortalUrl({

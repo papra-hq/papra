@@ -27,6 +27,7 @@ export const owlrelayIntakeEmailDriverFactory = defineIntakeEmailDriver(({ confi
 
   return {
     name: OWLRELAY_INTAKE_EMAIL_DRIVER_NAME,
+    getDomains: () => (domain ? [domain] : []),
     createEmailAddress: async ({ username }) => {
       const [result, error] = await safely(
         client.createEmail({

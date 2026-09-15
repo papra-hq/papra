@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useAlert } from '@/modules/ui/providers/alert-provider';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
@@ -25,6 +26,7 @@ export function RenameDocumentDialog({
   onConfirm,
   onCancel,
 }: RenameDocumentDialogProps) {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const { showAlert } = useAlert();
   const styles = createStyles({ themeColors });
@@ -47,8 +49,8 @@ export function RenameDocumentDialog({
   const handleConfirm = () => {
     if (documentName.trim() === '') {
       showAlert({
-        title: 'Invalid Name',
-        message: 'Please enter a document name',
+        title: t.common.invalidName,
+        message: t.documents.nameRequired,
       });
       return;
     }
@@ -75,7 +77,7 @@ export function RenameDocumentDialog({
           <TouchableWithoutFeedback>
             <View style={styles.content}>
               <View style={styles.header}>
-                <Text style={styles.title}>Document Name</Text>
+                <Text style={styles.title}>{t.documents.nameTitle}</Text>
               </View>
 
               <View style={styles.inputContainer}>
@@ -84,7 +86,7 @@ export function RenameDocumentDialog({
                   style={styles.input}
                   value={documentName}
                   onChangeText={setDocumentName}
-                  placeholder="Enter document name"
+                  placeholder={t.documents.namePlaceholder}
                   placeholderTextColor={themeColors.mutedForeground}
                   onSubmitEditing={handleConfirm}
                 />
@@ -95,13 +97,13 @@ export function RenameDocumentDialog({
                   style={[styles.button, styles.cancelButton]}
                   onPress={handleCancel}
                 >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                  <Text style={styles.cancelButtonText}>{t.common.cancel}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.confirmButton]}
                   onPress={handleConfirm}
                 >
-                  <Text style={styles.confirmButtonText}>Save</Text>
+                  <Text style={styles.confirmButtonText}>{t.common.save}</Text>
                 </TouchableOpacity>
               </View>
             </View>

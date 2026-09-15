@@ -1,6 +1,6 @@
 # Base stage with pnpm
 FROM node:26-slim@sha256:a1d9d671994fc2d26e297ac56b4b1522a8bc7fa71c43b14cd1b1fe6c5116f7dc AS base
-RUN npm install -g pnpm@11.1.1
+RUN npm install -g pnpm@11.22.0
 
 # Build stage
 FROM base AS build
@@ -23,7 +23,7 @@ COPY . .
 RUN pnpm --filter "@papra/app-client..." run build && \
     pnpm --filter "@papra/app-server..." run build
 
-RUN pnpm deploy --filter=@papra/app-server --legacy --prod /prod/papra-server
+RUN pnpm --filter=@papra/app-server --prod deploy /prod/papra-server
 
 FROM base
 

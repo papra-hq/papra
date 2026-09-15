@@ -16,6 +16,7 @@ export type Props = {
   canonicalUrl?: URL | null;
   pageType?: 'website' | 'article';
   locale?: string;
+  alternateLocales?: readonly string[];
   extra?: string | string[];
   jsonLd?: Record<string, unknown> | null;
 };
@@ -44,7 +45,7 @@ const organizationLd = {
   },
 };
 
-const { rawTitle, description = siteInfo.description, image = siteInfo.image, canonicalUrl: rawCanonicalUrl, pageType = 'website', locale = 'en', jsonLd = organizationLd } = Astro.props;
+const { rawTitle, description = siteInfo.description, image = siteInfo.image, canonicalUrl: rawCanonicalUrl, pageType = 'website', locale = Astro.currentLocale ?? DEFAULT_LOCALE, jsonLd = organizationLd } = Astro.props;
 const canonicalUrl = formatCanonicalUrl(rawCanonicalUrl ?? new URL(Astro.request.url, Astro.site));
 
 const title = rawTitle ?? [Astro.props.title, siteInfo.title].filter(Boolean).join(' - ');
@@ -78,7 +79,7 @@ const isMultiLangPage = Boolean(Astro.params.locale);
 
 // Generate alternate links for multi-language pages
 const alternateLinks = isMultiLangPage
-  ? LOCALES.map((loc) => {
+  ? (Astro.props.alternateLocales ?? LOCALES).map((loc) => {
       const pathWithoutLocale = getPathWithoutLocale(Astro.url);
       const href = new URL(`/${loc}${pathWithoutLocale}`, Astro.site).toString();
 

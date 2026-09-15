@@ -3,7 +3,7 @@ import { createInMemoryDatabase } from '../../app/database/database.test-utils';
 import { createServer } from '../../app/server';
 import { createTestServerDependencies } from '../../app/server.test-utils';
 import { overrideConfig } from '../../config/config.test-utils';
-import { createInMemoryDocumentStorageServices } from '../../documents/storage/documents.storage.services.test-utils';
+import { createInMemoryStorageService } from '../../storage/storage.test-utils';
 import { ORGANIZATION_ROLES } from '../../organizations/organizations.constants';
 import { createReadableStream } from '../../shared/streams/readable-stream';
 
@@ -45,7 +45,7 @@ async function createTestApp() {
     ],
   });
 
-  const documentsStorageService = createInMemoryDocumentStorageServices();
+  const documentsStorageService = createInMemoryStorageService();
 
   await documentsStorageService.saveFile({
     fileName: document.name,
@@ -194,7 +194,7 @@ describe('shared document access e2e', () => {
       { method: 'DELETE' },
       { loggedInUserId: 'usr_111111111111111111111111' },
     );
-    expect(trashResponse.status).toBe(200);
+    expect(trashResponse.status).toBe(204);
 
     // Public access to both the metadata and the file must stop with a 410 Gone.
     const trashedDocumentResponse = await app.request(

@@ -1,5 +1,4 @@
 import type { ThemeColors } from '@/modules/ui/theme.constants';
-import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -11,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useApiClient } from '@/modules/api/providers/api.provider';
 import { DocumentsList } from '@/modules/documents/components/documents-list';
 import { OrganizationPickerButton } from '@/modules/organizations/components/organization-picker-button';
@@ -18,31 +18,16 @@ import { OrganizationPickerDrawer } from '@/modules/organizations/components/org
 import { useOrganizations } from '@/modules/organizations/organizations.provider';
 import { Icon } from '@/modules/ui/components/icon';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
-import { fetchOrganizationDocuments } from '../documents.services';
+import { useDocuments } from '../hooks/use-documents.hook';
 import { syncUnsyncedDocuments } from '../documents.sync.services';
 
 export function DocumentsListScreen() {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const apiClient = useApiClient();
   const { currentOrganizationId, isLoading: isLoadingOrganizations } = useOrganizations();
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const pagination = { pageIndex: 0, pageSize: 20 };
-
-  const documentsQuery = useQuery({
-    queryKey: ['organizations', currentOrganizationId, 'documents', pagination],
-    queryFn: async () => {
-      if (currentOrganizationId == null) {
-        return { documents: [], documentsCount: 0 };
-      }
-
-      return fetchOrganizationDocuments({
-        organizationId: currentOrganizationId,
-        ...pagination,
-        apiClient,
-      });
-    },
-    enabled: currentOrganizationId !== null && currentOrganizationId !== '',
-  });
+  const documentsQuery = useDocuments();
 
   const styles = createStyles({ themeColors });
 
@@ -70,22 +55,22 @@ export function DocumentsListScreen() {
             style={styles.userButton}
             onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/settings')}
             accessibilityRole="button"
-            accessibilityLabel="User settings"
+            accessibilityLabel={t.documents.userSettings}
           >
             <Icon name="user" size={20} color={themeColors.foreground} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.title}>Documents</Text>
+        <Text style={styles.title}>{t.documents.title}</Text>
 
         <TouchableOpacity
           style={styles.searchButton}
           onPress={() => router.navigate('/(app)/(with-organizations)/(tabs)/search')}
           accessibilityRole="button"
-          accessibilityLabel="Search documents"
+          accessibilityLabel={t.documents.search.placeholder}
         >
           <Icon name="search" size={18} color={themeColors.mutedForeground} />
-          <Text style={styles.searchButtonText}>Search documents</Text>
+          <Text style={styles.searchButtonText}>{t.documents.search.placeholder}</Text>
         </TouchableOpacity>
       </View>
 
@@ -95,10 +80,14 @@ export function DocumentsListScreen() {
         </View>
       ) : (
         <DocumentsList
-          documents={documentsQuery.data?.documents ?? []}
+          key={currentOrganizationId}
+          documents={documentsQuery.documents}
+          onLoadMore={documentsQuery.loadMore}
+          isFetchingNextPage={documentsQuery.isFetchingNextPage}
+          isFetchNextPageError={documentsQuery.isFetchNextPageError}
           emptyState={{
-            title: 'No documents yet',
-            subtitle: 'Upload your first document to get started',
+            title: t.documents.emptyTitle,
+            subtitle: t.documents.emptySubtitle,
           }}
           refreshControl={
             <RefreshControl refreshing={documentsQuery.isRefetching} onRefresh={onRefresh} />

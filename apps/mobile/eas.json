@@ -15,6 +15,9 @@
     },
     "development": {
       "extends": "production",
+      "env": {
+        "APP_VARIANT": "development"
+      },
       "developmentClient": true,
       "distribution": "internal",
       "autoIncrement": false

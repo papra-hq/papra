@@ -46,7 +46,7 @@ jobs:
 
       # Now build the apps, the longer step, so we do it last as they are more unlikely to fail if the previous steps works
       - name: Build the apps
-        run: pnpm -r --parallel -F "./apps/*" build
+        run: pnpm -r --parallel -F "./apps/*" -F "./packages/search-parser/demo" build
 
       # Boot the built server bundle to catch runtime-only failures the build step cannot detect
       - name: Smoke test the server

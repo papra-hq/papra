@@ -9,6 +9,7 @@ import { config } from './src/app.config';
 
 import { DEFAULT_LOCALE, LOCALES } from './src/i18n/i18n.constants';
 import createRedirectsFile from './src/plugins/redirects';
+import docsSearch from './src/plugins/docs-search';
 
 export default defineConfig({
   site: 'https://papra.app',
@@ -38,6 +39,7 @@ export default defineConfig({
       },
     }),
     mdx(),
+    docsSearch(),
   ],
 
   output: 'static',

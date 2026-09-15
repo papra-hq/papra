@@ -1,0 +1,19 @@
+---
+import type { DocsSection } from '../docs.types';
+import type { Locale } from '../../i18n/i18n.constants';
+import { useI18n } from '../../i18n/i18n';
+import DocNavSections from './DocNavSections.astro';
+
+export type Props = {
+  sections: DocsSection[];
+  currentDocId: string;
+  locale: Locale;
+}
+
+const { sections, currentDocId, locale } = Astro.props;
+const { t } = useI18n({ locale });
+---
+
+<nav aria-label={t('docs.sidebar-label')} class="border-r max-w-300px w-full hidden md:block overflow-y-auto pl-2 pr-4 pt-2 flex-shrink-0 sticky top-113px h-[calc(100vh-113px)]">
+  <DocNavSections sections={sections} currentDocId={currentDocId} locale={locale} />
+</nav>

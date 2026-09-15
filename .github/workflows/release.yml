@@ -40,20 +40,19 @@ jobs:
 
       - name: Create Release Pull Request
         id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # v2.1.1
         with:
+          github-token: ${{ secrets.CHANGESET_GITHUB_TOKEN }}
           # Note: pnpm install after versioning is necessary to refresh lockfile
-          version: pnpm run version
-          publish: pnpm exec changeset publish
-          commit: 'chore(release): update versions'
-          title: 'chore(release): update versions'
-        env:
-          GITHUB_TOKEN: ${{ secrets.CHANGESET_GITHUB_TOKEN }}
+          version-script: pnpm run version
+          publish-script: pnpm exec changeset publish
+          commit-message: 'chore(release): update versions'
+          pr-title: 'chore(release): update versions'
 
       - name: Trigger Docker build
-        if: steps.changesets.outputs.published == 'true' && contains(fromJson(steps.changesets.outputs.publishedPackages).*.name, '@papra/app')
+        if: steps.changesets.outputs.published == 'true' && contains(fromJson(steps.changesets.outputs['published-packages']).*.name, '@papra/app')
         run: |
-          VERSION=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | select(.name=="@papra/app") | .version')
+          VERSION=$(echo '${{ steps.changesets.outputs['published-packages'] }}' | jq -r '.[] | select(.name=="@papra/app") | .version')
           echo "VERSION: $VERSION"
           gh workflow run release-docker.yaml -f version="$VERSION"
         env:

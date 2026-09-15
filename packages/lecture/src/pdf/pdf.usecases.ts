@@ -27,13 +27,19 @@ export function getNormalizedImageData(image: PdfRawImage): Uint8Array {
 export async function pdfImageToBuffer(image: PdfRawImage): Promise<Buffer> {
   const imageData = getNormalizedImageData(image);
 
-  return sharp(imageData, {
-    raw: {
-      width: image.width,
-      height: image.height,
-      channels: IMAGE_KIND_CHANNELS[image.kind]!,
-    },
-  })
-    .png()
-    .toBuffer();
+  return (
+    sharp(imageData, {
+      raw: {
+        width: image.width,
+        height: image.height,
+        channels: IMAGE_KIND_CHANNELS[image.kind]!,
+      },
+    })
+      // PDF image objects have no standalone DPI. Use Tesseract's 70 DPI fallback explicitly so
+      // it does not emit an invalid-resolution warning when processing the generated PNG.
+      // It's just a meta, doesn't affect the actual pixel data
+      .withMetadata({ density: 70 })
+      .png()
+      .toBuffer()
+  );
 }

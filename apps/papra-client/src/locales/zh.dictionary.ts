@@ -685,7 +685,7 @@ export const translations: Partial<TranslationsDictionary> = {
   'tags.update': '更新标签',
   'tags.delete': '删除标签',
   'tags.delete.confirm.title': '删除标签',
-  'tags.delete.confirm.message': '确定要删除此标签吗？删除后该标签将从所有文档中移除。',
+  'tags.delete.confirm.message': '确定要删除标签“{{ name }}”吗？删除后该标签将从所有文档中移除。',
   'tags.delete.confirm.confirm-button': '删除',
   'tags.delete.confirm.cancel-button': '取消',
   'tags.delete.success': '标签已删除',

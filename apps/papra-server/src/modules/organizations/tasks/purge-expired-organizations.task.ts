@@ -1,6 +1,6 @@
 import type { Database } from '../../app/database/database.types';
 import type { Config } from '../../config/config.types';
-import type { DocumentStorageService } from '../../documents/storage/documents.storage.services';
+import type { StorageService } from '../../storage/storage.services';
 import type { TaskServices } from '../../tasks/tasks.services';
 import { createDocumentsRepository } from '../../documents/documents.repository';
 import { createLogger } from '../../shared/logger/logger';
@@ -18,7 +18,7 @@ export async function registerPurgeExpiredOrganizationsTask({
   taskServices: TaskServices;
   db: Database;
   config: Config;
-  documentsStorageService: DocumentStorageService;
+  documentsStorageService: StorageService;
 }) {
   const taskName = 'purge-expired-organizations';
   const { cron, runOnStartup } = config.tasks.purgeExpiredOrganizations;

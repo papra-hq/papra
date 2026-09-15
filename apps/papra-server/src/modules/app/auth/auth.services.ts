@@ -45,6 +45,7 @@ export function getAuth({
     },
     emailAndPassword: {
       enabled: config.auth.providers.email.isEnabled,
+      disableSignUp: !config.auth.isRegistrationEnabled,
       revokeSessionsOnPasswordReset: true,
       requireEmailVerification: config.auth.isEmailVerificationRequired,
       sendResetPassword: config.auth.isPasswordResetEnabled
@@ -134,7 +135,15 @@ export function getAuth({
       twoFactor(),
 
       ...(config.auth.providers.customs.length > 0
-        ? [genericOAuth({ config: config.auth.providers.customs })]
+        ? [
+            genericOAuth({
+              config: config.auth.providers.customs.map((oauthConfig) => ({
+                ...oauthConfig,
+                disableSignUp: !config.auth.isRegistrationEnabled,
+                disableImplicitSignUp: !config.auth.isRegistrationEnabled,
+              })),
+            }),
+          ]
         : []),
     ],
   });

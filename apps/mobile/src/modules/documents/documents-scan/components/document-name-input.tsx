@@ -1,6 +1,7 @@
 import type { ScanOutputFormat } from '../documents-scan.types';
 import type { ThemeColors } from '@/modules/ui/theme.constants';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAppTranslations } from '@/modules/i18n/hooks/use-app-translations';
 import { useThemeColor } from '@/modules/ui/providers/use-theme-color';
 
 type DocumentNameInputProps = {
@@ -14,18 +15,19 @@ function getFileExtension(format: ScanOutputFormat): string {
 }
 
 export function DocumentNameInput({ value, onChangeText, format }: DocumentNameInputProps) {
+  const t = useAppTranslations();
   const themeColors = useThemeColor();
   const styles = createStyles({ themeColors });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Document name</Text>
+      <Text style={styles.label}>{t.documents.nameLabel}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           value={value}
           onChangeText={onChangeText}
-          placeholder="Enter document name"
+          placeholder={t.documents.namePlaceholder}
           placeholderTextColor={themeColors.mutedForeground}
           autoCapitalize="none"
           autoCorrect={false}

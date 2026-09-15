@@ -1,6 +1,7 @@
+import sharp from 'sharp';
 import { describe, expect, test } from 'vitest';
 import { IMAGE_KIND } from './pdf.constants';
-import { getNormalizedImageData } from './pdf.usecases';
+import { getNormalizedImageData, pdfImageToBuffer } from './pdf.usecases';
 
 describe('getNormalizedImageData', () => {
   describe('for GRAYSCALE_1BPP images, unpacks packed bits into one byte per pixel so that sharp can process the image', () => {
@@ -82,5 +83,22 @@ describe('getNormalizedImageData', () => {
     const image = { data, width: 2, height: 1, kind: IMAGE_KIND.RGB_24BPP };
 
     expect(getNormalizedImageData(image)).toBe(data);
+  });
+});
+
+describe('pdfImageToBuffer', () => {
+  test('sets Tesseract fallback density metadata on the generated PNG', async () => {
+    const image = {
+      data: new Uint8Array([255, 255, 255]),
+      width: 1,
+      height: 1,
+      kind: IMAGE_KIND.RGB_24BPP,
+    };
+
+    const buffer = await pdfImageToBuffer(image);
+    const metadata = await sharp(buffer).metadata();
+
+    expect(metadata.density).toBe(70);
+    expect(metadata.resolutionUnit).toBe('inch');
   });
 });
