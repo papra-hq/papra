@@ -2,6 +2,7 @@ import type { Document } from './documents.types';
 import { createSignal } from 'solid-js';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { downloadFile } from '@/modules/shared/files/download';
+import { isHttpErrorWithCode, isRateLimitError } from '@/modules/shared/http/http-errors';
 import { useConfirmModal } from '../shared/confirm';
 import { queryClient } from '../shared/query/query-client';
 import { createToast } from '../ui/components/sonner';
@@ -9,6 +10,7 @@ import {
   deleteDocument,
   fetchDocument,
   fetchDocumentFile,
+  reprocessDocument,
   restoreDocument,
 } from './documents.services';
 
@@ -103,6 +105,59 @@ export function useDeleteDocument() {
       createToast({ type: 'success', message: 'Document deleted' });
 
       return { hasDeleted: true };
+    },
+  };
+}
+
+export function useReprocessDocument() {
+  const { confirm } = useConfirmModal();
+  const { t } = useI18n();
+  const [getIsReprocessing, setIsReprocessing] = createSignal(false);
+
+  return {
+    getIsReprocessing,
+    reprocess: async ({ document }: { document: Document }) => {
+      if (getIsReprocessing() || document.isDeleted) {
+        return;
+      }
+
+      setIsReprocessing(true);
+
+      try {
+        const isConfirmed = await confirm({
+          title: t('documents.reprocess.confirm.title'),
+          message: t('documents.reprocess.confirm.description'),
+          confirmButton: { text: t('documents.reprocess.confirm.submit') },
+          cancelButton: { text: t('documents.actions.cancel') },
+        });
+
+        if (!isConfirmed) {
+          return;
+        }
+
+        await reprocessDocument({
+          documentId: document.id,
+          organizationId: document.organizationId,
+        });
+
+        createToast({
+          type: 'success',
+          message: t('documents.reprocess.queued'),
+          description: t('documents.reprocess.queued.description'),
+        });
+      } catch (error) {
+        let message = t('documents.reprocess.error');
+
+        if (isRateLimitError({ error })) {
+          message = t('documents.reprocess.rate-limited');
+        } else if (isHttpErrorWithCode({ error, code: 'document.reprocessing_disabled' })) {
+          message = t('documents.reprocess.disabled');
+        }
+
+        createToast({ type: 'error', message });
+      } finally {
+        setIsReprocessing(false);
+      }
     },
   };
 }

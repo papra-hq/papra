@@ -65,6 +65,8 @@ export const buildTimeConfig = {
     },
   },
   documents: {
+    // Only offer reprocessing when the server advertises support (also keeps demo mode disabled).
+    isReprocessingEnabled: false as boolean,
     deletedDocumentsRetentionDays: asNumber(
       import.meta.env.VITE_DOCUMENTS_DELETED_DOCUMENTS_RETENTION_DAYS,
       30,
