@@ -118,6 +118,11 @@ export function getAuth({
     advanced: {
       // Drizzle tables handle the id generation
       database: { generateId: false },
+      // Better Auth 1.6 falls back to secure cookies for dynamic base URLs in
+      // production. This deployment intentionally supports both HTTP on the
+      // LAN and HTTPS through Tailscale, so do not make the session cookie
+      // unusable for the LAN origin.
+      useSecureCookies: false,
       ipAddress: {
         ipAddressHeaders: config.auth.ipAddressHeaders,
       },
