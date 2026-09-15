@@ -33,10 +33,7 @@ export function getAuth({
   const { trustedOrigins } = getTrustedOrigins({ config });
   const { serverBaseUrl } = getServerBaseUrl({ config });
 
-  // Resolve the auth origin per request so host-only cookies work when the app
-  // is accessed through more than one approved URL (for example, LAN HTTP and
-  // Tailscale HTTPS). A static HTTPS base URL makes Better Auth mark cookies as
-  // secure, which browsers then reject when the same app is reached over HTTP.
+  // Resolve the auth origin per request for LAN HTTP and Tailscale HTTPS.
   const allowedHosts = [serverBaseUrl, ...trustedOrigins]
     .filter((origin) => origin.startsWith('http://') || origin.startsWith('https://'))
     .map((origin) => new URL(origin).host)
@@ -118,10 +115,7 @@ export function getAuth({
     advanced: {
       // Drizzle tables handle the id generation
       database: { generateId: false },
-      // Better Auth 1.6 falls back to secure cookies for dynamic base URLs in
-      // production. This deployment intentionally supports both HTTP on the
-      // LAN and HTTPS through Tailscale, so do not make the session cookie
-      // unusable for the LAN origin.
+      // This deployment supports both LAN HTTP and Tailscale HTTPS.
       useSecureCookies: false,
       ipAddress: {
         ipAddressHeaders: config.auth.ipAddressHeaders,
