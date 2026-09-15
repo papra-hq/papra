@@ -229,6 +229,22 @@ Change the name or content (for search purposes) of a document.
 - Response (JSON)
   - `document`: The updated document.
 
+### Reprocess a document
+
+**POST** `/api/organizations/:organizationId/documents/:documentId/reprocess`
+
+Enqueue a background task to reprocess an existing document using the current instance configuration, including its OCR languages. Processing happens asynchronously; existing content and tags are not cleared while the task is pending.
+
+- Required API key permissions: `documents:update`
+- The authenticated user must belong to the organization.
+- Body: none
+- Response: empty (202 status code). This confirms the task was queued, not that processing has completed.
+- Rate limit: 100 requests per hour per organization by default, configurable with `DOCUMENT_REPROCESSING_RATE_LIMIT`.
+- Errors
+  - `403` (`document.reprocessing_disabled`): Reprocessing is disabled via `DOCUMENT_REPROCESSING_ENABLED` (enabled by default).
+  - `404` (`document.not_found`): The document does not exist in the organization or is in the trash.
+  - `429` (`server.too_many_requests`): The organization's reprocessing rate limit has been exceeded. The `Retry-After` header indicates how many seconds to wait before retrying.
+
 ### Get document activity
 
 **GET** `/api/organizations/:organizationId/documents/:documentId/activity`

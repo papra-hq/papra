@@ -6,6 +6,12 @@ export const createDocumentNotFoundError = createErrorFactory({
   statusCode: 404,
 });
 
+export const createDocumentReprocessingDisabledError = createErrorFactory({
+  message: 'Document reprocessing is disabled.',
+  code: 'document.reprocessing_disabled',
+  statusCode: 403,
+});
+
 export const createDocumentIsNotDeletedError = createErrorFactory({
   message: 'Document is not deleted, cannot restore.',
   code: 'document.not_deleted',
