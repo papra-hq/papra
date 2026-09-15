@@ -891,6 +891,11 @@ export const translations = {
   'tagging-rules.apply.success': 'Aplikovanie pravidla sa spustilo na pozadí',
   'tagging-rules.apply.error': 'Nepodarilo sa spustiť aplikovanie pravidla',
   'tagging-rules.apply.processing': 'Spúšťa sa...',
+  'tagging-rules.delete.confirm.title': 'Odstrániť pravidlo štítkovania?',
+  'tagging-rules.delete.confirm.message':
+    'Naozaj chcete odstrániť toto pravidlo štítkovania? Túto akciu nie je možné vrátiť späť.',
+  'tagging-rules.delete.confirm.confirm-button': 'Odstrániť pravidlo',
+  'tagging-rules.delete.confirm.cancel-button': 'Zrušiť',
 
   // Intake emails
 
