@@ -14,10 +14,8 @@ import { ensureUserIsInOrganization } from '../organizations/organizations.useca
 import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
 import { getOrganizationPlan } from '../plans/plans.usecases';
-import { systemClock } from '../shared/clock/clock';
 import { createQueryPaginationSchemaKeys } from '../shared/schemas/pagination.schemas';
 import { getFileStreamFromMultipartForm } from '../shared/streams/file-upload';
-import { IN_MS } from '../shared/units';
 import { validateJsonBody, validateParams, validateQuery } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createTagsRepository } from '../tags/tags.repository';
@@ -53,6 +51,7 @@ import {
   trashDocument,
   updateDocument,
 } from './documents.usecases';
+import { computeRetryAfterDuration } from '../app/rate-limit/rate-limit.models';
 
 export function registerDocumentsRoutes(context: RouteDefinitionContext) {
   setupCreateDocumentRoute(context);
@@ -114,12 +113,7 @@ function setupReprocessDocumentRoute({
       });
 
       if (hasExceededLimit) {
-        const retryAfter = Math.max(
-          1,
-          Math.ceil(
-            (resetAt.epochMilliseconds - systemClock.now().epochMilliseconds) / IN_MS.SECOND,
-          ),
-        );
+        const retryAfter = computeRetryAfterDuration({ resetAt });
         context.header('Retry-After', String(retryAfter));
         throw createTooManyRequestsError();
       }
