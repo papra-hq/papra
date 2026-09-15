@@ -1,5 +1,39 @@
 # @papra/app
 
+## 26.7.0
+
+### Minor Changes
+
+- [#1474](https://github.com/papra-hq/papra/pull/1474) [`aa26524`](https://github.com/papra-hq/papra/commit/aa26524ef3806bd9769eb48b180528b9edd1f767) Thanks [@CorentinTh](https://github.com/CorentinTh)! - API breaking change: The route to trash a document `DELETE /api/organizations/:organizationId/documents/:documentId` now returns a 204 No Content status code instead of `{ success: true }` JSON body.
+
+- [#1513](https://github.com/papra-hq/papra/pull/1513) [`1f1a9ad`](https://github.com/papra-hq/papra/commit/1f1a9aded5db559b0bf67f252d007585ea329854) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added an API endpoint to reprocess existing documents `POST /api/organizations/:organizationId/documents/:documentId/reprocess`. This endpoint allows re-running content extraction + auto tagging and tagging rules on existing documents.
+
+### Patch Changes
+
+- [#1468](https://github.com/papra-hq/papra/pull/1468) [`4fef955`](https://github.com/papra-hq/papra/commit/4fef955ce7c13063448f4afd7c1e9a00cc93406b) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fonts are now bundled with the app, so that it can be used offline, and no longer depends on Bunny Fonts. A step towards making Papra fully air-gapped.
+
+- [#1461](https://github.com/papra-hq/papra/pull/1461) [`5d3063b`](https://github.com/papra-hq/papra/commit/5d3063b397020e5b301d0c788d2bcae42fc51561) Thanks [@bartdenhoed](https://github.com/bartdenhoed)! - Fixed missing refresh of the updatedAt db attribute.
+
+- [#1469](https://github.com/papra-hq/papra/pull/1469) [`347029d`](https://github.com/papra-hq/papra/commit/347029dbd1ae997dcf537a9d04ab003b06021090) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed OCR extraction for images whose rotation is stored in EXIF metadata.
+
+- [#1519](https://github.com/papra-hq/papra/pull/1519) [`82778df`](https://github.com/papra-hq/papra/commit/82778df8350f6e5dd152efd4504a22474a67ee91) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fixed document action menus wrapping longer translations by allowing the menu to expand.
+
+- [#1503](https://github.com/papra-hq/papra/pull/1503) [`2993c6e`](https://github.com/papra-hq/papra/commit/2993c6ea6a3b266fb5b022a9a520bfdeb984b422) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Security fix: Prevent custom OAuth providers from creating new accounts when registration is disabled, while allowing existing users to sign in.
+
+  Thanks to [白墨](https://github.com/5255fgh) for the responsible disclosure of this issue.
+
+- [#1517](https://github.com/papra-hq/papra/pull/1517) [`956684c`](https://github.com/papra-hq/papra/commit/956684c53c62686775e1c90195d39ac82fd62c0f) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Added a button to reprocess a document in the documents content tab.
+
+- [#1428](https://github.com/papra-hq/papra/pull/1428) [`76c4501`](https://github.com/papra-hq/papra/commit/76c450187533f80bae0e33734a2769fd3c181d16) Thanks [@jakubM817](https://github.com/jakubM817)! - Add Slovak (sk) translation for the app.
+
+- [#1511](https://github.com/papra-hq/papra/pull/1511) [`71fdd27`](https://github.com/papra-hq/papra/commit/71fdd274a0187677ded3a522e200df272cbef9dc) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Fully disabled AI credit accounting by default for self-hosted instances to silence "Failed to register AI credit usage" logs.
+
+- [#1470](https://github.com/papra-hq/papra/pull/1470) [`a58b4f0`](https://github.com/papra-hq/papra/commit/a58b4f0e349662218ce3a0a24321d352f3ff199d) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Silenced the content extraction warning about DPI.
+
+- [#1502](https://github.com/papra-hq/papra/pull/1502) [`c16661e`](https://github.com/papra-hq/papra/commit/c16661e93606de8759e5312020571a126f5f58e6) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Removed the default value for the intake email webhook validation secret to prevent ingestion of documents from untrusted sources when no secret is provided. Users must now explicitly set a secret using `INTAKE_EMAILS_WEBHOOK_SECRET`.
+
+  Thanks to [白墨](https://github.com/5255fgh) for the responsible disclosure of this issue.
+
 ## 26.6.2
 
 ### Patch Changes
