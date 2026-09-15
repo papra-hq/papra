@@ -21,6 +21,31 @@ describe('memory storage-driver', () => {
       },
     });
 
+    test('copies metadata into an independent entry and content buffer', async () => {
+      const driver = inMemoryStorageDriverFactory();
+      await driver.saveFile({
+        storageKey: 'source',
+        fileName: 'original.txt',
+        mimeType: 'text/plain',
+        fileStream: createReadableStream({ content: 'original content' }),
+      });
+
+      await driver.copyFile({ sourceStorageKey: 'source', destinationStorageKey: 'destination' });
+
+      const source = driver._getStorage().get('source');
+      const destination = driver._getStorage().get('destination');
+      expect.assert(source);
+      expect.assert(destination);
+      expect(destination).toEqual(source);
+
+      destination.content.fill(0);
+      destination.fileName = 'changed.txt';
+      destination.mimeType = 'application/octet-stream';
+      expect(source.content.toString()).toEqual('original content');
+      expect(source.fileName).toEqual('original.txt');
+      expect(source.mimeType).toEqual('text/plain');
+    });
+
     test('saves, retrieves and delete a file', async () => {
       const inMemoryStorageDriver = inMemoryStorageDriverFactory();
 

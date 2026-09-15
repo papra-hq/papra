@@ -24,11 +24,51 @@ export function runDriverTestSuites({
   timeout?: number;
   retry?: number;
 }) {
+  const createDriver = async () => {
+    const { driver, [Symbol.asyncDispose]: dispose } = await createDriverBase();
+    const storageKeys = new Set<string>();
+
+    return {
+      driver: {
+        ...driver,
+        saveFile: async (args) => {
+          storageKeys.add(args.storageKey);
+          await driver.saveFile(args);
+        },
+        copyFile: async (args) => {
+          storageKeys.add(args.destinationStorageKey);
+          await driver.copyFile(args);
+        },
+      } satisfies StorageDriver,
+      [Symbol.asyncDispose]: async () => {
+        try {
+          // Clean up even after failed assertions, including on shared live R2/B2 backends.
+          const results = await Promise.allSettled(
+            [...storageKeys].map(async (storageKey) => {
+              if (await driver.fileExists({ storageKey })) {
+                await driver.deleteFile({ storageKey });
+              }
+            }),
+          );
+          const errors = results
+            .filter((result) => result.status === 'rejected')
+            .map((result) => result.reason);
+
+          if (errors.length > 0) {
+            throw new AggregateError(errors, 'Failed to clean up storage test files');
+          }
+        } finally {
+          await dispose();
+        }
+      },
+    };
+  };
+
   [
     {
       name: 'without encryption',
       createStorageService: async () => {
-        const { driver, [Symbol.asyncDispose]: dispose } = await createDriverBase();
+        const { driver, [Symbol.asyncDispose]: dispose } = await createDriver();
 
         return {
           storageServices: {
@@ -45,7 +85,7 @@ export function runDriverTestSuites({
     {
       name: 'with encryption',
       createStorageService: async () => {
-        const { driver, [Symbol.asyncDispose]: dispose } = await createDriverBase();
+        const { driver, [Symbol.asyncDispose]: dispose } = await createDriver();
 
         return {
           storageServices: wrapWithEncryptionLayer({
@@ -69,6 +109,167 @@ export function runDriverTestSuites({
     },
   ].forEach(({ createStorageService, name }) => {
     describe.concurrent(name, () => {
+      test(
+        'copies to a nested key and remains readable after deleting the source',
+        { timeout, retry },
+        async () => {
+          await using resource = await createStorageService();
+          const { storageServices } = resource;
+          const prefix = `files/${randomUUID()}`;
+          const sourceStorageKey = `${prefix}/source.bin`;
+          const destinationStorageKey = `${prefix}/nested/destination.bin`;
+          const content = randomBytes(2_048);
+          const encryptionContext = await storageServices.saveFile({
+            storageKey: sourceStorageKey,
+            fileName: 'source.bin',
+            mimeType: 'application/octet-stream',
+            fileStream: createReadableStream({ content }),
+          });
+
+          await storageServices.copyFile({ sourceStorageKey, destinationStorageKey });
+
+          const { fileStream: destinationStream } = await storageServices.getFileStream({
+            storageKey: destinationStorageKey,
+            ...encryptionContext,
+          });
+          expect(await collectReadableStreamToBuffer({ stream: destinationStream })).toEqual(
+            content,
+          );
+
+          const { fileStream: sourceStream } = await storageServices.getFileStream({
+            storageKey: sourceStorageKey,
+            ...encryptionContext,
+          });
+          expect(await collectReadableStreamToBuffer({ stream: sourceStream })).toEqual(content);
+
+          await storageServices.deleteFile({ storageKey: sourceStorageKey });
+          expect(await storageServices.fileExists({ storageKey: sourceStorageKey })).toEqual(false);
+
+          const { fileStream } = await storageServices.getFileStream({
+            storageKey: destinationStorageKey,
+            ...encryptionContext,
+          });
+          expect(await collectReadableStreamToBuffer({ stream: fileStream })).toEqual(content);
+        },
+      );
+
+      test(
+        'rejects a missing copy source without creating a destination',
+        { timeout, retry },
+        async () => {
+          await using resource = await createStorageService();
+          const { storageServices } = resource;
+          const prefix = `files/${randomUUID()}`;
+          const sourceStorageKey = `${prefix}/missing.txt`;
+          const destinationStorageKey = `${prefix}/nested/destination.txt`;
+
+          await expect(
+            storageServices.copyFile({ sourceStorageKey, destinationStorageKey }),
+          ).rejects.toThrow(createFileNotFoundError());
+
+          expect(await storageServices.fileExists({ storageKey: sourceStorageKey })).toEqual(false);
+          expect(await storageServices.fileExists({ storageKey: destinationStorageKey })).toEqual(
+            false,
+          );
+        },
+      );
+
+      test(
+        'rejects an existing copy destination and preserves both files',
+        { timeout, retry },
+        async () => {
+          await using resource = await createStorageService();
+          const { storageServices } = resource;
+          const prefix = `files/${randomUUID()}`;
+          const sourceStorageKey = `${prefix}/source.txt`;
+          const destinationStorageKey = `${prefix}/destination.txt`;
+          const sourceContext = await storageServices.saveFile({
+            storageKey: sourceStorageKey,
+            fileName: 'source.txt',
+            mimeType: 'text/plain',
+            fileStream: createReadableStream({ content: 'source content' }),
+          });
+          const destinationContext = await storageServices.saveFile({
+            storageKey: destinationStorageKey,
+            fileName: 'destination.txt',
+            mimeType: 'text/plain',
+            fileStream: createReadableStream({ content: 'destination content' }),
+          });
+
+          await expect(
+            storageServices.copyFile({ sourceStorageKey, destinationStorageKey }),
+          ).rejects.toThrow(createFileAlreadyExistsInStorageError());
+
+          const { fileStream: sourceStream } = await storageServices.getFileStream({
+            storageKey: sourceStorageKey,
+            ...sourceContext,
+          });
+          expect(await collectReadableStreamToString({ stream: sourceStream })).toEqual(
+            'source content',
+          );
+          const { fileStream: destinationStream } = await storageServices.getFileStream({
+            storageKey: destinationStorageKey,
+            ...destinationContext,
+          });
+          expect(await collectReadableStreamToString({ stream: destinationStream })).toEqual(
+            'destination content',
+          );
+        },
+      );
+
+      test('rejects copying an existing key onto itself', { timeout, retry }, async () => {
+        await using resource = await createStorageService();
+        const { storageServices } = resource;
+        const storageKey = `files/${randomUUID()}.txt`;
+        const encryptionContext = await storageServices.saveFile({
+          storageKey,
+          fileName: 'source.txt',
+          mimeType: 'text/plain',
+          fileStream: createReadableStream({ content: 'original content' }),
+        });
+
+        await expect(
+          storageServices.copyFile({
+            sourceStorageKey: storageKey,
+            destinationStorageKey: storageKey,
+          }),
+        ).rejects.toThrow(createFileAlreadyExistsInStorageError());
+
+        const { fileStream } = await storageServices.getFileStream({
+          storageKey,
+          ...encryptionContext,
+        });
+        expect(await collectReadableStreamToString({ stream: fileStream })).toEqual(
+          'original content',
+        );
+      });
+
+      test(
+        'copies keys containing spaces, Unicode, and URL-reserved characters',
+        { timeout, retry },
+        async () => {
+          await using resource = await createStorageService();
+          const { storageServices } = resource;
+          const prefix = `files/${randomUUID()}`;
+          const sourceStorageKey = `${prefix}/dossier été/文档 + #%.txt`;
+          const destinationStorageKey = `${prefix}/copie été/資料 + #%.txt`;
+          const encryptionContext = await storageServices.saveFile({
+            storageKey: sourceStorageKey,
+            fileName: 'source.txt',
+            mimeType: 'text/plain',
+            fileStream: createReadableStream({ content: 'été 文档' }),
+          });
+
+          await storageServices.copyFile({ sourceStorageKey, destinationStorageKey });
+
+          const { fileStream } = await storageServices.getFileStream({
+            storageKey: destinationStorageKey,
+            ...encryptionContext,
+          });
+          expect(await collectReadableStreamToString({ stream: fileStream })).toEqual('été 文档');
+        },
+      );
+
       test(
         'the driver should support uploading, retrieving and deleting files',
         { timeout, retry },
