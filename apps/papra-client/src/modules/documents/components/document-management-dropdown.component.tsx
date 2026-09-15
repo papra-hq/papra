@@ -52,7 +52,7 @@ export const DocumentManagementDropdown: Component<{ document: Document }> = (pr
           </Button>
         )}
       />
-      <DropdownMenuContent class="w-48">
+      <DropdownMenuContent class="min-w-48">
         <DropdownMenuItem
           class="cursor-pointer "
           as={A}
