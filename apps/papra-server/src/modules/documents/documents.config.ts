@@ -1,5 +1,6 @@
 import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
+import { rateLimitConfigSchema } from '../app/rate-limit/rate-limit.config.schemas';
 import { booleanishSchema } from '../config/config.schemas';
 import { coercedNumberSchema } from '../shared/schemas/number.schemas';
 import { ocrLanguagesSchema, stringCoercedOcrLanguagesSchema } from './documents.schemas';
@@ -16,6 +17,18 @@ export const documentsConfig = {
     schema: v.union([stringCoercedOcrLanguagesSchema, ocrLanguagesSchema]),
     default: ['eng'],
     env: 'DOCUMENTS_OCR_LANGUAGES',
+  },
+  isReprocessingEnabled: {
+    doc: 'Whether to allow reprocessing existing documents using the current instance configuration',
+    schema: booleanishSchema,
+    default: true,
+    env: 'DOCUMENT_REPROCESSING_ENABLED',
+  },
+  reprocessingRateLimit: {
+    doc: 'The rate limit for document reprocessing requests per organization, e.g. "10/h" or "2/5m"',
+    schema: rateLimitConfigSchema,
+    default: '100/h',
+    env: 'DOCUMENT_REPROCESSING_RATE_LIMIT',
   },
   isContentExtractionEnabled: {
     doc: 'Whether to enable content extraction (OCR and text extraction) for uploaded documents',
