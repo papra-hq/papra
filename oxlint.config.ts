@@ -9,7 +9,7 @@ export default defineConfig({
   rules: {
     'typescript/consistent-type-imports': 'error',
     'no-console': 'error',
-    'no-unused-vars': 'error',
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'typescript/no-redundant-type-constituents': 'error',
 
     'import/no-duplicates': 'error',

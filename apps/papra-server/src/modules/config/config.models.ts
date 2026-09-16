@@ -42,7 +42,10 @@ export function getPublicConfig({
           ) ?? [],
       },
     },
-    documents: { deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays },
+    documents: {
+      deletedDocumentsRetentionDays: config.documents.deletedDocumentsRetentionDays,
+      isReprocessingEnabled: config.documents.isReprocessingEnabled,
+    },
     intakeEmails: {
       isEnabled: config.intakeEmails.isEnabled,
       address: {

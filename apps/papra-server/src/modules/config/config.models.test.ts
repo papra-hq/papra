@@ -13,6 +13,7 @@ describe('config models', () => {
         - auth.showLegalLinksOnAuthPage Whether to show Papra legal links on the auth pages
         - auth.providers.*.isEnabled Wether a oauth provider is enabled
         - documents.deletedExpirationDelayInDays The delay in days before a deleted document is permanently deleted
+        - documents.isReprocessingEnabled Whether existing documents can be reprocessed
         - intakeEmails.isEnabled Whether intake emails are enabled
         - intakeEmails.address.canCustomizeUsername Whether intake email usernames can be customized
         - intakeEmails.address.domains The domains available for intake email creation
@@ -40,6 +41,7 @@ describe('config models', () => {
         },
         documents: {
           deletedDocumentsRetentionDays: 30,
+          isReprocessingEnabled: true,
         },
         intakeEmails: {
           isEnabled: true,
@@ -88,6 +90,7 @@ describe('config models', () => {
           },
           documents: {
             deletedDocumentsRetentionDays: 30,
+            isReprocessingEnabled: true,
           },
           intakeEmails: {
             isEnabled: true,

@@ -45,6 +45,29 @@ export const azBlobStorageDriverFactory = ({
           : error;
       }
     },
+    copyFile: async ({ sourceStorageKey, destinationStorageKey }) => {
+      const source = getBlockBlobClient({ storageKey: sourceStorageKey });
+      const destination = getBlockBlobClient({ storageKey: destinationStorageKey });
+
+      const [, error] = await safely(async () => {
+        const poller = await destination.beginCopyFromURL(source.url, {
+          conditions: { ifNoneMatch: '*' },
+        });
+        await poller.pollUntilDone();
+      });
+
+      if (error && isAzureBlobNotFoundError({ error })) {
+        throw createFileNotFoundError();
+      }
+
+      if (error && isAzureBlobAlreadyExistsError({ error })) {
+        throw createFileAlreadyExistsInStorageError();
+      }
+
+      if (error) {
+        throw error;
+      }
+    },
     getFileStream: async ({ storageKey }) => {
       const [response, error] = await safely(getBlockBlobClient({ storageKey }).download());
 

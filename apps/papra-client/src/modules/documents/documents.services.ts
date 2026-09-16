@@ -111,6 +111,20 @@ export async function restoreDocument({
   });
 }
 
+export async function reprocessDocument({
+  documentId,
+  organizationId,
+}: {
+  documentId: string;
+  organizationId: string;
+}) {
+  await apiClient<void>({
+    method: 'POST',
+    path: `/api/organizations/${organizationId}/documents/${documentId}/reprocess`,
+    retry: 0,
+  });
+}
+
 export async function fetchDocument({
   documentId,
   organizationId,
