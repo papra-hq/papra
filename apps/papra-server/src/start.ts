@@ -100,6 +100,7 @@ async function buildServices({ config }: { config: Config }): Promise<GlobalDepe
     documentSearchServices,
     config,
     webhookTriggerServices,
+    documentsStorageService,
   });
 
   return {

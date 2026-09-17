@@ -78,6 +78,7 @@ export function createTestServerDependencies(
     documentSearchServices,
     config,
     webhookTriggerServices,
+    documentsStorageService,
   });
 
   return {

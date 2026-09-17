@@ -29,10 +29,10 @@ org_123456789012345678901234/invoice-2025.pdf
 
 ### Storage Key Persistence
 
-The generated storage key is stored in the database alongside each document record. This means that **changing the pattern configuration does not affect existing documents**, only newly uploaded documents will use the updated pattern. Existing documents retain their original storage keys and continue to be served from their original location.
+The generated storage key is stored in the database alongside each document record. By default, **changing the pattern configuration only affects newly uploaded documents**. Existing documents retain their original storage keys unless you enable synchronization or explicitly migrate them.
 
 <Aside type="tip">
-A migration tool to reprocess storage keys for existing documents (allowing you to move files from an old pattern to a new one, or even to a different storage backend) will be available in a future release.
+Use the [storage migration guide](/guides/migrate-document-storage/) to reprocess existing documents in bulk or move them to another storage backend.
 </Aside>
 
 ## Enabling Storage Key Patterns
@@ -50,8 +50,24 @@ DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
 ```
 
 <Aside type="caution">
-If you switch from the legacy system to the pattern-based system on an existing instance, only new documents will use the new pattern. Existing documents will continue to use their legacy storage keys (`{{organization.id}}/originals/{{document.id}}`) and remain accessible without any changes needed.
+If you switch from the legacy system to the pattern-based system on an existing instance, existing documents keep their legacy storage keys and remain accessible. With synchronization enabled, they adopt the configured pattern on the next update that triggers synchronization.
 </Aside>
+
+### Synchronizing Storage Keys on Document Updates
+
+To reflect document renames in the underlying storage, enable synchronization alongside pattern-based storage:
+
+```bash
+DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM=false
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
+DOCUMENT_STORAGE_KEY_SYNC_ENABLED=true
+```
+
+The configuration option is `documentsStorage.pattern.isStorageKeySyncEnabled` and defaults to `false`. When enabled, qualifying document updates trigger pattern re-evaluation using the document's current metadata. Currently, synchronization is triggered by document name changes. Papra copies the stored file to the new key, updates its database reference, and removes the old file. Encrypted files retain their encryption metadata.
+
+Enabling synchronization does not immediately move existing files: it applies to subsequent updates that trigger synchronization.
+
+When synchronization is triggered, all expressions are re-evaluated, including `{{currentDate.*}}` and `{{random}}`. These expressions do not trigger synchronization on their own. Synchronization runs asynchronously on a best-effort basis; failures are logged without automatic retries. Failed copies or database updates retain the original file, while failed old-file cleanup leaves the new key usable.
 
 ### Docker Compose Example
 
@@ -92,7 +108,7 @@ Multiple transformers can be chained, and each transformer receives the output o
 | Expression | Description | Example Output |
 |-----------|-------------|----------------|
 | `document.id` | The unique document identifier | `doc_123456789012345678901234` |
-| `document.name` | The original file name (sanitized for safe filesystem use) | `invoice-2025.pdf` |
+| `document.name` | The document name (sanitized for safe filesystem use) | `invoice-2025.pdf` |
 | `organization.id` | The organization identifier | `org_123456789012345678901234` |
 | `currentDate` | The current date and time in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `currentDate.yyyy` | Current year (4 digits) | `2025` |
@@ -224,6 +240,7 @@ DOCUMENT_STORAGE_PATTERN_ENABLE_RANDOM_SUFFIX_FALLBACK=false
 |----------|-------------|---------|
 | `DOCUMENT_STORAGE_USE_LEGACY_STORAGE_KEY_DEFINITION_SYSTEM` | Use the legacy storage key format (`{orgId}/originals/{docId}.{ext}`). Set to `false` to enable patterns. | `true` |
 | `DOCUMENT_STORAGE_KEY_PATTERN` | The pattern template for generating storage keys | `{{organization.id}}/{{document.name}}` |
+| `DOCUMENT_STORAGE_KEY_SYNC_ENABLED` | Synchronize storage keys on document updates when pattern-based storage is enabled | `false` |
 | `DOCUMENT_STORAGE_PATTERN_MAX_INCREMENTAL_SUFFIX_ATTEMPTS` | Maximum number of incremental suffix attempts for conflict resolution | `9` |
 | `DOCUMENT_STORAGE_PATTERN_ENABLE_RANDOM_SUFFIX_FALLBACK` | Enable random suffix fallback when all incremental suffixes are exhausted | `true` |
 
