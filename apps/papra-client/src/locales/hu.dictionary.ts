@@ -74,7 +74,7 @@ export const translations = {
   'auth.register.form.email.invalid': 'Érvénytelen e-mail cím',
   'auth.register.form.password.label': 'Jelszó',
   'auth.register.form.password.placeholder': 'Adj meg egy jelszót',
-  'auth.register.form.password.required': 'Kérjük, add meg a jelszavadat'',
+  'auth.register.form.password.required': 'Kérjük, add meg a jelszavadat',
   'auth.register.form.password.min-length': 'A jelszónak legalább {{ minLength }} karakter hosszúnak kell lennie',
   'auth.register.form.password.max-length': 'A jelszó nem lehet hosszabb {{ maxLength }} karakternél',
   'auth.register.form.name.label': 'Név',
@@ -245,7 +245,7 @@ export const translations = {
     'A szervezet törlése véglegesen eltávolítja az összes hozzá tartozó adatot.',
   'organization.settings.delete.confirm.title': 'Szervezet törlése',
   'organization.settings.delete.confirm.message':
-    'Biztosan törölni szeretné ezt a szervezetet? A szervezet törlésre kerül megjelölésre, és {{ days }} nap elteltével véglegesen törlődik. Ez idő alatt visszaállíthatja a szervezetek listájából.' Ezt az időszakot követően minden dokumentum és adat véglegesen törlésre kerül.',
+    'Biztosan törölni szeretné ezt a szervezetet? A szervezet törlésre kerül megjelölésre, és {{ days }} nap elteltével véglegesen törlődik. Ez idő alatt visszaállíthatja a szervezetek listájából. Ezt az időszakot követően minden dokumentum és adat véglegesen törlésre kerül.',
   'organization.settings.delete.confirm.confirm-button': 'Szervezet törlése',
   'organization.settings.delete.confirm.cancel-button': 'Mégse',
   'organization.settings.delete.success': 'Szervezet törölve',
