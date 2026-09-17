@@ -2,8 +2,8 @@ import type { StoragePatternInterpolationContext } from './storage-pattern.types
 import { castError } from '@corentinth/chisels';
 import { isNil, isNilOrEmptyString } from '../../shared/utils';
 import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID } from './storage-pattern.constants';
-import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
-import { tokenizeStringArguments } from './storage-pattern.models';
+import { expressionsDefinitions } from './storage-pattern.definitions';
+import { evaluateStoragePatternExpression } from './storage-pattern.models';
 
 export function buildStorageKey({
   storageKeyPattern,
@@ -26,36 +26,14 @@ export function buildStorageKey({
       throw new Error(`Unknown expression: ${expression}`);
     }
 
-    const expressionBuilder = expressionsDefinitions[expression];
+    const expressionDefinition = expressionsDefinitions[expression];
 
-    if (!expressionBuilder) {
+    if (!expressionDefinition) {
       // This should never happen because of the check above, but for type safety
-      throw new Error(`No builder found for expression: ${expression}`);
+      throw new Error(`No definition found for expression: ${expression}`);
     }
 
-    const baseValue = expressionBuilder(context);
-
-    if (transformerParts.length === 0) {
-      return String(baseValue);
-    }
-
-    return transformerParts.reduce((value, transformerPart) => {
-      const [transformerRawName, ...transformerArgsParts] = transformerPart.split(' ');
-
-      const transformerName = transformerRawName?.trim();
-      const argumentsString = transformerArgsParts.join(' ').trim();
-
-      const transformer =
-        expressionTransformers[transformerName as keyof typeof expressionTransformers];
-
-      if (!transformer) {
-        throw new Error(`Unknown transformer: ${transformerName}`);
-      }
-
-      const transformerArguments = tokenizeStringArguments({ argumentsString });
-
-      return transformer({ value, args: transformerArguments });
-    }, baseValue);
+    return evaluateStoragePatternExpression({ expressionDefinition, context, transformerParts });
   });
 
   return { storageKey };
