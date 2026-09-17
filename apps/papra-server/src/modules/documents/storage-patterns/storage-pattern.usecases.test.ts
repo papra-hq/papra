@@ -95,6 +95,16 @@ describe('storage-pattern usecases', () => {
       ).to.throw('Unknown transformer: unknownTransformer');
     });
 
+    test('default preserves a present document name in a storage key', () => {
+      expect(
+        buildStorageKey({
+          storageKeyPattern:
+            '{{organization.id}}/{{document.name | default "unnamed document" | uppercase}}',
+          ...context,
+        }),
+      ).toEqual({ storageKey: 'org_012345678901234567890123/MY DOCUMENT.PDF' });
+    });
+
     test('transformers without arguments called with arguments are ok', () => {
       expect(
         buildStorageKey({
@@ -106,6 +116,30 @@ describe('storage-pattern usecases', () => {
   });
 
   describe('isStoragePatternValid', () => {
+    test('a pattern with a default argument is valid', () => {
+      expect(
+        isStoragePatternValid({
+          storageKeyPattern: '{{document.name | default "unnamed document"}}',
+        }),
+      ).toEqual({ isValid: true });
+    });
+
+    test('a default without an argument is rejected even when the expression has a value', () => {
+      expect(isStoragePatternValid({ storageKeyPattern: '{{document.name | default}}' })).toEqual({
+        isValid: false,
+        error: new Error('The default transformer requires a non-empty fallback argument'),
+      });
+    });
+
+    test('an empty default argument is rejected', () => {
+      expect(
+        isStoragePatternValid({ storageKeyPattern: '{{document.name | default ""}}' }),
+      ).toEqual({
+        isValid: false,
+        error: new Error('The default transformer requires a non-empty fallback argument'),
+      });
+    });
+
     test('a pattern is invalid if it contains an unrecognized expression', () => {
       expect(
         isStoragePatternValid({ storageKeyPattern: '{{unknown.expression}}/{{document.name}}' }),

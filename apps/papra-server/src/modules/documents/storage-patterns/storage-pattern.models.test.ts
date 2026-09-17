@@ -87,6 +87,76 @@ describe('storage-pattern models', () => {
       ).toThrow('Unknown transformer: unknownTransformer');
     });
 
+    test('default replaces a null date after formatting and overrides the definition fallback', () => {
+      expect(
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => null, fallback: 'no-date' },
+          context,
+          transformerParts: ['formatDate "{yyyy}"', 'default "undated"'],
+        }),
+      ).toEqual('undated');
+    });
+
+    test('default replaces an undefined value and subsequent transformers process it', () => {
+      expect(
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => undefined },
+          context,
+          transformerParts: ['default "unknown supplier"', 'uppercase'],
+        }),
+      ).toEqual('UNKNOWN SUPPLIER');
+    });
+
+    test('default replaces an empty string', () => {
+      expect(
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => '' },
+          context,
+          transformerParts: ['default unnamed'],
+        }),
+      ).toEqual('unnamed');
+    });
+
+    test('default preserves a present value including a zero string', () => {
+      expect(
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => '0', fallback: 'unknown' },
+          context,
+          transformerParts: ['default missing', 'padStart 3 0'],
+        }),
+      ).toEqual('000');
+    });
+
+    test('the first default supplies the value for later defaults', () => {
+      expect(
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => null },
+          context,
+          transformerParts: ['default first', 'default second'],
+        }),
+      ).toEqual('first');
+    });
+
+    test('default requires an argument even when the value is missing', () => {
+      expect(() =>
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => null, fallback: 'unknown' },
+          context,
+          transformerParts: ['default'],
+        }),
+      ).toThrow('The default transformer requires a non-empty fallback argument');
+    });
+
+    test('default does not hide an invalid date', () => {
+      expect(() =>
+        evaluateStoragePatternExpression({
+          expressionDefinition: { resolve: () => 'invalid-date' },
+          context,
+          transformerParts: ['formatDate {yyyy}', 'default no-date'],
+        }),
+      ).toThrow('Invalid date value: invalid-date');
+    });
+
     test('a fallback does not hide an invalid date', () => {
       expect(() =>
         evaluateStoragePatternExpression({
