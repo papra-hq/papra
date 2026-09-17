@@ -58,6 +58,8 @@ export function isStoragePatternValid({
       storageKeyPattern,
       documentId: DUMMY_DOCUMENT_ID,
       documentName: 'my-document.pdf',
+      documentDate: new Date(),
+      documentCreatedAt: new Date(),
       organizationId: DUMMY_ORGANIZATION_ID,
       now: new Date(),
     });

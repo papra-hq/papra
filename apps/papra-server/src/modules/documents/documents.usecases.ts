@@ -108,9 +108,12 @@ export async function createDocument({
   });
 
   const documentId = generateDocumentId();
+  const createdAt = new Date();
   const { storageKey } = await createDocumentStorageKey({
     documentId,
     documentName: fileName,
+    documentDate: null,
+    documentCreatedAt: createdAt,
     organizationId,
     documentsStorageService,
     storagePatternConfig,
@@ -172,6 +175,7 @@ export async function createDocument({
         logger,
       })
     : await createNewDocument({
+        createdAt,
         newFileStorageContext: { storageKey, ...encryptionMetadata },
         fileName,
         size,
@@ -309,6 +313,7 @@ async function handleExistingDocument({
 }
 
 async function createNewDocument({
+  createdAt,
   fileName,
   size,
   mimeType,
@@ -328,6 +333,7 @@ async function createNewDocument({
   isContentExtractionEnabled = true,
   logger,
 }: {
+  createdAt: Date;
   fileName: string;
   size: number;
   mimeType: string;
@@ -372,6 +378,7 @@ async function createNewDocument({
   const [result, error] = await safely(
     documentsRepository.saveOrganizationDocument({
       id: documentId,
+      createdAt,
       name: fileName,
       organizationId,
       originalName: fileName,

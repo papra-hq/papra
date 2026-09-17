@@ -81,6 +81,8 @@ export async function migrateDocumentStorage({
       originalStorageKey: documentsTable.originalStorageKey,
       organizationId: documentsTable.organizationId,
       originalName: documentsTable.originalName,
+      documentDate: documentsTable.documentDate,
+      createdAt: documentsTable.createdAt,
       mimeType: documentsTable.mimeType,
       fileEncryptionKeyWrapped: documentsTable.fileEncryptionKeyWrapped,
       fileEncryptionKekVersion: documentsTable.fileEncryptionKekVersion,
@@ -131,6 +133,8 @@ export async function migrateDocumentStorage({
         documentId: id,
         organizationId,
         documentName: originalName,
+        documentDate: document.documentDate,
+        documentCreatedAt: document.createdAt,
         documentsStorageService: toStorageService,
         logger: createNoopLogger(),
       });

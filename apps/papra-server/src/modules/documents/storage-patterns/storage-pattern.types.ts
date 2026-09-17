@@ -3,6 +3,8 @@ import type { Config } from '../../config/config.types';
 export type StoragePatternInterpolationContext = {
   documentId: string;
   documentName: string;
+  documentDate: Date | null;
+  documentCreatedAt: Date;
   organizationId: string;
   now: Date;
 };

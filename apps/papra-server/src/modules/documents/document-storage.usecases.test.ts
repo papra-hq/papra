@@ -24,6 +24,8 @@ const baseStoragePatternConfig = {
 const documentContext = {
   documentId: 'doc_1',
   documentName: 'invoice.pdf',
+  documentDate: null,
+  documentCreatedAt: new Date('2025-12-01T00:00:00.000Z'),
   organizationId: 'org_1',
   now: new Date('2026-01-01T00:00:00.000Z'),
 };
@@ -76,6 +78,27 @@ async function setupSync({ sourceStorageKey = 'old.pdf', isEncryptionEnabled = f
 }
 
 describe('syncDocumentStorageKey', () => {
+  test('the creation date in a storage key stays fixed when the current date changes', async () => {
+    const { args, dependencies, document, getDocument, keys } = await setupSync();
+    const { clock } = createTestClock({ now: '2030-01-01T00:00:00Z' });
+    const sync = buildSyncDocumentStorageKey({
+      ...dependencies,
+      clock,
+      storagePatternConfig: {
+        ...baseStoragePatternConfig,
+        storageKeyPattern: '{{document.createdAt}}/{{document.name}}',
+      },
+    });
+
+    await sync(args);
+    clock.setNow('2031-01-01T00:00:00Z');
+    await sync(args);
+
+    const storageKey = `${document.createdAt.toISOString()}/invoice.pdf`;
+    expect((await getDocument())?.originalStorageKey).toEqual(storageKey);
+    expect(keys()).toEqual([storageKey]);
+  });
+
   test('re-evaluates current dates and random expressions on subsequent updates', async () => {
     const { args, dependencies, keys, getDocument } = await setupSync();
     const { clock } = createTestClock({ now: '2026-01-01T00:00:00Z' });
@@ -413,6 +436,21 @@ describe('syncDocumentStorageKey', () => {
 
 describe('document-storage usecases', () => {
   describe('createDocumentStorageKey', () => {
+    test('uses the supplied document dates when generating a key for an existing document', async () => {
+      await expect(
+        createDocumentStorageKey({
+          ...documentContext,
+          documentDate: new Date('2024-03-12T00:00:00.000Z'),
+          storagePatternConfig: {
+            ...baseStoragePatternConfig,
+            storageKeyPattern:
+              '{{document.date | formatDate}}/{{document.createdAt | formatDate}}/{{document.name}}',
+          },
+          documentsStorageService: { fileExists: async () => false },
+        }),
+      ).resolves.toEqual({ storageKey: '2024-03-12/2025-12-01/invoice.pdf' });
+    });
+
     test('uses the legacy document key without checking for collisions', async () => {
       const fileExists = vi.fn(async () => false);
 

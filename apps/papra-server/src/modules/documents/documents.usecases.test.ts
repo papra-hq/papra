@@ -35,6 +35,41 @@ import { createInMemoryStorageService } from '../storage/storage.test-utils';
 
 describe('documents usecases', () => {
   describe('createDocument', () => {
+    test('a new document key uses its persisted creation timestamp and the missing-date fallback', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+      });
+      const documentsStorageService = createInMemoryStorageService();
+      const createDocument = createDocumentCreationUsecase({
+        db,
+        config: overrideConfig({
+          organizationPlans: { isFreePlanUnlimited: true },
+          documentsStorage: {
+            pattern: {
+              useLegacyStorageKeyDefinitionSystem: false,
+              storageKeyPattern:
+                '{{document.createdAt}}/{{document.date | formatDate}}/{{document.name}}',
+            },
+          },
+        }),
+        documentsStorageService,
+        taskServices: createInMemoryTaskServices(),
+        eventServices: createTestEventServices(),
+      });
+
+      const { document } = await createDocument({
+        fileStream: createReadableStream({ content: 'Hello, world!' }),
+        fileName: 'file.txt',
+        mimeType: 'text/plain',
+        organizationId: 'organization-1',
+      });
+
+      const storageKey = `${document.createdAt.toISOString()}/no-date/file.txt`;
+      expect(document.originalStorageKey).toEqual(storageKey);
+      expect(await db.select().from(documentsTable)).toEqual([document]);
+      expect(await documentsStorageService.fileExists({ storageKey })).toEqual(true);
+    });
+
     test('creating a document save the file to the storage and registers a record in the db', async () => {
       const taskServices = createInMemoryTaskServices();
       const { db } = await createInMemoryDatabase({
