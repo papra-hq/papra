@@ -35,6 +35,7 @@ export function createDocumentsRepository({ db }: { db: Database }) {
       getAllOrganizationDocumentsIterator,
       getAllOrganizationUndeletedDocumentsIterator,
       updateDocument,
+      updateDocumentStorageKey,
       getGlobalDocumentsStats,
       areAllDocumentsInOrganization,
     },
@@ -479,6 +480,42 @@ async function updateDocument({
   }
 
   return { document };
+}
+
+async function updateDocumentStorageKey({
+  documentId,
+  organizationId,
+  sourceStorageKey,
+  storageKey,
+  name,
+  updatedAt,
+  db,
+}: {
+  documentId: string;
+  organizationId: string;
+  sourceStorageKey: string;
+  storageKey: string;
+  name: string;
+  updatedAt: Date;
+  db: Database;
+}) {
+  const rows = await db
+    .update(documentsTable)
+    // A storage-only change must not alter the document's modification date.
+    .set({ originalStorageKey: storageKey, updatedAt })
+    .where(
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        eq(documentsTable.originalStorageKey, sourceStorageKey),
+        eq(documentsTable.name, name),
+        eq(documentsTable.updatedAt, updatedAt),
+        eq(documentsTable.isDeleted, false),
+      ),
+    )
+    .returning({ id: documentsTable.id });
+
+  return { updated: rows.length > 0 };
 }
 
 async function getGlobalDocumentsStats({ db }: { db: Database }) {
