@@ -525,6 +525,16 @@ export const translations = {
   'documents.rename.success': 'A dokumentum átnevezése sikeres',
   'documents.rename.cancel': 'Mégse',
 
+  'documents.reprocess.action': 'Újrafeldolgozás',
+  'documents.reprocess.confirm.title': 'Dokumentum újrafeldolgozása',
+  'documents.reprocess.confirm.description': 'Biztosan szeretnéd újra feldolgozni ezt a dokumentumot? A tartalom és a metaadatok újra kinyerésre kerülnek.',
+  'documents.reprocess.confirm.submit': 'Újrafeldolgozás',
+  'documents.reprocess.disabled': 'Az újrafeldolgozás jelenleg le van tiltva',
+  'documents.reprocess.error': 'Nem sikerült újrafeldolgozni a dokumentumot',
+  'documents.reprocess.queued': 'Újrafeldolgozás ütemezve',
+  'documents.reprocess.queued.description': 'A dokumentum hozzáadva a feldolgozási sorhoz.',
+  'documents.reprocess.rate-limited': 'Túl sok kérés. Kérjük próbáld újra később.',
+
   'import-documents.title.error': '{{ count }} dokumentum importálása sikertelen',
   'import-documents.title.success': '{{ count }} dokumentum importálva',
   'import-documents.title.pending': '{{ count }} / {{ total }} dokumentum importálva',
