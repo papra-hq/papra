@@ -7,6 +7,11 @@ export type StoragePatternInterpolationContext = {
   now: Date;
 };
 
+export type StoragePatternExpressionDefinition = {
+  resolve: (context: StoragePatternInterpolationContext) => string | null | undefined;
+  fallback?: string;
+};
+
 export type StoragePatternExpressionTransformer = (args: {
   value: unknown;
   args?: string[];
