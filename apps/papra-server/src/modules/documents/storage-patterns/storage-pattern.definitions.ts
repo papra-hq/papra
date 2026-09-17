@@ -5,6 +5,7 @@ import type {
 } from './storage-pattern.types';
 import { formatDate, isValidDate } from '../../shared/date';
 import { generateRandomString } from '../../shared/random/random.services';
+import { isNilOrEmptyString } from '../../shared/utils';
 import { ensureSafeFileName } from '../documents.models';
 
 export const expressionsDefinitions: Record<string, StoragePatternExpressionDefinition> = {
@@ -26,6 +27,17 @@ export const expressionsDefinitions: Record<string, StoragePatternExpressionDefi
 };
 
 export const expressionTransformers: Record<string, StoragePatternExpressionTransformer> = {
+  default: ({ value, args }) => {
+    const fallback = args?.[0];
+
+    if (isNilOrEmptyString(fallback)) {
+      throw new Error('The default transformer requires a non-empty fallback argument');
+    }
+
+    const stringValue = String(value);
+
+    return isNilOrEmptyString(value) ? fallback : stringValue;
+  },
   uppercase: ({ value }) => String(value).toUpperCase(),
   lowercase: ({ value }) => String(value).toLowerCase(),
   formatDate: ({ value, args }) => {

@@ -29,8 +29,8 @@ export function evaluateStoragePatternExpression({
       throw new Error(`Unknown transformer: ${transformerName}`);
     }
 
-    // Preserve missing values until the fallback is applied, but still validate transformers.
-    if (isNilOrEmptyString(value)) {
+    // Only default handles missing values; other transformers preserve them for a later fallback.
+    if (isNilOrEmptyString(value) && transformerName !== 'default') {
       return value;
     }
 
