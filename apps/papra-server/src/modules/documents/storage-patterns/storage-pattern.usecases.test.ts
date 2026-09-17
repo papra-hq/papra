@@ -7,6 +7,8 @@ describe('storage-pattern usecases', () => {
     const context: StoragePatternInterpolationContext = {
       documentId: 'doc_012345678901234567890123',
       documentName: 'My Document.pdf',
+      documentDate: new Date('2024-03-12T00:00:00.000Z'),
+      documentCreatedAt: new Date('2025-01-02T10:20:30.456Z'),
       organizationId: 'org_012345678901234567890123',
       now: new Date('2025-05-15T12:34:56.789Z'),
     };
@@ -77,6 +79,45 @@ describe('storage-pattern usecases', () => {
       }
     });
 
+    test('document dates resolve to their ISO timestamps independently of the current date', () => {
+      expect(
+        buildStorageKey({
+          ...context,
+          storageKeyPattern: '{{document.date}}/{{document.createdAt}}',
+        }),
+      ).toEqual({ storageKey: '2024-03-12T00:00:00.000Z/2025-01-02T10:20:30.456Z' });
+    });
+
+    test('document dates support date formatting', () => {
+      expect(
+        buildStorageKey({
+          ...context,
+          storageKeyPattern:
+            '{{document.date | formatDate "{yyyy}/{MM}"}}/{{document.createdAt | formatDate}}',
+        }),
+      ).toEqual({ storageKey: '2024/03/2025-01-02' });
+    });
+
+    test('an unset document date falls back to no-date with or without date formatting', () => {
+      expect(
+        buildStorageKey({
+          ...context,
+          documentDate: null,
+          storageKeyPattern: '{{document.date}}/{{document.date | formatDate "{yyyy}/{MM}"}}',
+        }),
+      ).toEqual({ storageKey: 'no-date/no-date' });
+    });
+
+    test('a custom default overrides the missing document date fallback', () => {
+      expect(
+        buildStorageKey({
+          ...context,
+          documentDate: null,
+          storageKeyPattern: '{{document.date | formatDate | default "undated" | uppercase}}',
+        }),
+      ).toEqual({ storageKey: 'UNDATED' });
+    });
+
     test('unrecognized expressions throw an error', () => {
       expect(() =>
         buildStorageKey({
@@ -116,6 +157,15 @@ describe('storage-pattern usecases', () => {
   });
 
   describe('isStoragePatternValid', () => {
+    test('document date and creation date expressions with formatting are valid', () => {
+      expect(
+        isStoragePatternValid({
+          storageKeyPattern:
+            '{{document.date | formatDate "{yyyy}"}}/{{document.createdAt | formatDate}}/{{document.name}}',
+        }),
+      ).toEqual({ isValid: true });
+    });
+
     test('a pattern with a default argument is valid', () => {
       expect(
         isStoragePatternValid({

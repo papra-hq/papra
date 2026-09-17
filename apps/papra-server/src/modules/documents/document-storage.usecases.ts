@@ -55,6 +55,8 @@ export function buildSyncDocumentStorageKey({
       documentId,
       organizationId,
       documentName: document.name,
+      documentDate: document.documentDate,
+      documentCreatedAt: document.createdAt,
       now: new Date(clock.now().epochMilliseconds),
     });
 
@@ -107,6 +109,8 @@ export async function createDocumentStorageKey({
   storagePatternConfig,
   documentId,
   documentName,
+  documentDate,
+  documentCreatedAt,
   organizationId,
   documentsStorageService,
   logger,
@@ -115,6 +119,8 @@ export async function createDocumentStorageKey({
   storagePatternConfig: StoragePatternConfig;
   documentId: string;
   documentName: string;
+  documentDate: Date | null;
+  documentCreatedAt: Date;
   organizationId: string;
   documentsStorageService: Pick<StorageService, 'fileExists'>;
   logger?: Logger;
@@ -141,6 +147,8 @@ export async function createDocumentStorageKey({
     storageKeyPattern,
     documentId,
     documentName,
+    documentDate,
+    documentCreatedAt,
     organizationId,
     now,
   });

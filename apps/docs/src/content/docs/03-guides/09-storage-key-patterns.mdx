@@ -109,6 +109,8 @@ Multiple transformers can be chained, and each transformer receives the output o
 |-----------|-------------|----------------|
 | `document.id` | The unique document identifier | `doc_123456789012345678901234` |
 | `document.name` | The document name (sanitized for safe filesystem use) | `invoice-2025.pdf` |
+| `document.date` | The document date in ISO 8601 format, or `no-date` when unset | `2025-06-15T00:00:00.000Z` |
+| `document.createdAt` | The document's creation timestamp in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `organization.id` | The organization identifier | `org_123456789012345678901234` |
 | `currentDate` | The current date and time in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `currentDate.yyyy` | Current year (4 digits) | `2025` |
@@ -132,6 +134,16 @@ The `document.name` expression automatically sanitizes the file name by replacin
 </Aside>
 
 ## Available Transformers
+
+Both `document.date` and `document.createdAt` support the `formatDate` transformer:
+
+```
+{{organization.id}}/{{document.date | formatDate "{yyyy}/{MM}"}}/{{document.name}}
+```
+
+If the document date is unset, the expression resolves to `no-date`, even with date formatting. Use `default` after formatting to customize the fallback, for example `{{document.date | formatDate | default "undated"}}`.
+
+The `document.createdAt` value stays fixed on subsequent storage-key synchronizations. When storage-key synchronization is enabled, setting, changing, or clearing the document date also triggers synchronization.
 
 Transformers modify the value of an expression. They are applied using the pipe (`|`) operator after the expression name.
 

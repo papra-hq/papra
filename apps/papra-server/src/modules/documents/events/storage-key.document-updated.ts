@@ -26,7 +26,7 @@ export function registerSyncDocumentStorageKeyHandler({
     eventName: 'document.updated',
     handlerName: 'sync-document-storage-key',
     handler: async ({ document, changes }) => {
-      if (changes.name === undefined) {
+      if (changes.name === undefined && changes.documentDate === undefined) {
         return;
       }
 

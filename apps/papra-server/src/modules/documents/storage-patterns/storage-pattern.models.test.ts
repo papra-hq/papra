@@ -10,6 +10,8 @@ describe('storage-pattern models', () => {
     const context: StoragePatternInterpolationContext = {
       documentId: 'doc_012345678901234567890123',
       documentName: 'My Document.pdf',
+      documentDate: null,
+      documentCreatedAt: new Date('2025-05-15T12:34:56.789Z'),
       organizationId: 'org_012345678901234567890123',
       now: new Date('2025-05-15T12:34:56.789Z'),
     };

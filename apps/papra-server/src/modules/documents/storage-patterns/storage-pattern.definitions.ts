@@ -11,6 +11,11 @@ import { ensureSafeFileName } from '../documents.models';
 export const expressionsDefinitions: Record<string, StoragePatternExpressionDefinition> = {
   'document.id': { resolve: (context) => context.documentId },
   'document.name': { resolve: (context) => ensureSafeFileName(context.documentName) },
+  'document.date': {
+    resolve: (context) => context.documentDate?.toISOString(),
+    fallback: 'no-date',
+  },
+  'document.createdAt': { resolve: (context) => context.documentCreatedAt.toISOString() },
   'organization.id': { resolve: (context) => context.organizationId },
   'currentDate': { resolve: (context) => context.now.toISOString() },
   'random': { resolve: () => generateRandomString({ length: 8 }) },

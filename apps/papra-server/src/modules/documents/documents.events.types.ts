@@ -11,6 +11,7 @@ export type DocumentEvents = {
       name?: string;
       content?: string;
       notes?: string;
+      documentDate?: Date | null;
     };
   };
   'document.deleted': { documentId: string; organizationId: string }; // Hard deleted from trash
