@@ -1,40 +1,56 @@
-import type { StoragePatternInterpolationContext } from './storage-pattern.types';
+import type { OrganizationsRepository } from '../../organizations/organizations.repository';
+import type {
+  ResolveStoragePatternContext,
+  StoragePatternInterpolationContext,
+} from './storage-pattern.types';
 import { castError } from '@corentinth/chisels';
-import { isNil, isNilOrEmptyString } from '../../shared/utils';
+import { createOrganizationNotFoundError } from '../../organizations/organizations.errors';
 import { DUMMY_DOCUMENT_ID, DUMMY_ORGANIZATION_ID } from './storage-pattern.constants';
 import { expressionsDefinitions } from './storage-pattern.definitions';
-import { evaluateStoragePatternExpression } from './storage-pattern.models';
+import { evaluateStoragePatternExpression, parseStoragePattern } from './storage-pattern.models';
+
+export function buildResolveStoragePatternContext({
+  organizationsRepository,
+}: {
+  organizationsRepository: Pick<OrganizationsRepository, 'getOrganizationById'>;
+}): ResolveStoragePatternContext {
+  return async ({ storageKeyPattern, ...context }) => {
+    const { expressionIds } = parseStoragePattern({ storageKeyPattern });
+
+    if (!expressionIds.has('organization.name')) {
+      return context;
+    }
+
+    const { organization } = await organizationsRepository.getOrganizationById({
+      organizationId: context.organizationId,
+    });
+
+    if (!organization) {
+      throw createOrganizationNotFoundError();
+    }
+
+    return { ...context, organizationName: organization.name };
+  };
+}
 
 export function buildStorageKey({
   storageKeyPattern,
   ...context
 }: { storageKeyPattern: string } & StoragePatternInterpolationContext) {
-  const storageKey = storageKeyPattern.replace(/\{\{(.*?)\}\}(?!\})/g, (_match, rawExpression) => {
-    if (isNil(rawExpression) || typeof rawExpression !== 'string') {
-      throw new Error('Expression cannot be empty');
-    }
+  const { parts } = parseStoragePattern({ storageKeyPattern });
+  const storageKey = parts
+    .map((part) => {
+      if (typeof part === 'string') {
+        return part;
+      }
 
-    const [expression, ...transformerParts] = rawExpression.split('|').map((part) => part.trim());
-
-    if (isNilOrEmptyString(expression)) {
-      throw new Error('Expression cannot be empty');
-    }
-
-    const expressionExists = expression in expressionsDefinitions;
-
-    if (!expressionExists) {
-      throw new Error(`Unknown expression: ${expression}`);
-    }
-
-    const expressionDefinition = expressionsDefinitions[expression];
-
-    if (!expressionDefinition) {
-      // This should never happen because of the check above, but for type safety
-      throw new Error(`No definition found for expression: ${expression}`);
-    }
-
-    return evaluateStoragePatternExpression({ expressionDefinition, context, transformerParts });
-  });
+      return evaluateStoragePatternExpression({
+        expressionDefinition: expressionsDefinitions[part.expressionId]!,
+        context,
+        transformerParts: part.transformerParts,
+      });
+    })
+    .join('');
 
   return { storageKey };
 }
@@ -61,6 +77,7 @@ export function isStoragePatternValid({
       documentDate: new Date(),
       documentCreatedAt: new Date(),
       organizationId: DUMMY_ORGANIZATION_ID,
+      organizationName: 'My Organization',
       now: new Date(),
     });
 

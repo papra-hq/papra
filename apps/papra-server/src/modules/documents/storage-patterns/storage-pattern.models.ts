@@ -1,9 +1,36 @@
 import type {
   StoragePatternExpressionDefinition,
   StoragePatternInterpolationContext,
+  StoragePatternPart,
 } from './storage-pattern.types';
 import { isNilOrEmptyString } from '../../shared/utils';
-import { expressionTransformers } from './storage-pattern.definitions';
+import { expressionsDefinitions, expressionTransformers } from './storage-pattern.definitions';
+
+export function parseStoragePattern({ storageKeyPattern }: { storageKeyPattern: string }) {
+  const parts: StoragePatternPart[] = [];
+  const expressionIds = new Set<string>();
+  let position = 0;
+
+  for (const match of storageKeyPattern.matchAll(/\{\{(.*?)\}\}(?!\})/g)) {
+    const [expressionId, ...transformerParts] = match[1]!.split('|').map((part) => part.trim());
+
+    if (isNilOrEmptyString(expressionId)) {
+      throw new Error('Expression cannot be empty');
+    }
+
+    if (!Object.hasOwn(expressionsDefinitions, expressionId)) {
+      throw new Error(`Unknown expression: ${expressionId}`);
+    }
+
+    parts.push(storageKeyPattern.slice(position, match.index), { expressionId, transformerParts });
+    expressionIds.add(expressionId);
+    position = match.index + match[0].length;
+  }
+
+  parts.push(storageKeyPattern.slice(position));
+
+  return { parts, expressionIds };
+}
 
 export function evaluateStoragePatternExpression({
   expressionDefinition,

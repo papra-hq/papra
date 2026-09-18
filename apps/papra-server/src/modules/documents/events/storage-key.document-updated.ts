@@ -2,8 +2,10 @@ import type { Database } from '../../app/database/database.types';
 import type { EventServices } from '../../app/events/events.services';
 import type { Config } from '../../config/config.types';
 import type { StorageService } from '../../storage/storage.services';
+import { createOrganizationsRepository } from '../../organizations/organizations.repository';
 import { buildSyncDocumentStorageKey } from '../document-storage.usecases';
 import { createDocumentsRepository } from '../documents.repository';
+import { buildResolveStoragePatternContext } from '../storage-patterns/storage-pattern.usecases';
 
 export function registerSyncDocumentStorageKeyHandler({
   eventServices,
@@ -20,6 +22,9 @@ export function registerSyncDocumentStorageKeyHandler({
     storagePatternConfig: config.documentsStorage.pattern,
     documentsRepository: createDocumentsRepository({ db }),
     documentsStorageService,
+    resolveStoragePatternContext: buildResolveStoragePatternContext({
+      organizationsRepository: createOrganizationsRepository({ db }),
+    }),
   });
 
   eventServices.onEvent({

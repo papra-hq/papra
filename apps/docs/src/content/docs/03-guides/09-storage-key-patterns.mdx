@@ -63,7 +63,7 @@ DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}/{{document.name}}
 DOCUMENT_STORAGE_KEY_SYNC_ENABLED=true
 ```
 
-The configuration option is `documentsStorage.pattern.isStorageKeySyncEnabled` and defaults to `false`. When enabled, qualifying document updates trigger pattern re-evaluation using the document's current metadata. Currently, synchronization is triggered by document name changes. Papra copies the stored file to the new key, updates its database reference, and removes the old file. Encrypted files retain their encryption metadata.
+The configuration option is `documentsStorage.pattern.isStorageKeySyncEnabled` and defaults to `false`. When enabled, qualifying document updates trigger pattern re-evaluation using the document's current metadata. Currently, synchronization is triggered by document name or document date changes. Papra copies the stored file to the new key, updates its database reference, and removes the old file. Encrypted files retain their encryption metadata.
 
 Enabling synchronization does not immediately move existing files: it applies to subsequent updates that trigger synchronization.
 
@@ -112,6 +112,7 @@ Multiple transformers can be chained, and each transformer receives the output o
 | `document.date` | The document date in ISO 8601 format, or `no-date` when unset | `2025-06-15T00:00:00.000Z` |
 | `document.createdAt` | The document's creation timestamp in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `organization.id` | The organization identifier | `org_123456789012345678901234` |
+| `organization.name` | The current organization name (sanitized for safe filesystem use) | `Acme Finance` |
 | `currentDate` | The current date and time in ISO 8601 format | `2025-06-15T14:30:00.000Z` |
 | `currentDate.yyyy` | Current year (4 digits) | `2025` |
 | `currentDate.MM` | Current month (2 digits, zero-padded) | `06` |
@@ -130,8 +131,20 @@ Example:
 ```
 
 <Aside type="note">
-The `document.name` expression automatically sanitizes the file name by replacing unsafe filesystem characters with underscores (`_`).
+The `document.name` and `organization.name` expressions automatically sanitize names by replacing unsafe filesystem characters with underscores (`_`).
 </Aside>
+
+### Organization Names and Renames
+
+Use `organization.name` for readable organization folders. Organization names are not unique, so include `organization.id` to keep folders distinct:
+
+```bash
+DOCUMENT_STORAGE_KEY_PATTERN={{organization.id}}-{{organization.name}}/{{document.name}}
+```
+
+Renaming an organization does not move its existing documents, even when storage-key synchronization is enabled. Their persisted keys remain usable. New uploads use the current organization name. With synchronization enabled, a later document name or document date change re-evaluates the entire pattern and uses the current organization name too. An explicit [storage migration](/guides/migrate-document-storage/) also uses the current name.
+
+Papra looks up the organization name only when the pattern references `organization.name`.
 
 ## Available Transformers
 

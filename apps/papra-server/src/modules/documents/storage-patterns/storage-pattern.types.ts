@@ -6,8 +6,18 @@ export type StoragePatternInterpolationContext = {
   documentDate: Date | null;
   documentCreatedAt: Date;
   organizationId: string;
+  organizationName?: string;
   now: Date;
 };
+
+export type StoragePatternPart = string | { expressionId: string; transformerParts: string[] };
+
+export type ResolveStoragePatternContext = (
+  args: { storageKeyPattern: string } & Omit<
+    StoragePatternInterpolationContext,
+    'organizationName'
+  >,
+) => Promise<StoragePatternInterpolationContext>;
 
 export type StoragePatternExpressionDefinition = {
   resolve: (context: StoragePatternInterpolationContext) => string | null | undefined;
