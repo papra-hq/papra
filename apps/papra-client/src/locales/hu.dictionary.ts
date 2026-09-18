@@ -4,7 +4,7 @@ export const translations = {
   'auth.request-password-reset.title': 'Jelszó visszaállítás',
   'auth.request-password-reset.description': 'Adja meg e-mail-címét a jelszó visszaállításához.',
   'auth.request-password-reset.requested':
-    "Amennyiben létezik fiók ezzel az e-mail-címmel, küldtünk egy e-mailt a jelszó visszaállításához.",
+    'Amennyiben létezik fiók ezzel az e-mail-címmel, küldtünk egy e-mailt a jelszó visszaállításához.',
   'auth.request-password-reset.back-to-login': 'Vissza a bejelentkezéshez',
   'auth.request-password-reset.form.email.label': 'E-mail-cím',
   'auth.request-password-reset.form.email.placeholder': 'Például: feri@papra.app',
@@ -25,9 +25,10 @@ export const translations = {
   'auth.reset-password.form.submit': 'Jelszó visszaállítása',
   'auth.email-provider.open': '{{ provider }} megnyitása',
   'auth.login.title': 'Bejelentkezés a Paprába',
-  'auth.login.description': 'Add meg az e-mail címedet, vagy használd a közösségi bejelentkezést a Papra-fiókod eléréséhez.',
+  'auth.login.description':
+    'Add meg az e-mail címedet, vagy használd a közösségi bejelentkezést a Papra-fiókod eléréséhez.',
   'auth.login.login-with-provider': 'Bejelentkezés ezzel: {{ provider }}',
-  'auth.login.no-account': "Még nincs fiókod?",
+  'auth.login.no-account': 'Még nincs fiókod?',
   'auth.login.register': 'Regisztráció',
   'auth.login.form.email.label': 'E-mail',
   'auth.login.form.email.placeholder': 'Például: feri@papra.app',
@@ -75,8 +76,10 @@ export const translations = {
   'auth.register.form.password.label': 'Jelszó',
   'auth.register.form.password.placeholder': 'Adj meg egy jelszót',
   'auth.register.form.password.required': 'Kérjük, add meg a jelszavadat',
-  'auth.register.form.password.min-length': 'A jelszónak legalább {{ minLength }} karakter hosszúnak kell lennie',
-  'auth.register.form.password.max-length': 'A jelszó nem lehet hosszabb {{ maxLength }} karakternél',
+  'auth.register.form.password.min-length':
+    'A jelszónak legalább {{ minLength }} karakter hosszúnak kell lennie',
+  'auth.register.form.password.max-length':
+    'A jelszó nem lehet hosszabb {{ maxLength }} karakternél',
   'auth.register.form.name.label': 'Név',
   'auth.register.form.name.placeholder': 'Például: Kovács Feri',
   'auth.register.form.name.required': 'Kérjük add meg a nevedet',
@@ -134,7 +137,8 @@ export const translations = {
   'user.settings.two-factor.regenerate-codes-button': 'Biztonsági kódok újragenerálása',
 
   'user.settings.two-factor.enable-dialog.title': 'Kétlépcsős hitelesítés engedélyezése',
-  'user.settings.two-factor.enable-dialog.description': 'Adja meg jelszavát a 2FA engedélyezéséhez.',
+  'user.settings.two-factor.enable-dialog.description':
+    'Adja meg jelszavát a 2FA engedélyezéséhez.',
   'user.settings.two-factor.enable-dialog.password.label': 'Jelszó',
   'user.settings.two-factor.enable-dialog.password.placeholder': 'Adja meg jelszavát',
   'user.settings.two-factor.enable-dialog.password.required': 'Kérjük, adja meg jelszavát',
@@ -146,7 +150,7 @@ export const translations = {
   'user.settings.two-factor.setup-dialog.step1.description':
     'Olvassa be az alábbi QR-kódot, vagy írja be manuálisan a beállítási kulcsot a hitelesítő alkalmazásába.',
   'user.settings.two-factor.setup-dialog.copy-setup-key': 'Beállítási kulcs másolása',
-  'user.settings.two-factor.setup-dialog.step2.title': '2. lépés: Ellenőrizze a kódot', 
+  'user.settings.two-factor.setup-dialog.step2.title': '2. lépés: Ellenőrizze a kódot',
   'user.settings.two-factor.setup-dialog.step2.description':
     'Adja meg a hitelesítő alkalmazása által generált 6 számjegyű kódot a kétlépcsős hitelesítés ellenőrzéséhez és engedélyezéséhez.',
   'user.settings.two-factor.setup-dialog.cancel': 'Mégse',
@@ -270,7 +274,8 @@ export const translations = {
     'Az MI által egyetlen dokumentumhoz rendelhető címkék maximális száma ({{ min }} és {{ max }} között).',
 
   'organization.usage.page.title': 'Használat',
-  'organization.usage.page.description': 'Tekintse meg szervezete aktuális használati adatait és korlátait.',
+  'organization.usage.page.description':
+    'Tekintse meg szervezete aktuális használati adatait és korlátait.',
   'organization.usage.storage.title': 'Dokumentumtárhely',
   'organization.usage.storage.description': 'A dokumentumok által felhasznált összes tárhely',
   'organization.usage.intake-emails.title': 'Beérkező e-mail címek',
@@ -329,8 +334,7 @@ export const translations = {
   'organizations.invitations.status.cancelled': 'Visszavonva',
   'organizations.invitations.resend': 'Meghívó újraküldése',
   'organizations.invitations.cancel.title': 'Meghívó visszavonása',
-  'organizations.invitations.cancel.description':
-    'Biztosan vissza akarja vonni ezt a meghívót?',
+  'organizations.invitations.cancel.description': 'Biztosan vissza akarja vonni ezt a meghívót?',
   'organizations.invitations.cancel.confirm': 'Meghívó visszavonása',
   'organizations.invitations.cancel.cancel': 'Mégse',
   'organizations.invitations.resend.title': 'Meghívó újraküldése',
@@ -373,13 +377,16 @@ export const translations = {
   'documents.list.search.total-count-no-query':
     'Összesen {{ count }} {{ count, =1:dokumentum, dokumentum }}',
 
-  'documents.list.batch.selected-count': '{{ count }} {{ count, =1:dokumentum, dokumentumok }} kijelölve',
+  'documents.list.batch.selected-count':
+    '{{ count }} {{ count, =1:dokumentum, dokumentumok }} kijelölve',
   'documents.list.batch.clear': 'Kijelölés törlése',
   'documents.list.batch.tag-action': 'Címkézés',
   'documents.list.batch.trash-action': 'Áthelyezés a kukába',
   'documents.list.batch.error': 'A csoportos művelet sikertelen volt. Kérjük, próbálja újra.',
-  'documents.list.batch.select-all-matching': 'A keresésnek megfelelő mind a(z) {{ count }} elem kijelölése',
-  'documents.list.batch.select-all': 'Mind a(z) {{ count }} {{ count, =1:dokumentum, dokumentum }} kijelölése',
+  'documents.list.batch.select-all-matching':
+    'A keresésnek megfelelő mind a(z) {{ count }} elem kijelölése',
+  'documents.list.batch.select-all':
+    'Mind a(z) {{ count }} {{ count, =1:dokumentum, dokumentum }} kijelölése',
   'documents.list.batch.all-matching-selected':
     'A keresésnek megfelelő mind a(z) {{ count }} {{ count, =1:dokumentum, dokumentum }} kijelölve',
   'documents.list.batch.all-selected':
@@ -494,9 +501,11 @@ export const translations = {
   'custom-properties.form.description.placeholder': 'Írja le mire szolgál ez a tulajdonság',
   'custom-properties.form.description.max-length': 'A leírás legfeljebb 1000 karakter lehet',
   'custom-properties.form.type.label': 'Típus',
-  'custom-properties.form.type.immutable': 'A tulajdonság típusa a létrehozás után nem módosítható.',
+  'custom-properties.form.type.immutable':
+    'A tulajdonság típusa a létrehozás után nem módosítható.',
   'custom-properties.form.options.title': 'Opciók',
-  'custom-properties.form.options.description': 'Adja meg az ehhez a tulajdonsághoz elérhető választási lehetőségeket.',
+  'custom-properties.form.options.description':
+    'Adja meg az ehhez a tulajdonsághoz elérhető választási lehetőségeket.',
   'custom-properties.form.options.name.placeholder': 'Opció neve',
   'custom-properties.form.options.name.required': 'Az opció nevének megadása kötelező',
   'custom-properties.form.options.name.max-length': 'Az opció neve legfeljebb 255 karakter lehet',
@@ -527,7 +536,8 @@ export const translations = {
 
   'documents.reprocess.action': 'Újrafeldolgozás',
   'documents.reprocess.confirm.title': 'Dokumentum újrafeldolgozása',
-  'documents.reprocess.confirm.description': 'Biztosan szeretnéd újra feldolgozni ezt a dokumentumot? A tartalom és a metaadatok újra kinyerésre kerülnek.',
+  'documents.reprocess.confirm.description':
+    'Biztosan szeretnéd újra feldolgozni ezt a dokumentumot? A tartalom és a metaadatok újra kinyerésre kerülnek.',
   'documents.reprocess.confirm.submit': 'Újrafeldolgozás',
   'documents.reprocess.disabled': 'Az újrafeldolgozás jelenleg le van tiltva',
   'documents.reprocess.error': 'Nem sikerült újrafeldolgozni a dokumentumot',
@@ -585,8 +595,10 @@ export const translations = {
   'documents.pdf-viewer.more-actions.print': 'Nyomtatás',
   'documents.pdf-viewer.more-actions.go-to-first-page': 'Ugrás az első oldalra',
   'documents.pdf-viewer.more-actions.go-to-last-page': 'Ugrás az utolsó oldalra',
-  'documents.pdf-viewer.more-actions.rotate-clockwise': 'Forgatás az óramutató járásával megegyezően',
-  'documents.pdf-viewer.more-actions.rotate-counterclockwise': 'Forgatás az óramutató járásával ellentétesen',
+  'documents.pdf-viewer.more-actions.rotate-clockwise':
+    'Forgatás az óramutató járásával megegyezően',
+  'documents.pdf-viewer.more-actions.rotate-counterclockwise':
+    'Forgatás az óramutató járásával ellentétesen',
   'documents.pdf-viewer.more-actions.page-scrolling': 'Oldalgörgetés',
   'documents.pdf-viewer.more-actions.vertical-scrolling': 'Függőleges görgetés',
   'documents.pdf-viewer.more-actions.horizontal-scrolling': 'Vízszintes görgetés',
@@ -637,7 +649,8 @@ export const translations = {
   'document-share-links.list.description': 'A(z) „{{ name }}” megosztási linkjeinek kezelése.',
   'document-share-links.list.create-new': 'Új link létrehozása',
   'document-share-links.create.title': 'Megosztási link létrehozása',
-  'document-share-links.create.description': 'Új megosztási link létrehozása ehhez a dokumentumhoz.',
+  'document-share-links.create.description':
+    'Új megosztási link létrehozása ehhez a dokumentumhoz.',
   'document-share-links.create.password.toggle': 'Jelszó megkövetelése',
   'document-share-links.create.password.hint':
     'Opcionális: A címzetteknek meg kell adniuk a hozzáféréshez.',
@@ -648,14 +661,15 @@ export const translations = {
     'Opcionális: A link automatikusan lejár ezen dátum után.',
   'document-share-links.create.expiration.24h': '24 óra',
   'document-share-links.create.expiration.7d': '7 nap',
-  'document-share-links.create.expiration.30d': '30 nap', 
+  'document-share-links.create.expiration.30d': '30 nap',
   'document-share-links.create.expiration.custom': 'Egyedi',
   'document-share-links.create.expiration.pick-date': 'Dátum kiválasztása',
   'document-share-links.create.cancel': 'Mégse',
   'document-share-links.create.submit': 'Link létrehozása',
   'document-share-links.create.error': 'Nem sikerült létrehozni a megosztási linket',
   'document-share-links.created.title': 'Megosztási link létrehozva',
-  'document-share-links.created.description': 'A megosztási link elkészült – másolja ki és ossza meg.',
+  'document-share-links.created.description':
+    'A megosztási link elkészült – másolja ki és ossza meg.',
   'document-share-links.created.done': 'Kész',
   'document-share-links.actions.menu': 'Műveletek',
   'document-share-links.actions.open-document': 'Dokumentum megnyitása',
@@ -691,7 +705,7 @@ export const translations = {
   'document-share-links.management.never': 'Soha',
   'document-share-links.public.download': 'Letöltés',
   'document-share-links.public.download-error': 'A fájl letöltése sikertelen',
-  'document-share-links.public.password.title': 'Jelszó szükséges', 
+  'document-share-links.public.password.title': 'Jelszó szükséges',
   'document-share-links.public.password.description':
     'Ez a dokumentum védett. A hozzáféréshez adja meg a jelszót.',
   'document-share-links.public.password.label': 'Jelszó',
@@ -804,7 +818,8 @@ export const translations = {
   'document-views.form.description.label': 'Leírás',
   'document-views.form.description.optional': '(opcionális)',
   'document-views.form.description.placeholder': 'Pl. Feldolgozásra váró dokumentumok',
-  'document-views.form.description.max-length': 'A leírás hossza nem haladhatja meg a 256 karaktert',
+  'document-views.form.description.max-length':
+    'A leírás hossza nem haladhatja meg a 256 karaktert',
   'document-views.actions.menu': 'Nézetműveletek',
   'document-views.view.no-documents': 'Egyetlen dokumentum sem felel meg a nézet lekérdezésének.',
   'document-views.view.not-found': 'A nézet nem található.',
@@ -845,7 +860,8 @@ export const translations = {
   'tagging-rules.form.name.min-length': 'Kérjük, adja meg a szabály nevét',
   'tagging-rules.form.name.max-length': 'A név nem lehet hosszabb 64 karakternél',
   'tagging-rules.form.description.label': 'Leírás',
-  'tagging-rules.form.description.placeholder': "Példa: Azon dokumentumok címkézése, amelyek nevében szerepel a 'számla' szó",
+  'tagging-rules.form.description.placeholder':
+    "Példa: Azon dokumentumok címkézése, amelyek nevében szerepel a 'számla' szó",
   'tagging-rules.form.description.max-length': 'A leírás nem lehet hosszabb 256 karakternél',
   'tagging-rules.form.conditions.label': 'Feltételek',
   'tagging-rules.form.conditions.description':
@@ -858,7 +874,7 @@ export const translations = {
   'tagging-rules.condition-match-mode.any': 'Bármelyik feltételnek teljesülnie kell',
   'tagging-rules.form.conditions.no-conditions.title': 'Nincsenek feltételek',
   'tagging-rules.form.conditions.no-conditions.description':
-    "Nem adott meg feltételeket ehhez a szabályhoz. A szabály minden dokumentumra alkalmazza a címkéket.",
+    'Nem adott meg feltételeket ehhez a szabályhoz. A szabály minden dokumentumra alkalmazza a címkéket.',
   'tagging-rules.form.conditions.no-conditions.confirm': 'Szabály alkalmazása feltételek nélkül',
   'tagging-rules.form.conditions.no-conditions.cancel': 'Mégse',
   'tagging-rules.form.conditions.value.placeholder': 'Például: számla',
@@ -873,7 +889,7 @@ export const translations = {
   'tagging-rules.update.submit': 'Szabály frissítése',
   'tagging-rules.update.cancel': 'Mégse',
   'tagging-rules.apply.button': 'Alkalmazás a meglévő dokumentumokra',
-  'tagging-rules.apply.confirm.title': 'Alkalmazza a szabályt a meglévő dokumentumokra?', 
+  'tagging-rules.apply.confirm.title': 'Alkalmazza a szabályt a meglévő dokumentumokra?',
   'tagging-rules.apply.confirm.description':
     'Ez ellenőrzi a szervezet összes meglévő dokumentumát, és ahol a feltételek teljesülnek, ott alkalmazza a címkéket. A folyamat a háttérben zajlik majd.',
   'tagging-rules.apply.confirm.button': 'Szabály alkalmazása',
@@ -890,7 +906,7 @@ export const translations = {
 
   'intake-emails.title': 'Beérkező e-mailek',
   'intake-emails.description':
-    "A beérkező e-mail címek segítségével automatikusan importálhat e-maileket a Papra rendszerébe. Egyszerűen továbbítsa az e-maileket a megadott címre, és a mellékleteik bekerülnek a szervezete dokumentumai közé.",
+    'A beérkező e-mail címek segítségével automatikusan importálhat e-maileket a Papra rendszerébe. Egyszerűen továbbítsa az e-maileket a megadott címre, és a mellékleteik bekerülnek a szervezete dokumentumai közé.',
   'intake-emails.disabled.title': 'A beérkező e-mail funkció le van tiltva',
   'intake-emails.disabled.description':
     'A beérkező e-mail funkció le van tiltva ebben a példányban. Az engedélyezéshez kérjük, lépjen kapcsolatba a rendszergazdával. További információért tekintse meg a {{ documentation }} részt.',
@@ -950,13 +966,16 @@ export const translations = {
   'api-keys.permissions.tags.tags:update': 'Címkék módosítása',
   'api-keys.permissions.tags.tags:delete': 'Címkék törlése',
   'api-keys.permissions.custom-properties.title': 'Egyedi tulajdonságok',
-  'api-keys.permissions.custom-properties.custom-properties:create': 'Egyedi tulajdonságok létrehozása',
+  'api-keys.permissions.custom-properties.custom-properties:create':
+    'Egyedi tulajdonságok létrehozása',
   'api-keys.permissions.custom-properties.custom-properties:read': 'Egyedi tulajdonságok olvasása',
-  'api-keys.permissions.custom-properties.custom-properties:update': 'Egyedi tulajdonságok módosítása',
+  'api-keys.permissions.custom-properties.custom-properties:update':
+    'Egyedi tulajdonságok módosítása',
   'api-keys.permissions.custom-properties.custom-properties:delete': 'Egyedi tulajdonságok törlése',
   'api-keys.create.title': 'API-kulcs létrehozása',
   'api-keys.create.description': 'Hozzon létre új API-kulcsot a Papra API eléréséhez.',
-  'api-keys.create.success': 'Az API-kulcs sikeresen létrejött.', 'api-keys.create.back': 'Vissza az API-kulcsokhoz',
+  'api-keys.create.success': 'Az API-kulcs sikeresen létrejött.',
+  'api-keys.create.back': 'Vissza az API-kulcsokhoz',
   'api-keys.create.form.name.label': 'Név',
   'api-keys.create.form.name.placeholder': 'Például: Saját API-kulcs',
   'api-keys.create.form.name.required': 'Kérjük, adja meg az API-kulcs nevét',
@@ -1051,7 +1070,8 @@ export const translations = {
   'layout.menu.admin': 'Adminisztráció',
 
   'layout.upgrade-cta.title': 'Több helyre van szüksége?',
-  'layout.upgrade-cta.description': 'Szerezzen 10-szer több tárhelyet és csapatmunkát támogató funkciókat',
+  'layout.upgrade-cta.description':
+    'Szerezzen 10-szer több tárhelyet és csapatmunkát támogató funkciókat',
   'layout.upgrade-cta.button': 'Frissítés most',
 
   'layout.theme.light': 'Világos mód',
@@ -1079,11 +1099,13 @@ export const translations = {
   'command-palette.no-results': 'Nincs találat',
   'command-palette.sections.documents': 'Dokumentumok',
   'command-palette.sections.theme': 'Téma',
-  'command-palette.show-more-results': 'További {{ count }} találat megjelenítése a következőre: „{{ query }}”',
+  'command-palette.show-more-results':
+    'További {{ count }} találat megjelenítése a következőre: „{{ query }}”',
 
   // API errors
 
-  'api-errors.api.timeout': 'A kérés túl sokáig tartott és időtúllépés történt. Kérjük, próbálja újra.',
+  'api-errors.api.timeout':
+    'A kérés túl sokáig tartott és időtúllépés történt. Kérjük, próbálja újra.',
   'api-errors.document.already_exists': 'A dokumentum már létezik',
   'api-errors.document.size_too_large': 'A fájlméret túl nagy',
   'api-errors.intake-emails.already_exists': 'Már létezik ilyen című beérkezési e-mail cím.',
@@ -1117,7 +1139,8 @@ export const translations = {
     'A felhasználó már rendelkezik ilyen típusú jogosultsággal.',
   'api-errors.plan_entitlements.not_found': 'A csomaghoz tartozó jogosultság nem található.',
   'api-errors.plan_entitlements.not_eligible': 'A felhasználó nem jogosult erre a szolgáltatásra.',
-  'api-errors.users.cannot_delete_self': 'Saját fiókját nem törölheti az adminisztrátori felületről.',
+  'api-errors.users.cannot_delete_self':
+    'Saját fiókját nem törölheti az adminisztrátori felületről.',
 
   // Better auth api errors
 
@@ -1145,14 +1168,18 @@ export const translations = {
   'api-errors.SESSION_EXPIRED': 'A munkamenet lejárt',
   'api-errors.FAILED_TO_UNLINK_LAST_ACCOUNT': 'Nem sikerült leválasztani az utolsó fiókot',
   'api-errors.ACCOUNT_NOT_FOUND': 'Fiók nem található',
-  'api-errors.USER_ALREADY_HAS_PASSWORD': 'A felhasználónak már van jelszava', 'api-errors.INVALID_CODE': 'A megadott kód érvénytelen vagy lejárt',
+  'api-errors.USER_ALREADY_HAS_PASSWORD': 'A felhasználónak már van jelszava',
+  'api-errors.INVALID_CODE': 'A megadott kód érvénytelen vagy lejárt',
   'api-errors.OTP_NOT_ENABLED': 'A kétlépcsős hitelesítés nincs engedélyezve ehhez a fiókhoz',
   'api-errors.OTP_HAS_EXPIRED': 'A kétlépcsős hitelesítési kód lejárt',
   'api-errors.TOTP_NOT_ENABLED': 'A TOTP nincs engedélyezve ehhez a fiókhoz',
-  'api-errors.TWO_FACTOR_NOT_ENABLED': 'A kétlépcsős hitelesítés nincs engedélyezve ehhez a fiókhoz',
-  'api-errors.BACKUP_CODES_NOT_ENABLED': 'A biztonsági kódok nincsenek engedélyezve ehhez a fiókhoz',
+  'api-errors.TWO_FACTOR_NOT_ENABLED':
+    'A kétlépcsős hitelesítés nincs engedélyezve ehhez a fiókhoz',
+  'api-errors.BACKUP_CODES_NOT_ENABLED':
+    'A biztonsági kódok nincsenek engedélyezve ehhez a fiókhoz',
   'api-errors.INVALID_BACKUP_CODE': 'A megadott biztonsági kód érvénytelen vagy már felhasználták',
-  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE': 'Túl sok próbálkozás. Kérjük, igényeljen új kódot.',
+  'api-errors.TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE':
+    'Túl sok próbálkozás. Kérjük, igényeljen új kódot.',
   'api-errors.INVALID_TWO_FACTOR_COOKIE': 'Érvénytelen kétlépcsős hitelesítési süti',
 
   // Not found
@@ -1165,7 +1192,8 @@ export const translations = {
 
   'demo.popup.description':
     'Ez egy bemutató környezet, minden adat a böngésző helyi tárhelyére mentődik.',
-  'demo.popup.discord': 'Csatlakozz a {{ discordLink }} szerverhez, ha támogatásra van szükséged, funkciókat javasolnál, vagy csak beszélgetnél.',
+  'demo.popup.discord':
+    'Csatlakozz a {{ discordLink }} szerverhez, ha támogatásra van szükséged, funkciókat javasolnál, vagy csak beszélgetnél.',
   'demo.popup.discord-link-label': 'Discord-szerver',
   'demo.popup.reset': 'Bemutató adatok alaphelyzetbe állítása',
   'demo.popup.hide': 'Elrejtés',
@@ -1182,8 +1210,7 @@ export const translations = {
   // Subscriptions
 
   'subscriptions.checkout-success.title': 'Sikeres fizetés!',
-  'subscriptions.checkout-success.description':
-    'Az előfizetésed sikeresen aktiválva lett.',
+  'subscriptions.checkout-success.description': 'Az előfizetésed sikeresen aktiválva lett.',
   'subscriptions.checkout-success.thank-you':
     'Köszönjük, hogy átváltottál a Papra Plus csomagra. Mostantól minden prémium funkció elérhető számodra.',
   'subscriptions.checkout-success.go-to-organizations': 'Ugrás a szervezetekhez',
@@ -1235,7 +1262,7 @@ export const translations = {
 
   'plan-entitlements.claim.selfhst.title': 'Igényelje selfh.st Insider kedvezményét',
   'plan-entitlements.claim.selfhst.description':
-    "Selfh.st Insiderként jogosult a Papra bővített ingyenes csomagjára: kétszer akkora tárhely a dokumentumok számára, több e-mail-fogadási lehetőség és több tag az Ön tulajdonában lévő ingyenes szervezeteknél.",
+    'Selfh.st Insiderként jogosult a Papra bővített ingyenes csomagjára: kétszer akkora tárhely a dokumentumok számára, több e-mail-fogadási lehetőség és több tag az Ön tulajdonában lévő ingyenes szervezeteknél.',
   'plan-entitlements.claim.selfhst.email-notice':
     'Ellenőrizzük, hogy a Papra-fiókjához tartozó {{ email }} e-mail-címhez kapcsolódik-e aktív selfh.st Insider tagság.',
   'plan-entitlements.claim.selfhst.claim-button': 'Kedvezmény igénylése',
@@ -1273,7 +1300,8 @@ export const translations = {
   'admin.analytics.deleted-storage': 'Törölt adatok tárhelyigénye',
 
   'admin.organizations.title': 'Szervezetek kezelése',
-  'admin.organizations.description': 'A rendszerben található összes szervezet kezelése és megtekintése',
+  'admin.organizations.description':
+    'A rendszerben található összes szervezet kezelése és megtekintése',
   'admin.organizations.search-placeholder': 'Keresés név vagy azonosító alapján...',
   'admin.organizations.loading': 'Szervezetek betöltése...',
   'admin.organizations.no-results': 'Nem található a keresésnek megfelelő szervezet.',
@@ -1308,7 +1336,8 @@ export const translations = {
   'admin.organization-detail.members.table.role': 'Szerepkör',
   'admin.organization-detail.members.table.joined': 'Csatlakozás dátuma',
   'admin.organization-detail.intake-emails.title': 'Beérkező e-mailek ({{ count }})',
-  'admin.organization-detail.intake-emails.description': 'Dokumentumok fogadására szolgáló e-mail címek',
+  'admin.organization-detail.intake-emails.description':
+    'Dokumentumok fogadására szolgáló e-mail címek',
   'admin.organization-detail.intake-emails.empty': 'Nincsenek beállítva beérkező e-mail címek',
   'admin.organization-detail.intake-emails.status.enabled': 'Engedélyezve',
   'admin.organization-detail.intake-emails.status.disabled': 'Letiltva',
@@ -1369,7 +1398,8 @@ export const translations = {
   'admin.user-detail.organizations.empty': 'Nem tagja egyetlen szervezetnek sem',
   'admin.user-detail.organizations.table.id': 'Azonosító',
   'admin.user-detail.organizations.table.name': 'Név',
-  'admin.user-detail.organizations.table.created': 'Létrehozva', 'admin.user-detail.plan-entitlements.title': 'Csomagjogosultságok',
+  'admin.user-detail.organizations.table.created': 'Létrehozva',
+  'admin.user-detail.plan-entitlements.title': 'Csomagjogosultságok',
   'admin.user-detail.plan-entitlements.description':
     'Olyan jogosultságok, amelyek bővítik a felhasználó tulajdonában lévő szervezetek csomagjának lehetőségeit',
   'admin.user-detail.plan-entitlements.empty': 'Nincsenek csomagjogosultságok',
@@ -1390,7 +1420,7 @@ export const translations = {
   'admin.user-detail.plan-entitlements.grant.cancel': 'Mégse',
   'admin.user-detail.plan-entitlements.grant.success': 'A jogosultság sikeresen megadva.',
   'admin.user-detail.plan-entitlements.revoke.button': 'Visszavonás',
-  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Jogosultság visszavonása?', 
+  'admin.user-detail.plan-entitlements.revoke.confirm.title': 'Jogosultság visszavonása?',
   'admin.user-detail.plan-entitlements.revoke.confirm.message':
     'A felhasználó elveszíti az ezen jogosultság által biztosított csomagelőnyöket.',
   'admin.user-detail.plan-entitlements.revoke.confirm.confirm-button': 'Jogosultság visszavonása',
@@ -1404,7 +1434,7 @@ export const translations = {
     'Saját fiókját nem törölheti az adminisztrátori felületről.',
   'admin.user-detail.delete.confirm.title': 'Törli a felhasználót?',
   'admin.user-detail.delete.confirm.message':
-    "Ez a művelet nem vonható vissza. A megerősítéshez írja be a felhasználó e-mail-címét az alábbi mezőbe.",
+    'Ez a művelet nem vonható vissza. A megerősítéshez írja be a felhasználó e-mail-címét az alábbi mezőbe.',
   'admin.user-detail.delete.confirm.confirm-button': 'Felhasználó törlése',
   'admin.user-detail.delete.confirm.cancel-button': 'Mégse',
   'admin.user-detail.delete.success': 'A felhasználó sikeresen törölve.',
@@ -1447,7 +1477,8 @@ export const translations = {
     'A szerver továbbra sem érhető el. Próbáld meg később.',
 
   'coming-soon.title': 'Hamarosan érkezik',
-  'coming-soon.description': 'Ez a funkció hamarosan elérhető lesz. Kérjük, látogass vissza később.',
+  'coming-soon.description':
+    'Ez a funkció hamarosan elérhető lesz. Kérjük, látogass vissza később.',
 
   'socials.bluesky': 'Bluesky',
   'socials.mastodon': 'Mastodon',
