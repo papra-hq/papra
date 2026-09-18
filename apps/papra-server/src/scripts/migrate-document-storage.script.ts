@@ -9,7 +9,9 @@ import { count, eq } from 'drizzle-orm';
 import { createIterator } from '../modules/app/database/database.usecases';
 import { parseConfig } from '../modules/config/config';
 import { documentsTable } from '../modules/documents/documents.table';
-import { createDocumentStorageKey } from '../modules/documents/document-storage.usecases';
+import { buildCreateDocumentStorageKey } from '../modules/documents/document-storage.usecases';
+import { buildResolveStoragePatternContext } from '../modules/documents/storage-patterns/storage-pattern.usecases';
+import { createOrganizationsRepository } from '../modules/organizations/organizations.repository';
 import { createStorageService } from '../modules/storage/storage.services';
 import { ensureBooleanArg } from './commons/args.utils';
 import { runScriptWithDb } from './commons/run-script';
@@ -51,6 +53,15 @@ export async function migrateDocumentStorage({
   });
 
   prompts?.intro('Document Storage Migration');
+
+  const createDocumentStorageKey = buildCreateDocumentStorageKey({
+    storagePatternConfig: toConfig.documentsStorage.pattern,
+    documentsStorageService: toStorageService,
+    resolveStoragePatternContext: buildResolveStoragePatternContext({
+      organizationsRepository: createOrganizationsRepository({ db }),
+    }),
+    logger: createNoopLogger(),
+  });
 
   if (isDryRun) {
     prompts?.log.info(
@@ -129,14 +140,11 @@ export async function migrateDocumentStorage({
       });
 
       const { storageKey: newStorageKey } = await createDocumentStorageKey({
-        storagePatternConfig: toConfig.documentsStorage.pattern,
         documentId: id,
         organizationId,
         documentName: originalName,
         documentDate: document.documentDate,
         documentCreatedAt: document.createdAt,
-        documentsStorageService: toStorageService,
-        logger: createNoopLogger(),
       });
 
       const encryptionFields = await toStorageService.saveFile({

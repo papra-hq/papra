@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer';
 import { createNoopLogger } from '@crowlog/logger';
 import { describe, expect, test, vi } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { createTestClock } from '../shared/clock/clock.test-utils';
 import {
   collectReadableStreamToString,
@@ -10,8 +11,12 @@ import {
 } from '../shared/streams/readable-stream';
 import { inMemoryStorageDriverFactory } from '../storage/drivers/memory/memory.storage-driver';
 import { wrapWithEncryptionLayer } from '../storage/encryption/storage-encryption.services';
-import { buildSyncDocumentStorageKey, createDocumentStorageKey } from './document-storage.usecases';
+import {
+  buildSyncDocumentStorageKey,
+  buildCreateDocumentStorageKey,
+} from './document-storage.usecases';
 import { createDocumentsRepository } from './documents.repository';
+import { buildResolveStoragePatternContext } from './storage-patterns/storage-pattern.usecases';
 
 const baseStoragePatternConfig = {
   isStorageKeySyncEnabled: true,
@@ -64,6 +69,9 @@ async function setupSync({ sourceStorageKey = 'old.pdf', isEncryptionEnabled = f
     documentsRepository,
     documentsStorageService,
     storagePatternConfig: baseStoragePatternConfig,
+    resolveStoragePatternContext: buildResolveStoragePatternContext({
+      organizationsRepository: createOrganizationsRepository({ db }),
+    }),
     logger: createNoopLogger(),
   };
   return {
@@ -169,12 +177,17 @@ describe('syncDocumentStorageKey', () => {
 
   test('is opt-in and does not synchronize legacy keys', async () => {
     const { args, dependencies, keys } = await setupSync();
+    const resolveStoragePatternContext = async () => {
+      throw new Error('Unexpected context resolution');
+    };
     await buildSyncDocumentStorageKey({
       ...dependencies,
+      resolveStoragePatternContext,
       storagePatternConfig: { ...baseStoragePatternConfig, isStorageKeySyncEnabled: false },
     })(args);
     await buildSyncDocumentStorageKey({
       ...dependencies,
+      resolveStoragePatternContext,
       storagePatternConfig: {
         ...baseStoragePatternConfig,
         useLegacyStorageKeyDefinitionSystem: true,
@@ -436,34 +449,45 @@ describe('syncDocumentStorageKey', () => {
 
 describe('document-storage usecases', () => {
   describe('createDocumentStorageKey', () => {
+    const resolveStoragePatternContext = buildResolveStoragePatternContext({
+      organizationsRepository: {
+        getOrganizationById: async () => {
+          throw new Error('Unexpected organization lookup');
+        },
+      },
+    });
+
     test('uses the supplied document dates when generating a key for an existing document', async () => {
       await expect(
-        createDocumentStorageKey({
-          ...documentContext,
-          documentDate: new Date('2024-03-12T00:00:00.000Z'),
+        buildCreateDocumentStorageKey({
+          resolveStoragePatternContext,
           storagePatternConfig: {
             ...baseStoragePatternConfig,
             storageKeyPattern:
               '{{document.date | formatDate}}/{{document.createdAt | formatDate}}/{{document.name}}',
           },
           documentsStorageService: { fileExists: async () => false },
+        })({
+          ...documentContext,
+          documentDate: new Date('2024-03-12T00:00:00.000Z'),
         }),
       ).resolves.toEqual({ storageKey: '2024-03-12/2025-12-01/invoice.pdf' });
     });
 
-    test('uses the legacy document key without checking for collisions', async () => {
+    test('uses the legacy document key without checking for collisions or loading organization names', async () => {
       const fileExists = vi.fn(async () => false);
 
       await expect(
-        createDocumentStorageKey({
-          ...documentContext,
+        buildCreateDocumentStorageKey({
+          resolveStoragePatternContext,
           storagePatternConfig: {
             ...baseStoragePatternConfig,
             useLegacyStorageKeyDefinitionSystem: true,
+            storageKeyPattern: '{{organization.name}}/{{document.name}}',
           },
           documentsStorageService: { fileExists },
           logger: createNoopLogger(),
-        }),
+        })(documentContext),
       ).resolves.toEqual({ storageKey: 'org_1/originals/doc_1.pdf' });
       expect(fileExists).not.toHaveBeenCalled();
     });
@@ -474,12 +498,12 @@ describe('document-storage usecases', () => {
       );
 
       await expect(
-        createDocumentStorageKey({
-          ...documentContext,
+        buildCreateDocumentStorageKey({
+          resolveStoragePatternContext,
           storagePatternConfig: baseStoragePatternConfig,
           documentsStorageService: { fileExists },
           logger: createNoopLogger(),
-        }),
+        })(documentContext),
       ).resolves.toEqual({ storageKey: 'org_1/invoice_1.pdf' });
       expect(fileExists).toHaveBeenNthCalledWith(1, { storageKey: 'org_1/invoice.pdf' });
       expect(fileExists).toHaveBeenNthCalledWith(2, { storageKey: 'org_1/invoice_1.pdf' });
@@ -491,15 +515,15 @@ describe('document-storage usecases', () => {
         .mockResolvedValueOnce(true)
         .mockResolvedValueOnce(false);
 
-      const result = await createDocumentStorageKey({
-        ...documentContext,
+      const result = await buildCreateDocumentStorageKey({
+        resolveStoragePatternContext,
         storagePatternConfig: {
           ...baseStoragePatternConfig,
           maxIncrementalSuffixAttempts: 0,
         },
         documentsStorageService: { fileExists },
         logger: createNoopLogger(),
-      });
+      })(documentContext);
 
       expect(result.storageKey).toMatch(/^org_1\/invoice_[A-Za-z0-9]{8}\.pdf$/);
       expect(fileExists).toHaveBeenCalledTimes(2);

@@ -17,6 +17,12 @@ export const expressionsDefinitions: Record<string, StoragePatternExpressionDefi
   },
   'document.createdAt': { resolve: (context) => context.documentCreatedAt.toISOString() },
   'organization.id': { resolve: (context) => context.organizationId },
+  'organization.name': {
+    resolve: (context) =>
+      context.organizationName === undefined
+        ? undefined
+        : ensureSafeFileName(context.organizationName),
+  },
   'currentDate': { resolve: (context) => context.now.toISOString() },
   'random': { resolve: () => generateRandomString({ length: 8 }) },
   ...['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss', 'SSS'].reduce(

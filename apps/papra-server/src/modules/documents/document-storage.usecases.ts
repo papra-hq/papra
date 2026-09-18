@@ -2,7 +2,11 @@ import type { Clock } from '../shared/clock/clock.types';
 import type { Logger } from '../shared/logger/logger';
 import type { StorageService } from '../storage/drivers/drivers.models';
 import type { DocumentsRepository } from './documents.repository';
-import type { StoragePatternConfig } from './storage-patterns/storage-pattern.types';
+import type {
+  ResolveStoragePatternContext,
+  StoragePatternConfig,
+  StoragePatternInterpolationContext,
+} from './storage-patterns/storage-pattern.types';
 import { systemClock } from '../shared/clock/clock';
 import { createLogger } from '../shared/logger/logger';
 import { ensureStorageKeyIsAvailable } from '../storage/storage.usecases';
@@ -19,12 +23,14 @@ export function buildSyncDocumentStorageKey({
   storagePatternConfig,
   documentsRepository,
   documentsStorageService,
+  resolveStoragePatternContext,
   logger = createLogger({ namespace: 'sync-document-storage-key' }),
   clock = systemClock,
 }: {
   storagePatternConfig: StoragePatternConfig;
   documentsRepository: Pick<DocumentsRepository, 'getDocumentById' | 'updateDocumentStorageKey'>;
   documentsStorageService: Pick<StorageService, 'fileExists' | 'copyFile' | 'deleteFile'>;
+  resolveStoragePatternContext: ResolveStoragePatternContext;
   logger?: Logger;
   clock?: Clock;
 }): SyncDocumentStorageKey {
@@ -50,7 +56,7 @@ export function buildSyncDocumentStorageKey({
     }
 
     const sourceStorageKey = document.originalStorageKey;
-    const { storageKey: initialStorageKey } = buildStorageKey({
+    const context = await resolveStoragePatternContext({
       storageKeyPattern: storagePatternConfig.storageKeyPattern,
       documentId,
       organizationId,
@@ -58,6 +64,10 @@ export function buildSyncDocumentStorageKey({
       documentDate: document.documentDate,
       documentCreatedAt: document.createdAt,
       now: new Date(clock.now().epochMilliseconds),
+    });
+    const { storageKey: initialStorageKey } = buildStorageKey({
+      storageKeyPattern: storagePatternConfig.storageKeyPattern,
+      ...context,
     });
 
     if (sourceStorageKey === initialStorageKey) {
@@ -105,27 +115,21 @@ export function buildSyncDocumentStorageKey({
   };
 }
 
-export async function createDocumentStorageKey({
+export type CreateDocumentStorageKey = (
+  args: Omit<StoragePatternInterpolationContext, 'organizationName' | 'now'> & { now?: Date },
+) => Promise<{ storageKey: string }>;
+
+export function buildCreateDocumentStorageKey({
   storagePatternConfig,
-  documentId,
-  documentName,
-  documentDate,
-  documentCreatedAt,
-  organizationId,
+  resolveStoragePatternContext,
   documentsStorageService,
   logger,
-  now = new Date(),
 }: {
   storagePatternConfig: StoragePatternConfig;
-  documentId: string;
-  documentName: string;
-  documentDate: Date | null;
-  documentCreatedAt: Date;
-  organizationId: string;
+  resolveStoragePatternContext: ResolveStoragePatternContext;
   documentsStorageService: Pick<StorageService, 'fileExists'>;
   logger?: Logger;
-  now?: Date;
-}) {
+}): CreateDocumentStorageKey {
   const {
     useLegacyStorageKeyDefinitionSystem,
     storageKeyPattern,
@@ -133,31 +137,30 @@ export async function createDocumentStorageKey({
     maxIncrementalSuffixAttempts,
   } = storagePatternConfig;
 
-  if (useLegacyStorageKeyDefinitionSystem) {
-    const { originalDocumentStorageKey } = buildOriginalDocumentKey({
-      documentId,
-      fileName: documentName,
-      organizationId,
+  return async ({ now = new Date(), ...documentContext }) => {
+    if (useLegacyStorageKeyDefinitionSystem) {
+      const { originalDocumentStorageKey } = buildOriginalDocumentKey({
+        documentId: documentContext.documentId,
+        fileName: documentContext.documentName,
+        organizationId: documentContext.organizationId,
+      });
+
+      return { storageKey: originalDocumentStorageKey };
+    }
+
+    const context = await resolveStoragePatternContext({
+      storageKeyPattern,
+      ...documentContext,
+      now,
     });
+    const { storageKey: initialStorageKey } = buildStorageKey({ storageKeyPattern, ...context });
 
-    return { storageKey: originalDocumentStorageKey };
-  }
-
-  const { storageKey: initialStorageKey } = buildStorageKey({
-    storageKeyPattern,
-    documentId,
-    documentName,
-    documentDate,
-    documentCreatedAt,
-    organizationId,
-    now,
-  });
-
-  return ensureStorageKeyIsAvailable({
-    initialStorageKey,
-    maxIncrementalSuffixAttempts,
-    enableRandomSuffixFallback,
-    storageService: documentsStorageService,
-    logger,
-  });
+    return ensureStorageKeyIsAvailable({
+      initialStorageKey,
+      maxIncrementalSuffixAttempts,
+      enableRandomSuffixFallback,
+      storageService: documentsStorageService,
+      logger,
+    });
+  };
 }

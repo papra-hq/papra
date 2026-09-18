@@ -16,13 +16,14 @@ import type { DocumentsRepository } from './documents.repository';
 import type { Document } from './documents.types';
 import type { StorageService } from '../storage/storage.services';
 import type { EncryptionContext } from '../storage/drivers/drivers.models';
-import type { StoragePatternConfig } from './storage-patterns/storage-pattern.types';
+import type { CreateDocumentStorageKey } from './document-storage.usecases';
 import { PassThrough } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { safely } from '@corentinth/chisels';
 import pLimit from 'p-limit';
 import { buildCustomPropertiesArray } from '../custom-properties/custom-properties.models';
 import { createOrganizationDocumentStorageLimitReachedError } from '../organizations/organizations.errors';
+import { createOrganizationsRepository } from '../organizations/organizations.repository';
 import { getOrganizationStorageLimits } from '../organizations/organizations.usecases';
 import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
@@ -48,7 +49,8 @@ import {
   generateDocumentId as generateDocumentIdImpl,
 } from './documents.models';
 import { createDocumentsRepository } from './documents.repository';
-import { createDocumentStorageKey } from './document-storage.usecases';
+import { buildCreateDocumentStorageKey } from './document-storage.usecases';
+import { buildResolveStoragePatternContext } from './storage-patterns/storage-pattern.usecases';
 import type { ExtractDocumentTextUsecase } from './content-extraction/content-extraction.usecases';
 
 type DocumentStorageContext = {
@@ -63,7 +65,7 @@ export async function createDocument({
   organizationId,
   ocrLanguages = [],
   isContentExtractionEnabled = true,
-  storagePatternConfig,
+  createDocumentStorageKey,
   documentsRepository,
   documentsStorageService,
   generateDocumentId = generateDocumentIdImpl,
@@ -84,7 +86,7 @@ export async function createDocument({
   organizationId: string;
   ocrLanguages?: string[];
   isContentExtractionEnabled?: boolean;
-  storagePatternConfig: StoragePatternConfig;
+  createDocumentStorageKey: CreateDocumentStorageKey;
   documentsRepository: DocumentsRepository;
   documentsStorageService: StorageService;
   generateDocumentId?: () => string;
@@ -115,8 +117,6 @@ export async function createDocument({
     documentDate: null,
     documentCreatedAt: createdAt,
     organizationId,
-    documentsStorageService,
-    storagePatternConfig,
   });
 
   const { tap: hashStream, getHash } = createSha256HashTransformer();
@@ -238,7 +238,15 @@ export function createDocumentCreationUsecase({
       initialDeps.taggingRulesRepository ?? createTaggingRulesRepository({ db }),
     tagsRepository: initialDeps.tagsRepository ?? createTagsRepository({ db }),
 
-    storagePatternConfig: initialDeps.storagePatternConfig ?? config.documentsStorage.pattern,
+    createDocumentStorageKey:
+      initialDeps.createDocumentStorageKey ??
+      buildCreateDocumentStorageKey({
+        storagePatternConfig: config.documentsStorage.pattern,
+        documentsStorageService,
+        resolveStoragePatternContext: buildResolveStoragePatternContext({
+          organizationsRepository: createOrganizationsRepository({ db }),
+        }),
+      }),
     ocrLanguages: initialDeps.ocrLanguages ?? config.documents.ocrLanguages,
     isContentExtractionEnabled:
       initialDeps.isContentExtractionEnabled ?? config.documents.isContentExtractionEnabled,
