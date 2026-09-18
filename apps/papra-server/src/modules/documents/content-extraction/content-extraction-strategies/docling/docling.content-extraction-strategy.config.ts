@@ -3,6 +3,7 @@ import type { AppConfigDefinition } from '../../../../config/config.types';
 import { urlSchema } from '../../../../config/config.schemas';
 import { coercedStrictlyPositiveIntegerSchema } from '../../../../shared/schemas/number.schemas';
 import { IN_MS } from '../../../../shared/units';
+import { doclingOptionsSchema } from './docling.content-extraction-strategy.schemas';
 
 export const doclingConfig = {
   baseUrl: {
@@ -22,6 +23,12 @@ export const doclingConfig = {
     env: 'DOCLING_REQUEST_TIMEOUT_MS',
     schema: coercedStrictlyPositiveIntegerSchema,
     default: 5 * IN_MS.MINUTE,
+  },
+  options: {
+    doc: 'Conversion options sent with every Docling request, as a JSON object. For example: `{"ocr_lang":["en","fr"],"force_ocr":true}`. Arrays are sent as repeated form fields and objects as JSON. Top-level null values and empty arrays are omitted. The files, to_formats, image_export_mode, and target fields are managed by Papra and cannot be set here. See the [Docling options](https://github.com/docling-project/docling-serve/blob/main/docs/usage.md#common-parameters) for supported settings.',
+    env: 'DOCLING_OPTIONS',
+    schema: doclingOptionsSchema,
+    default: '{}',
   },
   mimeTypesAllowList: {
     doc: 'The list of mime types that the Docling strategy will be used for. If the document mime type is not in this list, the strategy will be skipped. Comma separated list. Supports wildcards, e.g. "image/*" matches all image mime types, and "*" matches all formats. Prefix an entry with "!" to negate it, e.g. "*,!image/png" allows everything except PNG. Negations always take precedence over allows, even more specific ones (e.g. "image/png,!image/*" rejects PNG).',
