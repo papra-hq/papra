@@ -411,6 +411,16 @@ async function saveOrganizationInvitation({
       status: ORGANIZATION_INVITATION_STATUS.PENDING,
       expiresAt: addDays(now, expirationDelayDays),
     })
+    .onConflictDoUpdate({
+      target: [organizationInvitationsTable.organizationId, organizationInvitationsTable.email],
+      set: {
+        role,
+        inviterId,
+        status: ORGANIZATION_INVITATION_STATUS.PENDING,
+        expiresAt: addDays(now, expirationDelayDays),
+        updatedAt: now,
+      },
+    })
     .returning();
 
   return { organizationInvitation };
