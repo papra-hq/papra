@@ -1,14 +1,12 @@
 import type { StorageService } from '../storage/storage.services';
 import type { EmailsServices } from '../emails/emails.services';
-import type { PlansRepository } from '../plans/plans.repository';
 import type { SubscriptionsServices } from '../subscriptions/subscriptions.services';
 import { assert, describe, expect, test } from 'vitest';
 import { createForbiddenError } from '../app/auth/auth.errors';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
 import { overrideConfig } from '../config/config.test-utils';
 import { createDocumentsRepository } from '../documents/documents.repository';
-import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
-import { createPlanEntitlementDefinitionRegistry } from '../plan-entitlements/plan-entitlements.registry';
+import { createTestClock } from '../shared/clock/clock.test-utils';
 import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
@@ -31,14 +29,16 @@ import {
   organizationsTable,
 } from './organizations.table';
 import {
+  buildInviteMemberToOrganization,
   checkIfUserCanCreateNewOrganization,
+  checkIfUserHasReachedOrganizationInvitationLimit,
   ensureUserIsInOrganization,
   ensureUserIsOwnerOfOrganization,
   getOrCreateOrganizationCustomerId,
-  inviteMemberToOrganization,
   purgeExpiredSoftDeletedOrganization,
   purgeExpiredSoftDeletedOrganizations,
   removeMemberFromOrganization,
+  sendOrganizationInvitationEmail,
   softDeleteOrganization,
 } from './organizations.usecases';
 
@@ -471,62 +471,40 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const sentEmails: unknown[] = [];
-      const emailsServices = {
-        sendEmail: async (args: unknown) => sentEmails.push(args),
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       // Owner can invite
       const { organizationInvitation: ownerInvitation } = await inviteMemberToOrganization({
         email: 'new-member-1@example.com',
         role: ORGANIZATION_ROLES.MEMBER,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        emailsServices,
-        config,
       });
 
-      expect(ownerInvitation?.email).toBe('new-member-1@example.com');
+      expect(ownerInvitation?.email).toEqual('new-member-1@example.com');
 
       // Admin can invite
       const { organizationInvitation: adminInvitation } = await inviteMemberToOrganization({
         email: 'new-member-2@example.com',
         role: ORGANIZATION_ROLES.MEMBER,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-2',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        emailsServices,
-        config,
       });
 
-      expect(adminInvitation?.email).toBe('new-member-2@example.com');
+      expect(adminInvitation?.email).toEqual('new-member-2@example.com');
 
       // Member cannot invite
       await expect(
@@ -534,17 +512,7 @@ describe('organizations usecases', () => {
           email: 'new-member-3@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-3',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createForbiddenError());
 
@@ -561,7 +529,7 @@ describe('organizations usecases', () => {
       ]);
     });
 
-    test('it is not possible to create an invitation for the owner role to prevent multiple owners in an organization', async () => {
+    test('an invitation for the owner role cannot be created to prevent multiple owners in an organization', async () => {
       const { logger, getLogs } = createTestLogger();
       const { db } = await createInMemoryDatabase({
         users: [{ id: 'user-1', email: 'owner@example.com' }],
@@ -572,40 +540,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-owner@example.com',
           role: ORGANIZATION_ROLES.OWNER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createForbiddenError());
 
@@ -642,40 +597,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'existing-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserAlreadyInOrganizationError());
 
@@ -717,40 +659,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'invited@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
 
@@ -790,40 +719,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 2,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createMaxOrganizationMembersCountReachedError());
 
@@ -872,42 +788,95 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 2 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const { clock } = createTestClock({ now: '2025-10-05T18:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: 2,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-1',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 2,
-          now: new Date('2025-10-05T18:00:00Z'),
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+    });
+
+    test('daily invitation limits and expiration use the current time when the use case is reused', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'user-1', email: 'owner@example.com' }],
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+        organizationMembers: [
+          { organizationId: 'organization-1', userId: 'user-1', role: ORGANIZATION_ROLES.OWNER },
+        ],
+        organizationInvitations: [
+          {
+            organizationId: 'organization-1',
+            email: 'invited@example.com',
+            role: ORGANIZATION_ROLES.MEMBER,
+            inviterId: 'user-1',
+            status: 'pending',
+            expiresAt: new Date('2025-10-12T10:00:00Z'),
+            createdAt: new Date('2025-10-05T10:00:00Z'),
+          },
+        ],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const { clock } = createTestClock({ now: '2025-10-05T18:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
+          organizationPlan: { limits: { maxOrganizationsMembersCount: 100 } },
+        }),
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: 1,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        clock,
+      });
+
+      await expect(
+        inviteMemberToOrganization({
+          email: 'new-member@example.com',
+          role: ORGANIZATION_ROLES.MEMBER,
+          organizationId: 'organization-1',
+          inviterId: 'user-1',
+        }),
+      ).rejects.toThrow(createUserOrganizationInvitationLimitReachedError());
+
+      clock.advanceBy({ hours: 24 });
+
+      const { organizationInvitation } = await inviteMemberToOrganization({
+        email: 'new-member@example.com',
+        role: ORGANIZATION_ROLES.MEMBER,
+        organizationId: 'organization-1',
+        inviterId: 'user-1',
+      });
+
+      expect(organizationInvitation?.expiresAt).toEqual(new Date('2025-10-13T18:00:00Z'));
     });
 
     test('invitations are created with the correct expiration date and an email notification is sent to the invited user', async () => {
@@ -920,42 +889,55 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
       const config = overrideConfig({
         organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
         client: { baseUrl: 'https://app.example.com' },
       });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
-          organizationPlan: {
-            limits: {
-              maxOrganizationsMembersCount: 100,
+      const sentEmails: Parameters<EmailsServices['sendEmail']>[0][] = [];
+      const emailsServices: EmailsServices = {
+        name: 'test',
+        sendEmail: async (args) => {
+          sentEmails.push(args);
+        },
+      };
+      const { clock } = createTestClock({ now: '2025-10-05T12:00:00Z' });
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async ({ organizationId }) => {
+          expect(organizationId).toEqual('organization-1');
+
+          return {
+            organizationPlan: {
+              limits: {
+                maxOrganizationsMembersCount: 100,
+              },
             },
-          },
-        }),
-      } as unknown as PlansRepository;
+          };
+        },
+        checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+          checkIfUserHasReachedOrganizationInvitationLimit({
+            userId,
+            now,
+            maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
+            organizationsRepository,
+          }),
+        sendOrganizationInvitationEmail: async ({ email, organizationId }) =>
+          sendOrganizationInvitationEmail({
+            email,
+            organizationId,
+            organizationsRepository,
+            emailsServices,
+            config,
+          }),
+        expirationDelayDays: config.organizations.invitationExpirationDelayDays,
+        clock,
+      });
 
-      const sentEmails: unknown[] = [];
-      const emailsServices = {
-        sendEmail: async (args: unknown) => sentEmails.push(args),
-      } as unknown as EmailsServices;
-
-      const now = new Date('2025-10-05T12:00:00Z');
       const { organizationInvitation } = await inviteMemberToOrganization({
         email: 'new-member@example.com',
         role: ORGANIZATION_ROLES.ADMIN,
         organizationId: 'organization-1',
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-        planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
         inviterId: 'user-1',
-        expirationDelayDays: 7,
-        maxInvitationsPerDay: 10,
-        now,
-        emailsServices,
-        config,
       });
 
       expect(organizationInvitation).toMatchObject({
@@ -1000,40 +982,27 @@ describe('organizations usecases', () => {
       });
 
       const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const config = overrideConfig({
-        organizations: { invitationExpirationDelayDays: 7, maxUserInvitationsPerDay: 10 },
-      });
-      const plansRepository = {
-        getOrganizationPlanById: async () => ({
+      const inviteMemberToOrganization = buildInviteMemberToOrganization({
+        organizationsRepository,
+        getOrganizationPlan: async () => ({
           organizationPlan: {
             limits: {
               maxOrganizationsMembersCount: 100,
             },
           },
         }),
-      } as unknown as PlansRepository;
-
-      const emailsServices = {
-        sendEmail: async () => {},
-      } as unknown as EmailsServices;
+        checkIfUserHasReachedOrganizationInvitationLimit: async () => {},
+        sendOrganizationInvitationEmail: async () => {},
+        expirationDelayDays: 7,
+        logger,
+      });
 
       await expect(
         inviteMemberToOrganization({
           email: 'new-member@example.com',
           role: ORGANIZATION_ROLES.MEMBER,
           organizationId: 'organization-1',
-          organizationsRepository,
-          subscriptionsRepository,
-          plansRepository,
-          planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
-          planEntitlementDefinitionRegistry: createPlanEntitlementDefinitionRegistry({ config }),
           inviterId: 'user-2',
-          expirationDelayDays: 7,
-          maxInvitationsPerDay: 10,
-          logger,
-          emailsServices,
-          config,
         }),
       ).rejects.toThrow(createUserNotInOrganizationError());
 
