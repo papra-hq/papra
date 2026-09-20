@@ -5,6 +5,7 @@ import { requireAuthentication } from '../app/auth/auth.middleware';
 import { getUser } from '../app/auth/auth.models';
 import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
 import { createPlansRepository } from '../plans/plans.repository';
+import { createGetOrganizationPlanUsecase } from '../plans/plans.usecases';
 import { validateJsonBody, validateParams } from '../shared/validation/validation';
 import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
@@ -17,12 +18,14 @@ import {
 import { ORGANIZATION_ROLES } from './organizations.constants';
 import { createOrganizationsRepository } from './organizations.repository';
 import {
+  buildInviteMemberToOrganization,
   checkIfUserCanCreateNewOrganization,
+  checkIfUserHasReachedOrganizationInvitationLimit,
   createOrganization,
   ensureUserIsInOrganization,
-  inviteMemberToOrganization,
   removeMemberFromOrganization,
   restoreOrganization,
+  sendOrganizationInvitationEmail,
   softDeleteOrganization,
   updateOrganizationMemberRole,
 } from './organizations.usecases';
@@ -332,6 +335,33 @@ function setupInviteOrganizationMemberRoute({
   emailsServices,
   planEntitlementDefinitionRegistry,
 }: RouteDefinitionContext) {
+  const organizationsRepository = createOrganizationsRepository({ db });
+  const inviteMemberToOrganization = buildInviteMemberToOrganization({
+    organizationsRepository,
+    getOrganizationPlan: createGetOrganizationPlanUsecase({
+      subscriptionsRepository: createSubscriptionsRepository({ db }),
+      plansRepository: createPlansRepository({ config }),
+      planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+      planEntitlementDefinitionRegistry,
+    }),
+    checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+      checkIfUserHasReachedOrganizationInvitationLimit({
+        userId,
+        now,
+        maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
+        organizationsRepository,
+      }),
+    sendOrganizationInvitationEmail: async ({ email, organizationId }) =>
+      sendOrganizationInvitationEmail({
+        email,
+        organizationId,
+        organizationsRepository,
+        emailsServices,
+        config,
+      }),
+    expirationDelayDays: config.organizations.invitationExpirationDelayDays,
+  });
+
   app.post(
     '/api/organizations/:organizationId/members/invitations',
     requireAuthentication(),
@@ -351,27 +381,13 @@ function setupInviteOrganizationMemberRoute({
       const { organizationId } = context.req.valid('param');
       const { email, role } = context.req.valid('json');
 
-      const organizationsRepository = createOrganizationsRepository({ db });
-      const subscriptionsRepository = createSubscriptionsRepository({ db });
-      const plansRepository = createPlansRepository({ config });
-      const planEntitlementsRepository = createPlanEntitlementsRepository({ db });
-
       await ensureUserIsInOrganization({ userId, organizationId, organizationsRepository });
 
       await inviteMemberToOrganization({
         email,
         role,
         organizationId,
-        organizationsRepository,
-        subscriptionsRepository,
-        plansRepository,
-        planEntitlementsRepository,
-        planEntitlementDefinitionRegistry,
         inviterId: userId,
-        expirationDelayDays: config.organizations.invitationExpirationDelayDays,
-        maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
-        emailsServices,
-        config,
       });
 
       return context.body(null, 204);
