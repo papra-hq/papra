@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createInMemoryDatabase } from '../app/database/database.test-utils';
+import { createOrganizationInvitationAlreadyExistsError } from './organizations.errors';
 import { createOrganizationsRepository } from './organizations.repository';
 import {
   organizationInvitationsTable,
@@ -8,6 +9,73 @@ import {
 } from './organizations.table';
 
 describe('organizations repository', () => {
+  describe('pending invitation uniqueness', () => {
+    test('concurrent invitations for the same recipient yield one invitation and a duplicate invitation error', async () => {
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'owner', email: 'owner@example.com' }],
+        organizations: [{ id: 'org', name: 'Organization' }],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+      const invitation = {
+        organizationId: 'org',
+        email: 'member@example.com',
+        inviterId: 'owner',
+        role: 'member' as const,
+      };
+
+      const results = await Promise.allSettled([
+        organizationsRepository.saveOrganizationInvitation(invitation),
+        organizationsRepository.saveOrganizationInvitation(invitation),
+      ]);
+
+      expect(results.filter(({ status }) => status === 'fulfilled')).toHaveLength(1);
+      expect(results.find(({ status }) => status === 'rejected')).toMatchObject({
+        status: 'rejected',
+        reason: createOrganizationInvitationAlreadyExistsError(),
+      });
+      expect(await db.select().from(organizationInvitationsTable)).toHaveLength(1);
+    });
+
+    test('reactivating a historical invitation cannot create a second pending invitation', async () => {
+      const invitation = {
+        organizationId: 'org',
+        email: 'member@example.com',
+        inviterId: 'owner',
+        role: 'member' as const,
+        expiresAt: new Date('2025-10-12'),
+      };
+      const { db } = await createInMemoryDatabase({
+        users: [{ id: 'owner', email: 'owner@example.com' }],
+        organizations: [{ id: 'org', name: 'Organization' }],
+        organizationInvitations: [
+          { ...invitation, id: 'cancelled', status: 'cancelled' },
+          { ...invitation, id: 'pending', status: 'pending' },
+        ],
+      });
+      const organizationsRepository = createOrganizationsRepository({ db });
+
+      await expect(
+        organizationsRepository.updateOrganizationInvitation({
+          invitationId: 'cancelled',
+          status: 'pending',
+        }),
+      ).rejects.toThrow(createOrganizationInvitationAlreadyExistsError());
+
+      expect(
+        await db
+          .select({
+            id: organizationInvitationsTable.id,
+            status: organizationInvitationsTable.status,
+          })
+          .from(organizationInvitationsTable)
+          .orderBy(organizationInvitationsTable.id),
+      ).toEqual([
+        { id: 'cancelled', status: 'cancelled' },
+        { id: 'pending', status: 'pending' },
+      ]);
+    });
+  });
+
   describe('updateExpiredPendingInvitationsStatus', () => {
     test('the pending invitations that are expired (expiredAt < now) are updated to expired', async () => {
       const commonInvitation = {

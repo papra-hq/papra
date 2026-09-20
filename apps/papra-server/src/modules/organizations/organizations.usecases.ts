@@ -243,7 +243,8 @@ export function buildInviteMemberToOrganization({
     OrganizationsRepository,
     | 'getOrganizationMemberByUserId'
     | 'getOrganizationMemberByEmail'
-    | 'getInvitationForEmailAndOrganization'
+    | 'getPendingInvitationForEmailAndOrganization'
+    | 'updateExpiredPendingInvitationsStatus'
     | 'getOrganizationMembersCount'
     | 'getOrganizationPendingInvitationsCount'
     | 'saveOrganizationInvitation'
@@ -311,10 +312,13 @@ export function buildInviteMemberToOrganization({
       throw createUserAlreadyInOrganizationError();
     }
 
-    const { invitation } = await organizationsRepository.getInvitationForEmailAndOrganization({
-      email,
-      organizationId,
-    });
+    await organizationsRepository.updateExpiredPendingInvitationsStatus({ organizationId, now });
+
+    const { invitation } =
+      await organizationsRepository.getPendingInvitationForEmailAndOrganization({
+        email,
+        organizationId,
+      });
 
     if (invitation) {
       logger.error(
@@ -456,82 +460,139 @@ export async function updateOrganizationMemberRole({
   return { member: updatedMember };
 }
 
-export async function resendOrganizationInvitation({
-  invitationId,
-  userId,
+export function buildResendOrganizationInvitation({
   organizationsRepository,
-  emailsServices,
-  config,
+  getOrganizationPlan,
+  checkIfUserHasReachedOrganizationInvitationLimit,
+  sendOrganizationInvitationEmail,
+  expirationDelayDays,
   logger = createLogger({ namespace: 'organizations.resend-invitation' }),
-  now = new Date(),
+  clock = systemClock,
 }: {
-  invitationId: string;
-  userId: string;
-  organizationsRepository: OrganizationsRepository;
-  emailsServices: EmailsServices;
-  config: Config;
+  organizationsRepository: Pick<
+    OrganizationsRepository,
+    | 'getOrganizationInvitationById'
+    | 'getOrganizationMemberByUserId'
+    | 'getOrganizationMemberByEmail'
+    | 'updateExpiredPendingInvitationsStatus'
+    | 'getPendingInvitationForEmailAndOrganization'
+    | 'getOrganizationMembersCount'
+    | 'getOrganizationPendingInvitationsCount'
+    | 'updateOrganizationInvitation'
+  >;
+  getOrganizationPlan: (args: { organizationId: string }) => Promise<{
+    organizationPlan: { limits: { maxOrganizationsMembersCount: number } };
+  }>;
+  checkIfUserHasReachedOrganizationInvitationLimit: (args: {
+    userId: string;
+    now: Date;
+  }) => Promise<void>;
+  sendOrganizationInvitationEmail: (args: {
+    email: string;
+    organizationId: string;
+  }) => Promise<void>;
+  expirationDelayDays: number;
   logger?: Logger;
-  now?: Date;
+  clock?: Clock;
 }) {
-  const { invitation } = await organizationsRepository.getOrganizationInvitationById({
-    invitationId,
-  });
+  return async ({ invitationId, userId }: { invitationId: string; userId: string }) => {
+    const now = new Date(clock.now().epochMilliseconds);
+    const { invitation } = await organizationsRepository.getOrganizationInvitationById({
+      invitationId,
+      now,
+    });
 
-  if (!invitation) {
-    logger.error({ invitationId }, 'Invitation not found');
-    throw createForbiddenError();
-  }
+    if (!invitation) {
+      logger.error({ invitationId }, 'Invitation not found');
+      throw createForbiddenError();
+    }
 
-  if (
-    ![
-      ORGANIZATION_INVITATION_STATUS.EXPIRED,
-      ORGANIZATION_INVITATION_STATUS.CANCELLED,
-      ORGANIZATION_INVITATION_STATUS.REJECTED,
-    ].includes(invitation.status)
-  ) {
-    logger.error(
-      { invitationId, invitationStatus: invitation.status },
-      'Cannot resend invitation that is neither expired, cancelled nor rejected',
-    );
-    throw createForbiddenError();
-  }
+    if (
+      ![
+        ORGANIZATION_INVITATION_STATUS.EXPIRED,
+        ORGANIZATION_INVITATION_STATUS.CANCELLED,
+        ORGANIZATION_INVITATION_STATUS.REJECTED,
+      ].includes(invitation.status)
+    ) {
+      logger.error(
+        { invitationId, invitationStatus: invitation.status },
+        'Cannot resend invitation that is neither expired, cancelled nor rejected',
+      );
+      throw createForbiddenError();
+    }
 
-  const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({
-    userId,
-    organizationId: invitation.organizationId,
-  });
+    const { member: inviterMember } = await organizationsRepository.getOrganizationMemberByUserId({
+      userId,
+      organizationId: invitation.organizationId,
+    });
 
-  if (!inviterMember) {
-    logger.error({ invitationId, userId }, 'Inviter not found in organization');
-    throw createForbiddenError();
-  }
+    if (!inviterMember) {
+      logger.error({ invitationId, userId }, 'Inviter not found in organization');
+      throw createForbiddenError();
+    }
 
-  if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
-    logger.error(
-      {
-        invitationId,
-        userId,
-        memberId: inviterMember.id,
-        memberRole: inviterMember.role,
-      },
-      'Inviter does not have permission to resend invitation',
-    );
-    throw createForbiddenError();
-  }
+    if (![ORGANIZATION_ROLES.OWNER, ORGANIZATION_ROLES.ADMIN].includes(inviterMember.role)) {
+      logger.error(
+        {
+          invitationId,
+          userId,
+          memberId: inviterMember.id,
+          memberRole: inviterMember.role,
+        },
+        'Inviter does not have permission to resend invitation',
+      );
+      throw createForbiddenError();
+    }
 
-  await organizationsRepository.updateOrganizationInvitation({
-    invitationId,
-    status: ORGANIZATION_INVITATION_STATUS.PENDING,
-    expiresAt: addDays(now, config.organizations.invitationExpirationDelayDays),
-  });
+    const { organizationId, email } = invitation;
+    const { member } = await organizationsRepository.getOrganizationMemberByEmail({
+      organizationId,
+      email,
+    });
 
-  await sendOrganizationInvitationEmail({
-    email: invitation.email,
-    organizationId: invitation.organizationId,
-    organizationsRepository,
-    emailsServices,
-    config,
-  });
+    if (member) {
+      throw createUserAlreadyInOrganizationError();
+    }
+
+    await organizationsRepository.updateExpiredPendingInvitationsStatus({ organizationId, now });
+
+    const { invitation: pendingInvitation } =
+      await organizationsRepository.getPendingInvitationForEmailAndOrganization({
+        organizationId,
+        email,
+      });
+
+    if (pendingInvitation) {
+      throw createOrganizationInvitationAlreadyExistsError();
+    }
+
+    const { membersCount } = await organizationsRepository.getOrganizationMembersCount({
+      organizationId,
+    });
+    const { pendingInvitationsCount } =
+      await organizationsRepository.getOrganizationPendingInvitationsCount({ organizationId });
+    const { organizationPlan } = await getOrganizationPlan({ organizationId });
+
+    if (
+      membersCount + pendingInvitationsCount >=
+      organizationPlan.limits.maxOrganizationsMembersCount
+    ) {
+      throw createMaxOrganizationMembersCountReachedError();
+    }
+
+    await checkIfUserHasReachedOrganizationInvitationLimit({ userId, now });
+
+    await organizationsRepository.updateOrganizationInvitation({
+      invitationId,
+      status: ORGANIZATION_INVITATION_STATUS.PENDING,
+      expiresAt: addDays(now, expirationDelayDays),
+    });
+
+    await sendOrganizationInvitationEmail({
+      email,
+      organizationId,
+    });
+  };
 }
 
 export async function getOrganizationStorageLimits({

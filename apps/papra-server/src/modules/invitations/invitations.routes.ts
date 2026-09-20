@@ -9,10 +9,18 @@ import {
   ORGANIZATION_ROLES,
 } from '../organizations/organizations.constants';
 import { createOrganizationsRepository } from '../organizations/organizations.repository';
-import { resendOrganizationInvitation } from '../organizations/organizations.usecases';
+import {
+  buildResendOrganizationInvitation,
+  checkIfUserHasReachedOrganizationInvitationLimit,
+  sendOrganizationInvitationEmail,
+} from '../organizations/organizations.usecases';
+import { createPlanEntitlementsRepository } from '../plan-entitlements/plan-entitlements.repository';
+import { createPlansRepository } from '../plans/plans.repository';
+import { createGetOrganizationPlanUsecase } from '../plans/plans.usecases';
 import { createError } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { validateParams } from '../shared/validation/validation';
+import { createSubscriptionsRepository } from '../subscriptions/subscriptions.repository';
 import { createUsersRepository } from '../users/users.repository';
 
 const logger = createLogger({ namespace: 'invitations' });
@@ -216,7 +224,40 @@ function setupCancelInvitationRoute({ app, db }: RouteDefinitionContext) {
   );
 }
 
-function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDefinitionContext) {
+function setupResendInvitationRoute({
+  app,
+  db,
+  config,
+  emailsServices,
+  planEntitlementDefinitionRegistry,
+}: RouteDefinitionContext) {
+  const organizationsRepository = createOrganizationsRepository({ db });
+  const resendOrganizationInvitation = buildResendOrganizationInvitation({
+    organizationsRepository,
+    getOrganizationPlan: createGetOrganizationPlanUsecase({
+      subscriptionsRepository: createSubscriptionsRepository({ db }),
+      plansRepository: createPlansRepository({ config }),
+      planEntitlementsRepository: createPlanEntitlementsRepository({ db }),
+      planEntitlementDefinitionRegistry,
+    }),
+    checkIfUserHasReachedOrganizationInvitationLimit: async ({ userId, now }) =>
+      checkIfUserHasReachedOrganizationInvitationLimit({
+        userId,
+        now,
+        maxInvitationsPerDay: config.organizations.maxUserInvitationsPerDay,
+        organizationsRepository,
+      }),
+    sendOrganizationInvitationEmail: async ({ email, organizationId }) =>
+      sendOrganizationInvitationEmail({
+        email,
+        organizationId,
+        organizationsRepository,
+        emailsServices,
+        config,
+      }),
+    expirationDelayDays: config.organizations.invitationExpirationDelayDays,
+  });
+
   app.post(
     '/api/invitations/:invitationId/resend',
     requireAuthentication(),
@@ -229,14 +270,9 @@ function setupResendInvitationRoute({ app, db, config, emailsServices }: RouteDe
       const { invitationId } = context.req.valid('param');
       const { userId } = getUser({ context });
 
-      const organizationsRepository = createOrganizationsRepository({ db });
-
       await resendOrganizationInvitation({
         invitationId,
         userId,
-        organizationsRepository,
-        emailsServices,
-        config,
       });
 
       return context.body(null, 204);

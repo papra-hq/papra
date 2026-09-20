@@ -116,7 +116,7 @@ describe('migrations registry', () => {
         CREATE INDEX migrations_run_at_index ON migrations (run_at);
         CREATE INDEX "organization_ai_credits_usage_organization_id_created_at_index" ON "organization_ai_credits_usage" ("organization_id", "created_at");
         CREATE INDEX "organization_ai_credits_usage_organization_id_index" ON "organization_ai_credits_usage" ("organization_id");
-        CREATE UNIQUE INDEX "organization_invitations_organization_email_unique" ON "organization_invitations" ("organization_id","email");
+        CREATE UNIQUE INDEX organization_invitations_pending_organization_email_unique ON organization_invitations (organization_id, email) WHERE status = 'pending';
         CREATE INDEX "organization_members_user_id_index" ON "organization_members" ("user_id");
         CREATE UNIQUE INDEX "organization_members_user_organization_unique" ON "organization_members" ("organization_id","user_id");
         CREATE INDEX "organization_subscriptions_organization_id_index" ON "organization_subscriptions" ("organization_id");
