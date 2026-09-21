@@ -39,6 +39,14 @@ const paidProperty = {
   options: [],
 };
 
+const invoiceDateProperty = {
+  id: 'cpd_invoice_date',
+  key: 'invoiceDate',
+  name: 'Invoice date',
+  type: 'date' as const,
+  options: [],
+};
+
 const categoryProperty = {
   id: 'cpd_category',
   key: 'category',
@@ -375,6 +383,30 @@ describe('ai-extraction.models', () => {
               vendor: '',
               amount: Number.NaN,
               category: 'Unknown',
+            },
+          },
+        }),
+      ).to.eql([]);
+    });
+
+    test('keeps valid date strings and rejects impossible calendar dates', () => {
+      expect(
+        resolveExtractedCustomPropertyValues({
+          propertiesToExtract: [invoiceDateProperty],
+          response: {
+            customProperties: {
+              invoiceDate: '2024-03-12',
+            },
+          },
+        }),
+      ).to.eql([{ propertyDefinitionId: 'cpd_invoice_date', value: '2024-03-12' }]);
+
+      expect(
+        resolveExtractedCustomPropertyValues({
+          propertiesToExtract: [invoiceDateProperty],
+          response: {
+            customProperties: {
+              invoiceDate: '2024-02-31',
             },
           },
         }),

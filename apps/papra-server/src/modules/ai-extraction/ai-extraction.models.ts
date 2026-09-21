@@ -415,7 +415,7 @@ export function resolveExtractedCustomPropertyValues({
     }
 
     if (property.type === 'date') {
-      if (!isNonEmptyString(rawValue)) {
+      if (!isNonEmptyString(rawValue) || !parseExtractedDocumentDate({ value: rawValue })) {
         continue;
       }
 
