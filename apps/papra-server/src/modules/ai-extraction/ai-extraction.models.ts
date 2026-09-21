@@ -271,8 +271,16 @@ export function parseExtractedDocumentDate({
   }
 
   const date = new Date(`${isoDate}T00:00:00.000Z`);
+  const [year, month, day] = isoDate.split('-').map(Number);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() + 1 !== month ||
+    date.getUTCDate() !== day
+  ) {
+    return undefined;
+  }
     return undefined;
   }
 
