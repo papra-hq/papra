@@ -1,7 +1,7 @@
 import type { Database } from '../app/database/database.types';
 import type { DbInsertableDocument } from './documents.types';
 import { injectArguments, safely } from '@corentinth/chisels';
-import { and, count, desc, eq, inArray, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, lt, sql } from 'drizzle-orm';
 import { createIterator } from '../app/database/database.usecases';
 import { createOrganizationNotFoundError } from '../organizations/organizations.errors';
 import { chunkArray } from '../shared/arrays/arrays.utils';
@@ -11,7 +11,11 @@ import { withPagination } from '../shared/db/pagination';
 import { createError } from '../shared/errors/errors';
 import { omitUndefined } from '../shared/objects';
 import { isDefined, isNil, uniq } from '../shared/utils';
-import { createDocumentAlreadyExistsError, createDocumentNotFoundError } from './documents.errors';
+import {
+  createDocumentAlreadyExistsError,
+  createDocumentConcurrentUpdateError,
+  createDocumentNotFoundError,
+} from './documents.errors';
 import { documentsTable } from './documents.table';
 
 export type DocumentsRepository = ReturnType<typeof createDocumentsRepository>;
@@ -457,6 +461,8 @@ async function updateDocument({
   content,
   documentDate,
   notes,
+  expectedName,
+  expectedDocumentDate,
   db,
 }: {
   documentId: string;
@@ -465,17 +471,34 @@ async function updateDocument({
   content?: string;
   documentDate?: Date | null;
   notes?: string;
+  expectedName?: string;
+  expectedDocumentDate?: Date | null;
   db: Database;
 }) {
+  const hasExpectedState = expectedName !== undefined || expectedDocumentDate !== undefined;
+
   const [document] = await db
     .update(documentsTable)
     .set(omitUndefined({ name, content, documentDate, notes }))
     .where(
-      and(eq(documentsTable.id, documentId), eq(documentsTable.organizationId, organizationId)),
+      and(
+        eq(documentsTable.id, documentId),
+        eq(documentsTable.organizationId, organizationId),
+        expectedName === undefined ? undefined : eq(documentsTable.name, expectedName),
+        expectedDocumentDate === undefined
+          ? undefined
+          : expectedDocumentDate === null
+            ? isNull(documentsTable.documentDate)
+            : eq(documentsTable.documentDate, expectedDocumentDate),
+      ),
     )
     .returning();
 
   if (isNil(document)) {
+    if (hasExpectedState) {
+      throw createDocumentConcurrentUpdateError();
+    }
+
     throw createDocumentNotFoundError();
   }
 

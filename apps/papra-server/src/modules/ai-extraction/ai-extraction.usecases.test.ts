@@ -341,5 +341,82 @@ describe('ai-extraction usecases', () => {
         },
       ]);
     });
+
+    test('does not overwrite metadata that changes after the post-model reread', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_vendor',
+            organizationId: 'org_1',
+            name: 'Vendor',
+            key: 'vendor',
+            type: 'text',
+          },
+        ],
+      });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: {
+          documentDate: '2024-03-12',
+          filename: 'AI Invoice',
+          customProperties: { vendor: 'Acme Corp' },
+        },
+      });
+
+      const originalUpdateDocument = deps.documentsRepository.updateDocument;
+      deps.documentsRepository.updateDocument = async (args) => {
+        if (args.expectedName !== undefined || args.expectedDocumentDate !== undefined) {
+          await originalUpdateDocument({
+            documentId: args.documentId,
+            organizationId: args.organizationId,
+            name: 'User renamed.pdf',
+            documentDate: new Date('2023-01-01T00:00:00.000Z'),
+          });
+        }
+
+        return originalUpdateDocument(args);
+      };
+
+      const originalSetValue = deps.customPropertiesRepository.setDocumentCustomPropertyValue;
+      deps.customPropertiesRepository.setDocumentCustomPropertyValue = async (args) => {
+        if (args.expectedAbsent) {
+          await originalSetValue({
+            documentId: args.documentId,
+            propertyDefinitionId: args.propertyDefinitionId,
+            values: [{ textValue: 'User vendor' }],
+          });
+        }
+
+        return originalSetValue(args);
+      };
+
+      await extractDocumentMetadata({
+        ...deps,
+        aiServices,
+        logger,
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings(),
+      });
+
+      expect(generateStructuredData).toHaveBeenCalledOnce();
+
+      const [document] = await deps.db.select().from(documentsTable);
+      expect(document).toMatchObject({
+        name: 'User renamed.pdf',
+        originalName: 'scan.pdf',
+        documentDate: new Date('2023-01-01T00:00:00.000Z'),
+      });
+
+      const customPropertyValues = await deps.db.select().from(documentCustomPropertyValuesTable);
+      expect(customPropertyValues).toMatchObject([
+        {
+          propertyDefinitionId: 'cpd_vendor',
+          textValue: 'User vendor',
+        },
+      ]);
+    });
   });
 });

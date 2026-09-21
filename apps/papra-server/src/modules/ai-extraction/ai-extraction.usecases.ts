@@ -6,9 +6,13 @@ import type { DocumentsRepository } from '../documents/documents.repository';
 import type { EventServices } from '../app/events/events.services';
 import type { OrganizationsRepository } from '../organizations/organizations.repository';
 import type { ResolveOrganizationSettingsUsecase } from '../organizations/organization-settings/organization-settings.usecases';
-import { createDocumentNotFoundError } from '../documents/documents.errors';
+import {
+  createDocumentNotFoundError,
+  DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE,
+} from '../documents/documents.errors';
 import { updateDocument } from '../documents/documents.usecases';
 import { setDocumentCustomPropertyValue } from '../custom-properties/custom-properties.usecases';
+import { isErrorWithCode } from '../shared/errors/errors';
 import { createLogger } from '../shared/logger/logger';
 import { ensureModelId } from '../ai/ai.models';
 import { isNonEmptyString } from '../shared/utils';
@@ -210,13 +214,26 @@ async function applyAiExtractionResult({
   }
 
   if (changes.name !== undefined || changes.documentDate !== undefined) {
-    await updateDocument({
-      documentId,
-      organizationId,
-      documentsRepository,
-      eventServices,
-      changes,
-    });
+    try {
+      await updateDocument({
+        documentId,
+        organizationId,
+        documentsRepository,
+        eventServices,
+        changes,
+        expectedName: document.name,
+        expectedDocumentDate: document.documentDate ?? null,
+      });
+    } catch (error) {
+      if (!isErrorWithCode({ error, code: DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE })) {
+        throw error;
+      }
+
+      logger.info(
+        { documentId, organizationId },
+        'Skipped applying extracted document name or date because the document was modified concurrently',
+      );
+    }
   }
 
   if (!currentTargets.shouldExtractCustomProperties) {
@@ -229,18 +246,26 @@ async function applyAiExtractionResult({
   });
 
   const results = await Promise.allSettled(
-    customPropertyValues.map(async ({ propertyDefinitionId, value }) =>
-      setDocumentCustomPropertyValue({
+    customPropertyValues.map(async ({ propertyDefinitionId, value }) => {
+      const { applied } = await setDocumentCustomPropertyValue({
         documentId,
         propertyDefinitionId,
         organizationId,
         value,
+        expectedAbsent: true,
         customPropertiesRepository,
         customPropertiesOptionsRepository,
         organizationsRepository,
         documentsRepository,
-      }),
-    ),
+      });
+
+      if (!applied) {
+        logger.info(
+          { documentId, organizationId, propertyDefinitionId },
+          'Skipped applying extracted custom property because it was set concurrently',
+        );
+      }
+    }),
   );
 
   const failedCount = results.filter((result) => result.status === 'rejected').length;
