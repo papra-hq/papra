@@ -176,6 +176,13 @@ export async function fetchOrganizationSettings({ organizationId }: { organizati
           canCreateNewTags: boolean;
           maxTags: number;
         };
+        extraction: {
+          isEnabled: boolean;
+          extractDate: boolean;
+          extractCustomProperties: boolean;
+          renameDocuments: boolean;
+          filenamePattern: string;
+        };
       };
     };
   }>({
@@ -199,6 +206,13 @@ export async function updateOrganizationSettings({
         isEnabled?: boolean;
         canCreateNewTags?: boolean;
         maxTags?: number;
+      };
+      extraction?: {
+        isEnabled?: boolean;
+        extractDate?: boolean;
+        extractCustomProperties?: boolean;
+        renameDocuments?: boolean;
+        filenamePattern?: string;
       };
     };
   };

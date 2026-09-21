@@ -4,7 +4,7 @@ description: Configure LLM providers in Papra to enable AI features like auto ta
 slug: guides/llm-configuration
 ---
 
-This guide explains how to configure LLM providers in Papra. Once a provider is configured, it can be used to power AI features like [document auto tagging](/guides/auto-tagging).
+This guide explains how to configure LLM providers in Papra. Once a provider is configured, it can be used to power AI features like [document auto tagging](/guides/auto-tagging) and [AI document extraction](/guides/ai-extraction).
 
 ## Enabling AI features
 
@@ -37,7 +37,7 @@ The `AI_DEFAULT_MODEL` variable defines which model is used by AI features when 
 AI_DEFAULT_MODEL=openai://gpt-4o-mini
 ```
 
-Individual features can override this. For example, auto tagging reads `AUTO_TAGGING_MODEL` first and falls back to `AI_DEFAULT_MODEL` if it is not set.
+Individual features can override this. For example, auto tagging reads `AUTO_TAGGING_MODEL` first and falls back to `AI_DEFAULT_MODEL` if it is not set. Document extraction reads `AI_EXTRACTION_MODEL` the same way.
 
 ## Supported providers
 

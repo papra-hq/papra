@@ -71,6 +71,15 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
                 ),
               }),
             ),
+            extraction: v.optional(
+              v.strictObject({
+                isEnabled: v.optional(v.boolean()),
+                extractDate: v.optional(v.boolean()),
+                extractCustomProperties: v.optional(v.boolean()),
+                renameDocuments: v.optional(v.boolean()),
+                filenamePattern: v.optional(v.pipe(v.string(), v.maxLength(255))),
+              }),
+            ),
           }),
         ),
       }),
@@ -92,6 +101,12 @@ export function setupUpdateOrganizationSettingsRoute({ app, db }: RouteDefinitio
             organizationSettingsPartials.ai?.autoTagging?.canCreateNewTags,
           aiAutoTaggingEnabled: organizationSettingsPartials.ai?.autoTagging?.isEnabled,
           aiAutoTaggingMaxTags: organizationSettingsPartials.ai?.autoTagging?.maxTags,
+          aiExtractionEnabled: organizationSettingsPartials.ai?.extraction?.isEnabled,
+          aiExtractionExtractDate: organizationSettingsPartials.ai?.extraction?.extractDate,
+          aiExtractionExtractCustomProperties:
+            organizationSettingsPartials.ai?.extraction?.extractCustomProperties,
+          aiExtractionRenameDocuments: organizationSettingsPartials.ai?.extraction?.renameDocuments,
+          aiExtractionFilenamePattern: organizationSettingsPartials.ai?.extraction?.filenamePattern,
         },
       });
 

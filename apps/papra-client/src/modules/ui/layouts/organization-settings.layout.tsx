@@ -24,6 +24,11 @@ export const OrganizationSettingsLayout: ParentComponent = (props) => {
           icon: 'i-tabler-tag',
         },
         {
+          label: t('layout.menu.ai-extraction'),
+          href: `/organizations/${params.organizationId}/settings/ai-extraction`,
+          icon: 'i-tabler-sparkles',
+        },
+        {
           label: t('layout.menu.usage'),
           href: `/organizations/${params.organizationId}/settings/usage`,
           icon: 'i-tabler-chart-bar',

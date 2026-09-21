@@ -20,4 +20,13 @@ export const organizationSettingsTable = sqliteTable('organization_settings', {
   }),
   aiAutoTaggingMaxTags: integer('ai_auto_tagging_max_tags'),
   aiAutoTaggingModelId: text('ai_auto_tagging_model_id'),
+
+  // AI document extraction settings
+  aiExtractionEnabled: integer('ai_extraction_enabled', { mode: 'boolean' }),
+  aiExtractionExtractDate: integer('ai_extraction_extract_date', { mode: 'boolean' }),
+  aiExtractionExtractCustomProperties: integer('ai_extraction_extract_custom_properties', {
+    mode: 'boolean',
+  }),
+  aiExtractionRenameDocuments: integer('ai_extraction_rename_documents', { mode: 'boolean' }),
+  aiExtractionFilenamePattern: text('ai_extraction_filename_pattern'),
 });
