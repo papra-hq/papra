@@ -281,8 +281,6 @@ export function parseExtractedDocumentDate({
   ) {
     return undefined;
   }
-    return undefined;
-  }
 
   return date;
 }

@@ -130,7 +130,6 @@ export async function extractDocumentMetadata({
   logger.info({ documentId, organizationId, durationMs }, 'AI extraction completed');
 
   await applyAiExtractionResult({
-    document,
     documentId,
     organizationId,
     targets,
@@ -145,7 +144,6 @@ export async function extractDocumentMetadata({
 }
 
 async function applyAiExtractionResult({
-  document,
   documentId,
   organizationId,
   targets,
@@ -157,11 +155,6 @@ async function applyAiExtractionResult({
   eventServices,
   logger,
 }: {
-  document: {
-    name: string;
-    originalName: string;
-    documentDate?: Date | null;
-  };
   documentId: string;
   organizationId: string;
   targets: PendingExtractionTargets;
@@ -173,9 +166,31 @@ async function applyAiExtractionResult({
   eventServices: EventServices;
   logger: Logger;
 }) {
+  const [{ document }, { values }] = await Promise.all([
+    documentsRepository.getDocumentById({ documentId, organizationId }),
+    customPropertiesRepository.getDocumentCustomPropertyValues({ documentId }),
+  ]);
+
+  if (!document) {
+    throw createDocumentNotFoundError();
+  }
+
+  const currentTargets = getPendingExtractionTargets({
+    document,
+    settings: {
+      isEnabled: true,
+      extractDate: targets.shouldExtractDate,
+      extractCustomProperties: targets.shouldExtractCustomProperties,
+      renameDocuments: targets.shouldRename,
+      filenamePattern: '',
+    },
+    extractableProperties: targets.propertiesToExtract,
+    existingPropertyDefinitionIds: new Set(values.map((row) => row.value.propertyDefinitionId)),
+  });
+
   const changes: { name?: string; documentDate?: Date } = {};
 
-  if (targets.shouldExtractDate) {
+  if (currentTargets.shouldExtractDate) {
     const documentDate = parseExtractedDocumentDate({ value: extractionResponse.documentDate });
 
     if (documentDate) {
@@ -183,7 +198,7 @@ async function applyAiExtractionResult({
     }
   }
 
-  if (targets.shouldRename) {
+  if (currentTargets.shouldRename) {
     const name = resolveExtractedFileName({
       proposedName: extractionResponse.filename,
       originalName: document.originalName,
@@ -204,13 +219,13 @@ async function applyAiExtractionResult({
     });
   }
 
-  if (!targets.shouldExtractCustomProperties) {
+  if (!currentTargets.shouldExtractCustomProperties) {
     return;
   }
 
   const customPropertyValues = resolveExtractedCustomPropertyValues({
     response: extractionResponse,
-    propertiesToExtract: targets.propertiesToExtract,
+    propertiesToExtract: currentTargets.propertiesToExtract,
   });
 
   const results = await Promise.allSettled(

@@ -292,6 +292,11 @@ describe('ai-extraction.models', () => {
       expect(parseExtractedDocumentDate({ value: 'not-a-date' })).to.eql(undefined);
       expect(parseExtractedDocumentDate({ value: '' })).to.eql(undefined);
     });
+
+    test('rejects impossible calendar dates that JS would otherwise roll over', () => {
+      expect(parseExtractedDocumentDate({ value: '2024-02-31' })).to.eql(undefined);
+      expect(parseExtractedDocumentDate({ value: '2023-06-31' })).to.eql(undefined);
+    });
   });
 
   describe('resolveExtractedFileName', () => {
