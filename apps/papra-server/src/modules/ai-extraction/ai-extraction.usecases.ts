@@ -213,27 +213,28 @@ async function applyAiExtractionResult({
     }
   }
 
-  if (changes.name !== undefined || changes.documentDate !== undefined) {
-    try {
-      await updateDocument({
-        documentId,
-        organizationId,
-        documentsRepository,
-        eventServices,
-        changes,
-        expectedName: document.name,
-        expectedDocumentDate: document.documentDate ?? null,
-      });
-    } catch (error) {
-      if (!isErrorWithCode({ error, code: DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE })) {
-        throw error;
-      }
+  if (changes.documentDate !== undefined) {
+    await applyExtractedDocumentField({
+      documentId,
+      organizationId,
+      documentsRepository,
+      eventServices,
+      logger,
+      changes: { documentDate: changes.documentDate },
+      expectedDocumentDate: document.documentDate ?? null,
+    });
+  }
 
-      logger.info(
-        { documentId, organizationId },
-        'Skipped applying extracted document name or date because the document was modified concurrently',
-      );
-    }
+  if (changes.name !== undefined) {
+    await applyExtractedDocumentField({
+      documentId,
+      organizationId,
+      documentsRepository,
+      eventServices,
+      logger,
+      changes: { name: changes.name },
+      expectedName: document.name,
+    });
   }
 
   if (!currentTargets.shouldExtractCustomProperties) {
@@ -268,12 +269,52 @@ async function applyAiExtractionResult({
     }),
   );
 
-  const failedCount = results.filter((result) => result.status === 'rejected').length;
+  const failures = results.flatMap((result) =>
+    result.status === 'rejected' ? [result.reason] : [],
+  );
 
-  if (failedCount > 0) {
-    logger.warn(
-      { documentId, organizationId, failedCount, total: results.length },
-      'Some extracted custom properties could not be applied',
+  if (failures.length > 0) {
+    throw new AggregateError(failures, 'Some extracted custom properties could not be applied');
+  }
+}
+
+async function applyExtractedDocumentField({
+  documentId,
+  organizationId,
+  documentsRepository,
+  eventServices,
+  logger,
+  changes,
+  expectedName,
+  expectedDocumentDate,
+}: {
+  documentId: string;
+  organizationId: string;
+  documentsRepository: DocumentsRepository;
+  eventServices: EventServices;
+  logger: Logger;
+  changes: { name?: string; documentDate?: Date };
+  expectedName?: string;
+  expectedDocumentDate?: Date | null;
+}) {
+  try {
+    await updateDocument({
+      documentId,
+      organizationId,
+      documentsRepository,
+      eventServices,
+      changes,
+      expectedName,
+      expectedDocumentDate,
+    });
+  } catch (error) {
+    if (!isErrorWithCode({ error, code: DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE })) {
+      throw error;
+    }
+
+    logger.info(
+      { documentId, organizationId },
+      'Skipped applying extracted document name or date because the document was modified concurrently',
     );
   }
 }

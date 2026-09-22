@@ -5,6 +5,7 @@ import { ORGANIZATION_ROLES } from '../organizations/organizations.constants';
 import {
   createDocumentAlreadyExistsError,
   createDocumentConcurrentUpdateError,
+  createDocumentNotFoundError,
 } from './documents.errors';
 import { createDocumentsRepository } from './documents.repository';
 import { documentsTable } from './documents.table';
@@ -428,6 +429,24 @@ describe('documents repository', () => {
         name: 'User renamed.pdf',
         documentDate: new Date('2023-01-01T00:00:00.000Z'),
       });
+    });
+
+    test('throws not found when a guarded update targets a missing document', async () => {
+      const { db } = await createInMemoryDatabase({
+        organizations: [{ id: 'organization-1', name: 'Organization 1' }],
+      });
+
+      const documentsRepository = createDocumentsRepository({ db });
+
+      await expect(
+        documentsRepository.updateDocument({
+          documentId: 'document-1',
+          organizationId: 'organization-1',
+          name: '2024-03-12 Invoice.pdf',
+          expectedName: 'scan.pdf',
+          expectedDocumentDate: null,
+        }),
+      ).rejects.toThrow(createDocumentNotFoundError());
     });
   });
 });

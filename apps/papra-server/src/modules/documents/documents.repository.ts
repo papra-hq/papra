@@ -496,7 +496,15 @@ async function updateDocument({
 
   if (isNil(document)) {
     if (hasExpectedState) {
-      throw createDocumentConcurrentUpdateError();
+      const { document: existingDocument } = await getDocumentById({
+        documentId,
+        organizationId,
+        db,
+      });
+
+      if (!isNil(existingDocument)) {
+        throw createDocumentConcurrentUpdateError();
+      }
     }
 
     throw createDocumentNotFoundError();

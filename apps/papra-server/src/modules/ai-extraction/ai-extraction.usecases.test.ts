@@ -418,5 +418,116 @@ describe('ai-extraction usecases', () => {
         },
       ]);
     });
+
+    test('still applies the document date when only the name changes after the reread', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+      });
+      const { aiServices, generateStructuredData } = createTestAiServices({
+        response: {
+          documentDate: '2024-03-12',
+          filename: 'AI Invoice',
+        },
+      });
+
+      const originalUpdateDocument = deps.documentsRepository.updateDocument;
+      deps.documentsRepository.updateDocument = async (args) => {
+        if (args.expectedName !== undefined) {
+          await originalUpdateDocument({
+            documentId: args.documentId,
+            organizationId: args.organizationId,
+            name: 'User renamed.pdf',
+          });
+        }
+
+        return originalUpdateDocument(args);
+      };
+
+      await extractDocumentMetadata({
+        ...deps,
+        aiServices,
+        logger,
+        documentId: 'doc_1',
+        organizationId: 'org_1',
+        resolveOrganizationSettings: createTestResolveOrganizationSettings({
+          extractCustomProperties: false,
+        }),
+      });
+
+      expect(generateStructuredData).toHaveBeenCalledOnce();
+
+      const [document] = await deps.db.select().from(documentsTable);
+      expect(document).toMatchObject({
+        name: 'User renamed.pdf',
+        originalName: 'scan.pdf',
+        documentDate: new Date('2024-03-12T00:00:00.000Z'),
+      });
+    });
+
+    test('rethrows unexpected custom property write failures after applying the rest', async () => {
+      const { logger } = createTestLogger();
+      const deps = await createTestDeps({
+        organizations: [{ id: 'org_1', name: 'Org 1' }],
+        documents: [baseDocument],
+        customPropertyDefinitions: [
+          {
+            id: 'cpd_vendor',
+            organizationId: 'org_1',
+            name: 'Vendor',
+            key: 'vendor',
+            type: 'text',
+          },
+          {
+            id: 'cpd_amount',
+            organizationId: 'org_1',
+            name: 'Amount',
+            key: 'amount',
+            type: 'number',
+          },
+        ],
+      });
+      const { aiServices } = createTestAiServices({
+        response: {
+          documentDate: '2024-03-12',
+          customProperties: {
+            vendor: 'Acme Corp',
+            amount: 42.5,
+          },
+        },
+      });
+
+      const originalSetValue = deps.customPropertiesRepository.setDocumentCustomPropertyValue;
+      deps.customPropertiesRepository.setDocumentCustomPropertyValue = async (args) => {
+        if (args.propertyDefinitionId === 'cpd_amount') {
+          throw new Error('db write failed');
+        }
+
+        return originalSetValue(args);
+      };
+
+      await expect(
+        extractDocumentMetadata({
+          ...deps,
+          aiServices,
+          logger,
+          documentId: 'doc_1',
+          organizationId: 'org_1',
+          resolveOrganizationSettings: createTestResolveOrganizationSettings({
+            extractDate: false,
+            renameDocuments: false,
+          }),
+        }),
+      ).rejects.toThrow(AggregateError);
+
+      const customPropertyValues = await deps.db.select().from(documentCustomPropertyValuesTable);
+      expect(customPropertyValues).toMatchObject([
+        {
+          propertyDefinitionId: 'cpd_vendor',
+          textValue: 'Acme Corp',
+        },
+      ]);
+    });
   });
 });
