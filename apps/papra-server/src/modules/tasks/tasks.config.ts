@@ -10,7 +10,7 @@ const RUN_ALL_SCHEDULED_TASKS_ON_STARTUP_ENV = 'RUN_SCHEDULED_TASKS_ON_STARTUP_D
 export const tasksConfig = {
   persistence: {
     driverName: {
-      doc: `The driver to use for the tasks persistence, values can be one of: ${tasksDriverNames.map((x) => `\`${x}\``).join(', ')}. Using the memory driver is enough when running a single instance of the server.`,
+      doc: `The driver to use for the tasks persistence, values can be one of: ${tasksDriverNames.map((x) => `\`${x}\``).join(', ')}. The \`memory\` driver keeps queued tasks in the process only, so any task still queued is lost when the server stops, including on a restart of a single instance. Use \`libsql\` for queued tasks to survive a restart.`,
       schema: v.picklist(tasksDriverNames),
       default: 'memory',
       env: 'TASKS_PERSISTENCE_DRIVER',
