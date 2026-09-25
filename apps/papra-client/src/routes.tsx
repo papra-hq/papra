@@ -54,6 +54,7 @@ import { CreateWebhookPage } from './modules/webhooks/pages/create-webhook.page'
 import { EditWebhookPage } from './modules/webhooks/pages/edit-webhook.page';
 import { WebhooksPage } from './modules/webhooks/pages/webhooks.page';
 import { OrganizationsAutoTaggingSettingsPage } from './modules/organizations/pages/organizations-auto-tagging-settings.page';
+import { OrganizationsAiExtractionSettingsPage } from './modules/organizations/pages/organizations-ai-extraction-settings.page';
 
 export const routes: RouteDefinition[] = [
   {
@@ -213,6 +214,10 @@ export const routes: RouteDefinition[] = [
               {
                 path: '/auto-tagging',
                 component: OrganizationsAutoTaggingSettingsPage,
+              },
+              {
+                path: '/ai-extraction',
+                component: OrganizationsAiExtractionSettingsPage,
               },
               {
                 path: '/usage',

@@ -59,6 +59,20 @@ export async function resolveOrganizationSettings({
             config.autoTagging.modelId ??
             config.ai.defaultModelId,
         },
+        extraction: {
+          isEnabled: organizationRawSettings?.aiExtractionEnabled ?? false,
+
+          extractDate: organizationRawSettings?.aiExtractionExtractDate ?? true,
+
+          extractCustomProperties:
+            organizationRawSettings?.aiExtractionExtractCustomProperties ?? true,
+
+          renameDocuments: organizationRawSettings?.aiExtractionRenameDocuments ?? false,
+
+          filenamePattern: organizationRawSettings?.aiExtractionFilenamePattern ?? '',
+
+          modelId: config.aiExtraction.modelId ?? config.ai.defaultModelId,
+        },
       },
     },
   };
