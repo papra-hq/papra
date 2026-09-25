@@ -1,5 +1,6 @@
 import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/solid-table';
 import type { Accessor, Component, Setter } from 'solid-js';
+import type { CustomPropertyDefinition } from '@/modules/custom-properties/custom-properties.types';
 import type { Document } from '../documents.types';
 import type { Pagination } from '@/modules/shared/pagination/pagination.types';
 import type { Tag } from '@/modules/tags/tags.types';
@@ -11,7 +12,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
 } from '@tanstack/solid-table';
-import { For, Match, Show, Switch } from 'solid-js';
+import { createMemo, For, Match, Show, Switch } from 'solid-js';
 import { RelativeTime } from '@/modules/i18n/components/RelativeTime';
 import { useI18n } from '@/modules/i18n/i18n.provider';
 import { cn } from '@/modules/shared/style/cn';
@@ -38,6 +39,10 @@ import {
   getDocumentNameExtension,
   getDocumentNameWithoutExtension,
 } from '../document.models';
+import {
+  formatDocumentCustomPropertyValue,
+  getCustomPropertyDocumentColumnId,
+} from '../document-columns.models';
 import { DocumentManagementDropdown } from './document-management-dropdown.component';
 
 const selectionColumn: ColumnDef<Document> = {
@@ -75,40 +80,74 @@ const selectionColumn: ColumnDef<Document> = {
   enableHiding: false,
 };
 
-export const documentDateColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.document-date')}</span>;
-  },
-  accessorKey: 'documentDate',
-  enableSorting: true,
-  cell: (data) => {
-    const { t } = useI18n();
-    const value = data.getValue<Date | null | undefined>();
-    return (
-      <span class="text-muted-foreground hidden sm:block">
-        <Show
-          when={value}
-          fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
-        >
-          {(date) => <RelativeTime date={date()} />}
-        </Show>
-      </span>
-    );
-  },
-};
+export function createDocumentMetadataColumns({
+  hideOnSmallScreens = true,
+}: {
+  hideOnSmallScreens?: boolean;
+} = {}) {
+  const visibilityClass = hideOnSmallScreens ? 'hidden sm:block' : 'block';
 
-export const createdAtColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.created')}</span>;
-  },
-  accessorKey: 'createdAt',
-  enableSorting: true,
-  cell: (data) => (
-    <RelativeTime class="text-muted-foreground hidden sm:block" date={data.getValue<Date>()} />
-  ),
-};
+  return {
+    documentDateColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return (
+          <span class={visibilityClass}>{t('documents.list.table.headers.document-date')}</span>
+        );
+      },
+      accessorKey: 'documentDate',
+      enableSorting: true,
+      cell: (data) => {
+        const { t } = useI18n();
+        const value = data.getValue<Date | null | undefined>();
+        return (
+          <span class={cn('text-muted-foreground', visibilityClass)}>
+            <Show
+              when={value}
+              fallback={<span class="text-muted-foreground/50">{t('documents.info.no-date')}</span>}
+            >
+              {(date) => <RelativeTime date={date()} />}
+            </Show>
+          </span>
+        );
+      },
+    },
+    createdAtColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return <span class={visibilityClass}>{t('documents.list.table.headers.created')}</span>;
+      },
+      accessorKey: 'createdAt',
+      enableSorting: true,
+      cell: (data) => (
+        <RelativeTime
+          class={cn('text-muted-foreground', visibilityClass)}
+          date={data.getValue<Date>()}
+        />
+      ),
+    },
+    tagsColumn: {
+      header: () => {
+        const { t } = useI18n();
+        return <span class={visibilityClass}>{t('documents.list.table.headers.tags')}</span>;
+      },
+      accessorKey: 'tags',
+      enableSorting: false,
+      cell: (data) => (
+        <DocumentTagsList
+          tags={data.getValue<Tag[]>()}
+          tagClass="text-xs text-muted-foreground"
+          triggerClass="size-6"
+          documentId={data.row.original.id}
+          organizationId={data.row.original.organizationId}
+          asLink
+        />
+      ),
+    },
+  } satisfies Record<'documentDateColumn' | 'createdAtColumn' | 'tagsColumn', ColumnDef<Document>>;
+}
+
+export const { documentDateColumn, createdAtColumn, tagsColumn } = createDocumentMetadataColumns();
 
 export const deletedAtColumn: ColumnDef<Document> = {
   header: () => {
@@ -135,24 +174,81 @@ export const standardActionsColumn: ColumnDef<Document> = {
   ),
 };
 
-export const tagsColumn: ColumnDef<Document> = {
-  header: () => {
-    const { t } = useI18n();
-    return <span class="hidden sm:block">{t('documents.list.table.headers.tags')}</span>;
-  },
-  accessorKey: 'tags',
-  enableSorting: false,
-  cell: (data) => (
-    <DocumentTagsList
-      tags={data.getValue<Tag[]>()}
-      tagClass="text-xs text-muted-foreground"
-      triggerClass="size-6"
-      documentId={data.row.original.id}
-      organizationId={data.row.original.organizationId}
-      asLink
-    />
-  ),
+export type DocumentColumnOption = {
+  id: string;
+  label: string;
+  column: ColumnDef<Document>;
 };
+
+const DocumentCustomPropertyValue: Component<{
+  definition: CustomPropertyDefinition;
+  document: Document;
+}> = (props) => {
+  const { formatDate, t } = useI18n();
+  const displayValue = createMemo(() =>
+    formatDocumentCustomPropertyValue({
+      definition: props.definition,
+      customProperties: props.document.customProperties,
+      formatDate,
+      booleanLabels: {
+        true: t('documents.list.columns.boolean.true'),
+        false: t('documents.list.columns.boolean.false'),
+      },
+    }),
+  );
+
+  return (
+    <Show
+      when={displayValue()}
+      keyed
+      fallback={
+        <span
+          class="text-muted-foreground/50"
+          aria-label={t('documents.custom-properties.no-value')}
+        >
+          -
+        </span>
+      }
+    >
+      {(value) => (
+        <span class="block max-w-48 truncate text-muted-foreground" title={value}>
+          {value}
+        </span>
+      )}
+    </Show>
+  );
+};
+
+export function createDocumentCustomPropertyColumnOptions({
+  propertyDefinitions,
+}: {
+  propertyDefinitions: CustomPropertyDefinition[];
+}): DocumentColumnOption[] {
+  return propertyDefinitions
+    .toSorted((a, b) => a.displayOrder - b.displayOrder)
+    .map((definition) => {
+      const id = getCustomPropertyDocumentColumnId({
+        propertyDefinitionId: definition.id,
+      });
+
+      return {
+        id,
+        label: definition.name,
+        column: {
+          id,
+          header: () => (
+            <span class="block max-w-48 truncate" title={definition.name}>
+              {definition.name}
+            </span>
+          ),
+          enableSorting: false,
+          cell: (data) => (
+            <DocumentCustomPropertyValue definition={definition} document={data.row.original} />
+          ),
+        },
+      };
+    });
+}
 
 export const DocumentsPaginatedList: Component<{
   documents: Document[];
@@ -168,52 +264,55 @@ export const DocumentsPaginatedList: Component<{
   setSorting?: Setter<SortingState>;
 }> = (props) => {
   const { t } = useI18n();
+  const getColumns = createMemo<ColumnDef<Document>[]>(() => [
+    ...(props.enableBatchSelection ? [selectionColumn] : []),
+    {
+      header: () => t('documents.list.table.headers.file-name'),
+      id: 'name',
+      accessorFn: (row) => row.name,
+      enableSorting: true,
+      cell: (data) => (
+        <div class="overflow-hidden flex gap-4 items-center max-w-500px">
+          <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
+            <div
+              class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}
+            />
+          </div>
+
+          <div class="flex-1 flex flex-col gap-1 truncate">
+            <A
+              href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
+              class="font-bold truncate block hover:underline"
+              title={data.row.original.name}
+            >
+              {getDocumentNameWithoutExtension({
+                name: data.row.original.name,
+              })}
+            </A>
+
+            <div class="text-xs text-muted-foreground lh-tight">
+              {[
+                formatBytes({ bytes: data.row.original.originalSize, base: 1000 }),
+                getDocumentNameExtension({ name: data.row.original.name }),
+              ]
+                .filter(Boolean)
+                .join(' - ')}{' '}
+              - <RelativeTime date={data.row.original.createdAt} />
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    ...(props.extraColumns ?? []),
+  ]);
   const table = createSolidTable({
     get data() {
       return props.documents ?? [];
     },
     getRowId: (row) => row.id,
-    columns: [
-      ...(props.enableBatchSelection ? [selectionColumn] : []),
-      {
-        header: () => t('documents.list.table.headers.file-name'),
-        id: 'name',
-        accessorFn: (row) => row.name,
-        enableSorting: true,
-        cell: (data) => (
-          <div class="overflow-hidden flex gap-4 items-center max-w-500px">
-            <div class="bg-muted flex items-center justify-center p-2 rounded-lg">
-              <div
-                class={cn(getDocumentIcon({ document: data.row.original }), 'size-6 text-primary')}
-              />
-            </div>
-
-            <div class="flex-1 flex flex-col gap-1 truncate">
-              <A
-                href={`/organizations/${data.row.original.organizationId}/documents/${data.row.original.id}`}
-                class="font-bold truncate block hover:underline"
-                title={data.row.original.name}
-              >
-                {getDocumentNameWithoutExtension({
-                  name: data.row.original.name,
-                })}
-              </A>
-
-              <div class="text-xs text-muted-foreground lh-tight">
-                {[
-                  formatBytes({ bytes: data.row.original.originalSize, base: 1000 }),
-                  getDocumentNameExtension({ name: data.row.original.name }),
-                ]
-                  .filter(Boolean)
-                  .join(' - ')}{' '}
-                - <RelativeTime date={data.row.original.createdAt} />
-              </div>
-            </div>
-          </div>
-        ),
-      },
-      ...(props.extraColumns ?? []),
-    ],
+    get columns() {
+      return getColumns();
+    },
     get rowCount() {
       return props.documentsCount;
     },

@@ -16,7 +16,7 @@ const pdfjsAssetsDirectory = getPdfjsAssetsDirectoryPath();
 export default defineConfig({
   plugins: [
     unoCssPlugin(),
-    solidPlugin(),
+    solidPlugin({ ssr: env.VITEST === 'true' }),
     cleanDemoAssetsPlugin(),
     viteStaticCopy({
       targets: [
