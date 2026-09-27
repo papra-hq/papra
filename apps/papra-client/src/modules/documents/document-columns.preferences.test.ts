@@ -1,19 +1,10 @@
-import type * as Solid from 'solid-js';
-import { createRoot, createSignal } from 'solid-js';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { createSignal } from 'solid-js';
+import { describe, expect, test } from 'vitest';
 import {
   DEFAULT_DOCUMENT_COLUMN_IDS,
   getDocumentColumnsStorageKey,
 } from './document-columns.models';
 import { createDocumentColumnPreferences } from './document-columns.preferences';
-
-vi.mock('solid-js', async () => vi.importActual<typeof Solid>('solid-js/dist/solid.js'));
-
-const disposers: (() => void)[] = [];
-
-afterEach(() => {
-  disposers.splice(0).forEach((dispose) => dispose());
-});
 
 function createTestStorage(initialEntries: Record<string, string> = {}) {
   const entries = new Map(Object.entries(initialEntries));
@@ -33,15 +24,12 @@ function setupPreferences({
   organizationId = 'organization-a',
   storage = createTestStorage(),
 } = {}) {
-  return createRoot((dispose) => {
-    disposers.push(dispose);
-    const [getOrganizationId, setOrganizationId] = createSignal(organizationId);
-    const [getColumnIds, setColumnIds] = createDocumentColumnPreferences({
-      getOrganizationId,
-      storage,
-    });
-    return { getColumnIds, setColumnIds, setOrganizationId };
+  const [getOrganizationId, setOrganizationId] = createSignal(organizationId);
+  const [getColumnIds, setColumnIds] = createDocumentColumnPreferences({
+    getOrganizationId,
+    storage,
   });
+  return { getColumnIds, setColumnIds, setOrganizationId };
 }
 
 describe('document column preferences', () => {
