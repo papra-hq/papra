@@ -85,6 +85,7 @@ export function getAuth({
             if (
               !isEmailDomainAllowed({
                 email,
+                allowedEmailDomains: config.auth.allowedEmailDomains,
                 forbiddenEmailDomains: config.auth.forbiddenEmailDomains,
               })
             ) {
