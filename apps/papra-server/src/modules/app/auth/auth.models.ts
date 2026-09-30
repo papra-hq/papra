@@ -88,15 +88,14 @@ export function isAuthenticationValid({
 
 export function isEmailDomainAllowed({
   email,
+  allowedEmailDomains,
   forbiddenEmailDomains,
 }: {
   email: string;
-  /**
-   * A set of toLowerCased forbidden email domains (e.g. "papra.app", "callback.email")
-   */
+  allowedEmailDomains?: Set<string>;
   forbiddenEmailDomains?: Set<string>;
 }): boolean {
-  if (isNil(forbiddenEmailDomains) || forbiddenEmailDomains.size === 0) {
+  if (!forbiddenEmailDomains?.size && !allowedEmailDomains?.size) {
     return true;
   }
 
@@ -106,5 +105,9 @@ export function isEmailDomainAllowed({
     return false;
   }
 
-  return !forbiddenEmailDomains.has(emailDomain);
+  if (forbiddenEmailDomains?.has(emailDomain)) {
+    return false;
+  }
+
+  return !allowedEmailDomains?.size || allowedEmailDomains.has(emailDomain);
 }
