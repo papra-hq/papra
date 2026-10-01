@@ -27,4 +27,6 @@ Deploy/restart the server after changing its configuration. If you previously bu
 
 ```
 pnpm eas build --platform android --profile production
+
+pnpm exec eas build --platform android --profile release-apk
 ```
