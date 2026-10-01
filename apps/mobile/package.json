@@ -62,7 +62,7 @@
   "devDependencies": {
     "@types/react": "~19.1.10",
     "eas-cli": "16.27.0",
-    "typescript": "catalog:",
+    "typescript": "catalog:typescript-legacy",
     "vitest": "catalog:"
   }
 }
