@@ -95,22 +95,49 @@ export function tokenize({
     stopCondition,
     processEscapes,
     stopAtQuote = false,
+    trackParenDepth = 'none',
   }: {
     stopCondition: StopCondition;
     processEscapes: boolean;
     stopAtQuote?: boolean;
+    trackParenDepth?: 'none' | 'always' | 'auto';
   }): string => {
     let value = '';
+    let parenDepth = 0;
+    let hasColon = false;
 
     while (pos < query.length) {
       const char = peek();
 
-      if (!char || stopCondition(char)) {
+      if (!char) {
         break;
+      }
+
+      const activeTrack = trackParenDepth === 'always' || (trackParenDepth === 'auto' && hasColon);
+
+      if (activeTrack && char === '(') {
+        parenDepth++;
+      }
+
+      if ((!activeTrack || parenDepth === 0) && stopCondition(char)) {
+        break;
+      }
+
+      if (activeTrack && char === ')') {
+        if (parenDepth > 0) {
+          parenDepth--;
+        } else {
+          break;
+        }
       }
 
       if (stopAtQuote && char === '"') {
         break;
+      }
+
+      // Check if we are passing an unescaped colon
+      if (char === ':' && (value.length === 0 || value[value.length - 1] !== '\\')) {
+        hasColon = true;
       }
 
       if (processEscapes && char === '\\') {
@@ -132,6 +159,7 @@ export function tokenize({
       stopCondition: isWhitespaceOrParen,
       processEscapes: false,
       stopAtQuote: true,
+      trackParenDepth: 'auto',
     });
   };
 
@@ -148,6 +176,7 @@ export function tokenize({
     const value = readUnquotedValue({
       stopCondition: isWhitespaceOrParen,
       processEscapes: true,
+      trackParenDepth: 'always',
     });
 
     return unescapeColons(value);
