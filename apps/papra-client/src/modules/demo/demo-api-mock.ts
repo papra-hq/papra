@@ -15,6 +15,7 @@ import {
   documentFileStorage,
   documentStorage,
   documentViewStorage,
+  organizationSettingsStorage,
   organizationStorage,
   tagDocumentStorage,
   taggingRuleStorage,
@@ -189,6 +190,52 @@ async function resolveBatchTargetDocumentIds({
   }).map((document) => document.id);
 }
 
+const defaultOrganizationSettings = {
+  ai: {
+    autoTagging: {
+      isEnabled: false,
+      canCreateNewTags: false,
+      maxTags: 10,
+    },
+    extraction: {
+      isEnabled: true,
+      extractDate: true,
+      extractCustomProperties: true,
+      renameDocuments: false,
+      filenamePattern: '',
+    },
+  },
+};
+
+function mergeOrganizationSettings(
+  stored?: Partial<typeof defaultOrganizationSettings> | null,
+): typeof defaultOrganizationSettings {
+  return {
+    ai: {
+      autoTagging: {
+        ...defaultOrganizationSettings.ai.autoTagging,
+        ...stored?.ai?.autoTagging,
+      },
+      extraction: {
+        ...defaultOrganizationSettings.ai.extraction,
+        ...stored?.ai?.extraction,
+      },
+    },
+  };
+}
+
+async function getOrganizationSettingsSnapshot(organizationId: string) {
+  const stored = await organizationSettingsStorage.getItem(organizationId);
+  return mergeOrganizationSettings(stored);
+}
+
+async function saveOrganizationSettings(
+  organizationId: string,
+  settings: typeof defaultOrganizationSettings,
+) {
+  await organizationSettingsStorage.setItem(organizationId, settings);
+}
+
 const inMemoryApiMock: Record<string, { handler: any }> = {
   ...defineHandler({
     path: '/api/config',
@@ -201,6 +248,12 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
           providers: {
             github: { isEnabled: false },
           },
+        },
+        autoTagging: {
+          isEnabled: true,
+        },
+        aiExtraction: {
+          isEnabled: true,
         },
       },
     }),
@@ -1533,15 +1586,7 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
       assert(organization, { status: 403 });
 
       return {
-        organizationSettings: {
-          ai: {
-            autoTagging: {
-              isEnabled: false,
-              canCreateNewTags: false,
-              maxTags: 10,
-            },
-          },
-        },
+        organizationSettings: await getOrganizationSettingsSnapshot(organizationId),
       };
     },
   }),
@@ -1549,16 +1594,33 @@ const inMemoryApiMock: Record<string, { handler: any }> = {
   ...defineHandler({
     path: '/api/organizations/:organizationId/settings',
     method: 'PATCH',
-    handler: async () => {
-      throw Object.assign(new FetchError('Not available in demo'), {
-        status: 501,
-        data: {
-          error: {
-            message: 'This feature is not available in demo',
-            code: 'demo.not_available',
+    handler: async ({ params: { organizationId }, body }) => {
+      const organization = await organizationStorage.getItem(organizationId);
+
+      assert(organization, { status: 403 });
+
+      const current = await getOrganizationSettingsSnapshot(organizationId);
+      const partials = body as {
+        ai?: {
+          autoTagging?: Partial<(typeof defaultOrganizationSettings)['ai']['autoTagging']>;
+          extraction?: Partial<(typeof defaultOrganizationSettings)['ai']['extraction']>;
+        };
+      };
+
+      await saveOrganizationSettings(organizationId, {
+        ai: {
+          autoTagging: {
+            ...current.ai.autoTagging,
+            ...partials.ai?.autoTagging,
+          },
+          extraction: {
+            ...current.ai.extraction,
+            ...partials.ai?.extraction,
           },
         },
       });
+
+      return undefined;
     },
   }),
 

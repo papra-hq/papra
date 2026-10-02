@@ -504,6 +504,20 @@ export const DocumentPage: Component = () => {
                               ),
                               icon: 'i-tabler-file-text',
                             },
+                            ...(getDocument().originalName &&
+                            getDocument().originalName !== getDocument().name
+                              ? [
+                                  {
+                                    label: t('documents.info.original-name'),
+                                    value: (
+                                      <span class="truncate" title={getDocument().originalName}>
+                                        {getDocument().originalName}
+                                      </span>
+                                    ),
+                                    icon: 'i-tabler-file-symlink',
+                                  },
+                                ]
+                              : []),
                             {
                               label: t('documents.info.type'),
                               value: getDocument().mimeType,

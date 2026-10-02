@@ -138,6 +138,7 @@ export async function setDocumentCustomPropertyValue({
   propertyDefinitionId,
   organizationId,
   value,
+  expectedAbsent,
   customPropertiesRepository,
   customPropertiesOptionsRepository,
   organizationsRepository,
@@ -147,6 +148,7 @@ export async function setDocumentCustomPropertyValue({
   propertyDefinitionId: string;
   organizationId: string;
   value: unknown;
+  expectedAbsent?: boolean;
   customPropertiesRepository: CustomPropertiesRepository;
   customPropertiesOptionsRepository: CustomPropertiesOptionsRepository;
   organizationsRepository: OrganizationsRepository;
@@ -181,9 +183,10 @@ export async function setDocumentCustomPropertyValue({
 
   const dbValue = customPropertyTypeDefinition.value.toDb({ value: parsedValue });
 
-  await customPropertiesRepository.setDocumentCustomPropertyValue({
+  return customPropertiesRepository.setDocumentCustomPropertyValue({
     documentId,
     propertyDefinitionId,
+    expectedAbsent,
     values: Array.isArray(dbValue) ? dbValue : [dbValue],
   });
 }

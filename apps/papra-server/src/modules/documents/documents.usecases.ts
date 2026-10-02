@@ -784,6 +784,8 @@ export async function updateDocument({
   documentsRepository,
   eventServices,
   changes,
+  expectedName,
+  expectedDocumentDate,
 }: {
   documentId: string;
   organizationId: string;
@@ -796,12 +798,16 @@ export async function updateDocument({
     documentDate?: Date | null;
     notes?: string;
   };
+  expectedName?: string;
+  expectedDocumentDate?: Date | null;
 }) {
-  // It throws if the document does not exist
+  // It throws if the document does not exist, or if expected-state predicates fail
   const { document } = await documentsRepository.updateDocument({
     documentId,
     organizationId,
     ...changes,
+    expectedName,
+    expectedDocumentDate,
   });
 
   eventServices.emitEvent({

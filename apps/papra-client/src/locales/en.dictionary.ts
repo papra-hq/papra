@@ -277,6 +277,29 @@ export const translations = {
   'organization.settings.auto-tagging.max-tags.description':
     'The most tags the AI can apply to a single document (between {{ min }} and {{ max }}).',
 
+  'organization.settings.ai-extraction.page.title': 'AI Extraction Settings',
+  'organization.settings.ai-extraction.page.description':
+    'Use an LLM to fill document dates, custom properties, and filenames from extracted content.',
+  'organization.settings.ai-extraction.unavailable':
+    'AI extraction is currently not available for your organization. Please contact support for more information.',
+  'organization.settings.ai-extraction.enabled.label': 'Enable AI extraction',
+  'organization.settings.ai-extraction.enabled.description':
+    'When enabled, documents added to this organization are analyzed after content extraction to fill metadata.',
+  'organization.settings.ai-extraction.extract-date.label': 'Extract document date',
+  'organization.settings.ai-extraction.extract-date.description':
+    'Fill the document date from invoices, letters, and other dated documents when it is not already set.',
+  'organization.settings.ai-extraction.extract-custom-properties.label':
+    'Extract custom properties',
+  'organization.settings.ai-extraction.extract-custom-properties.description':
+    "Fill empty custom properties using each property's type and description. Existing values are never overwritten.",
+  'organization.settings.ai-extraction.rename-documents.label': 'Rename documents',
+  'organization.settings.ai-extraction.rename-documents.description':
+    'Generate a display name from the document content. The original filename is always kept in the document metadata.',
+  'organization.settings.ai-extraction.filename-pattern.label': 'Filename pattern',
+  'organization.settings.ai-extraction.filename-pattern.placeholder': 'e.g. {date} - {vendor}',
+  'organization.settings.ai-extraction.filename-pattern.description':
+    'Optional naming rule for the AI, for example "{date} - {vendor}". Leave empty to let the model choose a concise descriptive name.',
+
   'organization.usage.page.title': 'Usage',
   'organization.usage.page.description': "View your organization's current usage and limits.",
   'organization.usage.storage.title': 'Document storage',
@@ -442,6 +465,7 @@ export const translations = {
     'This document has no extracted content, you can set it manually here.',
   'documents.info.id': 'ID',
   'documents.info.name': 'Name',
+  'documents.info.original-name': 'Original filename',
   'documents.info.type': 'Type',
   'documents.info.size': 'Size',
   'documents.info.created-at': 'Created',
@@ -1053,6 +1077,7 @@ export const translations = {
   'layout.menu.account': 'Account',
   'layout.menu.general-settings': 'General settings',
   'layout.menu.auto-tagging': 'Auto tagging',
+  'layout.menu.ai-extraction': 'AI extraction',
   'layout.menu.usage': 'Usage',
   'layout.menu.intake-emails': 'Intake emails',
   'layout.menu.webhooks': 'Webhooks',

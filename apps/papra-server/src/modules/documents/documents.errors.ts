@@ -25,6 +25,13 @@ export const createDocumentAlreadyExistsError = createErrorFactory({
   statusCode: 409,
 });
 
+export const DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE = 'document.concurrent_update' as const;
+export const createDocumentConcurrentUpdateError = createErrorFactory({
+  message: 'Document was modified concurrently.',
+  code: DOCUMENT_CONCURRENT_UPDATE_ERROR_CODE,
+  statusCode: 409,
+});
+
 export const createDocumentNotDeletedError = createErrorFactory({
   message: 'Document is not deleted, cannot delete.',
   code: 'document.not_deleted',
