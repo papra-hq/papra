@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest';
+import { createOperatorMatcher, DEFAULT_OPERATOR, DEFAULT_OPERATORS } from './operators';
 import { tokenize } from './tokenizer';
+
+const { matcher: operatorMatcher } = createOperatorMatcher({
+  operators: DEFAULT_OPERATORS,
+  defaultOperator: DEFAULT_OPERATOR,
+});
 
 describe('tokenizer', () => {
   describe('tokenize', () => {
@@ -129,7 +135,7 @@ describe('tokenizer', () => {
 
       for (const { query, expectedTokens, maxTokens = 100 } of queries) {
         test(`tokenizes "${query}"`, () => {
-          const result = tokenize({ query, maxTokens });
+          const result = tokenize({ query, maxTokens, operatorMatcher });
           expect(result.tokens).to.eql(expectedTokens);
         });
       }
