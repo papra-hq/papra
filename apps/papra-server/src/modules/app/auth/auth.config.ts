@@ -1,7 +1,7 @@
 import type { ConfigDefinition } from 'figue';
 import * as v from 'valibot';
 import { booleanishSchema, urlSchema } from '../../config/config.schemas';
-import { forbiddenEmailDomainsSchema } from './auth.config.schemas';
+import { domainListSchema } from './auth.config.schemas';
 import { DEFAULT_AUTH_SECRET } from './auth.constants';
 
 const customOAuthProviderSchema = v.object({
@@ -81,9 +81,15 @@ export const authConfig = {
     default: ['x-forwarded-for'],
     env: 'AUTH_IP_ADDRESS_HEADERS',
   },
+  allowedEmailDomains: {
+    doc: 'A comma separated list of email domains allowed for registration (e.g. "foo.com,bar.com"). When empty, no allowlist restriction is applied. Domains are matched exactly and case-insensitively. Forbidden domains take precedence over this list.',
+    schema: domainListSchema,
+    default: [],
+    env: 'AUTH_ALLOWED_EMAIL_DOMAINS',
+  },
   forbiddenEmailDomains: {
     doc: 'A comma separated list of email domains that are forbidden for registration (e.g. "foo.com,bar.com"), if set, it will override the default forbidden domains.',
-    schema: forbiddenEmailDomainsSchema,
+    schema: domainListSchema,
     default: ['papra.app', 'papra.email', 'owlrelay.email', 'callback.email', 'clb.email'],
     env: 'AUTH_FORBIDDEN_EMAIL_DOMAINS',
   },
