@@ -1,5 +1,11 @@
 # @papra/app
 
+## 26.7.1
+
+### Patch Changes
+
+- [#1552](https://github.com/papra-hq/papra/pull/1552) [`e7acb46`](https://github.com/papra-hq/papra/commit/e7acb46f9bc6ca0890092a88505e083e8b516774) Thanks [@CorentinTh](https://github.com/CorentinTh)! - Search across all pages in the advanced PDF viewer using Ctrl+F / Cmd+F, with match highlighting and previous/next navigation.
+
 ## 26.7.0
 
 ### Minor Changes
