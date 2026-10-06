@@ -8,6 +8,7 @@ import { queryClient } from '@/modules/shared/query/query-client';
 import { Button } from '@/modules/ui/components/button';
 import { createToast } from '@/modules/ui/components/sonner';
 import { CustomPropertyDefinitionForm } from '../components/custom-property-definition-form.component';
+import { getCustomPropertyDefinitionsQueryOptions } from '../custom-properties.queries';
 import {
   fetchCustomPropertyDefinition,
   updateCustomPropertyDefinition,
@@ -44,9 +45,9 @@ export const UpdateCustomPropertyPage: Component = () => {
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['organizations', params.organizationId, 'custom-properties'],
-      });
+      await queryClient.invalidateQueries(
+        getCustomPropertyDefinitionsQueryOptions({ organizationId: params.organizationId }),
+      );
 
       createToast({
         message: t('custom-properties.update.success'),

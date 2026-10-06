@@ -40,7 +40,7 @@ async function setupApp() {
 
 describe('custom properties e2e', () => {
   describe('document custom property values', () => {
-    test('can set a custom property value on a document', async () => {
+    test('preserves property IDs and values in the document list after renaming', async () => {
       const { app } = await setupApp();
 
       const createResponse = await app.request(
@@ -79,8 +79,40 @@ describe('custom properties e2e', () => {
 
       expect(document.customProperties).to.eql([
         {
+          propertyDefinitionId: propertyDefinition.id,
           key: 'invoicenumber',
           name: 'Invoice Number',
+          type: 'text',
+          displayOrder: 0,
+          value: 'INV-001',
+        },
+      ]);
+
+      const renameResponse = await app.request(
+        `/api/organizations/${ORG_ID}/custom-properties/${propertyDefinition.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'Reference' }),
+        },
+        { loggedInUserId: USER_ID },
+      );
+      expect(renameResponse.status).to.eql(200);
+
+      const listResponse = await app.request(
+        `/api/organizations/${ORG_ID}/documents`,
+        { method: 'GET' },
+        { loggedInUserId: USER_ID },
+      );
+      expect(listResponse.status).to.eql(200);
+      const { documents } = (await listResponse.json()) as {
+        documents: { id: string; customProperties: DocumentCustomPropertyForApi[] }[];
+      };
+      expect(documents[0]?.customProperties).to.eql([
+        {
+          propertyDefinitionId: propertyDefinition.id,
+          key: 'reference',
+          name: 'Reference',
           type: 'text',
           displayOrder: 0,
           value: 'INV-001',
@@ -181,6 +213,7 @@ describe('custom properties e2e', () => {
 
       expect(document.customProperties).to.eql([
         {
+          propertyDefinitionId: propertyDefinition.id,
           key: 'invoicenumber',
           name: 'Invoice Number',
           type: 'text',
@@ -193,7 +226,7 @@ describe('custom properties e2e', () => {
     test('a defined property with no value set shows as null in the document', async () => {
       const { app } = await setupApp();
 
-      await app.request(
+      const createResponse = await app.request(
         `/api/organizations/${ORG_ID}/custom-properties`,
         {
           method: 'POST',
@@ -202,6 +235,9 @@ describe('custom properties e2e', () => {
         },
         { loggedInUserId: USER_ID },
       );
+      const { propertyDefinition } = (await createResponse.json()) as {
+        propertyDefinition: CustomPropertyDefinition;
+      };
 
       const getResponse = await app.request(
         `/api/organizations/${ORG_ID}/documents/${DOC_ID}`,
@@ -214,6 +250,7 @@ describe('custom properties e2e', () => {
 
       expect(document.customProperties).to.eql([
         {
+          propertyDefinitionId: propertyDefinition.id,
           key: 'invoicenumber',
           name: 'Invoice Number',
           type: 'text',
