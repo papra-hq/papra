@@ -582,6 +582,18 @@ export const translations = {
   'documents.pdf-viewer.toolbar.download': 'Download',
   'documents.pdf-viewer.toolbar.print': 'Print',
 
+  'documents.pdf-viewer.search.label': 'Search document',
+  'documents.pdf-viewer.search.placeholder': 'Find in document...',
+  'documents.pdf-viewer.search.previous': 'Previous match (Shift+Enter)',
+  'documents.pdf-viewer.search.next': 'Next match (Enter)',
+  'documents.pdf-viewer.search.close': 'Close search (Escape)',
+  'documents.pdf-viewer.search.searching': 'Searching...',
+  'documents.pdf-viewer.search.no-matches': 'No matches',
+  'documents.pdf-viewer.search.matches': '{{current}} of {{total}}',
+  'documents.pdf-viewer.search.match-case': 'Match case',
+  'documents.pdf-viewer.search.whole-words': 'Whole words',
+  'documents.pdf-viewer.search.highlight-all': 'Highlight all matches',
+
   'documents.pdf-viewer.zoom.zoom-out': 'Zoom out',
   'documents.pdf-viewer.zoom.zoom-in': 'Zoom in',
   'documents.pdf-viewer.zoom.auto': 'Auto',

@@ -571,6 +571,18 @@ export const translations: Partial<TranslationsDictionary> = {
   'documents.pdf-viewer.toolbar.download': 'Télécharger',
   'documents.pdf-viewer.toolbar.print': 'Imprimer',
 
+  'documents.pdf-viewer.search.label': 'Rechercher dans le document',
+  'documents.pdf-viewer.search.placeholder': 'Rechercher dans le document...',
+  'documents.pdf-viewer.search.previous': 'Résultat précédent (Maj+Entrée)',
+  'documents.pdf-viewer.search.next': 'Résultat suivant (Entrée)',
+  'documents.pdf-viewer.search.close': 'Fermer la recherche (Échap)',
+  'documents.pdf-viewer.search.searching': 'Recherche en cours...',
+  'documents.pdf-viewer.search.no-matches': 'Aucun résultat',
+  'documents.pdf-viewer.search.matches': '{{current}} sur {{total}}',
+  'documents.pdf-viewer.search.match-case': 'Respecter la casse',
+  'documents.pdf-viewer.search.whole-words': 'Mots entiers',
+  'documents.pdf-viewer.search.highlight-all': 'Tout surligner',
+
   'documents.pdf-viewer.zoom.zoom-out': 'Dézoomer',
   'documents.pdf-viewer.zoom.zoom-in': 'Zoomer',
   'documents.pdf-viewer.zoom.auto': 'Automatique',

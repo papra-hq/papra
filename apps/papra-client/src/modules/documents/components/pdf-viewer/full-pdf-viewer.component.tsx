@@ -1,6 +1,7 @@
 import type { Component } from 'solid-js';
-import { createSignal, onCleanup, onMount } from 'solid-js';
+import { createSignal, createUniqueId, onCleanup, onMount, Show } from 'solid-js';
 import { cn } from '@/modules/shared/style/cn';
+import { PdfSearch } from './pdf-search.component';
 import { SideBar } from './sidebar/sidebar.component';
 import { PdfViewerToolbar } from './toolbar/pdf-viewer-toolbar.component';
 import { usePdfViewer } from './use-pdf-viewer';
@@ -20,6 +21,25 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = createSignal(true);
   const [sidebarWidth, setSidebarWidth] = createSignal(SIDEBAR_DEFAULT_WIDTH);
   const [isDragging, setIsDragging] = createSignal(false);
+  const [isSearchOpen, setIsSearchOpen] = createSignal(false);
+  const searchId = createUniqueId();
+  let searchInput: HTMLInputElement | undefined;
+  let previousFocus: HTMLElement | undefined;
+
+  const openSearch = () => {
+    if (!isSearchOpen()) {
+      previousFocus =
+        document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
+    }
+    setIsSearchOpen(true);
+    searchInput?.focus();
+    searchInput?.select();
+  };
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    previousFocus?.focus();
+  };
 
   onMount(() => {
     const observer = new ResizeObserver((entries) => {
@@ -42,11 +62,20 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
   });
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isSearchOpen()) {
+      e.preventDefault();
+      closeSearch();
+      return;
+    }
+
     if (!e.ctrlKey && !e.metaKey) {
       return;
     }
 
-    if (e.key === '=' || e.key === '+') {
+    if (e.key.toLowerCase() === 'f' && !e.altKey && store.pdfSlick) {
+      e.preventDefault();
+      openSearch();
+    } else if (e.key === '=' || e.key === '+') {
       e.preventDefault();
       store.pdfSlick?.viewer?.increaseScale();
     } else if (e.key === '-') {
@@ -106,9 +135,12 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
         store={store}
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
+        isSearchOpen={isSearchOpen}
+        searchId={searchId}
+        onOpenSearch={openSearch}
       />
 
-      <div class="flex-1 flex overflow-hidden min-h-0">
+      <div class="relative flex-1 flex overflow-hidden min-h-0">
         <div
           class={cn('shrink-0 h-full overflow-hidden', {
             'transition-width duration-200': !isDragging(),
@@ -127,6 +159,20 @@ export const PdfViewer: Component<{ url: string }> = (props) => {
         <div class="flex-1 relative h-full min-w-0">
           <PDFSlickViewer {...{ store, viewerRef }} />
         </div>
+
+        <Show when={store.pdfSlick} keyed>
+          {(pdfSlick) => (
+            <PdfSearch
+              id={searchId}
+              pdfSlick={pdfSlick}
+              isOpen={isSearchOpen}
+              onClose={closeSearch}
+              inputRef={(input) => {
+                searchInput = input;
+              }}
+            />
+          )}
+        </Show>
       </div>
     </div>
   );
