@@ -1,5 +1,5 @@
 import type { ApiContract } from './api.contracts';
-import type { ApiHandlerInput } from './api.routes';
+import type { ApiContextResolver, ApiHandlerInput } from './api.routes';
 import type { ApiResponse } from './responses/responses.types';
 import { addRoute, createRouter, findRoute } from 'rou3';
 import { parseBody } from './requests/parsers/body.parser';
@@ -12,6 +12,7 @@ import { serializeApiResponse } from './responses/serialize/responses.serialize'
 // cannot be called until its own contract has validated the request.
 type RegisteredApiRoute = {
   contract: ApiContract;
+  resolveContext?: ApiContextResolver;
   handler: (input: never) => Promise<ApiResponse>;
 };
 
@@ -36,9 +37,11 @@ export function buildApiRequestHandler({ routes }: { routes: RegisteredApiRoute[
 
     try {
       const {
-        data: { handler, contract },
+        data: { handler, contract, resolveContext },
         params,
       } = routeMatch;
+
+      const context = await resolveContext?.({ request });
 
       const paramsResult = parseParams({ params, schema: contract.request?.params });
 
@@ -59,13 +62,14 @@ export function buildApiRequestHandler({ routes }: { routes: RegisteredApiRoute[
       }
 
       const validatedHandler = handler as (
-        input: ApiHandlerInput<ApiContract>,
+        input: ApiHandlerInput<ApiContract, unknown>,
       ) => Promise<ApiResponse>;
       const handlerResult = await validatedHandler({
         body: bodyResult.body,
         query: queryResult.query,
         params: paramsResult.params,
         request,
+        context,
       });
 
       return serializeApiResponse({

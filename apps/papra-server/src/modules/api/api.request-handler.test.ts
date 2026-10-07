@@ -62,6 +62,162 @@ describe('buildApiRequestHandler', () => {
     });
   });
 
+  test('context resolves once per request before validation and is passed to the handler', async () => {
+    const events: string[] = [];
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        echoRoute,
+        defineApiRoute({
+          contract: defineApiContract({
+            ...echoRoute.contract,
+            path: '/api/context/:userId',
+            request: {
+              params: v.pipe(
+                echoRoute.contract.request.params,
+                v.transform((params) => {
+                  events.push('params');
+                  return params;
+                }),
+              ),
+              query: v.pipe(
+                echoRoute.contract.request.query,
+                v.transform((query) => {
+                  events.push('query');
+                  return query;
+                }),
+              ),
+              body: {
+                'application/json': v.pipe(
+                  echoRoute.contract.request.body['application/json'],
+                  v.transform((body) => {
+                    events.push('body');
+                    return body;
+                  }),
+                ),
+              },
+            },
+          }),
+          resolveContext: async ({ request }) => {
+            events.push('resolve:start');
+            await Promise.resolve();
+            events.push('resolve:end');
+            return { requestId: request.headers.get('X-Request-Id') ?? 'unknown' };
+          },
+          handler: async ({ context, body, query, params, request }) => {
+            events.push('handler');
+            return {
+              status: 201,
+              contentType: 'application/json',
+              body: { body, query, params, method: request.method },
+              headers: { 'X-Request-Id': context.requestId },
+            };
+          },
+        }),
+      ],
+    });
+
+    const sendRequest = async (requestId: string) =>
+      handleApiRequest({
+        request: new Request('https://papra.test/api/context/usr_123?limit=10', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Request-Id': requestId },
+          body: JSON.stringify({ name: '  Alice  ' }),
+        }),
+      });
+
+    const firstResponse = await sendRequest('request-1');
+    const secondResponse = await sendRequest('request-2');
+
+    expect(firstResponse.status).toEqual(201);
+    expect(secondResponse.status).toEqual(201);
+    expect(firstResponse.headers.get('X-Request-Id')).toEqual('request-1');
+    expect(secondResponse.headers.get('X-Request-Id')).toEqual('request-2');
+    expect(await firstResponse.json()).toEqual({
+      body: { name: 'Alice' },
+      query: { limit: 10 },
+      params: { userId: 'usr_123' },
+      method: 'POST',
+    });
+    expect(events).toEqual([
+      'resolve:start',
+      'resolve:end',
+      'params',
+      'query',
+      'body',
+      'handler',
+      'resolve:start',
+      'resolve:end',
+      'params',
+      'query',
+      'body',
+      'handler',
+    ]);
+  });
+
+  test('synchronous context resolvers provide their return value to the handler', async () => {
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          contract: defineApiContract({
+            method: 'GET',
+            path: '/api/context',
+            responses: {
+              200: {
+                description: 'The resolved request path.',
+                content: { 'text/plain': { schema: v.string() } },
+              },
+            },
+          }),
+          resolveContext: ({ request }) => ({ path: new URL(request.url).pathname }),
+          handler: async ({ context }) => ({
+            status: 200,
+            contentType: 'text/plain',
+            body: context.path,
+          }),
+        }),
+      ],
+    });
+
+    const response = await handleApiRequest({
+      request: new Request('https://papra.test/api/context'),
+    });
+
+    expect(response.status).toEqual(200);
+    expect(await response.text()).toEqual('/api/context');
+  });
+
+  test('resolver failures stop validation and the handler without exposing internal details', async () => {
+    let handlerCalled = false;
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          contract: echoRoute.contract,
+          resolveContext: async () => {
+            throw new Error('Sensitive resolver details');
+          },
+          handler: async () => {
+            handlerCalled = true;
+            throw new Error('The handler must not be called');
+          },
+        }),
+      ],
+    });
+    const request = new Request('https://papra.test/api/users/invalid', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'Invalid JSON',
+    });
+
+    const response = await handleApiRequest({ request });
+
+    expect(response.status).toEqual(500);
+    expect(await response.json()).toEqual({
+      error: { message: 'Internal server error', code: 'api.internal-error' },
+    });
+    expect(handlerCalled).toEqual(false);
+    expect(request.bodyUsed).toEqual(false);
+  });
+
   test('invalid request bodies return validation errors instead of reaching the handler', async () => {
     const handleApiRequest = buildApiRequestHandler({ routes: [echoRoute] });
 
@@ -141,8 +297,13 @@ describe('buildApiRequestHandler', () => {
             path: '/api/ignored/:id',
             responses: { 204: { description: 'No content.', content: {} } },
           }),
-          handler: async ({ body, query, params }) => {
-            expect({ body, query, params }).toEqual({ body: undefined, query: {}, params: {} });
+          handler: async ({ body, query, params, context }) => {
+            expect({ body, query, params, context }).toEqual({
+              body: undefined,
+              query: {},
+              params: {},
+              context: undefined,
+            });
             return { status: 204 };
           },
         }),
@@ -161,8 +322,19 @@ describe('buildApiRequestHandler', () => {
     expect(await response.text()).toEqual('');
   });
 
-  test('unmatched requests return a JSON not-found response', async () => {
-    const handleApiRequest = buildApiRequestHandler({ routes: [] });
+  test('unmatched requests return a JSON not-found response without resolving context', async () => {
+    let contextResolved = false;
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          ...echoRoute,
+          resolveContext: () => {
+            contextResolved = true;
+            return undefined;
+          },
+        }),
+      ],
+    });
 
     const response = await handleApiRequest({
       request: new Request('https://papra.test/api/missing'),
@@ -172,6 +344,7 @@ describe('buildApiRequestHandler', () => {
     expect(await response.json()).toEqual({
       error: { message: 'API route not found', code: 'api.not-found' },
     });
+    expect(contextResolved).toEqual(false);
   });
 
   test('handler failures return a generic error without exposing internal details', async () => {

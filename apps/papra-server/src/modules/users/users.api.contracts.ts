@@ -41,8 +41,8 @@ export const updateCurrentUserContract = defineApiContract({
       description: "Updates the current authenticated user's information.",
       content: {
         'application/json': {
-          schema: v.strictObject({
-            user: v.strictObject({
+          schema: v.object({
+            user: v.object({
               id: v.string(),
               email: v.string(),
               name: v.string(),
