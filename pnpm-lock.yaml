@@ -720,6 +720,9 @@ importers:
       resend:
         specifier: ^4.6.0
         version: 4.6.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      rou3:
+        specifier: ^0.12.0
+        version: 0.12.0
       s3mini:
         specifier: ^0.9.5
         version: 0.9.5
@@ -9721,6 +9724,10 @@ packages:
     resolution: {integrity: sha512-Z67nTmhZe7anqnM/EjI392w5i/ANUinjip7QYsOyN37oayduxt3ksdX0hf5OOamkAd53BiIHfbfSzfUmzKFQqQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
+
+  rou3@0.12.0:
+    resolution: {integrity: sha512-V2L6A3jA3RV/zI4pSXkV8OF3+8zPOfaYsb2bV9nTzxV/TXRYDtXgv+k0n1QnYrR0XuTkHfR63wU3Nov6hKCaAA==}
+    engines: {node: '>=20.19.0'}
 
   rou3@0.7.12:
     resolution: {integrity: sha512-iFE4hLDuloSWcD7mjdCDhx2bKcIsYbtOTpfH5MHHLSKMOUyjqQXTeZVa289uuwEGEKFoE/BAPbhaU4B774nceg==}
@@ -22843,6 +22850,8 @@ snapshots:
       '@rolldown/binding-openharmony-arm64': 1.2.8
       '@rolldown/binding-win32-arm64-msvc': 1.2.8
       '@rolldown/binding-win32-x64-msvc': 1.2.8
+
+  rou3@0.12.0: {}
 
   rou3@0.7.12: {}
 
