@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { ERROR_CODES } from './errors';
 import { parseSearchQuery } from './parser';
 
 describe('parseSearchQuery', () => {
@@ -885,6 +886,108 @@ describe('parseSearchQuery', () => {
         ],
       });
       expect(result.issues).toEqual([]);
+    });
+  });
+  describe('when parsing queries with custom operators', () => {
+    const operators = ['>=', '<=', '>', '<', '=', '~'] as const;
+
+    test('parses a custom operator in an unquoted filter', () => {
+      expect(parseSearchQuery({ query: 'tag:~invoice', operators })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '~', value: 'invoice' },
+        issues: [],
+      });
+    });
+
+    test('parses a custom operator with a quoted value', () => {
+      expect(parseSearchQuery({ query: 'name:~"my invoice"', operators })).toEqual({
+        expression: { type: 'filter', field: 'name', operator: '~', value: 'my invoice' },
+        issues: [],
+      });
+    });
+
+    test('parses a custom operator with a quoted field', () => {
+      expect(parseSearchQuery({ query: '"my field":~42', operators })).toEqual({
+        expression: { type: 'filter', field: 'my field', operator: '~', value: '42' },
+        issues: [],
+      });
+    });
+
+    test('parses a custom operator behind a negation', () => {
+      expect(parseSearchQuery({ query: '-tag:~invoice', operators })).toEqual({
+        expression: {
+          type: 'not',
+          operand: { type: 'filter', field: 'tag', operator: '~', value: 'invoice' },
+        },
+        issues: [],
+      });
+    });
+
+    test('parses custom operators alongside built-in ones', () => {
+      expect(
+        parseSearchQuery({ query: 'name:~invoice AND createdAt:>=2024-01-01', operators }),
+      ).toEqual({
+        expression: {
+          type: 'and',
+          operands: [
+            { type: 'filter', field: 'name', operator: '~', value: 'invoice' },
+            { type: 'filter', field: 'createdAt', operator: '>=', value: '2024-01-01' },
+          ],
+        },
+        issues: [],
+      });
+    });
+
+    test('matches the longest operator, regardless of the order in which they are declared', () => {
+      expect(parseSearchQuery({ query: 'tag:~=invoice', operators: ['~', '~=', '='] })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '~=', value: 'invoice' },
+        issues: [],
+      });
+    });
+
+    test('an operator that is not declared is part of the value', () => {
+      expect(parseSearchQuery({ query: 'tag:~invoice', operators: ['='] })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '=', value: '~invoice' },
+        issues: [],
+      });
+    });
+
+    test('falls back to the default operator when no operator is present', () => {
+      expect(parseSearchQuery({ query: 'tag:invoice', operators })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+        issues: [],
+      });
+    });
+
+    test('uses the provided default operator when no operator is present', () => {
+      expect(parseSearchQuery({ query: 'tag:invoice', operators, defaultOperator: '~' })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '~', value: 'invoice' },
+        issues: [],
+      });
+    });
+
+    test('reports invalid operators as issues while still parsing the query', () => {
+      expect(parseSearchQuery({ query: 'tag:invoice', operators: ['=', 'a b'] })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '=', value: 'invoice' },
+        issues: [
+          {
+            code: ERROR_CODES.INVALID_OPERATOR,
+            message:
+              'Operator "a b" cannot contain whitespaces, parentheses or quotes, it has been ignored',
+          },
+        ],
+      });
+    });
+
+    test('keeps the built-in operators when the operators option is omitted', () => {
+      expect(parseSearchQuery({ query: 'createdAt:>=2024-01-01' })).toEqual({
+        expression: { type: 'filter', field: 'createdAt', operator: '>=', value: '2024-01-01' },
+        issues: [],
+      });
+
+      expect(parseSearchQuery({ query: 'tag:~invoice' })).toEqual({
+        expression: { type: 'filter', field: 'tag', operator: '=', value: '~invoice' },
+        issues: [],
+      });
     });
   });
 });
