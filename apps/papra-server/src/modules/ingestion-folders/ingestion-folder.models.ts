@@ -9,13 +9,14 @@ export function normalizeFilePathToIngestionFolder({
   filePath: string;
   ingestionFolderPath: string;
 }) {
-  const relativeFilePath = relative(ingestionFolderPath, filePath);
+  const relativeFilePath = relative(ingestionFolderPath, filePath).replace(/\\/g, '/');
 
   return { relativeFilePath };
 }
 
 export function getOrganizationIdFromFilePath({ relativeFilePath }: { relativeFilePath: string }) {
-  const [maybeOrganizationId] = relativeFilePath.split(pathSeparator);
+  const normalized = relativeFilePath.replace(/\\/g, '/');
+  const [maybeOrganizationId] = normalized.split('/');
 
   if (isNil(maybeOrganizationId) || !ORGANIZATION_ID_REGEX.test(maybeOrganizationId)) {
     return { organizationId: undefined };
@@ -44,7 +45,8 @@ export function getAbsolutePathFromFolderRelativeToOrganizationIngestionFolder({
   path: string;
   organizationIngestionFolderPath: string;
 }) {
-  return isAbsolute(path) ? path : join(organizationIngestionFolderPath, path);
+  const result = isAbsolute(path) ? path : join(organizationIngestionFolderPath, path);
+  return result.replace(/\\/g, '/');
 }
 
 export function isFileInErrorFolder({
@@ -61,7 +63,7 @@ export function isFileInErrorFolder({
     organizationIngestionFolderPath,
   });
 
-  return filePath.startsWith(errorFolderPath);
+  return filePath.replace(/\\/g, '/').startsWith(errorFolderPath);
 }
 
 export function isFileInDoneFolder({
@@ -78,5 +80,5 @@ export function isFileInDoneFolder({
     organizationIngestionFolderPath,
   });
 
-  return filePath.startsWith(doneFolderPath);
+  return filePath.replace(/\\/g, '/').startsWith(doneFolderPath);
 }
