@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 import { describe, expect, test } from 'vitest';
+import { createUnauthorizedError } from '../app/auth/auth.errors';
+import { createError } from '../shared/errors/errors';
+import { createTestLogger } from '../shared/logger/logger.test-utils';
 import { defineApiContract } from './api.contracts';
 import { buildApiRequestHandler } from './api.request-handler';
 import { defineApiRoute } from './api.routes';
@@ -218,6 +221,102 @@ describe('buildApiRequestHandler', () => {
     expect(request.bodyUsed).toEqual(false);
   });
 
+  test('public resolver errors return their status before validation or handler execution', async () => {
+    let handlerCalled = false;
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          contract: echoRoute.contract,
+          resolveContext: async () => {
+            throw createUnauthorizedError();
+          },
+          handler: async () => {
+            handlerCalled = true;
+            throw new Error('The handler must not be called');
+          },
+        }),
+      ],
+    });
+    const request = new Request('https://papra.test/api/users/invalid', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'Invalid JSON',
+    });
+
+    const response = await handleApiRequest({ request });
+
+    expect(response.status).toEqual(401);
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
+    expect(await response.json()).toEqual({
+      error: { message: 'Unauthorized', code: 'auth.unauthorized' },
+    });
+    expect(handlerCalled).toEqual(false);
+    expect(request.bodyUsed).toEqual(false);
+  });
+
+  test('public handler errors preserve their status and public payload without being cached', async () => {
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          contract: defineApiContract({ method: 'GET', path: '/api/error', responses: {} }),
+          handler: async () => {
+            throw createError({
+              statusCode: 410,
+              message: 'Resource no longer available',
+              code: 'resource.gone',
+              cause: new Error('Sensitive cause'),
+            });
+          },
+        }),
+      ],
+    });
+
+    const response = await handleApiRequest({
+      request: new Request('https://papra.test/api/error'),
+    });
+
+    expect(response.status).toEqual(410);
+    expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
+    expect(await response.json()).toEqual({
+      error: { message: 'Resource no longer available', code: 'resource.gone' },
+    });
+  });
+
+  test('internal custom errors are logged but return a sanitized non-cacheable 500', async () => {
+    const { logger, getLogs } = createTestLogger();
+    const error = createError({
+      statusCode: 503,
+      message: 'Sensitive internal details',
+      code: 'internal.sensitive',
+      isInternal: true,
+    });
+    const handleApiRequest = buildApiRequestHandler({
+      logger,
+      routes: [
+        defineApiRoute({
+          contract: defineApiContract({ method: 'GET', path: '/api/error', responses: {} }),
+          handler: async () => {
+            throw error;
+          },
+        }),
+      ],
+    });
+
+    const response = await handleApiRequest({
+      request: new Request('https://papra.test/api/error'),
+    });
+
+    expect(response.status).toEqual(500);
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
+    expect(await response.json()).toEqual({
+      error: { message: 'Internal server error', code: 'api.internal-error' },
+    });
+    expect(getLogs()).toMatchObject([
+      { level: 'error', message: error.message, data: { error: { message: error.message } } },
+    ]);
+  });
+
   test('invalid request bodies return validation errors instead of reaching the handler', async () => {
     const handleApiRequest = buildApiRequestHandler({ routes: [echoRoute] });
 
@@ -230,6 +329,7 @@ describe('buildApiRequestHandler', () => {
     });
 
     expect(response.status).toEqual(400);
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toMatchObject({
       error: {
         code: 'api.validation_error',
@@ -341,14 +441,18 @@ describe('buildApiRequestHandler', () => {
     });
 
     expect(response.status).toEqual(404);
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toEqual({
       error: { message: 'API route not found', code: 'api.not-found' },
     });
     expect(contextResolved).toEqual(false);
   });
 
-  test('handler failures return a generic error without exposing internal details', async () => {
+  test('unexpected handler failures are logged and return a generic error without exposing internal details', async () => {
+    const { logger, getLogs } = createTestLogger();
+    const error = new Error('Sensitive internal details');
     const handleApiRequest = buildApiRequestHandler({
+      logger,
       routes: [
         defineApiRoute({
           contract: defineApiContract({
@@ -357,7 +461,7 @@ describe('buildApiRequestHandler', () => {
             responses: {},
           }),
           handler: async () => {
-            throw new Error('Sensitive internal details');
+            throw error;
           },
         }),
       ],
@@ -369,8 +473,12 @@ describe('buildApiRequestHandler', () => {
 
     expect(response.status).toEqual(500);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
+    expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toEqual({
       error: { message: 'Internal server error', code: 'api.internal-error' },
     });
+    expect(getLogs()).toMatchObject([
+      { level: 'error', message: error.message, data: { error: { message: error.message } } },
+    ]);
   });
 });

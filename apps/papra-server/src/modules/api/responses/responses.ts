@@ -1,8 +1,12 @@
-export function jsonResponse(body: unknown, { status = 200 } = {}) {
+export function jsonResponse(
+  body: unknown,
+  { status = 200, headers = {} }: { status?: number; headers?: Record<string, string> } = {},
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       'Content-Type': 'application/json',
+      ...headers,
     },
   });
 }
@@ -26,7 +30,7 @@ export function apiErrorResponse({
         ...rest,
       },
     },
-    { status },
+    { status, headers: { 'Cache-Control': 'no-store' } },
   );
 }
 

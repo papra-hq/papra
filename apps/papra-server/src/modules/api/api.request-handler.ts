@@ -7,6 +7,9 @@ import { parseParams } from './requests/parsers/params.parser';
 import { parseQuery } from './requests/parsers/query.parser';
 import { apiErrorResponse, internalServerErrorResponse } from './responses/responses';
 import { serializeApiResponse } from './responses/serialize/responses.serialize';
+import { isCustomError } from '../shared/errors/errors';
+import type { Logger } from '../shared/logger/logger';
+import { createLogger } from '../shared/logger/logger';
 
 // Heterogeneous routes erase their input types only inside the dispatcher. A handler
 // cannot be called until its own contract has validated the request.
@@ -16,7 +19,13 @@ type RegisteredApiRoute = {
   handler: (input: never) => Promise<ApiResponse>;
 };
 
-export function buildApiRequestHandler({ routes }: { routes: RegisteredApiRoute[] }) {
+export function buildApiRequestHandler({
+  routes,
+  logger = createLogger({ namespace: 'api' }),
+}: {
+  routes: RegisteredApiRoute[];
+  logger?: Logger;
+}) {
   const router = createRouter<RegisteredApiRoute>();
 
   for (const route of routes) {
@@ -76,7 +85,17 @@ export function buildApiRequestHandler({ routes }: { routes: RegisteredApiRoute[
         handlerResult,
         responseDefinitions: contract.responses,
       });
-    } catch {
+    } catch (error) {
+      logger.error({ error }, error instanceof Error ? error.message : 'An error occurred');
+
+      if (isCustomError(error) && !error.isInternal) {
+        return apiErrorResponse({
+          status: error.statusCode,
+          message: error.message,
+          code: error.code,
+        });
+      }
+
       return internalServerErrorResponse();
     }
   };
