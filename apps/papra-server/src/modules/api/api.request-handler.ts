@@ -32,16 +32,13 @@ export function buildApiRequestHandler({
     addRoute(router, route.contract.method, route.contract.path, route);
   }
 
-  return async ({ request }: { request: Request }): Promise<Response> => {
+  return async ({ request }: { request: Request }): Promise<Response | undefined> => {
     const url = new URL(request.url);
     const routeMatch = findRoute(router, request.method.toUpperCase(), url.pathname);
 
     if (!routeMatch) {
-      return apiErrorResponse({
-        status: 404,
-        message: 'API route not found',
-        code: 'api.not-found',
-      });
+      // Let the caller handle unmatched requests without consuming their body.
+      return undefined;
     }
 
     try {

@@ -54,6 +54,7 @@ describe('buildApiRequestHandler', () => {
       }),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(201);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
     expect(response.headers.get('X-Request-Id')).toEqual('request-1');
@@ -131,6 +132,8 @@ describe('buildApiRequestHandler', () => {
     const firstResponse = await sendRequest('request-1');
     const secondResponse = await sendRequest('request-2');
 
+    expect.assert(firstResponse);
+    expect.assert(secondResponse);
     expect(firstResponse.status).toEqual(201);
     expect(secondResponse.status).toEqual(201);
     expect(firstResponse.headers.get('X-Request-Id')).toEqual('request-1');
@@ -185,6 +188,7 @@ describe('buildApiRequestHandler', () => {
       request: new Request('https://papra.test/api/context'),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(200);
     expect(await response.text()).toEqual('/api/context');
   });
@@ -213,6 +217,7 @@ describe('buildApiRequestHandler', () => {
 
     const response = await handleApiRequest({ request });
 
+    expect.assert(response);
     expect(response.status).toEqual(500);
     expect(await response.json()).toEqual({
       error: { message: 'Internal server error', code: 'api.internal-error' },
@@ -245,6 +250,7 @@ describe('buildApiRequestHandler', () => {
 
     const response = await handleApiRequest({ request });
 
+    expect.assert(response);
     expect(response.status).toEqual(401);
     expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toEqual({
@@ -275,6 +281,7 @@ describe('buildApiRequestHandler', () => {
       request: new Request('https://papra.test/api/error'),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(410);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
     expect(response.headers.get('Cache-Control')).toEqual('no-store');
@@ -307,6 +314,7 @@ describe('buildApiRequestHandler', () => {
       request: new Request('https://papra.test/api/error'),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(500);
     expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toEqual({
@@ -328,6 +336,7 @@ describe('buildApiRequestHandler', () => {
       }),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(400);
     expect(response.headers.get('Cache-Control')).toEqual('no-store');
     expect(await response.json()).toMatchObject({
@@ -349,6 +358,7 @@ describe('buildApiRequestHandler', () => {
       }),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(400);
     expect(await response.json()).toMatchObject({
       error: { code: 'api.validation_error', details: [{ path: 'userId' }] },
@@ -384,6 +394,7 @@ describe('buildApiRequestHandler', () => {
       request: new Request('https://papra.test/api/pages/2'),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(200);
     expect(await response.json()).toEqual({ nextPage: 3 });
   });
@@ -417,12 +428,13 @@ describe('buildApiRequestHandler', () => {
       }),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(204);
     expect(response.headers.get('Content-Type')).toEqual(null);
     expect(await response.text()).toEqual('');
   });
 
-  test('unmatched requests return a JSON not-found response without resolving context', async () => {
+  test('unmatched paths return undefined without resolving context or consuming the body', async () => {
     let contextResolved = false;
     const handleApiRequest = buildApiRequestHandler({
       routes: [
@@ -436,16 +448,64 @@ describe('buildApiRequestHandler', () => {
       ],
     });
 
-    const response = await handleApiRequest({
-      request: new Request('https://papra.test/api/missing'),
+    const request = new Request('https://papra.test/api/missing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'Invalid JSON',
     });
 
-    expect(response.status).toEqual(404);
-    expect(response.headers.get('Cache-Control')).toEqual('no-store');
-    expect(await response.json()).toEqual({
-      error: { message: 'API route not found', code: 'api.not-found' },
-    });
+    const response = await handleApiRequest({ request });
+
+    expect(response).toEqual(undefined);
     expect(contextResolved).toEqual(false);
+    expect(request.bodyUsed).toEqual(false);
+    expect(await request.text()).toEqual('Invalid JSON');
+  });
+
+  test('unmatched methods return undefined even when the path matches', async () => {
+    const handleApiRequest = buildApiRequestHandler({ routes: [echoRoute] });
+    const request = new Request('https://papra.test/api/users/usr_123?limit=10', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Alice' }),
+    });
+
+    const response = await handleApiRequest({ request });
+
+    expect(response).toEqual(undefined);
+    expect(request.bodyUsed).toEqual(false);
+  });
+
+  test('matched routes returning 404 produce a response instead of falling through', async () => {
+    const handleApiRequest = buildApiRequestHandler({
+      routes: [
+        defineApiRoute({
+          contract: defineApiContract({
+            method: 'GET',
+            path: '/api/missing-document',
+            responses: {
+              404: {
+                description: 'The document does not exist.',
+                content: { 'text/plain': { schema: v.string() } },
+              },
+            },
+          }),
+          handler: async () => ({
+            status: 404,
+            contentType: 'text/plain',
+            body: 'Document not found',
+          }),
+        }),
+      ],
+    });
+
+    const response = await handleApiRequest({
+      request: new Request('https://papra.test/api/missing-document'),
+    });
+
+    expect.assert(response);
+    expect(response.status).toEqual(404);
+    expect(await response.text()).toEqual('Document not found');
   });
 
   test('unexpected handler failures are logged and return a generic error without exposing internal details', async () => {
@@ -471,6 +531,7 @@ describe('buildApiRequestHandler', () => {
       request: new Request('https://papra.test/api/error'),
     });
 
+    expect.assert(response);
     expect(response.status).toEqual(500);
     expect(response.headers.get('Content-Type')).toEqual('application/json');
     expect(response.headers.get('Cache-Control')).toEqual('no-store');
