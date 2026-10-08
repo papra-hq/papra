@@ -1,5 +1,6 @@
 import { defineApiContract } from '../api/api.contracts';
 import * as v from 'valibot';
+import { isoDateStringSchema } from '../api/api.schemas';
 
 export const getCurrentUserContract = defineApiContract({
   path: '/api/users/me',
@@ -9,13 +10,13 @@ export const getCurrentUserContract = defineApiContract({
       description: "Returns the current authenticated user's information.",
       content: {
         'application/json': {
-          schema: v.strictObject({
-            user: v.strictObject({
+          schema: v.object({
+            user: v.object({
               id: v.string(),
               email: v.string(),
               name: v.string(),
-              createdAt: v.pipe(v.string(), v.isoDateTime()),
-              updatedAt: v.pipe(v.string(), v.isoDateTime()),
+              createdAt: isoDateStringSchema,
+              updatedAt: isoDateStringSchema,
               twoFactorEnabled: v.boolean(),
               permissions: v.array(v.string()),
             }),
@@ -46,8 +47,8 @@ export const updateCurrentUserContract = defineApiContract({
               id: v.string(),
               email: v.string(),
               name: v.string(),
-              createdAt: v.pipe(v.string(), v.isoDateTime()),
-              updatedAt: v.pipe(v.string(), v.isoDateTime()),
+              createdAt: isoDateStringSchema,
+              updatedAt: isoDateStringSchema,
               twoFactorEnabled: v.boolean(),
             }),
           }),

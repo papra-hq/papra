@@ -1,23 +1,41 @@
+import type { ResolveAuthenticationContext } from '../api/api.authentication';
 import { defineApiRoute } from '../api/api.routes';
 import type { GlobalDependencies } from '../app/server.types';
+import { getPermissionsForRoles } from '../roles/roles.methods';
+import { createRolesRepository } from '../roles/roles.repository';
 import { getCurrentUserContract } from './users.api.contracts';
+import { createUsersRepository } from './users.repository';
 
-export function setupGetCurrentUserRoute(_deps: GlobalDependencies) {
+export function setupGetCurrentUserRoute({
+  resolveAuthenticationContext,
+  db,
+}: GlobalDependencies & { resolveAuthenticationContext: ResolveAuthenticationContext }) {
   return defineApiRoute({
     contract: getCurrentUserContract,
-    handler: async () => {
+    resolveContext: resolveAuthenticationContext(),
+    handler: async ({ context: { userId } }) => {
+      const usersRepository = createUsersRepository({ db });
+      const rolesRepository = createRolesRepository({ db });
+
+      const [{ user }, { roles }] = await Promise.all([
+        usersRepository.getUserByIdOrThrow({ userId }),
+        rolesRepository.getUserRoles({ userId }),
+      ]);
+
+      const { permissions } = getPermissionsForRoles({ roles });
+
       return {
         status: 200,
         contentType: 'application/json',
         body: {
           user: {
-            id: '1',
-            email: 'alice@example.com',
-            name: 'Alice',
-            createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
-            twoFactorEnabled: false,
-            permissions: [],
+            id: user.id,
+            email: user.email,
+            name: user.name ?? '',
+            createdAt: user.createdAt.toISOString(),
+            updatedAt: user.updatedAt.toISOString(),
+            twoFactorEnabled: user.twoFactorEnabled,
+            permissions,
           },
         },
       };
